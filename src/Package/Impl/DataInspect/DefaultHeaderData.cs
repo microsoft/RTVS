@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class DefaultHeaderData : IRange<string> {
@@ -15,11 +16,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public string this[int index] {
             get {
-                int rIndex = index + 1; // R index is 1-based
-                if (_mode == Mode.Column) {
-                    return string.Format("[,{0}]", rIndex);
+                int rIndex = index;
+
+                checked {
+                    rIndex = index + 1; // R index is 1-based
                 }
-                return string.Format("[{0},]", rIndex);
+
+                if (_mode == Mode.Column) {
+                    return Invariant($"[,{rIndex}]");
+                }
+                return Invariant($"[{rIndex},]");
             }
 
             set {

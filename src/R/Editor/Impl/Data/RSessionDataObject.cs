@@ -19,13 +19,18 @@ namespace Microsoft.R.Editor.Data {
         private readonly object syncObj = new object();
         private Task<IReadOnlyList<IRSessionDataObject>> _getChildrenTask = null;
 
-        protected RSessionDataObject() { }
+        protected const int DefaultMaxReprLength = 100;
+        protected const int DefaultMaxGrandChildren = 20;
+
+        protected RSessionDataObject() {
+            MaxReprLength = DefaultMaxReprLength;
+        }
 
         /// <summary>
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        public RSessionDataObject(DebugEvaluationResult evaluation) {
+        public RSessionDataObject(DebugEvaluationResult evaluation, int? maxChildrenCount = null) : this() {
             DebugEvaluation = evaluation;
 
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
@@ -33,16 +38,42 @@ namespace Microsoft.R.Editor.Data {
             if (DebugEvaluation is DebugValueEvaluationResult) {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
-                Value = GetValue(valueEvaluation).Trim();
-                ValueDetail = valueEvaluation.Representation.DPut;
+                Value = GetValue(valueEvaluation)?.Trim();
+                ValueDetail = valueEvaluation.Representation.Deparse;
                 TypeName = valueEvaluation.TypeName;
-                var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+
+                if (valueEvaluation.Classes != null) {
+                    var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                    Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+                }
+
                 HasChildren = valueEvaluation.HasChildren;
 
                 Dimensions = valueEvaluation.Dim ?? new List<int>();
+            } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
+                const string PromiseVaue = "<promise>";
+                var promise = (DebugPromiseEvaluationResult)DebugEvaluation;
+
+                Value = promise.Code;
+                TypeName = PromiseVaue;
+                Class = PromiseVaue;
+            } else if (DebugEvaluation is DebugActiveBindingEvaluationResult) {
+                const string ActiveBindingValue = "<active binding>";
+                var activeBinding = (DebugActiveBindingEvaluationResult)DebugEvaluation;
+
+                Value = ActiveBindingValue;
+                TypeName = ActiveBindingValue;
+                Class = ActiveBindingValue;
             }
+
+            if (Dimensions == null) Dimensions = new List<int>();
+
+            MaxChildrenCount = maxChildrenCount;
         }
+
+        protected int? MaxChildrenCount { get; set; }
+
+        protected int MaxReprLength { get; set; }
 
         protected DebugEvaluationResult DebugEvaluation { get; }
 
@@ -74,7 +105,7 @@ namespace Microsoft.R.Editor.Data {
                         DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
 
                 // assumption: DebugEvaluationResult returns children in ascending order
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, null, 100);    // TODO: consider exception propagation such as OperationCanceledException
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, MaxReprLength);
                 result = EvaluateChildren(children);
             }
 
@@ -84,7 +115,7 @@ namespace Microsoft.R.Editor.Data {
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(children[i]));
+                result.Add(new RSessionDataObject(children[i], DefaultMaxGrandChildren));
             }
             return result;
         }

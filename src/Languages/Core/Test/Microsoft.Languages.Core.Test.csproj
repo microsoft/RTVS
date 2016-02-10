@@ -71,7 +71,6 @@
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Bytes\ByteStreamTest.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Text\BraceCounterTest.cs" />
     <Compile Include="Text\TextRangeCollectionTest.cs" />
     <Compile Include="Text\TextHelperTest.cs" />

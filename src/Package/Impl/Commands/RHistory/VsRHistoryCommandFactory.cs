@@ -3,14 +3,9 @@ using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Commands.R;
-using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.History.Commands;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -41,7 +36,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, _interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
 
             return new ICommand[] {
-                new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int)RContextMenuId.RHistory),
                 new LoadHistoryCommand(textView, _historyProvider, _interactiveWorkflow),
                 new SaveHistoryCommand(textView, _historyProvider, _interactiveWorkflow),
                 sendToReplCommand,
@@ -50,6 +44,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
                 new DeleteAllHistoryEntriesCommand(textView, _historyProvider, _interactiveWorkflow),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
                 new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider, _interactiveWorkflow),
+                new HistoryWindowVsStd2KCmdIdUp(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdDown(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdHome(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdEnd(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdPageUp(textView, _historyProvider), 
+                new HistoryWindowVsStd2KCmdIdPageDown(textView, _historyProvider), 
                 new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, _interactiveWorkflow, RToolsSettings.Current), 
                 new CopySelectedHistoryCommand(textView, _historyProvider, _interactiveWorkflow)
             };

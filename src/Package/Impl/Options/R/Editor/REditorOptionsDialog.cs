@@ -1,8 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
@@ -133,6 +133,17 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         public override void ResetSettings() {
             REditorSettings.ResetSettings();
             base.ResetSettings();
+        }
+
+        protected override void OnApply(PageApplyEventArgs e) {
+            if (e.ApplyBehavior == ApplyKind.Apply) {
+                RtvsTelemetry.Current.ReportSettings();
+            }
+            base.OnApply(e);
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            base.OnClosed(e);
         }
     }
 }

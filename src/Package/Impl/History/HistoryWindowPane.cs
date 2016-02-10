@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Components.History;
+using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Support.Settings;
@@ -17,11 +18,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History {
-    [Guid(WindowGuid)]
-    internal class HistoryWindowPane : ToolWindowPane, IOleCommandTarget {
-        public const string WindowGuid = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
+    [Guid(WindowGuidString)]
+    internal class HistoryWindowPane : VisualComponentToolWindow<IRHistoryWindowVisualComponent>, IOleCommandTarget {
+        public const string WindowGuidString = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
+        public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        private readonly ITextEditorFactoryService _textEditorFactory;
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IRHistoryProvider _historyProvider;
         private IOleCommandTarget _commandTarget;
@@ -29,7 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.History {
         private IRHistoryFiltering _historyFiltering;
 
         public HistoryWindowPane() {
-            _textEditorFactory = VsAppShell.Current.ExportProvider.GetExportedValue<ITextEditorFactoryService>();
             _interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
 
@@ -40,11 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.History {
         protected override void OnCreate() {
             _history = _interactiveWorkflowProvider.GetOrCreate().History;
             _history.HistoryChanged += OnHistoryChanged;
-            _historyFiltering = _historyProvider.CreateFiltering(_history);
-
-            var textView = _historyProvider.GetOrCreateTextView(_history);
-            Content = _textEditorFactory.CreateTextViewHost(textView, false);
-            _commandTarget = new CommandTargetToOleShim(textView, RMainController.FromTextView(textView));
+            _historyFiltering = _historyProvider.CreateFiltering(Component);
+            _commandTarget = new CommandTargetToOleShim(Component.TextView, Component.Controller);
 
             base.OnCreate();
         }

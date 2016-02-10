@@ -35,6 +35,37 @@
       <HintPath>..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.9.0.9.0.30729\lib\Microsoft.VisualStudio.Shell.Interop.9.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.TextManager.Interop.7.10.6070\lib\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.TextManager.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Utilities, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -65,11 +96,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\VariableExplorerTest.cs" />
+    <Compile Include="Data\VariableGridTest.cs" />
+    <Compile Include="Help\HelpOnCurrentTest.cs" />
     <Compile Include="Help\HelpWindowTest.cs" />
+    <Compile Include="Help\RHostClientHelpTestApp.cs" />
     <Compile Include="InteractiveTest.cs" />
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />
+    <Compile Include="Utility\VisualTreeObject.cs" />
+    <Compile Include="Utility\VisualTreeProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -92,6 +128,7 @@
     <None Include="Files\VariableExplorer01.tree" />
     <None Include="Files\VariableExplorer02.tree" />
     <None Include="Files\VariableExplorer03.tree" />
+    <None Include="Files\VariableGrid02.tree" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,6 +148,10 @@
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
+      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Name>Microsoft.R.Debugger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
@@ -126,6 +167,14 @@
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>

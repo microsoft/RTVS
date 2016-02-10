@@ -67,13 +67,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _scrolledDirection = ScrollDirection.None;
         }
 
-        public DeferNotification DeferChangeNotification() {
-            return new DeferNotification(this);
+        public DeferNotification DeferChangeNotification(bool suppressNotification) {
+            return new DeferNotification(this, suppressNotification);
         }
 
-        public static double MinItemWidth { get { return 20.0; } }
+        public static double MinItemWidth { get { return 40.0; } }
 
         public static double MinItemHeight { get { return 10.0; } }
+
+
+        public double AverageItemHeight {
+            get {
+                Debug.Assert(_rowCount != 0);
+                return VerticalExtent / _rowCount;
+            }
+        }
 
         private double _verticalOffset;
         public double VerticalOffset {
@@ -114,6 +122,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public double VerticalComputedOffset {
+            get {
+                return VerticalOffset;
+            }
+            set {
+                VerticalOffset = value;
+            }
+        }
+
+        public double HorizontalComputedOffset {
+            get {
+                return HorizontalOffset;
+            }
+            set {
+                HorizontalOffset = value;
+            }
+        }
+
         public double VerticalExtent {
             get {
                 EnsureYPositions();
@@ -134,8 +160,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportHeight;
             }
             set {
-                _viewportHeight = value;
-                _scrolledDirection |= ScrollDirection.Vertical;
+                if (!LayoutDoubleUtil.AreClose(_viewportHeight, value)) {
+                    _viewportHeight = value;
+                    _scrolledDirection |= ScrollDirection.Vertical;
+                }
             }
         }
 
@@ -145,8 +173,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _viewportWidth;
             }
             set {
-                _viewportWidth = value;
-                _scrolledDirection |= ScrollDirection.Horizontal;
+                if (!LayoutDoubleUtil.AreClose(_viewportWidth, value)) {
+                    _viewportWidth = value;
+                    _scrolledDirection |= ScrollDirection.Horizontal;
+                }
             }
         }
 
@@ -156,12 +186,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public double xPosition(int xIndex) {
             EnsureXPositions();
-            return _xPositions[xIndex] - HorizontalOffset;
+            return _xPositions[xIndex] - HorizontalComputedOffset;
         }
 
         public double yPosition(int yIndex) {
             EnsureYPositions();
-            return _yPositions[yIndex] - VerticalOffset;
+            return _yPositions[yIndex] - VerticalComputedOffset;
         }
 
         public double GetWidth(int columnIndex) {
@@ -188,9 +218,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public double ColumnHeight { get; set; }
+        private double _columnHeaderHeight;
+        public double ColumnHeaderHeight {
+            get {
+                return _columnHeaderHeight;
+            }
+            set {
+                if (_columnHeaderHeight.LessThan(value)) {
+                    _columnHeaderHeight = value;
+                }
+            }
+        }
 
-        public double RowWidth { get; set; }
+        private double _rowHeaderWidth;
+        public double RowHeaderWidth {
+            get {
+                return _rowHeaderWidth;
+            }
+            set {
+                if (_rowHeaderWidth.LessThan(value)) {
+                    _rowHeaderWidth = value;
+                }
+            }
+        }
 
         public int xIndex(double position) {
             EnsureXPositions();
@@ -222,8 +272,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _height[i] = MinItemHeight;
             }
 
-            ColumnHeight = MinItemHeight;
-            RowWidth = MinItemWidth;
+            ColumnHeaderHeight = MinItemHeight;
+            RowHeaderWidth = MinItemWidth;
 
             ComputePositions();
         }
@@ -232,10 +282,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int columnStart = xIndex(visualViewport.X);
             int rowStart = yIndex(visualViewport.Y);
 
-            Debug.Assert(HorizontalOffset >= _xPositions[columnStart]);
-            Debug.Assert(VerticalOffset >= _yPositions[rowStart]);
+            Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
+            Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);
 
-            double width = _xPositions[columnStart] - HorizontalOffset;
+            double width = _xPositions[columnStart] - HorizontalComputedOffset;
             int columnCount = 0;
             for (int c = columnStart; c < _columnCount; c++) {
                 width += GetWidth(c);
@@ -246,8 +296,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (width.LessThan(visualViewport.Width)) {
+                overflow |= ScrollDirection.Horizontal;
                 for (int c = columnStart - 1; c >= 0; c--) {
-                    overflow |= ScrollDirection.Horizontal;
                     width += GetWidth(c);
                     if (width.GreaterThanOrClose(visualViewport.Width)) {
                         break;
@@ -255,7 +305,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
 
-            double height = _yPositions[rowStart] - VerticalOffset;
+            double height = _yPositions[rowStart] - VerticalComputedOffset;
             int rowEnd = rowStart;
             int rowCount = 0;
             for (int r = rowStart; r < _rowCount; r++) {
@@ -267,8 +317,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (height.LessThan(visualViewport.Height)) {
+                overflow |= ScrollDirection.Vertical;
                 for (int r = rowStart - 1; r >= 0; r--) {
-                    overflow |= ScrollDirection.Vertical;
                     height += GetHeight(r);
                     if (height.GreaterThanOrClose(visualViewport.Height)) {
                         break;
@@ -324,12 +374,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public class DeferNotification : IDisposable {
             private GridPoints _gridPoints;
-            public DeferNotification(GridPoints gridPoints) {
+            private bool _suppressNotification;
+
+            public DeferNotification(GridPoints gridPoints, bool suppressNotification) {
                 _gridPoints = gridPoints;
+                _suppressNotification = suppressNotification;
             }
 
             public void Dispose() {
-                if (_gridPoints != null) {
+                if (!_suppressNotification && _gridPoints != null) {
                     _gridPoints.OnPointChanged();
 
                     _gridPoints = null;
@@ -342,14 +395,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (scrollDirection == ScrollDirection.Horizontal) {
                     // column header
                     xPosition = new Indexer<double>(points.xPosition, NotSupportedSetter);
-                    yPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.ColumnHeight), NotSupportedSetter);
+                    yPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.ColumnHeaderHeight), NotSupportedSetter);
                     Width = new Indexer<double>(points.GetWidth, points.SetWidth);
-                    Height = new Indexer<double>((i) => points.ColumnHeight, (i, v) => points.ColumnHeight = v);
+                    Height = new Indexer<double>((i) => points.ColumnHeaderHeight, (i, v) => points.ColumnHeaderHeight = v);
                 } else if (scrollDirection == ScrollDirection.Vertical) {
                     // row header
-                    xPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.RowWidth), NotSupportedSetter);
+                    xPosition = new Indexer<double>((i) => (i == 0 ? 0.0 : points.RowHeaderWidth), NotSupportedSetter);
                     yPosition = new Indexer<double>(points.yPosition, NotSupportedSetter);
-                    Width = new Indexer<double>((i) => points.RowWidth, (i, v) => points.RowWidth = v);
+                    Width = new Indexer<double>((i) => points.RowHeaderWidth, (i, v) => points.RowHeaderWidth = v);
                     Height = new Indexer<double>(points.GetHeight, points.SetHeight);
                 } else if (scrollDirection == ScrollDirection.Both) {
                     // data

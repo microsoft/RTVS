@@ -68,12 +68,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GridItem.cs" />
-    <Compile Include="HeaderProvider.cs" />
-    <Compile Include="ItemsProvider.cs" />
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -101,10 +95,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="TreeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -39,6 +39,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class TelemetryAttribute : CategoryAttribute {
+            public TelemetryAttribute() : base("Telemetry") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public static class Project {
             [ExcludeFromCodeCoverage]
             public class ServicesAttribute : CategoryAttribute {
@@ -107,6 +112,12 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class PackageAttribute : CategoryAttribute {
                 public PackageAttribute() : base("R.Package") { }
             }
+
+            [ExcludeFromCodeCoverage]
+            public class DebuggerAttribute : CategoryAttribute {
+                public DebuggerAttribute() : base("R.Debugger") { }
+            }
+
 
             [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {

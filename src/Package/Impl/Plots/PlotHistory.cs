@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Export(typeof(IPlotHistory))]
@@ -25,6 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             PlotCount = info.PlotCount;
 
             VsAppShell.Current.DispatchOnUIThread(() => {
+                // We need to push creation of the tool window
+                // so it appears on the first plot
+                if (!VsAppShell.Current.IsUnitTestEnvironment) {
+                    ToolWindowUtilities.ShowWindowPane<PlotWindowPane>(0, false);
+                }
                 HistoryChanged?.Invoke(this, EventArgs.Empty);
             });
         }

@@ -16,23 +16,27 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class VsRCommandFactory : ICommandFactory {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            var exportProvider = VsAppShell.Current.ExportProvider;
-            var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-            if (interactiveWorkflow.ActiveWindow == null) {
-                interactiveWorkflowProvider
-                    .CreateInteractiveWindowAsync(interactiveWorkflow)
+        [ImportingConstructor]
+        public VsRCommandFactory(IRInteractiveWorkflowProvider workflowProvider) {
+            _workflowProvider = workflowProvider;
+        }
+
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
+            var workflow = _workflowProvider.GetOrCreate();
+
+            if (workflow.ActiveWindow == null) {
+                _workflowProvider
+                    .CreateInteractiveWindowAsync(workflow)
                     .ContinueOnRanToCompletion(w => w.Container.Show(false));
             }
 
             return new ICommand[] {
                 new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int) RContextMenuId.R),
-                new SendToReplCommand(textView, interactiveWorkflow),
-                new SourceRScriptCommand(textView, interactiveWorkflow),
+                new SendToReplCommand(textView, workflow),
                 new GoToFormattingOptionsCommand(textView, textBuffer),
-                new WorkingDirectoryCommand(interactiveWorkflow)
+                new WorkingDirectoryCommand(workflow)
             };
         }
     }

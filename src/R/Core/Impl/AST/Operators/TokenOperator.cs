@@ -38,7 +38,6 @@ namespace Microsoft.R.Core.AST.Operators {
 
             _operatorType = TokenOperator.GetOperatorType(context.TextProvider.GetText(context.Tokens.CurrentToken));
             this.OperatorToken = RParser.ParseToken(context, this);
-
             this.Association = OperatorAssociation.GetAssociation(_operatorType);
 
             bool isUnary;
@@ -47,7 +46,6 @@ namespace Microsoft.R.Core.AST.Operators {
             if (!_isUnary) {
                 _isUnary = isUnary;
             }
-
 
             return base.Parse(context, parent);
         }

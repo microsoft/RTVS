@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -20,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         
         internal void SetEvaluation(EvaluationWrapper evaluation) {
+            ClearError();
+
             VariableGrid.Initialize(new GridDataProvider(evaluation));
 
             _evaluation = evaluation;
@@ -45,11 +48,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         return;
                     }
 
-                    var wrapper = new EvaluationWrapper(-1, evaluation, true);
+                    var wrapper = new EvaluationWrapper(evaluation);
 
                     if (wrapper.Dimensions.Count != 2) {
                         // the same evaluation changed to non-matrix
-                        SetError($"object '{evaluation.Expression}' is not two dimensional.");
+                        SetError(Invariant($"object '{evaluation.Expression}' is not two dimensional."));
                     } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
                         || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
                         ClearError();

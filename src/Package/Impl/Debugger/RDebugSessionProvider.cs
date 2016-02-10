@@ -11,14 +11,14 @@ namespace Microsoft.VisualStudio.R.Package.Debugger {
         private readonly Dictionary<IRSession, DebugSession> _debugSessions = new Dictionary<IRSession, DebugSession>();
         private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
-        public async Task<DebugSession> GetDebugSessionAsync(IRSession session) {
+        public async Task<DebugSession> GetDebugSessionAsync(IRSession session, CancellationToken cancellationToken = default(CancellationToken)) {
             DebugSession debugSession;
 
-            await _sem.WaitAsync().ConfigureAwait(false);
+            await _sem.WaitAsync(cancellationToken).ConfigureAwait(false);
             try {
                 if (!_debugSessions.TryGetValue(session, out debugSession)) {
                     debugSession = new DebugSession(session);
-                    await debugSession.InitializeAsync().ConfigureAwait(false);
+                    await debugSession.InitializeAsync(cancellationToken).ConfigureAwait(false);
                     _debugSessions.Add(session, debugSession);
                 }
 

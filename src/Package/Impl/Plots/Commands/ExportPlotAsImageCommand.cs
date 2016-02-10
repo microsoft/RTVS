@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class ExportPlotAsImageCommand : PlotWindowCommand {
-        public ExportPlotAsImageCommand() :
-            base(RPackageCommandId.icmdExportPlotAsImage) {
+        public ExportPlotAsImageCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdExportPlotAsImage) {
         }
 
         protected override void SetStatus() {
@@ -16,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         protected override void Handle() {
             string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
-                string device = String.Empty;
+                string device = string.Empty;
                 string extension = Path.GetExtension(destinationFilePath).TrimStart('.').ToLowerInvariant();
                 switch (extension) {
                     case "png":

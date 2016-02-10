@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
         }
 
         protected override void SetStatus() {
-            this.Enabled = false; // ReplWindow.ReplWindowExists();
+            Enabled = false; // ReplWindow.ReplWindowExists();
         }
     }
 }

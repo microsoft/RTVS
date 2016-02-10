@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using FluentAssertions;
 using Microsoft.R.Support.Settings;
-using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
@@ -13,13 +13,16 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public RHostScript(IRSessionProvider sessionProvider, IRHostClientApp clientApp = null) {
             SessionProvider = sessionProvider;
+
             Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, clientApp ?? new RHostClientTestApp());
+            Session.IsHostRunning.Should().BeFalse();
+
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
-            }, 10000).Wait();
+            }, 50000).Wait();
         }
 
         public void Dispose() {
@@ -35,7 +38,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
             if (disposing) {
                 if (Session != null) {
-                    Session.StopHostAsync().Wait();
+                    Session.StopHostAsync().Wait(5000);
                     Session.Dispose();
                     Session = null;
                 }

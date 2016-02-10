@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -7,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class TextVisual : DrawingVisual {
 
         public TextVisual() {
-            Padding = 3.0;
+            Margin = 3.0;
         }
 
         public Brush Foreground { get; set; }
@@ -20,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public int Column { get; set; }
 
-        public double Padding { get; set; }
+        public double Margin { get; set; }
 
         private string _text;
         public string Text {
@@ -51,17 +50,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Size Size { get; set; }
 
         private bool _drawValid = false;
-        public bool Draw(Size refSize) {
+        public bool Draw() {
             if (_drawValid) return false;
             DrawingContext dc = RenderOpen();
             try {
                 var formattedText = GetFormattedText();
 
-                Size = new Size(
-                    Math.Max(refSize.Width, formattedText.Width + (2 * Padding)),
-                    Math.Max(refSize.Height, formattedText.Height + (2 * Padding)));
+                Size = new Size(formattedText.Width, formattedText.Height);
 
-                dc.DrawText(formattedText, new Point(Padding, Padding));
+                dc.DrawText(formattedText, new Point());
                 _drawValid = true;
                 return true;
             } finally {
@@ -74,15 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _isHighlight ^= true;
             _drawValid = false;
 
-            Draw(Size);
-        }
-
-        protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters) {
-            return base.HitTestCore(hitTestParameters);
-        }
-
-        protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters) {
-            return base.HitTestCore(hitTestParameters);
+            Draw();
         }
     }
 }

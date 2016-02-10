@@ -61,6 +61,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
@@ -97,9 +98,13 @@
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StubBuilders\InteractiveWorkflowBuilder.cs" />
+    <Compile Include="StubBuilders\RHistoryBuilder.cs" />
+    <Compile Include="StubBuilders\RHistoryProviderBuilder.cs" />
     <Compile Include="StubBuilders\RtfBuilderServiceBuilder.cs" />
     <Compile Include="StubBuilders\TextSearchServiceBuilder.cs" />
+    <Compile Include="Stubs\RInteractiveWorkflowProviderStub.cs" />
     <Compile Include="Stubs\RSettingsStub.cs" />
+    <Compile Include="Stubs\VisualComponents\VisualComponentContainerStub.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

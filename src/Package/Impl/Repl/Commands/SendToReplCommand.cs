@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -21,7 +19,7 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => Invariant($"sys.frame({Index})");
+        internal string SysFrame => Invariant($"base::sys.frame({Index})");
 
         public DebugStackFrame CallingFrame { get; }
 
@@ -48,7 +46,7 @@ namespace Microsoft.R.Debugger {
             var match = _doTraceRegex.Match(Call);
             if (match.Success) {
                 FrameKind = DebugStackFrameKind.DoTrace;
-            } 
+            }
 
             if (fallbackFrame != null) {
                 // If we still don't have the filename and line number, use those from the fallback frame.
@@ -65,15 +63,17 @@ namespace Microsoft.R.Debugger {
             string expression,
             string name = null,
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength);
+            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength, cancellationToken);
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return EvaluateAsync("environment()", fields: fields);
+            return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
     }
 }

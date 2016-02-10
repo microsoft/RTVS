@@ -31,10 +31,17 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         /// </summary>
         public void RecordEvent(string eventName, object parameters = null) {
             if (this.IsEnabled) {
-                IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
                 TelemetryEvent telemetryEvent = new TelemetryEvent(eventName);
-                foreach (KeyValuePair<string, object> kvp in dict) {
-                    telemetryEvent.Properties[kvp.Key] = kvp.Value;
+                if (parameters != null) {
+                    var stringParameter = parameters as string;
+                    if (stringParameter != null) {
+                        telemetryEvent.Properties["Value"] = stringParameter;
+                    } else {
+                        IDictionary<string, object> dict = DictionaryExtension.FromAnonymousObject(parameters);
+                        foreach (KeyValuePair<string, object> kvp in dict) {
+                            telemetryEvent.Properties[kvp.Key] = kvp.Value;
+                        }
+                    }
                 }
                 _session.PostEvent(telemetryEvent);
             }
@@ -61,5 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             }
         }
         #endregion
+
+        public void Dispose() { }
     }
 }

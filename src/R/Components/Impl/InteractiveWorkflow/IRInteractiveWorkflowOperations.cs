@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
@@ -21,6 +23,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         /// <param name="addNewLine">True to add a new line on non-complete inputs.</param>
         void EnqueueExpression(string expression, bool addNewLine);
         void ReplaceCurrentExpression(string replaceWith);
+        void PositionCaretAtPrompt();
         void ClearPendingInputs();
+        Task<ExecutionResult> ResetAsync();
     }
 }

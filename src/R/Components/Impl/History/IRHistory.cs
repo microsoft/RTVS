@@ -5,11 +5,14 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Components.History {
     public interface IRHistory : IDisposable {
-        IWpfTextView GetOrCreateTextView(ITextEditorFactoryService textEditorFactory);
+        IRHistoryWindowVisualComponent CreateVisualComponent(IRHistoryWindowVisualComponentFactory componentFactory, int instanceId = 0);
 
         event EventHandler<EventArgs> SelectionChanged;
         event EventHandler<EventArgs> HistoryChanging;
         event EventHandler<EventArgs> HistoryChanged;
+
+        IRHistoryWindowVisualComponent VisualComponent { get; }
+
         bool HasSelectedEntries { get; }
         bool HasEntries { get; }
         bool IsMultiline { get; set; }
@@ -22,6 +25,11 @@ namespace Microsoft.R.Components.History {
         void NextEntry();
         void CopySelection();
 
+        void ScrollToTop();
+        void ScrollPageUp();
+        void ScrollPageDown();
+        void ScrollToBottom();
+
         IReadOnlyList<SnapshotSpan> GetAllHistoryEntrySpans();
         IReadOnlyList<SnapshotSpan> GetSelectedHistoryEntrySpans();
         string GetSelectedText();
@@ -29,6 +37,8 @@ namespace Microsoft.R.Components.History {
         SnapshotSpan SelectHistoryEntry(int lineNumber);
         SnapshotSpan DeselectHistoryEntry(int lineNumber);
         SnapshotSpan ToggleHistoryEntrySelection(int lineNumber);
+        void SelectNextHistoryEntry();
+        void SelectPreviousHistoryEntry();
         void SelectHistoryEntries(IEnumerable<int> lineNumbers);
         void SelectAllEntries();
         void ClearHistoryEntrySelection();

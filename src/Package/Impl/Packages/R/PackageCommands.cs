@@ -2,7 +2,6 @@
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Feedback;
@@ -10,11 +9,15 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
+using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -22,6 +25,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
+            var plotHistory = exportProvider.GetExportedValue<IPlotHistory>();
+            var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>(typeof(IVsDebugger));
+            var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
+            var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -41,8 +48,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOverCommand(interactiveWorkflow),
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
+                new SourceRScriptCommand(interactiveWorkflow, textViewTracker),
 
-                new InterruptRCommand(interactiveWorkflow),
+                new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
+                new ResetReplCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(),
                 new ImportDataSetUrlCommand(),
@@ -55,16 +64,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand(),
+                new ShowHelpOnCurrentCommand(interactiveWorkflow.RSession, textViewTracker),
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands
-                new ExportPlotAsImageCommand(),
-                new ExportPlotAsPdfCommand(),
-                new CopyPlotAsBitmapCommand(),
-                new CopyPlotAsMetafileCommand(),
-                new HistoryNextPlotCommand(),
-                new HistoryPreviousPlotCommand()
+                new ExportPlotAsImageCommand(plotHistory),
+                new ExportPlotAsPdfCommand(plotHistory),
+                new CopyPlotAsBitmapCommand(plotHistory),
+                new CopyPlotAsMetafileCommand(plotHistory),
+                new HistoryNextPlotCommand(plotHistory),
+                new HistoryPreviousPlotCommand(plotHistory)
             };
         }
     }

@@ -1,5 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Xml.Serialization;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
@@ -20,39 +24,30 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VariableExplorer_ConstructorTest01() {
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                string actual = script.WriteVisualTree();
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
-            }
-        }
-
-        [Test]
-        [Category.Interactive]
         public void VariableExplorer_ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
-                    string actual = script.WriteVisualTree();
+                    var actual = VisualTreeObject.Create(script.Control);
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer02");
                 }
             }
         }
 
-        [Test(Skip = "UIThreadHelper and TetVsAppShell has different main thread")]
+        [Test]
         [Category.Interactive]
         public void VariableExplorer_SimpleDataTest() {
-            string actual = null;
+            VisualTreeObject actual = null;
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
                         using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.UnprotectedEnv);
+                            await eval.EvaluateAsync("x <- c(1:10)");
                         }
                     }).Wait();
 
                     DoIdle(2000);
-                    actual = script.WriteVisualTree();
+                    actual = VisualTreeObject.Create(script.Control);
                 }
             }
             ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer03");

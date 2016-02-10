@@ -429,7 +429,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Use multiline selection</value>
   </data>
   <data name="Settings_MultilineHistorySelection_Description" xml:space="preserve">
-    <value>Single click in R history window selects the entire fragment that was sent to R.\r\nUp/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
+    <value>Single click in R history window selects the entire fragment that was sent to R. Up/Down arrows in the R Interactive Window navigate through chunks instead of single lines.</value>
   </data>
   <data name="Ask" xml:space="preserve">
     <value>Ask</value>
@@ -540,5 +540,17 @@ please navigate to https://cran.r-project.org, install R for Windows and restart
   </data>
   <data name="VariableExplorer_Truncated" xml:space="preserve">
     <value>[truncated]</value>
+  </data>
+  <data name="VariableGrid_Caption" xml:space="preserve">
+    <value>R Data</value>
+  </data>
+  <data name="Settings_DebuggingCategory" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables" xml:space="preserve">
+    <value>Show dot-prefixed variables</value>
+  </data>
+  <data name="Settings_ShowDotPrefixedVariables_Description" xml:space="preserve">
+    <value>Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.</value>
   </data>
 </root>

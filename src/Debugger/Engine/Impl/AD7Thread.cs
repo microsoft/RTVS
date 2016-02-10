@@ -34,7 +34,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugThread100.CanDoFuncEval() {
             ThrowIfDisposed();
-            return VSConstants.S_FALSE;
+            return VSConstants.S_OK;
         }
 
         int IDebugThread2.CanSetNextStatement(IDebugStackFrame2 pStackFrame, IDebugCodeContext2 pCodeContext) {
@@ -156,8 +156,7 @@ namespace Microsoft.R.Debugger.Engine {
         private void ResetStackFrames() {
             _stackFrames = Lazy.Create(() =>
                 (IReadOnlyList<DebugStackFrame>)
-                Engine.DebugSession.GetStackFramesAsync()
-                .GetResultOnUIThread()
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.GetStackFramesAsync(ct))
                 .Reverse()
                 .ToArray());
         }

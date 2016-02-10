@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using FluentAssertions;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 
@@ -34,7 +32,6 @@ namespace Microsoft.R.Core.Test.Parser {
                             NumericalValue  [1 [17...18)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) x <- x+1");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -65,7 +62,6 @@ namespace Microsoft.R.Core.Test.Parser {
             TokenNode  [} [21...22)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) { x <- x+1 }");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -110,7 +106,6 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [} [41...42)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) { x <- x+1 } else { x <- x + 2 }");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -153,7 +148,6 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [} [37...38)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) x <- x+1 else { x <- x + 2 }");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeTrue();
         }
 
         [Test]
@@ -194,7 +188,6 @@ namespace Microsoft.R.Core.Test.Parser {
                                 NumericalValue  [2 [33...34)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) x <- x+1 else x <- x + 2");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeTrue();
         }
 
         [Test]
@@ -237,7 +230,6 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [} [41...42)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) \n x <- x+1 else \n { x <- x + 2 }");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeTrue();
         }
 
         [Test]
@@ -266,21 +258,19 @@ namespace Microsoft.R.Core.Test.Parser {
                             TokenNode  [+ [18...19)]
                             NumericalValue  [1 [19...20)]
             TokenNode  [} [21...22)]
-        KeywordScopeStatement  []
-            TokenNode  [else [25...29)]
-            SimpleScope  [32...42)
-                ExpressionStatement  [x <- x + 2]
-                    Expression  [x <- x + 2]
-                        TokenOperator  [<- [34...36)]
-                            Variable  [x]
-                            TokenNode  [<- [34...36)]
-                            TokenOperator  [+ [39...40)]
-                                Variable  [x]
-                                TokenNode  [+ [39...40)]
-                                NumericalValue  [2 [41...42)]
+    ExpressionStatement  [x <- x + 2]
+        Expression  [x <- x + 2]
+            TokenOperator  [<- [34...36)]
+                Variable  [x]
+                TokenNode  [<- [34...36)]
+                TokenOperator  [+ [39...40)]
+                    Variable  [x]
+                    TokenNode  [+ [39...40)]
+                    NumericalValue  [2 [41...42)]
+
+UnexpectedToken Token [25...29)
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "if(x < y) { x <- x+1 } \n else \n x <- x + 2");
-            ast.GetNodeOfTypeFromPosition<If>(1).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -322,7 +312,6 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [) [30...31)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "func(if(x < y) 1 \n else \n 2, a)");
-            ast.GetNodeOfTypeFromPosition<If>(6).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -382,7 +371,6 @@ UnexpectedToken Token [14...18)
 UnexpectedToken Token [19...23)
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "x <- if(x < y) 1 \n else 2");
-            ast.GetNodeOfTypeFromPosition<If>(6).LineBreakSensitive.Should().BeTrue();
         }
 
         [Test]
@@ -425,7 +413,6 @@ UnexpectedToken Token [19...23)
                     TokenNode  [) [34...35)]
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "x <- func(a = if(x < y) 1 \n else 2)");
-            ast.GetNodeOfTypeFromPosition<If>(15).LineBreakSensitive.Should().BeFalse();
         }
 
         [Test]
@@ -457,7 +444,6 @@ UnexpectedToken Token [19...23)
 CloseCurlyBraceExpected AfterToken [25...29)
 ";
             AstRoot ast = ParserTest.VerifyParse(expected, "{if (x > 1)\r\n    x <- 1\r\nelse\n");
-            ast.GetNodeOfTypeFromPosition<If>(2).LineBreakSensitive.Should().BeFalse();
         }
     }
 }

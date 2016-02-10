@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -33,6 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Points = new GridPoints(dataProvider.RowCount, dataProvider.ColumnCount, Data.RenderSize);
             Points.PointChanged += Points_PointChanged;
 
+            ColumnHeader.Clear();
+            RowHeader.Clear();
+            Data.Clear();
+
             DataProvider = dataProvider;
 
             _scroller?.StopScroller();
@@ -42,6 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // reset scroll bar position to zero
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
             VerticalScrollBar.Value = VerticalScrollBar.Minimum;
+            SetScrollBar(ScrollDirection.Both);
         }
 
         public void Refresh() {
@@ -194,21 +200,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnKeyDown(KeyEventArgs e) {
             e.Handled = true;
             if (e.Key == Key.Up) {
-                _scroller?.EnqueueCommand(ScrollType.LineUp, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineUp, 1);
             } else if (e.Key == Key.Down) {
-                _scroller?.EnqueueCommand(ScrollType.LineDown, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineDown, 1);
             } else if (e.Key == Key.Right) {
-                _scroller?.EnqueueCommand(ScrollType.LineRight, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineRight, 1);
             } else if (e.Key == Key.Left) {
-                _scroller?.EnqueueCommand(ScrollType.LineLeft, 0);
+                _scroller?.EnqueueCommand(ScrollType.LineLeft, 1);
             } else if (e.Key == Key.PageUp) {
-                _scroller?.EnqueueCommand(ScrollType.PageUp, 0);
+                _scroller?.EnqueueCommand(ScrollType.PageUp, 1);
             } else if (e.Key == Key.PageDown) {
-                _scroller?.EnqueueCommand(ScrollType.PageDown, 0);
+                _scroller?.EnqueueCommand(ScrollType.PageDown, 1);
             } else if (e.Key == Key.Home) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0);
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0.0, ThumbTrack.None);
             } else if (e.Key == Key.End) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, double.PositiveInfinity);
+                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 1.0, ThumbTrack.None);
             } else {
                 e.Handled = false;
             }
@@ -260,33 +266,43 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             switch (e.ScrollEventType) {
-                case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
-                case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
+                // page up/down
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageUp, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageUp, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageDown, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageDown, 1);
                     break;
-                case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
-                    break;
+
+                // line up/down
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineUp, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineUp, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineDown, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineDown, 1);
                     break;
+
+                // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
+
+                // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.Track);
                     break;
+                case ScrollEventType.EndScroll:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.End);
+                    break;
+
+                // home/end (scroll to limit)
+                case ScrollEventType.First:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
+                    break;
+                case ScrollEventType.Last:
+                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
+                    break;
+
                 default:
                     break;
             }
@@ -298,50 +314,70 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             switch (e.ScrollEventType) {
-                case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
-                case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
+                // page left/right
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageLeft, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageLeft, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageRight, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.PageRight, 1);
                     break;
-                case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
-                    break;
+
+                // line left/right
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineLeft, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineLeft, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineRight, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.LineRight, 1);
                     break;
+
+                // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
+
+                // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, e.NewValue);
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.Track);
                     break;
+                case ScrollEventType.EndScroll:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.End);
+                    break;
+
+                // home/end (scroll to limit)
+                case ScrollEventType.First:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
+                    break;
+                case ScrollEventType.Last:
+                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
+                    break;
+
                 default:
                     break;
             }
         }
 
         private void Points_PointChanged(object sender, PointChangedEventArgs e) {
-            if (e.Direction.HasFlag(ScrollDirection.Horizontal)) {
-                double width = Data.RenderSize.Width;
-                HorizontalScrollBar.ViewportSize = width;
-                HorizontalScrollBar.Maximum = Points.HorizontalExtent - width;
+            SetScrollBar(e.Direction);
+        }
+
+        private double ComputeVerticalOffset(ScrollEventArgs e) {
+            return e.NewValue / VerticalScrollBar.Maximum;
+        }
+
+        private double ComputeHorizontalOffset(ScrollEventArgs e) {
+            return e.NewValue / HorizontalScrollBar.Maximum;
+        }
+
+        private void SetScrollBar(ScrollDirection direction) {
+            if (direction.HasFlag(ScrollDirection.Horizontal)) {
+                HorizontalScrollBar.ViewportSize = Points.ViewportWidth;
+                HorizontalScrollBar.Maximum = Points.HorizontalExtent - Points.ViewportWidth;
                 HorizontalScrollBar.Value = Points.HorizontalOffset;
             }
 
-            if (e.Direction.HasFlag(ScrollDirection.Vertical)) {
-                double height = Data.RenderSize.Height;
-                VerticalScrollBar.ViewportSize = height;
-                VerticalScrollBar.Maximum = Points.VerticalExtent - height;
+            if (direction.HasFlag(ScrollDirection.Vertical)) {
+                VerticalScrollBar.ViewportSize = Points.ViewportHeight;
+                VerticalScrollBar.Maximum = Points.VerticalExtent - Points.ViewportHeight;
                 VerticalScrollBar.Value = Points.VerticalOffset;
             }
         }

@@ -91,9 +91,15 @@
     </None>
     <EmbeddedResource Include="rtvs\R\grid.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
     </EmbeddedResource>
     <EmbeddedResource Include="rtvs\R\graphics.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\completions.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>True</IncludeInVSIX>
     </EmbeddedResource>
     <None Include="rtvs\R\rtvs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

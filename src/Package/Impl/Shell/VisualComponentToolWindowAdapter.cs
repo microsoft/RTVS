@@ -1,10 +1,13 @@
-﻿using Microsoft.R.Components.View;
+﻿using System.ComponentModel.Design;
+using System.Windows;
+using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public class VisualComponentToolWindowAdapter<T> : IVisualComponentContainer<T> where T : IVisualComponent {
         private readonly ToolWindowPane _toolWindowPane;
+        private IVsWindowFrame _vsWindowFrame;
 
         public VisualComponentToolWindowAdapter(ToolWindowPane toolWindowPane) {
             _toolWindowPane = toolWindowPane;
@@ -23,7 +26,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        private IVsWindowFrame VsWindowFrame => _toolWindowPane.Frame as IVsWindowFrame;
+        private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
+
+        public void ShowContextMenu(CommandID commandId, Point position) {
+            var point = Component.Control.PointToScreen(position);
+            VsAppShell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
+        }
 
         public void UpdateCommandStatus(bool immediate) {
             var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof (SVsUIShell));

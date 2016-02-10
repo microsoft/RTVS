@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -9,7 +10,6 @@ using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -127,8 +127,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
+        public void PositionCaretAtPrompt() {
+            if (InteractiveWindow == null || InteractiveWindow.IsInitializing) {
+                return;
+            }
+
+            var textView = InteractiveWindow.TextView;
+            // Click on text view will move the caret so we need 
+            // to move caret to the prompt after view finishes its
+            // mouse processing.
+            textView.Selection.Clear();
+            ITextSnapshot snapshot = textView.TextBuffer.CurrentSnapshot;
+            SnapshotPoint caretPosition = new SnapshotPoint(snapshot, snapshot.Length);
+            textView.Caret.MoveTo(caretPosition);
+        }
+
         public void ClearPendingInputs() {
             Interlocked.Exchange(ref _pendingInputs, new ConcurrentQueue<PendingSubmission>());
+        }
+
+        public Task<ExecutionResult> ResetAsync() {
+            return InteractiveWindow.Operations.ResetAsync();
         }
 
         public void Dispose() {
@@ -148,24 +167,34 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             PendingSubmission current;
             while (_pendingInputs.TryDequeue(out current)) {
                 var curLangBuffer = InteractiveWindow.CurrentLanguageBuffer;
+                SnapshotPoint? curLangPoint = null;
 
-                var curLangPoint = textView.MapDownToBuffer(
-                    InteractiveWindow.CurrentLanguageBuffer.CurrentSnapshot.Length,
-                    curLangBuffer
-                    );
+                // If anything is selected we need to clear it before inserting new code
+                textView.Selection.Clear();
+
+                // Find out if caret position is where code can be inserted.
+                // Caret must be in the area mappable to the language buffer.
+                if (!textView.Caret.InVirtualSpace) {
+                    curLangPoint = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, curLangBuffer);
+                }
 
                 if (curLangPoint == null) {
-                    // ensure the caret is in the input buffer, otherwise inserting code does nothing
-                    textView.Caret.MoveTo(
-                        textView.BufferGraph.MapUpToBuffer(
-                            new SnapshotPoint(
-                                curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length
-                                ),
-                            PointTrackingMode.Positive,
-                            PositionAffinity.Successor,
-                            textView.TextBuffer
-                            ).Value
-                        );
+                    // Ensure the caret is in the input buffer, otherwise inserting code does nothing.
+                    SnapshotPoint? viewPoint = textView.BufferGraph.MapUpToBuffer(
+                        new SnapshotPoint(curLangBuffer.CurrentSnapshot, curLangBuffer.CurrentSnapshot.Length),
+                        PointTrackingMode.Positive,
+                        PositionAffinity.Predecessor,
+                        textView.TextBuffer);
+
+                    if (!viewPoint.HasValue) {
+                        // Unable to map language buffer to view.
+                        // Try moving caret to the end of the view then.
+                        viewPoint = new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, textView.TextBuffer.CurrentSnapshot.Length);
+                    }
+
+                    if (viewPoint.HasValue) {
+                        textView.Caret.MoveTo(viewPoint.Value);
+                    }
                 }
 
                 InteractiveWindow.InsertCode(current.Expression);

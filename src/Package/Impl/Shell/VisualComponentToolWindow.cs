@@ -1,4 +1,6 @@
-﻿using Microsoft.R.Components.View;
+﻿using System.ComponentModel.Design;
+using System.Windows;
+using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -7,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public T Component {
             get { return _adapter.Component; }
-            protected set {
+            internal set {
                 _adapter.Component = value;
                 Content = value.Control;
             }
@@ -21,6 +23,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void Show(bool focus) {
             _adapter?.Show(focus);
+        }
+
+        public void ShowContextMenu(CommandID commandId, Point position) {
+            _adapter?.ShowContextMenu(commandId, position);
         }
 
         public void UpdateCommandStatus(bool immediate) {

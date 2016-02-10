@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Plots;
@@ -15,12 +18,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
-    internal sealed class RHostClientApp: IRHostClientApp {
+    internal sealed class RHostClientApp : IRHostClientApp {
         private static readonly Lazy<IRHostClientApp> InstanceLazy = new Lazy<IRHostClientApp>(() => new RHostClientApp());
 
         public static IRHostClientApp Instance => InstanceLazy.Value;
 
-        private RHostClientApp() {}
+        private RHostClientApp() { }
 
         /// <summary>
         /// Displays error message in the host-specific UI
@@ -43,8 +46,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         /// </summary>
         public async Task ShowHelp(string url) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-            pane.Component.Navigate(url);
+            if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.External) {
+                Process.Start(url);
+            } else {
+                HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
+                pane.Component.Navigate(url);
+            }
         }
 
         /// <summary>

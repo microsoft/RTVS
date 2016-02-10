@@ -10,6 +10,7 @@
         <Component Id="RtvsPackageR" Guid="{FF41B7CB-7071-47AB-9A0B-612000EA7B83}">
           <File Source="$(var.BinDir)\rtvs\R\rtvs" />
           <File Source="$(var.BinDir)\rtvs\R\breakpoints.R" />
+          <File Source="$(var.BinDir)\rtvs\R\completions.R" />
           <File Source="$(var.BinDir)\rtvs\R\eval.R" />
           <File Source="$(var.BinDir)\rtvs\R\graphics.R" />
           <File Source="$(var.BinDir)\rtvs\R\grid.R" />

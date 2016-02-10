@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
@@ -19,10 +20,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return MessageButtons.OK;
         }
 
+        public void ShowContextMenu(CommandID commandId, int x, int y) { }
+
         public void DoIdle() {
-            if (Idle != null) {
-                Idle(null, EventArgs.Empty);
-            }
+            Idle?.Invoke(null, EventArgs.Empty);
             DoEvents();
         }
 

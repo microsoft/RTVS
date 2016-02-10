@@ -25,7 +25,7 @@
       </Menu>
       <!-- End R code editor context menu -->
       
-      <!-- R code editor context menu -->
+      <!-- R history context menu -->
       <Menu guid="guidRToolsCmdSet" id="rHistoryContextMenu" type="Context">
         <CommandFlag>DontCache</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
@@ -34,7 +34,15 @@
           <ButtonText>R History Context</ButtonText>
         </Strings>
       </Menu>
-      <!-- End R code editor context menu -->
+      <!-- End R history context context menu -->
+      
+      <!-- R debugger Autos/Locals/Watch context menu -->
+      <Menu guid="guidRToolsCmdSet" id="debuggerRContextMenu" priority="0x0301" type="Context">
+        <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_DISPLAY"/>
+        <Strings>
+          <ButtonText>&amp;R</ButtonText>
+        </Strings>
+      </Menu>
 
       <!-- Plot window toolbar -->
       <Menu guid="guidRToolsCmdSet" id="plotWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
@@ -171,6 +179,11 @@
       </Group>
       <!-- End R code editor context menu groups -->
 
+      <!-- R debugger Autos/Locals/Watch context menu group -->
+      <Group guid="guidRToolsCmdSet" id="groupRContextDebugger" priority="0x0000">
+        <Parent guid="guidRToolsCmdSet" id="debuggerRContextMenu"/>
+      </Group>
+
       <!-- Main menu group -->
       <Group guid="guidRToolsCmdSet" id="mainMenuGroup" priority="0x0000">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
@@ -218,8 +231,16 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-
+      
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0310">
+        <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup" priority="0x0320">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
@@ -296,6 +317,9 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0520">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
+      <Group guid="guidRToolsCmdSet" id="sessionRDebugGroup" priority="0x0530">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
+      </Group>
       <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
@@ -330,6 +354,18 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x0300" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Restart"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Reset</ButtonText>
+          <MenuText>&amp;Reset</MenuText>
+          <CommandName>Reset</CommandName>
+        </Strings>
+      </Button>
+      
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -860,8 +896,9 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0100" type="Button">
-        <Icon guid="ImageCatalogGuid" id="Run"/>
+        <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Source R Script</ButtonText>
           <MenuText>&amp;Source R Script</MenuText>
@@ -880,7 +917,20 @@
           <ButtonText>Help On Current</ButtonText>
         </Strings>
       </Button>
+
+      <!-- R debugger context menu -->
+      <Button guid="guidRToolsCmdSet" id="icmdShowDotPrefixedVariables" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="groupRContextDebugger"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Show &amp;Dot-Prefixed Variables</ButtonText>
+          <ToolTipText>Shows variables that have names beginning with ".".</ToolTipText>
+          <LocCanonicalName>ShowDotPrefixedVariables</LocCanonicalName>
+        </Strings>
+      </Button>
     </Buttons>
+
   </Commands>
 
   <Commands package="MarkdownPackage">
@@ -904,6 +954,10 @@
     <Groups>
       <!-- MD code editor context menu groups -->
       <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
+        <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
+      </Group>
+      
+      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0210">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
 
@@ -989,7 +1043,7 @@
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
-
+   
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
@@ -998,8 +1052,13 @@
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
     </CommandPlacement>
-
     <!-- End R code editor context menu -->
+
+    <!-- RMD context menu -->   
+    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+      <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
+    </CommandPlacement>
+    <!-- End RMD context menu -->
     
     <!-- R history context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
@@ -1102,16 +1161,20 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x0410">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0410">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0420">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachDebugger" priority="0x0450">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachToRInteractive" priority="0x0E01">
@@ -1119,26 +1182,30 @@
     </CommandPlacement>
     
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0460">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStopDebugging" priority="0x0470">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepInto" priority="0x0480">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOver" priority="0x0490">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x04A0">
-      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
     
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
+    <CommandPlacement guid="guidVSStd97" id="cmdidLocalsWindow" priority="0x04B0">
+      <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
+    </CommandPlacement>
+
+  <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
 
@@ -1153,7 +1220,7 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="CMDUIGUID_R_EDITOR" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
@@ -1193,6 +1260,7 @@
       <IDSymbol name="mdEditorContextMenu" value="300" />
       <IDSymbol name="previewSubMenu" value="130" />
       <IDSymbol name="groupPreview" value="135" />
+      <IDSymbol name="groupRmdRepl" value="136" />
       <IDSymbol name="groupPublish" value="145" />
       <IDSymbol name="groupPreviewSubMenu" value="200" />
 
@@ -1210,12 +1278,16 @@
       <IDSymbol name="rCodeEditorContextMenu" value="100" />
       <!-- R history editor context menu. -->
       <IDSymbol name="rHistoryContextMenu" value="102" />
+      <!-- R debugger Autos/Locals/Watch context menu. -->
+      <IDSymbol name="debuggerRContextMenu" value="103" />
+
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
       <IDSymbol name="groupRContextRepl" value="122" />
       <IDSymbol name="groupRContextHelp" value="124"/>
-      <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
+      <!-- R debugger Autos/Locals/Watch context menu group. -->
+      <IDSymbol name="groupRContextDebugger" value="125"/>
 
       <!-- RTVS Command IDs -->
       <!-- General -->
@@ -1230,6 +1302,7 @@
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
+      <IDSymbol name="icmdResetRepl" value="505"/>
       <IDSymbol name="icmdInterruptR" value="506" />
       <IDSymbol name="icmdAttachDebugger" value="507" />
       <IDSymbol name="icmdSourceRScript" value="508" />
@@ -1248,6 +1321,8 @@
       <IDSymbol name="sessionSubMenuRInteractiveGroup" value="554"/>
       <IDSymbol name="sessionSubMenuEditorGroup" value="555"/>
       <IDSymbol name="sessionToolbarDirectoryGroup" value="556"/>
+      <IDSymbol name="sessionRDebugGroup" value="557"/>
+      <IDSymbol name="sessionSubMenuResetGroup" value="558"/>
 
       <IDSymbol name="interactiveWindowContextGroup" value="570"/>
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>
@@ -1318,6 +1393,9 @@
       <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
       <IDSymbol name="historyWindowSettingsGroup" value="0x2024"/>
       <IDSymbol name="historyCopySelectedGroup" value="0x2025"/>
+
+      <!-- Debugger -->
+      <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
 
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>

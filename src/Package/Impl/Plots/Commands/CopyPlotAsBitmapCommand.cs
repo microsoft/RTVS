@@ -1,9 +1,10 @@
 ﻿using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class CopyPlotAsBitmapCommand : PlotWindowCommand {
-        public CopyPlotAsBitmapCommand() :
-            base(RPackageCommandId.icmdCopyPlotAsBitmap) {
+        public CopyPlotAsBitmapCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdCopyPlotAsBitmap) {
         }
 
         protected override void SetStatus() {

@@ -91,13 +91,18 @@
     <Compile Include="History\Implementation\RHistoryEntries.cs" />
     <Compile Include="History\Implementation\RHistoryFiltering.cs" />
     <Compile Include="History\Implementation\RHistoryProvider.cs" />
+    <Compile Include="History\Implementation\RHistoryWindowVisualComponent.cs" />
     <Compile Include="History\Implementation\SinglelineRHistoryEntries.cs" />
     <Compile Include="History\IRHistory.cs" />
     <Compile Include="History\IRHistoryEntries.cs" />
     <Compile Include="History\IRHistoryEntry.cs" />
     <Compile Include="History\IRHistoryFiltering.cs" />
     <Compile Include="History\IRHistoryProvider.cs" />
+    <Compile Include="History\IRHistoryVisualComponent .cs" />
+    <Compile Include="History\IRHistoryWindowVisualComponentFactory.cs" />
+    <Compile Include="History\RHistoryCommandIds.cs" />
     <Compile Include="History\RHistoryContentTypeDefinition.cs" />
+    <Compile Include="InteractiveWorkflow\IDebuggerModeTracker.cs" />
     <Compile Include="InteractiveWorkflow\IInteractiveWindowComponentFactory.cs" />
     <Compile Include="InteractiveWorkflow\IInteractiveWindowVisualComponent.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
@@ -108,7 +113,10 @@
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Commands\" />
+    <Folder Include="InteractiveWorkflow\Implementation\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>

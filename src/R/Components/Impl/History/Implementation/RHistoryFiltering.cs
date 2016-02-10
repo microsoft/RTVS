@@ -22,14 +22,14 @@ namespace Microsoft.R.Components.History.Implementation {
 
         private string _searchPattern;
 
-        public RHistoryFiltering(IRHistory history, ITextView textView, IRSettings settings, ITextSearchService2 textSearchService) {
+        public RHistoryFiltering(IRHistory history, IRHistoryWindowVisualComponent visualComponent, IRSettings settings, ITextSearchService2 textSearchService) {
             _history = history;
             _history.HistoryChanging += HistoryChanging;
             _history.HistoryChanged += HistoryChanged;
 
             _settings = settings;
             _textSearchService = textSearchService;
-            _textView = textView;
+            _textView = visualComponent.TextView;
             _textBuffer = _textView.TextDataModel.DataBuffer;
 
             IElisionBuffer elisionBuffer;
@@ -165,7 +165,6 @@ namespace Microsoft.R.Components.History.Implementation {
             _searchPattern = null;
             var span = new Span(0, _textBuffer.CurrentSnapshot.Length);
             _elisionBuffer.ExpandSpans(new NormalizedSpanCollection(span));
-            _textView.ViewScroller.EnsureSpanVisible(new SnapshotSpan(_textView.TextSnapshot, new Span(0, 0)));
         }
     }
 }

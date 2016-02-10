@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluationSource {
@@ -9,8 +9,9 @@ namespace Microsoft.R.Host.Client.Session {
 
         public bool IsMutating { get; }
 
-        public RSessionEvaluationSource(bool isMutating) {
+        public RSessionEvaluationSource(bool isMutating, CancellationToken ct) {
             _tcs = new TaskCompletionSource<IRSessionEvaluation>();
+            ct.Register(() => _tcs.TrySetCanceled(ct), false);
             IsMutating = isMutating;
         }
 
@@ -18,8 +19,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task BeginEvaluationAsync(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
             var evaluation = new RSessionEvaluation(contexts, evaluator, ct);
-            _tcs.SetResult(evaluation);
-            return evaluation.Task;
+            return _tcs.TrySetResult(evaluation) ? evaluation.Task : TaskUtilities.CompletedTask;
         }
 
         public bool TryCancel() {

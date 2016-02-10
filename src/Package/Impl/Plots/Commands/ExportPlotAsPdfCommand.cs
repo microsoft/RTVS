@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class ExportPlotAsPdfCommand : PlotWindowCommand {
-        public ExportPlotAsPdfCommand() :
-            base(RPackageCommandId.icmdExportPlotAsPdf) {
+        public ExportPlotAsPdfCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdExportPlotAsPdf) {
         }
 
         protected override void SetStatus() {

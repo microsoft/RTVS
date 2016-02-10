@@ -1,9 +1,10 @@
 ﻿using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class HistoryNextPlotCommand : PlotWindowCommand {
-        public HistoryNextPlotCommand() :
-            base(RPackageCommandId.icmdNextPlot) {
+        public HistoryNextPlotCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdNextPlot) {
         }
 
         protected override void SetStatus() {

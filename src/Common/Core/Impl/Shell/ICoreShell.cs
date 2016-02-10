@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Threading;
 
 namespace Microsoft.Common.Core.Shell {
@@ -50,6 +51,14 @@ namespace Microsoft.Common.Core.Shell {
         /// Displays error message in a host-specific UI
         /// </summary>
         void ShowErrorMessage(string message);
+
+        /// <summary>
+        /// Shows the context menu with the specified command ID at the specified location
+        /// </summary>
+        /// <param name="commandId"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        void ShowContextMenu(CommandID commandId, int x, int y);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI

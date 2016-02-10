@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;
 
@@ -7,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class VariableWindowPane : ToolWindowPane {
         public VariableWindowPane() {
             Caption = Resources.VariableWindowCaption;
-            Content = new VariableView();
+            Content = new VariableView(RToolsSettings.Current);
 
             // this value matches with icmdShowVariableExplorerWindow's Icon in VSCT file
             BitmapImageMoniker = KnownMonikers.VariableProperty;

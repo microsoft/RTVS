@@ -18,8 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    internal sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
-        private readonly bool _truncateChildren;
+    public sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
 
         public EvaluationWrapper() { Index = -1; }
 
@@ -28,12 +27,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(int index, DebugEvaluationResult evaluation, bool truncateChildren) :
-            base(evaluation) {
+        public EvaluationWrapper(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
+            base(evaluation, maxChildrenCount) {
 
             Index = index;
-
-            _truncateChildren = truncateChildren;
 
             CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowDetail) {
@@ -84,14 +81,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
 
                 // assumption: DebugEvaluationResult returns children in ascending order
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, _truncateChildren ? (int?)20 : null, 100);    // TODO: consider exception propagation such as OperationCanceledException
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, 100);
 
                 result = new List<IRSessionDataObject>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(i, children[i], _truncateChildren));
+                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: DefaultMaxGrandChildren));
                 }
 
-                if (valueEvaluation.Length > result.Count) {
+                // return children can be less than value's length in some cases e.g. missing parameter
+                if (valueEvaluation.Length > result.Count
+                    && (valueEvaluation.Length > MaxChildrenCount)) {
                     result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
@@ -141,25 +140,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             string rows = gridRange.Rows.ToRString();
             string columns = gridRange.Columns.ToRString();
 
-            using (var elapsed = new Elapsed("Data:Evaluate:")) {
-                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
-                    var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+                var result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
-                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                        throw new InvalidOperationException($"Grid data evaluation failed:{result}");
-                    }
-
-                    var data = GridParser.Parse(result.StringResult);
-                    data.Range = gridRange;
-
-                    if (data.ValidHeaderNames
-                        && (data.ColumnNames.Count != gridRange.Columns.Count
-                            || data.RowNames.Count != gridRange.Rows.Count)) {
-                        throw new InvalidOperationException("Header names lengths are different from data's length");
-                    }
-
-                    return data;
+                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
                 }
+
+                var data = GridParser.Parse(result.StringResult);
+                data.Range = gridRange;
+
+                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
+                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
+                    throw new InvalidOperationException("Header names lengths are different from data's length");
+                }
+
+                return data;
             }
         }
 

@@ -6,7 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Variable subscription from <see cref="VariableProvider"/>
     /// </summary>
-    internal sealed class VariableSubscription : IDisposable {
+    public sealed class VariableSubscription : IDisposable {
         WeakReference _weakReference;
         private readonly MethodInfo _method;
         private readonly Type _delegateType;

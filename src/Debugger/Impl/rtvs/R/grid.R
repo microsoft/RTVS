@@ -1,17 +1,13 @@
-grid.header <- function(obj, range, isRow) {
-  vp <- list();
-
-  dn <- dimnames(obj);
-  if (!is.null(dn) && (length(dn)==2)) {
-    if (isRow) {
-      vp$headers<-grid.str.vector(dn[[1]][range]);
-    } else {
-      vp$headers<-grid.str.vector(dn[[2]][range])
-    }
+grid.trim <- function(str, max_length = 100) {
+  if (nchar(str) > (100 - 3)) {
+    paste(substr(str, 1, 97), '...', sep='');
   } else {
-    vp$headers<-list();
+    str;
   }
-  vp;
+}
+
+grid.format <- function(x) {
+  sapply(format(x, trim = TRUE), grid.trim);
 }
 
 grid.data <- function(x, rows, cols) {
@@ -20,18 +16,35 @@ grid.data <- function(x, rows, cols) {
     stop('grid.data requires two dimensional object');
   }
   
-  x0 <- as.data.frame(x[rows, cols]);
-  x1 <- apply(x0, 2, format);
+  if ((length(rows) == 1) || (length(cols) == 1)) {
+    x1 <- grid.format(x[rows, cols]);
+  } else {
+    x0 <- as.data.frame(x[rows, cols]);
+    x1 <- sapply(x0, grid.format, USE.NAMES=FALSE);
+  }
 
   vp<-list();
 
   dn <- dimnames(x);
   if (!is.null(dn) && (length(dn)==2)) {
-    vp$dimnames <- 'true';
-    vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
-    vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
+    dnvalue <- 0;
+    vp$dimnames <- dnvalue;
+    if (!is.null(dn[[1]])) {
+      vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
+      dnvalue <- dnvalue + 1;
+    } else {
+      vp$row.names <- 'dummy';
+    }
+    
+    if (!is.null(dn[[2]])) {
+      vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
+      dnvalue <- dnvalue + 2;
+    } else {
+      vp$col.names <- 'dummy';
+    }
+    vp$dimnames <- format(dnvalue);
   } else {
-    vp$dimnames <- 'false';
+    vp$dimnames <- '0';
     vp$row.names <- 'dummy';  # dummy required for parser
     vp$col.names <- 'dummy';
   }
@@ -39,24 +52,6 @@ grid.data <- function(x, rows, cols) {
   vp$data<-x1;
 
   vp;
-}
-
-grid.str.vector<-function(v) {
-  vr <- list();
-  index<-1;
-  for (item in v) {
-    if (is.character(item)){
-      vr[[index]]<-item;
-    } else {
-      vr[[index]]<-capture.output(str(item, give.head = FALSE));
-    }
-    index<-index+1;
-  }
-  vr;
-};
-
-grid.dput2 <- function(obj) {
-    capture.output(cat(capture.output(dput(obj))));
 }
 
 grid.dput <- function(obj) {
@@ -71,15 +66,3 @@ grid.dput <- function(obj) {
     json;
 }
 
-grid.toJSON <- function(obj) {
-    conn <- textConnection(NULL, open = "w");
-    json <- "{}";
-    tryCatch({
-        rtvs:::toJSON(obj, conn);
-        cat('\n', file = conn, sep = '');
-        json <- textConnectionValue(conn);
-    }, finally = {
-        close(conn);
-    });
-    json;
-}

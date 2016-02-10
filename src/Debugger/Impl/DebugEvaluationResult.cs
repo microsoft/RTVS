@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -16,10 +17,10 @@ namespace Microsoft.R.Debugger {
         Expression = 1 << 1,
         Kind = 1 << 2,
         Repr = 1 << 3,
-        ReprDPut = 1 << 4,
+        ReprDeparse = 1 << 4,
         ReprToString = 1 << 5,
         ReprStr = 1 << 6,
-        ReprAll = Repr | ReprDPut | ReprStr | ReprToString,
+        ReprAll = Repr | ReprDeparse | ReprStr | ReprToString,
         TypeName = 1 << 7,
         Classes = 1 << 8,
         Length = 1 << 9,
@@ -37,7 +38,7 @@ namespace Microsoft.R.Debugger {
             [DebugEvaluationResultFields.Expression] = "expression",
             [DebugEvaluationResultFields.Kind] = "kind",
             [DebugEvaluationResultFields.Repr] = "repr",
-            [DebugEvaluationResultFields.ReprDPut] = "repr.dput",
+            [DebugEvaluationResultFields.ReprDeparse] = "repr.deparse",
             [DebugEvaluationResultFields.ReprToString] = "repr.toString",
             [DebugEvaluationResultFields.ReprStr] = "repr.str",
             [DebugEvaluationResultFields.TypeName] = "type",
@@ -57,7 +58,7 @@ namespace Microsoft.R.Debugger {
             }
 
             var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
-            return Invariant($"c({string.Join(", ", fieldNames)})");
+            return Invariant($"base::c({string.Join(", ", fieldNames)})");
         }
     }
 
@@ -93,17 +94,18 @@ namespace Microsoft.R.Debugger {
             return new DebugValueEvaluationResult(stackFrame, expression, name, json);
         }
 
-        public Task<DebugEvaluationResult> SetValueAsync(string value) {
+        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
 
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0);
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0, cancellationToken: cancellationToken);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
             if (StackFrame == null) {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that is not tied to a frame.");
@@ -112,7 +114,7 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
             }
 
-            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength);
+            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength, cancellationToken);
         }
     }
 
@@ -144,12 +146,12 @@ namespace Microsoft.R.Debugger {
     }
 
     public struct DebugValueEvaluationResultRepresentation {
-        public readonly string DPut;
+        public readonly string Deparse;
         public readonly new string ToString;
         public readonly string Str;
 
         public DebugValueEvaluationResultRepresentation(JObject repr) {
-            DPut = repr.Value<string>("dput");
+            Deparse = repr.Value<string>("deparse");
             ToString = repr.Value<string>("toString");
             Str = repr.Value<string>("str");
         }
@@ -169,9 +171,9 @@ namespace Microsoft.R.Debugger {
 
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
-        public bool HasAttributes => AttributeCount != 0;
-        public bool HasSlots => SlotCount != 0;
-        public bool HasChildren => HasSlots || Length > (IsAtomic || TypeName == "closure" ? 1 : 0);
+        public bool HasAttributes => AttributeCount != null && AttributeCount != 0;
+        public bool HasSlots => SlotCount != null && SlotCount != 0;
+        public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || TypeName == "closure" ? 1 : 0)));
 
         internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
             : base(stackFrame, expression, name) {
@@ -240,7 +242,8 @@ namespace Microsoft.R.Debugger {
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
             int? maxLength = null,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -254,7 +257,7 @@ namespace Microsoft.R.Debugger {
             var call = Invariant($@"rtvs:::toJSON(rtvs:::describe_children(
                 {Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, 
                 {fields.ToRVector()}, {maxLength}, {reprMaxLength}))");
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call);
+            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
@@ -277,7 +280,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {Representation.DPut}");
+            return Invariant($"VALUE: {TypeName} {Representation.Deparse}");
         }
     }
 

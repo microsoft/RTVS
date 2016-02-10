@@ -1,4 +1,7 @@
-﻿namespace Microsoft.R.Components.View {
+﻿using System.ComponentModel.Design;
+using System.Windows;
+
+namespace Microsoft.R.Components.View {
     /// <summary>
     /// Represents UI element that holds visual component
     /// (typically a tool window)
@@ -8,6 +11,7 @@
         bool IsOnScreen { get; }
 
         void Show(bool focus);
+        void ShowContextMenu(CommandID commandId, Point position);
         void UpdateCommandStatus(bool immediate);
     }
 }

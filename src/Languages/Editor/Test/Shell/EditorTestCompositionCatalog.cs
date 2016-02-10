@@ -59,6 +59,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.R.Editor.Test.dll",
             "Microsoft.R.Support.dll",
             "Microsoft.R.Support.Test.dll",
+            "Microsoft.R.Components.dll",
+            "Microsoft.R.Components.Test.dll",
             "Microsoft.R.Common.Core.dll",
             "Microsoft.R.Host.Client.dll",
         };

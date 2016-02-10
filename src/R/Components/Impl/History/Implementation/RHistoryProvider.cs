@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Components.History.Implementation {
     [Export(typeof(IRHistoryProvider))]
     internal class RHistoryProvider : IRHistoryProvider {
-        private readonly ITextEditorFactoryService _textEditorFactory;
         private readonly ITextBufferFactoryService _textBufferFactory;
         private readonly IFileSystem _fileSystem;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
@@ -23,8 +22,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
 
         [ImportingConstructor]
-        public RHistoryProvider(ITextEditorFactoryService textEditorFactory, ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IRSettings settings) {
-            _textEditorFactory = textEditorFactory;
+        public RHistoryProvider(ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IRSettings settings) {
             _textBufferFactory = textBufferFactory;
             _fileSystem = fileSystem;
             _editorOperationsFactory = editorOperationsFactory;
@@ -41,13 +39,9 @@ namespace Microsoft.R.Components.History.Implementation {
             return _histories.TryGetValue(textView.TextDataModel.DocumentBuffer, out history) ? history : null;
         }
 
-        public IRHistoryFiltering CreateFiltering(IRHistory history) {
-            var textView = GetOrCreateTextView(history);
-            return new RHistoryFiltering(history, textView, _settings, _textSearchService);
-        }
-
-        public IWpfTextView GetOrCreateTextView(IRHistory history) {
-            return history.GetOrCreateTextView(_textEditorFactory);
+        public IRHistoryFiltering CreateFiltering(IRHistoryWindowVisualComponent visualComponent) {
+            var history = GetAssociatedRHistory(visualComponent.TextView);
+            return new RHistoryFiltering(history, visualComponent, _settings, _textSearchService);
         }
 
         public IRHistory CreateRHistory(IRInteractiveWorkflow interactiveWorkflow) {

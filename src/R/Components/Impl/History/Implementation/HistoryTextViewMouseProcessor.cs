@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
@@ -19,16 +20,23 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Stopwatch _doubleTapStopWatch = new Stopwatch();
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
         private readonly int _minimumPositionDelta = 30;
+        private readonly IRHistoryWindowVisualComponent _visualComponent;
 
-        public HistoryWindowPaneMouseProcessor(IWpfTextView wpfTextView, IRHistoryProvider historyProvider) {
-            _textView = wpfTextView;
-            _history = historyProvider.GetAssociatedRHistory(_textView);
+        public HistoryWindowPaneMouseProcessor(IRHistory history) {
+            _history = history;
+            _visualComponent = history.VisualComponent;
+            _textView = _visualComponent.TextView;
         }
 
         #region IMouseProcessorProvider Member Implementations
 
         public override void PreprocessMouseLeftButtonDown(MouseButtonEventArgs e) {
             HandleLeftButtonDown(e);
+        }
+
+        public override void PreprocessMouseRightButtonUp(MouseButtonEventArgs e) {
+            _visualComponent.Container.ShowContextMenu(RHistoryCommandIds.ContextMenu, GetPosition(e, _textView.VisualElement));
+            e.Handled = true;
         }
 
         /// <summary>

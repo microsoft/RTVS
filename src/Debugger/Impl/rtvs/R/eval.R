@@ -23,8 +23,15 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   if (field('repr')) {
     repr <- new.env();
     
-    if (field('repr.dput')) {
-      repr$dput <- NA_if_error(dput_str(obj, repr_max_length, 0x100));
+    if (field('repr.deparse')) {
+      repr$deparse <- paste0(collapse = '', NA_if_error(
+        if (is.na(repr_max_length)) {
+            deparse(obj)
+        } else {
+            # Force max length into range permitted by deparse
+            cutoff <- min(max(repr_max_length, 20), 500);
+            deparse(obj, width.cutoff = cutoff, nlines = 1)
+        }))
     }
     
     if (field('repr.toString')) {
@@ -68,7 +75,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   if (field('dim')) {
     dim <- NA_if_error(dim(obj));
     if (is.integer(dim) && !anyNA(dim)) {
-      res$dim <- dim;
+      res$dim <- as.list(dim);
     }
   }
     
@@ -81,7 +88,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   }
 
   if (field('flags')) {
-    res$flags <- c(
+    res$flags <- list(
       if (is.atomic(obj)) "atomic" else NA,
       if (is.recursive(obj)) "recursive" else NA,
       if (has_parent_env) "has_parent_env" else NA
@@ -179,15 +186,15 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       });
 
       item_expr <-
-        if (expr == 'environment()') {
-          dput_symbol(name)
+        if (expr == 'base::environment()') {
+          deparse_symbol(name)
         } else {
-          paste0(expr, '$', dput_symbol(name), collapse = '')
+          paste0(expr, '$', deparse_symbol(name), collapse = '')
         };
 
       if (!is.null(code)) {
         # It's a promise - we don't want to force it as it could affect the debugged code.
-        value <- list(promise = dput_str(code), expression = item_expr);
+        value <- list(promise = deparse(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
         value <- list(active_binding = TRUE, expression = item_expr);
@@ -237,11 +244,11 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       
       # For S4 objects, slots can be accessed with '@'. For other objects, we have to
       # use slot(). Still, always use '@' as accessor name to show to the user.
-      accessor <- paste0('@', dput_symbol(name), collapse = '');
+      accessor <- paste0('@', deparse_symbol(name), collapse = '');
       if (is_S4) {
         slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
       } else {
-        slot_expr <- paste0('methods::slot((', expr, '), ', dput_str(name), ')', collapse = '')
+        slot_expr <- paste0('methods::slot((', expr, '), ', deparse(name), ')', collapse = '')
       }
       
       value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr_max_length);
@@ -270,7 +277,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
     # avoid presenting an infinitely recursive model (a vector of size 1 has the only child,
     # which is another vector of size 1 etc). However, we do want to show the only child if
     # it is named, so that the name is exposed.
-    if (n != 1 || !is.atomic(obj) || !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == '')) {
+    if (n != 1 || !is.atomic(obj) || (length(names) >= 1 && !(is.null(names[[1]]) || is.na(names[[1]]) || names[[1]] == ''))) {
       if (!is.null(count)) {
         n <- min(n, count);
         count <<- count - n;
@@ -285,14 +292,19 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
         # if this item corresponds to the first mention of that name - i.e. if we have
         # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
         # is effectively unnamed, because there's no way to address it by name.
-        name <- force_toString(names[[i]]);
+        name <- tryCatch({
+            names[[i]]
+        }, error = function(e) {
+            NULL
+        });
+        name <- force_toString(name);
         if (name != '' && match(name, names, -1) == i) {
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.
           if (is.list(obj)) {
-            accessor <- paste0('$', dput_symbol(name), collapse = '');
+            accessor <- paste0('$', deparse_symbol(name), collapse = '');
           } else {
-            accessor <- paste0('[[', dput_str(name), ']]', collapse = '');
+            accessor <- paste0('[[', deparse(name), ']]', collapse = '');
           }
         }
         

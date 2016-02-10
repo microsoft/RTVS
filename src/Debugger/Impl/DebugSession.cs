@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -18,7 +16,7 @@ namespace Microsoft.R.Debugger {
         private readonly object _initializeLock = new object();
 
         private CancellationTokenSource _initialPromptCts = new CancellationTokenSource();
-        private TaskCompletionSource<object> _stepTcs;
+        private TaskCompletionSource<bool> _stepTcs;
         private DebugStackFrame _bpHitFrame;
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
@@ -70,63 +68,67 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public Task InitializeAsync() {
+        public Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             lock (_initializeLock) {
                 if (_initializeTask == null) {
-                    _initializeTask = InitializeWorkerAsync();
+                    _initializeTask = InitializeWorkerAsync(cancellationToken);
                 }
+
                 return _initializeTask;
             }
         }
 
-        private async Task InitializeWorkerAsync() {
+        private async Task InitializeWorkerAsync(CancellationToken cancellationToken) {
             ThrowIfDisposed();
-
             await TaskUtilities.SwitchToBackgroundThread();
-
-            using (var eval = await RSession.BeginEvaluationAsync()) {
-                // Re-initialize the breakpoint table.
-                foreach (var bp in _breakpoints.Values) {
-                    await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
-                }
-
-                await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
-            }
-
-            // Attach might happen when session is already at the Browse prompt, in which case we have
-            // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
-            // grab an interaction and check the prompt.
-            RSession.BeginInteractionAsync().ContinueWith(async t => {
-                using (var inter = await t) {
-                    // If we got AfterRequest before we got here, then that has already taken care of
-                    // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.'
-                    if (_initialPromptCts.IsCancellationRequested) {
-                        return;
+            try {
+                using (var eval = await RSession.BeginEvaluationAsync(cancellationToken: cancellationToken)) {
+                    // Re-initialize the breakpoint table.
+                    foreach (var bp in _breakpoints.Values) {
+                        await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
                     }
 
-                    // Otherwise, treat it the same as if AfterRequest just happened.
-                    ProcessBrowsePrompt(inter.Contexts);
+                    await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
                 }
-            }).DoNotWait();
+
+                // Attach might happen when session is already at the Browse prompt, in which case we have
+                // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
+                // grab an interaction and check the prompt.
+                RSession.BeginInteractionAsync(cancellationToken: cancellationToken).ContinueWith(async t => {
+                    using (var inter = await t) {
+                        // If we got AfterRequest before we got here, then that has already taken care of
+                        // the prompt; or if it's not a Browse prompt, will do so in a future event. Bail out.'
+                        if (_initialPromptCts.IsCancellationRequested) {
+                            return;
+                        }
+
+                        // Otherwise, treat it the same as if AfterRequest just happened.
+                        ProcessBrowsePrompt(inter.Contexts);
+                    }
+                }, cancellationToken).DoNotWait();
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                Dispose();
+                throw;
+            }
         }
 
-        public async Task ExecuteBrowserCommandAsync(string command) {
+        public async Task ExecuteBrowserCommandAsync(string command, CancellationToken cancellationToken) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
-            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
+            using (var inter = await RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
                 if (IsBrowserContext(inter.Contexts)) {
                     await inter.RespondAsync(command + "\n");
                 }
             }
         }
 
-        internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, bool json = false) {
+        internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, CancellationToken cancellationToken, bool json = false) {
             TaskUtilities.AssertIsOnBackgroundThread();
             ThrowIfDisposed();
 
             REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync(false)) {
+            using (var eval = await RSession.BeginEvaluationAsync(false, cancellationToken)) {
                 res = await eval.EvaluateAsync(expression, json ? REvaluationKind.Json : REvaluationKind.Normal);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || (json && res.JsonResult == null)) {
                     Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));
@@ -137,10 +139,10 @@ namespace Microsoft.R.Debugger {
             return res;
         }
 
-        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression)
+        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression, CancellationToken cancellationToken)
             where TToken : JToken {
 
-            var res = await InvokeDebugHelperAsync(expression, json: true);
+            var res = await InvokeDebugHelperAsync(expression, cancellationToken, json: true);
 
             var token = res.JsonResult as TToken;
             if (token == null) {
@@ -152,8 +154,8 @@ namespace Microsoft.R.Debugger {
             return token;
         }
 
-        public Task<DebugEvaluationResult> EvaluateAsync(string expression) {
-            return EvaluateAsync(null, expression);
+        public Task<DebugEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken) {
+            return EvaluateAsync(null, expression, cancellationToken:cancellationToken);
         }
 
         public async Task<DebugEvaluationResult> EvaluateAsync(
@@ -162,65 +164,70 @@ namespace Microsoft.R.Debugger {
             string name = null,
             string env = null,
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
-            int? reprMaxLength = null
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default (CancellationToken)
         ) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
-            await InitializeAsync();
+            await InitializeAsync(cancellationToken);
 
             env = env ?? stackFrame?.SysFrame ?? "NULL";
             var code = Invariant($"rtvs:::toJSON(rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength}))");
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>(code);
+            var jEvalResult = await InvokeDebugHelperAsync<JObject>(code, cancellationToken);
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
-        public async Task Break() {
+        public async Task Break(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(isVisible: true)) {
+            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
                 await inter.RespondAsync("browser()\n");
             }
         }
 
-        public async Task Continue() {
+        public async Task Continue(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            ExecuteBrowserCommandAsync("c")
+            ExecuteBrowserCommandAsync("c", cancellationToken)
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
         }
 
-        public Task StepIntoAsync() {
-            return StepAsync("s");
+        public Task<bool> StepIntoAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            return StepAsync(cancellationToken, "s");
         }
 
-        public Task StepOverAsync() {
-            return StepAsync("n");
+        public Task<bool> StepOverAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            return StepAsync(cancellationToken, "n");
         }
 
-        public Task StepOutAsync() {
-            return StepAsync("browserSetDebug()", "c");
+        public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            return StepAsync(cancellationToken, "rtvs:::browser_set_debug()", "c");
         }
 
-        private async Task StepAsync(params string[] commands) {
+        /// <returns>
+        /// <c>true</c> if step completed successfully, and <c>false</c> if it was interrupted midway by something
+        /// else pausing the process, such as a breakpoint.
+        /// </returns>
+        private async Task<bool> StepAsync(CancellationToken cancellationToken, params string[] commands) {
             Trace.Assert(commands.Length > 0);
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
 
-            _stepTcs = new TaskCompletionSource<object>();
+            _stepTcs = new TaskCompletionSource<bool>();
             for (int i = 0; i < commands.Length - 1; ++i) {
-                await ExecuteBrowserCommandAsync(commands[i]);
+                await ExecuteBrowserCommandAsync(commands[i], cancellationToken);
             }
 
             // If RException happens, it means that the expression we just stepped over caused an error.
             // The step is still considered successful and complete in that case, so we just ignore it.
-            ExecuteBrowserCommandAsync(commands.Last())
+            ExecuteBrowserCommandAsync(commands.Last(), cancellationToken)
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
 
-            await _stepTcs.Task;
+            return await _stepTcs.Task;
         }
 
         public bool CancelStep() {
@@ -235,13 +242,13 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync() {
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
-            await InitializeAsync();
+            await InitializeAsync(cancellationToken);
 
-            var jFrames = await InvokeDebugHelperAsync<JArray>("rtvs:::describe_traceback()");
+            var jFrames = await InvokeDebugHelperAsync<JArray>("rtvs:::describe_traceback()", cancellationToken);
             Trace.Assert(jFrames.All(t => t is JObject), "rtvs:::describe_traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
@@ -258,17 +265,17 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public async Task EnableBreakpoints(bool enable) {
+        public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"));
+            await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"), ct);
         }
 
-        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location) {
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
-            await InitializeAsync();
+            await InitializeAsync(cancellationToken);
 
             DebugBreakpoint bp;
             if (!_breakpoints.TryGetValue(location, out bp)) {
@@ -276,7 +283,7 @@ namespace Microsoft.R.Debugger {
                 _breakpoints.Add(location, bp);
             }
 
-            await bp.SetBreakpointAsync();
+            await bp.SetBreakpointAsync(cancellationToken);
             return bp;
         }
 
@@ -352,7 +359,7 @@ namespace Microsoft.R.Debugger {
             if (_stepTcs != null) {
                 var stepTcs = _stepTcs;
                 _stepTcs = null;
-                stepTcs.TrySetResult(null);
+                stepTcs.TrySetResult(breakpointsHit == null || breakpointsHit.Count == 0);
                 isStepCompleted = true;
             }
 

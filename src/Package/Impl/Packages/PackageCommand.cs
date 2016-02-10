@@ -12,9 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         private static void OnBeforeQueryStatus(object sender, EventArgs e) {
             PackageCommand command = sender as PackageCommand;
-            if (command != null) {
-                command.SetStatus();
-            }
+            command?.SetStatus();
         }
 
         protected virtual void SetStatus() { }
@@ -22,9 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         public static void OnCommand(object sender, EventArgs args) {
             var command = sender as PackageCommand;
-            if (command != null) {
-                command.Handle();
-            }
+            command?.Handle();
         }
     }
 }

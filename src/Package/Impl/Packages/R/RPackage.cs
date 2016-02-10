@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
@@ -26,6 +27,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -54,9 +56,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
-    [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString)]
+    [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString, DebuggerGuids.CustomViewerString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
-    [ProvideDebugPortPicker(typeof(RDebugPortPicker))]
+    [ProvideComClass(typeof(RDebugPortPicker))]
+    [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
@@ -64,8 +67,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string OptionsDialogName = "R Tools";
 
         private System.Threading.Tasks.Task _indexBuildingTask;
-        private IDisposable _activeTextViewTrackerToken;
-        private IDisposable _activeRInteractiveWindowTrackerToken;
 
         public static IRPackage Current { get; private set; }
 
@@ -73,11 +74,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             Current = this;
             CranMirrorList.Download();
 
-            base.Initialize();
+            // Force app shell creation before everything else
+            var shell = VsAppShell.Current;
 
-            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage))) {
-                p.LoadSettingsFromStorage();
+            RtvsTelemetry.Initialize();
+
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.LoadSettings();
             }
+
+            base.Initialize();
 
             ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
@@ -85,8 +91,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
-            _activeTextViewTrackerToken = AdviseWindowFrameEvents<ActiveWpfTextViewTracker>();
-            _activeRInteractiveWindowTrackerToken = AdviseWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
+            AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
+            AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
+            AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
+
+			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
@@ -95,12 +104,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask = null;
             }
 
-            _activeTextViewTrackerToken?.Dispose();
-            _activeRInteractiveWindowTrackerToken?.Dispose();
-
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
+
+            RtvsTelemetry.Current.Dispose();
+
+            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p.SaveSettings();
+            }
+
             base.Dispose(disposing);
         }
 
@@ -110,10 +123,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {
             yield return new RProjectFileGenerator();
-        }
-
-        protected override IEnumerable<IVsProjectFactory> CreateProjectFactories() {
-            yield break;
         }
 
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
@@ -134,25 +143,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                var workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-                try {
-                    var workflow = workflowProvider.GetOrCreate();
-                    workflowProvider.CreateInteractiveWindowAsync(workflow, id);
-                    return VSConstants.S_OK;
-                } catch (Exception) {
-                    return VSConstants.E_FAIL;
-                }
-            }
-
-            return base.CreateToolWindow(ref toolWindowType, id);
-        }
-
-        private IDisposable AdviseWindowFrameEvents<T>() where T : IVsWindowFrameEvents {
-            var windowFrameEvents = VsAppShell.Current.ExportProvider.GetExportedValue<T>();
-            var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
-            var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
-            return Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<ToolWindowFactory>();
+            int result;
+            return toolWindowFactory.TryCreateToolWindow(ref toolWindowType, id, out result) ? result : base.CreateToolWindow(ref toolWindowType, id);
         }
     }
 }

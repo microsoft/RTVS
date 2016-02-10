@@ -31,5 +31,8 @@ namespace Microsoft.R.Debugger.Engine {
 
         public const string PortSupplierString = "B3B6414F-D6F8-43A3-BFF4-93F5DD84CB86";
         public static readonly Guid PortSupplier = new Guid(PortSupplierString);
+
+        public const string CustomViewerString = "8FBE2C99-E300-4079-A702-410FC60996EA";
+        public static readonly Guid CustomViewer = new Guid(CustomViewerString);
     };
 }

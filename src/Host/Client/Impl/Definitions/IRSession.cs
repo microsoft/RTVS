@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
@@ -16,8 +17,8 @@ namespace Microsoft.R.Host.Client {
         string Prompt { get; }
         bool IsHostRunning { get; }
 
-        Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true);
-        Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true);
+        Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken));
         Task CancelAllAsync();
         Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000);
         Task StopHostAsync();

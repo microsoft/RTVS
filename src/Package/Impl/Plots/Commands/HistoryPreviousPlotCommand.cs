@@ -1,9 +1,10 @@
 ﻿using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class HistoryPreviousPlotCommand : PlotWindowCommand {
-        public HistoryPreviousPlotCommand() :
-            base(RPackageCommandId.icmdPrevPlot) {
+        public HistoryPreviousPlotCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdPrevPlot) {
         }
         protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex > 0;

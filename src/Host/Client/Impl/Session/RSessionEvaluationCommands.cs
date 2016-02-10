@@ -24,68 +24,42 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
-            var script = @"
-.GlobalEnv$.rtvs.vsgdresize <- function(width, height) {
-   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_resize', width, height))
-}
-.GlobalEnv$.rtvs.vsgd <- function() {
-   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_new'))
-}
-.GlobalEnv$.rtvs.vsgdexportimage <- function(filename, device, width, height) {
-    dev.copy(device=device,filename=filename,width=width,height=height)
-    dev.off()
-}
-.GlobalEnv$.rtvs.vsgdexportpdf <- function(filename, width, height, paper) {
-    dev.copy(device=pdf,file=filename,width=width,height=height,paper=paper)
-    dev.off()
-}
-.GlobalEnv$.rtvs.vsgdnextplot <- function() {
-   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_next_plot'))
-}
-.GlobalEnv$.rtvs.vsgdpreviousplot <- function() {
-   invisible(.External('Microsoft.R.Host::External.ide_graphicsdevice_previous_plot'))
-}
-.GlobalEnv$.rtvs.vsgdhistoryinfo <- function() {
-   .External('Microsoft.R.Host::External.ide_graphicsdevice_history_info')
-}
-options(device='.rtvs.vsgd')
-";
-
+            var script = "options(device=rtvs:::graphics.ide.new)\n";
             return evaluation.EvaluateAsync(script);
         }
 
         public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height) {
-            var script = string.Format(".rtvs.vsgdresize({0}, {1})\n", width, height);
+            var script = string.Format("rtvs:::graphics.ide.resize({0}, {1})\n", width, height);
             return evaluation.RespondAsync(script);
         }
 
         public static Task NextPlot(this IRSessionInteraction evaluation) {
-            var script = ".rtvs.vsgdnextplot()\n";
+            var script = "rtvs:::graphics.ide.nextplot()\n";
             return evaluation.RespondAsync(script);
         }
 
         public static Task PreviousPlot(this IRSessionInteraction evaluation) {
-            var script = ".rtvs.vsgdpreviousplot()\n";
+            var script = "rtvs:::graphics.ide.previousplot()\n";
             return evaluation.RespondAsync(script);
         }
 
         public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(.rtvs.vsgdhistoryinfo())";
+            var script = @"rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> ExportToBitmap(this IRSessionEvaluation evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
-            string script = string.Format(".rtvs.vsgdexportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
+            string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
             return evaluation.EvaluateAsync(script);
         }
 
         public static Task<REvaluationResult> ExportToMetafile(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format(".rtvs.vsgdexportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+            string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
             return evaluation.EvaluateAsync(script);
         }
 
         public static Task<REvaluationResult> ExportToPdf(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches, string paper) {
-            string script = string.Format(".rtvs.vsgdexportpdf(\"{0}\", {1}, {2}, '{3}')", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches, paper);
+            string script = string.Format("rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2}, '{3}')", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches, paper);
             return evaluation.EvaluateAsync(script);
         }
 
@@ -101,25 +75,10 @@ options(device='.rtvs.vsgd')
 
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
             var script =
-@"options(browser = function(url) { 
+@"options(help_type = 'html')
+  options(browser = function(url) { 
       .Call('Microsoft.R.Host::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
   })";
-            return evaluation.EvaluateAsync(script);
-        }
-
-        public static Task<REvaluationResult> SetRdHelpExtraction(this IRSessionEvaluation evaluation) {
-            var script =
-@" .GlobalEnv$.rtvs.signature.help2 <- function(f, p) {
-        x <- help(paste(f), paste(p))
-        y <- utils:::.getHelpFile(x)
-        paste0(y, collapse = '')
-    }
-
-    .GlobalEnv$.rtvs.signature.help1 <- function(f) {
-        x <- help(paste(f))
-        y <- utils:::.getHelpFile(x)
-        paste0(y, collapse = '')
-    }";
             return evaluation.EvaluateAsync(script);
         }
 

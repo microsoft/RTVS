@@ -16,21 +16,8 @@ using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
-    /// <summary>
-    /// contains expectation for EvaluationWrapper
-    /// </summary>
     [ExcludeFromCodeCoverage]
-    class VariableExpectation {
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public string Class { get; set; }
-        public string TypeName { get; set; }
-        public bool HasChildren { get; set; }
-        public bool CanShowDetail { get; set; }
-    }
-
-    [ExcludeFromCodeCoverage]
-    class VariableRHostScript : RHostScript {
+    public class VariableRHostScript : RHostScript {
         private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
 
@@ -41,8 +28,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             DoIdle(100);
         }
 
+        public IVariableDataProvider VariableProvider {
+            get {
+                return _variableProvider;
+            }
+        }
+
+        public EvaluationWrapper GlobalEnvrionment {
+            get {
+                return _globalEnv;
+            }
+        }
+
         private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
-            _globalEnv = new EvaluationWrapper(-1, result, false);
+            _globalEnv = new EvaluationWrapper(result);
             _mre.Set();
         }
 
@@ -53,10 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 _mre = new ManualResetEventSlim();
 
                 _globalEnv = null;
-                subscription = _variableProvider.Subscribe(0, "environment()", OnGlobalEnvironmentEvaluated);
+                subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
 
                 using (var evaluation = await base.Session.BeginEvaluationAsync()) {
-                    await evaluation.EvaluateAsync(rScript, REvaluationKind.UnprotectedEnv);
+                    await evaluation.EvaluateAsync(rScript);
                 }
 
                 if (System.Diagnostics.Debugger.IsAttached) {
@@ -74,24 +73,39 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         /// <summary>
         /// evaluate R script and assert if the expectation is not found in global environment
         /// </summary>
-        /// <param name="rScript"></param>
-        /// <param name="expectation"></param>
-        /// <returns></returns>
-        public async Task EvaluateAndAssert(string rScript, VariableExpectation expectation) {
+        public async Task<IRSessionDataObject> EvaluateAndAssert(
+            string rScript,
+            VariableExpectation expectation,
+            Action<IRSessionDataObject, VariableExpectation> assertAction) {
+
             await EvaluateAsync(rScript);
 
             var children = await _globalEnv.GetChildrenAsync();
 
             // must contain one and only expectation in result
             var evaluation = children.First(v => v.Name == expectation.Name);
-            AssertEvaluationWrapper(evaluation, expectation);
+            assertAction(evaluation, expectation);
+
+            return evaluation;
         }
 
-        private static void AssertEvaluationWrapper(IRSessionDataObject v, VariableExpectation expectation) {
+        public static void AssertEvaluationWrapper(IRSessionDataObject rdo, VariableExpectation expectation) {
+            var v = (EvaluationWrapper)rdo;
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
+        public static void AssertEvaluationWrapper_ValueStartWith(IRSessionDataObject rdo, VariableExpectation expectation) {
+            var v = (EvaluationWrapper)rdo;
+            v.Name.ShouldBeEquivalentTo(expectation.Name);
+            v.Value.Should().StartWith(expectation.Value);
+            v.Class.ShouldBeEquivalentTo(expectation.Class);
+            v.TypeName.ShouldBeEquivalentTo(expectation.TypeName);
+            v.HasChildren.ShouldBeEquivalentTo(expectation.HasChildren);
+        }
+
         protected override void Dispose(bool disposing) {
+            DoIdle(2000);
+
             base.Dispose(disposing);
 
             if (disposing) {

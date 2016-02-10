@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public Task RespondAsync(string messageText) {
-            _requestTcs.SetResult(messageText);
+            _requestTcs.TrySetResult(messageText);
             return _responseTcs.Task;
         }
 

@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Host.Client;
@@ -30,6 +32,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         internal bool IsDisposed { get; private set; }
         internal bool IsConnected { get; private set; }
+        internal bool IsProgramDestroyed { get; private set; }
         internal DebugSession DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
@@ -38,6 +41,9 @@ namespace Microsoft.R.Debugger.Engine {
 
         [Import]
         private IDebugSessionProvider DebugSessionProvider { get; set; }
+
+        [Import]
+        internal IDebugGridViewProvider GridViewProvider { get; set; }
 
         public AD7Engine() {
             var compModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
@@ -70,7 +76,10 @@ namespace Microsoft.R.Debugger.Engine {
 
             IsDisposed = true;
 
-            ExitBrowserAsync(rSession).SilenceException<MessageTransportException>().DoNotWait();
+            ExitBrowserAsync(rSession)
+                .SilenceException<MessageTransportException>()
+                .SilenceException<RException>()
+                .DoNotWait();
         }
 
         private void ThrowIfDisposed() {
@@ -80,7 +89,20 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private async Task ExitBrowserAsync(IRSession session) {
-            using (var inter = await session.BeginInteractionAsync(isVisible: true)) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var cts = new CancellationTokenSource(1000);
+            IRSessionInteraction inter;
+            try {
+                inter = await session.BeginInteractionAsync(true, cts.Token);
+            } catch (OperationCanceledException) {
+                // If we couldn't get a prompt to put "Q" into within a reasonable timeframe, just
+                // abort the current interaction;
+                await session.CancelAllAsync();
+                return;
+            }
+
+            using (inter) {
                 // Check if this is still the same prompt as the last Browse prompt that we've seen.
                 // If it isn't, then session has moved on already, and there's nothing for us to exit.
                 DebugBrowseEventArgs currentBrowseDebugEventArgs;
@@ -134,12 +156,12 @@ namespace Microsoft.R.Debugger.Engine {
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = DebugSessionProvider.GetDebugSessionAsync(_program.Session).GetResultOnUIThread();
+            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSessionProvider.GetDebugSessionAsync(_program.Session, ct));
             MainThread = new AD7Thread(this);
             IsConnected = true;
 
             // Enable breakpoint instrumentation.
-            DebugSession.EnableBreakpoints(true).GetResultOnUIThread();
+            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpointsAsync(true, ct));
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
@@ -238,7 +260,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngineLaunch2.CanTerminateProcess(IDebugProcess2 pProcess) {
             ThrowIfDisposed();
-            return VSConstants.S_FALSE;
+            return VSConstants.S_OK;
         }
 
         int IDebugEngineLaunch2.LaunchSuspended(string pszServer, IDebugPort2 pPort, string pszExe, string pszArgs, string pszDir, string bstrEnv, string pszOptions, enum_LAUNCH_FLAGS dwLaunchFlags, uint hStdInput, uint hStdOutput, uint hStdError, IDebugEventCallback2 pCallback, out IDebugProcess2 ppProcess) {
@@ -251,7 +273,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngineLaunch2.TerminateProcess(IDebugProcess2 pProcess) {
-            return VSConstants.E_NOTIMPL;
+            return IDebugProgram2.Detach();
         }
 
         int IDebugProgram2.Attach(IDebugEventCallback2 pCallback) {
@@ -268,15 +290,25 @@ namespace Microsoft.R.Debugger.Engine {
             return IDebugEngine2.CauseBreak();
         }
 
+        private void DestroyProgram() {
+            IsProgramDestroyed = true;
+            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+        }
+
         int IDebugProgram2.Detach() {
             ThrowIfDisposed();
 
             try {
-                // Disable breakpoint instrumentation.
-                DebugSession.EnableBreakpoints(false).GetResultOnUIThread();
+                // Queue disabling breakpoint instrumentation, but do not wait for it to complete -
+                // if there's currently some code running, this may take a while, so just detach and
+                // let breakpoints be taken care of later.
+                DebugSession.EnableBreakpointsAsync(false)
+                    .SilenceException<MessageTransportException>()
+                    .SilenceException<RException>()
+                    .DoNotWait();
             } finally {
                 // Detach should never fail, even if something above didn't work.
-                Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+                DestroyProgram();
             }
 
             return VSConstants.S_OK;
@@ -292,16 +324,16 @@ namespace Microsoft.R.Debugger.Engine {
                 // debugger that user has explicitly entered something at the Browse prompt, and
                 // we don't actually need to issue the command to R debugger.
 
-                Task continueTask = null;
+                Func<CancellationToken, Task> continueMethod = null;
                 lock (_browseLock) {
                     if (_sentContinue != true) {
                         _sentContinue = true;
-                        continueTask = DebugSession.Continue();
+                        continueMethod = ct => DebugSession.Continue(ct);
                     }
                 }
 
-                if (continueTask != null) {
-                    continueTask.GetResultOnUIThread();
+                if (continueMethod != null) {
+                    TaskExtensions.RunSynchronouslyOnUIThread(continueMethod);
                 }
             }
 
@@ -396,24 +428,31 @@ namespace Microsoft.R.Debugger.Engine {
         int IDebugProgram2.Step(IDebugThread2 pThread, enum_STEPKIND sk, enum_STEPUNIT Step) {
             ThrowIfDisposed();
 
-            Task step;
-            switch (sk) {
-                case enum_STEPKIND.STEP_OVER:
-                    step = DebugSession.StepOverAsync();
-                    break;
-                case enum_STEPKIND.STEP_INTO:
-                    step = DebugSession.StepIntoAsync();
-                    break;
-                case enum_STEPKIND.STEP_OUT:
-                    step = DebugSession.StepOutAsync();
-                    break;
-                default:
-                    return VSConstants.E_NOTIMPL;
+            // If step was interrupted midway (e.g. by a breakpoint), we have already reported breakpoint
+            // hit event, and so we must not report step complete. Note that interrupting is not the same
+            // as canceling, and if step was canceled, we must report step completion.
+            bool completed = true;
+            try {
+                switch (sk) {
+                    case enum_STEPKIND.STEP_OVER:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOverAsync(ct));
+                        break;
+                    case enum_STEPKIND.STEP_INTO:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepIntoAsync(ct));
+                        break;
+                    case enum_STEPKIND.STEP_OUT:
+                        completed = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.StepOutAsync(ct));
+                        break;
+                    default:
+                        return VSConstants.E_NOTIMPL;
+                }
+            } catch (OperationCanceledException) {
+            } catch (MessageTransportException) {
             }
 
-            step.ContinueWith(t => {
+            if (completed) {
                 Send(new AD7SteppingCompleteEvent(), AD7SteppingCompleteEvent.IID);
-            });
+            }
 
             return VSConstants.S_OK;
         }
@@ -565,7 +604,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         private void RSession_Disconnected(object sender, EventArgs e) {
             IsConnected = false;
-            Send(new AD7ProgramDestroyEvent(0), AD7ProgramDestroyEvent.IID);
+            DestroyProgram();
         }
     }
 }

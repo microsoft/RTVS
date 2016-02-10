@@ -53,10 +53,20 @@
         Monospace,
 
         /// <summary>
-        /// Triple-backtick
+        /// Leading triple-backtick
         /// </summary>
-        Code,
+        CodeStart,
 
+        /// <summary>
+        /// Code inside ```code``` block
+        /// </summary>
+        CodeContent,
+
+        /// <summary>
+        /// Trailing triple-backtick
+        /// </summary>
+        CodeEnd,
+        
         /// <summary>
         /// (url)
         /// </summary>

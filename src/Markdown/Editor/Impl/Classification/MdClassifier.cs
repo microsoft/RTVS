@@ -26,8 +26,13 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
 
 
         protected override void RemoveSensitiveTokens(int position, TextRangeCollection<MarkdownToken> tokens) {
+            // Check if change damages code block. Normally base classifier removes all tokens
+            // from the caret position to the end of the visible area. If typing is inside
+            // the code area it may also affects tokens starting from the beginning of the code
+            // block. For example, when user types ``` in a middle of existing ```...``` block. 
+            // This is similar to typing %> or ?> in a middle of ASP.NET or PHP block.
             int last = tokens.Count - 1;
-            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.Code) {
+            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.CodeStart) {
                 tokens.RemoveAt(last);
             }
 

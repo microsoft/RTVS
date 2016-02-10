@@ -9,14 +9,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
-        private readonly IRInteractiveWorkflowOperations _operations;
-
+        private readonly IDebuggerModeTracker _debuggerModeTracker;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow) : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow, IDebuggerModeTracker debuggerModeTracker)
+            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+
             _interactiveWorkflow = interactiveWorkflow;
-            _operations = interactiveWorkflow.Operations;
             _session = interactiveWorkflow.RSession;
+            _debuggerModeTracker = debuggerModeTracker;
             _session.Disconnected += OnDisconnected;
             _session.BeforeRequest += OnBeforeRequest;
             _session.AfterRequest += OnAfterRequest;
@@ -38,15 +39,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var window = _interactiveWorkflow.ActiveWindow;
             if (window != null && window.Container.IsOnScreen) {
                 Visible = true;
-                Enabled = _session.IsHostRunning && _enabled;
+                Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsEnteredBreakMode;
             } else {
                 Visible = false;
+                Enabled = false;
             }
         }
 
         protected override void Handle() {
             if (_enabled) {
-                _operations.ClearPendingInputs();
+                _interactiveWorkflow.Operations.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();
                 _enabled = false;
             }

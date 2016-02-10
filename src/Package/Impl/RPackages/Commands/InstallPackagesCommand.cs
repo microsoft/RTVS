@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Commands {

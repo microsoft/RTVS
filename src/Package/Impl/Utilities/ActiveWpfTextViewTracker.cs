@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Editor;
@@ -12,16 +13,29 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     internal class ActiveWpfTextViewTracker : IActiveWpfTextViewTracker, IVsWindowFrameEvents {
         private readonly Dictionary<IContentType, IWpfTextView> _textViews;
         private readonly IVsEditorAdaptersFactoryService _editorAdaptersFactory;
+        private readonly IContentTypeRegistryService _registryService;
+
+        public event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;
 
         [ImportingConstructor]
-        public ActiveWpfTextViewTracker(IVsEditorAdaptersFactoryService editorAdaptersFactory) {
+        public ActiveWpfTextViewTracker(IVsEditorAdaptersFactoryService editorAdaptersFactory, IContentTypeRegistryService registryService) {
             _editorAdaptersFactory = editorAdaptersFactory;
+            _registryService = registryService;
             _textViews = new Dictionary<IContentType, IWpfTextView>();
         }
 
         public IWpfTextView GetLastActiveTextView(IContentType contentType) {
             IWpfTextView value;
             return _textViews.TryGetValue(contentType, out value) ? value : null;
+        }
+
+        public IWpfTextView GetLastActiveTextView(string contentTypeName) {
+            IContentType contentType = _registryService.GetContentType(contentTypeName);
+            if (contentType != null) {
+                IWpfTextView value;
+                return _textViews.TryGetValue(contentType, out value) ? value : null;
+            }
+            return null;
         }
 
         public void OnFrameCreated(IVsWindowFrame frame) {
@@ -50,7 +64,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         private void UpdateTextViewIfRequired(IWpfTextView wpfTextView) {
             var contentType = wpfTextView.TextBuffer.ContentType;
+            IWpfTextView oldValue;
+            if (_textViews.TryGetValue(contentType, out oldValue) && oldValue.Equals(wpfTextView)) {
+                return;
+            }
+
             _textViews[contentType] = wpfTextView;
+            LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldValue, wpfTextView));
         }
 
         private IWpfTextView GetWpfTextView(IVsWindowFrame frame) {
@@ -64,6 +84,16 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
 
             return _editorAdaptersFactory.GetWpfTextView(textView);
+        }
+    }
+
+    public class ActiveTextViewChangedEventArgs {
+        public IWpfTextView Old { get; }
+        public IWpfTextView New { get; }
+
+        public ActiveTextViewChangedEventArgs(IWpfTextView oldValue, IWpfTextView newValue) {
+            Old = oldValue;
+            New = newValue;
         }
     }
 }
