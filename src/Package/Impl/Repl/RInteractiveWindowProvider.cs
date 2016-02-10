@@ -12,6 +12,8 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class RInteractiveWindowProvider : IVsInteractiveWindowProvider {
+        private IVsInteractiveWindow _vsInteractiveWindow;
+
         [Import]
         private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
@@ -29,21 +31,23 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var interactive = RInteractiveProvider.GetOrCreate();
             var evaluator = interactive.GetOrCreateEvaluator(instanceId);
 
+            _vsInteractiveWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
+            _vsInteractiveWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
+
             EventHandler<EventArgs> clearPendingInputsHandler = (sender, args) => ReplWindow.Current.ClearPendingInputs();
             interactive.RSession.Disconnected += clearPendingInputsHandler;
-            EventHandler textViewOnClosed = (_, __) => {
+            var window = _vsInteractiveWindow.InteractiveWindow;
+
+            EventHandler textViewOnClosed = null;
+            textViewOnClosed = (_, __) => {
+                window.TextView.Closed -= textViewOnClosed;
                 interactive.RSession.Disconnected -= clearPendingInputsHandler;
                 evaluator.Dispose();
             };
+            window.TextView.Closed += textViewOnClosed;
 
-            var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
-            vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, ContentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType));
-            vsWindow.InteractiveWindow.TextView.Closed += textViewOnClosed;
-
-            var window = vsWindow.InteractiveWindow;
             InitializeWindowAsync(window).DoNotWait();
-
-            return vsWindow;
+            return _vsInteractiveWindow;
         }
 
         private static async Task InitializeWindowAsync(IInteractiveWindow window) {

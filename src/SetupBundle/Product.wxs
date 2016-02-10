@@ -37,7 +37,7 @@
                          BuildBranch="Main"
                          BuildNumber="$(var.MsiVersion)" />
 
-      <UserExperienceDataCollection Policy="none" ShowCheckbox="False" />
+      <UserExperienceDataCollection Policy="always" ShowCheckbox="False" />
       <BlockOn>
         <Process Name="devenv"
                  Type="Warn"

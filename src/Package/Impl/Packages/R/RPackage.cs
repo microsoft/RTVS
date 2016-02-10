@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
@@ -64,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
-        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
+        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = Lazy.Create(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
         private IDisposable _activeTextViewTrackerToken;
 
@@ -94,6 +95,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             InitializeActiveWpfTextViewTracker();
+            ReplWindow.EnsureReplWindow();
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
