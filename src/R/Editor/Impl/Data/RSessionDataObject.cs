@@ -161,10 +161,9 @@ namespace Microsoft.R.Editor.Data {
         #endregion
 
         /// <summary>
-        /// Convert R string that comes encoded into &lt;U+ABCD&gt;
-        /// into actual Unicode characters so user can see actual
-        /// language symbols rather than Unicode numerical values.
-        /// Also, trims trailing '| __truncated__' that R tends 
+        /// Convert R string that comes encoded into &lt;U+ABCD&gt; into Unicode
+        /// characters so user can see actual language symbols rather than 
+        /// the character codes. Trims trailing '| __truncated__' that R tends 
         /// to append at the end.
         /// </summary>
         private string ConvertCharacterCodes(string s) {
@@ -196,8 +195,7 @@ namespace Microsoft.R.Editor.Data {
                 }
                 converted[j++] = s[i++];
             }
-            converted[j] = '\0';
-            return new string(converted);
+            return new string(converted, 0, j);
         }
     }
 }
