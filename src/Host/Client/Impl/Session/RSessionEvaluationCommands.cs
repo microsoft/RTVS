@@ -24,7 +24,11 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
-            var script = "options(device=rtvs:::graphics.ide.new)\n";
+            var script = @"
+attach(as.environment(list(ide = function() { rtvs:::graphics.ide.new() })), name='rtvs::graphics::ide')
+options(device='ide')
+grDevices::deviceIsInteractive('ide')
+";
             return evaluation.EvaluateAsync(script);
         }
 
