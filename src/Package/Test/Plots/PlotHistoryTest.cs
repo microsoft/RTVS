@@ -142,13 +142,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
                 }
 
                 for (int i = _commands.Length - 1; i >= 0; i--) {
-                    history.PlotContentProvider.PreviousPlotAsync().Wait(1000);
-                    EventsPump.DoEvents(100);
+                    try {
+                        history.PlotContentProvider.PreviousPlotAsync().Wait(1000);
+                        EventsPump.DoEvents(100);
+                    } catch (RException) { } catch (AggregateException) { }
                 }
 
                 for (int i = 0; i < _commands.Length; i++) {
-                    history.PlotContentProvider.NextPlotAsync().Wait(1000);
-                    EventsPump.DoEvents(500);
+                    try {
+                        history.PlotContentProvider.NextPlotAsync().Wait(1000);
+                        EventsPump.DoEvents(500);
+                    } catch (RException) { } catch (AggregateException) { }
                 }
 
                 EventsPump.DoEvents(1000);
