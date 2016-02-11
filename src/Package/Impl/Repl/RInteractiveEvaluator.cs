@@ -103,6 +103,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
+
+            // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
+            if (text[0] == '\u0002') {
+                text = text.Substring(1);
+            }
+
             try {
                 await request.RespondAsync(text);
                 return ExecutionResult.Success;

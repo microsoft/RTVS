@@ -56,17 +56,23 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (!string.IsNullOrEmpty(fileName)) {
                 try {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
-                        // Use Begin/EndInit to avoid locking the file on disk
-                        var bmp = new BitmapImage();
-                        bmp.BeginInit();
-                        bmp.UriSource = new Uri(fileName);
-                        bmp.CacheOption = BitmapCacheOption.OnLoad;
-                        bmp.EndInit();
+                        var fileInfo = new FileInfo(fileName);
+                        if (fileInfo.Length > 0) {
+                            // Use Begin/EndInit to avoid locking the file on disk
+                            var bmp = new BitmapImage();
+                            bmp.BeginInit();
+                            bmp.UriSource = new Uri(fileName);
+                            bmp.CacheOption = BitmapCacheOption.OnLoad;
+                            bmp.EndInit();
 
-                        var image = new Image();
-                        image.Source = bmp;
+                            var image = new Image();
+                            image.Source = bmp;
 
-                        element = image;
+                            element = image;
+                        } else {
+                            // A zero-sized .png file means a blank image
+                            element = new TextBlock();
+                        }
                     } else {
                         element = (UIElement)XamlServices.Load(fileName);
                     }
