@@ -135,24 +135,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
                 foreach (var c in _commands) {
                     using (var interaction = await script.Session.BeginInteractionAsync()) {
                         try {
-                            interaction.RespondAsync(c + Environment.NewLine).Wait(1000);
+                            await interaction.RespondAsync(c + Environment.NewLine);
                             EventsPump.DoEvents(100);
-                        } catch (RException) { } catch(AggregateException) { }
+                        } catch (RException) { }
                     }
                 }
 
                 for (int i = _commands.Length - 1; i >= 0; i--) {
                     try {
-                        history.PlotContentProvider.PreviousPlotAsync().Wait(1000);
+                        await history.PlotContentProvider.PreviousPlotAsync();
                         EventsPump.DoEvents(100);
-                    } catch (RException) { } catch (AggregateException) { }
+                    } catch (RException) { }
                 }
 
                 for (int i = 0; i < _commands.Length; i++) {
                     try {
-                        history.PlotContentProvider.NextPlotAsync().Wait(1000);
+                        await history.PlotContentProvider.NextPlotAsync();
                         EventsPump.DoEvents(500);
-                    } catch (RException) { } catch (AggregateException) { }
+                    } catch (RException) { }
                 }
 
                 EventsPump.DoEvents(1000);
