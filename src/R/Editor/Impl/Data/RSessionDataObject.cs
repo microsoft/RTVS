@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -128,7 +129,7 @@ namespace Microsoft.R.Editor.Data {
                     return match.Groups[1].Value.Trim();
                 }
             }
-            return value;
+            return value != null ? ConvertCharacterCodes(value) : value;
         }
 
         #region IRSessionDataObject
@@ -158,5 +159,45 @@ namespace Microsoft.R.Editor.Data {
         }
 
         #endregion
+
+        /// <summary>
+        /// Convert R string that comes encoded into &lt;U+ABCD&gt;
+        /// into actual Unicode characters so user can see actual
+        /// language symbols rather than Unicode numerical values.
+        /// Also, trims trailing '| __truncated__' that R tends 
+        /// to append at the end.
+        /// </summary>
+        private string ConvertCharacterCodes(string s) {
+            int t = s.IndexOf("\"| __truncated__");
+            if(t >= 0) {
+                s = s.Substring(0, t);
+            }
+
+            if(s.IndexOf("<U+") < 0) {
+                // Nothing to convert
+                return s;
+            }
+
+            char[] converted = new char[s.Length];
+            int j = 0;
+            for (int i = 0; i < s.Length;) {
+                if (i < s.Length - 8 &&
+                    s[i] == '<' && s[i + 1] == 'U' && s[i + 2] == '+' && s[i + 7] == '>') {
+                    var x = s.Substring(i + 3, 4);
+                    int code = 0;
+                    try {
+                        code = Int32.Parse(x, NumberStyles.HexNumber);
+                        if (code > 0 && code < 65535) {
+                            converted[j++] = Convert.ToChar(code);
+                            i += 8;
+                            continue;
+                        }
+                    } catch (FormatException) { }
+                }
+                converted[j++] = s[i++];
+            }
+            converted[j] = '\0';
+            return new string(converted);
+        }
     }
 }

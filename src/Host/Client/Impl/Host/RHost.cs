@@ -570,7 +570,7 @@ namespace Microsoft.R.Host.Client {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
 
                     // Timeout increased to allow more time in test and code coverage runs.
-                    await Task.WhenAny(_transportTcs.Task, Task.Delay(timeout)).Unwrap();
+                    await Task.WhenAny(_transportTcs.Task, Task.Delay(600000)).Unwrap();
                     if (!_transportTcs.Task.IsCompleted) {
                         _log.FailedToConnectToRHost();
                         throw new RHostTimeoutException("Timed out waiting for R host process to connect");

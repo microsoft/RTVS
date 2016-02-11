@@ -304,15 +304,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
-        /// </summary>
-        public static string Error_ReplUnicodeCoversion {
-            get {
-                return ResourceManager.GetString("Error_ReplUnicodeCoversion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
         /// </summary>
         public static string Error_UnableToFindR {

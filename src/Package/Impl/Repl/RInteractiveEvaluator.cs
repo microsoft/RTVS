@@ -103,12 +103,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
-            if (!CheckConvertableToDefaultCodepage(text)) {
-                CurrentWindow.WriteErrorLine(Resources.Error_ReplUnicodeCoversion);
-                request.Dispose();
-                return ExecutionResult.Failure;
-            }
-
             try {
                 await request.RespondAsync(text);
                 return ExecutionResult.Success;
