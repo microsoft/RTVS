@@ -152,8 +152,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
-                return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
+                _interactiveWindowProvider.Value.Open(id, false);
+                return VSConstants.S_OK;
             }
 
             return base.CreateToolWindow(ref toolWindowType, id);
