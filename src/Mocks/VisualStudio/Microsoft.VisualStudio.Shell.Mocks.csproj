@@ -47,13 +47,11 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.ImageCatalog, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
       <Private>False</Private>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow.dll">
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
       <Private>False</Private>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
