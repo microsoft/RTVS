@@ -405,13 +405,17 @@
     <Reference Include="$(MSBuildAssembly)">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\..\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
+     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <Private>False</Private>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
