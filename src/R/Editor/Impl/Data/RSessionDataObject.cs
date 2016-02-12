@@ -168,11 +168,11 @@ namespace Microsoft.R.Editor.Data {
         /// </summary>
         private string ConvertCharacterCodes(string s) {
             int t = s.IndexOf("\"| __truncated__");
-            if(t >= 0) {
+            if (t >= 0) {
                 s = s.Substring(0, t);
             }
 
-            if(s.IndexOf("<U+") < 0) {
+            if (s.IndexOf("<U+") < 0) {
                 // Nothing to convert
                 return s;
             }
@@ -182,16 +182,12 @@ namespace Microsoft.R.Editor.Data {
             for (int i = 0; i < s.Length;) {
                 if (i < s.Length - 8 &&
                     s[i] == '<' && s[i + 1] == 'U' && s[i + 2] == '+' && s[i + 7] == '>') {
-                    var x = s.Substring(i + 3, 4);
-                    int code = 0;
-                    try {
-                        code = Int32.Parse(x, NumberStyles.HexNumber);
-                        if (code > 0 && code < 65535) {
-                            converted[j++] = Convert.ToChar(code);
-                            i += 8;
-                            continue;
-                        }
-                    } catch (FormatException) { }
+                    int code = s.SubstringToHex(i + 3, 4);
+                    if (code > 0 && code < 65535) {
+                        converted[j++] = Convert.ToChar(code);
+                        i += 8;
+                        continue;
+                    }
                 }
                 converted[j++] = s[i++];
             }

@@ -75,6 +75,27 @@ namespace Microsoft.Common.Core {
 
             return sb.ToString();
         }
+        public static int SubstringToHex(this string s, int position, int count) {
+            int mul = 1 << (4 * (count - 1));
+            int result = 0;
 
+            for (int i = 0; i < count; i++) {
+                char ch = s[position + i];
+                int z;
+                if (ch >= '0' && ch <= '9') {
+                    z = ch - '0';
+                } else if (ch >= 'a' && ch <= 'f') {
+                    z = ch - 'a' + 10;
+                } else if (ch >= 'A' && ch <= 'F') {
+                    z = ch - 'A' + 10;
+                } else {
+                    return -1;
+                }
+
+                result += z * mul;
+                mul >>= 4;
+            }
+            return result;
+        }
     }
 }
