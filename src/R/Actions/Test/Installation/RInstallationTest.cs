@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Utility;
@@ -39,8 +40,8 @@ namespace Microsoft.R.Actions.Test.Installation {
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
-            data.Path.Should().Contain("R-");
+            string path = Path.Combine(data.Path, @"bin\x64");
+            Directory.Exists(path).Should().BeTrue();
         }
 
         [Test]
