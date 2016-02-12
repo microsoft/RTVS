@@ -241,7 +241,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x..
         /// </summary>
         public static string Error_CannotFindRBinariesFormat {
             get {
