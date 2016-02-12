@@ -18,7 +18,7 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public object GetValue(string name) {
-            return _key ?? _key.GetValue(name);
+            return _key != null ? _key.GetValue(name) : null;
         }
 
         public IRegistryKey OpenSubKey(string name) {
