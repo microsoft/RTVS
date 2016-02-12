@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Editor.ContentType;
@@ -47,14 +48,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
                     text.Should().Contain(string.Format(Resources.InputIsTooLong, 4096));
-
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("電話帳 全米のお");
-                    result.Should().Be(ExecutionResult.Failure);
-                    text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be(Resources.Error_ReplUnicodeCoversion);
+                    result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    tb.Clear();
 
+                    result = await eval.ExecuteCodeAsync("z" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.TrimEnd().Should().Be("[1] \"電話帳 全米のお\"");
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("Encoding(z)" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.TrimEnd().Should().Be("[1] \"UTF-8\"");
                     tb.Clear();
 
                     result = await eval.ExecuteCodeAsync("x <- c(1:10)");

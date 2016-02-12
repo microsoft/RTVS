@@ -103,11 +103,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ExecutionResult.Failure;
             }
 
-            if (!CheckConvertableToDefaultCodepage(text)) {
-                CurrentWindow.WriteErrorLine(Resources.Error_ReplUnicodeCoversion);
-                request.Dispose();
-                return ExecutionResult.Failure;
-            }
 
             // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
             if (text[0] == '\u0002') {
