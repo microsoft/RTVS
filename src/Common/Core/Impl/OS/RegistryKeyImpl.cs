@@ -14,11 +14,11 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public string[] GetSubKeyNames() {
-            return _key.GetSubKeyNames();
+            return _key != null ? _key.GetSubKeyNames() : new string[0];
         }
 
         public object GetValue(string name) {
-            return _key.GetValue(name);
+            return _key ?? _key.GetValue(name);
         }
 
         public IRegistryKey OpenSubKey(string name) {
