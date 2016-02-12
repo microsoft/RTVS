@@ -18,6 +18,16 @@ namespace Microsoft.R.Actions.Test.Installation {
             Assert.True(data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion);
         }
 
+        [CompositeTest]
+        [Category.R.Install]
+        [InlineData(@"C:\", @"C:\")]
+        [InlineData(@"C:\R", @"C:\R")]
+        [InlineData(@"C:\R\bin", @"C:\R")]
+        [InlineData(@"C:\R\bin\x64", @"C:\R")]
+        public void NormalizePath(string path, string expected) {
+            RInstallation.NormalizeRPath(path).Should().Be(expected);
+        }
+
         [Test]
         [Category.R.Install]
         public void RInstallation_Test02() {
