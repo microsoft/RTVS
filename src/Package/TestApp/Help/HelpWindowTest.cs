@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
-                    GetBackgroundColor(component.Browser).Should().Be("black");
+                    GetBackgroundColor(component.Browser).Should().Be("rgb(36,36,36)");
 
                     component.VisualTheme = "Light.css";
                     ShowHelp("?lm\n", hostScript, clientApp);
