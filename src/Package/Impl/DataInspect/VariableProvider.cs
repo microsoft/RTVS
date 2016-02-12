@@ -152,7 +152,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var stackFrame = stackFrames.FirstOrDefault(f => f.Index == token.FrameIndex);
 
             if (stackFrame != null) {
-                var fields = DebugEvaluationResultFields.Classes
+                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                     | DebugEvaluationResultFields.Expression
                     | DebugEvaluationResultFields.TypeName
                     | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
