@@ -128,13 +128,7 @@ namespace Microsoft.R.Editor.Completion {
                 // such as for(), if(), library(), ...
                 if (completionText == "if" || completionText == "for" || completionText == "while" ||
                     completionText == "return" || completionText == "library" || completionText == "require") {
-                    if (typedChar == '(')
-                        return true;
-
-                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
-                        return true;
-
-                    return false;
+                    return typedChar == '(' || typedChar == '\t' || (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique);
                 }
 
                 switch (typedChar) {
@@ -166,18 +160,12 @@ namespace Microsoft.R.Editor.Completion {
                     return false;
 
                 if (char.IsWhiteSpace(typedChar)) {
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if (document != null && document.IsTransient) {
-                        return CompletionSession.SelectedCompletionSet.SelectionStatus.IsSelected && typedChar == '\t';
-                    }
-
                     if (typedChar.IsLineBreak()) {
                         if (REditorSettings.CommitOnEnter)
                             return true;
 
                         return !IsAutoShownCompletion();
                     }
-
                     return true;
                 }
             }
