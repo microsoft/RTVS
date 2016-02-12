@@ -152,7 +152,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var stackFrame = stackFrames.FirstOrDefault(f => f.Index == token.FrameIndex);
 
             if (stackFrame != null) {
-                DebugEvaluationResult evaluation = await stackFrame.EvaluateAsync(token.Expression);
+                var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
+                        DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
+
+                DebugEvaluationResult evaluation = await stackFrame.EvaluateAsync(token.Expression, fields: fields);
 
                 foreach (var sub in subscriptions) {
                     try {
