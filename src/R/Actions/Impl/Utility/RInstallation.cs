@@ -104,11 +104,12 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static string NormalizeRPath(string path) {
-            string bin64 = @"bin\x64";
-            if (path.EndsWith(bin64, StringComparison.OrdinalIgnoreCase)) {
-                path = path.Substring(0, path.Length - bin64.Length - 1);
-            } else if (path.EndsWith("bin", StringComparison.OrdinalIgnoreCase)) {
-                path = path.Substring(0, path.Length - 4);
+            string[] suffixes = { "bin", "bin\x64" };
+            foreach (var s in suffixes) {
+                if (path.EndsWith(s, StringComparison.OrdinalIgnoreCase)) {
+                    path = path.Substring(0, path.Length - s.Length - 1);
+                    break;
+                }
             }
             return path;
         }
