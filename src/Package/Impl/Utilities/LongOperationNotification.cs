@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     }
 
     internal static class LongOperationNotification {
-        public static void ShowWaitingPopup(string message, IReadOnlyList<LongAction> actions) {
+        public static bool ShowWaitingPopup(string message, IReadOnlyList<LongAction> actions) {
             CommonMessagePump msgPump = new CommonMessagePump();
             msgPump.AllowCancel = true;
             msgPump.EnableRealProgress = true;
@@ -47,15 +47,11 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
             }
 
-            if (!task.IsCanceled) {
-                try {
-                    task.Wait();
-                } catch (AggregateException aex) {
-                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, aex.InnerException.Message));
-                } catch (Exception ex) {
-                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotCollectLogs, ex.Message));
-                }
+            if (task.IsCanceled) {
+                return false;
             }
+            task.Wait();
+            return true;
         }
     }
 }

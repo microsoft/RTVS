@@ -57,8 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     );
                 }
 
-                LongOperationNotification.ShowWaitingPopup(Resources.Progress_PreparingExcelData, actions);
-                return xlData;
+                if (LongOperationNotification.ShowWaitingPopup(Resources.Progress_PreparingExcelData, actions)) {
+                    return xlData;
+                }
 
             } catch (OperationCanceledException) { }
 
