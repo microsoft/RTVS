@@ -96,7 +96,7 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
                         <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Command="{Binding Model.Content.ShowDetailCommand}">
+                            Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}">
                             <Button.Template>
                                 <ControlTemplate>
                                     <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
@@ -115,7 +115,7 @@
                         </Button>
                         <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Command="{Binding Model.Content.OpenInExcelCommand}">
+                            Command="{Binding Model.Content.OpenInExcelCommand}" ToolTip="{Binding Model.Content.OpenInExcelCommandTooltip}">
                             <Button.Template>
                                 <ControlTemplate>
                                     <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
