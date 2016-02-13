@@ -42,11 +42,13 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(e.NewPosition.BufferPosition);
-            if (node != _lastNode) {
-                _lastNode = node;
-                if (SuggestedActionsChanged != null) {
-                    SuggestedActionsChanged(this, new EventArgs());
+            if (_document != null && _document.EditorTree != null) {
+                var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(e.NewPosition.BufferPosition);
+                if (node != _lastNode) {
+                    _lastNode = node;
+                    if (SuggestedActionsChanged != null) {
+                        SuggestedActionsChanged(this, new EventArgs());
+                    }
                 }
             }
         }
@@ -94,9 +96,12 @@ namespace Microsoft.R.Editor.SuggestedActions {
             return false;
         }
         public void Dispose() {
-            _document = null;
-            _textBuffer = null;
-            _textView = null;
+            if (_textView != null) {
+                _textView.Caret.PositionChanged -= OnCaretPositionChanged;
+                _document = null;
+                _textBuffer = null;
+                _textView = null;
+            }
         }
         #endregion
     }

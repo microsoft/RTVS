@@ -449,11 +449,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Processing Item {0} of {1}.
+        /// </summary>
+        public static string LongOperationProgressMessage1 {
+            get {
+                return ResourceManager.GetString("LongOperationProgressMessage1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}: {2}.
         /// </summary>
-        public static string LongOperationProgressMessage {
+        public static string LongOperationProgressMessage2 {
             get {
-                return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
+                return ResourceManager.GetString("LongOperationProgressMessage2", resourceCulture);
             }
         }
         
@@ -583,6 +592,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Row {0} of {1}.
+        /// </summary>
+        public static string Progress_ExcelRowCounter {
+            get {
+                return ResourceManager.GetString("Progress_ExcelRowCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing data for Microsoft Excel....
+        /// </summary>
+        public static string Progress_PreparingExcelData {
+            get {
+                return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
             }
         }
         
@@ -1308,6 +1335,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel data conversion for Microsoft Excel?.
+        /// </summary>
+        public static string Warning_CancelCurrentExcelView {
+            get {
+                return ResourceManager.GetString("Warning_CancelCurrentExcelView", resourceCulture);
             }
         }
         
