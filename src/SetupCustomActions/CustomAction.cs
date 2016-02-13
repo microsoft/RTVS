@@ -21,7 +21,7 @@ namespace SetupCustomActions {
             bool resetKeyboard = false;
 
             // Uncomment for debugging
-            //MessageBox.Show("Custom Action", "Begin!");
+            // MessageBox.Show("Custom Action", "Begin!");
             session.Log("Begin Data Science profile import action");
 
             string ideFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Microsoft Visual Studio 14.0\Common7\IDE\");
@@ -73,6 +73,7 @@ namespace SetupCustomActions {
                         SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
 
             if (data.Status != RInstallStatus.OK) {
+                //MessageBox.Show("Custom Action", data.Status.ToString() + " " + data.Exception != null ? data.Exception.Message : "");
                 using (var form = new InstallMROForm()) {
                     ds = form.ShowDialog(new SetupWindowHandle());
                 }
