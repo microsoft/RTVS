@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
+using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -176,6 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string ValidateRBasePath(string path) {
             // If path is null, folder selector dialog was canceled
             if (path != null) {
+                path = RInstallation.NormalizeRPath(path);
                 bool valid = SupportedRVersions.VerifyRIsInstalled(path, showErrors: !_allowLoadingFromStorage);
                 if (!valid) {
                     path = null; // Prevents assignment of bad values to the property.

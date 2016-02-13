@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Utility;
@@ -18,6 +19,16 @@ namespace Microsoft.R.Actions.Test.Installation {
             Assert.True(data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion);
         }
 
+        [CompositeTest]
+        [Category.R.Install]
+        [InlineData(@"C:\", @"C:\")]
+        [InlineData(@"C:\R", @"C:\R")]
+        [InlineData(@"C:\R\bin", @"C:\R")]
+        [InlineData(@"C:\R\bin\x64", @"C:\R")]
+        public void NormalizePath(string path, string expected) {
+            RInstallation.NormalizeRPath(path).Should().Be(expected);
+        }
+
         [Test]
         [Category.R.Install]
         public void RInstallation_Test02() {
@@ -29,8 +40,8 @@ namespace Microsoft.R.Actions.Test.Installation {
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
-            data.Path.Should().Contain("R-");
+            string path = Path.Combine(data.Path, @"bin\x64");
+            Directory.Exists(path).Should().BeTrue();
         }
 
         [Test]

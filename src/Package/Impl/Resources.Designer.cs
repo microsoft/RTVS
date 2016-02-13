@@ -241,7 +241,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x..
         /// </summary>
         public static string Error_CannotFindRBinariesFormat {
             get {
@@ -300,15 +300,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
-        /// </summary>
-        public static string Error_ReplUnicodeCoversion {
-            get {
-                return ResourceManager.GetString("Error_ReplUnicodeCoversion", resourceCulture);
             }
         }
         
