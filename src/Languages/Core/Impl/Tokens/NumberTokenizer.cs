@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens {
@@ -73,7 +74,7 @@ namespace Microsoft.Languages.Core.Tokens {
             int len = end - start;
             string s = cs.GetSubstringAt(start, len);
             double n;
-            return Double.TryParse(s, out n);
+            return Double.TryParse(s, NumberStyles.Number, CultureInfo.InvariantCulture, out n);
         }
 
         internal static int HandleHex(CharacterStream cs, int start) {
