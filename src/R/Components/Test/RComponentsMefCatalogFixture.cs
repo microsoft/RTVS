@@ -3,7 +3,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Components.Test.UI.Fakes;
+using Microsoft.R.Components.Test.Fakes;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test {

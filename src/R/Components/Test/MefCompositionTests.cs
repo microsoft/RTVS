@@ -5,7 +5,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
-namespace Microsoft.R.Components.Test.UI {
+namespace Microsoft.R.Components.Test {
     /// <summary>
     /// These tests are basic markers that all required composition imports are available.
     /// </summary>

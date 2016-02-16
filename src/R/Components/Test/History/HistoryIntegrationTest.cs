@@ -12,8 +12,8 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Components.Test.UI.History {
-    public class ReplHistoryTest : IDisposable {
+namespace Microsoft.R.Components.Test.History {
+    public class HistoryIntegrationTest : IDisposable {
         private readonly ExportProvider _exportProvider;
         private readonly ITextBufferFactoryService _textBufferFactory;
         private readonly ITextEditorFactoryService _textEditorFactory;
@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Test.UI.History {
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
-        public ReplHistoryTest(RComponentsMefCatalogFixture catalog) {
+        public HistoryIntegrationTest(RComponentsMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _textBufferFactory = _exportProvider.GetExportedValue<ITextBufferFactoryService>();
             _textEditorFactory = _exportProvider.GetExportedValue<ITextEditorFactoryService>();
@@ -34,7 +34,7 @@ namespace Microsoft.R.Components.Test.UI.History {
 
         [Test]
         [Category.History]
-        public async Task GeneralTest01() {
+        public async Task InteractiveWindowIntegration01() {
             var workflow = _workflowProvider.GetOrCreate();
             var history = workflow.History;
             var session = workflow.RSession;
@@ -61,7 +61,7 @@ namespace Microsoft.R.Components.Test.UI.History {
 
         [Test(ThreadType.UI)]
         [Category.History]
-        public async Task GeneralTest02() {
+        public async Task InteractiveWindowIntegration02() {
             var workflow = _workflowProvider.GetOrCreate();
             var history = workflow.History;
             var session = workflow.RSession;

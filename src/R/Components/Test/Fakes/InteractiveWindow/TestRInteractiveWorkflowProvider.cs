@@ -9,7 +9,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowProvider))]
     internal class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;

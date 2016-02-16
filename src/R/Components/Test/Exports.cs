@@ -4,7 +4,7 @@ using Microsoft.Common.Core.Test.StubBuilders;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.StubFactories;
 
-namespace Microsoft.R.Components.Test.UI {
+namespace Microsoft.R.Components.Test {
     /// <summary>
     /// Default exports for types that haven't been loaded from assemblies
     /// </summary>

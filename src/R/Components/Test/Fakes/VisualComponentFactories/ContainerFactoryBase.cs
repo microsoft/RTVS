@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.R.Components.Test.UI.Controls;
 using Microsoft.R.Components.View;
 using Microsoft.UnitTests.Core.Threading;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     internal abstract class ContainerFactoryBase<T> : IDisposable where T : IVisualComponent {
         private readonly Dictionary<int, Container<T>> _containers = new Dictionary<int, Container<T>>();
 

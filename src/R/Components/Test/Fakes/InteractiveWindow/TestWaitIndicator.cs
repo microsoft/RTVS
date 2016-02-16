@@ -3,7 +3,7 @@ using System.ComponentModel.Composition;
 using System.Threading;
 using Microsoft.VisualStudio.Language.Intellisense.Utilities;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IWaitIndicator))]
     internal sealed class TestWaitIndicator : IWaitIndicator {
         public IWaitContext StartWait(string title, string message, bool allowCancel) {

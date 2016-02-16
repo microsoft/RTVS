@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IInteractiveWindowEditorFactoryService))]
     internal sealed class TestInteractiveWindowEditorsFactoryService : IInteractiveWindowEditorFactoryService {
         private const string ContentType = "text";

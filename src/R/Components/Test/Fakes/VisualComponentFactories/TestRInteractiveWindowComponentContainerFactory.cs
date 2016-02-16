@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal sealed class TestRInteractiveWindowComponentContainerFactory : ContainerFactoryBase<IInteractiveWindowVisualComponent>, IInteractiveWindowComponentContainerFactory {
         private readonly IContentType _contentType;

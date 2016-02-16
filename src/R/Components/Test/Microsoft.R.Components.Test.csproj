@@ -110,7 +110,7 @@
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="History\ReplHistoryTest.cs" />
+    <Compile Include="History\HistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryProviderTests.cs" />
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="MefCompositionTests.cs" />

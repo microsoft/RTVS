@@ -6,7 +6,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.Trackers {
     [Export(typeof(IActiveWpfTextViewTracker))]
     [Export(typeof(TestActiveWpfTextViewTracker))]
     internal sealed class TestActiveWpfTextViewTracker : IActiveWpfTextViewTracker {

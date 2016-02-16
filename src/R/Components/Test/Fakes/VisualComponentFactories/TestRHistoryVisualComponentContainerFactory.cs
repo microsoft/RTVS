@@ -1,12 +1,11 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
-using Microsoft.R.Components.Test.UI.Controls;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Components.Test.UI.Fakes {
+namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof (IRHistoryVisualComponentContainerFactory))]
     internal sealed class TestRHistoryVisualComponentContainerFactory : ContainerFactoryBase<IRHistoryWindowVisualComponent>, IRHistoryVisualComponentContainerFactory {
         private readonly IRHistoryProvider _historyProvider;

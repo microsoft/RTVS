@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.R.Components.View;
 
-namespace Microsoft.R.Components.Test.UI.Controls {
+namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     internal class Container<T> : ContentControl, IDisposable, IVisualComponentContainer<T> where T : IVisualComponent {
         private readonly Action _onDispose;
 
