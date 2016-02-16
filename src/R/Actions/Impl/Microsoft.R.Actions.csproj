@@ -50,6 +50,7 @@
     <Compile Include="Logging\NullLogWriter.cs" />
     <Compile Include="Logging\StringLog.cs" />
     <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\SupportLog.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

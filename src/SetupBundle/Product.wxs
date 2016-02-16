@@ -58,6 +58,8 @@
 
     <Chain>
       <MsiPackage SourceFile="$(var.BinDir)\RTVS.msi" />
+      <MsiPackage Id="RHost" SourceFile="$(var.BinDir)\RHost.msi"
+                  Compressed="no" DownloadUrl="https://ptvs.blob.core.windows.net/temp/RHost.msi" />
       <!--<PackageGroupRef Id="RTVSPackageId" />
       <PackageGroupRef Id="MROPackageId" />
       <PackageGroupRef Id="VsCommunityId" />-->
