@@ -22,6 +22,7 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         [CompositeTest]
+        [Category.History]
         [InlineData(new [] { " ", "\r\n", " \r\n " }, "")]
         [InlineData(new [] { "x <- 1" }, "x <- 1")]
         [InlineData(new [] { "x <- 1\r\ny <- 2" }, "x <- 1\r\ny <- 2")]
@@ -55,6 +56,7 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         [CompositeTest]
+        [Category.History]
         [InlineData(true, new[] { "x <- 1" }, 0, "x <- 1")]
         [InlineData(false, new[] { "x <- 1" }, 0, "x <- 1")]
         [InlineData(true, new[] { "x <- 1", "y <- 2" }, 0, "x <- 1")]

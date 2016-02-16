@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.Threading;
 
-namespace Microsoft.R.Components.Test.UI.Controls {
+namespace Microsoft.UnitTests.Core.UI {
     internal class ContainerHost : ContentControl {
         private const int MaxContainerCount = 9;
 
@@ -21,7 +23,6 @@ namespace Microsoft.R.Components.Test.UI.Controls {
         }
 
         private readonly UIElement[] _elements = new UIElement[MaxContainerCount];
-        private readonly Window _window;
         private readonly Grid _grid;
 
         private int _columns = 1;
@@ -30,12 +31,15 @@ namespace Microsoft.R.Components.Test.UI.Controls {
         private int _columnWidth = 600;
         private int _rowHeight = 300;
 
+        private Window _window;
+        private Task _createWindowTask;
+
         public ContainerHost(Window window) {
             _window = window;
             _current = this;
             _firstEmptySlot = 0;
 
-            HorizontalAlignment = HorizontalAlignment.Stretch;
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
             VerticalAlignment = VerticalAlignment.Stretch;
             _grid = new Grid {
                 RowDefinitions = { new RowDefinition() },
@@ -154,6 +158,48 @@ namespace Microsoft.R.Components.Test.UI.Controls {
             }
 
             return 1;
+        }
+
+        public async Task ShowWindowAsync() {
+            await TaskUtilities.SwitchToBackgroundThread();
+            _createWindowTask = ScheduleTask(ShowWindow);
+            await ScheduleTask(() => { });
+        }
+
+        public async Task CloseWindowAsync() {
+            await ScheduleTask(CloseWindow);
+            await _createWindowTask;
+        }
+
+        private void ShowWindow() {
+            _window = new Window {
+                Title = "Test window",
+                Height = double.NaN,
+                Width = double.NaN,
+            };
+
+            _window.Content = new ContainerHost(_window);
+            _window.SizeToContent = SizeToContent.WidthAndHeight;
+            if (Screen.AllScreens.Length == 1) {
+                _window.Left = 0;
+                _window.Top = 50;
+            } else {
+                var secondary = Screen.AllScreens.First(x => !x.Primary);
+                _window.Left = secondary.WorkingArea.Left;
+                _window.Top = secondary.WorkingArea.Top + 80;
+            }
+
+            _window.Topmost = true;
+            _window.ShowDialog();
+        }
+
+        private void CloseWindow() {
+            _window?.Close();
+            _window = null;
+        }
+
+        private static Task ScheduleTask(Action action) {
+            return Task.Run(() => UIThreadHelper.Instance.Invoke(action));
         }
     }
 }

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Test.History {
-    public class HistoryIntegrationTest : IDisposable {
+    public class RHistoryIntegrationTest : IDisposable {
         private readonly ExportProvider _exportProvider;
         private readonly ITextBufferFactoryService _textBufferFactory;
         private readonly ITextEditorFactoryService _textEditorFactory;
@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Test.History {
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
-        public HistoryIntegrationTest(RComponentsMefCatalogFixture catalog) {
+        public RHistoryIntegrationTest(RComponentsMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _textBufferFactory = _exportProvider.GetExportedValue<ITextBufferFactoryService>();
             _textEditorFactory = _exportProvider.GetExportedValue<ITextEditorFactoryService>();
