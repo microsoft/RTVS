@@ -12,7 +12,7 @@ namespace Microsoft.R.Components.Test.UI {
     public class MefCompositionTests {
         private readonly ExportProvider _exportProvider;
 
-        public MefCompositionTests(RComponentsUIMefCatalogFixture mefCatalog) {
+        public MefCompositionTests(RComponentsMefCatalogFixture mefCatalog) {
             _exportProvider = mefCatalog.CreateExportProvider();
         }
 

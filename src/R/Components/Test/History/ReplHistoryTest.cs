@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Test.UI.History {
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
         private readonly IRHistoryVisualComponentContainerFactory _historyVisualComponentContainerFactory;
 
-        public ReplHistoryTest(RComponentsUIMefCatalogFixture catalog) {
+        public ReplHistoryTest(RComponentsMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _textBufferFactory = _exportProvider.GetExportedValue<ITextBufferFactoryService>();
             _textEditorFactory = _exportProvider.GetExportedValue<ITextEditorFactoryService>();

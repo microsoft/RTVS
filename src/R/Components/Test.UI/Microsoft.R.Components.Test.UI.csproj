@@ -91,23 +91,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controls\Container.cs" />
     <Compile Include="Controls\ContainerHost.cs" />
     <Compile Include="Controls\ContainerHostTest.cs" />
-    <Compile Include="Fakes\ContainerFactoryBase.cs" />
-    <Compile Include="Fakes\TestActiveWpfTextViewTracker.cs" />
-    <Compile Include="Fakes\TestCoreShell.cs" />
-    <Compile Include="Fakes\TestDebuggerModeTracker.cs" />
-    <Compile Include="Fakes\TestInteractiveWindowEditorsFactoryService.cs" />
-    <Compile Include="Fakes\TestRHistoryVisualComponentContainerFactory.cs" />
-    <Compile Include="Fakes\TestRInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="Fakes\TestRInteractiveWorkflowProvider.cs" />
-    <Compile Include="Fakes\TestWaitIndicator.cs" />
-    <Compile Include="History\ReplHistoryTest.cs" />
-    <Compile Include="MefCompositionTests.cs" />
-    <Compile Include="Exports.cs" />
     <Compile Include="HostWindowFixture.cs" />
-    <Compile Include="RComponentsUIMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

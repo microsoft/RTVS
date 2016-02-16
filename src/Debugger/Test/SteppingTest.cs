@@ -1,11 +1,7 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;

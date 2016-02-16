@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Extensions;
+using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Test.UI.Fakes;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test {
@@ -33,6 +37,15 @@ namespace Microsoft.R.Components.Test {
                 "Microsoft.VisualStudio.Language.Intellisense.dll",
                 "Microsoft.VisualStudio.Platform.VSEditor.dll"
             };
+        }
+
+        protected override void AddValues(CompositionContainer container) {
+            base.AddValues(container);
+            var coreShell = new TestCoreShell(container);
+            var batch = new CompositionBatch()
+                .AddValue<ICoreShell>(coreShell)
+                .AddValue(coreShell);
+            container.Compose(batch);
         }
     }
 }
