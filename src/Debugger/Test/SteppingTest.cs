@@ -33,7 +33,7 @@ z <- x + y";
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
                         var bpHit = new TaskCompletionSource<bool>();
                         bp.BreakpointHit += (s, e) => {
-                            bpHit.SetResult(true);
+                            bpHit.TrySetResult(true);
                         };
 
                         await sf.Source(session);
@@ -67,7 +67,7 @@ z <- x + y";
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
                         var bpHit = new TaskCompletionSource<bool>();
                         bp.BreakpointHit += (s, e) => {
-                            bpHit.SetResult(true);
+                            bpHit.TrySetResult(true);
                         };
 
                         await sf.Source(session);
@@ -102,7 +102,7 @@ z <- x + y";
                         var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
                         var bpHit = new TaskCompletionSource<bool>();
                         bp.BreakpointHit += (s, e) => {
-                            bpHit.SetResult(true);
+                            bpHit.TrySetResult(true);
                         };
 
                         await sf.Source(session);

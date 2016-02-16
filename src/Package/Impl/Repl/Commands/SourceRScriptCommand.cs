@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 textView.SaveFile();
-                _operations.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
+                _operations.ExecuteExpression($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             }
         }
     }
