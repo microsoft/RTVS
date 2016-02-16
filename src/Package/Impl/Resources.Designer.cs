@@ -241,15 +241,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation..
-        /// </summary>
-        public static string Error_CannotFindRBinariesFormat {
-            get {
-                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
         /// </summary>
         public static string Error_CannotSendFeedback1 {
@@ -268,15 +259,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
-        /// </summary>
-        public static string Error_ExceptionAccessingPath {
-            get {
-                return ResourceManager.GetString("Error_ExceptionAccessingPath", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Markdown conversion failed.
         /// </summary>
         public static string Error_MarkdownConversionFailed {
@@ -286,47 +268,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
-        /// </summary>
-        public static string Error_Microsoft_R_Host_Missing {
-            get {
-                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
         public static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
-        /// </summary>
-        public static string Error_ReplUnicodeCoversion {
-            get {
-                return ResourceManager.GetString("Error_ReplUnicodeCoversion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
-        /// </summary>
-        public static string Error_UnableToFindR {
-            get {
-                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
-        /// </summary>
-        public static string Error_UnsupportedRVersion {
-            get {
-                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
         
@@ -403,15 +349,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
-        /// </summary>
-        public static string InputIsTooLong {
-            get {
-                return ResourceManager.GetString("InputIsTooLong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         public static string LanguageName {
@@ -463,33 +400,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string LongOperationProgressMessage {
             get {
                 return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Starting R Session....
-        /// </summary>
-        public static string MicrosoftRHostStarting {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStarting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
-        /// </summary>
-        public static string MicrosoftRHostStopped {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Stopping R Session....
-        /// </summary>
-        public static string MicrosoftRHostStopping {
-            get {
-                return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
             }
         }
         

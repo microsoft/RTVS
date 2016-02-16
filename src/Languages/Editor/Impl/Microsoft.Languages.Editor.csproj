@@ -121,7 +121,6 @@
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
     <Compile Include="Services\ServiceManager.cs" />
-    <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IEditorShell.cs" />
     <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
@@ -134,17 +133,13 @@
     <Compile Include="Tasks\IdleTimeAction.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTaskQueue.cs" />
-    <Compile Include="Text\TextViewExtensions.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
-    <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextViewListener.cs" />
     <Compile Include="Text\StringDifference.cs" />
     <Compile Include="Text\TextProvider.cs" />
     <Compile Include="Text\TextRangeExtensions.cs" />
     <Compile Include="Text\TextUtility.cs" />
-    <Compile Include="Text\TextBufferListenerEventArgs.cs" />
-    <Compile Include="Text\TextBufferListenerEvents.cs" />
     <Compile Include="Text\TextViewListenerEventArgs.cs" />
     <Compile Include="Text\TextViewListenerEvents.cs" />
     <Compile Include="Undo\CompoundUndoAction.cs" />

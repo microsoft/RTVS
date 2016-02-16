@@ -4,11 +4,11 @@ using Microsoft.R.Components.InteractiveWorkflow;
 namespace Microsoft.R.Components.Test.Stubs {
     public class RInteractiveWorkflowProviderStub : IRInteractiveWorkflowProvider {
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IInteractiveWindowComponentFactory _componentFactory;
+        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
-        public RInteractiveWorkflowProviderStub(IRInteractiveWorkflow workflow, IInteractiveWindowComponentFactory componentFactory) {
+        public RInteractiveWorkflowProviderStub(IRInteractiveWorkflow workflow, IInteractiveWindowComponentContainerFactory componentContainerFactory) {
             _workflow = workflow;
-            _componentFactory = componentFactory;
+            _componentContainerFactory = componentContainerFactory;
         }
 
         public IRInteractiveWorkflow GetOrCreate() {
@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.Test.Stubs {
         }
 
         public Task<IInteractiveWindowVisualComponent> CreateInteractiveWindowAsync(IRInteractiveWorkflow workflow, int instanceId = 0) {
-            return workflow.CreateInteractiveWindowAsync(_componentFactory, instanceId);
+            return workflow.GetOrCreateVisualComponent(_componentContainerFactory, instanceId);
         }
     }
 }

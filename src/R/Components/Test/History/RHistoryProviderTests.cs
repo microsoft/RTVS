@@ -4,7 +4,7 @@ using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Test.StubBuilders;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Components.Test.StubBuilders;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.UnitTests.Core.XUnit;
 
@@ -19,9 +19,9 @@ namespace Microsoft.R.Components.Test.History {
         [Test]
         public void MefComposition() {
             var additionalValues = new CompositionBatch()
-                .AddValue(TextSearchServiceBuilder.CreateDefault())
-                .AddValue(RtfBuilderServiceBuilder.CreateDefault())
-                .AddValue(FileSystemBuilder.CreateDefault())
+                .AddValue(TextSearchServiceStubFactory.CreateDefault())
+                .AddValue(RtfBuilderServiceStubFactory.CreateDefault())
+                .AddValue(FileSystemStubFactory.CreateDefault())
                 .AddValue<IRSettings>(new RSettingsStub());
 
             var exportProvider = _mefCatalogFixture.CreateExportProvider(additionalValues);

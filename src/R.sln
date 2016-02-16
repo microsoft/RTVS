@@ -92,6 +92,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupCustomActions", "Setup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger.Test", "Debugger\Test\Microsoft.R.Debugger.Test.csproj", "{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components.Test.UI", "R\Components\Test.UI\Microsoft.R.Components.Test.UI.csproj", "{52CA9E37-A7FF-44B2-A44B-2651580CA21D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -583,6 +585,18 @@ Global
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x64.Build.0 = Release|Any CPU
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x86.Build.0 = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|x64.Build.0 = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Debug|x86.Build.0 = Debug|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|x64.ActiveCfg = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|x64.Build.0 = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|x86.ActiveCfg = Release|Any CPU
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -610,5 +624,6 @@ Global
 		{2AA8762F-3A84-4CD5-9AA0-77829A766769} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{2BBB937B-EFD3-48AA-BEF8-05E203589D24} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+		{52CA9E37-A7FF-44B2-A44B-2651580CA21D} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
 EndGlobal

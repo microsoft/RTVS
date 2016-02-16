@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;

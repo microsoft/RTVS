@@ -1,8 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Components.Test.StubBuilders;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             using (new VsRHostScript()) {
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
-                using (var eval = new RInteractiveEvaluator(session, RHistoryBuilder.CreateDefault(), RToolsSettings.Current)) {
+                using (var eval = new RInteractiveEvaluator(session, RHistoryStubFactory.CreateDefault(), VsAppShell.Current, RToolsSettings.Current)) {
                     var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
                     var tv = new WpfTextViewMock(tb);
 
@@ -42,14 +43,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result = await eval.ExecuteCodeAsync(new string(new char[10000]));
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
-                    text.Should().Contain(string.Format(Resources.InputIsTooLong, 4096));
+                    text.Should().Contain(string.Format(Microsoft.R.Components.Resources.InputIsTooLong, 4096));
 
                     tb.Clear();
 
                     result = await eval.ExecuteCodeAsync("電話帳 全米のお");
                     result.Should().Be(ExecutionResult.Failure);
                     text = tb.CurrentSnapshot.GetText();
-                    text.Should().Be(Resources.Error_ReplUnicodeCoversion);
+                    text.Should().Be(Microsoft.R.Components.Resources.Error_ReplUnicodeCoversion);
 
                     tb.Clear();
 
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     await eval.ResetAsync(initialize: false);
                     text = tb.CurrentSnapshot.GetText();
-                    text.Should().StartWith(Resources.MicrosoftRHostStopping);
+                    text.Should().StartWith(Microsoft.R.Components.Resources.MicrosoftRHostStopping);
                 }
             }
         }

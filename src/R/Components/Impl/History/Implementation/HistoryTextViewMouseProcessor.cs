@@ -3,13 +3,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 
 namespace Microsoft.R.Components.History.Implementation {
     internal class HistoryWindowPaneMouseProcessor : MouseProcessorBase, IMouseProcessor2 {
-        private readonly IWpfTextView _textView;
         private readonly IRHistory _history;
 
         private TimeSpan _elapsedSinceLastTap;
@@ -20,12 +18,9 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Stopwatch _doubleTapStopWatch = new Stopwatch();
         private readonly TimeSpan _maximumElapsedDoubleTap = new TimeSpan(0, 0, 0, 0, 600);
         private readonly int _minimumPositionDelta = 30;
-        private readonly IRHistoryWindowVisualComponent _visualComponent;
 
         public HistoryWindowPaneMouseProcessor(IRHistory history) {
             _history = history;
-            _visualComponent = history.VisualComponent;
-            _textView = _visualComponent.TextView;
         }
 
         #region IMouseProcessorProvider Member Implementations
@@ -35,7 +30,7 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
         public override void PreprocessMouseRightButtonUp(MouseButtonEventArgs e) {
-            _visualComponent.Container.ShowContextMenu(RHistoryCommandIds.ContextMenu, GetPosition(e, _textView.VisualElement));
+            _history.VisualComponent.Container.ShowContextMenu(RHistoryCommandIds.ContextMenu, GetPosition(e, _history.VisualComponent.Control));
             e.Handled = true;
         }
 
@@ -43,12 +38,12 @@ namespace Microsoft.R.Components.History.Implementation {
         /// Handles the Mouse up event
         /// </summary>
         public override void PostprocessMouseUp(MouseButtonEventArgs e) {
-            _lastTapPosition = GetAdjustedPosition(e, _textView);
+            _lastTapPosition = GetAdjustedPosition(e, _history.VisualComponent.TextView);
             _doubleTapStopWatch.Restart();
         }
 
         public void PreprocessTouchDown(TouchEventArgs e) {
-            _currentTapPosition = GetAdjustedPosition(e, _textView);
+            _currentTapPosition = GetAdjustedPosition(e, _history.VisualComponent.TextView);
             _elapsedSinceLastTap = _doubleTapStopWatch.Elapsed;
             _doubleTapStopWatch.Restart();
 
@@ -156,12 +151,12 @@ namespace Microsoft.R.Components.History.Implementation {
 
         private bool HandleSingleClick(InputEventArgs e, ModifierKeys modifiers) {
             // Don't do anything if there is no history
-            if (_textView.TextBuffer.CurrentSnapshot.Length == 0) {
+            if (_history.VisualComponent.TextView.TextBuffer.CurrentSnapshot.Length == 0) {
                 _lastSelectedLineNumber = null;
                 return true;
             }
 
-            var point = GetAdjustedPosition(e, _textView);
+            var point = GetAdjustedPosition(e, _history.VisualComponent.TextView);
             var lineNumber = GetLineNumberUnderPoint(point);
             if (lineNumber == -1) {
                 _lastSelectedLineNumber = null;
@@ -176,7 +171,7 @@ namespace Microsoft.R.Components.History.Implementation {
                     return false;
 
                 case ModifierKeys.Control:
-                    _textView.Selection.Clear();
+                    _history.VisualComponent.TextView.Selection.Clear();
                     _history.ToggleHistoryEntrySelection(lineNumber);
                     _lastSelectedLineNumber = lineNumber;
                     return true;
@@ -211,7 +206,7 @@ namespace Microsoft.R.Components.History.Implementation {
         private bool HandleDoubleClick(InputEventArgs e, ModifierKeys modifiers) {
             switch (modifiers) {
                 case ModifierKeys.None:
-                    var point = GetAdjustedPosition(e, _textView);
+                    var point = GetAdjustedPosition(e, _history.VisualComponent.TextView);
                     var textLine = GetTextViewLineUnderPoint(point);
                     if (textLine != null) {
                         _history.SendSelectedToRepl();
@@ -229,7 +224,7 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
         private ITextViewLine GetTextViewLineUnderPoint(Point pt) {
-            return _textView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y);
+            return _history.VisualComponent.TextView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y);
         }
     }
 }

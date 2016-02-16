@@ -10,6 +10,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 
-        Task<IInteractiveWindowVisualComponent> CreateInteractiveWindowAsync(IInteractiveWindowComponentFactory interactiveWindowComponentFactory, int instanceId = 0);
+        Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0);
     }
 }

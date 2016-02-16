@@ -6,8 +6,9 @@ namespace Microsoft.R.Components.Test {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public sealed class RComponentsMefCatalogFixture : AssemblyMefCatalogFixture {
-        protected override IEnumerable<string> GetProductAssemblies() {
+        protected override IEnumerable<string> GetBinDirectoryAssemblies() {
             return new[] {
+                "Microsoft.VisualStudio.InteractiveWindow.dll",
                 "Microsoft.R.Host.Client.dll",
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",
@@ -28,7 +29,6 @@ namespace Microsoft.R.Components.Test {
 
         protected override IEnumerable<string> GetVsAssemblies() {
             return new[] {
-                "Microsoft.VisualStudio.InteractiveWindow.dll",
                 "Microsoft.VisualStudio.Editor.dll",
                 "Microsoft.VisualStudio.Language.Intellisense.dll",
                 "Microsoft.VisualStudio.Platform.VSEditor.dll"

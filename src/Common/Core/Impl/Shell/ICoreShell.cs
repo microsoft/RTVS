@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -9,16 +10,6 @@ namespace Microsoft.Common.Core.Shell {
     /// services and so on.
     /// </summary>
     public interface ICoreShell: ICompositionCatalog {
-        /// <summary>
-        /// Retrieves global service from the host application.
-        /// This method is not thread safe and should not be called 
-        /// from async methods.
-        /// </summary>
-        /// <typeparam name="T">Service interface type such as IVsUIShell</typeparam>
-        /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
-        /// <returns>Service instance of null if not found.</returns>
-        T GetGlobalService<T>(Type type = null) where T : class;
-
         /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
@@ -32,10 +23,18 @@ namespace Microsoft.Common.Core.Shell {
         void DispatchOnUIThread(Action action);
 
         /// <summary>
+        /// Async version of DispatchOnUIThread
+        /// </summary>
+        /// <param name="action">Action to execute</param>
+        /// <param name="cancellationToken">A token whose cancellation will immediately schedule the continuation on calling thread</param>
+        /// <returns></returns>
+        Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = default (CancellationToken));
+
+        /// <summary>
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        Thread MainThread { get; set; }
+        Thread MainThread { get; }
 
         /// <summary>
         /// Fires when host application enters idle state.
@@ -69,21 +68,5 @@ namespace Microsoft.Common.Core.Shell {
         /// Returns host locale ID
         /// </summary>
         int LocaleId { get; }
-
-        /// <summary>
-        /// <summary>
-        /// Tells if code runs in unit test environment
-        /// </summary>
-        bool IsUnitTestEnvironment { get; set; }
-
-        /// <summary>
-        /// Tells if code runs in UI test environment
-        /// </summary>
-        bool IsUITestEnvironment { get; set; }
-
-        /// <summary>
-        /// Forces idle time processing
-        /// </summary>
-        void DoIdle();
     }
 }

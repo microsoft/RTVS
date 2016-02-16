@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Services;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -7,29 +9,42 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Components.History.Implementation {
     public class RHistoryWindowVisualComponent : IRHistoryWindowVisualComponent {
         private readonly IVisualComponentContainer<IRHistoryWindowVisualComponent> _container;
+        private IRHistory _history;
 
         public const string TextViewRole = "TextViewRole";
 
-        public RHistoryWindowVisualComponent(ITextBuffer historyTextBuffer, ITextEditorFactoryService textEditorFactory, IVisualComponentContainer<IRHistoryWindowVisualComponent> container) {
+        public RHistoryWindowVisualComponent(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ITextEditorFactoryService textEditorFactory, IVisualComponentContainer<IRHistoryWindowVisualComponent> container) {
             _container = container;
+            _history = historyProvider.GetAssociatedRHistory(historyTextBuffer);
+
             TextView = CreateTextView(historyTextBuffer, textEditorFactory);
-            Control = TextView.VisualElement;
-        }
+            Control = textEditorFactory.CreateTextViewHost(TextView, false).HostControl;
+            Controller = ServiceManagerBase.GetService<ICommandTarget>(TextView);
 
-        /// <summary>
-        /// TODO: Remove when commandTarget can be extracted from TextView
-        /// </summary>
-        public void SetController(ICommandTarget commandTarget) {
-            Controller = commandTarget;
+            TextView.Selection.SelectionChanged += TextViewSelectionChanged;
         }
-
+        
         public ICommandTarget Controller { get; set; }
         public FrameworkElement Control { get; }
         public IVisualComponentContainer<IVisualComponent> Container => _container;
-        public IWpfTextView TextView { get; }
+        public IWpfTextView TextView { get; private set; }
 
         public void Dispose() {
+            if (TextView == null) {
+                return;
+            }
 
+            Controller = null;
+            TextView.Selection.SelectionChanged -= TextViewSelectionChanged;
+            TextView.Close();
+            TextView = null;
+            _history = null;
+        }
+
+        private void TextViewSelectionChanged(object sender, EventArgs e) {
+            if (TextView.Selection.Start != TextView.Selection.End) {
+                _history.ClearHistoryEntrySelection();
+            }
         }
 
         private static IWpfTextView CreateTextView(ITextBuffer historyTextBuffer, ITextEditorFactoryService textEditorFactory) {

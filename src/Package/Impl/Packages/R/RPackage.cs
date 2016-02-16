@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
@@ -139,13 +140,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
-            return this.FindWindowPane(t, id, create) as T;
+            return FindWindowPane(t, id, create) as T;
         }
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<ToolWindowFactory>();
-            int result;
-            return toolWindowFactory.TryCreateToolWindow(ref toolWindowType, id, out result) ? result : base.CreateToolWindow(ref toolWindowType, id);
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
+        }
+
+        protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
     }
 }

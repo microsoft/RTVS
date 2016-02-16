@@ -88,22 +88,15 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
 
-        public IRHistoryWindowVisualComponent CreateVisualComponent(IRHistoryWindowVisualComponentFactory visualComponentFactory, int instanceId = 0) { 
+        public IRHistoryWindowVisualComponent GetOrCreateVisualComponent(IRHistoryVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) { 
             if (VisualComponent != null) {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentFactory.Create(_historyTextBuffer);
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(_historyTextBuffer).Component;
             _textViewSelection = VisualComponent.TextView.Selection;
-            _textViewSelection.SelectionChanged += TextViewSelectionChanged;
             _editorOperations = _editorOperationsFactory.GetEditorOperations(VisualComponent.TextView);
             return VisualComponent;
-        }
-
-        private void TextViewSelectionChanged(object sender, EventArgs e) {
-            if (VisualComponent.TextView.Selection.Start != VisualComponent.TextView.Selection.End) {
-                ClearHistoryEntrySelection();
-            }
         }
 
         public bool TryLoadFromFile(string path) {

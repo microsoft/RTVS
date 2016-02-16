@@ -11,18 +11,10 @@
     <AssemblyName>Microsoft.VisualStudio.R.Package.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
@@ -46,8 +38,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
@@ -105,8 +97,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+      <Private>True</Private>
     </Reference>
     <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
@@ -140,7 +132,9 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
@@ -239,13 +233,12 @@
     <Compile Include="DataInspect\VariableRHostScript.cs" />
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
-    <Compile Include="Mocks\RHistoryWindowVisualComponentFactoryMock.cs" />
+    <Compile Include="Mocks\RHistoryVisualComponentContainerFactoryMock.cs" />
     <Compile Include="Plots\PlotHistoryTest.cs" />
     <Compile Include="Plots\PlotCommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repl\ReplCommandTest.cs" />
     <Compile Include="Repl\CurrentDirectoryTest.cs" />
-    <Compile Include="Repl\ReplHistoryTest.cs" />
     <Compile Include="Repl\RInteractiveEvaluatorTest.cs" />
     <Compile Include="Shell\VsTestCompositionCatalog.cs" />
     <Compile Include="Cran\CranMirrorListTest.cs" />
@@ -257,7 +250,7 @@
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
-    <Compile Include="Mocks\InteractiveWindowComponentFactoryMock.cs" />
+    <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
@@ -271,7 +264,6 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;

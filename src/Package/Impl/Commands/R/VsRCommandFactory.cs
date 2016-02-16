@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Repl;

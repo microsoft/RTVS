@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public T Component {
             get { return _adapter.Component; }
-            internal set {
+            protected set {
                 _adapter.Component = value;
                 Content = value.Control;
             }

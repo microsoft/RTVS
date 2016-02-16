@@ -16,14 +16,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         protected abstract ComposablePartCatalog CreateCatalog();
 
+        protected virtual void AddValues(CompositionContainer container) {}
+
         public ExportProvider CreateExportProvider() {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
+            AddValues(container);
             _containers.Enqueue(container);
             return container;
         }
 
         public ExportProvider CreateExportProvider(CompositionBatch additionalValues) {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
+            AddValues(container);
             container.Compose(additionalValues);
             _containers.Enqueue(container);
             return container;

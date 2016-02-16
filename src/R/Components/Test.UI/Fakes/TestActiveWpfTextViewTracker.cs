@@ -1,0 +1,49 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
+
+namespace Microsoft.R.Components.Test.UI.Fakes {
+    [Export(typeof(IActiveWpfTextViewTracker))]
+    [Export(typeof(TestActiveWpfTextViewTracker))]
+    internal sealed class TestActiveWpfTextViewTracker : IActiveWpfTextViewTracker {
+        private readonly Dictionary<IContentType, IWpfTextView> _textViews;
+        private readonly IContentTypeRegistryService _registryService;
+
+        [ImportingConstructor]
+        public TestActiveWpfTextViewTracker(IContentTypeRegistryService registryService) {
+            _textViews = new Dictionary<IContentType, IWpfTextView>();
+            _registryService = registryService;
+        }
+
+        public void SetLastActiveTextView(IWpfTextView wpfTextView) {
+            var contentType = wpfTextView.TextBuffer.ContentType;
+            IWpfTextView oldValue;
+            if (_textViews.TryGetValue(contentType, out oldValue) && oldValue.Equals(wpfTextView)) {
+                return;
+            }
+
+            _textViews[contentType] = wpfTextView;
+            LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldValue, wpfTextView));
+        }
+
+        public IWpfTextView GetLastActiveTextView(IContentType contentType) {
+            IWpfTextView value;
+            return _textViews.TryGetValue(contentType, out value) ? value : null;
+        }
+
+        public IWpfTextView GetLastActiveTextView(string contentTypeName) {
+            IContentType contentType = _registryService.GetContentType(contentTypeName);
+            if (contentType == null) {
+                return null;
+            }
+
+            return GetLastActiveTextView(contentType);
+        }
+
+        public event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;
+    }
+}

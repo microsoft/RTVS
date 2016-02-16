@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Components.History;
+using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -12,6 +13,8 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History {
     [Guid(WindowGuidString)]
@@ -19,22 +22,26 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public const string WindowGuidString = "62ACEA29-91C7-4BFC-B76F-550E7B3DE234";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly ITextBuffer _historyTextBuffer;
         private readonly IRHistoryProvider _historyProvider;
+        private readonly ITextEditorFactoryService _textEditorFactory;
         private IOleCommandTarget _commandTarget;
         private IRHistory _history;
         private IRHistoryFiltering _historyFiltering;
 
-        public HistoryWindowPane() {
-            _interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            _historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
+        public HistoryWindowPane(ITextBuffer historyTextBuffer, IRHistoryProvider historyProvider, ITextEditorFactoryService textEditorFactory) {
+            _historyTextBuffer = historyTextBuffer;
+            _historyProvider = historyProvider;
+            _textEditorFactory = textEditorFactory;
 
             Caption = Resources.HistoryWindowCaption;
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.historyWindowToolBarId);
         }
 
         protected override void OnCreate() {
-            _history = _interactiveWorkflowProvider.GetOrCreate().History;
+            Component = new RHistoryWindowVisualComponent(_historyTextBuffer, _historyProvider, _textEditorFactory, this);
+
+            _history = _historyProvider.GetAssociatedRHistory(Component.TextView);
             _history.HistoryChanged += OnHistoryChanged;
             _historyFiltering = _historyProvider.CreateFiltering(Component);
             _commandTarget = new CommandTargetToOleShim(Component.TextView, Component.Controller);
@@ -53,6 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
                 _commandTarget = null;
                 _history.HistoryChanged -= OnHistoryChanged;
                 _history = null;
+                Component = null;
             }
             base.Dispose(disposing);
         }

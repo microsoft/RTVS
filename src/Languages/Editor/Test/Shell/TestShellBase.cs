@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.Threading;
@@ -34,6 +35,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 return;
             }
             action();
+        }
+
+        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            await UIThreadHelper.Instance.InvokeAsync(action);
         }
 
         public void DoEvents() {

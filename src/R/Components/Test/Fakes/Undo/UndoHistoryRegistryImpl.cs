@@ -13,7 +13,7 @@ namespace Microsoft.R.Components.Test.Fakes.Undo {
     [ExcludeFromCodeCoverage]
     [Export(typeof(ITextUndoHistoryRegistry))]
     [Export(typeof(UndoHistoryRegistryImpl))]
-    internal class UndoHistoryRegistryImpl : ITextUndoHistoryRegistry {
+    public class UndoHistoryRegistryImpl : ITextUndoHistoryRegistry {
         #region Private Fields
         private readonly Dictionary<ITextUndoHistory, int> _histories;
         private readonly Dictionary<WeakReferenceForDictionaryKey, ITextUndoHistory> _weakContextMapping;

@@ -21,12 +21,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
 
         [ImportingConstructor]
         public VsRHistoryCommandFactory(IRHistoryProvider historyProvider,
-            IRInteractiveWorkflow interactiveWorkflow,
+            IRInteractiveWorkflowProvider interactiveWorkflowProvider,
             IContentTypeRegistryService contentTypeRegistry,
             IActiveWpfTextViewTracker textViewTracker) {
 
             _historyProvider = historyProvider;
-            _interactiveWorkflow = interactiveWorkflow;
+            _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             _contentTypeRegistry = contentTypeRegistry;
             _textViewTracker = textViewTracker;
         }

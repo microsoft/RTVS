@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Language.Intellisense;

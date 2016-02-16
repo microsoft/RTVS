@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;

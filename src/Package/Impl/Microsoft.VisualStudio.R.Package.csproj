@@ -140,7 +140,8 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
-    <Compile Include="History\VsRHistoryWindowVisualComponentFactory.cs" />
+    <Compile Include="Packages\ToolWindowPaneFactory.cs" />
+    <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
@@ -156,7 +157,7 @@
     <Compile Include="Packages\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
-    <Compile Include="Packages\R\ToolWindowFactory.cs" />
+    <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
@@ -191,20 +192,15 @@
     <Compile Include="Repl\Debugger\StepOverCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
-    <Compile Include="Repl\RInteractiveWindowVisualComponent.cs" />
-    <Compile Include="Repl\RInteractiveWorkflowOperations.cs" />
-    <Compile Include="Repl\VsRInteractiveWindowComponentFactory.cs" />
+    <Compile Include="Repl\VsRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
-    <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
-    <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\RHostClientApp.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
-    <Compile Include="Repl\RInteractiveWorkflow.cs" />
-    <Compile Include="Repl\RInteractiveWorkflowProvider.cs" />
+    <Compile Include="Repl\VsRInteractiveWorkflowProvider.cs" />
     <Compile Include="Repl\Workspace\ResetReplCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
@@ -294,7 +290,6 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
-    <Compile Include="Repl\RInteractiveEvaluator.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -338,7 +333,6 @@
     <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
     <Compile Include="Repl\IActiveRInteractiveWindowTracker.cs" />
-    <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />

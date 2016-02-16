@@ -1,5 +1,6 @@
 ﻿using System;
 using EnvDTE;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Settings;

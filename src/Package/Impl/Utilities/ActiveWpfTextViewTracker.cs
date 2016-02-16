@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -84,16 +86,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
 
             return _editorAdaptersFactory.GetWpfTextView(textView);
-        }
-    }
-
-    public class ActiveTextViewChangedEventArgs {
-        public IWpfTextView Old { get; }
-        public IWpfTextView New { get; }
-
-        public ActiveTextViewChangedEventArgs(IWpfTextView oldValue, IWpfTextView newValue) {
-            Old = oldValue;
-            New = newValue;
         }
     }
 }

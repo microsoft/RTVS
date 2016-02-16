@@ -4,8 +4,11 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -20,8 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// Main HTML editor command controller
     /// </summary>
     public class ReplCommandController : ViewController {
-        private ICompletionBroker _completionBroker;
-
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
             ServiceManager.AddService(this, textView);
@@ -108,9 +109,21 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             controller.DismissAllSessions();
+            ICompletionBroker broker = VsAppShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+            broker.DismissAllSessions(TextView);
+
             var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView);
+            interactiveWorkflowProvider.GetOrCreate().Operations.ExecuteCurrentExpression(TextView, FormatReplDocument);
             return CommandResult.Executed;
+        }
+
+        private static void FormatReplDocument(ITextView textView, ITextBuffer textBuffer, int position) {
+            var document = REditorDocument.TryFromTextBuffer(textBuffer);
+            if (document != null) {
+                var tree = document.EditorTree;
+                tree.EnsureTreeReady();
+                FormatOperations.FormatNode<IStatement>(textView, textBuffer, position);
+            }
         }
 
         private void HandleCancel(RCompletionController controller) {
@@ -135,16 +148,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private bool IsCompletionCommand(Guid group, int id) {
             ICommand cmd = Find(group, id);
             return cmd is RCompletionCommandHandler;
-        }
-
-        private ICompletionBroker CompletionBroker {
-            get {
-                if (_completionBroker == null) {
-                    _completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
-                }
-
-                return _completionBroker;
-            }
         }
 
         /// <summary>

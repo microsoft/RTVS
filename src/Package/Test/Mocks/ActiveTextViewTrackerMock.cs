@@ -1,4 +1,6 @@
 ﻿using System;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text.Editor;

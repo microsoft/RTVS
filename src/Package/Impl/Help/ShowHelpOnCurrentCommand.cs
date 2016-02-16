@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;

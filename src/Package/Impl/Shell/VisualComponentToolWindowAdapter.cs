@@ -29,8 +29,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
 
         public void ShowContextMenu(CommandID commandId, Point position) {
-            var point = Component.Control.PointToScreen(position);
-            VsAppShell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var point = Component.Control.PointToScreen(position);
+                VsAppShell.Current.ShowContextMenu(commandId, (int)point.X, (int)point.Y);
+            });
         }
 
         public void UpdateCommandStatus(bool immediate) {
@@ -45,12 +47,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return;
             }
 
-            if (focus) {
-                ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
-                Component.Control?.Focus();
-            } else {
-                ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
-            }
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                if (focus) {
+                    ErrorHandler.ThrowOnFailure(VsWindowFrame.Show());
+                    Component.Control?.Focus();
+                } else {
+                    ErrorHandler.ThrowOnFailure(VsWindowFrame.ShowNoActivate());
+                }
+            });
         }
     }
 }

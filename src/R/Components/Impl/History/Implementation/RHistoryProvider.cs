@@ -34,6 +34,11 @@ namespace Microsoft.R.Components.History.Implementation {
             _histories = new Dictionary<ITextBuffer, IRHistory>();
         }
 
+        public IRHistory GetAssociatedRHistory(ITextBuffer textBuffer) {
+            IRHistory history;
+            return _histories.TryGetValue(textBuffer, out history) ? history : null;
+        }
+
         public IRHistory GetAssociatedRHistory(ITextView textView) {
             IRHistory history;
             return _histories.TryGetValue(textView.TextDataModel.DocumentBuffer, out history) ? history : null;

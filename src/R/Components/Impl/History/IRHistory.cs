@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Components.History {
     public interface IRHistory : IDisposable {
-        IRHistoryWindowVisualComponent CreateVisualComponent(IRHistoryWindowVisualComponentFactory componentFactory, int instanceId = 0);
+        IRHistoryWindowVisualComponent GetOrCreateVisualComponent(IRHistoryVisualComponentContainerFactory componentContainerFactory, int instanceId = 0);
 
         event EventHandler<EventArgs> SelectionChanged;
         event EventHandler<EventArgs> HistoryChanging;

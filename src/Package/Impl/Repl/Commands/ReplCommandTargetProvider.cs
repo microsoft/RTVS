@@ -4,6 +4,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;

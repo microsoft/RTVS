@@ -13,9 +13,10 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         private ITextBuffer _textBuffer;
 
-        public InteractiveWindowMock(IWpfTextView textView) {
+        public InteractiveWindowMock(IWpfTextView textView, IInteractiveEvaluator evaluator = null) {
             TextView = textView;
             _textBuffer = textView.TextBuffer;
+            Evaluator = evaluator ?? new InteractiveEvaluatorMock(this);
         }
 
         public ITextBuffer CurrentLanguageBuffer {
@@ -30,11 +31,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             }
         }
 
-        public IInteractiveEvaluator Evaluator {
-            get {
-                return new InteractiveEvaluatorMock(this);
-            }
-        }
+        public IInteractiveEvaluator Evaluator { get; }
 
         public bool IsInitializing => false;
 

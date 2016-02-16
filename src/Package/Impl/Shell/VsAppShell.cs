@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using IServiceProvider = System.IServiceProvider;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -131,6 +132,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 Debug.Assert(false);
                 ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => action());
             }
+        }
+
+        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            action();
         }
 
         /// <summary>

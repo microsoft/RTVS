@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Test.StubBuilders;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
@@ -17,7 +17,7 @@ namespace Microsoft.R.Components.Test.History {
         public RHistoryTests(RComponentsMefCatalogFixture mefCatalog) {
             _exportProvider = mefCatalog.CreateExportProvider();
 
-            _interactiveWorkflow = InteractiveWorkflowBuilder.CreateDefault();
+            _interactiveWorkflow = InteractiveWorkflowStubFactory.CreateDefault();
             _textBuffer = _exportProvider.GetExportedValue<ITextBufferFactoryService>().CreateTextBuffer();
         }
 

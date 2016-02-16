@@ -32,7 +32,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                     FindInCurrentAssemblyFolder(nugetAssemblies, aggregateCatalog);
                 }
 
-                foreach (var assemblyName in GetProductAssemblies()) {
+                foreach (var assemblyName in GetBinDirectoryAssemblies()) {
                     LoadAssembly(assemblyName, _knownProductAssemblyPaths, aggregateCatalog);
                 }
 
@@ -52,7 +52,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return LoadVsAssembly(assemblyFile);
         }
 
-        protected virtual IEnumerable<string> GetProductAssemblies() => Enumerable.Empty<string>();
+        protected virtual IEnumerable<string> GetBinDirectoryAssemblies() => Enumerable.Empty<string>();
         protected virtual IEnumerable<string> GetNugetAssemblies() => Enumerable.Empty<string>();
         protected virtual IEnumerable<string> GetVsAssemblies() => Enumerable.Empty<string>();
 
