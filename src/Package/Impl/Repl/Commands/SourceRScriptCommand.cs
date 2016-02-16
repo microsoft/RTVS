@@ -23,7 +23,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             _activeTextViewTracker = activeTextViewTracker;
             _operations = interactiveWorkflow.Operations;
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
-
             if (_monitorSelection != null) {
                 var debugUIContextGuid = new Guid(UIContextGuids.Debugging);
                 if (ErrorHandler.Failed(_monitorSelection.GetCmdUIContextCookie(ref debugUIContextGuid, out _debugUIContextCookie))) {
@@ -70,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 textView.SaveFile();
-                _operations.ExecuteExpression($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
+                _operations.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             }
         }
     }

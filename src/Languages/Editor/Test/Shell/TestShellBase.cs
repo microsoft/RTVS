@@ -29,12 +29,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void DispatchOnUIThread(Action action) {
-            var disp = GetDispatcher();
-            if (disp != null) {
-                disp.BeginInvoke(action, DispatcherPriority.Normal);
-                return;
-            }
-            action();
+            UIThreadHelper.Instance.Invoke(action);
         }
 
         public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {

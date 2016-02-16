@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -24,6 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
+
+            // this value matches with icmdShowPlotWindow's Icon in VSCT file
+            BitmapImageMoniker = KnownMonikers.LineChart;
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistoryProvider>();

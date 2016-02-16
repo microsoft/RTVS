@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;

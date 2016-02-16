@@ -124,7 +124,7 @@
     <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
   <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation.</value>
+    <value>Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x.</value>
   </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
