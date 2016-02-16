@@ -42,8 +42,8 @@
     <Compile Include="RTVS_UX.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EULA R Tools for Visual Studio.txt" />
     <Content Include="packages.config" />
+    <Content Include="EULA R Tools For Visual Studio.html" />
     <Content Include="UXResources\BootstrapperCore.config" />
     <Content Include="UXResources\DarkTheme.xaml" />
     <Content Include="UXResources\HighContrastSkuResources.xaml" />
