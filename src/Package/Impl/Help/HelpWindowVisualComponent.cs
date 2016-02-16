@@ -36,9 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private WindowsFormsHost _host;
         private Color? _lastDefaultBackground;
 
-        public HelpWindowVisualComponent(IVisualComponentContainer<IHelpWindowVisualComponent> container) {
-            Container = container;
-
+        public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
@@ -61,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public ICommandTarget Controller { get; }
 
         public FrameworkElement Control { get; }
-        public IVisualComponentContainer<IVisualComponent> Container { get; }
+        public IVisualComponentContainer<IVisualComponent> Container { get; internal set; }
 
         #endregion
 

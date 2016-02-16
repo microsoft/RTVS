@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Test.Fakes.Trackers;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Xunit;
 
@@ -16,7 +21,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
         public CurrentDirectoryTest() {
-            _interactiveWorkflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
+            var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
+            var debuggerModeTracker = new TestDebuggerModeTracker();
+            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, activeTextViewTracker, debuggerModeTracker, null, VsAppShell.Current, RToolsSettings.Current, () => {});
         }
 
         public void Dispose() {

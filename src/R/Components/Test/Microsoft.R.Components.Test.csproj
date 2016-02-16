@@ -89,7 +89,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exports.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />
@@ -121,7 +120,6 @@
     <Compile Include="StubFactories\RSettingsStubFactory.cs" />
     <Compile Include="StubFactories\RtfBuilderServiceStubFactory.cs" />
     <Compile Include="StubFactories\TextSearchServiceStubFactory.cs" />
-    <Compile Include="Stubs\RInteractiveWorkflowProviderStub.cs" />
     <Compile Include="Stubs\RSettingsStub.cs" />
     <Compile Include="Stubs\VisualComponents\VisualComponentContainerStub.cs" />
   </ItemGroup>

@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         public bool IsResetting => false;
 
-        public bool IsRunning => true;
+        public bool IsRunning => false;
 
         public IInteractiveWindowOperations Operations {
             get {

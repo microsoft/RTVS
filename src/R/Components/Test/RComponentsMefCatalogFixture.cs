@@ -3,7 +3,10 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Extensions;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Test.StubBuilders;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test {
@@ -43,6 +46,8 @@ namespace Microsoft.R.Components.Test {
             base.AddValues(container);
             var coreShell = new TestCoreShell(container);
             var batch = new CompositionBatch()
+                .AddValue(FileSystemStubFactory.CreateDefault())
+                .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath())
                 .AddValue<ICoreShell>(coreShell)
                 .AddValue(coreShell);
             container.Compose(batch);

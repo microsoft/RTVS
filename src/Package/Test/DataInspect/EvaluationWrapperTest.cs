@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         };
 
         [CompositeTest]
-        [InlineData("value.na <- NA", "value.na", "NA", "logical", false, false)]
+        [InlineData("value.na <- NA", "value.na", "NA", "logical", "logical", false, false)]
         [InlineData("value.null <- NULL", "value.null", "NULL", "NULL", "NULL", false, false)]
         [InlineData("value.NaN <- NaN","value.NaN", "NaN", "double", "numeric", false, false)]
         [InlineData("value.character <- 'abcdefghijklmnopqrstuvwxyz'", "value.character", "\"abcdefghijklmnopqrstuvwxyz\"", "character", "character", false, false)]

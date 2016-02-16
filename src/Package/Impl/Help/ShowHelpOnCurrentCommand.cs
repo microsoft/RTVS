@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle() {
             try {
-                if (_session.IsHostRunning) {
+                if (!_session.IsHostRunning) {
                     return;
                 }
 

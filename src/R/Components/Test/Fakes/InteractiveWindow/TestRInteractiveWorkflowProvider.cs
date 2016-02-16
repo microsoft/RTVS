@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowProvider))]
-    internal class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
+    public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;

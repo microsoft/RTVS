@@ -7,6 +7,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
@@ -14,12 +15,14 @@ using Microsoft.R.Components.View;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client.Mocks;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -29,8 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     public class ReplCommandTest {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
-        private readonly RInteractiveWorkflow _workflow;
-        private readonly RInteractiveWorkflowProviderStub _workflowProvider;
+        private readonly IRInteractiveWorkflow _workflow;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
         public ReplCommandTest() {
@@ -40,8 +43,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _debuggerModeTracker = new VsDebuggerModeTracker();
 
             _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock();
-            _workflow = new RInteractiveWorkflow(sessionProvider, historyProvider, activeViewTrackerMock, _debuggerModeTracker, null, null, RToolsSettings.Current, () => {});
-            _workflowProvider = new RInteractiveWorkflowProviderStub(_workflow, _componentContainerFactory);
+            _workflowProvider = new TestRInteractiveWorkflowProvider(
+                sessionProvider, historyProvider, _componentContainerFactory, activeViewTrackerMock, _debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current);
+            _workflow = _workflowProvider.GetOrCreate();
         }
 
         [Test]
@@ -50,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             var command = new InterruptRCommand(_workflow, _debuggerModeTracker);
             command.Should().BeInvisibleAndDisabled();
 
-            using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
                 command.Should().BeVisibleAndDisabled();
 
                 await _workflow.RSession.BeginEvaluationAsync();
@@ -71,17 +75,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         [Test]
         [Category.Repl]
-        public void SendToReplTest() {
+        public async Task SendToReplTest() {
             string content = "x <- 1\r\ny <- 2\r\n";
 
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var tv = new TextViewMock(tb);
 
             var commandFactory = new VsRCommandFactory(_workflowProvider);
-            var command = commandFactory.GetCommands(tv, tb).OfType<SendToReplCommand>()
-                .Should().ContainSingle().Which;
-
+            var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, tb));
+            
+            await IsTrue(_workflow.ActiveWindow != null);
             _workflow.ActiveWindow.Should().NotBeNull();
+
+            await IsTrue(!_workflow.ActiveWindow.InteractiveWindow.IsInitializing);
+
+            var command = commands.OfType<SendToReplCommand>()
+                .Should().ContainSingle().Which;
 
             var textBuffer = _workflow.ActiveWindow.InteractiveWindow.CurrentLanguageBuffer;
             var containerStub = (VisualComponentContainerStub<RInteractiveWindowVisualComponent>)_workflow.ActiveWindow.Container;
@@ -108,6 +117,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
             _workflow.ActiveWindow.Dispose();
             _workflow.ActiveWindow.Should().BeNull();
+        }
+
+        private async Task IsTrue(bool condition) {
+            var attempts = 10;
+            while (!condition && attempts-- > 0) {
+                await Task.Delay(100);
+            }
         }
     }
 }

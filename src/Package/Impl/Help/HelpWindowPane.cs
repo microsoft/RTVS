@@ -16,7 +16,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
 
-            Component = new HelpWindowVisualComponent(this);
+            Component = new HelpWindowVisualComponent {
+                Container = this
+            };
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
             ToolBarCommandTarget = new CommandTargetToOleShim(null, Component.Controller);

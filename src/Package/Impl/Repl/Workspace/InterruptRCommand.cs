@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
 
         protected override void SetStatus() {
             var window = _interactiveWorkflow.ActiveWindow;
-            if (window != null && window.Container.IsOnScreen) {
+            if (window != null) {
                 Visible = true;
                 Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsEnteredBreakMode;
             } else {

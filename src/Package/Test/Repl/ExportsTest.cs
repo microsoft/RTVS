@@ -28,21 +28,5 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             lazy.Should().NotBeNull();
             lazy.Value.Should().NotBeNull();
         }
-
-        [Test]
-        [Category.Repl]
-        public void RHistoryProvider_ExportTest() {
-            Lazy<IRHistoryProvider> provider = VsAppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
-            provider.Should().NotBeNull();
-            provider.Value.Should().NotBeNull();
-        }
-
-        [Test]
-        [Category.Repl]
-        public void RInteractiveProvider_ExportTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveWorkflowProvider>();
-            provider.Should().NotBeNull();
-            provider.Value.Should().NotBeNull();
-        }
     }
 }
