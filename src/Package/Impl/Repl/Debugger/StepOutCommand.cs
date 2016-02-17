@@ -8,5 +8,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                    VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.StepOut,
                    DebuggerCommandVisibility.Stopped) {
         }
+
+        internal override void SetStatus() {
+            base.SetStatus();
+            Enabled = false;
+        }
     }
 }
