@@ -406,12 +406,10 @@ rtvs:::graphics.ide.previousplot()
         }
 
         private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs) {
-            var sessionProvider = new RSessionProvider();
             var app = new RHostClientTestApp() { PlotHandler = OnPlot };
-            using (new RHostScript(sessionProvider, app)) {
-                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, app);
+            using (var script = new RHostScript(new RSessionProvider(), app)) {
                 foreach (string input in inputs) {
-                    using (var interaction = await session.BeginInteractionAsync()) {
+                    using (var interaction = await script.Session.BeginInteractionAsync()) {
                         await interaction.RespondAsync(input + "\n");
                         EventsPump.DoEvents(100);
                     }
