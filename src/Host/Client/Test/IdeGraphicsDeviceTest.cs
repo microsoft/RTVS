@@ -347,10 +347,7 @@ write(info, {0})
             int expectedCount = 2;
 
             string[] lines = File.ReadAllLines(outputFilePath);
-            lines.Should().HaveCount(3);
-            lines[0].Should().Be($"[{expectedActive}");
-            lines[1].Should().Be($", {expectedCount}");
-            lines[2].Should().Be("]");
+            lines.Should().Equal($"[{expectedActive}", $", {expectedCount}", "]");
         }
 
         [Test]
