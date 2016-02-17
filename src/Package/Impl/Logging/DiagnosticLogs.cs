@@ -122,10 +122,6 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
             var logs = Directory.EnumerateFiles(tempPath, pattern);
             return logs.Where((file) => {
-                if (file.EndsWith(".full.log")) {
-                    return false;
-                }
-
                 DateTime writeTime = File.GetLastWriteTimeUtc(file);
                 TimeSpan difference = DateTime.Now.ToUniversalTime() - writeTime;
                 if (difference.TotalDays < DaysToRetain) {
