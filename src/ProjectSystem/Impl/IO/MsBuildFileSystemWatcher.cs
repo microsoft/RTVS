@@ -162,7 +162,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         private void TraceError(string watcherName, ErrorEventArgs errorEventArgs) {
             _log.ErrorInFileWatcher(watcherName, errorEventArgs.GetException());
-            Trace.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
+            Debug.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
         }
 
         public class Changeset {
