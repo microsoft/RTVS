@@ -16,7 +16,7 @@ Copyright (c) Microsoft. All rights reserved.
       <Payload Name="HighContrastSkuResources.xaml"
                SourceFile="UXResources\HighContrastSkuResources.xaml" />
       <Payload Name="License.htm"
-               SourceFile="EULA R Tools for Visual Studio.txt" />
+               SourceFile="EULA R Tools for Visual Studio.html" />
     </PayloadGroup>
   </Fragment>
 </Wix>
