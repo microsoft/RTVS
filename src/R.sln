@@ -86,6 +86,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetupCustomActions", "Setup
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger.Test", "Debugger\Test\Microsoft.R.Debugger.Test.csproj", "{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupRHost", "SetupRHost\SetupRHost.wixproj", "{A5265B92-029A-423E-9006-A7C1F52476ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -541,6 +543,14 @@ Global
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x64.Build.0 = Release|Any CPU
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x86.ActiveCfg = Release|Any CPU
 		{6D3AC84F-D53F-4494-8142-DD2BC8FD9CFD}.Release|x86.Build.0 = Release|Any CPU
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Debug|x64.ActiveCfg = Debug|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Debug|x86.ActiveCfg = Debug|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Debug|x86.Build.0 = Debug|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Release|Any CPU.ActiveCfg = Release|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Release|x64.ActiveCfg = Release|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Release|x86.ActiveCfg = Release|x86
+		{A5265B92-029A-423E-9006-A7C1F52476ED}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

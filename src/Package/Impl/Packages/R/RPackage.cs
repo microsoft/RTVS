@@ -79,6 +79,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
+            VerifyWebToolsInstalled();
 
             RtvsTelemetry.Initialize();
 
@@ -164,6 +165,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
             var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
             _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
+        }
+
+        private void VerifyWebToolsInstalled() {
+            Guid htmlEditorPackage = new Guid("CF49EC7D-92B1-4BBD-9254-9CC13978E82E");
+            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            int installed;
+            int hr = shell.IsPackageInstalled(ref htmlEditorPackage, out installed);
+            if (hr != VSConstants.S_OK || installed == 0) {
+                VsAppShell.Current.ShowErrorMessage(Package.Resources.Error_NoWebTools);
+            }
         }
     }
 }

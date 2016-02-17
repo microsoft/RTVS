@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define ProductName ="Microsoft R Host" ?>
+  <?define VSRegVer="14.0" ?>
+
+  <?define BinDir="$(var.OutDir)" ?>
+  <?define SourceDir=".." ?>
+
+  <?define LangList=ENU?>
+  <?define LcidList=1033?>
+</Include>
