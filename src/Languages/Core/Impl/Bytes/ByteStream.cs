@@ -84,7 +84,7 @@ namespace Microsoft.Languages.Core.Bytes {
         }
 
         public static bool IsWhiteSpace(char ch) {
-            return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
+            return ch <= ' ';
         }
 
         public bool IsWhiteSpace() {

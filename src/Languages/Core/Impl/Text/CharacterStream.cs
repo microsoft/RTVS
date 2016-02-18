@@ -157,8 +157,7 @@ namespace Microsoft.Languages.Core.Text {
         /// </summary>
         public bool IsWhiteSpace() {
             // Char.IsWhiteSpace is slow
-            return (_currentChar == ' ' || _currentChar == '\t' || _currentChar == '\r' ||
-                    _currentChar == '\n' || _currentChar == '\f' || _currentChar == 0x200B);
+            return _currentChar <= ' ' || _currentChar == 0x200B;
         }
 
         /// <summary>

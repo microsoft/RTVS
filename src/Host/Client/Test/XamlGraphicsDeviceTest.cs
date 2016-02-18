@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Actions.Utility;
-using Microsoft.R.Support.Test.Utility;
+using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -20,10 +16,7 @@ namespace Microsoft.R.Host.Client.Test {
     [Collection(CollectionNames.NonParallel)]
     public class XamlGraphicsDeviceTest {
         private const string Ns = "http://schemas.microsoft.com/winfx/2006/xaml/presentation";
-        private const string SetupCode = @"
-xaml <- function(filename, width, height) { .External('Microsoft.R.Host::External.xaml_graphicsdevice_new', filename, width, height)}
-";
-        private const string GridPrefixCode = "xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
+        private const string GridPrefixCode = "rtvs:::graphics.xaml(\"{0}\", {1}, {2});library(grid);grid.newpage();\n";
         private const string GridSuffixCode = "dev.off()\n";
 
         private const int DefaultWidth = 360;
@@ -166,7 +159,7 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
 
         private async Task<XDocument> GridTest(string code) {
             string outputFilePath = System.IO.Path.GetTempFileName();
-            return await RunGraphicsTest(SetupCode + "\n" + string.Format(GridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + GridSuffixCode + "\n", outputFilePath);
+            return await RunGraphicsTest(string.Format(GridPrefixCode, outputFilePath.Replace("\\", "/"), DefaultWidth, DefaultHeight) + "\n" + code + "\n" + GridSuffixCode + "\n", outputFilePath);
         }
 
         private void CheckX1Y1X2Y2(XElement element, double x1, double y1, double x2, double y2) {
@@ -230,74 +223,19 @@ xaml <- function(filename, width, height) { .External('Microsoft.R.Host::Externa
         }
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
-            var callbacks = new Callbacks(code);
-            var host = new RHost("Test", callbacks);
-            var rhome = RInstallation.GetCompatibleEnginePathFromRegistry();
-            
-            await host.CreateAndRun(rhome, string.Empty, 10000);
+            var sessionProvider = new RSessionProvider();
+            using (new RHostScript(sessionProvider)) {
+                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
+                using (var interaction = await session.BeginInteractionAsync()) {
+                    await interaction.RespondAsync(code);
+                }
+            }
 
             File.Exists(outputFilePath).Should().BeTrue();
             var doc = XDocument.Load(outputFilePath);
             var docXml = doc.ToString();
             Console.WriteLine(docXml);
             return doc;
-        }
-
-        class Callbacks : IRCallbacks {
-            private string _inputCode;
-            public Callbacks(string code) {
-                _inputCode = code;
-            }
-
-            public Task Busy(bool which, CancellationToken ct) {
-                return Task.FromResult(true);
-            }
-
-            public Task Connected(string rVersion) {
-                return Task.CompletedTask;
-            }
-
-            public Task Disconnected() {
-                return Task.CompletedTask;
-            }
-
-            public Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
-                // We're getting called a few times here
-                // First time, send over the code to execute
-                // After that, send nothing
-                var code = _inputCode;
-                _inputCode = "";
-                return Task.FromResult(code);
-            }
-
-            public async Task ShowMessage(string s, CancellationToken ct) {
-                await Console.Error.WriteLineAsync(s);
-            }
-
-            public async Task WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
-                var writer = otype == OutputType.Output ? Console.Out : Console.Error;
-                await writer.WriteAsync(buf);
-            }
-
-            public Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
-                return Task.FromResult(Client.YesNoCancel.Yes);
-            }
-
-            public Task Plot(string filePath, CancellationToken ct) {
-                return Task.CompletedTask;
-            }
-
-            public Task Browser(string url) {
-                throw new NotImplementedException();
-            }
-
-            public void DirectoryChanged() {
-                throw new NotImplementedException();
-            }
-
-            public Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
-                throw new NotImplementedException();
-            }
         }
     }
 }
