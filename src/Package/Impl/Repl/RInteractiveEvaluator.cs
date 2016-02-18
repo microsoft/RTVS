@@ -40,7 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         Name = "REPL",
                         RBasePath = _toolsSettings.RBasePath,
                         RCommandLineArguments = _toolsSettings.RCommandLineArguments,
-                        CranMirrorName = _toolsSettings.CranMirror
+                        CranMirrorName = _toolsSettings.CranMirror,
+                        WorkingDirectory = _toolsSettings.WorkingDirectory
                     });
                 }
                 return ExecutionResult.Success;
