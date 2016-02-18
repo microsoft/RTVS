@@ -6,6 +6,7 @@ namespace Microsoft.R.Host.Client.Test {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class GraphicsDeviceTestFilesFixture : DeployFilesFixture {
+        public string HistoryInfoResultPath { get; }
         public string ExportToPdfResultPath { get; }
         public string ExportToBmpResultPath { get; }
         public string ExportToPngResultPath { get; }
@@ -21,6 +22,7 @@ namespace Microsoft.R.Host.Client.Test {
             Directory.CreateDirectory(ActualFolderPath);
 
             // Path to files that are generated when tests are executed
+            HistoryInfoResultPath = Path.Combine(ActualFolderPath, "HistoryInfoResult.json");
             ExportToPdfResultPath = Path.Combine(ActualFolderPath, "ExportToPdfResult.pdf");
             ExportToBmpResultPath = Path.Combine(ActualFolderPath, "ExportToBmpResult.bmp");
             ExportToPngResultPath = Path.Combine(ActualFolderPath, "ExportToPngResult.png");

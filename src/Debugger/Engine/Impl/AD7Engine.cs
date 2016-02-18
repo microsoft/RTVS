@@ -437,8 +437,9 @@ namespace Microsoft.R.Debugger.Engine {
                     step = DebugSession.StepIntoAsync();
                     break;
                 case enum_STEPKIND.STEP_OUT:
-                    step = DebugSession.StepOutAsync();
-                    break;
+                    goto default;
+                //    step = DebugSession.StepOutAsync();
+                //    break;
                 default:
                     return VSConstants.E_NOTIMPL;
             }

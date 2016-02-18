@@ -5,11 +5,17 @@ using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRHostClientApp {
+        public Action<string> PlotHandler { get; set; }
+
         public virtual string CranUrlFromName(string name) {
             return "https://cran.rstudio.com";
         }
 
         public virtual Task Plot(string filePath, CancellationToken ct) {
+            if (PlotHandler != null) {
+                PlotHandler(filePath);
+                return Task.CompletedTask;
+            }
             throw new NotImplementedException();
         }
 
