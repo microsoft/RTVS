@@ -268,6 +268,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to evaluate expression and get data for Microsoft Excel.
+        /// </summary>
+        public static string Error_ExcelCannotEvaluateExpression {
+            get {
+                return ResourceManager.GetString("Error_ExcelCannotEvaluateExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
         /// </summary>
         public static string Error_ExceptionAccessingPath {

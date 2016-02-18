@@ -570,4 +570,10 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="ShowDetailCommandTooltip" xml:space="preserve">
     <value>Open in a Grid Viewer</value>
   </data>
+  <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
+    <value>Unable to evaluate expression and get data for Microsoft Excel</value>
+  </data>
+  <data name="Error_NoWebTools" xml:space="preserve">
+    <value>R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
+  </data>
 </root>

@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -13,15 +9,15 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
-    internal static class ExcelInterop {
-        private const string _workbookName = "RTVS_View.xlsx";
-        private static Application _excel;
+    internal sealed class ExcelData {
+        public object[] RowNames;
+        public object[] ColNames;
+        public object[,] CellData;
+    }
 
-        class ExcelData {
-            public object[] RowNames;
-            public object[] ColNames;
-            public object[,] CellData;
-        }
+    internal static class ExcelInterop {
+        public const string WorkbookName = "RTVS_View.xlsx";
+        private static Application _excel;
 
         public static void OpenDataInExcel(string variableName, string expression, int rows, int cols) {
             ExcelData xlData = GenerateExcelData(expression, Math.Min(10000, rows), Math.Min(10000, cols));
@@ -38,9 +34,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             }
         }
 
-        private static ExcelData GenerateExcelData(string expression, int rows, int cols) {
+        public static ExcelData GenerateExcelData(string expression, int rows, int cols) {
             try {
                 ExcelData xlData = new ExcelData();
+                if (rows <= 0 || cols <= 0) {
+                    return xlData;
+                }
+
                 xlData.CellData = new object[rows, cols];
                 int chunkSize = 100;
 
@@ -60,23 +60,26 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 if (LongOperationNotification.ShowWaitingPopup(Resources.Progress_PreparingExcelData, actions)) {
                     return xlData;
                 }
-
-            } catch (OperationCanceledException) { }
-
+            } catch (Exception ex) {
+                if (!(ex is OperationCanceledException)) {
+                    VsAppShell.Current.ShowErrorMessage(Resources.Error_ExcelCannotEvaluateExpression);
+                }
+            }
             return null;
         }
 
         private static void FetchChunk(string expression, int start, int chunkSize, ExcelData xlData, int totalRows, int totalCols) {
             IGridData<string> data =
-                 GridDataSource.GetGridDataAsync(expression,
-                    new GridRange(new Range(start, chunkSize), new Range(0, totalCols))).Result;
+                GridDataSource.GetGridDataAsync(expression,
+                                new GridRange(new Range(start, chunkSize),
+                                new Range(0, totalCols))).Result;
 
             if (data != null) {
                 if (data.RowHeader != null) {
                     if (xlData.RowNames == null) {
                         xlData.RowNames = new object[totalRows];
                     }
-                    for (int r = 0; r < chunkSize; r++) {
+                    for (int r = 0; r < chunkSize && r < totalRows - start; r++) {
                         xlData.RowNames[r + start] = data.RowHeader[r + start];
                     }
                 }
@@ -88,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     }
                 }
 
-                for (int r = 0; r < chunkSize; r++) {
+                for (int r = 0; r < chunkSize && r < totalRows - start; r++) {
                     for (int c = 0; c < totalCols; c++) {
                         xlData.CellData[r + start, c] = data.Grid[r + start, c];
                     }
@@ -131,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private static Workbook GetOrCreateWorkbook() {
             Workbook wb = null;
             try {
-                wb = _excel.Workbooks[_workbookName];
+                wb = _excel.Workbooks[WorkbookName];
             } catch (COMException) { }
 
             if (wb == null) {
@@ -139,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 string wbName = null;
                 try {
                     string myDocPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                    wbName = Path.Combine(myDocPath, _workbookName);
+                    wbName = Path.Combine(myDocPath, WorkbookName);
                     if (File.Exists(wbName)) {
                         File.Delete(wbName);
                     }
@@ -168,7 +171,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             return ws;
         }
 
-        private static void PopulateWorksheet(Worksheet ws, object[] rowNames, object[] colNames, object[,] cellData) {
+        internal static void PopulateWorksheet(Worksheet ws, object[] rowNames, object[] colNames, object[,] cellData) {
             int startRow = colNames != null ? 2 : 1;
             int startCol = rowNames != null ? 2 : 1;
             Excel.Range c1, c2;
