@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.SuggestedActions.Definitions;
@@ -63,22 +64,23 @@ namespace Microsoft.R.Editor.SuggestedActions {
 
             List<SuggestedActionSet> actionSets = new List<SuggestedActionSet>();
             int caretPosition = _textView.Caret.Position.BufferPosition;
-            AstRoot ast = _document.EditorTree.AstRoot;
-
-            _lastNode = ast.GetNodeOfTypeFromPosition<TokenNode>(caretPosition);
-            if (_lastNode != null) {
-                foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
-                    if (actionProvider.HasSuggestedActions(_textView, _textBuffer, caretPosition)) {
-                        IEnumerable<ISuggestedAction> actions = actionProvider.GetSuggestedActions(_textView, _textBuffer, caretPosition);
-                        Span applicableSpan = new Span(_lastNode.Start, _lastNode.Length);
-                        SuggestedActionSet actionSet = new SuggestedActionSet(actions, applicableToSpan: applicableSpan);
-                        actionSets.Add(actionSet);
+            SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
+            if (bufferPoint.HasValue) {
+                AstRoot ast = _document.EditorTree.AstRoot;
+                int bufferPosition = bufferPoint.Value.Position;
+                _lastNode = ast.GetNodeOfTypeFromPosition<TokenNode>(bufferPosition);
+                if (_lastNode != null) {
+                    foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
+                        if (actionProvider.HasSuggestedActions(_textView, _textBuffer, bufferPosition)) {
+                            IEnumerable<ISuggestedAction> actions = actionProvider.GetSuggestedActions(_textView, _textBuffer, bufferPosition);
+                            Span applicableSpan = new Span(_lastNode.Start, _lastNode.Length);
+                            SuggestedActionSet actionSet = new SuggestedActionSet(actions, applicableToSpan: applicableSpan);
+                            actionSets.Add(actionSet);
+                        }
                     }
                 }
             }
-
             return actionSets;
-
         }
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {

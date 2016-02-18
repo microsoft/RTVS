@@ -202,6 +202,8 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private void SetGlobalEditorOptions() {
             IEditorOptions options = EditorOptionsFactoryService.GlobalOptions;
 
+            options.SetOptionValue("IsCodeLensEnabled", false);
+
             options.SetOptionValue<bool>(DefaultTextViewOptions.UseVisibleWhitespaceId, true);
             options.SetOptionValue<bool>(DefaultTextViewOptions.BraceCompletionEnabledOptionId, true);
 
