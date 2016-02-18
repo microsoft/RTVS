@@ -138,17 +138,17 @@
 
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
-                    <?foreach Lcid in $(var.LcidList)?>
+                    <!--<?foreach Lcid in $(var.LcidList)?>
                     <Directory Id="ItemTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>
+                    <?endforeach?>-->
                   </Directory>
                 </Directory>
 
                 <Directory Id="ProjectTemplatesFolder" Name="ProjectTemplates">
                   <Directory Id="ProjectTemplatesInstallFolder" Name="R">
-                    <?foreach Lcid in $(var.LcidList)?>
+                    <!--<?foreach Lcid in $(var.LcidList)?>
                     <Directory Id="ProjectTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>
+                    <?endforeach?>-->
                   </Directory>
                 </Directory>
                 <Directory Id="ProfilesFolder" Name="Profiles" />
