@@ -69,17 +69,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Office {
             return vars.FirstOrDefault(x => x.Name == "x");
         }
 
-        private Application MockExcel(string workSheetName) {
-            var ws = Substitute.For<Worksheet>();
-            var wb = Substitute.For<Workbook>();
+        //private Application MockExcel(string workSheetName) {
+        //    var ws = Substitute.For<Worksheet>();
+        //    var wb = Substitute.For<Workbook>();
 
-            var wbs = Substitute.For<Workbooks>();
-            wbs[ExcelInterop.WorkbookName].Returns(wb);
+        //    var wbs = Substitute.For<Workbooks>();
+        //    wbs[ExcelInterop.WorkbookName].Returns(wb);
 
-            var xlApp = Substitute.For<Application>();
-            xlApp.Workbooks.Returns(wbs);
+        //    var xlApp = Substitute.For<Application>();
+        //    xlApp.Workbooks.Returns(wbs);
 
-            return xlApp;
-        }
+        //    return xlApp;
+        //}
     }
 }
