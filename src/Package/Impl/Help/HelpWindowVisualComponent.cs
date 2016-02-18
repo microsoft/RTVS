@@ -33,7 +33,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private ContentControl _windowContentControl;
         private IRSession _session;
         private WindowsFormsHost _host;
-        private Color? _lastDefaultBackground;
 
         public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
@@ -129,11 +128,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                if (!_lastDefaultBackground.HasValue || _lastDefaultBackground.Value != defaultBackground) {
-                    _lastDefaultBackground = defaultBackground;
-                    // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                    cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
-                }
+                // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
+                cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {
@@ -210,7 +206,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void CloseBrowser() {
             _windowContentControl.Content = null;
-            _lastDefaultBackground = null;
 
             if (Browser != null) {
                 Browser.Navigating -= OnNavigating;
