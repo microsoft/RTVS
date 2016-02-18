@@ -43,7 +43,9 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            if (_document != null && _document.EditorTree != null) {
+            int caretPosition = e.NewPosition.BufferPosition;
+            SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
+            if (bufferPoint.HasValue && _document != null && _document.EditorTree != null) {
                 var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(e.NewPosition.BufferPosition);
                 if (node != _lastNode) {
                     _lastNode = node;
