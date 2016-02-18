@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
                 case RInstallStatus.NoRBinaries:
                     Debug.Assert(!string.IsNullOrEmpty(data.Path));
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.BinPath);
 
                 case RInstallStatus.PathNotSpecified:
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
