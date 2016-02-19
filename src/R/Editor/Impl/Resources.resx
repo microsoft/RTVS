@@ -238,9 +238,9 @@
     <value>Parsing document...</value>
   </data>
   <data name="SmartTagName_InstallPackage" xml:space="preserve">
-    <value>Install package...</value>
+    <value>Install package</value>
   </data>
   <data name="SmartTagName_LoadLibrary" xml:space="preserve">
-    <value>Load library...</value>
+    <value>Load library</value>
   </data>
 </root>

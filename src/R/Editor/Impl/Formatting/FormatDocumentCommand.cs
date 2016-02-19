@@ -5,6 +5,8 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;

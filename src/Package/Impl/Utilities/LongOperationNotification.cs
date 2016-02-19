@@ -36,7 +36,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 }
             }, cts.Token);
 
-            var exitCode = msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
+            CommonMessagePumpExitCode exitCode;
+            if (!VsAppShell.Current.IsUnitTestEnvironment) {
+                exitCode = msgPump.ModalWaitForHandles(((IAsyncResult)task).AsyncWaitHandle);
+            } else {
+                exitCode = CommonMessagePumpExitCode.HandleSignaled;
+            }
 
             if (exitCode == CommonMessagePumpExitCode.UserCanceled || exitCode == CommonMessagePumpExitCode.ApplicationExit) {
                 cts.Cancel();

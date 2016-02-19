@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.History;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;

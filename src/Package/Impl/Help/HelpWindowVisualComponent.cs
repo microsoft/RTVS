@@ -4,10 +4,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
@@ -18,10 +17,12 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.View;
 using ContentControl = System.Windows.Controls.ContentControl;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
-    public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
+    internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
         /// <summary>
         /// Holds browser control. When R session is restarted
         /// it is necessary to re-create the browser control since
@@ -30,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// control changing so instead we keed content control 
         /// unchanged and only replace browser that is inside it.
         /// </summary>
-        private ContentControl _windowContentControl;
+        private readonly ContentControl _windowContentControl;
         private IRSession _session;
         private WindowsFormsHost _host;
 
@@ -38,12 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
-            _windowContentControl = new System.Windows.Controls.ContentControl();
-            this.Control = _windowContentControl;
+            _windowContentControl = new ContentControl();
+            Control = _windowContentControl;
 
             var c = new Controller();
             c.AddCommandSet(GetCommands());
-            this.Controller = c;
+            Controller = c;
 
             CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
@@ -56,7 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         #region IVisualComponent
         public ICommandTarget Controller { get; }
 
-        public System.Windows.Controls.Control Control { get; }
+        public FrameworkElement Control { get; }
+        public IVisualComponentContainer<IVisualComponent> Container { get; internal set; }
+
         #endregion
 
         #region IHelpWindowVisualComponent
@@ -80,9 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                CloseBrowser();
-            });
+            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
         }
 
         private void CreateBrowser() {

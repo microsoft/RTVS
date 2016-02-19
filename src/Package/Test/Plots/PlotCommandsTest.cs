@@ -19,23 +19,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new HistoryNextPlotCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdNextPlot);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 2;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
 
             history.ActivePlotIndex = 1;
             history.PlotCount = 2;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
         }
 
         [Test]
@@ -45,23 +41,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new HistoryPreviousPlotCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdPrevPlot);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 2;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 1;
             history.PlotCount = 2;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
 
         [Test]
@@ -71,13 +63,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new CopyPlotAsBitmapCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdCopyPlotAsBitmap);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
 
         [Test]
@@ -87,13 +77,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new CopyPlotAsMetafileCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdCopyPlotAsMetafile);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
 
         [Test]
@@ -103,13 +91,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new ExportPlotAsImageCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdExportPlotAsImage);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
 
         [Test]
@@ -119,13 +105,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             var cmd = new ExportPlotAsPdfCommand(history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdExportPlotAsPdf);
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeFalse();
+            cmd.Should().BeDisabled();
 
             history.ActivePlotIndex = 0;
             history.PlotCount = 1;
-            cmd.SetStatus();
-            cmd.Enabled.Should().BeTrue();
+            cmd.Should().BeEnabled();
         }
 
         class PlotHistory : IPlotHistory {

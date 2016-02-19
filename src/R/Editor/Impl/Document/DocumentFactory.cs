@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Utilities;
 

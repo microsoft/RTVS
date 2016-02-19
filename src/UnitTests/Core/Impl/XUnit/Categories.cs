@@ -11,6 +11,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class HistoryAttribute : CategoryAttribute {
+            public HistoryAttribute() : base("History") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class LoggingAttribute : CategoryAttribute {
             public LoggingAttribute() : base("Logging") { }
         }

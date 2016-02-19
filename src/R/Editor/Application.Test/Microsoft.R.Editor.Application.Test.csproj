@@ -71,6 +71,10 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -162,6 +166,7 @@
     <Compile Include="Formatting\AutoFormatTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
+    <Compile Include="SuggestedActions\SmartTagsTest.cs" />
     <Compile Include="TestShell\EditorWindow.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
     <Compile Include="TestShell\Navigation.cs" />

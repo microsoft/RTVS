@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.History;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {

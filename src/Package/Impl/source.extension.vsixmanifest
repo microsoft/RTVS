@@ -20,6 +20,7 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Host.Client.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Common.Core.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Components.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Support.dll" />

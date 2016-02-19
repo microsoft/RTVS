@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

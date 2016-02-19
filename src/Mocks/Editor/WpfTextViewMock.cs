@@ -26,11 +26,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             }
         }
 
-        public System.Windows.FrameworkElement VisualElement {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public System.Windows.FrameworkElement VisualElement => null;
 
         public double ZoomLevel { get; set; } = 1.0;
 

@@ -1,12 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Editor.BraceMatch;
-using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.R.Components.Extensions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using NSubstitute;
 
 namespace Microsoft.Languages.Editor.Test.Helpers {

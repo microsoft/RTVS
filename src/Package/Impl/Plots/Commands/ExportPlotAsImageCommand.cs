@@ -10,14 +10,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdExportPlotAsImage) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
-                string device = String.Empty;
+                string device = string.Empty;
                 string extension = Path.GetExtension(destinationFilePath).TrimStart('.').ToLowerInvariant();
                 switch (extension) {
                     case "png":

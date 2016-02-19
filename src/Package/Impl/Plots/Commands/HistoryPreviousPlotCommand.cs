@@ -6,10 +6,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         public HistoryPreviousPlotCommand(IPlotHistory plotHistory) :
             base(plotHistory, RPackageCommandId.icmdPrevPlot) {
         }
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex > 0;
         }
-        internal override void Handle() {
+        protected override void Handle() {
             PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.PreviousPlotAsync());
         }
     }

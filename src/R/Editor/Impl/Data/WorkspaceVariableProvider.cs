@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.ContentType;

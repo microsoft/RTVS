@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;

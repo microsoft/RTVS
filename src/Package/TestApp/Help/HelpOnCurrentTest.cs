@@ -1,11 +1,13 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Help;
+using Microsoft.VisualStudio.R.Package.Test;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -32,20 +34,16 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                     var viewTracker = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                     var view = viewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                    var cmd = new ShowHelpOnCurrentCommand(sessionProvider, viewTracker);
+                    var cmd = new ShowHelpOnCurrentCommand(hostScript.Session, viewTracker);
 
-                    cmd.SetStatus();
-                    cmd.Visible.Should().BeTrue();
-                    cmd.Enabled.Should().BeFalse();
+                    cmd.Should().BeVisibleAndDisabled();
 
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
 
-                    cmd.SetStatus();
-                    cmd.Visible.Should().BeTrue();
-                    cmd.Enabled.Should().BeTrue();
+                    cmd.Should().BeVisibleAndEnabled();
                     cmd.Text.Should().EndWith("plot");
 
-                    cmd.Handle();
+                    cmd.Invoke();
                     WaitForAppReady(clientApp);
 
                     clientApp.Uri.IsLoopback.Should().Be(true);

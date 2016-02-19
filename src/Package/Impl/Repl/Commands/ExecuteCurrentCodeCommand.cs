@@ -1,30 +1,32 @@
 ﻿using System;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    class ExecuteCurrentCodeCommand : RexecuteCommand {
+    class ExecuteCurrentCodeCommand : RExecuteCommand {
 
-        public ExecuteCurrentCodeCommand(ITextView textView) :
-            base(textView, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRexecuteReplCmd)) {
+        public ExecuteCurrentCodeCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+            base(textView, interactiveWorkflow, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRexecuteReplCmd)) {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var window = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow;
-            if (window != null) {
-                var text = GetText(window);
-
-                if (text != null) {
-                    ReplWindow.Current.EnqueueCode(text, false);
-                }
-
-                return CommandResult.Executed;
+            var window = InteractiveWorkflow.ActiveWindow;
+            if (window == null) {
+                return CommandResult.Disabled;
             }
-            return CommandResult.Disabled;
+
+            
+            var text = GetText(window);
+
+            if (text != null) {
+                InteractiveWorkflow.Operations.EnqueueExpression(text, false);
+            }
+
+            return CommandResult.Executed;
         }
     }
 }

@@ -412,7 +412,7 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Install package....
+        ///   Looks up a localized string similar to Install package.
         /// </summary>
         internal static string SmartTagName_InstallPackage {
             get {
@@ -421,7 +421,7 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Load library....
+        ///   Looks up a localized string similar to Load library.
         /// </summary>
         internal static string SmartTagName_LoadLibrary {
             get {

@@ -7,11 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdCopyPlotAsBitmap) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             PlotHistory.PlotContentProvider.CopyToClipboardAsBitmap();
         }
     }

@@ -241,7 +241,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to R installation directory such as &apos;Program Files\R\R-3.2.x&apos; or &apos;Program Files\MRO\R-3.2.x&apos;..
         /// </summary>
         public static string Error_CannotFindRBinariesFormat {
             get {
@@ -264,6 +264,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to evaluate expression and get data for Microsoft Excel.
+        /// </summary>
+        public static string Error_ExcelCannotEvaluateExpression {
+            get {
+                return ResourceManager.GetString("Error_ExcelCannotEvaluateExpression", resourceCulture);
             }
         }
         

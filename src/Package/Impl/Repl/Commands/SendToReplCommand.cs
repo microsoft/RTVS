@@ -1,7 +1,7 @@
 ﻿using System;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
@@ -10,16 +10,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
-        private IReplWindow _replWindow;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
-        public SendToReplCommand(ITextView textView) :
-            base(textView, new[]
-            {
+        public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+            base(textView, new[] {
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
                 new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
             }, false) {
-            ReplWindow.EnsureReplWindow();
-            _replWindow = ReplWindow.Current;
+
+            _interactiveWorkflow = interactiveWorkflow;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -29,36 +28,30 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             ITextSelection selection = TextView.Selection;
             ITextSnapshot snapshot = TextView.TextBuffer.CurrentSnapshot;
-            IReplWindow replWindow = ReplWindow.Current;
             int position = selection.Start.Position;
             ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
 
-            if (replWindow == null)
-            {
+            var window = _interactiveWorkflow.ActiveWindow;
+            if (window == null) {
                 return CommandResult.Disabled;
             }
 
             string text;
-            if (selection.StreamSelectionSpan.Length == 0)
-            {
+            if (selection.StreamSelectionSpan.Length == 0) {
                 text = line.GetText();
-            }
-            else
-            {
+            } else {
                 text = TextView.Selection.StreamSelectionSpan.GetText();
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            _replWindow.Show();
-            replWindow.EnqueueCode(text, addNewLine: true);
+            window.Container.Show(true);
+            _interactiveWorkflow.Operations.EnqueueExpression(text, true);
 
             var targetLine = line;
-            while (targetLine.LineNumber < snapshot.LineCount - 1)
-            {
+            while (targetLine.LineNumber < snapshot.LineCount - 1) {
                 targetLine = snapshot.GetLineFromLineNumber(targetLine.LineNumber + 1);
                 // skip over blank lines, unless it's the last line, in which case we want to land on it no matter what
-                if (!String.IsNullOrWhiteSpace(targetLine.GetText()) || targetLine.LineNumber == snapshot.LineCount - 1)
-                {
+                if (!string.IsNullOrWhiteSpace(targetLine.GetText()) || targetLine.LineNumber == snapshot.LineCount - 1) {
                     TextView.Caret.MoveTo(new SnapshotPoint(snapshot, targetLine.Start));
                     TextView.Caret.EnsureVisible();
                     break;
@@ -66,23 +59,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             // Take focus back if REPL window has stolen it
-            if (!TextView.HasAggregateFocus)
-            {
+            if (!TextView.HasAggregateFocus) {
                 IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }
-            
+
             return CommandResult.Executed;
-        }
-
-        protected override void Dispose(bool disposing) {
-            if (_replWindow != null) {
-                _replWindow.Dispose();
-                _replWindow = null;
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

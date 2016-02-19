@@ -1,11 +1,14 @@
-﻿using Microsoft.VisualStudio.Editor.Mocks;
+﻿using System;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
     public sealed class ActiveTextViewTrackerMock : IActiveWpfTextViewTracker {
-        private WpfTextViewMock _textView;
+        private readonly WpfTextViewMock _textView;
 
         public ActiveTextViewTrackerMock(string content, string contentTypeName) {
             var tb = new TextBufferMock(content, contentTypeName);
@@ -15,6 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
         public IWpfTextView GetLastActiveTextView(string contentType) {
             return _textView;
         }
+#pragma warning disable 67
+        public event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;
 
         public IWpfTextView GetLastActiveTextView(IContentType contentType) {
             return _textView;

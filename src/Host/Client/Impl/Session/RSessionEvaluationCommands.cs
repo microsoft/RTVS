@@ -7,6 +7,16 @@ namespace Microsoft.R.Host.Client.Session {
             return evaluation.EvaluateNonReentrantAsync($"options(width=as.integer({width}))\n");
         }
 
+        public static async Task<string> GetRUserDirectory(this IRSessionEvaluation evaluation) {
+            var result = await evaluation.EvaluateAsync("Sys.getenv('R_USER')");
+            return result.StringResult.Replace('/', '\\');
+        }
+
+        public static async Task<string> GetWorkingDirectory(this IRSessionEvaluation evaluation) {
+            var result = await evaluation.EvaluateAsync("getwd()");
+            return result.StringResult.Replace('/', '\\');
+        }
+
         public static Task SetWorkingDirectory(this IRSessionEvaluation evaluation, string path) {
             return evaluation.EvaluateNonReentrantAsync($"setwd('{path.Replace('\\', '/')}')\n");
         }

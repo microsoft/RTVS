@@ -148,7 +148,7 @@ namespace Microsoft.R.Core.AST {
 
         public static string IsInLibraryStatement(this AstRoot ast, int position) {
             var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
-            if (fc != null && fc.LeftOperand != null) { 
+            if (fc != null && fc.LeftOperand != null) {
                 string funcName = ast.TextProvider.GetText(fc.LeftOperand);
                 if (funcName.Equals("library", StringComparison.Ordinal)) {
                     if (fc.Arguments.Count == 1) {

@@ -7,11 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Core.Utility;
+using Microsoft.Common.Core.Collections;
 using Microsoft.VisualStudio.R.Package.Shell;
-using ThreadHelper = Microsoft.VisualStudio.Shell.ThreadHelper;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
 

@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
         public const int DaysToRetain = 5;
+        public const int MaximumFileSize = 1024 * 1024;
         public const string RHostLogPattern = "Microsoft.R.Host*.log";
         public const string ProjectSystemLogPattern = "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log";
         public const string RtvsGeneralDataFile = "RTVSGeneralData.log";
@@ -104,6 +105,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
                     foreach (string file in files) {
                         using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                            if (fileStream.Length > MaximumFileSize) {
+                                fileStream.Seek(-MaximumFileSize, SeekOrigin.End);
+                            }
                             var entry = zipArchive.CreateEntry(Path.GetFileName(file));
                             using (var zipEntryStream = entry.Open()) {
                                 fileStream.CopyTo(zipEntryStream);

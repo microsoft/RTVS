@@ -1,4 +1,4 @@
-﻿using Microsoft.Languages.Editor;
+﻿using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Interop {
