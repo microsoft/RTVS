@@ -4,5 +4,6 @@
         public string RBasePath { get; set; }
         public string RCommandLineArguments { get; set; }
         public string CranMirrorName { get; set; }
+        public string WorkingDirectory { get; set; }
     }
 }
