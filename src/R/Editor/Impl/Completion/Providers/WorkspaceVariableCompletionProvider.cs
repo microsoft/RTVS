@@ -45,7 +45,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                 if (v.Name.Length > 0 && v.Name[0] != '[') {
                     ImageSource glyph = v.ItemType == NamedItemType.Variable ? variableGlyph : functionGlyph;
-                    var completion = new RCompletion(v.Name, v.Name, v.Description, glyph);
+                    var completion = new RCompletion(v.Name, CompletionUtilities.BacktickName(v.Name), v.Description, glyph);
                     completions.Add(completion);
                 }
             }
