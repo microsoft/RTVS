@@ -5,7 +5,4 @@
 
   <?define BinDir="$(var.OutDir)" ?>
   <?define SourceDir=".." ?>
-
-  <?define LangList=ENU?>
-  <?define LcidList=1033?>
 </Include>
