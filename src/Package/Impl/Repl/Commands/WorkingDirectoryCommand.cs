@@ -138,9 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     }
                     return "~";
                 }
-                else {
-                    return directory.Replace('\\', '/');
-                }
+                return directory.Replace('\\', '/');
             }
             return directory;
         }
