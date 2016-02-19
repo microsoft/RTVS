@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Formatting {
             string trimmedSpanText = spanText.Trim();
 
             RFormatter formatter = new RFormatter(options);
-            string formattedText = formatter.Format(trimmedSpanText);
+            string formattedText = formatter.Format(trimmedSpanText, ast);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
             formattedText = IndentLines(textBuffer, spanToFormat.Start, ast, formattedText, options, baseIndentPosition, respectUserIndent);
