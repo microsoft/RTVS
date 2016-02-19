@@ -48,6 +48,10 @@ namespace Microsoft.Common.Core {
         }
 
         public static string RemoveWhiteSpaceLines(this string text) {
+            if (string.IsNullOrWhiteSpace(text)) {
+                return string.Empty;
+            }
+
             var sb = new StringBuilder(text);
             var lineBreakIndex = sb.Length;
             var isWhiteSpaceOnly = true;

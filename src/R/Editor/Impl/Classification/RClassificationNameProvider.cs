@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Classification;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;

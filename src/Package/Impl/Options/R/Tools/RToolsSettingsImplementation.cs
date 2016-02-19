@@ -8,16 +8,17 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Actions.Utility;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
+    [Export(typeof(IRSettings))]
     [Export(typeof(IRToolsSettings))]
     internal sealed class RToolsSettingsImplementation : IRToolsSettings {
         private const int MaxDirectoryEntries = 8;

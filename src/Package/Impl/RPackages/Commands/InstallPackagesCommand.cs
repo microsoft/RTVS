@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design;
-using Microsoft.VisualStudio.R.Package.Commands;
+﻿using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Commands {
@@ -8,11 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Commands {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInstallPackages) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = false;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
         }
     }
 }

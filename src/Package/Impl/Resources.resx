@@ -216,9 +216,6 @@
   <data name="Settings_SendToRepl_Description" xml:space="preserve">
     <value>Override editor 'insert empty line above' command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard.</value>
   </data>
-  <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
-    <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
-  </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
     <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|</value>
   </data>
@@ -227,15 +224,6 @@
   </data>
   <data name="CtrlEnter" xml:space="preserve">
     <value>Control+Enter</value>
-  </data>
-  <data name="MicrosoftRHostStopped" xml:space="preserve">
-    <value>R Host process is stopped. Click Reset to start a new one.</value>
-  </data>
-  <data name="MicrosoftRHostStopping" xml:space="preserve">
-    <value>Stopping R Session...</value>
-  </data>
-  <data name="InputIsTooLong" xml:space="preserve">
-    <value>Input is too long - no more than {0} characters expected.</value>
   </data>
   <data name="Settings_ReplSyntaxCheck" xml:space="preserve">
     <value>Syntax check in R Console</value>
@@ -273,9 +261,6 @@
   </data>
   <data name="PlotExportAsPdfFilter" xml:space="preserve">
     <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
-  </data>
-  <data name="MicrosoftRHostStarting" xml:space="preserve">
-    <value>Starting R Session...</value>
   </data>
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
@@ -477,17 +462,8 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="ChooseRInstallFolder" xml:space="preserve">
     <value>Choose R Install Folder</value>
   </data>
-  <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x.</value>
-  </data>
-  <data name="Error_ExceptionAccessingPath" xml:space="preserve">
-    <value>Unable to access path {0}. Exception: {1}.</value>
-  </data>
   <data name="RPathChangedRestartVS" xml:space="preserve">
     <value>You must restart Visual Studio after changing path to the R installation.</value>
-  </data>
-  <data name="Error_UnsupportedRVersion" xml:space="preserve">
-    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
@@ -497,9 +473,6 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="OpenFunctionHelp" xml:space="preserve">
     <value>Help on {0}</value>
-  </data>
-  <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>

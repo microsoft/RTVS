@@ -14,11 +14,11 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendFrown) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = true;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string zipPath = DiagnosticLogs.Collect();
             SendMail(_disclaimer, "RTVS Frown", zipPath);
         }

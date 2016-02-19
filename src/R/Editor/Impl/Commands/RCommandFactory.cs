@@ -2,6 +2,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;

@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.History;
@@ -25,22 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             Lazy<IRSessionProvider> lazy = VsAppShell.Current.ExportProvider.GetExport<IRSessionProvider>();
             lazy.Should().NotBeNull();
             lazy.Value.Should().NotBeNull();
-        }
-
-        [Test]
-        [Category.Repl]
-        public void RHistoryProvider_ExportTest() {
-            Lazy<IRHistoryProvider> provider = VsAppShell.Current.ExportProvider.GetExport<IRHistoryProvider>();
-            provider.Should().NotBeNull();
-            provider.Value.Should().NotBeNull();
-        }
-
-        [Test]
-        [Category.Repl]
-        public void RInteractiveProvider_ExportTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExport<IRInteractiveProvider>();
-            provider.Should().NotBeNull();
-            provider.Value.Should().NotBeNull();
         }
     }
 }

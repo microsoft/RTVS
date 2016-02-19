@@ -2,9 +2,10 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -32,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 target = VsAppShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
-                ServiceManager.AddService<IOleCommandTarget>(target, textView);
+                ServiceManager.AddService(target, textView);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target

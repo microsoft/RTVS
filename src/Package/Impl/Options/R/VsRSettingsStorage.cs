@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Settings;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Options.Common;
 using Microsoft.VisualStudio.R.Packages.R;

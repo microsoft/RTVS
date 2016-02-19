@@ -1,4 +1,5 @@
 ﻿using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;

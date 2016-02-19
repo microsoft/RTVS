@@ -111,8 +111,6 @@
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
-    <Compile Include="ContentType\RContentTypeDefinition.cs" />
-    <Compile Include="ContentType\RHistoryContentTypeDefinition.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
@@ -218,6 +216,10 @@
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

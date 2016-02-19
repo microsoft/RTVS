@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings.Definitions;
@@ -29,15 +31,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
         private readonly IRSession _session;
+        private readonly IRHistory _history;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            _interactiveWorkflowProvider = interactiveWorkflowProvider;
+            _interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
+            _session = _interactiveWorkflow.RSession;
+            _history = _interactiveWorkflow.History;
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -56,7 +64,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             // Force REPL window up
             await _threadHandling.SwitchToUIThread();
-            ReplWindow.EnsureReplWindow();
+            if (_interactiveWorkflow.ActiveWindow == null) {
+                var window = await _interactiveWorkflowProvider.CreateInteractiveWindowAsync(_interactiveWorkflow);
+                window.Container.Show(true);
+            }
 
             if (!_session.IsHostRunning) {
                 return;
@@ -74,8 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
-            var history = GetRHistory();
-            history?.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+            _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
@@ -96,8 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
                 await _threadHandling.SwitchToUIThread();
-                var history = GetRHistory();
-                history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
             }
         }
 
@@ -127,14 +136,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 default:
                     return false;
             }
-        }
-
-        private static IRHistory GetRHistory() {
-            return GetRInteractiveEvaluator()?.History;
-        }
-
-        private static RInteractiveEvaluator GetRInteractiveEvaluator() {
-            return ReplWindow.Current.GetInteractiveWindow()?.InteractiveWindow.Evaluator as RInteractiveEvaluator;
         }
     }
 }

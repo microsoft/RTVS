@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

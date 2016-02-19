@@ -18,9 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class VariableProvider: IVariableDataProvider, IDisposable {
         #region members and ctor
 
-        private IRSessionProvider _rSessionProvider;
-        private IDebugSessionProvider _debugSessionProvider;
-
         private DebugSession _debugSession;
 
         [ImportingConstructor]
@@ -28,22 +25,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             [Import(typeof(IRSessionProvider))]IRSessionProvider sessionProvider,
             [Import(typeof(IDebugSessionProvider))] IDebugSessionProvider debugSessionProvider) {
             if (sessionProvider == null) {
-                throw new ArgumentNullException("sessionProvider");
+                throw new ArgumentNullException(nameof(sessionProvider));
             }
             if (debugSessionProvider == null) {
-                throw new ArgumentNullException("debugSessionProvider");
+                throw new ArgumentNullException(nameof(debugSessionProvider));
             }
 
-            _rSessionProvider = sessionProvider;
-            
 
             RSession = sessionProvider.GetInteractiveWindowRSession();
             if (RSession == null) {
                 throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(IVariableDataProvider)}"));
             }
             RSession.Mutated += RSession_Mutated;
-
-            _debugSessionProvider = debugSessionProvider;
 
             IdleTimeAction.Create(() => {
                 PublishAllAsync().SilenceException<Exception>().DoNotWait();

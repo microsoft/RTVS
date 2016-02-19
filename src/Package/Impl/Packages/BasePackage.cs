@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.Linq;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -11,6 +13,7 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.Packages {
     public abstract class BasePackage<TLanguageService> : VisualStudio.Shell.Package, IPackage
         where TLanguageService : class, new() {
+        private readonly IList<IDisposable> _disposables = new List<IDisposable>();
         private Dictionary<IVsProjectGenerator, uint> _projectFileGenerators;
         protected abstract IEnumerable<IVsEditorFactory> CreateEditorFactories();
         protected virtual IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() { return new IVsProjectGenerator[0]; }
@@ -54,6 +57,22 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             }
         }
 
+        protected void AdviseExportedWindowFrameEvents<T>() where T : IVsWindowFrameEvents {
+            var windowFrameEvents = VsAppShell.Current.ExportProvider.GetExportedValue<T>();
+            var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
+            var cookie = shell.AdviseWindowFrameEvents(windowFrameEvents);
+            _disposables.Add(Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie)));
+        }
+
+        protected void AdviseExportedDebuggerEvents<T>() where T : IVsDebuggerEvents {
+            var debuggerEvents = VsAppShell.Current.ExportProvider.GetExportedValue<T>();
+            var debugger = (IVsDebugger)GetService(typeof(IVsDebugger));
+
+            uint cookie;
+            debugger.AdviseDebuggerEvents(debuggerEvents, out cookie);
+            _disposables.Add(Disposable.Create(() => debugger.UnadviseDebuggerEvents(cookie)));
+        }
+
         private void RegisterProjectFileGenerator(IVsProjectGenerator projectFileGenerator) {
             var registerProjectGenerators = GetService(typeof(SVsRegisterProjectTypes)) as IVsRegisterProjectGenerators;
             if (registerProjectGenerators == null) {
@@ -73,6 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
 
         protected override void Dispose(bool disposing) {
             if (!disposing) {
+                base.Dispose(false);
                 return;
             }
 
@@ -82,11 +102,16 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
                 UnregisterProjectFileGenerators(projectFileGenerators);
             }
 
+            foreach (var disposable in _disposables.Reverse()) {
+                disposable.Dispose();
+            }
+            _disposables.Clear();
+
             IServiceContainer container = this;
             container.RemoveService(typeof(TLanguageService));
 
             // Base still needs shell to save settings
-            base.Dispose(disposing);
+            base.Dispose(true);
         }
 
         private void UnregisterProjectFileGenerators(Dictionary<IVsProjectGenerator, uint> projectFileGenerators) {

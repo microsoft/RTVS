@@ -1,5 +1,5 @@
 ﻿using System.Windows.Forms;
-using Microsoft.VisualStudio.R.Package.Definitions;
+using Microsoft.R.Components.View;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     public interface IHelpWindowVisualComponent : IVisualComponent {

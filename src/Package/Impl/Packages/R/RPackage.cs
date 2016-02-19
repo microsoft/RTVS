@@ -4,6 +4,9 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -44,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
-    [LanguageEditorOptionsAttribute(RContentTypeDefinition.LanguageName, 2, true, true)]
+    [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
@@ -61,17 +64,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
-    [ProvideNewFileTemplatesAttribute(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
-        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = Lazy.Create(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
-        private IDisposable _activeTextViewTrackerToken;
 
         public static IRPackage Current { get; private set; }
-
-        public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
 
         protected override void Initialize() {
             Current = this;
@@ -83,7 +82,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Initialize();
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p.LoadSettings();
             }
 
@@ -95,10 +94,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
-            InitializeActiveWpfTextViewTracker();
-            ReplWindow.EnsureReplWindow();
+            AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
+            AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
+            AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
@@ -106,8 +106,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;
             }
-
-            _activeTextViewTrackerToken?.Dispose();
 
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
@@ -130,10 +128,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             yield return new RProjectFileGenerator();
         }
 
-        protected override IEnumerable<IVsProjectFactory> CreateProjectFactories() {
-            yield break;
-        }
-
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
             return PackageCommands.GetCommands(VsAppShell.Current.ExportProvider);
         }
@@ -148,23 +142,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
-            return this.FindWindowPane(t, id, create) as T;
+            return FindWindowPane(t, id, create) as T;
         }
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                _interactiveWindowProvider.Value.Open(id, false);
-                return VSConstants.S_OK;
-            }
-
-            return base.CreateToolWindow(ref toolWindowType, id);
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
-        private void InitializeActiveWpfTextViewTracker() {
-            var activeTextViewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
-            var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
-            var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
-            _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
+        protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
         }
 
         private void VerifyWebToolsInstalled() {
