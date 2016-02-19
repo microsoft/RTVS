@@ -449,6 +449,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open in Microsoft Excel.
+        /// </summary>
+        public static string OpenInExcelCommandTooltip {
+            get {
+                return ResourceManager.GetString("OpenInExcelCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
@@ -1155,6 +1164,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_WorkspaceCategory {
             get {
                 return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open in a Grid Viewer.
+        /// </summary>
+        public static string ShowDetailCommandTooltip {
+            get {
+                return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
             }
         }
         

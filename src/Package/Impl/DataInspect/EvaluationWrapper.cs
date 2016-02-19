@@ -33,7 +33,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowDetail) {
                 ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
+                ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
+
                 OpenInExcelCommand = new DelegateCommand(OpenInExcel, (o) => CanShowDetail);
+                OpenInExcelCommandTooltip = Resources.OpenInExcelCommandTooltip;
             }
         }
 
@@ -112,8 +115,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanShowDetail { get; }
 
         public ICommand ShowDetailCommand { get; }
+        public string ShowDetailCommandTooltip { get; }
 
         public ICommand OpenInExcelCommand { get; }
+        public string OpenInExcelCommandTooltip { get; }
 
         private void ShowVariableGridWindowPane(object parameter) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);

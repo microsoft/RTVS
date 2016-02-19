@@ -7,11 +7,6 @@ namespace Microsoft.R.Support.Settings.Definitions {
         YesNoAsk SaveRDataOnProjectUnload { get; set; }
 
         /// <summary>
-        /// Current working directory for REPL
-        /// </summary>
-        string WorkingDirectory { get; set; }
-
-        /// <summary>
         /// Most recently used directories in REPL
         /// </summary>
         string[] WorkingDirectoryList { get; set; }

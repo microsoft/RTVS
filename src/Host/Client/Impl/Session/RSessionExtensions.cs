@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private static async Task GetScheduleEvaluationTask(this IRSession session, Func<IRSessionEvaluation, Task> function) {
-            TaskUtilities.AssertIsOnBackgroundThread();
+            await TaskUtilities.SwitchToBackgroundThread();
             using (var evaluation = await session.BeginEvaluationAsync()) {
                 await function(evaluation);
             } 

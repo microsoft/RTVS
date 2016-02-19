@@ -1,7 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -10,6 +9,8 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
@@ -24,6 +25,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session = session;
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
+            Session.BeforeRequest += SessionOnBeforeRequest;
             _coreShell = coreShell;
             _settings = settings;
         }
@@ -31,6 +33,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public void Dispose() {
             Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
+            Session.BeforeRequest -= SessionOnBeforeRequest;
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
@@ -40,7 +43,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         Name = "REPL",
                         RBasePath = _settings.RBasePath,
                         RCommandLineArguments = _settings.RCommandLineArguments,
-                        CranMirrorName = _settings.CranMirror
+                        CranMirrorName = _settings.CranMirror,
+                        WorkingDirectory = _settings.WorkingDirectory
                     });
                 }
                 return ExecutionResult.Success;
@@ -160,6 +164,22 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
+        private void SessionOnBeforeRequest(object sender, RRequestEventArgs e) {
+            _coreShell.DispatchOnUIThread(() => {
+                if (CurrentWindow.IsRunning) {
+                    return;
+                }
+
+                var projectionBuffer = CurrentWindow.TextView.TextBuffer as IProjectionBuffer;
+                if (projectionBuffer == null) {
+                    return;
+                }
+
+                var spanCount = projectionBuffer.CurrentSnapshot.SpanCount;
+                projectionBuffer.ReplaceSpans(spanCount - 2, 1, new List<object> {GetPrompt()}, EditOptions.None, new object());
+            });
+        }
+
         private void Write(string message) {
             if (CurrentWindow != null) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow.Write(message));
@@ -176,22 +196,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (CurrentWindow != null) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
             }
-        }
-
-        /// <summary>
-        /// Check if given Unicode text is convertable without loss to the default
-        /// OS codepage. R is not Unicode so host process converts incoming UTF-8
-        /// to 8-bit characters via Windows CP. If locale for non-Unicode programs 
-        /// is set correctly, user can type in their language.
-        /// </summary>
-        private bool CheckConvertableToDefaultCodepage(string s) {
-            // Convert to Windows CP and back and see if the result
-            // of the conversion matches original text.
-            byte[] srcBytes = Encoding.Unicode.GetBytes(s);
-            byte[] dstBytes = Encoding.Convert(Encoding.Unicode, Encoding.GetEncoding(0), srcBytes);
-            byte[] resultBytes = Encoding.Convert(Encoding.GetEncoding(0), Encoding.Unicode, dstBytes);
-
-            return srcBytes.SequenceEqual(resultBytes);
         }
     }
 }

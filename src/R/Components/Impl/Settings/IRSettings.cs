@@ -20,5 +20,10 @@
         /// to the R Host process
         /// </summary>
         string RCommandLineArguments { get; set; }
+
+        /// <summary>
+        /// Current working directory for REPL
+        /// </summary>
+        string WorkingDirectory { get; set; }
     }
 }
