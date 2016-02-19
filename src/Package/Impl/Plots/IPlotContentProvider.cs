@@ -44,9 +44,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// <summary>
         /// Resize the current plot or set the default size for future plots.
         /// </summary>
-        /// <param name="width">Width in pixels.</param>
-        /// <param name="height">Height in pixels.</param>
-        Task ResizePlotAsync(int width, int height);
+        /// <param name="pixelWidth">Width in pixels.</param>
+        /// <param name="pixelHeight">Height in pixels.</param>
+        Task ResizePlotAsync(int pixelWidth, int pixelHeight);
 
         /// <summary>
         /// Navigate to the next plot in the plot history.

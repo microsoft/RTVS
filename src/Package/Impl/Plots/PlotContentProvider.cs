@@ -1,31 +1,26 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Xaml;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Tasks;
-using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
         private string _lastLoadFile;
-        private int _lastWidth;
-        private int _lastHeight;
+        private int _lastPixelWidth;
+        private int _lastPixelHeight;
 
         public PlotContentProvider(IRSession session) {
-            _lastWidth = -1;
-            _lastHeight = -1;
+            _lastPixelWidth = -1;
+            _lastPixelHeight = -1;
 
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
@@ -37,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
-            if (_lastWidth >= 0 && _lastHeight >= 0) {
+            if (_lastPixelWidth >= 0 && _lastPixelHeight >= 0) {
                 await ApplyNewSize();
             }
 
@@ -65,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                             bmp.CacheOption = BitmapCacheOption.OnLoad;
                             bmp.EndInit();
 
-                            var image = new Image();
+                            var image = new NonScaledImage();
                             image.Source = bmp;
 
                             element = image;
@@ -105,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsImageAsync(string fileName, string deviceName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap(deviceName, fileName, _lastWidth, _lastHeight);
+                    await eval.ExportToBitmap(deviceName, fileName, _lastPixelWidth, _lastPixelHeight);
                 }
             }
         }
@@ -114,12 +109,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap("bmp", fileName, _lastWidth, _lastHeight);
+                    await eval.ExportToBitmap("bmp", fileName, _lastPixelWidth, _lastPixelHeight);
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
                             try {
-                            // Use Begin/EndInit to avoid locking the file on disk
-                            var image = new BitmapImage();
+                                // Use Begin/EndInit to avoid locking the file on disk
+                                var image = new BitmapImage();
                                 image.BeginInit();
                                 image.UriSource = new Uri(fileName);
                                 image.CacheOption = BitmapCacheOption.OnLoad;
@@ -139,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight));
+                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
 
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
@@ -170,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsPdfAsync(string fileName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToPdf(fileName, PixelsToInches(_lastWidth), PixelsToInches(_lastHeight), "special");
+                    await eval.ExportToPdf(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), "special");
                 }
             }
         }
@@ -210,11 +205,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async System.Threading.Tasks.Task ResizePlotAsync(int width, int height) {
+        public async System.Threading.Tasks.Task ResizePlotAsync(int pixelWidth, int pixelHeight) {
             // Cache the size, so we can set the initial size
             // whenever we get a new session
-            _lastWidth = width;
-            _lastHeight = height;
+            _lastPixelWidth = pixelWidth;
+            _lastPixelHeight = pixelHeight;
 
             if (_rSession != null) {
                 await ApplyNewSize();
@@ -224,7 +219,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ApplyNewSize() {
             if (_rSession != null) {
                 using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                    await eval.ResizePlot(_lastWidth, _lastHeight);
+                    await eval.ResizePlot(_lastPixelWidth, _lastPixelHeight);
                 }
             }
         }
@@ -257,6 +252,39 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             task.SilenceException<MessageTransportException>()
                 .SilenceException<Microsoft.R.Host.Client.RException>()
                 .DoNotWait();
+        }
+
+    }
+
+    internal static class WpfUnitsConversion {
+        public static Size FromPixels(Visual visual, Size pixelSize) {
+            var source = PresentationSource.FromVisual(visual);
+            return (Size)source.CompositionTarget.TransformFromDevice.Transform((Vector)pixelSize);
+        }
+
+        public static Size ToPixels(Visual visual, Size wpfSize) {
+            var source = PresentationSource.FromVisual(visual);
+            return (Size)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
+        }
+    }
+
+    /// <summary>
+    /// An bitmap image that is rendered to the screen without being scaled,
+    /// where each pixel in the bitmap takes one physical pixel on screen.
+    /// </summary>
+    internal class NonScaledImage : Image {
+        protected override Size MeasureOverride(Size constraint) {
+            BitmapImage bmp = this.Source as BitmapImage;
+            if (bmp != null) {
+                // WPF assumes that your code doesn't have special dpi handling
+                // and automatically sizes bitmaps to avoid them being too
+                // small when running at high dpi.
+                // We prevent that scaling by calculating a size based on
+                // pixel size and dpi setting.
+                Size bitmapSize = new Size(bmp.PixelWidth, bmp.PixelHeight);
+                return WpfUnitsConversion.FromPixels(this, bitmapSize);
+            }
+            return base.MeasureOverride(constraint);
         }
     }
 }
