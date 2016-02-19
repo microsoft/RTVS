@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -13,6 +16,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         private readonly Dictionary<IContentType, IWpfTextView> _textViews;
         private readonly IVsEditorAdaptersFactoryService _editorAdaptersFactory;
         private readonly IContentTypeRegistryService _registryService;
+
+        public event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;
 
         [ImportingConstructor]
         public ActiveWpfTextViewTracker(IVsEditorAdaptersFactoryService editorAdaptersFactory, IContentTypeRegistryService registryService) {
@@ -61,7 +66,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         private void UpdateTextViewIfRequired(IWpfTextView wpfTextView) {
             var contentType = wpfTextView.TextBuffer.ContentType;
+            IWpfTextView oldValue;
+            if (_textViews.TryGetValue(contentType, out oldValue) && oldValue.Equals(wpfTextView)) {
+                return;
+            }
+
             _textViews[contentType] = wpfTextView;
+            LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldValue, wpfTextView));
         }
 
         private IWpfTextView GetWpfTextView(IVsWindowFrame frame) {

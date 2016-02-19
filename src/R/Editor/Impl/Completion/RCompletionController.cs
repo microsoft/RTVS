@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
+    using Core.Parser;
     using Core.Tokens;
     using Host.Client;
     using Languages.Core.Text;
@@ -351,11 +352,21 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         private async Task<bool> IsFunction(string name) {
+            if(Keywords.IsKeyword(name)) {
+                return false;
+            }
+
+            string expression = $"tryCatch(is.function({name}), error = function(e) {{ }})";
+            AstRoot ast = RParser.Parse(expression);
+            if(ast.Errors.Count > 0) {
+                return false;
+            }
+
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync($"tryCatch(is.function({name}), error = function(e) {{ }})");
+                    REvaluationResult result = await eval.EvaluateAsync(expression);
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&
                          (result.StringResult == "T" || result.StringResult == "TRUE")) {

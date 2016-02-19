@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.R.Components.Controller;
 
 namespace Microsoft.Languages.Editor.Controller.Command {
     public class Command : ICommand {

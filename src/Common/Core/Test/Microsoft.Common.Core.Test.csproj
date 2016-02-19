@@ -100,10 +100,11 @@
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="IO\SubstituteFactories\DirectoryInfoFactory.cs" />
-    <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
+    <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
+    <Compile Include="StubFactories\FileInfoStubFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
+    <Compile Include="StubFactories\FileSystemStubFactory.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
@@ -123,7 +124,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO\SubstituteFactories\" />
+  </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
       <Authenticode>Microsoft</Authenticode>

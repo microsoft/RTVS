@@ -14,12 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility
     {
         TestServiceProvider _serviceProvider = new TestServiceProvider();
 
-        public RInteractiveWindowProvider InteractiveWindowProvider {
-            get {
-                throw new NotImplementedException();
-            }
-        }
-
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
             return new ToolWindowPaneMock(this) as T;
         }

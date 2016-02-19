@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Composition;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
@@ -18,6 +19,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     [BracePair('(', ')')]
     [BracePair('\'', '\'')]
     [BracePair('\"', '\"')]
+    [BracePair('`', '`')]
     internal sealed class BraceCompletionContextProvider : IBraceCompletionContextProvider {
         /// <summary>
         /// Creates an <see cref="IBraceCompletionContext"/> to handle 

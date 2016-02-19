@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completion {

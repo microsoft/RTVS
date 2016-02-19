@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.ContentType;

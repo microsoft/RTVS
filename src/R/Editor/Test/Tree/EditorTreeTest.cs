@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Editor.Mocks;

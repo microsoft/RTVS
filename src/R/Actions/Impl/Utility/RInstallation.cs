@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Win32;
 
 namespace Microsoft.R.Actions.Utility {
     /// <summary>
@@ -20,22 +21,22 @@ namespace Microsoft.R.Actions.Utility {
 
         internal static IRegistry Registry {
             get {
-                if (_registry == null) {
-                    _registry = new RegistryImpl();
+                if (RInstallation._registry == null) {
+                    RInstallation._registry = new RegistryImpl();
                 }
-                return _registry;
+                return RInstallation._registry;
             }
-            set { _registry = value; }
+            set { RInstallation._registry = value; }
         }
 
         internal static IFileSystem FileSystem {
             get {
-                if (_fileSystem == null) {
-                    _fileSystem = new FileSystem();
+                if (RInstallation._fileSystem == null) {
+                    RInstallation._fileSystem = new FileSystem();
                 }
-                return _fileSystem;
+                return RInstallation._fileSystem;
             }
-            set { _fileSystem = value; }
+            set { RInstallation._fileSystem = value; }
         }
 
         /// <summary>
@@ -50,17 +51,17 @@ namespace Microsoft.R.Actions.Utility {
             string path = RInstallation.GetRInstallPath(basePath);
 
             // If nothing is found, look into the file system
-            if (string.IsNullOrEmpty(path)) {
+            if (String.IsNullOrEmpty(path)) {
                 foreach (var f in rFolders) {
                     path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                    if (!string.IsNullOrEmpty(path)) {
+                    if (!String.IsNullOrEmpty(path)) {
                         break;
                     }
                 }
             }
 
             // Still nothing? Fail, caller will typically display an error message.
-            if (string.IsNullOrEmpty(path)) {
+            if (String.IsNullOrEmpty(path)) {
                 return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
@@ -127,7 +128,7 @@ namespace Microsoft.R.Actions.Utility {
         /// First tries user settings, then 64-bit registry.
         /// </summary>
         public static string GetRInstallPath(string basePath) {
-            if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
+            if (String.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = RInstallation.GetCompatibleEnginePathFromRegistry();
             }
             return basePath;
@@ -142,7 +143,7 @@ namespace Microsoft.R.Actions.Utility {
             string binFolder = null;
             string installPath = RInstallation.GetRInstallPath(basePath);
 
-            if (!string.IsNullOrEmpty(installPath)) {
+            if (!String.IsNullOrEmpty(installPath)) {
                 binFolder = Path.Combine(installPath, @"bin\x64");
             }
 
@@ -173,12 +174,12 @@ namespace Microsoft.R.Actions.Utility {
         /// </summary>
         public static string GetCompatibleEnginePathFromRegistry() {
             string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
-            string highestVersionName = string.Empty;
+            string highestVersionName = String.Empty;
             Version highest = null;
 
             foreach (string name in installedEngines) {
                 // Protect from random key name format changes
-                if (!string.IsNullOrEmpty(name)) {
+                if (!String.IsNullOrEmpty(name)) {
                     string versionString = ExtractVersionString(name);
                     Version v;
                     if (Version.TryParse(versionString, out v) && SupportedRVersionList.IsCompatibleVersion(v)) {
@@ -214,7 +215,7 @@ namespace Microsoft.R.Actions.Utility {
                 }
             }
 
-            return end > start ? original.Substring(start, end - start) : string.Empty;
+            return end > start ? original.Substring(start, end - start) : String.Empty;
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace Microsoft.R.Actions.Utility {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
-            using (IRegistryKey hklm = Registry.OpenBaseKey(Win32.RegistryHive.LocalMachine, Win32.RegistryView.Registry64)) {
+            using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         return rKey.GetSubKeyNames();
@@ -242,7 +243,7 @@ namespace Microsoft.R.Actions.Utility {
 
         private static string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            using (IRegistryKey hklm = Registry.OpenBaseKey(Win32.RegistryHive.LocalMachine, Win32.RegistryView.Registry64)) {
+            using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
                         if (rKey != null) {
@@ -251,7 +252,7 @@ namespace Microsoft.R.Actions.Utility {
                     }
                 } catch (Exception) { }
             }
-            return string.Empty;
+            return String.Empty;
         }
 
         public static Version GetRVersionFromFolderName(string folderName) {
@@ -273,7 +274,7 @@ namespace Microsoft.R.Actions.Utility {
             try {
                 IEnumerable<IFileSystemInfo> directories = FileSystem.GetDirectoryInfo(baseRFolder)
                                                                 .EnumerateFileSystemInfos()
-                                                                .Where(x => (x.Attributes & System.IO.FileAttributes.Directory) != 0);
+                                                                .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
                 foreach (IFileSystemInfo fsi in directories) {
                     string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
                     Version v = GetRVersionFromFolderName(subFolderName);
@@ -291,7 +292,7 @@ namespace Microsoft.R.Actions.Utility {
             if (versions.Count > 0) {
                 versions.Sort();
                 Version highest = versions[versions.Count - 1];
-                return Path.Combine(baseRFolder, string.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
+                return Path.Combine(baseRFolder, String.Format(CultureInfo.InvariantCulture, "R-{0}.{1}.{2}", highest.Major, highest.Minor, highest.Build));
             }
 
             return string.Empty;

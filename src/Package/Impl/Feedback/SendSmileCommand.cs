@@ -7,11 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSendSmile) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = true;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             SendMail(":-)", "RTVS Smile", null);
         }
     }

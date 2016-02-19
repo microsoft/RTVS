@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -20,13 +20,13 @@ namespace Microsoft.R.Editor.EditorFactory
         public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory)
         {
             if (workspaceItem == null)
-                throw new ArgumentNullException("workspaceItem");
+                throw new ArgumentNullException(nameof(workspaceItem));
 
             if (diskBuffer == null)
-                throw new ArgumentNullException("diskBuffer");
+                throw new ArgumentNullException(nameof(diskBuffer));
 
             if (documentFactory == null)
-                throw new ArgumentNullException("documentFactory");
+                throw new ArgumentNullException(nameof(documentFactory));
 
             WorkspaceItem = workspaceItem;
             ViewBuffer = diskBuffer;
@@ -37,10 +37,7 @@ namespace Microsoft.R.Editor.EditorFactory
         }
 
         #region IEditorInstance
-        public object WpfControl
-        {
-            get { return null; }
-        }
+        public object WpfControl => null;
 
         public IWorkspaceItem WorkspaceItem { get; private set; }
         public ITextBuffer ViewBuffer { get; private set; }

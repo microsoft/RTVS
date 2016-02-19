@@ -2,13 +2,14 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
@@ -24,12 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public async Task EvaluatorTest() {
             using (new VsRHostScript()) {
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
-                var rInteractive = new RInteractive(sessionProvider, historyProvider, RToolsSettings.Current);
-                var history = historyProvider.CreateRHistory(rInteractive);
-
                 var session = sessionProvider.GetInteractiveWindowRSession();
-                using (var eval = new RInteractiveEvaluator(session, history, RToolsSettings.Current)) {
+                using (var eval = new RInteractiveEvaluator(session, RHistoryStubFactory.CreateDefault(), VsAppShell.Current, RToolsSettings.Current)) {
                     var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
                     var tv = new WpfTextViewMock(tb);
 
@@ -47,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result = await eval.ExecuteCodeAsync(new string(new char[10000]));
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
-                    text.Should().Contain(string.Format(Resources.InputIsTooLong, 4096));
+                    text.Should().Contain(string.Format(Microsoft.R.Components.Resources.InputIsTooLong, 4096));
                     tb.Clear();
 
                     result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'" + Environment.NewLine);
@@ -75,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     await eval.ResetAsync(initialize: false);
                     text = tb.CurrentSnapshot.GetText();
-                    text.Should().StartWith(Resources.MicrosoftRHostStopping);
+                    text.Should().StartWith(Microsoft.R.Components.Resources.MicrosoftRHostStopping);
                 }
             }
         }

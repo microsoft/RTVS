@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -23,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             string columns = gridRange.Columns.ToRString();
 
             REvaluationResult? result = null;
-            using (var evaluator = await rSession.BeginEvaluationAsync(isMutating: false)) {
+            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
                 result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
                 if (result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -49,8 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 Process.Start(url);
             } else {
                 HelpWindowPane pane = ToolWindowUtilities.ShowWindowPane<HelpWindowPane>(0, focus: false);
-                var container = pane as IVisualComponentContainer<IHelpWindowVisualComponent>;
-                container.Component.Navigate(url);
+                pane.Component.Navigate(url);
             }
         }
 

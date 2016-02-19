@@ -10,6 +10,8 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;

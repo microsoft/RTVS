@@ -2,10 +2,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.SuggestedActions.Actions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;

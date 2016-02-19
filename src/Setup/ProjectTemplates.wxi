@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?foreach Lcid in $(var.LcidList)?>
-    <DirectoryRef Id="ProjectTemplatesInstallFolder_$(var.Lcid)">
-      <Component Id="ProjectTemplates_$(var.Lcid)" Guid="{AF4E5560-7AD1-47AC-B888-C64522EB530A}">
+  <!--<?foreach Lcid in $(var.LcidList)?>-->
+    <!--<DirectoryRef Id="ProjectTemplatesInstallFolder_$(var.Lcid)">-->
+  <DirectoryRef Id="ProjectTemplatesInstallFolder">
+    <Component Id="ProjectTemplates_$(var.Lcid)" Guid="{AF4E5560-7AD1-47AC-B888-C64522EB530A}">
         <File Id="ProjectTemplates_EmptyProject_$(var.Lcid)" Source="$(var.ProjectTemplatesDir)\$(var.Lcid)\EmptyProject.zip" />
       </Component>
     </DirectoryRef>
-  <?endforeach?>
+  <!--<?endforeach?>-->
 </Include>

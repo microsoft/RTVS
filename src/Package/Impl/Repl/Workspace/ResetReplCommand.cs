@@ -1,33 +1,31 @@
 ﻿using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class ResetReplCommand : PackageCommand {
-        public ResetReplCommand() : 
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+
+        public ResetReplCommand(IRInteractiveWorkflow interactiveWorkflow) : 
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdResetRepl) {
+            _interactiveWorkflow = interactiveWorkflow;
         }
 
-        internal override void SetStatus() {
-            Visible = false;
-            Enabled = false;
-
-            if (ReplWindow.Current.IsActive) {
-                IVsInteractiveWindow window = ReplWindow.Current.GetInteractiveWindow();
-                if (window != null && window.InteractiveWindow != null) {
-                    Visible = true;
-                    Enabled = true;
-                }
+        protected override void SetStatus() {
+            if (_interactiveWorkflow.ActiveWindow != null) {
+                Visible = true;
+                Enabled = true;
+            } else {
+                Visible = false;
+                Enabled = false;
             }
         }
 
-        internal override void Handle() {
-            if (ReplWindow.Current.IsActive) {
-                IVsInteractiveWindow window = ReplWindow.Current.GetInteractiveWindow();
-                if (window != null && window.InteractiveWindow != null) {
-                    window.InteractiveWindow.Operations.ResetAsync().DoNotWait();
-                }
+        protected override void Handle() {
+            if (_interactiveWorkflow.ActiveWindow != null) {
+                _interactiveWorkflow.Operations.ResetAsync().DoNotWait();
             }
         }
     }

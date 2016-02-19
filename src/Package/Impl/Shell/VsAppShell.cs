@@ -9,10 +9,10 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using IServiceProvider = System.IServiceProvider;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -133,6 +134,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
+        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            action();
+        }
+
         /// <summary>
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
@@ -160,11 +166,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
-        public void ShowContextMenu(Guid contextMenuGroup, int contextMenuId, int x, int y) {
+        public void ShowContextMenu(CommandID commandId, int x, int y) {
             var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
             if (package != null) {
                 var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
-                menuService.ShowContextMenu(new CommandID(contextMenuGroup, contextMenuId), x, y);
+                menuService.ShowContextMenu(commandId, x, y);
             }
         }
 

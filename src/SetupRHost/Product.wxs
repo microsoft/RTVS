@@ -13,11 +13,13 @@
            UpgradeCode="{8182DB42-032F-407E-9FB1-6ADC301C7BA4}">
 
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*"/>
-    <Icon Id ="ControlPanelIcon" SourceFile="RFile.ico" />
-    <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
 
     <MajorUpgrade AllowDowngrades="yes" RemoveFeatures="ALL" Schedule="afterInstallInitialize"/>
     <MediaTemplate EmbedCab="yes" />
+
+    <Property Id="VS_ROOT_FOLDER" Secure="yes">
+      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
+    </Property>
 
     <!-- Uninstall Current MSI -->
     <Upgrade Id="{8182DB42-032F-407E-9FB1-6ADC301C7BA4}">

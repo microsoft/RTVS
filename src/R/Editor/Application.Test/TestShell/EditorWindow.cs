@@ -63,26 +63,28 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         }
 
         private static void CreateEditorInstance(EditorTestRequest a, ManualResetEventSlim evt) {
-            CoreEditor = new CoreEditor(a.Text, a.FileName, a.ContentType);
+            try {
+                CoreEditor = new CoreEditor(a.Text, a.FileName, a.ContentType);
 
-            Window = new Window();
+                Window = new Window();
 
-            if (Screen.AllScreens.Length == 1) {
-                Window.Left = 0;
-                Window.Top = 50;
-            } else {
-                Screen secondary = Screen.AllScreens.FirstOrDefault(x => !x.Primary);
-                Window.Left = secondary.WorkingArea.Left;
-                Window.Top = secondary.WorkingArea.Top + 50;
+                if (Screen.AllScreens.Length == 1) {
+                    Window.Left = 0;
+                    Window.Top = 50;
+                } else {
+                    Screen secondary = Screen.AllScreens.FirstOrDefault(x => !x.Primary);
+                    Window.Left = secondary.WorkingArea.Left;
+                    Window.Top = secondary.WorkingArea.Top + 50;
+                }
+
+                Window.Width = 800;
+                Window.Height = 600;
+
+                Window.Title = "R Editor - " + (a.FileName ?? "Untitled");
+                Window.Content = CoreEditor.Control;
+            } finally {
+                evt.Set();
             }
-
-            Window.Width = 800;
-            Window.Height = 600;
-
-            Window.Title = "R Editor - " + (a.FileName != null ? a.FileName : "Untitled");
-            Window.Content = CoreEditor.Control;
-
-            evt.Set();
 
             Window.Topmost = true;
             Window.ShowDialog();

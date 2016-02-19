@@ -11,20 +11,20 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
     public class ReplWindowProviderTest {
-        [Test]
-        [Category.Repl]
-        public void ReplWindowProvider_ConstructionTest() {
-            RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
-        }
+        //[Test]
+        //[Category.Repl]
+        //public void ReplWindowProvider_ConstructionTest() {
+        //    RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
+        //}
 
-        [Test]
-        [Category.Repl]
-        public void ReplWindowProvider_InteractiveWindowCreateTest() {
-            RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
-            ITextBufferFactoryService svc = VsAppShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
-            IContentTypeRegistryService r = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var window = provider.Create(0);
-            window.Should().NotBeNull();
-        }
+        //[Test]
+        //[Category.Repl]
+        //public void ReplWindowProvider_InteractiveWindowCreateTest() {
+        //    RInteractiveWindowProvider provider = new RInteractiveWindowProvider();
+        //    ITextBufferFactoryService svc = VsAppShell.Current.ExportProvider.GetExportedValue<ITextBufferFactoryService>();
+        //    IContentTypeRegistryService r = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+        //    var window = provider.Create(0);
+        //    window.Should().NotBeNull();
+        //}
     }
 }

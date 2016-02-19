@@ -7,7 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         public ShowVariableWindowCommand() :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowVariableExplorerWindow) { }
 
-        internal override void Handle() {
+        protected override void Handle() {
             ToolWindowUtilities.ShowWindowPane<VariableWindowPane>(0, true);
         }
     }

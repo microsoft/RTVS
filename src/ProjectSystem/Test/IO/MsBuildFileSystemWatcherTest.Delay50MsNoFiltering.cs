@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.Common.Core.Test.StubFactories;
 using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -77,7 +77,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in addedDirectories)
                     {
-                        DirectoryInfoFactory.Create(_fileSystem, path);
+                        DirectoryInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_directoryWatcher, addedDirectories);
@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 
                 foreach (var path in deletedDirectories)
                 {
-                    DirectoryInfoFactory.Delete(_fileSystem, path);
+                    DirectoryInfoStubFactory.Delete(_fileSystem, path);
                 }
 
                 RaiseDeleted(_directoryWatcher, deletedDirectories);

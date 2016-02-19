@@ -446,7 +446,7 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleFunctionOrIndexer(IOperator operatorNode) {
+        private ParseErrorType HandleFunctionOrIndexer(IRValueNode operatorNode) {
             // Indexing or function call is performed on the topmost operand which 
             // generally should be a variable or a node that evaluates to it.
             // However, we leave syntax check to separate code.
@@ -458,7 +458,6 @@ namespace Microsoft.R.Core.AST.Expressions {
             }
 
             operatorNode.AppendChild(operand);
-            operatorNode.LeftOperand = operand;
             _operands.Push(operatorNode);
 
             return ParseErrorType.None;

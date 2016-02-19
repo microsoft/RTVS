@@ -1,5 +1,6 @@
 using System;
-using Microsoft.Languages.Editor;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.History;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
