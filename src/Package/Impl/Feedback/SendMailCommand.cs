@@ -40,7 +40,7 @@ your command history as well as all output displayed in the R Interactive Window
                 mail.Body = body;
                 AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
                 if (currentUser.Type == "EX") {
-                    mail.To = "rtvsuserfeedback";
+                    mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Recipients.ResolveAll();
 
                     if (!string.IsNullOrEmpty(attachmentFile)) {
