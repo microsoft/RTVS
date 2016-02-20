@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(MSBuildThisFileDirectory)..\</RootDirectory>
+    <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
+    <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(RootDirectory)NugetPackages\</NugetDirectory>
+    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix.1.0.15100801\</WixDirectory>
+    <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
+    <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
+
+    <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
+
+    <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
+    <SetupRHost Condition="'$(SetupRHost)' == ''">$(SourceDirectory)SetupRHost\SetupRHost.wixproj</SetupRHost>
+    <Setup Condition="'$(Setup)' == ''">$(SourceDirectory)Setup\Setup.wixproj</Setup>
+    <SetupBundle Condition="'$(SetupBundle)' == ''">$(SourceDirectory)SetupBundle\SetupBundle.wixproj</SetupBundle>
+   
+    <WixTargetsPath Condition="'$(WixTargetsPath)' == ''">$(WixBinDirectory)wix.targets</WixTargetsPath>
+    <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
+    <RHostMSI Condition="'$(RHostMSI)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMSI>
+
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
+    <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
+  </PropertyGroup>
+
+  <Target Name="RenameRHostMSI">
+    <Move SourceFiles="$(OutputDirectory)$(Configuration)\RHost.msi" DestinationFiles="$(OutputDirectory)$(Configuration)\$(RHostMSI)" />
+  </Target>
+
+  <Target Name="Clean">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Clean" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Clean" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Clean" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Clean" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+  </Target>
+
+  <Target Name="Build">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Build" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Build" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <CallTarget Targets="RenameRHostMSI" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+  </Target>
+
+  <Target Name="Rebuild">
+    <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
+    <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
+    <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
+    <MSBuild Targets="Rebuild" Projects="$(Setup)" Properties="$(SetupProperties)" />
+    <CallTarget Targets="RenameRHostMSI" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+  </Target>
+</Project>
