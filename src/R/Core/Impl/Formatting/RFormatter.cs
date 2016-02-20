@@ -57,7 +57,7 @@ namespace Microsoft.R.Core.Formatting {
                     AppendTextBeforeToken();
                 }
 
-                AppendNextToken(ast);
+                AppendNextToken(ast, fragmentStart);
             }
 
             // Append any trailing line breaks
@@ -420,11 +420,11 @@ namespace Microsoft.R.Core.Formatting {
                 }
             } else {
                 // Find out if } belongs to an 'if' statement
-                If ifNode = ast.GetNodeOfTypeFromPosition<If>(_tokens.CurrentToken.Start + fragmentStart);
+                If ifNode = ast.GetNodeOfTypeFromPosition<If>(_tokens.PreviousToken.Start + fragmentStart);
                 return ifNode != null &&
                         ifNode.Scope != null &&
                         ifNode.Scope.CloseCurlyBrace != null &&
-                        ifNode.Scope.CloseCurlyBrace.Start == _tokens.CurrentToken.Start + fragmentStart;
+                        ifNode.Scope.CloseCurlyBrace.Start == _tokens.PreviousToken.Start + fragmentStart;
             }
             return false;
         }
