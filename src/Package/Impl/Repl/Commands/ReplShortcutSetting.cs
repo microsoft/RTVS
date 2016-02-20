@@ -37,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (REditorSettings.SendToReplOnCtrlEnter) {
                 // Find and save existing binding
-                foreach (Command c in dte.Commands) {
+                Command c = dte.Commands.Item(CommandName);
+                if (c != null) {
                     object[] commandBindings = c.Bindings as object[];
                     if (commandBindings != null && commandBindings.Length > 0) {
                         string commandName = c.Name;
