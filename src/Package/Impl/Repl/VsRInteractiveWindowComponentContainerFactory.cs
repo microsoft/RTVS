@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
@@ -14,16 +16,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
         private readonly IContentType _contentType;
-        private IVsInteractiveWindowFactory VsInteractiveWindowFactory { get; }
+        private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
 
         [ImportingConstructor]
-        public VsRInteractiveWindowComponentContainerFactory(IVsInteractiveWindowFactory vsInteractiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService) {
-            VsInteractiveWindowFactory = vsInteractiveWindowFactory;
+        public VsRInteractiveWindowComponentContainerFactory(Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService) {
+            _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
             _contentType = contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
-            var vsWindow = VsInteractiveWindowFactory.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
+            VsAppShell.Current.AssertIsOnMainThread();
+            var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, _contentType);
 
             var toolWindow = (ToolWindowPane) vsWindow;

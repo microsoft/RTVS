@@ -387,15 +387,11 @@
     <Reference Include="$(MSBuildAssembly)">
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
       <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
+    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
       <Private>False</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>

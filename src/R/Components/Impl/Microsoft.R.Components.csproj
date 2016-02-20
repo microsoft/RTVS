@@ -141,7 +141,7 @@
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
-      <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
+      <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
