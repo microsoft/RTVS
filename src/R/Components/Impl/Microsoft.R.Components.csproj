@@ -27,8 +27,10 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
