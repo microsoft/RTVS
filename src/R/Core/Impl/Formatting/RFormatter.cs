@@ -3,7 +3,9 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
@@ -39,7 +41,13 @@ namespace Microsoft.R.Core.Formatting {
         /// <summary>
         /// Format string containing R code
         /// </summary>
-        public string Format(string text) {
+        /// <param name="text">Text to format (can be a fragment)</param>
+        /// <param name="ast">When formatting fragment, supply AST of the complete
+        /// file so ambiguous fragments such as '} else' where it is unclear if '}' 
+        /// closes the 'if' and then the 'else' cannot be separated from '}' or is it 
+        /// 'if(...) while(..) { } else' where line break should be inserted 
+        /// before the 'else'.</param>
+        public string Format(string text, AstRoot ast = null, int fragmentStart = 0) {
             // Tokenize incoming text
             Tokenize(text);
 
@@ -49,7 +57,7 @@ namespace Microsoft.R.Core.Formatting {
                     AppendTextBeforeToken();
                 }
 
-                AppendNextToken();
+                AppendNextToken(ast, fragmentStart);
             }
 
             // Append any trailing line breaks
@@ -58,7 +66,7 @@ namespace Microsoft.R.Core.Formatting {
             return _tb.Text;
         }
 
-        private void AppendNextToken() {
+        private void AppendNextToken(AstRoot ast = null, int fragmentStart = 0) {
             switch (_tokens.CurrentToken.TokenType) {
                 case RTokenType.Keyword:
                     AppendKeyword();
@@ -69,7 +77,7 @@ namespace Microsoft.R.Core.Formatting {
                     break;
 
                 case RTokenType.CloseCurlyBrace:
-                    CloseFormattingScope();
+                    CloseFormattingScope(ast, fragmentStart);
                     break;
 
                 case RTokenType.Comma:
@@ -126,7 +134,7 @@ namespace Microsoft.R.Core.Formatting {
             _tb.NewIndentLevel();
         }
 
-        private void CloseFormattingScope() {
+        private void CloseFormattingScope(AstRoot ast = null, int fragmentStart = 0) {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
             _tb.SoftLineBreak();
@@ -147,8 +155,10 @@ namespace Microsoft.R.Core.Formatting {
                 // (scope is in the argument list) or a closing brace 
                 // (last parameter in a function or indexer) or it is followed by 'else'
                 // so 'else' does not get separated from 'if'.
-                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
-                    _tb.SoftLineBreak();
+                if (!KeepCurlyAndElseTogether(ast, fragmentStart)) {
+                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                        _tb.SoftLineBreak();
+                    }
                 }
             }
         }
@@ -371,7 +381,7 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private bool IsClosingToken(RToken token) {
+        private bool IsClosingToken(RToken token, AstRoot ast = null) {
             switch (token.TokenType) {
                 case RTokenType.Comma:
                 case RTokenType.CloseBrace:
@@ -379,28 +389,43 @@ namespace Microsoft.R.Core.Formatting {
                 case RTokenType.CloseDoubleSquareBracket:
                 case RTokenType.Semicolon:
                     return true;
-
-                case RTokenType.Keyword:
-                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
-                           _textProvider.GetText(token) == "else") {
-                        // Check what was the most recent keyword indented in this scope.
-                        // If it is 'if' then there should not be a break between 
-                        // the closing brace and the 'else'. This prevents false positives
-                        // in constructs like
-                        //
-                        //      if(TRUE)
-                        //          repeat {
-                        //          } else
-                        //
-                        // in which else should be placed at the next line and indented with the if.
-                        var scope = _formattingScopes.Peek();
-                        if (scope.Keywords.Count > 0) {
-                            return scope.Keywords[scope.Keywords.Count - 1] == "if";
-                        }
-                    }
-                    break;
             }
 
+            return false;
+        }
+
+        private bool KeepCurlyAndElseTogether(AstRoot ast = null, int fragmentStart = 0) {
+            if (_tokens.CurrentToken.TokenType != RTokenType.Keyword) {
+                return false;
+            }
+
+            if (ast == null) {
+                if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                       _textProvider.GetText(_tokens.CurrentToken) == "else") {
+                    // Check what was the most recent keyword indented in this scope.
+                    // If it is 'if' then there should not be a break between 
+                    // the closing brace and the 'else'. This prevents false positives
+                    // in constructs like
+                    //
+                    //      if(TRUE)
+                    //          repeat {
+                    //          } else
+                    //
+                    // in which else should be placed at the next line and indented with the if.
+                    var scope = _formattingScopes.Peek();
+                    if (scope.Keywords.Count > 0) {
+                        string lastKeyword = scope.Keywords[scope.Keywords.Count - 1];
+                        return lastKeyword == "if";
+                    }
+                }
+            } else {
+                // Find out if } belongs to an 'if' statement
+                If ifNode = ast.GetNodeOfTypeFromPosition<If>(_tokens.PreviousToken.Start + fragmentStart);
+                return ifNode != null &&
+                        ifNode.Scope != null &&
+                        ifNode.Scope.CloseCurlyBrace != null &&
+                        ifNode.Scope.CloseCurlyBrace.Start == _tokens.PreviousToken.Start + fragmentStart;
+            }
             return false;
         }
 
