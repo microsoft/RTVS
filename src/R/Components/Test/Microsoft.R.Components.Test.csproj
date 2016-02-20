@@ -81,8 +81,10 @@
       <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.execution.2.2.0-beta1-build3239\lib\net45\xunit.execution.desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
       <Private>False</Private>

@@ -390,12 +390,12 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
