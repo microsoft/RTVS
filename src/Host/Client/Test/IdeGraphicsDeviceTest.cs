@@ -5,18 +5,15 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
-    [Collection(CollectionNames.NonParallel)]
     public class IdeGraphicsDeviceTest {
         private readonly GraphicsDeviceTestFilesFixture _files;
         private readonly MethodInfo _testMethod;
@@ -53,9 +50,9 @@ grid.segments(.01, .1, .99, .1)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
-            actualPlotFilePaths.Should().ContainSingle();
+            var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
-            var bmp = (Bitmap)Image.FromFile(actualPlotFilePaths.First());
+            var bmp = (Bitmap)Image.FromFile(plotFilePath);
             bmp.Width.Should().Be(DefaultWidth);
             bmp.Height.Should().Be(DefaultHeight);
             var startX = X(0.01);
@@ -81,7 +78,7 @@ grid.segments(.01, .1, .99, .1)
         [Test]
         [Category.Plots]
         public async Task MultiplePagesTwoBatchesInteractive() {
-            var inputs = new string[] {
+            var inputs = new[] {
                 @"
 library(grid)
 redGradient <- matrix(hcl(0, 80, seq(50, 80, 10)), nrow = 4, ncol = 5)
@@ -144,9 +141,9 @@ plot(0:10)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
-            actualPlotFilePaths.Should().ContainSingle();
+            var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
-            var bmp = (Bitmap)Image.FromFile(actualPlotFilePaths.First());
+            var bmp = (Bitmap)Image.FromFile(plotFilePath);
             bmp.Width.Should().Be(600);
             bmp.Height.Should().Be(600);
         }
@@ -160,9 +157,9 @@ rtvs:::graphics.ide.resize(600, 600)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
-            actualPlotFilePaths.Should().ContainSingle();
+            var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
-            var bmp = (Bitmap)Image.FromFile(actualPlotFilePaths.First());
+            var bmp = (Bitmap)Image.FromFile(plotFilePath);
             bmp.Width.Should().Be(600);
             bmp.Height.Should().Be(600);
         }
@@ -210,9 +207,9 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
-            actualPlotFilePaths.Should().ContainSingle();
+            var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
-            var bmp = (Bitmap)Image.FromFile(actualPlotFilePaths.First());
+            var bmp = (Bitmap)Image.FromFile(plotFilePath);
             bmp.Width.Should().Be(DefaultWidth);
             bmp.Height.Should().Be(DefaultHeight);
 
@@ -273,9 +270,9 @@ rtvs:::graphics.ide.exportpdf({0}, {1}, {2}, '{3}')
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
-            actualPlotFilePaths.Should().ContainSingle();
+            var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
-            var bmp = (Bitmap)Image.FromFile(actualPlotFilePaths.First());
+            var bmp = (Bitmap)Image.FromFile(plotFilePath);
             bmp.Width.Should().Be(DefaultWidth);
             bmp.Height.Should().Be(DefaultHeight);
 
@@ -310,7 +307,7 @@ rtvs:::graphics.ide.resize(600, 600)
             // Make sure that all parts of the graph are present
             // We used to have a bug where the resized image only had
             // the top left plot, and the others were missing
-            var inputs = new string[] {
+            var inputs = new [] {
                 @"
 par(mfrow = c(2, 2))
 plot(0:1)
@@ -406,16 +403,22 @@ rtvs:::graphics.ide.previousplot()
         }
 
         private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs) {
-            var app = new RHostClientTestApp() { PlotHandler = OnPlot };
-            using (var script = new RHostScript(new RSessionProvider(), app)) {
-                foreach (string input in inputs) {
-                    using (var interaction = await script.Session.BeginInteractionAsync()) {
+            using (var sessionProvider = new RSessionProvider()) {
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp {PlotHandler = OnPlot});
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RBasePath = RUtilities.FindExistingRBasePath()
+                }, 50000);
+
+                foreach (var input in inputs) {
+                    using (var interaction = await session.BeginInteractionAsync()) {
                         await interaction.RespondAsync(input + "\n");
-                        EventsPump.DoEvents(100);
                     }
                 }
-            }
 
+                await session.StopHostAsync();
+            }
+            
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var deletedFilePath in OriginalPlotFilePaths) {
                 File.Exists(deletedFilePath).Should().BeFalse();
@@ -433,21 +436,23 @@ rtvs:::graphics.ide.previousplot()
         }
 
         private static string[] Batch(string code) {
-            return new string[] { code };
+            return new[] { code };
         }
 
         private void OnPlot(string filePath) {
-            if (filePath.Length > 0) {
-                // Make a copy of the plot file, and store the path to the copy
-                // When the R code finishes executing, the graphics device is destructed,
-                // which destructs all the plots which deletes the original plot files
-                int index = PlotFilePaths.Count;
-                PlotFilePaths.Add(SavePlotFile(filePath, index));
-
-                // We also store the original plot file paths, so we can 
-                // validate that they have been deleted when the host goes away
-                OriginalPlotFilePaths.Add(filePath);
+            if (filePath.Length <= 0) {
+                return;
             }
+
+            // Make a copy of the plot file, and store the path to the copy
+            // When the R code finishes executing, the graphics device is destructed,
+            // which destructs all the plots which deletes the original plot files
+            int index = PlotFilePaths.Count;
+            PlotFilePaths.Add(SavePlotFile(filePath, index));
+
+            // We also store the original plot file paths, so we can 
+            // validate that they have been deleted when the host goes away
+            OriginalPlotFilePaths.Add(filePath);
         }
     }
 }

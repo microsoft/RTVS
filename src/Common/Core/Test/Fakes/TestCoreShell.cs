@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.Threading;
 
-namespace Microsoft.R.Components.Test.Fakes {
-    internal sealed class TestCoreShell : ICoreShell {
+namespace Microsoft.Common.Core.Test.Fakes {
+    public sealed class TestCoreShell : ICoreShell {
         private readonly CompositionContainer _container;
 
         public TestCoreShell(CompositionContainer container) {
