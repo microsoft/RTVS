@@ -163,8 +163,7 @@ x <- 1";
   repeat {
     x <- 1;
     next;
-  }
-else
+  } else
   z";
             actual.Should().Be(expected);
         }

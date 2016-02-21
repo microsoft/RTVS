@@ -54,7 +54,7 @@ namespace Microsoft.R.Editor.Formatting {
             string trimmedSpanText = spanText.Trim();
 
             RFormatter formatter = new RFormatter(options);
-            string formattedText = formatter.Format(trimmedSpanText, ast, formatRange.Start);
+            string formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
             formattedText = IndentLines(textBuffer, spanToFormat.Start, ast, formattedText, options, baseIndentPosition, respectUserIndent);
@@ -106,6 +106,14 @@ namespace Microsoft.R.Editor.Formatting {
 
             for (int i = 0; i < lines.Count; i++) {
                 string lineText = lines[i];
+
+                if (i == 0 && lineText.Trim() == "}") {
+                    string s = IndentBuilder.GetIndentString(options.IndentSize, options.IndentType, options.TabSize);
+                    sb.Append(indentString);
+                    sb.Append(s);
+                    sb.Append("}" + "\r\n");
+                    continue;
+                }
 
                 if (i == 0 && lineText.Trim() == "{") {
                     if (options.BracesOnNewLine && !LineBreakBeforePosition(textBuffer, rangeStartPosition)) {
