@@ -295,7 +295,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
+        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Without this component IntelliseSense and help on function parameters will not work. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
         /// </summary>
         public static string Error_NoWebTools {
             get {
@@ -1335,15 +1335,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string Warning_LogTooLarge {
-            get {
-                return ResourceManager.GetString("Warning_LogTooLarge", resourceCulture);
             }
         }
         

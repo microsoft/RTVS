@@ -116,6 +116,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text = tb.CurrentSnapshot.GetText();
                     text.TrimEnd().Should().Be("[1] \"“text”\"");
                     tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("e <- dQuote('абвг')" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.Should().Be(string.Empty);
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("e" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.TrimEnd().Should().Be("[1] \"“абвг”\"");
+                    tb.Clear();
                 }
             }
         }

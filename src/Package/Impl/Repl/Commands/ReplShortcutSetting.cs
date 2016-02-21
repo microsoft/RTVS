@@ -35,41 +35,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 binding = "Text Editor::ctrl+e,ctrl+e";
             }
 
-            if (REditorSettings.SendToReplOnCtrlEnter) {
-                // Find and save existing binding
-                Command c = dte.Commands.Item(CommandName);
-                if (c != null) {
-                    object[] commandBindings = c.Bindings as object[];
-                    if (commandBindings != null && commandBindings.Length > 0) {
-                        string commandName = c.Name;
-                        if (!commandName.ToLowerInvariant().Contains("ExecuteLineInInteractive")) {
-                            foreach (object o in commandBindings) {
-                                string commandBinding = o as string;
-                                if (string.IsNullOrEmpty(commandBinding)) {
-                                    if (commandBinding.Contains("text editor") && commandBinding.Contains("ctrl+enter")) {
-                                        REditorSettings.WritableStorage.SetString("CtrlEnterBinding", commandBinding);
-                                        REditorSettings.WritableStorage.SetString("CtrlEnterCommandName", c.Name);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Restore original binding, if any.
-                string storedBinding = REditorSettings.WritableStorage.GetString("CtrlEnterBinding", string.Empty);
-                string storedCommandName = REditorSettings.WritableStorage.GetString("CtrlEnterCommandName", string.Empty);
-                if (!string.IsNullOrEmpty(storedCommandName) && !string.IsNullOrEmpty(storedBinding)) {
-                    try {
-                        Command c = dte.Commands.Item(storedCommandName);
-                        if (c != null) {
-                            c.Bindings = storedBinding;
-                        }
-                    } catch (ArgumentException) { }
-                }
-            }
-
             try {
                 Command sendToReplCommand = dte.Commands.Item(CommandName);
                 Debug.Assert(sendToReplCommand != null);
@@ -78,7 +43,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 }
             } catch (ArgumentException) { }
         }
-
 
         private static void REditorSettings_Changed(object sender, EventArgs e) {
             if (_currentSetting != REditorSettings.SendToReplOnCtrlEnter) {
