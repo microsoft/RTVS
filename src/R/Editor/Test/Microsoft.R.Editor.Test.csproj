@@ -101,6 +101,14 @@
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{E1B1909E-3193-499B-91DB-1E13E6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -177,6 +185,7 @@
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
+    <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />

@@ -94,7 +94,6 @@
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />
-    <Compile Include="Fakes\TestCoreShell.cs" />
     <Compile Include="Fakes\Trackers\TestActiveWpfTextViewTracker.cs" />
     <Compile Include="Fakes\Trackers\TestDebuggerModeTracker.cs" />
     <Compile Include="Fakes\Undo\AutoEnclose.cs" />

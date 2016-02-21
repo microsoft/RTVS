@@ -1,17 +1,25 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
-    [Collection(CollectionNames.NonParallel)]
     public class ValuesTest {
+        private readonly MethodInfo _testMethod;
+
+        public ValuesTest(TestMethodInfoFixture testMethodInfo) {
+            _testMethod = testMethodInfo.Method;
+        }
+
         [Test]
         [Category.R.Debugger]
         public async Task MultilinePromise() {
@@ -24,9 +32,13 @@ x <- quote({{{}}})
 eval(substitute(f(P, x), list(P = x)))
 ";
 
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            using (new RHostScript(sessionProvider)) {
-                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
+            using (var sessionProvider = new RSessionProvider()) {
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RBasePath = RUtilities.FindExistingRBasePath()
+                }, 50000);
+
                 using (var debugSession = new DebugSession(session)) {
                     using (var sf = new SourceFile(code)) {
                         await debugSession.EnableBreakpointsAsync(true);
@@ -59,6 +71,8 @@ eval(substitute(f(P, x), list(P = x)))
                         p.Code.Should().Be(d.Representation.Deparse);
                     }
                 }
+
+                await session.StopHostAsync();
             }
         }
     }
