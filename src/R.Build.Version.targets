@@ -7,12 +7,12 @@
 
   <PropertyGroup Condition="$(GenerateAssemblyVersionInfo)">
     <!-- 0.1.YMMDD.HHMM -->
-    <Year>$([System.DateTime]::Now.Year)</Year>
+    <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
     <YearMinus4>$([MSBuild]::Subtract($(Year), 4))</YearMinus4>
     <YearMinus4String>$(YearMinus4.ToString())</YearMinus4String>
     <LastDigitOfYear>$(YearMinus4String.Substring(3,1))</LastDigitOfYear>
-    <Date>$([System.DateTime]::Now.ToString("MMdd"))</Date>
-    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <Date Condition="'$(Date)' == ''">$([System.DateTime]::Now.ToString("MMdd"))</Date>
+    <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <MajorVersion>0</MajorVersion>
     <MinorVersion>1</MinorVersion>

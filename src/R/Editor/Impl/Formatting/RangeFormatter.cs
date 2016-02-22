@@ -100,12 +100,20 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             string indentString = IndentBuilder.GetIndentString(baseIndentInSpaces, options.IndentType, options.TabSize);
- 
+
             var sb = new StringBuilder();
             IList<string> lines = TextHelper.SplitTextIntoLines(formattedText);
 
             for (int i = 0; i < lines.Count; i++) {
                 string lineText = lines[i];
+
+                if (i == 0 && lineText.Trim() == "}") {
+                    string s = IndentBuilder.GetIndentString(options.IndentSize, options.IndentType, options.TabSize);
+                    sb.Append(indentString);
+                    sb.Append(s);
+                    sb.Append("}" + "\r\n");
+                    continue;
+                }
 
                 if (i == 0 && lineText.Trim() == "{") {
                     if (options.BracesOnNewLine && !LineBreakBeforePosition(textBuffer, rangeStartPosition)) {

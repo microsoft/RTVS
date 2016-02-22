@@ -21,11 +21,6 @@
       <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
     </Property>
 
-    <!-- Uninstall Current MSI -->
-    <Upgrade Id="{8182DB42-032F-407E-9FB1-6ADC301C7BA4}">
-      <UpgradeVersion IncludeMinimum="yes" Minimum="0.1.0.0" Property="MS_R_HOST" RemoveFeatures="ALL" />
-    </Upgrade>
-
     <Feature Id="ProductFeature" Title="$(var.ProductName)">
       <ComponentRef Id="ProductAssemblies" />
     </Feature>

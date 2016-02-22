@@ -1402,7 +1402,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. Proceed?.
+        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?.
         /// </summary>
         public static string Warning_SettingsReset {
             get {

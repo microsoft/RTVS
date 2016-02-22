@@ -152,7 +152,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message);
+                Write(args.Message.ToUnicodeQuotes());
             } else {
                 WriteError(args.Message);
             }

@@ -47,7 +47,7 @@
     </dd:UxConfiguration>
 
     <?include VSDetection.wxi?>
-
+    
     <!-- Require VS 2015 Update 1 -->
     <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v14.0.24720"
                 DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
@@ -61,9 +61,9 @@
 
     <Chain>
       <MsiPackage SourceFile="$(var.BinDir)\RTVS.msi" />
-      <MsiPackage Id="RHost" SourceFile="$(var.BinDir)\RHost.msi"
-                  Compressed="no" DownloadUrl="https://ptvs.blob.core.windows.net/temp/RHost.msi" />
-      <PackageGroupRef Id="RTVSPackageId" />
+      <MsiPackage Id="RHost" SourceFile="$(var.BinDir)$(var.RHostMsi)"
+                  Compressed="no" DownloadUrl="https://ptvs.blob.core.windows.net/temp/$(var.RHostMsi)" />
+      <!--<PackageGroupRef Id="RTVSPackageId" />
       <PackageGroupRef Id="MROPackageId" />
       <!-- <PackageGroupRef Id="VsCommunityId" />-->
     </Chain>

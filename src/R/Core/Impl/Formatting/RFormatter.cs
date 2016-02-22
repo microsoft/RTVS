@@ -155,12 +155,12 @@ namespace Microsoft.R.Core.Formatting {
                 // (scope is in the argument list) or a closing brace 
                 // (last parameter in a function or indexer) or it is followed by 'else'
                 // so 'else' does not get separated from 'if'.
-                if (!KeepCurlyAndElseTogether(ast, fragmentStart)) {
-                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
-                        _tb.SoftLineBreak();
-                    }
+                if (!KeepCurlyAndElseTogether()) {
+                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                    _tb.SoftLineBreak();
                 }
             }
+        }
         }
 
         /// <summary>
@@ -392,41 +392,15 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             return false;
+            }
+
+        private bool KeepCurlyAndElseTogether() {
+            if (_tokens.CurrentToken.TokenType != RTokenType.Keyword) {
+            return false;
         }
 
-        private bool KeepCurlyAndElseTogether(AstRoot ast = null, int fragmentStart = 0) {
-            if (_tokens.CurrentToken.TokenType != RTokenType.Keyword) {
-                return false;
-            }
-
-            if (ast == null) {
-                if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
-                       _textProvider.GetText(_tokens.CurrentToken) == "else") {
-                    // Check what was the most recent keyword indented in this scope.
-                    // If it is 'if' then there should not be a break between 
-                    // the closing brace and the 'else'. This prevents false positives
-                    // in constructs like
-                    //
-                    //      if(TRUE)
-                    //          repeat {
-                    //          } else
-                    //
-                    // in which else should be placed at the next line and indented with the if.
-                    var scope = _formattingScopes.Peek();
-                    if (scope.Keywords.Count > 0) {
-                        string lastKeyword = scope.Keywords[scope.Keywords.Count - 1];
-                        return lastKeyword == "if";
-                    }
-                }
-            } else {
-                // Find out if } belongs to an 'if' statement
-                If ifNode = ast.GetNodeOfTypeFromPosition<If>(_tokens.PreviousToken.Start + fragmentStart);
-                return ifNode != null &&
-                        ifNode.Scope != null &&
-                        ifNode.Scope.CloseCurlyBrace != null &&
-                        ifNode.Scope.CloseCurlyBrace.Start == _tokens.PreviousToken.Start + fragmentStart;
-            }
-            return false;
+            return _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                   _textProvider.GetText(_tokens.CurrentToken) == "else";
         }
 
         private void AppendOperator() {

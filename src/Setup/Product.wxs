@@ -13,17 +13,9 @@
            UpgradeCode="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
 
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*"/>
-    <Icon Id ="ControlPanelIcon" SourceFile="RFile.ico" />
-    <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
-
     <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL"
                   Schedule="afterInstallInitialize"
                   DowngradeErrorMessage="A later version of $(var.ProductName) is already installed. Setup will now exit."/>
-
-    <!-- Uninstall Current MSI -->
-    <Upgrade Id="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
-      <UpgradeVersion IncludeMinimum="yes" Minimum="0.1.0.0" Property="VS_R_TOOLS" RemoveFeatures="ALL" />
-    </Upgrade>
 
     <MediaTemplate EmbedCab="yes" />
 

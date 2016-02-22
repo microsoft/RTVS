@@ -16,7 +16,6 @@ namespace Microsoft.R.Components.Test.History {
 
         public RHistoryTests(RComponentsMefCatalogFixture mefCatalog) {
             _exportProvider = mefCatalog.CreateExportProvider();
-
             _interactiveWorkflow = InteractiveWorkflowStubFactory.CreateDefault();
             _textBuffer = _exportProvider.GetExportedValue<ITextBufferFactoryService>().CreateTextBuffer();
         }

@@ -520,7 +520,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
   <data name="Warning_SettingsReset" xml:space="preserve">
-    <value>This will reset Visual Studio window layout to the Data Scientist profile. Proceed?</value>
+    <value>This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?</value>
   </data>
   <data name="HelpBrowser_Automatic" xml:space="preserve">
     <value>Automatic</value>

@@ -79,7 +79,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.R.Te
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68212AEB-6CCF-481B-8F94-39447EEE2E41}"
 	ProjectSection(SolutionItems) = preProject
-		CodeCoverage.runsettings = CodeCoverage.runsettings
+		build.proj = build.proj
+		R.Build.Version.targets = R.Build.Version.targets
+		R.Settings.targets = R.Settings.targets
+		R.Wix.Settings.targets = R.Wix.Settings.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components", "R\Components\Impl\Microsoft.R.Components.csproj", "{506141BE-1418-4D75-8E24-54A9280B0A66}"

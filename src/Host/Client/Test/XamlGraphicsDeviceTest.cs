@@ -2,10 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -21,6 +23,12 @@ namespace Microsoft.R.Host.Client.Test {
 
         private const int DefaultWidth = 360;
         private const int DefaultHeight = 360;
+
+        private readonly MethodInfo _testMethod;
+
+        public XamlGraphicsDeviceTest(TestMethodInfoFixture testMethod) {
+            _testMethod = testMethod.Method;
+        }
 
         private double X(double percentX) {
             return DefaultWidth * percentX;
@@ -223,12 +231,18 @@ namespace Microsoft.R.Host.Client.Test {
         }
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
-            var sessionProvider = new RSessionProvider();
-            using (new RHostScript(sessionProvider)) {
-                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
+            using (var sessionProvider = new RSessionProvider()) {
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RBasePath = RUtilities.FindExistingRBasePath()
+                }, 50000);
+
                 using (var interaction = await session.BeginInteractionAsync()) {
                     await interaction.RespondAsync(code);
                 }
+
+                await session.StopHostAsync();
             }
 
             File.Exists(outputFilePath).Should().BeTrue();
