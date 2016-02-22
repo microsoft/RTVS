@@ -15,7 +15,6 @@ using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
-using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -62,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand(interactiveWorkflow.RSession, textViewTracker),
+                new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker),
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands

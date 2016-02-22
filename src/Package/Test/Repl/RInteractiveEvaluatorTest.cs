@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
@@ -84,11 +85,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             using (new VsRHostScript()) {
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
-                var rInteractive = new RInteractive(sessionProvider, historyProvider, RToolsSettings.Current);
-                var history = historyProvider.CreateRHistory(rInteractive);
 
                 var session = sessionProvider.GetInteractiveWindowRSession();
-                using (var eval = new RInteractiveEvaluator(session, history, RToolsSettings.Current)) {
+                using (var eval = new RInteractiveEvaluator(session, RHistoryStubFactory.CreateDefault(), VsAppShell.Current, RToolsSettings.Current)) {
                     var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
                     var tv = new WpfTextViewMock(tb);
 

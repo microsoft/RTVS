@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.Text;
 using Xunit;
+using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
@@ -22,6 +23,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             using (var hostScript = new RHostScript(sessionProvider, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
                     DoIdle(100);
@@ -34,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
                     var viewTracker = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                     var view = viewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                    var cmd = new ShowHelpOnCurrentCommand(hostScript.Session, viewTracker);
+                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, viewTracker);
 
                     cmd.Should().BeVisibleAndDisabled();
 
