@@ -12,8 +12,9 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         [Test]
         [Category.Interactive]
         public void R_SelectWord01() {
-            using (var script = new TestScript("abc$def", RContentTypeDefinition.ContentType)) {
+            using (var script = new TestScript("\r\nabc$def['test test']", RContentTypeDefinition.ContentType)) {
 
+                script.MoveDown();
                 script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
                 var selectedWord = span.GetText();
@@ -25,6 +26,11 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("def");
 
+                script.MoveRight(3);
+                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
+                selectedWord = span.GetText();
+                selectedWord.Should().Be("test");
             }
         }
 
@@ -43,7 +49,6 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
                 span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
                 selectedWord.Should().Be("def");
-
             }
         }
     }
