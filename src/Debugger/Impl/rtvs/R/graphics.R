@@ -11,7 +11,7 @@ graphics.ide.new <- function() {
 }
 
 graphics.ide.exportimage <- function(filename, device, width, height) {
-    dev.copy(device=device,filename=filename,width=width,height=height)
+    dev.copy(device=device,filename=filename,width=width,height=height,res=96)
     dev.off()
 }
 
