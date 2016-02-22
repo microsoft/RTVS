@@ -56,7 +56,7 @@ eval(substitute(f(P, x), list(P = x)))
                         children["d"].Should().BeAssignableTo<DebugValueEvaluationResult>();
                         var d = (DebugValueEvaluationResult)children["d"];
 
-                        p.Code.Should().Be(d.Representation.Deparse);
+                        p.Code.Should().Be(d.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse);
                     }
                 }
             }
