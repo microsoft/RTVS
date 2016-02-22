@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
-            if(CommandLineMode()) {
+            if(IsCommandLineMode()) {
                 return;
             }
 
@@ -181,7 +181,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
         }
 
-        private bool CommandLineMode() {
+        private bool IsCommandLineMode() {
             var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
                 object value = null;

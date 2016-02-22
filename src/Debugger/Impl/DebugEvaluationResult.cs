@@ -154,8 +154,16 @@ namespace Microsoft.R.Debugger {
             Deparse = repr.Value<string>("deparse");
             ToString = repr.Value<string>("toString");
             Str = repr.Value<string>("str");
-            if(!string.IsNullOrEmpty(Str) && kind == DebugValueRepresentationKind.Normal) {
-                Str = Str.ToUnicodeQuotes();
+            if (kind == DebugValueRepresentationKind.Normal) {
+                if (!string.IsNullOrEmpty(Deparse)) {
+                    Deparse = Deparse.ToUnicodeQuotes();
+                }
+                if (!string.IsNullOrEmpty(ToString)) {
+                    ToString = ToString.ToUnicodeQuotes();
+                }
+                if (!string.IsNullOrEmpty(Str)) {
+                    Str = Str.ToUnicodeQuotes();
+                }
             }
         }
     }
