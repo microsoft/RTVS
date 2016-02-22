@@ -75,10 +75,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         protected override void Initialize() {
             Current = this;
-            CranMirrorList.Download();
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
+            if(IsCommandLineMode()) {
+                return;
+            }
+
+            CranMirrorList.Download();
             VerifyWebToolsInstalled();
 
             RtvsTelemetry.Initialize();
@@ -175,6 +179,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             if (hr != VSConstants.S_OK || installed == 0) {
                 VsAppShell.Current.ShowErrorMessage(Package.Resources.Error_NoWebTools);
             }
+        }
+
+        private bool IsCommandLineMode() {
+            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            if (shell != null) {
+                object value = null;
+                shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
+                return value is bool && (bool)value;
+            }
+            return false;
         }
     }
 }

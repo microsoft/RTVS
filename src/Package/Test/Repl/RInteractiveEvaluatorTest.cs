@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     public sealed class RInteractiveEvaluatorTest {
         [Test]
         [Category.Repl]
-        public async Task EvaluatorTest() {
+        public async Task EvaluatorTest01() {
             using (new VsRHostScript()) {
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
@@ -43,6 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     eval.CanExecuteCode("x <-").Should().BeFalse();
                     eval.CanExecuteCode("(()").Should().BeFalse();
                     eval.CanExecuteCode("a *(b+c)").Should().BeTrue();
+
+                    VsRHostScript.DoIdle(300);
 
                     result = await eval.ExecuteCodeAsync(new string(new char[10000]));
                     result.Should().Be(ExecutionResult.Failure);
@@ -70,12 +72,62 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result.Should().Be(ExecutionResult.Success);
                     text = tb.CurrentSnapshot.GetText();
                     text.Should().Be(string.Empty);
-
                     tb.Clear();
 
                     await eval.ResetAsync(initialize: false);
                     text = tb.CurrentSnapshot.GetText();
                     text.Should().StartWith(Resources.MicrosoftRHostStopping);
+                }
+            }
+        }
+
+        [Test]
+        [Category.Repl]
+        public async Task EvaluatorTest02() {
+            using (new VsRHostScript()) {
+                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
+                var rInteractive = new RInteractive(sessionProvider, historyProvider, RToolsSettings.Current);
+                var history = historyProvider.CreateRHistory(rInteractive);
+
+                var session = sessionProvider.GetInteractiveWindowRSession();
+                using (var eval = new RInteractiveEvaluator(session, history, RToolsSettings.Current)) {
+                    var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
+                    var tv = new WpfTextViewMock(tb);
+
+                    var iwm = new InteractiveWindowMock(tv);
+                    eval.CurrentWindow = iwm;
+
+                    var result = await eval.InitializeAsync();
+                    result.Should().Be(ExecutionResult.Success);
+                    session.IsHostRunning.Should().BeTrue();
+
+                    VsRHostScript.DoIdle(1000);
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("w <- dQuote('text')" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    var text = tb.CurrentSnapshot.GetText();
+                    text.Should().Be(string.Empty);
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("w" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.TrimEnd().Should().Be("[1] \"“text”\"");
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("e <- dQuote('абвг')" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.Should().Be(string.Empty);
+                    tb.Clear();
+
+                    result = await eval.ExecuteCodeAsync("e" + Environment.NewLine);
+                    result.Should().Be(ExecutionResult.Success);
+                    text = tb.CurrentSnapshot.GetText();
+                    text.TrimEnd().Should().Be("[1] \"“абвг”\"");
+                    tb.Clear();
                 }
             }
         }
