@@ -12,8 +12,6 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
@@ -45,6 +43,17 @@ namespace Microsoft.R.Editor.Completion.Engine {
                     providers.Add(new FilesCompletionProvider(directory));
                 }
                 return providers;
+            }
+
+            // Identifier character is a trigger but only as a first character so it doesn't suddenly
+            // bring completion back on a second character if user dismissed it after the first one,
+            // or in a middle of 'install.packages' when user types dot or in floating point numbers.
+            if (context.Position > 1 && autoShownCompletion) {
+                char triggerChar = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 1, 1)[0];
+                char charBeforeTigger = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 2, 1)[0];
+                if (RTokenizer.IsIdentifierCharacter(triggerChar) && RTokenizer.IsIdentifierCharacter(charBeforeTigger)) {
+                    return providers;
+                }
             }
 
             if (IsInFunctionArgumentName<FunctionDefinition>(context.AstRoot, context.Position)) {
@@ -184,7 +193,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return false;
         }
 
-         /// <summary>
+        /// <summary>
         /// Determines if position is in object member. Typically used
         /// to suppress general intellisense when typing data member 
         /// name such as 'mtcars$|'

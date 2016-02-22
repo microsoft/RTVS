@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion {
+    using Core.Tokens;
     using Languages.Editor.Services;
     using Completion = VisualStudio.Language.Intellisense.Completion;
 
@@ -144,7 +145,7 @@ namespace Microsoft.R.Editor.Completion {
 
             for (int i = linePosition - 1; i >= 0; i--) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
+                if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     start = i + 1;
                     break;
                 }
@@ -152,7 +153,7 @@ namespace Microsoft.R.Editor.Completion {
 
             for (int i = linePosition; i < lineText.Length; i++) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
+                if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     end = i;
                     break;
                 }
