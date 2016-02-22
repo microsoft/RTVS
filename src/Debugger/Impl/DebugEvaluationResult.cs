@@ -150,16 +150,18 @@ namespace Microsoft.R.Debugger {
         public readonly new string ToString;
         public readonly string Str;
 
-        public DebugValueEvaluationResultRepresentation(JObject repr) {
+        public DebugValueEvaluationResultRepresentation(JObject repr, DebugValueRepresentationKind kind) {
             Deparse = repr.Value<string>("deparse");
             ToString = repr.Value<string>("toString");
             Str = repr.Value<string>("str");
+            if(!string.IsNullOrEmpty(Str) && kind == DebugValueRepresentationKind.Normal) {
+                Str = Str.ToUnicodeQuotes();
+            }
         }
     }
 
     public class DebugValueEvaluationResult : DebugEvaluationResult {
         public DebugValueEvaluationResultKind Kind { get; }
-        public DebugValueEvaluationResultRepresentation Representation { get; }
         public string TypeName { get; }
         public IReadOnlyList<string> Classes { get; }
         public int? Length { get; }
@@ -175,16 +177,17 @@ namespace Microsoft.R.Debugger {
         public bool HasSlots => SlotCount != null && SlotCount != 0;
         public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || TypeName == "closure" ? 1 : 0)));
 
+        private JObject _reprObj;
+
         internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
             : base(stackFrame, expression, name) {
 
             var repr = json["repr"];
             if (repr != null) {
-                var reprObj = repr as JObject;
-                if (reprObj == null) {
+                _reprObj = repr as JObject;
+                if (_reprObj == null) {
                     throw new InvalidDataException(Invariant($"'repr' must be an object in:\n\n{json}"));
                 }
-                Representation = new DebugValueEvaluationResultRepresentation(reprObj);
             }
 
             TypeName = json.Value<string>("type");
@@ -239,6 +242,10 @@ namespace Microsoft.R.Debugger {
             }
         }
 
+        public DebugValueEvaluationResultRepresentation GetRepresentation(DebugValueRepresentationKind kind) {
+            return new DebugValueEvaluationResultRepresentation(_reprObj, kind);
+        }
+
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
             int? maxLength = null,
@@ -280,7 +287,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {Representation.Deparse}");
+            return Invariant($"VALUE: {TypeName} {GetRepresentation(DebugValueRepresentationKind.Raw).Deparse}");
         }
     }
 

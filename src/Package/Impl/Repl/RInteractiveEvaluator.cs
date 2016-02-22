@@ -153,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void SessionOnOutput(object sender, ROutputEventArgs args) {
             if (args.OutputType == OutputType.Output) {
-                Write(args.Message);
+                Write(args.Message.ToUnicodeQuotes());
             } else {
                 WriteError(args.Message);
             }
