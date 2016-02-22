@@ -113,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private string GetItemUnderCaret() {
-            ITextView textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+            ITextView textView = GetActiveView();
             if (textView != null && !textView.Caret.InVirtualSpace) {
                 SnapshotPoint position = textView.Caret.Position.BufferPosition;
                 ITextSnapshotLine line = position.GetContainingLine();
@@ -121,6 +121,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 return GetItem(lineText, position.Position - line.Start);
             }
             return string.Empty;
+        }
+
+        private ITextView GetActiveView() {
+            ITextView textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+            if (textView != null && textView.HasAggregateFocus) {
+                return textView;
+            }
+            textView = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow.TextView;
+            if (textView != null && textView.HasAggregateFocus) {
+                return textView;
+            }
+            return null;
         }
 
         private string GetItem(string lineText, int position) {

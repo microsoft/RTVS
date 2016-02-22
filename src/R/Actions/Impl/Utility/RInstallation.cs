@@ -105,7 +105,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static string NormalizeRPath(string path) {
-            string[] suffixes = { "bin", @"bin\x64" };
+            string[] suffixes = { @"bin", @"bin\x64" };
             foreach (var s in suffixes) {
                 if (path.EndsWith(s, StringComparison.OrdinalIgnoreCase)) {
                     path = path.Substring(0, path.Length - s.Length - 1);

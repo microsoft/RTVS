@@ -268,7 +268,16 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
+        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
+        /// </summary>
+        public static string Error_Microsoft_R_Host_Missing {
+            get {
+                return ResourceManager.GetString("Error_Microsoft_R_Host_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Without this component IntelliseSense and help on function parameters will not work. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
         /// </summary>
         public static string Error_NoWebTools {
             get {
@@ -1258,15 +1267,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string Warning_LogTooLarge {
-            get {
-                return ResourceManager.GetString("Warning_LogTooLarge", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?.
         /// </summary>
         public static string Warning_RStudioKeyboardShortcuts {
@@ -1276,7 +1276,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. Proceed?.
+        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?.
         /// </summary>
         public static string Warning_SettingsReset {
             get {

@@ -44,5 +44,37 @@ namespace Microsoft.R.Host.Client {
 
             return sb.ToString();
         }
+
+        /// <summary>
+        /// Converts fancy quotes specified in the Unicode control range specifically,
+        /// 0x91-0x94 to visible quotes. These are 'respectively are left/right single 
+        /// quotes and left/right double quotes.
+        /// Example: https://everythingfonts.com/unicode/0x0091.
+        /// </summary>
+        public static string ToUnicodeQuotes(this string s) {
+            var sb = new StringBuilder(s.Length);
+            for (int i = 0; i < s.Length; i++) {
+                char ch;
+                switch (s[i]) {
+                    case (char)0x0091:
+                        ch = (char)0x2018; // Left single quote
+                        break;
+                    case (char)0x0092:
+                        ch = (char)0x2019; // Right single quote
+                        break;
+                    case (char)0x0093:
+                        ch = (char)0x201C; // Left double quote
+                        break;
+                    case (char)0x0094:
+                        ch = (char)0x201D; // Right double quote
+                        break;
+                    default:
+                        ch = s[i];
+                        break;
+                }
+                sb.Append(ch);
+            }
+            return sb.ToString();
+        }
     }
 }

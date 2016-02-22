@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             GridData data = null;
 
             if (result.HasValue) {
-                data = GridParser.Parse(result.Value.StringResult);
+                data = GridParser.Parse(result.Value.StringResult.ToUnicodeQuotes());
                 data.Range = gridRange;
 
                 if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
