@@ -78,11 +78,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
         public async Task SendToReplTest() {
             string content = "x <- 1\r\ny <- 2\r\n";
 
-            var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var tv = new TextViewMock(tb);
+            var editorBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var tv = new TextViewMock(editorBuffer);
 
             var commandFactory = new VsRCommandFactory(_workflowProvider);
-            var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, tb));
+            var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
             
             await IsTrue(_workflow.ActiveWindow != null);
             _workflow.ActiveWindow.Should().NotBeNull();
@@ -92,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             var command = commands.OfType<SendToReplCommand>()
                 .Should().ContainSingle().Which;
 
-            var textBuffer = _workflow.ActiveWindow.InteractiveWindow.CurrentLanguageBuffer;
+            var replBuffer = _workflow.ActiveWindow.InteractiveWindow.CurrentLanguageBuffer;
             var containerStub = (VisualComponentContainerStub<RInteractiveWindowVisualComponent>)_workflow.ActiveWindow.Container;
             containerStub.IsOnScreen.Should().BeFalse();
 
@@ -105,18 +105,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             containerStub.IsOnScreen = false;
             command.Invoke(group, id, null, ref o);
 
-            textBuffer.CurrentSnapshot.GetText().Should().Be("x <- 1");
+            replBuffer.CurrentSnapshot.GetText().Trim().Should().Be("x <- 1");
 
             int caretPos = tv.Caret.Position.BufferPosition.Position;
-            int lineNum = tb.CurrentSnapshot.GetLineNumberFromPosition(caretPos);
+            int lineNum = editorBuffer.CurrentSnapshot.GetLineNumberFromPosition(caretPos);
             lineNum.Should().Be(1);
 
-            tv.Selection.Select(new SnapshotSpan(tb.CurrentSnapshot, new Span(0, 1)), false);
+            tv.Selection.Select(new SnapshotSpan(editorBuffer.CurrentSnapshot, new Span(0, 1)), false);
             command.Invoke(group, id, null, ref o);
-            textBuffer.CurrentSnapshot.GetText().Should().Be("x");
+
+            ITextSnapshotLine line = replBuffer.CurrentSnapshot.GetLineFromLineNumber(1);
+            line.GetText().Trim().Should().Be("x");
 
             _workflow.ActiveWindow.Dispose();
-            _workflow.ActiveWindow.Should().BeNull();
         }
 
         private async Task IsTrue(bool condition) {

@@ -199,6 +199,7 @@
     <Compile Include="ImageHandleMock.cs" />
     <Compile Include="InteractiveEvaluatorMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
+    <Compile Include="InteractiveWindowOperationsMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />
     <Compile Include="OleComponentManagerMock.cs" />
     <Compile Include="ProjectServiceAccessorMock.cs" />
