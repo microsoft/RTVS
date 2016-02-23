@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class TaskUtilities {
-        public static Task CompletedTask = Task.FromResult(0);
-
         public static bool IsOnBackgroundThread() {
             var taskScheduler = TaskScheduler.Current;
             var syncContext = SynchronizationContext.Current;
