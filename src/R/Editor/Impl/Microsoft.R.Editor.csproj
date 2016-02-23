@@ -80,6 +80,8 @@
     <Compile Include="Commands\RCommandFactory.cs" />
     <Compile Include="Commands\REditorCommands.cs" />
     <Compile Include="Commands\RMainController.cs" />
+    <Compile Include="Commands\RMouseProcessor.cs" />
+    <Compile Include="Commands\RMouseProcessorProvider.cs" />
     <Compile Include="Commands\RTextViewConnectionListener.cs" />
     <Compile Include="Commands\RTypingCommandHandler.cs" />
     <Compile Include="Comments\CommentCommand.cs" />
@@ -145,6 +147,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Selection\RSelectionTracker.cs" />
+    <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
