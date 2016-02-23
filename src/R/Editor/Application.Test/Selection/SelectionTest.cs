@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         [Test]
         [Category.Interactive]
         public void R_SelectWord03() {
-            using (var script = new TestScript("abc\ndef", RContentTypeDefinition.ContentType)) {
+            using (var script = new TestScript("abc\'def", RContentTypeDefinition.ContentType)) {
 
                 script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 var span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
