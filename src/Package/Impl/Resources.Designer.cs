@@ -1150,7 +1150,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Intellisense list on first character.
+        ///   Looks up a localized string similar to Completion list on first character.
         /// </summary>
         public static string Settings_TriggerOnFirstChar {
             get {
@@ -1159,11 +1159,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command.
+        ///   Looks up a localized string similar to Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J).
         /// </summary>
         public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completion list on Tab key.
+        /// </summary>
+        public static string Settings_TriggerOnTab {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If set to on completion list can be invoked by typing one or more characters and pressing Tab..
+        /// </summary>
+        public static string Settings_TriggerOnTab_Description {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnTab_Description", resourceCulture);
             }
         }
         

@@ -14,6 +14,9 @@
                 case OperatorType.RightAssign:
                     return 20;
 
+                case OperatorType.DataTableAssign:
+                    return 25;
+
                 case OperatorType.Tilde:
                     return 30;
 

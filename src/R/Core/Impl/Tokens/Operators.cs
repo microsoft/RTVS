@@ -116,6 +116,7 @@ namespace Microsoft.R.Core.Tokens {
             "&&",
             "**", // alternative to ^
             "::",
+            ":=", // reserved for data.table package
             "??",
             "||",
             "<-",
