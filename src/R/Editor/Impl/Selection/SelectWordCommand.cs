@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Selection {
                     }
                     if (spanToSelect.HasValue && spanToSelect.Value.Length > 0) {
                         NormalizedSnapshotSpanCollection spans = TextView.BufferGraph.MapUpToBuffer(
-                            new SnapshotSpan(rPosition.Value.Snapshot, spanToSelect.Value), 
+                            new SnapshotSpan(rPosition.Value.Snapshot, spanToSelect.Value),
                             SpanTrackingMode.EdgePositive, TextView.TextBuffer);
                         if (spans.Count == 1) {
                             TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, spans[0]), isReversed: false);
@@ -53,26 +53,25 @@ namespace Microsoft.R.Editor.Selection {
             return CommandResult.Executed;
         }
 
-        private Span GetWordSpan(string text, int lineStart, int position) {
+        private static Span GetWordSpan(string text, int lineStart, int position) {
             int start = position;
             int end = position;
             for (start = position; start >= 0; start--) {
-                if (char.IsWhiteSpace(text[start]) || text[start] == '\'' || text[start] == '\"') {
+                if (IsSeparator(text[start])) {
                     start++;
                     break;
                 }
             }
             for (end = position + 1; end < text.Length; end++) {
-                if (char.IsWhiteSpace(text[end]) || text[end] == '\'' || text[end] == '\"') {
+                if (IsSeparator(text[end])) {
                     break;
                 }
             }
+            return Span.FromBounds(start + lineStart, end + lineStart);
+        }
 
-            if (start <= end) {
-                return Span.FromBounds(start + lineStart, end + lineStart);
-            }
-
-            return new Span(position + lineStart, 0);
+        private static bool IsSeparator(char ch) {
+            return char.IsWhiteSpace(ch) || ch == '\'' || ch == '\"' || ch == '\\';
         }
     }
 }

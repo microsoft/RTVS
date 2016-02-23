@@ -51,5 +51,23 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
                 selectedWord.Should().Be("def");
             }
         }
+
+        [Test]
+        [Category.Interactive]
+        public void R_SelectWord03() {
+            using (var script = new TestScript("abc\ndef", RContentTypeDefinition.ContentType)) {
+
+                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                var span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
+                var selectedWord = span.GetText();
+                selectedWord.Should().Be("abc");
+
+                script.MoveRight(2);
+                script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
+                span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
+                selectedWord = span.GetText();
+                selectedWord.Should().Be("def");
+            }
+        }
     }
 }
