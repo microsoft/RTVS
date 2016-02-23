@@ -100,8 +100,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
             InitializeActiveWpfTextViewTracker();
-            ReplWindow.EnsureReplWindow();
-
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 

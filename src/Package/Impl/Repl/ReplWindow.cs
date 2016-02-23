@@ -45,7 +45,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             if (debugger != null) {
                 debugger.AdviseDebuggerEvents(this, out _debuggerEventsCookie);
             }
-            EnsureReplWindow();
         }
 
         public static IReplWindow Current {

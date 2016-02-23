@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOutCommand(rSessionProvider),
                 new StepIntoCommand(rSessionProvider),
 
-                new InterruptRCommand(ReplWindow.Current, rSessionProvider, debugger),
+                new InterruptRCommand(rSessionProvider, debugger),
                 new ResetReplCommand(),
 
                 new ImportDataSetTextFileCommand(),
