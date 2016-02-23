@@ -98,9 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     }
                 } catch (OperationCanceledException) {
                     return;
-                } catch (Exception) {
-                    return;
-                }
+                } 
 
                 if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
                     await _threadHandling.SwitchToUIThread();
