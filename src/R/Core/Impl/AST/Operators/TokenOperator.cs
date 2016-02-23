@@ -141,6 +141,9 @@ namespace Microsoft.R.Core.AST.Operators {
                 case "!=":
                     return OperatorType.ConditionalNotEquals; // !=
 
+                case ":=":
+                    return OperatorType.DataTableAssign; // :=
+
                 case "::":
                 case ":::":
                     return OperatorType.Namespace;

@@ -186,20 +186,19 @@ namespace Microsoft.R.Editor.Completion {
         /// passed down to core editor or false otherwise.
         /// </returns>
         public override bool OnPreTypeChar(char typedCharacter) {
-            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
-                // if previous character is not whitespace, bring it on
+            if (typedCharacter == '\t' && !HasActiveCompletionSession && REditorSettings.ShowCompletionOnTab) {
+                // if previous character is identifier character, bring completion list
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
                     if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1])) {
+                        if (RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1])) {
                             ShowCompletion(autoShownCompletion: false);
                             return true;
                         }
                     }
                 }
             }
-
             return base.OnPreTypeChar(typedCharacter);
         }
 
