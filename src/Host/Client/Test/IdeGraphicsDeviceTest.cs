@@ -343,11 +343,112 @@ write(info, {0})
             File.ReadAllBytes(actualPlotFilePaths[2]).Should().Equal(File.ReadAllBytes(actualPlotFilePaths[0]));
             File.ReadAllBytes(actualPlotFilePaths[1]).Should().NotEqual(File.ReadAllBytes(actualPlotFilePaths[0]));
 
-            int expectedActive = 0;
-            int expectedCount = 2;
+            CheckHistoryResult(outputFilePath, expectedActive: 0, expectedCount: 2);
+        }
 
-            string[] lines = File.ReadAllLines(outputFilePath);
-            lines.Should().Equal($"[{expectedActive}", $", {expectedCount}", "]");
+        [Test]
+        [Category.Plots]
+        public async Task ClearPlots() {
+            var outputFilePath = _files.ClearPlotsResultPath;
+            var code = string.Format(@"
+plot(0:10)
+plot(0:15)
+rtvs:::graphics.ide.clearplots()
+info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
+write(info, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            actualPlotFilePaths.Should().HaveCount(2);
+
+            CheckHistoryResult(outputFilePath, expectedActive: -1, expectedCount: 0);
+        }
+
+        [Test]
+        [Category.Plots]
+        public async Task RemovePlotFirst() {
+            var outputFilePath = _files.ClearPlotsResultPath;
+            var code = string.Format(@"
+plot(0:10)
+plot(0:20)
+plot(0:30)
+rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.removeplot()
+info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
+write(info, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            actualPlotFilePaths.Should().HaveCount(6);
+
+            CheckHistoryResult(outputFilePath, expectedActive: 0, expectedCount: 2);
+        }
+
+        [Test]
+        [Category.Plots]
+        public async Task RemovePlotLast() {
+            var outputFilePath = _files.ClearPlotsResultPath;
+            var code = string.Format(@"
+plot(0:10)
+plot(0:20)
+plot(0:30)
+rtvs:::graphics.ide.removeplot()
+info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
+write(info, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            actualPlotFilePaths.Should().HaveCount(4);
+
+            CheckHistoryResult(outputFilePath, expectedActive: 1, expectedCount: 2);
+        }
+
+        [Test]
+        [Category.Plots]
+        public async Task RemovePlotMiddle() {
+            var outputFilePath = _files.ClearPlotsResultPath;
+            var code = string.Format(@"
+plot(0:10)
+plot(0:20)
+plot(0:30)
+rtvs:::graphics.ide.previousplot()
+rtvs:::graphics.ide.removeplot()
+info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
+write(info, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            actualPlotFilePaths.Should().HaveCount(5);
+
+            CheckHistoryResult(outputFilePath, expectedActive: 1, expectedCount: 2);
+        }
+
+        [Test]
+        [Category.Plots]
+        public async Task RemovePlotSingle() {
+            var outputFilePath = _files.ClearPlotsResultPath;
+            var code = string.Format(@"
+plot(0:10)
+rtvs:::graphics.ide.removeplot()
+info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
+write(info, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            actualPlotFilePaths.Should().HaveCount(1);
+
+            CheckHistoryResult(outputFilePath, expectedActive: -1, expectedCount: 0);
         }
 
         [Test]
@@ -376,6 +477,11 @@ rtvs:::graphics.ide.previousplot()
             bmp3.Height.Should().Be(600);
             bmp4.Width.Should().Be(600);
             bmp4.Height.Should().Be(600);
+        }
+
+        private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
+            string[] lines = File.ReadAllLines(historyInfoFilePath);
+            lines.Should().Equal($"[{expectedActive}", $", {expectedCount}", "]");
         }
 
         private async Task<string[]> GraphicsTestAgainstExpectedFilesAsync(string[] inputs) {
