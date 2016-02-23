@@ -39,11 +39,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         public bool IsRunning => false;
 
-        public IInteractiveWindowOperations Operations {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public IInteractiveWindowOperations Operations => new InteractiveWindowOperationsMock(_textBuffer);
 
         public ITextBuffer OutputBuffer => _textBuffer;
 

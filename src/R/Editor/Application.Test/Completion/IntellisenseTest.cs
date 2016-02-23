@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
@@ -220,6 +221,53 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     actual.Should().Be("base");
 
                     message.Should().NotContain("Error");
+                }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_NoCompletionOnTab() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    script.DoIdle(100);
+                    script.Type("f1<-function(x,y");
+                    script.DoIdle(300);
+                    script.Type("{TAB}");
+                    script.DoIdle(100);
+
+                    string actual = script.EditorText;
+                    actual.Should().Be("f1<-function(x,y)");
+
+                    EditorWindow.CoreEditor.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
+                }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionOnTab() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    REditorSettings.ShowCompletionOnTab = true;
+                    script.DoIdle(100);
+                    script.Type("f1<-x");
+                    EditorShell.Current.DispatchOnUIThread(() => script.GetCompletionSession().Dismiss());
+
+                    script.DoIdle(300);
+                    script.Type("{TAB}");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+                    script.DoIdle(200);
+
+                    string actual = script.EditorText;
+                    actual.Should().Be("f1<-x11()");
+
+                    REditorSettings.ShowCompletionOnTab = false;
                 }
             }
         }

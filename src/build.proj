@@ -27,7 +27,7 @@
     <WixCATargetsPath Condition="'$(WixCATargetsPath)' == ''">$(WixBinSdkDirectory)wix.ca.targets</WixCATargetsPath>
     <RHostMSI Condition="'$(RHostMSI)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMSI>
 
-    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
     <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
   </PropertyGroup>
 

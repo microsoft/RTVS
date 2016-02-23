@@ -286,7 +286,8 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         public async Task CancelAllAsync() {
             if (_runTask == null) {
-                throw new InvalidOperationException("Not connected to host.");
+                // Nothing to cancel.
+                return;
             }
 
             await TaskUtilities.SwitchToBackgroundThread();

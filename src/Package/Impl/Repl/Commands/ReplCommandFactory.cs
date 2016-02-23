@@ -4,6 +4,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
@@ -30,7 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
-                new PasteCurrentCodeCommand(textView, interactiveWorkflow)
+                new PasteCurrentCodeCommand(textView, interactiveWorkflow),
+                new SelectWordCommand(textView, textBuffer)
             };
         }
     }

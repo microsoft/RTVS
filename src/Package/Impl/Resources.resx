@@ -330,10 +330,10 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Commit intellisense selection when Enter key is pressed</value>
   </data>
   <data name="Settings_TriggerOnFirstChar" xml:space="preserve">
-    <value>Intellisense list on first character</value>
+    <value>Completion list on first character</value>
   </data>
   <data name="Settings_TriggerOnFirstChar_Description" xml:space="preserve">
-    <value>Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command</value>
+    <value>Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J)</value>
   </data>
   <data name="VariableWindowCaption" xml:space="preserve">
     <value>Variable Explorer</value>
@@ -569,6 +569,12 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="ShowDetailCommandTooltip" xml:space="preserve">
     <value>Open in a Grid Viewer</value>
+  </data>
+  <data name="Settings_TriggerOnTab" xml:space="preserve">
+    <value>Completion list on Tab key</value>
+  </data>
+  <data name="Settings_TriggerOnTab_Description" xml:space="preserve">
+    <value>If set to on completion list can be invoked by typing one or more characters and pressing Tab.</value>
   </data>
   <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
     <value>Unable to evaluate expression and get data for Microsoft Excel</value>

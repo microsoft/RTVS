@@ -52,6 +52,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         }
 
         [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_TriggerOnTab")]
+        [LocDescription("Settings_TriggerOnTab_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(false)]
+        public bool TriggerOnTab {
+            get { return REditorSettings.ShowCompletionOnTab; }
+            set { REditorSettings.ShowCompletionOnTab = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
         [CustomLocDisplayName("Settings_PartialArgumentNameMatch")]
         [LocDescription("Settings_PartialArgumentNameMatch_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]

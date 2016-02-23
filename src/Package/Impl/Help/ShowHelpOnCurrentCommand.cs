@@ -26,12 +26,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// </remarks>
     internal sealed class ShowHelpOnCurrentCommand : PackageCommand {
         private const int MaxHelpItemLength = 128;
-        private readonly IRSession _session;
+        private readonly IRInteractiveWorkflow _workflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
-        public ShowHelpOnCurrentCommand(IRSession session, IActiveWpfTextViewTracker textViewTracker) :
+        public ShowHelpOnCurrentCommand(IRInteractiveWorkflow workflow, IActiveWpfTextViewTracker textViewTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) {
-            _session = session;
+            _workflow = workflow;
             _textViewTracker = textViewTracker;
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle() {
             try {
-                if (!_session.IsHostRunning) {
+                if (!_workflow.RSession.IsHostRunning) {
                     return;
                 }
 
@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private async Task ShowHelpOnCurrentAsync(string prefix, string item) {
             try {
-                using (IRSessionEvaluation evaluation = await _session.BeginEvaluationAsync(isMutating: false)) {
+                using (IRSessionEvaluation evaluation = await _workflow.RSession.BeginEvaluationAsync(isMutating: false)) {
                     REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
                     if (result.ParseStatus == RParseStatus.OK &&
                         string.IsNullOrEmpty(result.Error)) {
@@ -96,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // message in REPL is actually an error (comes in red) so we'll get RException.
             int retries = 0;
             while (retries < 3) {
-                using (IRSessionInteraction interaction = await _session.BeginInteractionAsync(isVisible: false)) {
+                using (IRSessionInteraction interaction = await _workflow.RSession.BeginInteractionAsync(isVisible: false)) {
                     try {
                         await interaction.RespondAsync(prefix + item + Environment.NewLine);
                     } catch (RException ex) {
@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }
-            textView = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow.TextView;
+            textView = _workflow.ActiveWindow.InteractiveWindow.TextView;
             if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }
