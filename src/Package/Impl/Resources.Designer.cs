@@ -1231,7 +1231,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show completion list on first character typed. If set to off, completion list can be brough up by invoking Edit &gt; IntelliSense &gt; List Members command (Ctrl+J).
+        ///   Looks up a localized string similar to Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J).
         /// </summary>
         public static string Settings_TriggerOnFirstChar_Description {
             get {

@@ -333,7 +333,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Completion list on first character</value>
   </data>
   <data name="Settings_TriggerOnFirstChar_Description" xml:space="preserve">
-    <value>Show completion list on first character typed. If set to off, completion list can be brough up by invoking Edit &gt; IntelliSense &gt; List Members command (Ctrl+J)</value>
+    <value>Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J)</value>
   </data>
   <data name="VariableWindowCaption" xml:space="preserve">
     <value>Variable Explorer</value>
