@@ -76,7 +76,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new CopyPlotAsBitmapCommand(plotHistory),
                 new CopyPlotAsMetafileCommand(plotHistory),
                 new HistoryNextPlotCommand(plotHistory),
-                new HistoryPreviousPlotCommand(plotHistory)
+                new HistoryPreviousPlotCommand(plotHistory),
+                new ClearPlotsCommand(plotHistory),
+                new RemovePlotCommand(plotHistory),
             };
         }
     }

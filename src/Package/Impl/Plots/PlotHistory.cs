@@ -49,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private void ClearHistoryInfo() {
             ActivePlotIndex = -1;
             PlotCount = 0;
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Dispose() {

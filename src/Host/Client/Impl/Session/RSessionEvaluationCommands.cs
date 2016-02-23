@@ -57,6 +57,16 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.RespondAsync(script);
         }
 
+        public static Task ClearPlotHistory(this IRSessionInteraction evaluation) {
+            var script = "rtvs:::graphics.ide.clearplots()\n";
+            return evaluation.RespondAsync(script);
+        }
+
+        public static Task RemoveCurrentPlot(this IRSessionInteraction evaluation) {
+            var script = "rtvs:::graphics.ide.removeplot()\n";
+            return evaluation.RespondAsync(script);
+        }
+
         public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
             var script = @"rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
