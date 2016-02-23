@@ -24,11 +24,11 @@
       <PayloadGroupRef Id="commonvsmanaged_ux"/>
       <PayloadGroupRef Id="rtvs_ux"/>
 
-      <dd:MappingStore>
+      <!--<dd:MappingStore>
         <SelectableItem DefinitionId="RTVSPackageSelectableItemId" DefaultInstallStateOverride="install" />
-        <SelectableItem DefinitionId="MROItemDefinitionId" DefaultInstallStateOverride="install" />
-      </dd:MappingStore>
-      <!--<SelectableItem DefinitionId="VSItemDefinitionId" DefaultInstallStateOverride="install" />-->
+      </dd:MappingStore>-->
+      <!--<SelectableItem DefinitionId="MROItemDefinitionId" DefaultInstallStateOverride="install" />
+        <SelectableItem DefinitionId="VSItemDefinitionId" DefaultInstallStateOverride="install" />-->
 
     </BootstrapperApplicationRef>
 
@@ -47,13 +47,13 @@
     </dd:UxConfiguration>
 
     <?include VSDetection.wxi?>
-    
+
     <!-- Require VS 2015 Update 1 -->
     <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v14.0.24720"
                 DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
 
     <dd:Blocker ShortName="Win64Block" Type="Stop" Condition="NOT VersionNT64"
-                DisplayText="R Tools for Visual Studio require 64-bit Windows." />
+            DisplayText="R Tools for Visual Studio require 64-bit Windows." />
 
     <!--<dd:Blocker ShortName="MinimumOSLevel" Type="Stop" Condition="(VersionNT &lt; v6.1)" DisplayText="R Tools for Visual Studio require Windows 7 or higher." />-->
     <!--<dd:Blocker ShortName="VsInstalledBlock" Type="Stop" Condition="( NOT ((Professional_DetectKey = 1) OR (Community_DetectKey = 1) OR (Enterprise_DetectKey = 1)) ) AND (CurrentOperation = &quot;Install&quot;)"
@@ -65,11 +65,11 @@
                   Compressed="no" DownloadUrl="https://ptvs.blob.core.windows.net/temp/$(var.RHostMsi)" />
       <!--<PackageGroupRef Id="RTVSPackageId" />
       <PackageGroupRef Id="MROPackageId" />
-      <!-- <PackageGroupRef Id="VsCommunityId" />-->
+      <PackageGroupRef Id="VsCommunityId" />-->
     </Chain>
   </Bundle>
 
-  <Fragment>
+  <!--<Fragment>
     <PackageGroup Id="RTVSPackageId">
       <MsiPackage Id="RTVSPackageId" SourceFile="$(var.BinDir)\RTVS.msi" />
     </PackageGroup>
@@ -90,7 +90,7 @@
       </ExePackage>
     </PackageGroup>
 
-    <!--<PackageGroup Id="VsCommunityId">
+    <PackageGroup Id="VsCommunityId">
       <ExePackage Id="VsCommunityId"
               Vital="yes"
               Name="vs_community_ENU.exe"
@@ -103,10 +103,10 @@
                        Version="14.0.5827.17676"
                        Hash="a6e9ec1443cfb1cc8997cd67d877d37d2fbb433e"/>
       </ExePackage>
-    </PackageGroup>-->
-  </Fragment>
+    </PackageGroup>
+  </Fragment>-->
 
-  <Fragment>
+  <!--<Fragment>
     <dd:SelectableItemDefinition Id="RTVSPackageSelectableItemId"
                                  DisplayName="R Tools for Visual Studio"
                                  Description="R Tools for Visual Studio 2015."
@@ -121,11 +121,11 @@
       <PackageId Id="MROPackageId" />
     </dd:SelectableItemDefinition>
 
-    <!--<dd:SelectableItemDefinition Id="VSItemDefinitionId"
+    <dd:SelectableItemDefinition Id="VSItemDefinitionId"
                                  DisplayName="Visual Studio 2015"
                                  Description="A free, fully-featured, and extensible IDE for creating modern applications for Windows, Android, and iOS, as well as web applications and cloud services."
                                  DefaultInstallState="install">
       <PackageId Id="VsCommunityId" />
-    </dd:SelectableItemDefinition>-->
-  </Fragment>
+    </dd:SelectableItemDefinition>
+  </Fragment>-->
 </Wix>

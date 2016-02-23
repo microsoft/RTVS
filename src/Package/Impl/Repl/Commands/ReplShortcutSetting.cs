@@ -37,11 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (REditorSettings.SendToReplOnCtrlEnter) {
                 // Find and save existing binding
-                foreach (Command c in dte.Commands) {
-                    string commandName = c.Name;
-                    if (!commandName.ToLowerInvariant().Contains("ExecuteLineInInteractive")) {
-                        object[] commandBindings = c.Bindings as object[];
-                        if (commandBindings != null && commandBindings.Length > 0) {
+                Command c = dte.Commands.Item("EditorContextMenus.CodeWindow.ExecuteLineInInteractive");
+                if (c != null) {
+                    object[] commandBindings = c.Bindings as object[];
+                    if (commandBindings != null && commandBindings.Length > 0) {
+                        string commandName = c.Name;
+                        if (!commandName.ToLowerInvariant().Contains("ExecuteLineInInteractive")) {
                             foreach (object o in commandBindings) {
                                 string commandBinding = o as string;
                                 if (string.IsNullOrEmpty(commandBinding)) {

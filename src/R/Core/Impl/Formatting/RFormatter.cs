@@ -5,7 +5,6 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Formatting {
@@ -41,13 +40,7 @@ namespace Microsoft.R.Core.Formatting {
         /// <summary>
         /// Format string containing R code
         /// </summary>
-        /// <param name="text">Text to format (can be a fragment)</param>
-        /// <param name="ast">When formatting fragment, supply AST of the complete
-        /// file so ambiguous fragments such as '} else' where it is unclear if '}' 
-        /// closes the 'if' and then the 'else' cannot be separated from '}' or is it 
-        /// 'if(...) while(..) { } else' where line break should be inserted 
-        /// before the 'else'.</param>
-        public string Format(string text, AstRoot ast = null, int fragmentStart = 0) {
+        public string Format(string text) {
             // Tokenize incoming text
             Tokenize(text);
 
@@ -57,7 +50,7 @@ namespace Microsoft.R.Core.Formatting {
                     AppendTextBeforeToken();
                 }
 
-                AppendNextToken(ast, fragmentStart);
+                AppendNextToken();
             }
 
             // Append any trailing line breaks
@@ -66,7 +59,7 @@ namespace Microsoft.R.Core.Formatting {
             return _tb.Text;
         }
 
-        private void AppendNextToken(AstRoot ast = null, int fragmentStart = 0) {
+        private void AppendNextToken() {
             switch (_tokens.CurrentToken.TokenType) {
                 case RTokenType.Keyword:
                     AppendKeyword();
@@ -77,7 +70,7 @@ namespace Microsoft.R.Core.Formatting {
                     break;
 
                 case RTokenType.CloseCurlyBrace:
-                    CloseFormattingScope(ast, fragmentStart);
+                    CloseFormattingScope();
                     break;
 
                 case RTokenType.Comma:
@@ -134,7 +127,7 @@ namespace Microsoft.R.Core.Formatting {
             _tb.NewIndentLevel();
         }
 
-        private void CloseFormattingScope(AstRoot ast = null, int fragmentStart = 0) {
+        private void CloseFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
             _tb.SoftLineBreak();
@@ -156,11 +149,11 @@ namespace Microsoft.R.Core.Formatting {
                 // (last parameter in a function or indexer) or it is followed by 'else'
                 // so 'else' does not get separated from 'if'.
                 if (!KeepCurlyAndElseTogether()) {
-                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
-                    _tb.SoftLineBreak();
+                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                        _tb.SoftLineBreak();
+                    }
                 }
             }
-        }
         }
 
         /// <summary>
@@ -392,12 +385,12 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             return false;
-            }
+        }
 
         private bool KeepCurlyAndElseTogether() {
             if (_tokens.CurrentToken.TokenType != RTokenType.Keyword) {
-            return false;
-        }
+                return false;
+            }
 
             return _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
                    _textProvider.GetText(_tokens.CurrentToken) == "else";
