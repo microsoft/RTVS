@@ -13,6 +13,7 @@ namespace Microsoft.R.Editor.Settings {
         public const string CommitOnSpaceKey = "CommitOnSpace";
         public const string CommitOnEnterKey = "CommitOnEnter";
         public const string CompletionOnFirstCharKey = "CompletionOnFirstChar";
+        public const string CompletionOnTabKey = "CompletionOnTab";
         public const string SendToReplOnCtrlEnterKey = "SendToReplOnCtrlEnter";
         public const string SyntaxCheckInReplKey = "SyntaxCheckInRepl";
         public const string PartialArgumentNameMatchKey = "PartialArgumentNameMatch";
@@ -136,6 +137,14 @@ namespace Microsoft.R.Editor.Settings {
             set {
                 if (IsWritable)
                     WritableStorage.SetBoolean(CompletionOnFirstCharKey, value);
+            }
+        }
+
+        public static bool ShowCompletionOnTab {
+            get { return Storage.GetBoolean(CompletionOnTabKey, false); }
+            set {
+                if (IsWritable)
+                    WritableStorage.SetBoolean(CompletionOnTabKey, value);
             }
         }
 
