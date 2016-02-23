@@ -166,7 +166,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void SessionOnBeforeRequest(object sender, RRequestEventArgs e) {
             _coreShell.DispatchOnUIThread(() => {
-                if (CurrentWindow.IsRunning) {
+                if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
                 }
 
