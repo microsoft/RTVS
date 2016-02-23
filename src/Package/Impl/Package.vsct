@@ -154,6 +154,8 @@
         <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
         <CommandFlag>StretchHorizontally</CommandFlag>
         <CommandFlag>ComboCommitsOnDrop</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Select Working Directory</ButtonText>
         </Strings>
@@ -899,6 +901,8 @@
         <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Source R Script</ButtonText>
           <MenuText>&amp;Source R Script</MenuText>
