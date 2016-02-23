@@ -8,7 +8,7 @@ namespace Microsoft.R.Editor.Commands {
     [Name(nameof(RMouseProcessor))]
     [Order(Before = "WordSelection")]
     [ContentType(RContentTypeDefinition.ContentType)]
-    [TextViewRole(PredefinedTextViewRoles.Document)]
+    [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal sealed class RMouseProcessorProvider : IMouseProcessorProvider {
         public IMouseProcessor GetAssociatedProcessor(IWpfTextView wpfTextView) {
             return wpfTextView.Properties.GetOrCreateSingletonProperty(() => new RMouseProcessor(wpfTextView));

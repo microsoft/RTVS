@@ -24,6 +24,7 @@
         Not, // !
         And, // &
         Or, // |
+        DataTableAssign, // :=
         ConditionalAnd, // &&
         CondtitionalOr, // ||
         ConditionalEquals, // ==

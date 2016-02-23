@@ -167,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void SessionOnBeforeRequest(object sender, RRequestEventArgs e) {
             VsAppShell.Current.DispatchOnUIThread(() => {
-                if (CurrentWindow.IsRunning) {
+                if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
                 }
 

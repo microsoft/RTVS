@@ -186,20 +186,19 @@ namespace Microsoft.R.Editor.Completion {
         /// passed down to core editor or false otherwise.
         /// </returns>
         public override bool OnPreTypeChar(char typedCharacter) {
-            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
-                // if previous character is not whitespace, bring it on
+            if (typedCharacter == '\t' && !HasActiveCompletionSession && REditorSettings.ShowCompletionOnTab) {
+                // if previous character is identifier character, bring completion list
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
                     if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1])) {
+                        if (RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1])) {
                             ShowCompletion(autoShownCompletion: false);
                             return true;
                         }
                     }
                 }
             }
-
             return base.OnPreTypeChar(typedCharacter);
         }
 
@@ -327,14 +326,18 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
-            if (CompletionSession != null) {
-                if (CompletionSession.CompletionSets.Count > 0) {
-                    Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
-                    string name = completion.InsertionText;
-                    SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
-                    Task.Run(async () => await InsertFunctionBraces(position, name));
-                }
-            }
+            // Aut-insert of braces is disabled until we have reliable method
+            // of determination if given token is a function or a variable
+            // using both AST and R engine.
+
+            //if (CompletionSession != null) {
+            //    if (CompletionSession.CompletionSets.Count > 0) {
+            //        Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
+            //        string name = completion.InsertionText;
+            //        SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
+            //        Task.Run(async () => await InsertFunctionBraces(position, name));
+            //    }
+            //}
             base.OnCompletionSessionCommitted(sender, eventArgs);
         }
 

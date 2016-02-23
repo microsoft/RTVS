@@ -3,7 +3,7 @@ using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -21,7 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView),
-                new PasteCurrentCodeCommand(textView)
+                new PasteCurrentCodeCommand(textView),
+                new SelectWordCommand(textView, textBuffer)
             };
         }
     }

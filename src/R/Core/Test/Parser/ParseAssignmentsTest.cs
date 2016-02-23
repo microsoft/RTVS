@@ -149,5 +149,40 @@ UnexpectedToken Token [0...2)
 ";
             ParserTest.VerifyParse(expected, "StudentData$ScoreRounded<-round(StudentData$Score)");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseDataTableAssignment() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [dt[, b := letters[1:3]]]
+        Expression  [dt[, b := letters[1:3]]]
+            Indexer  [0...23)
+                Variable  [dt]
+                TokenNode  [[ [2...3)]
+                ArgumentList  [3...22)
+                    MissingArgument  [{Missing}]
+                        TokenNode  [, [3...4)]
+                    ExpressionArgument  [5...22)
+                        Expression  [b := letters[1:3]]
+                            TokenOperator  [:= [7...9)]
+                                Variable  [b]
+                                TokenNode  [:= [7...9)]
+                                Indexer  [10...22)
+                                    Variable  [letters]
+                                    TokenNode  [[ [17...18)]
+                                    ArgumentList  [18...21)
+                                        ExpressionArgument  [18...21)
+                                            Expression  [1:3]
+                                                TokenOperator  [: [19...20)]
+                                                    NumericalValue  [1 [18...19)]
+                                                    TokenNode  [: [19...20)]
+                                                    NumericalValue  [3 [20...21)]
+                                    TokenNode  [] [21...22)]
+                TokenNode  [] [22...23)]
+";
+            ParserTest.VerifyParse(expected, "dt[, b := letters[1:3]]");
+        }
+
     }
 }

@@ -4,11 +4,12 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Selection {
-    public sealed class SelectWordCommand: ViewCommand {
+    public sealed class SelectWordCommand : ViewCommand {
         public SelectWordCommand(ITextView textView, ITextBuffer textBuffer) :
             base(textView, typeof(VSConstants.VSStd2KCmdID).GUID, (int)VSConstants.VSStd2KCmdID.SELECTCURRENTWORD, needCheckout: false) {
         }
@@ -18,23 +19,59 @@ namespace Microsoft.R.Editor.Selection {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var caretPosition = TextView.Caret.Position.BufferPosition;
-            ITextSnapshotLine line = null;
-            try {
-                line = TextView.TextBuffer.CurrentSnapshot.GetLineFromPosition(caretPosition);
-            } catch (Exception) { }
+            int caretPosition = TextView.Caret.Position.BufferPosition.Position;
+            SnapshotPoint? rPosition = TextView.MapDownToR(caretPosition);
 
-            // Tokenize current line
-            if(line != null) {
-                var text = line.GetText();
-                var t = new RTokenizer();
-                var tokens = t.Tokenize(text);
-                var token = tokens.FirstOrDefault(x => x.Start >= caretPosition && caretPosition < x.End);
-                if(token != null) {
-                    TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, new Span(token.Start, token.Length)), isReversed: false);
+            if (rPosition.HasValue) {
+                ITextSnapshotLine line = rPosition.Value.Snapshot.GetLineFromPosition(caretPosition);
+                // Tokenize current line
+                if (line != null) {
+                    Span? spanToSelect = null;
+                    var text = line.GetText();
+                    var tokenizer = new RTokenizer();
+                    var tokens = tokenizer.Tokenize(text);
+                    var positionInLine = rPosition.Value.Position - line.Start;
+                    var token = tokens.FirstOrDefault(t => t.Contains(positionInLine));
+                    if (token != null) {
+                        if (token.TokenType == RTokenType.String) {
+                            // Select word inside string
+                            spanToSelect = GetWordSpan(text, line.Start, positionInLine);
+                        } else {
+                            spanToSelect = new Span(token.Start + line.Start, token.Length);
+                        }
+                    }
+                    if (spanToSelect.HasValue && spanToSelect.Value.Length > 0) {
+                        NormalizedSnapshotSpanCollection spans = TextView.BufferGraph.MapUpToBuffer(
+                            new SnapshotSpan(rPosition.Value.Snapshot, spanToSelect.Value),
+                            SpanTrackingMode.EdgePositive, TextView.TextBuffer);
+                        if (spans.Count == 1) {
+                            TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, spans[0]), isReversed: false);
+                        }
+                    }
                 }
             }
             return CommandResult.Executed;
+        }
+
+        private static Span GetWordSpan(string text, int lineStart, int position) {
+            int start = position;
+            int end = position;
+            for (start = position; start >= 0; start--) {
+                if (IsSeparator(text[start])) {
+                    start++;
+                    break;
+                }
+            }
+            for (end = position + 1; end < text.Length; end++) {
+                if (IsSeparator(text[end])) {
+                    break;
+                }
+            }
+            return Span.FromBounds(start + lineStart, end + lineStart);
+        }
+
+        private static bool IsSeparator(char ch) {
+            return char.IsWhiteSpace(ch) || ch == '\'' || ch == '\"' || ch == '\\';
         }
     }
 }
