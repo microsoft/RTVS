@@ -175,6 +175,10 @@
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Components\Test\Microsoft.R.Components.Test.csproj">
+      <Project>{2aa8762f-3a84-4cd5-9aa0-77829a766769}</Project>
+      <Name>Microsoft.R.Components.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor</Name>
@@ -182,6 +186,10 @@
     <ProjectReference Include="..\..\R\Editor\Test\Microsoft.R.Editor.Test.csproj">
       <Project>{9066522E-780E-4409-B410-2525E6A621FC}</Project>
       <Name>Microsoft.R.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
+      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>

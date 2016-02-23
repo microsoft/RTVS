@@ -239,6 +239,7 @@
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\VariableExpectation.cs" />
     <Compile Include="DataInspect\VariableRHostScript.cs" />
+    <Compile Include="FakeFactories\TestRInteractiveWorkflowProviderFactory.cs" />
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Mocks\RHistoryVisualComponentContainerFactoryMock.cs" />
