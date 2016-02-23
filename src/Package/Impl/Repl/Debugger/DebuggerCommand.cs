@@ -35,20 +35,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             if (mode[0] == DBGMODE.DBGMODE_Design) {
                 if (_visibility == DebuggerCommandVisibility.DesignMode) {
+                    Visible = ReplWindow.Current.IsActive;
                     Enabled = true;
-                    Visible = true;
                 }
                 return;
             }
 
             if ((_visibility & DebuggerCommandVisibility.DebugMode) > 0) {
-                Visible = true;
+                Visible = ReplWindow.Current.IsActive;
 
                 if (mode[0] == DBGMODE.DBGMODE_Break) {
                     Enabled = (_visibility & DebuggerCommandVisibility.Stopped) > 0;
                     return;
                 }
-
                 if (mode[0] == DBGMODE.DBGMODE_Run) {
                     Enabled = (_visibility & DebuggerCommandVisibility.Run) > 0;
                     return;
