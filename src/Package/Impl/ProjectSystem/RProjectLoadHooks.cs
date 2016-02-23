@@ -3,6 +3,7 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
@@ -87,18 +88,26 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
 
-            using (var evaluation = await _session.BeginEvaluationAsync()) {
-                if (saveDefaultWorkspace) {
-                    await evaluation.SaveWorkspace(rdataPath);
+            Task.Run(async () => {
+                try {
+                    using (var evaluation = await _session.BeginEvaluationAsync()) {
+                        if (saveDefaultWorkspace) {
+                            await evaluation.SaveWorkspace(rdataPath);
+                        }
+                        await evaluation.SetDefaultWorkingDirectory();
+                    }
+                } catch (OperationCanceledException) {
+                    return;
+                } catch (Exception) {
+                    return;
                 }
-                await evaluation.SetDefaultWorkingDirectory();
-            }
 
-            if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
-                await _threadHandling.SwitchToUIThread();
-                var history = GetRHistory();
-                history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-            }
+                if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
+                    await _threadHandling.SwitchToUIThread();
+                    var history = GetRHistory();
+                    history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                }
+            }).DoNotWait();
         }
 
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
