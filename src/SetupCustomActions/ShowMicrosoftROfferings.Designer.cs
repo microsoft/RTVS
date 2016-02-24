@@ -53,8 +53,6 @@
             // 
             // closeApp
             // 
-            this.closeApp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.closeApp.ForeColor = System.Drawing.Color.White;
             this.closeApp.Location = new System.Drawing.Point(831, 656);
             this.closeApp.Name = "closeApp";
             this.closeApp.Size = new System.Drawing.Size(148, 32);
@@ -65,22 +63,18 @@
             // 
             // openInBrowser
             // 
-            this.openInBrowser.BackColor = System.Drawing.Color.Black;
-            this.openInBrowser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.openInBrowser.ForeColor = System.Drawing.Color.White;
             this.openInBrowser.Location = new System.Drawing.Point(665, 656);
             this.openInBrowser.Name = "openInBrowser";
             this.openInBrowser.Size = new System.Drawing.Size(148, 32);
             this.openInBrowser.TabIndex = 2;
             this.openInBrowser.Text = "&Open in Web Browser...";
-            this.openInBrowser.UseVisualStyleBackColor = false;
+            this.openInBrowser.UseVisualStyleBackColor = true;
             this.openInBrowser.Click += new System.EventHandler(this.openInBrowser_Click);
             // 
             // ShowMicrosoftROfferings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(991, 702);
             this.Controls.Add(this.openInBrowser);
             this.Controls.Add(this.closeApp);
