@@ -185,6 +185,26 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 (int)result.JsonResult[1].ToObject(typeof(int)));
         }
 
+        public async System.Threading.Tasks.Task ClearAllAsync() {
+            if (_rSession == null) {
+                return;
+            }
+
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
+                await eval.ClearPlotHistory();
+            }
+        }
+
+        public async System.Threading.Tasks.Task RemoveCurrentPlotAsync() {
+            if (_rSession == null) {
+                return;
+            }
+
+            using (var eval = await _rSession.BeginInteractionAsync(false)) {
+                await eval.RemoveCurrentPlot();
+            }
+        }
+
         public async System.Threading.Tasks.Task NextPlotAsync() {
             if (_rSession == null) {
                 return;

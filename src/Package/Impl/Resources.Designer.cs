@@ -196,6 +196,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
+        /// </summary>
+        public static string DeleteAllPlots {
+            get {
+                return ResourceManager.GetString("DeleteAllPlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
+        /// </summary>
+        public static string DeletePlot {
+            get {
+                return ResourceManager.GetString("DeletePlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to remove the selected entries from the history?.
         /// </summary>
         public static string DeleteSelectedHistoryEntries {

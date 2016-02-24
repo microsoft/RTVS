@@ -99,22 +99,33 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
-            var request = await Session.BeginInteractionAsync();
-
-            if (text.Length >= request.MaxLength) {
-                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
-                request.Dispose();
-                return ExecutionResult.Failure;
-            }
-
-
             // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
             if (text[0] == '\u0002') {
                 text = text.Substring(1);
             }
 
+            var start = 0;
+            var end = text.IndexOf('\n');
+            if (end == -1) {
+                return ExecutionResult.Success;
+            }
+
             try {
-                await request.RespondAsync(text);
+                while (end != -1) {
+                    var line = text.Substring(start, end - start + 1);
+                    start = end + 1;
+                    end = text.IndexOf('\n', start);
+
+                    using (var request = await Session.BeginInteractionAsync()) {
+                        if (line.Length >= request.MaxLength) {
+                            CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                            return ExecutionResult.Failure;
+                        }
+
+                        await request.RespondAsync(line);
+                    }
+                }
+                
                 return ExecutionResult.Success;
             } catch (RException) {
                 // It was already reported via RSession.Error and printed out; just return failure.
