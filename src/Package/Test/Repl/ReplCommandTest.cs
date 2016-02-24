@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             var debugger = new VsDebuggerMock();
             var sp = new RSessionProviderMock();
             var rw = new ReplWindowMock();
-            var command = new InterruptRCommand(rw, sp, debugger);
+            var command = new InterruptRCommand(sp, debugger, rw);
 
             command.SetStatus();
             command.Visible.Should().BeFalse();
