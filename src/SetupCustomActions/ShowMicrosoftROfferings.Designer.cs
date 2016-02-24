@@ -53,6 +53,7 @@
             // 
             // closeApp
             // 
+            this.closeApp.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.closeApp.Location = new System.Drawing.Point(831, 656);
             this.closeApp.Name = "closeApp";
             this.closeApp.Size = new System.Drawing.Size(148, 32);
@@ -63,6 +64,7 @@
             // 
             // openInBrowser
             // 
+            this.openInBrowser.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.openInBrowser.Location = new System.Drawing.Point(665, 656);
             this.openInBrowser.Name = "openInBrowser";
             this.openInBrowser.Size = new System.Drawing.Size(148, 32);
