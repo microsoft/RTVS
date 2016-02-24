@@ -349,7 +349,6 @@
     <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
     <Compile Include="Telemetry\RtvsTelemetry.cs" />
-    <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />

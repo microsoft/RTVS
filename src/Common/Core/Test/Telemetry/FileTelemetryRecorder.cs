@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.VisualStudio.Telemetry;
 using Newtonsoft.Json;
 
 namespace Microsoft.Common.Core.Test.Telemetry {
@@ -39,30 +37,6 @@ namespace Microsoft.Common.Core.Test.Telemetry {
 
                 string json = JsonConvert.SerializeObject(telemetryEvent);
                 sw.WriteLine(json);
-            }
-        }
-
-        public void RecordEvent(TelemetryEvent telemetryEvent) {
-            using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
-                SimpleTelemetryEvent simpleEvent = new SimpleTelemetryEvent(telemetryEvent.Name);
-                simpleEvent.Properties = telemetryEvent.Properties;
-
-                string json = JsonConvert.SerializeObject(simpleEvent);
-                sw.WriteLine(json);
-            }
-        }
-
-        public void RecordActivity(object telemetryActivity) {
-            TelemetryActivity activity = telemetryActivity as TelemetryActivity;
-            Debug.Assert(activity != null);
-            if (activity != null) {
-                using (StreamWriter sw = File.AppendText(FileTelemetryRecorder.TestLog)) {
-                    SimpleTelemetryEvent simpleEvent = new SimpleTelemetryEvent(activity.Name);
-                    simpleEvent.Properties = activity.Properties;
-
-                    string json = JsonConvert.SerializeObject(simpleEvent);
-                    sw.WriteLine(json);
-                }
             }
         }
 

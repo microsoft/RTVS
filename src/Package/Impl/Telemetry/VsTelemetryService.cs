@@ -27,17 +27,5 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             (base.TelemetryRecorder as ITelemetryLog)?.Reset();
         }
         #endregion
-
-        /// <summary>
-        /// Start a telemetry activity, dispose of the return value when the activity is complete
-        /// </summary>
-        public override ITelemetryActivity StartActivity(TelemetryArea area, string eventName) {
-            Check.ArgumentStringNullOrEmpty("eventName", eventName);
-
-            string fullEventName = this.EventNamePrefix + area.ToString() + "/" + eventName;
-            string eventPropertyPrefix = this.PropertyNamePrefix + area.ToString() + "." + eventName + '.';
-
-            return new TelemetryActivityWrapper(this.TelemetryRecorder, fullEventName, eventPropertyPrefix);
-        }
     }
 }
