@@ -117,19 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DSProfilePromptText" xml:space="preserve">
-    <value>Data Scientist profile provides window layout and keyboard shortcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?</value>
-  </data>
-  <data name="MicrosoftROpenQuestion" xml:space="preserve">
-    <value>Setup was unable to locate the R language engine. Would you like setup to open a Web page where you can download and install Microsoft R Open?</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>No</value>
-  </data>
-  <data name="VsCommunityQuestion" xml:space="preserve">
-    <value>Setup was unable to locate Visual Studio 2015 which is required. Would you like setup to open a Web page where you can download and install free Visual Studio 2015 Community?</value>
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
-  </data>
 </root>

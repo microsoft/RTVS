@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Deployment.WindowsInstaller;
 using Microsoft.R.Actions.Utility;
@@ -37,12 +38,6 @@ namespace SetupCustomActions {
 
             session.Log("End R detection action");
             return actionResult;
-        }
-
-        [CustomAction]
-        public static ActionResult OpenRtvsPageAction(Session session) {
-            Process.Start("https://microsoft.github.io/RTVS-docs");
-            return ActionResult.Success;
         }
 
         [CustomAction]
@@ -83,6 +78,25 @@ namespace SetupCustomActions {
 
             session.Log("End VS detection action");
             return actionResult;
+        }
+
+        [CustomAction]
+        public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
+            session.Log("Start ShowMicrosoftROfferings action");
+
+            var staThread = new Thread(StaThreadEntry);
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join();
+
+            session.Log("End ShowMicrosoftROfferings action");
+            return ActionResult.Success;
+        }
+
+        private static void StaThreadEntry(object o) {
+            using (var form = new ShowMicrosoftROfferings()) {
+                form.ShowDialog(new SetupWindowHandle());
+            }
         }
 
         class SetupWindowHandle : IWin32Window {
