@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (ReplWindow.ReplWindowExists) {
                 return CommandStatus.SupportedAndEnabled;
             }
-            return CommandStatus.Supported;
+            return CommandStatus.Invisible;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

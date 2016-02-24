@@ -64,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         internal override void SetStatus() {
+            Visible = ReplWindow.Current.IsActive;
             Enabled = GetFilePath() != null;
         }
 
