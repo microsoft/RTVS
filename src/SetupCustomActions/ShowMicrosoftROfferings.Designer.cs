@@ -25,6 +25,7 @@
         private void InitializeComponent() {
             this.webBrowserPanel = new System.Windows.Forms.Panel();
             this.webBrowser = new System.Windows.Forms.WebBrowser();
+            this.closeApp = new System.Windows.Forms.Button();
             this.openInBrowser = new System.Windows.Forms.Button();
             this.webBrowserPanel.SuspendLayout();
             this.SuspendLayout();
@@ -32,10 +33,13 @@
             // webBrowserPanel
             // 
             this.webBrowserPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.webBrowserPanel.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.webBrowserPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.webBrowserPanel.Controls.Add(this.webBrowser);
-            this.webBrowserPanel.Location = new System.Drawing.Point(12, 12);
+            this.webBrowserPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.webBrowserPanel.Location = new System.Drawing.Point(0, 0);
             this.webBrowserPanel.Name = "webBrowserPanel";
-            this.webBrowserPanel.Size = new System.Drawing.Size(689, 439);
+            this.webBrowserPanel.Size = new System.Drawing.Size(991, 636);
             this.webBrowserPanel.TabIndex = 0;
             // 
             // webBrowser
@@ -44,16 +48,26 @@
             this.webBrowser.Location = new System.Drawing.Point(0, 0);
             this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser.Name = "webBrowser";
-            this.webBrowser.Size = new System.Drawing.Size(689, 439);
+            this.webBrowser.Size = new System.Drawing.Size(989, 634);
             this.webBrowser.TabIndex = 0;
+            // 
+            // closeApp
+            // 
+            this.closeApp.Location = new System.Drawing.Point(831, 656);
+            this.closeApp.Name = "closeApp";
+            this.closeApp.Size = new System.Drawing.Size(148, 32);
+            this.closeApp.TabIndex = 1;
+            this.closeApp.Text = "&Close";
+            this.closeApp.UseVisualStyleBackColor = true;
+            this.closeApp.Click += new System.EventHandler(this.closeApp_Click);
             // 
             // openInBrowser
             // 
-            this.openInBrowser.Location = new System.Drawing.Point(754, 660);
+            this.openInBrowser.Location = new System.Drawing.Point(665, 656);
             this.openInBrowser.Name = "openInBrowser";
-            this.openInBrowser.Size = new System.Drawing.Size(148, 31);
-            this.openInBrowser.TabIndex = 1;
-            this.openInBrowser.Text = "Open in Web Browser...";
+            this.openInBrowser.Size = new System.Drawing.Size(148, 32);
+            this.openInBrowser.TabIndex = 2;
+            this.openInBrowser.Text = "&Open in Web Browser...";
             this.openInBrowser.UseVisualStyleBackColor = true;
             this.openInBrowser.Click += new System.EventHandler(this.openInBrowser_Click);
             // 
@@ -61,11 +75,12 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(915, 704);
+            this.ClientSize = new System.Drawing.Size(991, 702);
             this.Controls.Add(this.openInBrowser);
+            this.Controls.Add(this.closeApp);
             this.Controls.Add(this.webBrowserPanel);
             this.Name = "ShowMicrosoftROfferings";
-            this.Text = "R Tools for Visual Studio";
+            this.Text = "Welcome to Microsoft R Tools for Visual Studio";
             this.webBrowserPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -75,6 +90,7 @@
 
         private System.Windows.Forms.Panel webBrowserPanel;
         private System.Windows.Forms.WebBrowser webBrowser;
+        private System.Windows.Forms.Button closeApp;
         private System.Windows.Forms.Button openInBrowser;
     }
 }

@@ -83,7 +83,6 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-            MessageBox.Show("ShowMicrosoftROfferingsAction");
 
             var staThread = new Thread(StaThreadEntry);
             staThread.SetApartmentState(ApartmentState.STA);

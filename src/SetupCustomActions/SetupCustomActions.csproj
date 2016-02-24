@@ -100,12 +100,6 @@
       <Link>R\SupportedRVersionList.cs</Link>
     </Compile>
     <Compile Include="CustomAction.cs" />
-    <Compile Include="DSProfilePromptForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DSProfilePromptForm.Designer.cs">
-      <DependentUpon>DSProfilePromptForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="InstallVsCommunityForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,12 +125,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Content Include="CustomAction.config" />
-    <Content Include="DSProfileScreen.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DSProfilePromptForm.resx">
-      <DependentUpon>DSProfilePromptForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ShowMicrosoftROfferings.resx">
       <DependentUpon>ShowMicrosoftROfferings.cs</DependentUpon>
     </EmbeddedResource>
