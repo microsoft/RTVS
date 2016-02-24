@@ -53,9 +53,5 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
                 _enabled = false;
             }
         }
-
-        private IReplWindow CurrentReplWindow {
-            get { return _replWindow ?? ReplWindow.Current; }
-        }
     }
 }
