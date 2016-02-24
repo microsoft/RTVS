@@ -160,6 +160,8 @@
     <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
+    <Compile Include="Plots\Commands\RemovePlotCommand.cs" />
+    <Compile Include="Plots\Commands\ClearPlotsCommand.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />

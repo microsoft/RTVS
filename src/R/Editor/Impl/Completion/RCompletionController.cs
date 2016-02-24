@@ -326,14 +326,18 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
-            if (CompletionSession != null) {
-                if (CompletionSession.CompletionSets.Count > 0) {
-                    Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
-                    string name = completion.InsertionText;
-                    SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
-                    Task.Run(async () => await InsertFunctionBraces(position, name));
-                }
-            }
+            // Aut-insert of braces is disabled until we have reliable method
+            // of determination if given token is a function or a variable
+            // using both AST and R engine.
+
+            //if (CompletionSession != null) {
+            //    if (CompletionSession.CompletionSets.Count > 0) {
+            //        Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
+            //        string name = completion.InsertionText;
+            //        SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
+            //        Task.Run(async () => await InsertFunctionBraces(position, name));
+            //    }
+            //}
             base.OnCompletionSessionCommitted(sender, eventArgs);
         }
 

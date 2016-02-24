@@ -262,6 +262,15 @@
   <data name="PlotExportAsPdfFilter" xml:space="preserve">
     <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
   </data>
+  <data name="DeletePlot" xml:space="preserve">
+    <value>Are you sure you want to remove the current plot?</value>
+  </data>
+  <data name="DeleteAllPlots" xml:space="preserve">
+    <value>Are you sure you want to remove all plots?</value>
+  </data>
+  <data name="MicrosoftRHostStarting" xml:space="preserve">
+    <value>Starting R Session...</value>
+  </data>
   <data name="SavePlotDialogTitle" xml:space="preserve">
     <value>Save R Plot File</value>
   </data>

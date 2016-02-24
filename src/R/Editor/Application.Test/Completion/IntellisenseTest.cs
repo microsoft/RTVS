@@ -172,7 +172,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
-        [Test]
+        // Disabled since auto-insertion of braces is off
+        //[Test]
         [Category.Interactive]
         public void R_CompletionFunctionBraces01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
