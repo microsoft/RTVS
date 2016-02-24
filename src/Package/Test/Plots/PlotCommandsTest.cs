@@ -112,6 +112,34 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             cmd.Should().BeEnabled();
         }
 
+        [Test]
+        [Category.Plots]
+        public void ClearAllPlots() {
+            var history = new PlotHistory();
+            var cmd = new ClearPlotsCommand(history);
+
+            cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdClearPlots);
+            cmd.Should().BeDisabled();
+
+            history.ActivePlotIndex = 0;
+            history.PlotCount = 1;
+            cmd.Should().BeEnabled();
+        }
+
+        [Test]
+        [Category.Plots]
+        public void RemovePlot() {
+            var history = new PlotHistory();
+            var cmd = new RemovePlotCommand(history);
+
+            cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdRemovePlot);
+            cmd.Should().BeDisabled();
+
+            history.ActivePlotIndex = 0;
+            history.PlotCount = 1;
+            cmd.Should().BeEnabled();
+        }
+
         class PlotHistory : IPlotHistory {
             public int ActivePlotIndex { get; set; } = -1;
             public IPlotContentProvider PlotContentProvider { get; set; }

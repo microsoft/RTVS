@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     VsRHostScript.DoIdle(300);
 
-                    result = await eval.ExecuteCodeAsync(new string(new char[10000]));
+                    result = await eval.ExecuteCodeAsync(new string(new char[10000])+"\r\n");
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
                     text.Should().Contain(string.Format(Microsoft.R.Components.Resources.InputIsTooLong, 4096));
