@@ -17,9 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
         public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
+            _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
             _operations = interactiveWorkflow.Operations;
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
@@ -60,6 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void SetStatus() {
+            Visible = _interactiveWorkflow.ActiveWindow != null && _interactiveWorkflow.ActiveWindow.Container.IsOnScreen;
             Enabled = GetFilePath() != null;
         }
 
