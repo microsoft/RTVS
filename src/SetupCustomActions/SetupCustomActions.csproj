@@ -36,6 +36,7 @@
       <HintPath>$(WixInstallPath)\sdk\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Core\Impl\IO\DirectoryInfoProxy.cs">
@@ -108,6 +109,12 @@
     <Compile Include="InstallVsCommunityForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ShowMicrosoftROfferings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ShowMicrosoftROfferings.Designer.cs">
+      <DependentUpon>ShowMicrosoftROfferings.cs</DependentUpon>
+    </Compile>
     <Compile Include="YesNoMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,6 +136,9 @@
   <ItemGroup>
     <EmbeddedResource Include="DSProfilePromptForm.resx">
       <DependentUpon>DSProfilePromptForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ShowMicrosoftROfferings.resx">
+      <DependentUpon>ShowMicrosoftROfferings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="YesNoMessageBox.resx">
       <DependentUpon>YesNoMessageBox.cs</DependentUpon>

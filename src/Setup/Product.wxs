@@ -53,34 +53,27 @@
               ExeCommand='[CommonIdeFolder]devenv.exe /InstallVSTemplates'
               Return='ignore'/>
     
-    <CustomAction Id='OpenRtvsPage'
-          BinaryKey='CustomActions'
-          DllEntry='OpenRtvsPageAction'
-          Execute="immediate"
-          Return='ignore'/>
-
-    <CustomAction Id='MROInstallPrompt'
-          BinaryKey='CustomActions'
-          DllEntry='MROInstallPromptAction'
-          Execute="immediate"
-          Return='ignore'/>
-
     <CustomAction Id='VsCommunityInstallPrompt'
           BinaryKey='CustomActions'
           DllEntry='VsCommunityInstallAction'
           Execute="immediate"
           Return='check'/>
 
+    <CustomAction Id='ShowMicrosoftROfferings'
+          BinaryKey='CustomActions'
+          DllEntry='ShowMicrosoftROfferingsAction'
+          Execute="immediate"
+          Return='ignore'/>
+    
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
     </UI>
 
     <InstallExecuteSequence>
       <Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>
-      <Custom Action="OpenRtvsPage" After="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="ShowMicrosoftROfferings" After="InstallFinalize">NOT Installed</Custom>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
-      <Custom Action="MROInstallPrompt" After="InstallFiles">NOT Installed</Custom>
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>
