@@ -702,6 +702,7 @@
     <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\script.r" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
