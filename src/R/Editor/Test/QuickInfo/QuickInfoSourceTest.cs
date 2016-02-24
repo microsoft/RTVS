@@ -47,5 +47,28 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             quickInfoContent.Should().ContainSingle()
                 .Which.ToString().Should().StartWith("as.matrix(x, ...)");
         }
+
+        [Test]
+        public async Task QuickInfoSourceTest02() {
+            // 'as.Date.character' RD contains no function info for 'as.Date.character', but the one for 'as.Date'
+            // then, the current code expects to add 'as.Date' quick info, which is the first function info for as.Date.character
+            string content = @"x <- as.Date.character(x)";
+            AstRoot ast = RParser.Parse(content);
+
+            int caretPosition = 6;
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
+            QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
+            List<object> quickInfoContent = new List<object>();
+
+            quickInfoSession.TriggerPoint = new SnapshotPoint(textBuffer.CurrentSnapshot, caretPosition);
+            var applicableSpan = await quickInfoSource.AugmentQuickInfoSessionAsync(ast, caretPosition, quickInfoSession, quickInfoContent);
+
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, textBuffer.CurrentSnapshot, 10);
+
+            applicableSpan.Should().NotBeNull();
+            quickInfoContent.Should().ContainSingle()
+                .Which.ToString().Should().StartWith("as.Date(x, ...)");
+        }
     }
 }
