@@ -124,10 +124,9 @@ namespace Microsoft.R.Support.Help.Functions {
                 packageName,
                 (string rdData) => {
                     IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
-                    if (functionInfos != null) {
-                        foreach (IFunctionInfo info in functionInfos) {
-                            _functionToInfoMap[info.Name] = info;
-                        }
+                    if (functionInfos != null && functionInfos.Count > 0) {
+                        // use the first function info and discard others
+                        _functionToInfoMap[functionName] = functionInfos[0];
                     }
 
                     if (infoReadyCallback != null) {
