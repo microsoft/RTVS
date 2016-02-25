@@ -702,7 +702,7 @@
     <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\script.r" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
@@ -714,7 +714,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\script.r">
+    <Content Include="Templates\NewItem\script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
