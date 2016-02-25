@@ -2,6 +2,7 @@
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -138,7 +139,14 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return InnerIndentSizeFromNode(textBuffer, node, REditorSettings.FormatOptions);
             }
 
-            return 0;
+            // See if we are in function arguments and indent at the function level
+            var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(line.Start);
+            if(fc != null && fc.Arguments != null && fc.OpenBrace != null && line.Start >= fc.OpenBrace.End) {
+                return InnerIndentSizeFromNode(textBuffer, fc, REditorSettings.FormatOptions);
+            }
+
+            // If nothing is found, default to block indent
+            return GetBlockIndent(line);
         }
 
         public static int InnerIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {

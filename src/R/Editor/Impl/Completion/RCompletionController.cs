@@ -188,10 +188,11 @@ namespace Microsoft.R.Editor.Completion {
         /// passed down to core editor or false otherwise.
         /// </returns>
         public override bool OnPreTypeChar(char typedCharacter) {
-            // Allow tab to bring intellisense if either is true
+            // Allow tab to bring intellisense if
             //  a) REditorSettings.ShowCompletionOnTab true
             //  b) Position is at the end of a string so we bring completion for files
-            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
+            //  c) There is no selection
+            if (typedCharacter == '\t' && !HasActiveCompletionSession && TextView.Selection.StreamSelectionSpan.Length == 0) {
                 // if previous character is identifier character, bring completion list
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
