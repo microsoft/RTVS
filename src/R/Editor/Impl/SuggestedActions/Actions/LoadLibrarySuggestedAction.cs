@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.SuggestedActions.Actions {
     internal sealed class LoadLibrarySuggestedAction : LibrarySuggestedAction {
@@ -8,7 +9,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
             base(textView, textBuffer, position, Resources.SmartTagName_LoadLibrary) { }
 
         protected override string GetCommand(string libraryName) {
-            return $"library({libraryName})";
+            return Invariant($"library({libraryName})");
         }
     }
 }

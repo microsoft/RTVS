@@ -49,9 +49,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
                 var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(e.NewPosition.BufferPosition);
                 if (node != _lastNode) {
                     _lastNode = node;
-                    if (SuggestedActionsChanged != null) {
-                        SuggestedActionsChanged(this, new EventArgs());
-                    }
+                    SuggestedActionsChanged?.Invoke(this, new EventArgs());
                 }
             }
         }
@@ -99,6 +97,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
             telemetryId = Guid.Empty;
             return false;
         }
+
         public void Dispose() {
             if (_textView != null) {
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;

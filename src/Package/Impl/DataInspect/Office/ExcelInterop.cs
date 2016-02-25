@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -60,10 +61,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 if (LongOperationNotification.ShowWaitingPopup(Resources.Progress_PreparingExcelData, actions)) {
                     return xlData;
                 }
-            } catch (Exception ex) {
-                if (!(ex is OperationCanceledException)) {
-                    VsAppShell.Current.ShowErrorMessage(Resources.Error_ExcelCannotEvaluateExpression);
-                }
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                VsAppShell.Current.ShowErrorMessage(Resources.Error_ExcelCannotEvaluateExpression);
             }
             return null;
         }
