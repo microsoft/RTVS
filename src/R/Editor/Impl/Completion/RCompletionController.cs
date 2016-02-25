@@ -209,7 +209,7 @@ namespace Microsoft.R.Editor.Completion {
             if (!HasActiveCompletionSession) {
                 switch (typedCharacter) {
                     case '$':
-                        //case '@':
+                    case '@':
                         return true;
 
                     case ':':

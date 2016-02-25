@@ -113,7 +113,6 @@
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />
-    <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
