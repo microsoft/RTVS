@@ -4,6 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Office.Interop.Excel;
+using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -63,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 VsAppShell.Current.ShowErrorMessage(Resources.Error_ExcelCannotEvaluateExpression);
+                GeneralLog.Write(ex);
             }
             return null;
         }

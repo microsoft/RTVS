@@ -17,6 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
         public const int DaysToRetain = 5;
         public const int MaximumFileSize = 1024 * 1024;
+        public const string GeneralLogPattern = "Microsoft.R.General*.log";
         public const string RHostLogPattern = "Microsoft.R.Host*.log";
         public const string ProjectSystemLogPattern = "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log";
         public const string RtvsGeneralDataFile = "RTVSGeneralData.log";
@@ -70,6 +71,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
 
         private static void CollectRTVSLogs(object o) {
             IEnumerable<string> logs;
+
+            logs = GetRecentLogFiles(GeneralLogPattern);
+            _logFiles.AddRange(logs);
 
             logs = GetRecentLogFiles(RHostLogPattern);
             _logFiles.AddRange(logs);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -55,7 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             if (task.IsCanceled) {
                 return false;
             }
-            task.Wait();
+            try {
+                task.Wait();
+            } catch (Exception ex) {
+                GeneralLog.Write(ex);
+            }
             return true;
         }
     }
