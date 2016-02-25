@@ -46,13 +46,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
                     VsRHostScript.DoIdle(300);
 
-                    result = await eval.ExecuteCodeAsync(new string(new char[10000]));
+                    result = await eval.ExecuteCodeAsync(new string(new char[10000]) + "\n");
                     result.Should().Be(ExecutionResult.Failure);
                     string text = tb.CurrentSnapshot.GetText();
                     text.Should().Contain(string.Format(Resources.InputIsTooLong, 4096));
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'" + Environment.NewLine);
+                    result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'\n");
                     result.Should().Be(ExecutionResult.Success);
                     tb.Clear();
 
@@ -62,13 +62,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text.TrimEnd().Should().Be("[1] \"電話帳 全米のお\"");
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("Encoding(z)" + Environment.NewLine);
+                    result = await eval.ExecuteCodeAsync("Encoding(z)\n");
                     result.Should().Be(ExecutionResult.Success);
                     text = tb.CurrentSnapshot.GetText();
                     text.TrimEnd().Should().Be("[1] \"UTF-8\"");
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                    result = await eval.ExecuteCodeAsync("x <- c(1:10)\n");
                     result.Should().Be(ExecutionResult.Success);
                     text = tb.CurrentSnapshot.GetText();
                     text.Should().Be(string.Empty);
