@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public System.Threading.Tasks.Task<ExecutionResult> InitializeAsync() {
-            return System.Threading.Tasks.Task.FromResult(ExecutionResult.Success);
+            return Evaluator.InitializeAsync();
         }
 
         public void InsertCode(string text) {

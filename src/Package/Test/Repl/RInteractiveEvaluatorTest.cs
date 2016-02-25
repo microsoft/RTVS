@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text.Should().Contain(string.Format(Microsoft.R.Components.Resources.InputIsTooLong, 4096));
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'" + Environment.NewLine);
+                    result = await eval.ExecuteCodeAsync("z <- '電話帳 全米のお'\n");
                     result.Should().Be(ExecutionResult.Success);
                     tb.Clear();
 
@@ -60,13 +60,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     text.TrimEnd().Should().Be("[1] \"電話帳 全米のお\"");
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("Encoding(z)" + Environment.NewLine);
+                    result = await eval.ExecuteCodeAsync("Encoding(z)\n");
                     result.Should().Be(ExecutionResult.Success);
                     text = tb.CurrentSnapshot.GetText();
                     text.TrimEnd().Should().Be("[1] \"UTF-8\"");
                     tb.Clear();
 
-                    result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                    result = await eval.ExecuteCodeAsync("x <- c(1:10)\n");
                     result.Should().Be(ExecutionResult.Success);
                     text = tb.CurrentSnapshot.GetText();
                     text.Should().Be(string.Empty);

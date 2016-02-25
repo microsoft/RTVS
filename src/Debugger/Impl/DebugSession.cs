@@ -112,15 +112,24 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public async Task ExecuteBrowserCommandAsync(string command, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<bool> ExecuteBrowserCommandAsync(string command, Func<IRSessionInteraction, Task<bool>> prepare = null, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
 
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                if (prepare != null) {
+                    if (!await prepare(inter)) {
+                        return false;
+                    }
+                }
+
                 if (IsBrowserContext(inter.Contexts)) {
                     await inter.RespondAsync(command + "\n");
+                    return true;
                 }
             }
+
+            return false;
         }
 
         internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, CancellationToken cancellationToken, bool json = false) {
@@ -187,7 +196,7 @@ namespace Microsoft.R.Debugger {
 
         public async Task Continue(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            ExecuteBrowserCommandAsync("c", cancellationToken)
+            ExecuteBrowserCommandAsync("c", null, cancellationToken)
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
@@ -202,31 +211,37 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            return StepAsync(cancellationToken, "rtvs:::browser_set_debug()", "c");
+            return StepAsync(cancellationToken, "c", async inter => {
+                using (var eval = await RSession.BeginEvaluationAsync(false, cancellationToken)) {
+                    // EvaluateAsync will push a new toplevel context on the context stack before
+                    // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
+                    // before locating the target context for step-out.
+                    var res = await eval.EvaluateAsync("rtvs:::browser_set_debug(1, 1)");
+                    Trace.Assert(res.ParseStatus == RParseStatus.OK);
+
+                    if (res.ParseStatus != RParseStatus.OK || res.Error != null) {
+                        _stepTcs.TrySetResult(false);
+                        return false;
+                    }
+
+                    return true;
+                }
+            });
         }
 
         /// <returns>
         /// <c>true</c> if step completed successfully, and <c>false</c> if it was interrupted midway by something
         /// else pausing the process, such as a breakpoint.
         /// </returns>
-        private async Task<bool> StepAsync(CancellationToken cancellationToken, params string[] commands) {
-            Trace.Assert(commands.Length > 0);
+        private async Task<bool> StepAsync(CancellationToken cancellationToken, string command, Func<IRSessionInteraction, Task<bool>> prepare = null) {
             ThrowIfDisposed();
-
             await TaskUtilities.SwitchToBackgroundThread();
 
             _stepTcs = new TaskCompletionSource<bool>();
-            for (int i = 0; i < commands.Length - 1; ++i) {
-                await ExecuteBrowserCommandAsync(commands[i], cancellationToken);
-            }
-
-            // If RException happens, it means that the expression we just stepped over caused an error.
-            // The step is still considered successful and complete in that case, so we just ignore it.
-            ExecuteBrowserCommandAsync(commands.Last(), cancellationToken)
+            ExecuteBrowserCommandAsync(command, prepare, cancellationToken)
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
-
             return await _stepTcs.Task;
         }
 

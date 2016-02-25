@@ -14,6 +14,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Xunit;
 
@@ -266,31 +267,27 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     script.DoIdle(200);
 
                     string actual = script.EditorText;
-                    actual.Should().Be("f1<-x11()");
+                    actual.Should().Be("f1<-x11");
 
                     REditorSettings.ShowCompletionOnTab = false;
                 }
             }
         }
 
-        //[Test]
-        //[Category.Interactive]
-        public void R_DeclaredVariablesCompletion() {
+        [Test]
+        [Category.Interactive]
+        public async Task R_DeclaredVariablesCompletion01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                using (new RHostScript(provider)) {
-                    REvaluationResult result;
+                using (var hostScript = new RHostScript(provider)) {
 
-                    var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
-                    rSession.Should().NotBeNull();
+                    await ExecuteRCode(hostScript.Session, "zzz111 <- 1\r\n");
+                    await ExecuteRCode(hostScript.Session, "zzz111$y222 <- 2\r\n");
 
-                    using (var eval = rSession.BeginEvaluationAsync().Result) {
-                        result = eval.EvaluateAsync("x111 <- 1; x111$y222 <- 2").Result;
-                    }
+                    PrimeIntellisenseProviders();
 
-                    script.DoIdle(1000);
-
-                    script.Type("x1");
+                    script.DoIdle(500);
+                    script.Type("zzz1");
                     script.DoIdle(500);
                     script.Type("{TAB}");
                     script.DoIdle(500);
@@ -300,11 +297,57 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     script.DoIdle(500);
                     script.Type("{TAB}");
 
-                    string expected = "x111$y222";
+                    string expected = "zzz111$y222";
                     string actual = script.EditorText;
 
                     actual.Should().Be(expected);
                 }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public async Task R_DeclaredVariablesCompletion02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    await ExecuteRCode(hostScript.Session, "setClass('Person', representation(name = 'character', age = 'numeric'))\r\n");
+                    await ExecuteRCode(hostScript.Session, "hadley <- new('Person', name = 'Hadley', age = 31)\r\n");
+
+                    PrimeIntellisenseProviders();
+
+                    script.DoIdle(1000);
+                    script.Type("hadle");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+                    script.DoIdle(500);
+                    script.Type("@");
+                    script.DoIdle(500);
+                    script.Type("na");
+                    script.DoIdle(500);
+                    script.Type("{TAB}");
+
+                    string expected = "hadley@name";
+                    string actual = script.EditorText;
+
+                    actual.Should().Be(expected);
+                }
+            }
+        }
+
+        private void PrimeIntellisenseProviders() {
+            // Prime variable provider
+            EditorShell.Current.DispatchOnUIThread(() => {
+                var broker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+                broker.TriggerCompletion(EditorWindow.CoreEditor.View);
+                broker.DismissAllSessions(EditorWindow.CoreEditor.View);
+            });
+        }
+
+        private async Task ExecuteRCode(IRSession session, string expression) {
+            using (var interaction = await session.BeginInteractionAsync(isVisible: false)) {
+                await interaction.RespondAsync(expression).SilenceException<RException>();
             }
         }
     }

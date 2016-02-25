@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Task = System.Threading.Tasks.Task;
@@ -40,7 +41,9 @@ namespace Microsoft.R.Host.Client.Session {
         private RSessionRequestSource _currentRequestSource;
         private readonly IRHostClientApp _hostClientApp;
         private readonly Action _onDispose;
+        private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private volatile bool _isHostRunning;
+        private volatile bool _delayedMutatedOnReadConsole;
 
         public int Id { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
@@ -58,6 +61,18 @@ namespace Microsoft.R.Host.Client.Session {
             Id = id;
             _hostClientApp = hostClientApp;
             _onDispose = onDispose;
+            _disableMutatingOnReadConsole = new CountdownDisposable(OnMutated);
+        }
+
+        private void OnMutated() {
+            if (_disableMutatingOnReadConsole.Count == 0) {
+                if (_delayedMutatedOnReadConsole) {
+                    _delayedMutatedOnReadConsole = false;
+                    Mutated?.Invoke(this, EventArgs.Empty);
+                }
+            } else {
+                _delayedMutatedOnReadConsole = true;
+            }
         }
 
         public void Dispose() {
@@ -169,6 +184,10 @@ namespace Microsoft.R.Host.Client.Session {
             // If nothing worked, then just kill the host process.
             _host?.Dispose();
             await _hostRunTask;
+        }
+
+        public IDisposable DisableMutatedOnReadConsole() {
+            return _disableMutatingOnReadConsole.Increment();
         }
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
@@ -284,7 +303,7 @@ namespace Microsoft.R.Host.Client.Session {
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
-                Mutated?.Invoke(this, EventArgs.Empty);
+                OnMutated();
             }
 
             currentRequest?.CompleteResponse();
@@ -344,7 +363,7 @@ namespace Microsoft.R.Host.Client.Session {
                         mutated = false;
                     } else if (mutated) {
                         // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
-                        Mutated?.Invoke(this, EventArgs.Empty);
+                        OnMutated();
                     }
 
                     if (ct.IsCancellationRequested) {
@@ -374,7 +393,7 @@ namespace Microsoft.R.Host.Client.Session {
                 mutated = false;
             } finally {
                 if (mutated) {
-                    Mutated?.Invoke(this, EventArgs.Empty);
+                    OnMutated();
                 }
             }
 
