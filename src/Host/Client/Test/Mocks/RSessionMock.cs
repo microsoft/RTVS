@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -45,6 +46,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             StopHostAsync().Wait(5000);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
+
+        public IDisposable DisableMutatedOnReadConsole() => Disposable.Empty;
 
         public void FlushLog() {
         }
