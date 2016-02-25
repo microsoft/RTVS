@@ -21,16 +21,16 @@ namespace Microsoft.R.Editor.Selection {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             int caretPosition = TextView.Caret.Position.BufferPosition.Position;
             SnapshotPoint? rPosition = TextView.MapDownToR(caretPosition);
-
             if (rPosition.HasValue) {
-                ITextSnapshotLine line = rPosition.Value.Snapshot.GetLineFromPosition(caretPosition);
+                int rCaretPosition = rPosition.Value.Position;
+                ITextSnapshotLine line = rPosition.Value.Snapshot.GetLineFromPosition(rCaretPosition);
                 // Tokenize current line
                 if (line != null) {
                     Span? spanToSelect = null;
                     var text = line.GetText();
                     var tokenizer = new RTokenizer();
                     var tokens = tokenizer.Tokenize(text);
-                    var positionInLine = rPosition.Value.Position - line.Start;
+                    var positionInLine = rCaretPosition - line.Start;
                     var token = tokens.FirstOrDefault(t => t.Contains(positionInLine));
                     if (token != null) {
                         if (token.TokenType == RTokenType.String) {
@@ -46,11 +46,12 @@ namespace Microsoft.R.Editor.Selection {
                             SpanTrackingMode.EdgePositive, TextView.TextBuffer);
                         if (spans.Count == 1) {
                             TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, spans[0]), isReversed: false);
+                            return CommandResult.Executed;
                         }
                     }
                 }
             }
-            return CommandResult.Executed;
+            return CommandResult.NotSupported;
         }
 
         private static Span GetWordSpan(string text, int lineStart, int position) {
