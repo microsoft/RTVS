@@ -49,6 +49,7 @@ namespace Microsoft.R.Host.Client.Session {
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
+        public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(CancellationToken.None);
 
         static RSession() {
             var tcs = new CancellationTokenSource();
