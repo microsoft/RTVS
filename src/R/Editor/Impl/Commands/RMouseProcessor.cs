@@ -50,16 +50,14 @@ namespace Microsoft.R.Editor.Commands {
                 using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
                     var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
-                    var urlSpan = tags.Where(t => {
+                    return tags.Any(t => {
                         SnapshotPoint? start = t.Span.Start.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
                         SnapshotPoint? end = t.Span.End.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
 
                         return start.HasValue && end.HasValue &&
                                start.Value <= bufferPosition.Value &&
                                bufferPosition.Value < end.Value;
-                    }).FirstOrDefault();
-
-                    return urlSpan != null;
+                    });
                 }
             }
             return false;
