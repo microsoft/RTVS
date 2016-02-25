@@ -23,6 +23,8 @@ namespace Microsoft.R.Host.Client {
         Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000);
         Task StopHostAsync();
 
+        IDisposable DisableMutatedOnReadConsole();
+
         void FlushLog();
     }
 }
