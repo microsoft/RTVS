@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.SuggestedActions;
 using Microsoft.R.Host.Client;
@@ -20,16 +22,23 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
             }
         }
 
-        protected void ExecuteAction(string command, CancellationToken cancellationToken) {
+        protected void SubmitToInteractive(string command, CancellationToken cancellationToken) {
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null && session.IsHostRunning) {
                 _runningAction = Task.Run(async () => {
-                    using (var eval = await session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                        await eval.RespondAsync(command);
+                    try {
+                        using (var eval = await session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                            await eval.RespondAsync(command);
+                        }
+                    } finally {
+                        EditorShell.DispatchOnUIThread(() => _runningAction = null);
                     }
-                    EditorShell.DispatchOnUIThread(() => _runningAction = null);
                 });
+
+                _runningAction.SilenceException<RException>()
+                              .SilenceException<OperationCanceledException>()
+                              .SilenceException<MessageTransportException>();
             }
         }
     }

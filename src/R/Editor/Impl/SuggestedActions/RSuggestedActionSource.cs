@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
         public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer) {
             var suggestedActionsSource = ServiceManager.GetService<RSuggestedActionSource>(textView);
             if (suggestedActionsSource == null) {
-                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany().Select(p => p.Value).ToList();
+                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany().Select(p => p.Value);
                 suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders);
             }
             return suggestedActionsSource;

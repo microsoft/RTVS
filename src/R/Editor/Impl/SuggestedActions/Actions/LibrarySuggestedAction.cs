@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
             if (tree.IsReady) {
                 string libraryName = document.EditorTree.AstRoot.IsInLibraryStatement(TextView.Caret.Position.BufferPosition);
                 if (!string.IsNullOrEmpty(libraryName)) {
-                    ExecuteAction(GetCommand(libraryName) + Environment.NewLine, cancellationToken);
+                    SubmitToInteractive(GetCommand(libraryName) + "\n", cancellationToken);
                 }
             }
         }
