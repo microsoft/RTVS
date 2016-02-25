@@ -15,7 +15,7 @@
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <MajorVersion>0</MajorVersion>
-    <MinorVersion>1</MinorVersion>
+    <MinorVersion>2</MinorVersion>
     <Build>$(LastDigitOfYear)$(Date)</Build>
     <Revision>$(Time)</Revision>
     <BuildNumber Condition="'$(BuildNumber)' == ''">$(Build).$(Revision)</BuildNumber>

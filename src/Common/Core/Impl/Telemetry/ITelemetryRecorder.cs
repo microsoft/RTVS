@@ -22,11 +22,5 @@ namespace Microsoft.Common.Core.Telemetry {
         /// a collection of string/object pairs.
         /// </summary>
         void RecordEvent(string eventName, object parameters = null);
-
-        /// <summary>
-        /// Records telemetry activity (typically VS TelemetryActivity object)
-        /// </summary>
-        /// <param name="activity"></param>
-        void RecordActivity(object activity);
     }
 }

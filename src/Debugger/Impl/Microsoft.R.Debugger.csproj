@@ -29,12 +29,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +45,7 @@
     <Compile Include="DebugValueRepresentationKind.cs" />
     <Compile Include="IDebugSessionProvider.cs" />
     <Compile Include="DebugStackFrame.cs" />
+    <Compile Include="RDebugSessionProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

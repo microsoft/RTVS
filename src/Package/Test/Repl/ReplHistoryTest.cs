@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result.Should().Be(ExecutionResult.Success);
                     session.IsHostRunning.Should().BeTrue();
 
-                    result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                    result = await eval.ExecuteCodeAsync("x <- c(1:10)\n");
                     result.Should().Be(ExecutionResult.Success);
                     history.HasEntries.Should().BeTrue();
                     history.HasSelectedEntries.Should().BeFalse();
@@ -79,12 +79,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                     result.Should().Be(ExecutionResult.Success);
                     session.IsHostRunning.Should().BeTrue();
 
-                    result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                    result = await eval.ExecuteCodeAsync("x <- c(1:10)\n");
                     result.Should().Be(ExecutionResult.Success);
 
                     await eval.ExecuteCodeAsync("\r\n");
 
-                    result = await eval.ExecuteCodeAsync("x <- c(1:20)");
+                    result = await eval.ExecuteCodeAsync("x <- c(1:20)\n");
                     result.Should().Be(ExecutionResult.Success);
 
                     history.HasEntries.Should().BeTrue();
