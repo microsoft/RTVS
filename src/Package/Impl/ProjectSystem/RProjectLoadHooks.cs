@@ -56,10 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _fileWatcher.Start();
 
             // Force REPL window up
-            await _threadHandling.SwitchToUIThread();
-            ReplWindow.EnsureReplWindow();
+            VsAppShell.Current.DispatchOnUIThread(ReplWindow.EnsureReplWindow);
 
-            if (!_session.IsHostRunning) {
+            try {
+                await _session.HostStarted;
+            } catch (Exception) {
                 return;
             }
 
