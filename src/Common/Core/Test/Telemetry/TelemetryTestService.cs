@@ -29,13 +29,6 @@ namespace Microsoft.Common.Core.Test.Telemetry {
             ITelemetryTestSupport testSupport = this.TelemetryRecorder as ITelemetryTestSupport;
             testSupport.Reset();
         }
-
-        /// <summary>
-        /// Start a telemetry activity, dispose of the return value when the activity is complete
-        /// </summary>
-        public override ITelemetryActivity StartActivity(TelemetryArea area, string eventName) {
-            throw new NotImplementedException();
-        }
         #endregion
     }
 }

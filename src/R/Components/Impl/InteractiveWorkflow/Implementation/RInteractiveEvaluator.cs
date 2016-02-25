@@ -110,21 +110,24 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             try {
-                while (end != -1) {
-                    var line = text.Substring(start, end - start + 1);
-                    start = end + 1;
-                    end = text.IndexOf('\n', start);
+                Session.BeforeRequest -= SessionOnBeforeRequest;
+                using (Session.DisableMutatedOnReadConsole()) {
+                    while (end != -1) {
+                        var line = text.Substring(start, end - start + 1);
+                        start = end + 1;
+                        end = text.IndexOf('\n', start);
 
-                    using (var request = await Session.BeginInteractionAsync()) {
-                        if (line.Length >= request.MaxLength) {
-                            CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
-                            return ExecutionResult.Failure;
+                        using (var request = await Session.BeginInteractionAsync()) {
+                            if (line.Length >= request.MaxLength) {
+                                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                                return ExecutionResult.Failure;
+                            }
+
+                            await request.RespondAsync(line);
                         }
-
-                        await request.RespondAsync(line);
                     }
                 }
-                
+
                 return ExecutionResult.Success;
             } catch (RException) {
                 // It was already reported via RSession.Error and printed out; just return failure.
@@ -137,6 +140,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 await _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(ex.ToString()));
                 return ExecutionResult.Failure;
             } finally {
+                Session.BeforeRequest += SessionOnBeforeRequest;
                 History.AddToHistory(text);
             }
         }

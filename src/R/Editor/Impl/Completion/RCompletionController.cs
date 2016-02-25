@@ -15,8 +15,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
+    using Core.AST.Definitions;
     using Core.Parser;
     using Core.Tokens;
+    using Engine;
     using Host.Client;
     using Languages.Core.Text;
     using Languages.Editor.Shell;
@@ -186,22 +188,32 @@ namespace Microsoft.R.Editor.Completion {
         /// passed down to core editor or false otherwise.
         /// </returns>
         public override bool OnPreTypeChar(char typedCharacter) {
-            if (typedCharacter == '\t' && !HasActiveCompletionSession && REditorSettings.ShowCompletionOnTab) {
+            // Allow tab to bring intellisense if either is true
+            //  a) REditorSettings.ShowCompletionOnTab true
+            //  b) Position is at the end of a string so we bring completion for files
+            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
                 // if previous character is identifier character, bring completion list
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
                     if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        if (RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1])) {
+                        bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
+                        bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
+                        if (!showCompletion) {
+                            var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                            string directory;
+                            showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
+                        }
+                        if (showCompletion) {
                             ShowCompletion(autoShownCompletion: false);
-                            return true;
+                            return true; // eat the character
                         }
                     }
                 }
             }
             return base.OnPreTypeChar(typedCharacter);
         }
-
+        
         /// <summary>
         /// Should this key press trigger a completion session?
         /// </summary>
@@ -209,7 +221,7 @@ namespace Microsoft.R.Editor.Completion {
             if (!HasActiveCompletionSession) {
                 switch (typedCharacter) {
                     case '$':
-                        //case '@':
+                    case '@':
                         return true;
 
                     case ':':
@@ -355,13 +367,13 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         private async Task<bool> IsFunction(string name) {
-            if(Keywords.IsKeyword(name)) {
+            if (Keywords.IsKeyword(name)) {
                 return false;
             }
 
             string expression = $"tryCatch(is.function({name}), error = function(e) {{ }})";
             AstRoot ast = RParser.Parse(expression);
-            if(ast.Errors.Count > 0) {
+            if (ast.Errors.Count > 0) {
                 return false;
             }
 

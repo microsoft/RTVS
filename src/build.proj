@@ -48,9 +48,12 @@
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
+    <RemoveDir Directories="$(RootDirectory)\obj" />
     <MSBuild Targets="Build" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
+    <RemoveDir Directories="$(RootDirectory)\obj" />
     <MSBuild Targets="Build" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <CallTarget Targets="RenameRHostMSI" />
+    <RemoveDir Directories="$(RootDirectory)\obj" />
     <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
   </Target>
 

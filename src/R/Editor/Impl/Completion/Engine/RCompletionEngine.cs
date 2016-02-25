@@ -34,12 +34,9 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
-            IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
-                string directory = node.Root.TextProvider.GetText(node);
-                // Bring file/folder completion when either string is empty or ends with /
-                // assuming that / specifies directory where files are.
-                if (directory.Length == 2 || directory.EndsWith("/\"", StringComparison.Ordinal) || directory.EndsWith("/\'", StringComparison.Ordinal)) {
+            string directory;
+            if(CanShowFileCompletion(context.AstRoot, context.Position, out directory)) { 
+                if (!string.IsNullOrEmpty(directory)) {
                     providers.Add(new FilesCompletionProvider(directory));
                 }
                 return providers;
@@ -89,6 +86,21 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
         public static void Initialize() {
             FunctionIndex.Initialize();
+        }
+
+        public static bool CanShowFileCompletion(AstRoot ast, int position, out string directory) {
+            TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
+            directory = null;
+            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
+                string text = node.Root.TextProvider.GetText(node);
+                // Bring file/folder completion when either string is empty or ends with /
+                // assuming that / specifies directory where files are.
+                if (text.Length == 2 || text.EndsWith("/\"", StringComparison.Ordinal) || text.EndsWith("/\'", StringComparison.Ordinal)) {
+                    directory = text;
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders {
