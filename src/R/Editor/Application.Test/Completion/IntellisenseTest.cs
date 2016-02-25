@@ -266,7 +266,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     script.DoIdle(200);
 
                     string actual = script.EditorText;
-                    actual.Should().Be("f1<-x11()");
+                    actual.Should().Be("f1<-x11");
 
                     REditorSettings.ShowCompletionOnTab = false;
                 }
