@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             if (outlookApp == null) {
                 if (attachmentFile != null) {
                     body = string.Format(CultureInfo.InvariantCulture, Resources.MailToFrownMessage,
-                                         Path.GetDirectoryName(Path.GetTempPath()),
+                                         Path.GetDirectoryName(Path.GetTempPath()), // Trims trailing slash
                                          Environment.NewLine + Environment.NewLine);
                     VsAppShell.Current.ShowMessage(body, MessageButtons.OK);
                 }
@@ -33,13 +33,18 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                 Process.Start(psi);
 
                 if (attachmentFile != null) {
-                    IntPtr pidl = NativeMethods.ILCreateFromPath(attachmentFile);
-                    if (pidl != IntPtr.Zero) {
-                        NativeMethods.SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
-                        NativeMethods.ILFree(pidl);
+                    IntPtr pidl = IntPtr.Zero;
+                    try {
+                        pidl = NativeMethods.ILCreateFromPath(attachmentFile);
+                        if (pidl != IntPtr.Zero) {
+                            NativeMethods.SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                        }
+                    } finally {
+                        if (pidl != IntPtr.Zero) {
+                            NativeMethods.ILFree(pidl);
+                        }
                     }
                 }
-                //Process.Start(Path.GetTempPath());
 
             } else {
                 MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
