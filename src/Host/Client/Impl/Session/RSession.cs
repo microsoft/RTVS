@@ -62,15 +62,19 @@ namespace Microsoft.R.Host.Client.Session {
             Id = id;
             _hostClientApp = hostClientApp;
             _onDispose = onDispose;
-            _disableMutatingOnReadConsole = new CountdownDisposable(OnMutated);
+            _disableMutatingOnReadConsole = new CountdownDisposable(() => {
+                if (!_delayedMutatedOnReadConsole) {
+                    return;
+                }
+
+                _delayedMutatedOnReadConsole = false;
+                Mutated?.Invoke(this, EventArgs.Empty);
+            });
         }
 
         private void OnMutated() {
             if (_disableMutatingOnReadConsole.Count == 0) {
-                if (_delayedMutatedOnReadConsole) {
-                    _delayedMutatedOnReadConsole = false;
-                    Mutated?.Invoke(this, EventArgs.Empty);
-                }
+                Mutated?.Invoke(this, EventArgs.Empty);
             } else {
                 _delayedMutatedOnReadConsole = true;
             }
