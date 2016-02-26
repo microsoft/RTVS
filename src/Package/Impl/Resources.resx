@@ -216,6 +216,9 @@
   <data name="Settings_SendToRepl_Description" xml:space="preserve">
     <value>Override editor 'insert empty line above' command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard.</value>
   </data>
+  <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
+    <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
+  </data>
   <data name="SaveAsFilterMD" xml:space="preserve">
     <value>Markdown Files (*.md;*.rmd;*.markdown)|*.md;*.rmd;*.markdown|</value>
   </data>
@@ -224,6 +227,15 @@
   </data>
   <data name="CtrlEnter" xml:space="preserve">
     <value>Control+Enter</value>
+  </data>
+  <data name="MicrosoftRHostStopped" xml:space="preserve">
+    <value>R Host process is stopped. Click Reset to start a new one.</value>
+  </data>
+  <data name="MicrosoftRHostStopping" xml:space="preserve">
+    <value>Stopping R Session...</value>
+  </data>
+  <data name="InputIsTooLong" xml:space="preserve">
+    <value>Input is too long - no more than {0} characters expected.</value>
   </data>
   <data name="Settings_ReplSyntaxCheck" xml:space="preserve">
     <value>Syntax check in R Console</value>
@@ -377,7 +389,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="GatheringDiagnosticData" xml:space="preserve">
     <value>Gathering diagnostics data...</value>
   </data>
-  <data name="LongOperationProgressMessage" xml:space="preserve">
+  <data name="LongOperationProgressMessage2" xml:space="preserve">
     <value>Processing Item {0} of {1}: {2}</value>
   </data>
   <data name="VariableExplorer_EnvironmentName" xml:space="preserve">
@@ -471,8 +483,17 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="ChooseRInstallFolder" xml:space="preserve">
     <value>Choose R Install Folder</value>
   </data>
+  <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
+    <value>Cannot find R binaries in {0}. Please specify valid path to R installation directory such as 'Program Files\R\R-3.2.x' or 'Program Files\MRO\R-3.2.x'.</value>
+  </data>
+  <data name="Error_ExceptionAccessingPath" xml:space="preserve">
+    <value>Unable to access path {0}. Exception: {1}.</value>
+  </data>
   <data name="RPathChangedRestartVS" xml:space="preserve">
     <value>You must restart Visual Studio after changing path to the R installation.</value>
+  </data>
+  <data name="Error_UnsupportedRVersion" xml:space="preserve">
+    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
   </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
@@ -482,6 +503,9 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="OpenFunctionHelp" xml:space="preserve">
     <value>Help on {0}</value>
+  </data>
+  <data name="Error_UnableToFindR" xml:space="preserve">
+    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -531,8 +555,20 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="Settings_ShowDotPrefixedVariables_Description" xml:space="preserve">
     <value>Show variables that have names beginning with "." in Variable Explorer and debugger tool windows.</value>
   </data>
-  <data name="Error_NoWebTools" xml:space="preserve">
-    <value>R Tools require Web Development Tools component which is not installed. Without this component IntelliseSense and help on function parameters will not work. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
+  <data name="Warning_LogTooLarge" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Progress_ExcelRowCounter" xml:space="preserve">
+    <value>Row {0} of {1}</value>
+  </data>
+  <data name="Progress_PreparingExcelData" xml:space="preserve">
+    <value>Preparing data for Microsoft Excel...</value>
+  </data>
+  <data name="Warning_CancelCurrentExcelView" xml:space="preserve">
+    <value>Cancel data conversion for Microsoft Excel?</value>
+  </data>
+  <data name="LongOperationProgressMessage1" xml:space="preserve">
+    <value>Processing Item {0} of {1}</value>
   </data>
   <data name="OpenInExcelCommandTooltip" xml:space="preserve">
     <value>Open in Microsoft Excel</value>
@@ -545,5 +581,11 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="Settings_TriggerOnTab_Description" xml:space="preserve">
     <value>If set to on completion list can be invoked by typing one or more characters and pressing Tab.</value>
+  </data>
+  <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
+    <value>Unable to evaluate expression and get data for Microsoft Excel</value>
+  </data>
+  <data name="Error_NoWebTools" xml:space="preserve">
+    <value>R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
   </data>
 </root>

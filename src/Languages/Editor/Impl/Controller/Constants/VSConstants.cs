@@ -4376,6 +4376,61 @@ namespace Microsoft.Languages.Editor.Controller.Constants {
             CommandWindowHistoryDown = 0x310D,
         }
 
+        [Guid("4C7763BF-5FAF-4264-A366-B7E1F27BA958")]
+        public enum VSStd14CmdID {
+            //
+            ShowQuickFixes = 1,
+            //
+            ShowRefactorings = 2,
+            //
+            SmartBreakLine = 3,
+            //
+            ManageWindowLayouts = 4,
+            //
+            SaveWindowLayout = 5,
+            //
+            ShowQuickFixesForPosition = 6,
+            //
+            DeleteFR1 = 10,
+            //
+            DeleteFR2 = 20,
+            //
+            ErrorContextComboList = 30,
+            //
+            ErrorContextComboGetList = 31,
+            //
+            ErrorBuildContextComboList = 40,
+            //
+            ErrorBuildContextComboGetList = 41,
+            ErrorListClearFilters = 50,
+            //
+            WindowLayoutList0 = 4096,
+            //
+            WindowLayoutListFirst = 4096,
+            //
+            WindowLayoutList1 = 4097,
+            //
+            WindowLayoutList2 = 4098,
+            //
+            WindowLayoutList3 = 4099,
+            //
+            WindowLayoutList4 = 4100,
+            //
+            WindowLayoutList5 = 4101,
+            //
+            WindowLayoutList6 = 4102,
+            //
+            WindowLayoutList7 = 4103,
+            //
+            WindowLayoutList8 = 4104,
+            //
+            WindowLayoutList9 = 4105,
+            //
+            WindowLayoutListDynamicFirst = 4112,
+            //
+            WindowLayoutListLast = 8191
+        }
+
         internal enum DebugCommands {
             None = 0,
             InsertTracepoint = 0x00000041,

@@ -70,8 +70,12 @@ namespace Microsoft.R.Actions.Utility {
             // version claimed in the registry is not what is really in files.
             RInstallData data = new RInstallData() { Status = RInstallStatus.OK, Path = path };
 
+            // Normalize path so it points to R root and not to bin or bin\x64
+            path = NormalizeRPath(path);
             try {
                 string rDirectory = Path.Combine(path, @"bin\x64");
+                data.BinPath = rDirectory;
+
                 string rDllPath = Path.Combine(rDirectory, "R.dll");
                 string rGraphAppPath = Path.Combine(rDirectory, "Rgraphapp.dll");
                 string rTermPath = Path.Combine(rDirectory, "RTerm.exe");

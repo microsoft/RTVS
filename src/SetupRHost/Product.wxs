@@ -51,6 +51,6 @@
         <File Source="$(var.BinDir)\Microsoft.R.Host.exe" />
       </Component>
     </DirectoryRef>
-    
+
   </Fragment>
 </Wix>

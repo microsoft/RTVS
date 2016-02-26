@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
         public IWpfTextView GetLastActiveTextView(string contentType) {
             return _textView;
         }
-
+#pragma warning disable 67
         public event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;
 
         public IWpfTextView GetLastActiveTextView(IContentType contentType) {

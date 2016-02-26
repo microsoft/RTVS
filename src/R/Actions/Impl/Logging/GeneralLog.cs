@@ -1,12 +1,12 @@
 ﻿using System;
 
 namespace Microsoft.R.Actions.Logging {
-    public static class SupportLog {
+    public static class GeneralLog {
         private static FileLogWriter _fileLogWriter;
         public static IActionLogWriter LogWriter {
             get {
                 if(_fileLogWriter == null) {
-                    _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.Support");
+                    _fileLogWriter = FileLogWriter.InTempFolder("Microsoft.R.General");
                 }
                 return _fileLogWriter;
             }

@@ -259,6 +259,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to R installation directory such as &apos;Program Files\R\R-3.2.x&apos; or &apos;Program Files\MRO\R-3.2.x&apos;..
+        /// </summary>
+        public static string Error_CannotFindRBinariesFormat {
+            get {
+                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
         /// </summary>
         public static string Error_CannotSendFeedback1 {
@@ -273,6 +282,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to evaluate expression and get data for Microsoft Excel.
+        /// </summary>
+        public static string Error_ExcelCannotEvaluateExpression {
+            get {
+                return ResourceManager.GetString("Error_ExcelCannotEvaluateExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to access path {0}. Exception: {1}..
+        /// </summary>
+        public static string Error_ExceptionAccessingPath {
+            get {
+                return ResourceManager.GetString("Error_ExceptionAccessingPath", resourceCulture);
             }
         }
         
@@ -295,7 +322,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Without this component IntelliseSense and help on function parameters will not work. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
+        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
         /// </summary>
         public static string Error_NoWebTools {
             get {
@@ -309,6 +336,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
+        /// </summary>
+        public static string Error_UnableToFindR {
+            get {
+                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
+        /// </summary>
+        public static string Error_UnsupportedRVersion {
+            get {
+                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
         
@@ -385,6 +430,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
+        /// </summary>
+        public static string InputIsTooLong {
+            get {
+                return ResourceManager.GetString("InputIsTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         public static string LanguageName {
@@ -431,11 +485,47 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Processing Item {0} of {1}.
+        /// </summary>
+        public static string LongOperationProgressMessage1 {
+            get {
+                return ResourceManager.GetString("LongOperationProgressMessage1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}: {2}.
         /// </summary>
-        public static string LongOperationProgressMessage {
+        public static string LongOperationProgressMessage2 {
             get {
-                return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
+                return ResourceManager.GetString("LongOperationProgressMessage2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting R Session....
+        /// </summary>
+        public static string MicrosoftRHostStarting {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStarting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Host process is stopped. Click Reset to start a new one..
+        /// </summary>
+        public static string MicrosoftRHostStopped {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stopping R Session....
+        /// </summary>
+        public static string MicrosoftRHostStopping {
+            get {
+                return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
             }
         }
         
@@ -547,6 +637,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Row {0} of {1}.
+        /// </summary>
+        public static string Progress_ExcelRowCounter {
+            get {
+                return ResourceManager.GetString("Progress_ExcelRowCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing data for Microsoft Excel....
+        /// </summary>
+        public static string Progress_PreparingExcelData {
+            get {
+                return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
             }
         }
         
@@ -1299,6 +1407,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancel data conversion for Microsoft Excel?.
+        /// </summary>
+        public static string Warning_CancelCurrentExcelView {
+            get {
+                return ResourceManager.GetString("Warning_CancelCurrentExcelView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string Warning_LogTooLarge {
+            get {
+                return ResourceManager.GetString("Warning_LogTooLarge", resourceCulture);
             }
         }
         

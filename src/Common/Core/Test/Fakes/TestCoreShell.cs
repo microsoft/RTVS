@@ -28,6 +28,7 @@ namespace Microsoft.Common.Core.Test.Fakes {
 
         public Thread MainThread => UIThreadHelper.Instance.Thread;
 
+#pragma warning disable 67
         public event EventHandler<EventArgs> Idle;
         public event EventHandler<EventArgs> Terminating;
 

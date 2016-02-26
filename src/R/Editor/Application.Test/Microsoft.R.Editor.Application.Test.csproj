@@ -167,6 +167,7 @@
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
+    <Compile Include="SuggestedActions\SmartTagsTest.cs" />
     <Compile Include="TestShell\EditorWindow.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
     <Compile Include="TestShell\Navigation.cs" />

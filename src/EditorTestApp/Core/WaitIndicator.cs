@@ -17,6 +17,7 @@ namespace Microsoft.Languages.Editor.Application.Core
 
         public WaitIndicatorResult Wait(string title, string message, bool allowCancel, Action<IWaitContext> action)
         {
+            action(new WaitContext());
             return WaitIndicatorResult.Completed;
         }
     }

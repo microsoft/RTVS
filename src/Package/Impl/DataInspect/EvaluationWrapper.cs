@@ -8,7 +8,6 @@ using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
@@ -126,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInExcel(object parameter) {
-            //ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]).DoNotWait();
+            ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]);
          }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };

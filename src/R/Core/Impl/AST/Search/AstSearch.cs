@@ -145,5 +145,18 @@ namespace Microsoft.R.Core.AST {
             TokenNode node = ast.NodeFromPosition(position) as TokenNode;
             return node != null && node.Token.TokenType == RTokenType.String;
         }
+
+        public static string IsInLibraryStatement(this AstRoot ast, int position) {
+            var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
+            if (fc != null && fc.LeftOperand != null) {
+                string funcName = ast.TextProvider.GetText(fc.LeftOperand);
+                if (funcName.Equals("library", StringComparison.Ordinal)) {
+                    if (fc.Arguments.Count == 1) {
+                        return ast.TextProvider.GetText(fc.Arguments[0]);
+                    }
+                }
+            }
+            return string.Empty;
+        }
     }
 }

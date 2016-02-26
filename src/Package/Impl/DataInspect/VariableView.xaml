@@ -113,7 +113,7 @@
                                 </ControlTemplate>
                             </Button.Template>
                         </Button>
-                        <!--<Button
+                        <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
                             Command="{Binding Model.Content.OpenInExcelCommand}" ToolTip="{Binding Model.Content.OpenInExcelCommandTooltip}">
                             <Button.Template>
@@ -131,7 +131,7 @@
                                     </ControlTemplate.Triggers>
                                 </ControlTemplate>
                             </Button.Template>
-                        </Button>-->
+                        </Button>
                     </StackPanel>
                 </Grid>
             </DataTemplate>

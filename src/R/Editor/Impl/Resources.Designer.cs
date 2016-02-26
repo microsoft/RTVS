@@ -412,6 +412,24 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Install package.
+        /// </summary>
+        internal static string SmartTagName_InstallPackage {
+            get {
+                return ResourceManager.GetString("SmartTagName_InstallPackage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Load library.
+        /// </summary>
+        internal static string SmartTagName_LoadLibrary {
+            get {
+                return ResourceManager.GetString("SmartTagName_LoadLibrary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uncomment selection.
         /// </summary>
         internal static string UncommentSelection {
