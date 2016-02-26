@@ -93,6 +93,8 @@
     <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
     <Compile Include="Definitions\IVisualComponentContainer.cs" />
     <Compile Include="Definitions\IVisualComponent.cs" />
+    <Compile Include="Documentation\DocumentationUrls.cs" />
+    <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
     <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
