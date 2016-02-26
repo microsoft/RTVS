@@ -40,24 +40,25 @@ namespace Microsoft.R.Editor.Commands {
         private bool IsOverHotUrl(ITextView textView, MouseButtonEventArgs e) {
             Point pt = e.GetPosition(_wpfTextView.VisualElement);
             ITextViewLine viewLine = _wpfTextView.TextViewLines.GetTextViewLineContainingYCoordinate(pt.Y);
+            if (viewLine != null) {
+                SnapshotPoint? bufferPosition = viewLine.GetBufferPositionFromXCoordinate(pt.X);
+                if (bufferPosition.HasValue) {
+                    var snapshot = textView.TextBuffer.CurrentSnapshot;
+                    ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
 
-            SnapshotPoint? bufferPosition = viewLine.GetBufferPositionFromXCoordinate(pt.X);
-            if (bufferPosition.HasValue) {
-                var snapshot = textView.TextBuffer.CurrentSnapshot;
-                ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
+                    var tagAggregator = EditorShell.Current.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+                    using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
-                var tagAggregator = EditorShell.Current.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
-                using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
+                        var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
+                        return tags.Any(t => {
+                            SnapshotPoint? start = t.Span.Start.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
+                            SnapshotPoint? end = t.Span.End.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
 
-                    var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));
-                    return tags.Any(t => {
-                        SnapshotPoint? start = t.Span.Start.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
-                        SnapshotPoint? end = t.Span.End.GetPoint(textView.TextBuffer, PositionAffinity.Successor);
-
-                        return start.HasValue && end.HasValue &&
-                               start.Value <= bufferPosition.Value &&
-                               bufferPosition.Value < end.Value;
-                    });
+                            return start.HasValue && end.HasValue &&
+                                   start.Value <= bufferPosition.Value &&
+                                   bufferPosition.Value < end.Value;
+                        });
+                    }
                 }
             }
             return false;
