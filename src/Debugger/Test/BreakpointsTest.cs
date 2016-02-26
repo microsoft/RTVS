@@ -82,5 +82,35 @@ namespace Microsoft.R.Debugger.Test {
                 }
             }
         }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task SetBreakpointOnNull() {
+            const string code =
+@"f <- function() {
+NULL
+}";
+
+            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (new RHostScript(sessionProvider)) {
+                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
+                using (var debugSession = new DebugSession(session)) {
+                    using (var sf = new SourceFile(code)) {
+                        var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                        debugSession.Breakpoints.Count.Should().Be(1);
+
+                        await sf.Source(session);
+
+                        var res = await debugSession.EvaluateAsync("is.function(f)");
+                        res.Should().BeAssignableTo<DebugValueEvaluationResult>();
+
+                        var valueRes = (DebugValueEvaluationResult)res;
+                        valueRes.GetRepresentation(DebugValueRepresentationKind.Normal).Deparse
+                            .Should().Be("TRUE");
+                    }
+                }
+            }
+        }
+
     }
 }
