@@ -2,8 +2,11 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {
@@ -18,11 +21,10 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 
             if (outlookApp == null) {
                 if (attachmentFile != null) {
-                    body =
-@"Please attach RTVSLogs.zip file that can be found in your user TEMP folder 
-and briefly describe what you were doing that led to the issue if applicable. 
-Please be aware that the data contained in the attached logs contain 
-your command history as well as all output displayed in the R Interactive Window";
+                    body = string.Format(CultureInfo.InvariantCulture, Resources.MailToFrownMessage,
+                                         Path.GetDirectoryName(Path.GetTempPath()), // Trims trailing slash
+                                         Environment.NewLine + Environment.NewLine);
+                    VsAppShell.Current.ShowMessage(body, MessageButtons.OK);
                 }
 
                 ProcessStartInfo psi = new ProcessStartInfo();
@@ -31,8 +33,19 @@ your command history as well as all output displayed in the R Interactive Window
                 Process.Start(psi);
 
                 if (attachmentFile != null) {
-                    Process.Start(Path.GetTempPath());
+                    IntPtr pidl = IntPtr.Zero;
+                    try {
+                        pidl = NativeMethods.ILCreateFromPath(attachmentFile);
+                        if (pidl != IntPtr.Zero) {
+                            NativeMethods.SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                        }
+                    } finally {
+                        if (pidl != IntPtr.Zero) {
+                            NativeMethods.ILFree(pidl);
+                        }
+                    }
                 }
+
             } else {
                 MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
 
@@ -40,7 +53,7 @@ your command history as well as all output displayed in the R Interactive Window
                 mail.Body = body;
                 AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
                 if (currentUser.Type == "EX") {
-                    mail.To = "rtvsuserfeedback";
+                    mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Recipients.ResolveAll();
 
                     if (!string.IsNullOrEmpty(attachmentFile)) {
