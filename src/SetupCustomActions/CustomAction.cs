@@ -25,8 +25,7 @@ namespace SetupCustomActions {
                         SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
 
             if (data.Status != RInstallStatus.OK) {
-                //MessageBox.Show("Custom Action", data.Status.ToString() + " " + data.Exception != null ? data.Exception.Message : "");
-                using (var form = new InstallMROForm()) {
+                 using (var form = new InstallMROForm()) {
                     ds = form.ShowDialog(new SetupWindowHandle());
                 }
             }
@@ -83,20 +82,9 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-
-            var staThread = new Thread(StaThreadEntry);
-            staThread.SetApartmentState(ApartmentState.STA);
-            staThread.Start();
-            staThread.Join();
-
+            Process.Start("https://mran.revolutionanalytics.com/download");
             session.Log("End ShowMicrosoftROfferings action");
             return ActionResult.Success;
-        }
-
-        private static void StaThreadEntry(object o) {
-            using (var form = new ShowMicrosoftROfferings()) {
-                form.ShowDialog(new SetupWindowHandle());
-            }
         }
 
         class SetupWindowHandle : IWin32Window {
