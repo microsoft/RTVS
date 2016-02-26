@@ -68,7 +68,7 @@ namespace Microsoft.R.Host.Client.Session {
                 }
 
                 _delayedMutatedOnReadConsole = false;
-                Mutated?.Invoke(this, EventArgs.Empty);
+                Task.Run(() => Mutated?.Invoke(this, EventArgs.Empty));
             });
         }
 
