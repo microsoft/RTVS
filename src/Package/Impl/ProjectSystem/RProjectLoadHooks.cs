@@ -55,8 +55,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
 
-            // Force REPL window up
-            VsAppShell.Current.DispatchOnUIThread(ReplWindow.EnsureReplWindow);
+            // Force REPL window up and continue only when it is shown
+            await _threadHandling.SwitchToUIThread();
+            ReplWindow.EnsureReplWindow();
 
             try {
                 await _session.HostStarted;
