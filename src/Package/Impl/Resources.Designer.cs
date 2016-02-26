@@ -485,6 +485,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window..
+        /// </summary>
+        public static string MailToFrownMessage {
+            get {
+                return ResourceManager.GetString("MailToFrownMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
