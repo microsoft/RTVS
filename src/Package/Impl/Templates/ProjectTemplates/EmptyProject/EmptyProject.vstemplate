@@ -1,7 +1,7 @@
 <VSTemplate Version="3.0.0" Type="Project" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>Empty Project</Name>
-    <Description>An empty project for creating a new R working directory</Description>
+    <Name>R Project</Name>
+    <Description>A project for creating a new R working directory</Description>
     <Icon>REmptyProject.png</Icon>
     <TemplateID>Microsoft.RTools.Project.Empty</TemplateID>
     <ProjectType>R</ProjectType>
@@ -15,6 +15,7 @@
     <Project TargetFileName="$safeprojectname$.rproj" File="rproject.rproj" ReplaceParameters="true">
       <ProjectItem ReplaceParameters="true" TargetFileName=".Rhistory">.Rhistory</ProjectItem>
       <ProjectItem TargetFileName="Project_StartPage.html" OpenInWebBrowser="true">Project_StartPage.html</ProjectItem>
+      <ProjectItem>script.R</ProjectItem>
     </Project>
   </TemplateContent>
 </VSTemplate>

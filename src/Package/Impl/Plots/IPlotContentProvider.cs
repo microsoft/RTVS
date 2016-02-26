@@ -63,6 +63,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// </summary>
         /// <returns>Tuple of active index (0-based, -1 for none) and number of plots.</returns>
         Task<PlotHistoryInfo> GetHistoryInfoAsync();
+
+        /// <summary>
+        /// Clear all plots from the plot history.
+        /// </summary>
+        Task ClearAllAsync();
+
+        /// <summary>
+        /// Remove the current plot from the plot history.
+        /// </summary>
+        Task RemoveCurrentPlotAsync();
     }
 
     /// <summary>

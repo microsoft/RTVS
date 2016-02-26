@@ -154,6 +154,8 @@
         <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
         <CommandFlag>StretchHorizontally</CommandFlag>
         <CommandFlag>ComboCommitsOnDrop</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Select Working Directory</ButtonText>
         </Strings>
@@ -544,6 +546,16 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="RemoveFromCollection"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Remove Plot</ButtonText>
+          <MenuText>Remo&amp;ve Plot</MenuText>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdCopyPlotAsMetafile" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="Copy"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -899,6 +911,8 @@
         <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Source R Script</ButtonText>
           <MenuText>&amp;Source R Script</MenuText>
@@ -1123,9 +1137,13 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
+    </CommandPlacement>
 
     <!-- Plot window toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
@@ -1152,9 +1170,13 @@
       <Parent guid="guidRToolsCmdSet" id="plotToolbarCopyGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarClearGroup"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarClearGroup"/>
+    </CommandPlacement>
     <!-- End Plot Window toolbar -->
 
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
@@ -1334,6 +1356,7 @@
       <IDSymbol name="icmdCheckForPackageUpdates" value="602" />
 
       <!-- Plots-->
+      <IDSymbol name="icmdRemovePlot" value="705" />
       <IDSymbol name="icmdNextPlot" value="710" />
       <IDSymbol name="icmdPrevPlot" value="711" />
       <IDSymbol name="icmdClearPlots" value="712" />

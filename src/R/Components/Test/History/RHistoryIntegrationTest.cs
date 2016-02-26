@@ -43,7 +43,7 @@ namespace Microsoft.R.Components.Test.History {
                 session.IsHostRunning.Should().BeTrue();
 
                 var eval = workflow.ActiveWindow.InteractiveWindow.Evaluator;
-                var result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                var result = await eval.ExecuteCodeAsync("x <- c(1:10)\r\n");
                 result.Should().Be(ExecutionResult.Success);
                 history.HasEntries.Should().BeTrue();
                 history.HasSelectedEntries.Should().BeFalse();
@@ -74,12 +74,10 @@ namespace Microsoft.R.Components.Test.History {
 
                 var eval = workflow.ActiveWindow.InteractiveWindow.Evaluator;
 
-                var result = await eval.ExecuteCodeAsync("x <- c(1:10)");
+                var result = await eval.ExecuteCodeAsync("x <- c(1:10)\r\n");
                 result.Should().Be(ExecutionResult.Success);
 
-                await eval.ExecuteCodeAsync("\r\n");
-
-                result = await eval.ExecuteCodeAsync("x <- c(1:20)");
+                result = await eval.ExecuteCodeAsync("x <- c(1:20)\r\n");
                 result.Should().Be(ExecutionResult.Success);
 
                 history.HasEntries.Should().BeTrue();

@@ -68,11 +68,6 @@ namespace Microsoft.Common.Core.Telemetry {
                 this.TelemetryRecorder.RecordEvent(completeEventName, dictWithPrefix);
             }
         }
-
-        /// <summary>
-        /// Start a telemetry activity, dispose of the return value when the activity is complete
-        /// </summary>
-        public abstract ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
         #endregion
 
         private string MakeEventName(TelemetryArea area, string eventName) {

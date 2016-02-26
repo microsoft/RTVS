@@ -111,7 +111,6 @@
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />
-    <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
@@ -160,6 +159,8 @@
     <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
+    <Compile Include="Plots\Commands\RemovePlotCommand.cs" />
+    <Compile Include="Plots\Commands\ClearPlotsCommand.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
@@ -327,7 +328,6 @@
     <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
     <Compile Include="Telemetry\RtvsTelemetry.cs" />
-    <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
@@ -686,6 +686,7 @@
     <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
@@ -697,7 +698,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\script.r">
+    <Content Include="Templates\NewItem\script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>

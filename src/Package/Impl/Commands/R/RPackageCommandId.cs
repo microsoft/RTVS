@@ -37,7 +37,7 @@
         public const int icmdCheckForPackageUpdates = 602;
 
         // Plots
-        public const int icmdPrintPlot = 705;
+        public const int icmdRemovePlot = 705;
         public const int icmdNextPlot = 710;
         public const int icmdPrevPlot = 711;
         public const int icmdClearPlots = 712;

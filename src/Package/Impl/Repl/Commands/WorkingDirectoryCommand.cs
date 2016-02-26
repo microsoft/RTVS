@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            return _interactiveWorkflow.ActiveWindow != null ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
+            return _interactiveWorkflow.ActiveWindow != null ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {

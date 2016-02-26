@@ -63,6 +63,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.R.Components.Test.dll",
             "Microsoft.R.Common.Core.dll",
             "Microsoft.R.Host.Client.dll",
+            "Microsoft.R.Debugger.dll",
         };
 
         /// <summary>

@@ -8,7 +8,6 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Completion.Definitions;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help.Definitions;
@@ -25,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Collection of top-level variables
         /// </summary>
         private Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
+        private bool _updating;
 
         #region IVariablesProvider
         /// <summary>
@@ -118,32 +118,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task UpdateList() {
-            // May be null in tests
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IRSessionProvider>();
-            var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
-            if(session.IsHostRunning) {
-                var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IDebugSessionProvider>();
-                if ( debugSessionProvider != null) {
-                var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
-                    if (debugSession != null) {
-                        var stackFrames = await debugSession.GetStackFramesAsync();
+            if (_updating) {
+                return;
+            }
 
-                        var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-                        if (globalStackFrame != null) {
-                            DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment");
-                            var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
+            try {
+                _updating = true;
+                // May be null in tests
+                var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IRSessionProvider>();
+                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+                if (session.IsHostRunning) {
+                    var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IDebugSessionProvider>();
+                    if (debugSessionProvider != null) {
+                        var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
+                        if (debugSession != null) {
+                            var stackFrames = await debugSession.GetStackFramesAsync();
 
-                            _topLevelVariables.Clear();
+                            var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+                            if (globalStackFrame != null) {
+                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment");
+                                var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
-                            var children = await e.GetChildrenAsync();
-                            if (children != null) {
-                                foreach (var x in children) {
-                                    _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+                                _topLevelVariables.Clear();
+
+                                var children = await e.GetChildrenAsync();
+                                if (children != null) {
+                                    foreach (var x in children) {
+                                        _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            } finally {
+                _updating = false;
             }
         }
 
