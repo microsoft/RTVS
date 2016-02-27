@@ -82,7 +82,7 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-            Process.Start("http://microsoft.github.io/RTVS-docs");
+            Process.Start("http://microsoft.github.io/RTVS-docs/installer.html");
             session.Log("End ShowMicrosoftROfferings action");
             return ActionResult.Success;
         }
