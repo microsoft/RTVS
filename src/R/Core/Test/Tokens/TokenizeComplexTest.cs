@@ -26,5 +26,17 @@ namespace Microsoft.R.Core.Test.Tokens {
                 .And.StartAt(start)
                 .And.HaveLength(length);
         }
+
+        [CompositeTest]
+        [InlineData("0xAi", 0, 4)]
+        [Category.R.Tokenizer]
+        public void TokenizeHexComplex(string text, int start, int length) {
+            var tokens = Tokenize(text, new RTokenizer());
+
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(RTokenType.Complex)
+                .And.StartAt(start)
+                .And.HaveLength(length);
+        }
     }
 }
