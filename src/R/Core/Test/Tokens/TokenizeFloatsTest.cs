@@ -27,7 +27,24 @@ namespace Microsoft.R.Core.Test.Tokens {
                 .Which.Should().HaveType(RTokenType.Number)
                 .And.StartAt(start)
                 .And.HaveLength(length);
+        }
 
+        [CompositeTest]
+        [InlineData("+1L ", 0, 3)]
+        [InlineData("1e4L", 0, 4)]
+        [InlineData("-.0L", 0, 4)]
+        [InlineData("0.e1L", 0, 5)]
+        [InlineData(".0e-2L", 0, 6)]
+        [InlineData("2.4L", 0, 4)]
+        [Category.R.Tokenizer]
+        public void TokenizeLongFloats(string text, int start, int length)
+        {
+            var tokens = Tokenize(text, new RTokenizer());
+
+            tokens.Should().ContainSingle()
+                .Which.Should().HaveType(RTokenType.Number)
+                .And.StartAt(start)
+                .And.HaveLength(length);
         }
 
         [Test]
