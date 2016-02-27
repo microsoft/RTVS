@@ -38,6 +38,8 @@ namespace Microsoft.R.Core.Test.Tokens {
         [InlineData("0.e1L", 0, 5)]
         [InlineData(".0e-2L", 0, 6)]
         [InlineData("2.4L", 0, 4)]
+        [InlineData(".1L", 0, 3)]
+        [InlineData("1.L", 0, 3)]
         [Category.R.Tokenizer]
         public void TokenizeLongFloats(string text, int start, int length)
         {
