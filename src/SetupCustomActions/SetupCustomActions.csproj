@@ -103,12 +103,6 @@
     <Compile Include="InstallVsCommunityForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ShowMicrosoftROfferings.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ShowMicrosoftROfferings.Designer.cs">
-      <DependentUpon>ShowMicrosoftROfferings.cs</DependentUpon>
-    </Compile>
     <Compile Include="YesNoMessageBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,9 +121,6 @@
     <Content Include="CustomAction.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="ShowMicrosoftROfferings.resx">
-      <DependentUpon>ShowMicrosoftROfferings.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="YesNoMessageBox.resx">
       <DependentUpon>YesNoMessageBox.cs</DependentUpon>
     </EmbeddedResource>

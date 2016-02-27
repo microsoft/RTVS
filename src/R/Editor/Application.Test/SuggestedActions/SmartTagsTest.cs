@@ -23,9 +23,9 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 var e = EditorShell.Current.ExportProvider;
                 var svc = e.GetExportedValue<ISuggestedActionCategoryRegistryService>();
-                var broker = e.GetExportedValue<ILightBulbBroker>();
 
                 script.Invoke(() => {
+                    var broker = e.GetExportedValue<ILightBulbBroker>();
                     broker.CreateSession(svc.AllCodeFixes, EditorWindow.CoreEditor.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
@@ -43,6 +43,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
 
                 sets = null;
                 script.Invoke(() => {
+                    var broker = e.GetExportedValue<ILightBulbBroker>();
                     broker.CreateSession(svc.Any, EditorWindow.CoreEditor.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();

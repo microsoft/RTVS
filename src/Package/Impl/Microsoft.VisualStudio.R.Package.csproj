@@ -91,6 +91,8 @@
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
+    <Compile Include="Documentation\DocumentationUrls.cs" />
+    <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
     <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
@@ -842,6 +844,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddTemplatesToVsixSources" AfterTargets="GetVsixSourceItems">

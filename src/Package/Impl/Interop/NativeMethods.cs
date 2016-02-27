@@ -32,5 +32,14 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
             IDHELP = 9,
             IDTRYAGAIN = 10,
             IDCONTINUE = 11;
+
+        [DllImport("shell32.dll")]
+        public static extern int SHOpenFolderAndSelectItems(IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags);
+
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr ILCreateFromPath(string fileName);
+
+        [DllImport("shell32.dll")]
+        public static extern void ILFree(IntPtr pidl);
     }
 }

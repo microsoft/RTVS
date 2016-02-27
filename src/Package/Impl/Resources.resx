@@ -505,7 +505,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Help on {0}</value>
   </data>
   <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
+    <value>Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -581,6 +581,9 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="Settings_TriggerOnTab_Description" xml:space="preserve">
     <value>If set to on completion list can be invoked by typing one or more characters and pressing Tab.</value>
+  </data>
+  <data name="MailToFrownMessage" xml:space="preserve">
+    <value>If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window.</value>
   </data>
   <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
     <value>Unable to evaluate expression and get data for Microsoft Excel</value>
