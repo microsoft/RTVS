@@ -142,6 +142,17 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
+        public void TokenizeFloats12() {
+            var tokens = Tokenize("-1eL", new RTokenizer());
+            tokens.Should().HaveCount(1);
+
+            tokens[0].Should().HaveType(RTokenType.Identifier)
+                .And.StartAt(3)
+                .And.HaveLength(1);
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeFile_FloatsFile() {
             TokenizeFiles.TokenizeFile(_files, @"Tokenization\Floats.r");
         }
