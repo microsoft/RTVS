@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                     return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
 
                 case RInstallStatus.PathNotSpecified:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine);
             }
 
             return string.Empty;
