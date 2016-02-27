@@ -82,7 +82,7 @@ namespace SetupCustomActions {
         [CustomAction]
         public static ActionResult ShowMicrosoftROfferingsAction(Session session) {
             session.Log("Start ShowMicrosoftROfferings action");
-            Process.Start("https://mran.revolutionanalytics.com/download");
+            Process.Start("http://microsoft.github.io/RTVS-docs");
             session.Log("End ShowMicrosoftROfferings action");
             return ActionResult.Success;
         }
