@@ -83,5 +83,15 @@
 
         // Debugger
         public const int icmdShowDotPrefixedVariables = 1300;
+
+        // Documentation
+        public const int icmdRtvsDocumentation = 1400;
+        public const int icmdRtvsSamples = 1401;
+        public const int icmdRDocsIntroToR = 1402;
+        public const int icmdRDocsTaskViews = 1403;
+        public const int icmdRDocsDataImportExport = 1404;
+        public const int icmdRDocsWritingRExtensions = 1405;
+        public const int icmdMicrosoftRProducts = 1406;
+        public const int icmdCheckForUpdates = 1407;
     }
 }
