@@ -331,7 +331,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
+        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R..
         /// </summary>
         public static string Error_UnableToFindR {
             get {
