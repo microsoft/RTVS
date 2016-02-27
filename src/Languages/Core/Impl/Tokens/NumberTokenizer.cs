@@ -54,6 +54,7 @@ namespace Microsoft.Languages.Core.Tokens {
 
             int numberLength;
             if (cs.CurrentChar == 'e' || cs.CurrentChar == 'E') {
+                isDouble = true;
                 numberLength = HandleExponent(cs, start);
             } else {
                 numberLength = cs.Position - start;
@@ -100,13 +101,11 @@ namespace Microsoft.Languages.Core.Tokens {
 
             bool hasSign = false;
 
-            if (cs.IsWhiteSpace() || cs.IsEndOfStream()) {
-                // 0.1E
-                cs.MoveToNextChar();
-                return cs.Position - start;
-            }
-
             cs.MoveToNextChar();
+            if (cs.IsWhiteSpace() || cs.IsEndOfStream()) {
+                // 0.1E or 1e
+                return 0;
+            }
 
             if (cs.CurrentChar == '-' || cs.CurrentChar == '+') {
                 hasSign = true;
@@ -131,12 +130,6 @@ namespace Microsoft.Languages.Core.Tokens {
             // Ideally this needs to be extended in a way so language-specific
             // tokenizer can specify options or control number format.
             if (char.IsLetter(cs.CurrentChar) && cs.CurrentChar != 'i' && cs.CurrentChar != 'L') {
-                return 0;
-            }
-
-            if (cs.CurrentChar == '[' || cs.CurrentChar == ']' ||
-                cs.CurrentChar == '{' || cs.CurrentChar == '}' ||
-                cs.CurrentChar == '(' || cs.CurrentChar == ')') {
                 return 0;
             }
 

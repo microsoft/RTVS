@@ -19,6 +19,8 @@ namespace Microsoft.R.Core.Test.Tokens {
         [InlineData("-.0", 0, 3)]
         [InlineData("0.e1", 0, 4)]
         [InlineData(".0e-2", 0, 5)]
+        [InlineData("1e5", 0, 3)]
+        [InlineData("-1e+1", 0, 5)]
         [Category.R.Tokenizer]
         public void TokenizeFloats(string text, int start, int length) {
             var tokens = Tokenize(text, new RTokenizer());
@@ -49,14 +51,14 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
-        public void TokenizeFloats5() {
+        public void TokenizeFloats05() {
             var tokens = Tokenize("-0.e", new RTokenizer());
             tokens.Should().BeEmpty();
         }
 
         [Test]
         [Category.R.Tokenizer]
-        public void TokenizeFloats6() {
+        public void TokenizeFloats06() {
             var tokens = Tokenize("-12.%foo%-.1e", new RTokenizer());
 
             tokens.Should().HaveCount(2);
@@ -72,7 +74,7 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
-        public void TokenizeFloats7() {
+        public void TokenizeFloats07() {
             var tokens = Tokenize(".1", new RTokenizer());
 
             tokens.Should().ContainSingle()
@@ -83,7 +85,7 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
-        public void TokenizeFloats8() {
+        public void TokenizeFloats08() {
             var tokens = Tokenize("1..1", new RTokenizer());
 
             tokens.Should().HaveCount(2);
@@ -99,9 +101,43 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
-        public void TokenizeFloats9() {
+        public void TokenizeFloats09() {
             var tokens = Tokenize("1e", new RTokenizer());
             tokens.Should().BeEmpty();
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
+        public void TokenizeFloats10() {
+            var tokens = Tokenize("1.0)", new RTokenizer());
+            tokens.Should().HaveCount(2);
+
+            tokens[0].Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(3);
+
+            tokens[1].Should().HaveType(RTokenType.CloseBrace)
+                .And.StartAt(3)
+                .And.HaveLength(1);
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
+        public void TokenizeFloats11() {
+            var tokens = Tokenize("1e+1+1", new RTokenizer());
+            tokens.Should().HaveCount(3);
+
+            tokens[0].Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(4);
+
+            tokens[1].Should().HaveType(RTokenType.Operator)
+                .And.StartAt(4)
+                .And.HaveLength(1);
+
+            tokens[2].Should().HaveType(RTokenType.Number)
+                 .And.StartAt(5)
+                 .And.HaveLength(1);
         }
 
         [Test]
