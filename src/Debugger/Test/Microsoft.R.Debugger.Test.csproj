@@ -63,6 +63,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="SourceFile.cs" />
+    <Compile Include="DebugReplTest.cs" />
     <Compile Include="ValuesTest.cs" />
     <Compile Include="SteppingTest.cs" />
     <Compile Include="BreakpointsTest.cs" />
