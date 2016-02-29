@@ -44,9 +44,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Office {
         [Test]
         public void FetchDataErrors01() {
             ExcelData xlData = ExcelInterop.GenerateExcelData("x", -10, -10);
-            xlData.CellData.GetLength(0).Should().Be(0);
-            xlData.CellData.GetLength(1).Should().Be(0);
-        }
+            xlData.Should().BeNull();
+         }
 
         [Test]
         public void FetchDataErrors02() {

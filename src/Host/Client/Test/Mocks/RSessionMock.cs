@@ -12,6 +12,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public bool IsHostRunning { get; set; }
 
+        public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
+
         public string Prompt { get; set; } = ">";
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {

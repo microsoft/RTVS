@@ -37,12 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         }
 
         public static ExcelData GenerateExcelData(string expression, int rows, int cols) {
+            if (rows <= 0 || cols <= 0) {
+                return null;
+            }
+
             try {
                 ExcelData xlData = new ExcelData();
-                if (rows <= 0 || cols <= 0) {
-                    return xlData;
-                }
-
                 xlData.CellData = new object[rows, cols];
                 int chunkSize = 100;
 
@@ -60,6 +60,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 }
 
                 if (LongOperationNotification.ShowWaitingPopup(Resources.Progress_PreparingExcelData, actions)) {
+                    if (xlData.CellData[0, 0] == null) {
+                        return null;
+                    }
                     return xlData;
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {

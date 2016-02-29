@@ -25,9 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
             if (_regenerateBaselineFiles) {
                 var serializedActual = SerializeVisualTree(actual);
 
-                // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\Package\TestApp\Files";
-                string baselineFilePath = Path.Combine(enlistmentPath, Path.GetFileName(testFileName));
+                string baselineFilePath = Path.Combine(fixture.SourcePath, Path.GetFileName(testFileName));
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
                 var deserializedExpected = DeserializeVisualTree(testFilePath);
