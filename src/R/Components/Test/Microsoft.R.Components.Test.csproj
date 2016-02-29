@@ -112,6 +112,7 @@
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
+    <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

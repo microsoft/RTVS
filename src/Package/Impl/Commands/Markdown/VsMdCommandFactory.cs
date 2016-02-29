@@ -17,14 +17,21 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     [Export(typeof(ICommandFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class VsMdCommandFactory : ICommandFactory {
-        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            var exportProvider = VsAppShell.Current.ExportProvider;
-            var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-            var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
-            if (interactiveWorkflow.ActiveWindow == null) {
-                interactiveWorkflowProvider
-                    .CreateInteractiveWindowAsync(interactiveWorkflow)
+        [ImportingConstructor]
+        public VsMdCommandFactory(IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory) {
+            _workflowProvider = workflowProvider;
+            _componentContainerFactory = componentContainerFactory;
+        }
+
+        public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
+            var workflow = _workflowProvider.GetOrCreate();
+
+            if (workflow.ActiveWindow == null) {
+                workflow
+                    .GetOrCreateVisualComponent(_componentContainerFactory)
                     .ContinueOnRanToCompletion(w => w.Container.Show(false));
             }
 
@@ -32,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
                 new PreviewHtmlCommand(textView),
                 new PreviewPdfCommand(textView),
                 new PreviewWordCommand(textView),
-                new SendToReplCommand(textView, interactiveWorkflow),
+                new SendToReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
             };
         }

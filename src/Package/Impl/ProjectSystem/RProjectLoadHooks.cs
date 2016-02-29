@@ -16,9 +16,8 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
@@ -31,22 +30,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
-        private readonly IRSession _session;
-        private readonly IRHistory _history;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
-        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
+
+        private IRInteractiveWorkflow _workflow;
+        private IRSession _session;
+        private IRHistory _history;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
-            _interactiveWorkflowProvider = interactiveWorkflowProvider;
-            _interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
-            _session = _interactiveWorkflow.RSession;
-            _history = _interactiveWorkflow.History;
+            _workflowProvider = workflowProvider;
+            _componentContainerFactory = componentContainerFactory;
+
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -65,8 +65,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
-            if (_interactiveWorkflow.ActiveWindow == null) {
-                var window = await _interactiveWorkflowProvider.CreateInteractiveWindowAsync(_interactiveWorkflow);
+            VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
+            _workflow = _workflowProvider.GetOrCreate();
+            _session = _workflow.RSession;
+            _history = _workflow.History;
+
+            if (_workflow.ActiveWindow == null) {
+                var window = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
                 window.Container.Show(true);
             }
 

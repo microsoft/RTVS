@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// </summary>
     [Export(typeof(IApplicationShell))]
     public sealed class VsAppShell : IApplicationShell, IIdleTimeService, IDisposable {
-        private static Lazy<VsAppShell> _instance = Lazy.Create(() => new VsAppShell());
+        private static readonly Lazy<VsAppShell> _instance = Lazy.Create(() =>  new VsAppShell());
 
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return sp.GetService(type ?? typeof(T)) as T;
             }
 
-            return RPackage.GetGlobalService(type ?? typeof(T)) as T;
+            return VisualStudio.Shell.Package.GetGlobalService(type ?? typeof(T)) as T;
         }
 
         /// <summary>
@@ -381,8 +381,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             this.IsUITestEnvironment = false;
         }
 
-        private IVsPackage EnsurePackageLoaded(Guid guidPackage) {
-            var shell = GetGlobalService<IVsShell>();
+        public static IVsPackage EnsurePackageLoaded(Guid guidPackage) {
+            var shell = (IVsShell)VisualStudio.Shell.Package.GetGlobalService(typeof(IVsShell));
             var guid = guidPackage;
             IVsPackage package;
             int hr = ErrorHandler.ThrowOnFailure(shell.IsPackageLoaded(ref guid, out package), VSConstants.E_FAIL);
