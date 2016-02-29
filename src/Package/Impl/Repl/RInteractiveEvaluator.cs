@@ -99,11 +99,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
-            // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
-            if (text[0] == '\u0002') {
-                text = text.Substring(1);
-            }
-
             var start = 0;
             var end = text.IndexOf('\n');
             if (end == -1) {

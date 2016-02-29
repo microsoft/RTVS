@@ -165,9 +165,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         textView.Caret.MoveTo(point.Value);
                     }
 
-                    // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
-                    current.InteractiveWindow.CurrentLanguageBuffer.Insert(0, "\u0002");
-
                     current.InteractiveWindow.Operations.Return();
                 } else {
                     // Otherwise insert a line break in the middle of an input
