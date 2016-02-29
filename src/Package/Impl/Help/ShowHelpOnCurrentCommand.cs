@@ -124,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private ITextView GetActiveView() {
-            ITextView textView = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow.TextView;
+            ITextView textView = _workflow.ActiveWindow.InteractiveWindow.TextView;
             if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }
