@@ -23,6 +23,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var interactiveWorkflowComponentContainerFactory = exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
             var plotHistoryProvider = exportProvider.GetExportedValue<IPlotHistoryProvider>();
@@ -70,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 // Window commands
                 new ShowPlotWindowsCommand(),
-                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider),
+                new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker),

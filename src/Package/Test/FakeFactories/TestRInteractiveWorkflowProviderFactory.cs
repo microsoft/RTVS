@@ -16,19 +16,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
     public static class TestRInteractiveWorkflowProviderFactory {
         public static IRInteractiveWorkflowProvider Create(IRSessionProvider sessionProvider = null
             , IRHistoryProvider historyProvider = null
-            , IInteractiveWindowComponentContainerFactory componentContainerFactory = null
             , IActiveWpfTextViewTracker activeTextViewTracker = null
             , IDebuggerModeTracker debuggerModeTracker = null
             , ICoreShell shell = null
             , IRSettings settings = null) {
             sessionProvider = sessionProvider ?? new RSessionProviderMock();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
-            componentContainerFactory = componentContainerFactory ?? new InteractiveWindowComponentContainerFactoryMock();
 
             activeTextViewTracker = activeTextViewTracker ?? new ActiveTextViewTrackerMock(string.Empty, RContentTypeDefinition.ContentType);
             debuggerModeTracker = debuggerModeTracker ?? new VsDebuggerModeTracker();
 
-           return new TestRInteractiveWorkflowProvider(sessionProvider, historyProvider, componentContainerFactory, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
+           return new TestRInteractiveWorkflowProvider(sessionProvider, historyProvider, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
         }
     }
 }

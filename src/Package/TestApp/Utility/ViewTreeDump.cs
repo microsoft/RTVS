@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
             if (_regenerateBaselineFiles) {
                 var serializedActual = SerializeVisualTree(actual);
 
-                string baselineFilePath = Path.Combine(fixture.SourcePath, Path.GetFileName(testFileName));
+                string baselineFilePath = fixture.GetSourcePath(testFileName);
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
                 var deserializedExpected = DeserializeVisualTree(testFilePath);
