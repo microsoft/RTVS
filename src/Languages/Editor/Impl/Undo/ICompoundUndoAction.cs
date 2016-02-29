@@ -1,4 +1,7 @@
-﻿
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+
 namespace Microsoft.Languages.Editor.Undo {
     /// <summary>
     /// Allows text buffer changes to be batched together in a single named action.

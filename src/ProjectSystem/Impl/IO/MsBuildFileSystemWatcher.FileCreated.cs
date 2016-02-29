@@ -1,4 +1,7 @@
-﻿using Microsoft.Common.Core.IO;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Common.Core.IO;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher {
