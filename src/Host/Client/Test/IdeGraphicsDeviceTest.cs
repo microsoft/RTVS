@@ -15,7 +15,6 @@ using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
-    [Collection(CollectionNames.NonParallel)]
     public class IdeGraphicsDeviceTest {
         private readonly GraphicsDeviceTestFilesFixture _files;
         private readonly MethodInfo _testMethod;
