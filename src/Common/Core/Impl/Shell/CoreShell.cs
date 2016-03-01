@@ -17,8 +17,15 @@ namespace Microsoft.Common.Core.Shell {
             string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
             string packageTestAssemblyPath = Path.Combine(assemblyLoc, assemblyName);
+            Assembly testAssembly = null;
 
-            Assembly testAssembly = Assembly.LoadFrom(packageTestAssemblyPath);
+            // Catch exception when loading assembly since it is missing in non-test
+            // environment but do throw when it is present but test types cannot be created.
+            try {
+                testAssembly = Assembly.LoadFrom(packageTestAssemblyPath);
+            }
+            catch(Exception) { }
+
             if (testAssembly != null) {
                 Type[] types = testAssembly.GetTypes();
                 IEnumerable<Type> classes = types.Where(x => x.IsClass);
