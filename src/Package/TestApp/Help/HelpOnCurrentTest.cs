@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     public class HelpOnCurrentTest : InteractiveTest {
         [Test]
         [Category.Interactive]
-        public async Task HelpTest() {
+        public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var historyProvider = RHistoryProviderStubFactory.CreateDefault();
@@ -44,12 +44,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
                     var cmd = new ShowHelpOnCurrentCommand(workflow, activeViewTrackerMock);
 
-                    cmd.SetStatus();
                     cmd.Should().BeVisibleAndDisabled();
-
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
 
-                    cmd.SetStatus();
                     cmd.Should().BeVisibleAndEnabled();
                     cmd.Text.Should().EndWith("plot");
 
