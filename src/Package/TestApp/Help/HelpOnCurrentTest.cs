@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var historyProvider = RHistoryProviderStubFactory.CreateDefault();            
+            var historyProvider = RHistoryProviderStubFactory.CreateDefault();
             using (var hostScript = new RHostScript(sessionProvider, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
                     DoIdle(100);
