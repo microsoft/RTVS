@@ -9,7 +9,7 @@ namespace Microsoft.R.Support.Help.Definitions {
         /// <summary>
         /// Function arguments
         /// </summary>
-        IReadOnlyList<IArgumentInfo> Arguments { get; }
+        IList<IArgumentInfo> Arguments { get; }
 
         /// <summary>
         /// Creates formatted signature that is presented to the user

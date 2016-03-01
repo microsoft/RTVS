@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var historyProvider = RHistoryProviderStubFactory.CreateDefault();            
+            var historyProvider = RHistoryProviderStubFactory.CreateDefault();
             using (var hostScript = new RHostScript(sessionProvider, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
                     DoIdle(100);
@@ -42,7 +42,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock);
 
                     cmd.Should().BeVisibleAndDisabled();
-
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));
 
                     cmd.Should().BeVisibleAndEnabled();

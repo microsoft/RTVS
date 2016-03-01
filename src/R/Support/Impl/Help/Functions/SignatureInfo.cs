@@ -20,7 +20,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// <summary>
         /// Function arguments
         /// </summary>
-        public IReadOnlyList<IArgumentInfo> Arguments { get; internal set; }
+        public IList<IArgumentInfo> Arguments { get; internal set; }
 
         /// <summary>
         /// Creates formatted signature that is presented to the user
