@@ -3,9 +3,11 @@ using FluentAssertions;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Images {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class ImagesProviderTest {
         [Test]
         [Category.Project.Services]

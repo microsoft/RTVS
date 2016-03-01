@@ -14,24 +14,20 @@ namespace Microsoft.Common.Core.Shell {
         // in isolation. In this case code uses reflection to instatiate 
         // service provider with a specific name.
         public static void TryCreateTestInstance(string assemblyName, string className) {
-            try {
-                string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
-                string assemblyLoc = Path.GetDirectoryName(thisAssembly);
-                string packageTestAssemblyPath = Path.Combine(assemblyLoc, assemblyName);
+            string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
+            string assemblyLoc = Path.GetDirectoryName(thisAssembly);
+            string packageTestAssemblyPath = Path.Combine(assemblyLoc, assemblyName);
 
-                Assembly testAssembly = Assembly.LoadFrom(packageTestAssemblyPath);
-                if (testAssembly != null) {
-                    Type[] types = testAssembly.GetTypes();
-                    IEnumerable<Type> classes = types.Where(x => x.IsClass);
+            Assembly testAssembly = Assembly.LoadFrom(packageTestAssemblyPath);
+            if (testAssembly != null) {
+                Type[] types = testAssembly.GetTypes();
+                IEnumerable<Type> classes = types.Where(x => x.IsClass);
 
-                    Type testAppShell = classes.FirstOrDefault(c => c.Name.Contains(className));
-                    Debug.Assert(testAppShell != null);
+                Type testAppShell = classes.FirstOrDefault(c => c.Name.Contains(className));
+                Debug.Assert(testAppShell != null);
 
-                    MethodInfo mi = testAppShell.GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
-                    mi.Invoke(null, null);
-                }
-            }
-            catch(Exception) {
+                MethodInfo mi = testAppShell.GetMethod("Create", BindingFlags.Static | BindingFlags.Public);
+                mi.Invoke(null, null);
             }
         }
     }

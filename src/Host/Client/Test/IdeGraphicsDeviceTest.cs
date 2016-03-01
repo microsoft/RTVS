@@ -11,9 +11,11 @@ using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class IdeGraphicsDeviceTest {
         private readonly GraphicsDeviceTestFilesFixture _files;
         private readonly MethodInfo _testMethod;

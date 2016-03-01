@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
@@ -40,14 +41,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
             _globalEnv = new EvaluationWrapper(result);
-            _mre.Set();
+            _mre.Value.Set();
         }
 
-        private ManualResetEventSlim _mre;
+        private Lazy<ManualResetEventSlim> _mre = Lazy.Create(() => new ManualResetEventSlim());
+
         public async Task EvaluateAsync(string rScript) {
             VariableSubscription subscription = null;
             try {
-                _mre = new ManualResetEventSlim();
+                _mre.Value.Reset();
 
                 _globalEnv = null;
                 subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
@@ -57,9 +59,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 }
 
                 if (System.Diagnostics.Debugger.IsAttached) {
-                    _mre.Wait();
+                    _mre.Value.Wait();
                 } else {
-                    if (!_mre.Wait(TimeSpan.FromSeconds(10))) {
+                    if (!_mre.Value.Wait(TimeSpan.FromSeconds(10))) {
                         throw new TimeoutException("Evaluate time out");
                     }
                 }
