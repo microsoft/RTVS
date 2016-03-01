@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                    DebuggerCommandVisibility.Stopped) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             base.SetStatus();
             Enabled = false;
         }

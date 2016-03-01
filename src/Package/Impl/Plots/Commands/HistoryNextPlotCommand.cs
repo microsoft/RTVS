@@ -7,11 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdNextPlot) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0 && PlotHistory.ActivePlotIndex < PlotHistory.PlotCount - 1;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.NextPlotAsync());
         }
     }

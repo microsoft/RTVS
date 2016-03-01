@@ -15,8 +15,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             command?.SetStatus();
         }
 
-        internal virtual void SetStatus() { }
-        internal virtual void Handle() { }
+        protected virtual void SetStatus() { }
+        protected virtual void Handle() { }
 
         public static void OnCommand(object sender, EventArgs args) {
             var command = sender as PackageCommand;

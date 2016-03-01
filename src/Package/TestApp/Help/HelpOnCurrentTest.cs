@@ -13,8 +13,6 @@ using Microsoft.VisualStudio.Text;
 using Xunit;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
-using Microsoft.UnitTests.Core.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
@@ -25,15 +23,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var historyProvider = RHistoryProviderStubFactory.CreateDefault();
+            var historyProvider = RHistoryProviderStubFactory.CreateDefault();            
             using (var hostScript = new RHostScript(sessionProvider, clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
                     DoIdle(100);
 
                     var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                     var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, activeTextViewTracker: activeViewTrackerMock);
-                    var workflow = interactiveWorkflowProvider.GetOrCreate();
-                    var componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock();
+                    var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
                     var component = ControlWindow.Component as IHelpWindowVisualComponent;
                     component.Should().NotBeNull();
@@ -42,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     clientApp.Component = component;
 
                     var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                    var cmd = new ShowHelpOnCurrentCommand(workflow, activeViewTrackerMock);
+                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock);
 
                     cmd.Should().BeVisibleAndDisabled();
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));

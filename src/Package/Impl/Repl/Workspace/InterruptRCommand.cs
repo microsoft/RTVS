@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _enabled = true;
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             var window = _interactiveWorkflow.ActiveWindow;
             if (window != null) {
                 Visible = true;
@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             if (_enabled) {
                 _interactiveWorkflow.Operations.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();

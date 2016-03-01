@@ -9,11 +9,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdExportPlotAsPdf) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsPdfFilter, null, Resources.ExportPlotAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
                 PlotHistory.PlotContentProvider.ExportAsPdf(destinationFilePath);

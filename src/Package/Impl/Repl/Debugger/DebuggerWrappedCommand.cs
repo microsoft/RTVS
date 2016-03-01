@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             _shellCmdId = (uint)shellCmdId;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             object o = null;
             shell.PostExecCommand(ref _shellGroup, _shellCmdId, 0, ref o);

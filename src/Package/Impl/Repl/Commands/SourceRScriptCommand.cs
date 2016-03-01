@@ -61,12 +61,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return null;
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Visible = _interactiveWorkflow.ActiveWindow != null && _interactiveWorkflow.ActiveWindow.Container.IsOnScreen;
             Enabled = GetFilePath() != null;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string filePath = GetFilePath();
             if (filePath != null) {
                 // Save file before sourcing
