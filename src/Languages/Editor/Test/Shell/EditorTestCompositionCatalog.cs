@@ -270,69 +270,69 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         private CompositionContainer BuildCatalog(AggregateCatalog aggregateCatalog) {
             CompositionContainer container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
 
-            StringBuilder parts = _traceExportImports ? new StringBuilder() : null;
-            StringBuilder exports = _traceExportImports ? new StringBuilder() : null;
+            if (_traceExportImports) {
+                StringBuilder parts = new StringBuilder();
+                StringBuilder exports = new StringBuilder();
 
-            foreach (object o in container.Catalog.Parts) {
+                foreach (object o in container.Catalog.Parts) {
+                    ComposablePartDefinition part = o as ComposablePartDefinition;
+                    if (part == null) {
+                        parts.AppendLine("PART MISSING: " + o.ToString());
+                        exports.AppendLine("PART MISSING: " + o.ToString());
+                        continue;
+                    }
 
-                ComposablePartDefinition part = o as ComposablePartDefinition;
-                if (part == null) {
-                    parts.AppendLine("PART MISSING: " + o.ToString());
-                    exports.AppendLine("PART MISSING: " + o.ToString());
-                    continue;
-                }
+                    parts.AppendLine("===============================================================");
+                    parts.AppendLine(part.ToString());
 
-                parts?.AppendLine("===============================================================");
-                parts?.AppendLine(part.ToString());
+                    exports.AppendLine("===============================================================");
+                    exports.AppendLine(part.ToString());
 
-                exports?.AppendLine("===============================================================");
-                exports?.AppendLine(part.ToString());
+                    bool first = true;
 
-                bool first = true;
+                    if (part.ExportDefinitions.FirstOrDefault() != null) {
+                        parts.AppendLine("\t --- EXPORTS --");
+                        exports.AppendLine("\t --- EXPORTS --");
 
-                if (part.ExportDefinitions.FirstOrDefault() != null) {
-                    parts?.AppendLine("\t --- EXPORTS --");
-                    exports?.AppendLine("\t --- EXPORTS --");
+                        foreach (ExportDefinition exportDefinition in part.ExportDefinitions) {
+                            parts.AppendLine("\t" + exportDefinition.ContractName);
+                            exports.AppendLine("\t" + exportDefinition.ContractName);
 
-                    foreach (ExportDefinition exportDefinition in part.ExportDefinitions) {
-                        parts?.AppendLine("\t" + exportDefinition.ContractName);
-                        exports?.AppendLine("\t" + exportDefinition.ContractName);
+                            foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata) {
+                                string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
 
-                        foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata) {
-                            string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
+                                parts.AppendLine("\t" + kvp.Key + " : " + valueString);
+                                exports.AppendLine("\t" + kvp.Key + " : " + valueString);
+                            }
 
-                            parts?.AppendLine("\t" + kvp.Key + " : " + valueString);
-                            exports?.AppendLine("\t" + kvp.Key + " : " + valueString);
-                        }
-
-                        if (first) {
-                            first = false;
-                        } else {
-                            parts?.AppendLine("------------------------------------------------------");
-                            exports?.AppendLine("------------------------------------------------------");
+                            if (first) {
+                                first = false;
+                            } else {
+                                parts.AppendLine("------------------------------------------------------");
+                                exports.AppendLine("------------------------------------------------------");
+                            }
                         }
                     }
-                }
 
-                if (part.ImportDefinitions.FirstOrDefault() != null) {
-                    parts?.AppendLine("\t --- IMPORTS ---");
+                    if (part.ImportDefinitions.FirstOrDefault() != null) {
+                        parts.AppendLine("\t --- IMPORTS ---");
 
-                    foreach (ImportDefinition importDefinition in part.ImportDefinitions) {
-                        parts?.AppendLine("\t" + importDefinition.ContractName);
-                        parts?.AppendLine("\t" + importDefinition.Constraint.ToString());
-                        parts?.AppendLine("\t" + importDefinition.Cardinality.ToString());
+                        foreach (ImportDefinition importDefinition in part.ImportDefinitions) {
+                            parts.AppendLine("\t" + importDefinition.ContractName);
+                            parts.AppendLine("\t" + importDefinition.Constraint.ToString());
+                            parts.AppendLine("\t" + importDefinition.Cardinality.ToString());
 
-                        if (first) {
-                            first = false;
-                        } else {
-                            parts?.AppendLine("------------------------------------------------------");
+                            if (first) {
+                                first = false;
+                            } else {
+                                parts.AppendLine("------------------------------------------------------");
+                            }
                         }
                     }
+                    _partsData = parts.ToString();
+                    _exportsData = exports.ToString();
                 }
-                _partsData = parts?.ToString();
-                _exportsData = exports?.ToString();
             }
-
             return container;
         }
 
