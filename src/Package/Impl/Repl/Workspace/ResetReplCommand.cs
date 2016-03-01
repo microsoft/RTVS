@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _interactiveWorkflow = interactiveWorkflow;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             if (_interactiveWorkflow.ActiveWindow != null) {
                 Visible = true;
                 Enabled = true;
@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             if (_interactiveWorkflow.ActiveWindow != null) {
                 _interactiveWorkflow.Operations.ResetAsync().DoNotWait();
             }

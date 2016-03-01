@@ -11,11 +11,11 @@ namespace Microsoft.VisualStudio.R.Package.Documentation {
             _url = url;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = true;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.UseShellExecute = true;
             psi.FileName = _url;

@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             _interactiveWorkflow = interactiveWorkflow;
         }
 
-        protected unsafe override void Handle() {
+        internal unsafe override void Handle() {
             if (!RSession.IsHostRunning) {
                 return;
             }

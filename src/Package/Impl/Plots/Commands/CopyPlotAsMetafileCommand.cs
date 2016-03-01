@@ -7,11 +7,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdCopyPlotAsMetafile) {
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             PlotHistory.PlotContentProvider.CopyToClipboardAsMetafile();
         }
     }

@@ -8,11 +8,11 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Commands {
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCheckForPackageUpdates) {
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = false;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
         }
     }
 }

@@ -9,11 +9,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdClearPlots) {
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = PlotHistory.PlotCount > 0;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             if (VsAppShell.Current.ShowMessage(Resources.DeleteAllPlots, MessageButtons.YesNo) == MessageButtons.Yes) {
                 PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.ClearAllAsync());
             }

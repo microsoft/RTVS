@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
             _visibility = visibility;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             Enabled = false;
             Visible = false;
 

@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _textViewTracker = textViewTracker;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             string item = GetItemUnderCaret();
             if (!string.IsNullOrEmpty(item)) {
                 Enabled = true;
@@ -45,22 +45,22 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             try {
                 if (!_workflow.RSession.IsHostRunning) {
                     return;
                 }
 
-                    // Fetch identifier under the cursor
-                    string item = GetItemUnderCaret();
+                // Fetch identifier under the cursor
+                string item = GetItemUnderCaret();
                 if (item == null || item.Length >= MaxHelpItemLength) {
                     return;
                 }
 
-                        // First check if expression can be evaluated. If result is non-empty
-                        // then R knows about the item and '?item' interaction will succed.
-                        // If response is empty then we'll try '??item' instead.
-                        string prefix = "?";
+                // First check if expression can be evaluated. If result is non-empty
+                // then R knows about the item and '?item' interaction will succed.
+                // If response is empty then we'll try '??item' instead.
+                string prefix = "?";
                 ShowHelpOnCurrentAsync(prefix, item).DoNotWait();
             } catch (Exception ex) {
                 Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
@@ -72,45 +72,45 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private async Task ShowHelpOnCurrentAsync(string prefix, string item) {
-                        try {
+            try {
                 using (IRSessionEvaluation evaluation = await _workflow.RSession.BeginEvaluationAsync(isMutating: false)) {
-                                REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                    REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
                     if (result.ParseStatus == RParseStatus.OK &&
                         string.IsNullOrEmpty(result.Error)) {
                         if (string.IsNullOrEmpty(result.StringResult) ||
                             result.StringResult == "NA") {
-                                        prefix = "??";
-                                    }
-                                } else {
-                                    // Parsing or other errors, bail out
-                                    Debug.Assert(false,
-                                        string.Format(CultureInfo.InvariantCulture,
-                                        "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
+                            prefix = "??";
+                        }
+                    } else {
+                        // Parsing or other errors, bail out
+                        Debug.Assert(false,
+                            string.Format(CultureInfo.InvariantCulture,
+                            "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
                     }
-                                }
+                }
             } catch (RException) {
             } catch (OperationCanceledException) {
-                            }
+            }
 
-                        // Now actually request the help. First call may throw since 'starting help server...'
-                        // message in REPL is actually an error (comes in red) so we'll get RException.
-                        int retries = 0;
-                        while (retries < 3) {
+            // Now actually request the help. First call may throw since 'starting help server...'
+            // message in REPL is actually an error (comes in red) so we'll get RException.
+            int retries = 0;
+            while (retries < 3) {
                 using (IRSessionInteraction interaction = await _workflow.RSession.BeginInteractionAsync(isVisible: false)) {
-                                try {
-                                    await interaction.RespondAsync(prefix + item + Environment.NewLine);
-                                } catch (RException ex) {
-                        if ((uint) ex.HResult == 0x80131500) {
-                                        // Typically 'starting help server...' so try again
-                                        retries++;
-                                        continue;
-                                    }
-                    } catch (OperationCanceledException) {}
-                            }
-
-                            break;
+                    try {
+                        await interaction.RespondAsync(prefix + item + Environment.NewLine);
+                    } catch (RException ex) {
+                        if ((uint)ex.HResult == 0x80131500) {
+                            // Typically 'starting help server...' so try again
+                            retries++;
+                            continue;
                         }
-                    }
+                    } catch (OperationCanceledException) { }
+                }
+
+                break;
+            }
+        }
 
         private string GetItemUnderCaret() {
             ITextView textView = GetActiveView();
@@ -124,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private ITextView GetActiveView() {
-            ITextView textView = _workflow.ActiveWindow.InteractiveWindow.TextView;
+            ITextView textView = _workflow.ActiveWindow?.InteractiveWindow.TextView;
             if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }

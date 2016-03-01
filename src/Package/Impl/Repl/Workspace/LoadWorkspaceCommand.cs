@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _projectServiceAccessor = projectServiceAccessor;
         }
 
-        protected override void SetStatus() {
+        internal override void SetStatus() {
             var window = _interactiveWorkflow.ActiveWindow;
             if (window != null && window.Container.IsOnScreen) {
                 Visible = true;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             }
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             var projectService = _projectServiceAccessor.GetProjectService();
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 

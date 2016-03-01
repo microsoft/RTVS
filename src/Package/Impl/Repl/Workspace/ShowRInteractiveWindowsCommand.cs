@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
         }
 
-        protected override void Handle() {
+        internal override void Handle() {
             var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
             var window = interactiveWorkflow.ActiveWindow;
             if (window != null) {
