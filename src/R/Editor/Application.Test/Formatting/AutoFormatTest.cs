@@ -168,6 +168,65 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
+        public void R_AutoFormatScopeBraces09() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("if(TRUE){ENTER}while(TRUE){");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+
+                string expected = "if (TRUE)\r\n    while (TRUE) {\r\n        a\r\n    }";
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+
+                script.MoveDown();
+                script.MoveRight();
+                script.Type("{ENTER}");
+
+                expected = "if (TRUE)\r\n    while (TRUE) {\r\n        a\r\n    }\r\n";
+                actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatScopeBraces10() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("if(TRUE){");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+                script.MoveDown();
+                script.MoveRight();
+                script.Type("{ENTER}");
+                string expected = "if (TRUE) {\r\n    a\r\n}\r\n";
+
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFunctionArgument() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("zzzz(a=1,{ENTER}");
+                script.DoIdle(300);
+                script.Type("b=2");
+                string expected = "zzzz(a = 1,\r\n    b=2)";
+
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatIfNoScope() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.Type("if(x>1)");

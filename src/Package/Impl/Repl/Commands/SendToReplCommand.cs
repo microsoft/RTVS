@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            window.Container.Show(true);
+            window.Container.Show(false);
             _interactiveWorkflow.Operations.EnqueueExpression(text, true);
 
             var targetLine = line;
@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 IVsTextView tv = adapterService.GetViewAdapter(TextView);
                 tv.SendExplicitFocus();
             }
-
+            
             return CommandResult.Executed;
         }
     }
