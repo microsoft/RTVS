@@ -1,4 +1,7 @@
-﻿using Microsoft.Languages.Core.Classification;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Core.Classification;
 using Microsoft.Markdown.Editor.Tokens;
 
 namespace Microsoft.Markdown.Editor.Classification {

@@ -1,4 +1,7 @@
-﻿using System.Windows.Forms;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Windows.Forms;
 using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

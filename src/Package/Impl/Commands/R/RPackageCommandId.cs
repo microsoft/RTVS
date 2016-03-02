@@ -1,4 +1,7 @@
-﻿namespace Microsoft.VisualStudio.R.Package.Commands {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.VisualStudio.R.Package.Commands {
     public static class RPackageCommandId {
         public const int plotWindowToolBarId = 0x2000;
         public const int helpWindowToolBarId = 0x2010;
