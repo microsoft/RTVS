@@ -132,7 +132,8 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 return HandleCode(block: true);
             }
 
-            if (_cs.NextChar == 'r') {
+            // If it is `r ... then it is inline R code
+            if (_cs.NextChar == 'r' && char.IsWhiteSpace(_cs.LookAhead(2))) {
                 return HandleCode(block: false);
             }
 
