@@ -156,7 +156,7 @@
       <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141BE-1418-4D75-8E24-54A9280B0A66}</Project>
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">

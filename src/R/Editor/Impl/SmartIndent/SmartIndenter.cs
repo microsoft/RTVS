@@ -1,4 +1,7 @@
-﻿using Microsoft.Languages.Core.Formatting;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;

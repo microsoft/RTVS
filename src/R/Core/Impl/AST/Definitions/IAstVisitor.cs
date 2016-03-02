@@ -1,4 +1,7 @@
-﻿namespace Microsoft.R.Core.AST.Definitions {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.R.Core.AST.Definitions {
     /// <summary>
     /// Implemented by code that needs to traverse AST 
     /// using standard visitor design pattern.

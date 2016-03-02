@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -126,7 +129,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     change.Apply(changeset);
                 } catch (Exception e) {
                     _log.WatcherApplyChangeFailed(change.ToString(), e);
-                    Trace.Fail($"Failed to apply change {change}:\n{e}");
+                    Debug.Fail($"Failed to apply change {change}:\n{e}");
                     throw;
                 }
             }

@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 signature.help2 <- function(f, p) {
     x <- help(paste(f), paste(p))
     y <- utils:::.getHelpFile(x)

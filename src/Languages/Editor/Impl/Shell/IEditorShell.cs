@@ -1,4 +1,7 @@
-﻿using Microsoft.Common.Core.Shell;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
