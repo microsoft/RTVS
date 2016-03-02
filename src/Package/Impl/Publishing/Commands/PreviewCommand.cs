@@ -10,9 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Markdown.Editor.Commands;
-using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
@@ -20,6 +18,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -73,8 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     }
                 }
 
-                IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
-                string inputFilePath = document.WorkspaceItem.Path;
+                string inputFilePath = VsFileInfo.GetFileName(TextView);
                 var buffer = new StringBuilder(NativeMethods.MAX_PATH);
                 NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
 
