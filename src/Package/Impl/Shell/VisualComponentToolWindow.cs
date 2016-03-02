@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get { return _adapter.Component; }
             protected set {
                 _adapter.Component = value;
-                Content = value.Control;
+                Content = value?.Control;
             }
         }
 
