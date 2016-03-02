@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            _replWindow.Show(activate: false);
+            _replWindow.Show();
             replWindow.EnqueueCode(text, addNewLine: true);
 
             var targetLine = line;

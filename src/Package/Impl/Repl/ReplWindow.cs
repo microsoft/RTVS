@@ -72,13 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
         }
 
-        public void Show(bool activate) {
-            var toolWindow = GetToolWindow();
-            if (activate) {
-                toolWindow?.Show();
-            } else {
-                toolWindow?.ShowNoActivate();
-            }
+        public void Show() {
+            GetToolWindow()?.Show();
         }
 
         /// <summary>
@@ -404,7 +399,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 // This is not desirable when focus was in the interactive window
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
-                Show(activate: true);
+                Show();
 
                 _replLostFocus = false;
                 _enteredBreakMode = false;

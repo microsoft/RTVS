@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     public interface IReplWindow : IDisposable {
         bool IsActive { get; }
-        void Show(bool activate);
+        void Show();
         IVsInteractiveWindow GetInteractiveWindow();
 
         /// <summary>

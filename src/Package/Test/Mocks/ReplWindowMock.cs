@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
                             new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType)));
         }
 
-        public void Show(bool activate) {
+        public void Show() {
             ReplWindow.ShowWindow();
         }
 

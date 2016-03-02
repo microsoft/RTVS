@@ -112,12 +112,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private ITextView GetActiveView() {
-            ITextView textView = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow.TextView;
+            ITextView textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
             if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }
-            textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-            if (textView != null) {
+            textView = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow.TextView;
+            if (textView != null && textView.HasAggregateFocus) {
                 return textView;
             }
             return null;
