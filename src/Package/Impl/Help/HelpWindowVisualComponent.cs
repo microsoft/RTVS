@@ -167,26 +167,25 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
             SetThemeColors();
             _host.Child = Browser;
+            Browser.Document.Window.Unload += OnWindowUnload;
 
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
-
-            //Browser.Document.Window.Unload += OnWindowUnload;
         }
 
         private void OnWindowUnload(object sender, HtmlElementEventArgs e) {
             // Refresh button clicked. Current document state is 'complete'.
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
-            //Browser.Document.Window.Unload -= OnWindowUnload;
-            //IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+            Browser.Document.Window.Unload -= OnWindowUnload;
+            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
         }
 
         private void SetThemeColorsWhenReady() {
             var domDoc = Browser.Document.DomDocument as IHTMLDocument2;
-            if (domDoc.readyState == "complete") {
+            if (Browser.ReadyState == WebBrowserReadyState.Complete) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
             } else {
