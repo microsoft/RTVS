@@ -1,4 +1,7 @@
-﻿namespace Microsoft.R.Core.AST.DataTypes {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>
     /// R 'mode' which is a data type. For example, string
     /// is a one-element vector of 'character' mode. Number

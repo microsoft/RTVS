@@ -687,7 +687,6 @@
     <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Profiles\R.vssettings">

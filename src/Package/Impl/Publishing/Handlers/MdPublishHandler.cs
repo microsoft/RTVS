@@ -1,4 +1,7 @@
-﻿#if _NOT_ACTIVE_
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+#if _NOT_ACTIVE_
 using System.ComponentModel.Composition;
 using System.Globalization;
 using Microsoft.Markdown.Editor.Flavor;

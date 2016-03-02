@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # Fills the provided environment 'res' with information about object 'obj', such as:
 # - various textual representations
 # - typeof and classes
