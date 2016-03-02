@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -22,17 +21,5 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// Retrieves editor instance command target for a particular view
         /// </summary>
         ICommandTarget GetCommandTarget(ITextView textView);
-
-        /// <summary>
-        /// Caption for the editor tab in the host application. 
-        /// Null if IDE should use default.
-        /// </summary>
-        string Caption { get; }
-
-        /// <summary>
-        /// Workspace item that represents document 
-        /// in the host application project system.
-        /// </summary>
-        IWorkspaceItem WorkspaceItem { get; }
     }
 }

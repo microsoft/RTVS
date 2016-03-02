@@ -61,7 +61,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
-            if (TaskList != null && _document.WorkspaceItem != null && _document.WorkspaceItem.Path.Length > 0) {
+            if (TaskList != null && !_document.IsTransient) {
                 TaskList.AddTaskSource(this);
             }
 

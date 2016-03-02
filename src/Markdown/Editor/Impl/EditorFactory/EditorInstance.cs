@@ -2,10 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
@@ -15,31 +13,20 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
     internal class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
-            if (workspaceItem == null)
-                throw new ArgumentNullException(nameof(workspaceItem));
-
+        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
             if (diskBuffer == null)
                 throw new ArgumentNullException(nameof(diskBuffer));
 
             if (documentFactory == null)
                 throw new ArgumentNullException(nameof(documentFactory));
 
-            WorkspaceItem = workspaceItem;
-            ViewBuffer = diskBuffer;
-
+             ViewBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
 
             ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
         }
 
         #region IEditorInstance
-        /// <summary>
-        /// Workspace item that represents document 
-        /// in the host application project system.
-        /// </summary>
-        public IWorkspaceItem WorkspaceItem { get; private set; }
-
         /// <summary>
         /// Text buffer containing document data that is 
         /// to be attached to a text view. 
@@ -52,15 +39,6 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
         public ICommandTarget GetCommandTarget(ITextView textView) {
             return MdMainController.FromTextView(textView);
         }
-
-        /// <summary>
-        /// Caption for the editor tab in the host application. 
-        /// Null if IDE should use default.
-        /// </summary>
-        public string Caption {
-            get { return Path.GetFileName(WorkspaceItem.Path); }
-        }
-
         #endregion
 
         #region IDisposable
@@ -70,11 +48,6 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
 
                 _document.Dispose();
                 _document = null;
-            }
-
-            if (WorkspaceItem != null) {
-                WorkspaceItem.Dispose();
-                WorkspaceItem = null;
             }
         }
 
