@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -164,9 +167,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         );
                         textView.Caret.MoveTo(point.Value);
                     }
-
-                    // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
-                    current.InteractiveWindow.CurrentLanguageBuffer.Insert(0, "\u0002");
 
                     current.InteractiveWindow.Operations.Return();
                 } else {

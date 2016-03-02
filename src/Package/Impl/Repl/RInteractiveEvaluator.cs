@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -99,11 +102,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<ExecutionResult> ExecuteCodeAsync(string text) {
-            // TODO: Workaround for bug https://github.com/dotnet/roslyn/issues/8569
-            if (text[0] == '\u0002') {
-                text = text.Substring(1);
-            }
-
             var start = 0;
             var end = text.IndexOf('\n');
             if (end == -1) {

@@ -1,4 +1,7 @@
-﻿using Microsoft.R.Core.AST.Statements.Definitions;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;

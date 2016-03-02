@@ -1,4 +1,7 @@
-﻿using Microsoft.Languages.Editor.Outline;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
