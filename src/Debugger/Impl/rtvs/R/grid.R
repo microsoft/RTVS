@@ -32,10 +32,10 @@ grid.data <- function(x, rows, cols) {
 
 
   # format row names
-  dnvalue <- 0;
+  dimnames <- 0;
   if (length(rn) > 0) {
     x.rownames <- sapply(rn, format, USE.NAMES = FALSE);
-    dnvalue <- dnvalue + 1;
+    dimnames <- dimnames + 1;
   } else {
     x.rownames <- 'dummy';
   }
@@ -43,14 +43,14 @@ grid.data <- function(x, rows, cols) {
   #format column names
   if (!is.null(cn) && (length(cn)>0)) {
     x.colnames <- sapply(cn, format, USE.NAMES = FALSE);
-    dnvalue <- dnvalue + 2;
+    dimnames <- dimnames + 2;
   } else {
     x.colnames <- 'dummy';
   }
 
   # assign return value
   vp<-list();
-  vp$dimnames <- format(dnvalue);
+  vp$dimnames <- format(dimnames);
   vp$row.names <- x.rownames;
   vp$col.names <- x.colnames;
   vp$data<-data;
