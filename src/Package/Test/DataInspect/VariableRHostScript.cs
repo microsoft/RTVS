@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
@@ -19,6 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     public class VariableRHostScript : RHostScript {
         private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
+        private ManualResetEventSlim _mre = new ManualResetEventSlim(false);
+        private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
@@ -41,15 +42,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
             _globalEnv = new EvaluationWrapper(result);
-            _mre.Value.Set();
+            _mre.Set();
         }
-
-        private Lazy<ManualResetEventSlim> _mre = Lazy.Create(() => new ManualResetEventSlim());
 
         public async Task EvaluateAsync(string rScript) {
             VariableSubscription subscription = null;
+
+            // One eval at a time
+            await _sem.WaitAsync();
             try {
-                _mre.Value.Reset();
+                _mre.Reset();
 
                 _globalEnv = null;
                 subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
@@ -59,14 +61,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 }
 
                 if (System.Diagnostics.Debugger.IsAttached) {
-                    _mre.Value.Wait();
+                    _mre.Wait();
                 } else {
-                    if (!_mre.Value.Wait(TimeSpan.FromSeconds(10))) {
+                    if (!_mre.Wait(TimeSpan.FromSeconds(10))) {
                         throw new TimeoutException("Evaluate time out");
                     }
                 }
             } finally {
                 _variableProvider.Unsubscribe(subscription);
+                _sem.Release();
             }
         }
 
