@@ -167,13 +167,13 @@
       <Project>{62857e49-e586-4baa-ae4d-1232093e7378}</Project>
       <Name>Microsoft.Languages.Editor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
-      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
-      <Name>Microsoft.R.Components</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
       <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
       <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Test\Microsoft.R.Components.Test.csproj">
       <Project>{2aa8762f-3a84-4cd5-9aa0-77829a766769}</Project>
