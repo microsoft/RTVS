@@ -9,7 +9,6 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Selection;
@@ -48,26 +47,17 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,
-                                            AstRoot ast, RFormatOptions options, 
-                                            int scopeStatementPosition, bool respectUserIndent = true) {
+                                            AstRoot ast, RFormatOptions options, int baseIndentPosition, bool respectUserIndent = true) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
             string trimmedSpanText = spanText.Trim();
 
-            if (trimmedSpanText == "}") {
-                // Locate opening { and its statement
-                var scopeNode = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(spanToFormat.Start);
-                if (scopeNode != null) {
-                    scopeStatementPosition = scopeNode.Start;
-                }
-            }
-
             RFormatter formatter = new RFormatter(options);
             string formattedText = formatter.Format(trimmedSpanText);
 
             formattedText = formattedText.Trim(); // there may be inserted line breaks after {
-            formattedText = IndentLines(textBuffer, spanToFormat.Start, ast, formattedText, options, scopeStatementPosition, respectUserIndent);
+            formattedText = IndentLines(textBuffer, spanToFormat.Start, ast, formattedText, options, baseIndentPosition, respectUserIndent);
 
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
                 var selectionTracker = new RSelectionTracker(textView, textBuffer);
@@ -92,14 +82,14 @@ namespace Microsoft.R.Editor.Formatting {
         /// </summary>
         private static string IndentLines(ITextBuffer textBuffer, int rangeStartPosition, AstRoot ast,
                                            string formattedText, RFormatOptions options,
-                                           int scopeStatementPosition, bool respectUserIndent = true) {
+                                           int statementPosition, bool respectUserIndent = true) {
             ITextSnapshotLine firstLine = textBuffer.CurrentSnapshot.GetLineFromPosition(rangeStartPosition);
             string firstLineText = firstLine.GetText();
             int baseIndentInSpaces;
 
-            if (scopeStatementPosition >= 0) {
+            if (statementPosition >= 0) {
                 // If parent statement position is provided, use it to determine indentation
-                ITextSnapshotLine statementLine = textBuffer.CurrentSnapshot.GetLineFromPosition(scopeStatementPosition);
+                ITextSnapshotLine statementLine = textBuffer.CurrentSnapshot.GetLineFromPosition(statementPosition);
                 baseIndentInSpaces = SmartIndenter.GetSmartIndent(statementLine, ast);
             } else if (respectUserIndent && RespectUserIndent(textBuffer, ast, rangeStartPosition)) {
                 // Determine indent from fist line in multiline constructs
@@ -109,17 +99,6 @@ namespace Microsoft.R.Editor.Formatting {
                 baseIndentInSpaces = SmartIndenter.GetSmartIndent(firstLine, ast);
             }
 
-            // There are three major cases with range formatting:
-            //  1. Formatting of a scope when } closes.
-            //  2. Formatting of a single line on Enter or ;
-            //  3. Formatting of a user-selected range.
-            //
-            // Indentation in (1) is relatively easy since complete scope is known.
-            // (2) Is the most difficult is to figure out proper indent of a single }.
-            //     Normally we get statementPosition of the statement that define the scope
-            // (3) Theoretically may end up with odd indents but users rarely intentionally
-            //     select strange ranges
-
             string indentString = IndentBuilder.GetIndentString(baseIndentInSpaces, options.IndentType, options.TabSize);
 
             var sb = new StringBuilder();
@@ -128,11 +107,19 @@ namespace Microsoft.R.Editor.Formatting {
             for (int i = 0; i < lines.Count; i++) {
                 string lineText = lines[i];
 
+                if (i == 0 && lineText.Trim() == "}") {
+                    string s = IndentBuilder.GetIndentString(options.IndentSize, options.IndentType, options.TabSize);
+                    sb.Append(indentString);
+                    sb.Append(s);
+                    sb.Append("}" + "\r\n");
+                    continue;
+                }
+
                 if (i == 0 && lineText.Trim() == "{") {
                     if (options.BracesOnNewLine && !LineBreakBeforePosition(textBuffer, rangeStartPosition)) {
                         sb.Append("\r\n");
                     }
-                    if (scopeStatementPosition < 0 || options.BracesOnNewLine) {
+                    if (statementPosition < 0 || options.BracesOnNewLine) {
                         sb.Append(indentString);
                     }
                     sb.Append('{');
