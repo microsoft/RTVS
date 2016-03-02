@@ -1,4 +1,7 @@
-﻿using Microsoft.R.Components.History;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
 using Microsoft.R.Components.View;
