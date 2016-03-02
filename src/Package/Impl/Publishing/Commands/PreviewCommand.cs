@@ -70,8 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     }
                 }
 
-                IEditorDocument document = MdEditorDocument.FromTextBuffer(TextView.TextBuffer);
-                string inputFilePath = document.WorkspaceItem.Path;
+                string inputFilePath = VsFileInfo.GetFileName(TextView);
                 var buffer = new StringBuilder(NativeMethods.MAX_PATH);
                 NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
 
