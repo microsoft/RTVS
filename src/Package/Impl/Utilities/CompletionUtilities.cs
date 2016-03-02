@@ -9,13 +9,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class CompletionUtilities {
-        public static IVsExpansionManager GetExpansionManager() {
-            IVsExpansionManager expansionManager = null;
-            IVsTextManager2 textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
-            textManager2.GetExpansionManager(out expansionManager);
-            return expansionManager;
-        }
-
         public static bool IsStatementCompletionWindowActive(ITextView textView) {
             bool result = false;
 

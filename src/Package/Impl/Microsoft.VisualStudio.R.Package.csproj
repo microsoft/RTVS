@@ -319,14 +319,14 @@
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
+    <Compile Include="Snippets\ExpansionBuffer.cs" />
     <Compile Include="Snippets\ExpansionClient.cs" />
     <Compile Include="Snippets\Definitions\ISnippetInfo.cs" />
-    <Compile Include="Snippets\Definitions\ISnippetProvider.cs" />
     <Compile Include="Snippets\SnippetCache.cs" />
     <Compile Include="Snippets\SnippetController.cs" />
     <Compile Include="Snippets\SnippetControllerFactory.cs" />
     <Compile Include="Snippets\SnippetInfo.cs" />
-    <Compile Include="Snippets\SnippetListManager.cs" />
+    <Compile Include="Snippets\SnippetInfoList.cs" />
     <Compile Include="Snippets\VsExpansionEx.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />

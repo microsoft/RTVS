@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Xml;
 using Microsoft.VisualStudio.R.Package.Snippets.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Snippets {
-    internal sealed class SnippetInfo : IComparable, ISnippetInfo {
+    public sealed class SnippetInfo : IComparable, ISnippetInfo {
         public SnippetInfo() {
             ShouldFormat = true;
             ProjectTypeGuids = new HashSet<Guid>();

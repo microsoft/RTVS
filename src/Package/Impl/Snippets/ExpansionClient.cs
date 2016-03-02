@@ -1,7 +1,11 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
@@ -18,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
     /// <summary>
     /// Text view client that manages insertion of snippets
     /// </summary>
-    public sealed class RExpansionClient : IVsExpansionClient {
+    public sealed class ExpansionClient : IVsExpansionClient {
         private static string[] ALL_STANDARD_SNIPPET_TYPES = { "Expansion", "SurroundsWith" };
         private static string[] SURROUND_WITH_SNIPPET_TYPES = { "SurroundsWith" };
 
@@ -27,52 +31,29 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
         private IVsTextLines _viewTextLines;
         private IVsTextManager _textManager;
 
-        internal ITextBuffer TextBuffer { get; private set; }
-
         private bool _earlyEndExpansionHappened = false;
         private string _shortcut = null;
         private string _title = null;
 
-        public RExpansionClient(ITextView textView, ITextBuffer textBuffer) {
+        public ExpansionClient(ITextView textView, ITextBuffer textBuffer) {
+            TextView = textView;
             TextBuffer = textBuffer;
+
             IVsTextBuffer bufferAdapter = textView.TextBuffer.QueryInterface<IVsTextBuffer>();
 
             _viewTextLines = bufferAdapter as IVsTextLines;
             _textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
+
+            var tm2 = _textManager as IVsTextManager2;
+            tm2.GetExpansionManager(out _expansionManager);
         }
+
+        public ITextBuffer TextBuffer { get; }
+        public ITextView TextView { get; }
+
 
         public static string[] GetAllStandardSnippetTypes() {
             return ALL_STANDARD_SNIPPET_TYPES;
-        }
-
-        public IVsExpansionManager ExpansionManager {
-            get {
-                if ((_expansionManager == null)) {
-                    _expansionManager = CompletionUtilities.GetExpansionManager();
-                }
-                return _expansionManager;
-            }
-        }
-
-        public SnippetListManager SnippetListManager {
-            get {
-                return SnippetListManager.FromContentType(TextBuffer.ContentType);
-            }
-        }
-
-        public IVsTextView VsTextView {
-            get {
-                IVsTextView vsTextView = null;
-                _textManager?.GetActiveView(0, _viewTextLines, out vsTextView);
-                return vsTextView;
-            }
-        }
-
-        public ITextView TextView {
-            get {
-                IVsEditorAdaptersFactoryService editorAdapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
-                return editorAdapterService.GetWpfTextView(this.VsTextView);
-            }
         }
 
         public bool IsEditingExpansion() {
@@ -133,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
         }
 
         public int InvokeInsertionUI(int invokationCommand) {
-            if ((ExpansionManager != null) && (VsTextView != null)) {
+            if ((_expansionManager != null) && (TextView != null)) {
                 // Set the allowable snippet types and prompt text according to the current command.
                 string[] snippetTypes = null;
                 string promptText = "";
@@ -145,8 +126,8 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
                     promptText = Resources.SurroundWith;
                 }
 
-                return ExpansionManager.InvokeInsertionUI(
-                    VsTextView,
+                return _expansionManager.InvokeInsertionUI(
+                    TextView.QueryInterface<IVsTextView>(),
                     this,
                     RGuidList.RLanguageServiceGuid,
                     snippetTypes,
@@ -180,60 +161,22 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
         public int StartSnippetInsertion(out bool snippetInserted) {
             int hr = VSConstants.E_FAIL;
             snippetInserted = false;
-            bool removePrefixAngleBracket = false;
 
             // Get the text at the current caret position and
             // determine if it is a snippet shortcut.
-            TextSpan ts = new TextSpan();
-            ErrorHandler.ThrowOnFailure(VsTextView.GetCaretPos(out ts.iStartLine, out ts.iStartIndex));
+            if (!TextView.Caret.InVirtualSpace) {
+                SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
+                ITextSnapshotLine line = caretPoint.GetContainingLine();
 
-            if (ts.iStartIndex > 0) {
-                IVsTextLines textLines;
-                ErrorHandler.ThrowOnFailure(VsTextView.GetBuffer(out textLines));
-
-                // handle virtual space
-                int lineLen;
-                ErrorHandler.ThrowOnFailure(textLines.GetLengthOfLine(ts.iStartLine, out lineLen));
-                if (ts.iStartIndex > lineLen) {
-                    ts.iStartIndex = lineLen;
-                }
-
-                ts.iEndLine = ts.iStartLine;
-                ts.iEndIndex = ts.iStartIndex;
-
-                string line;
-                ErrorHandler.ThrowOnFailure(textLines.GetLineText(ts.iStartLine, 0, ts.iStartLine, ts.iEndIndex, out line));
-
-                // Find the start of the possible shortcut.
-                if (ts.iStartIndex > line.Length) {
-                    // The start point is past the end of the line, so don't try to search for a macro to expand. 
-                    // This situation can happen when a new empty line is created by pressing the Enter key
-                    // at the end of an existing line.
-                } else {
-                    while ((ts.iStartIndex > 0) && IsValidShortcutChar(line[ts.iStartIndex - 1])) {
-                        ts.iStartIndex--;
-                    }
-
-                    // If we are inserting a snippet using Statement Completion list in markup, then 
-                    // it is possible that we brought up tag name Statement Completion list using "<".
-                    // Our snippet markup will always contain opening "<" in it's code. To avoid 
-                    // having duplicate "<<", we will eat one of them up.
-                }
-
-                // If there appears to be a shortcut, insert the related snippet.
-                if ((ts.iEndIndex - ts.iStartIndex) > 0) {
-                    IVsExpansion expansion = textLines as IVsExpansion;
+                if (line != null && caretPoint.Position > line.Start && line.Length > 0) {
+                    var expansion = TextBuffer.QueryInterface<IVsExpansion>();
                     try {
                         TextSpan insertionPosition = ts;
-                        if (removePrefixAngleBracket) {
-                            insertionPosition.iStartIndex--;
-                        }
 
                         _earlyEndExpansionHappened = false;
-                        _shortcut = line.Substring(ts.iStartIndex, ts.iEndIndex - ts.iStartIndex);
+                        _shortcut = "for"; // Get non-ws text before caret
 
                         // check to make sure the shortcut is available before committing it
-
                         var combinedSnippetInfos = SnippetListManager.GetSnippetList(TextBuffer);
                         SnippetInfo shortcutSnippetInfo = null;
 
@@ -265,66 +208,51 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
                             snippetInserted = true;
                             return hr;
                         }
-                    } catch {
-                        // The text before the cursor probably wasn't a valid snippet shortcut, so allow the next filter 
-                        // to handle the command.
                     }
+                    }
+                return hr;
+            }
+
+            #region IVsExpansionClient
+            int IVsExpansionClient.EndExpansion() {
+                if (_expansionSession == null) {
+                    _earlyEndExpansionHappened = true;
+                } else {
+                    _expansionSession = null;
                 }
+                _title = null;
+                _shortcut = null;
+
+                return VSConstants.S_OK;
             }
 
-            return hr;
-        }
+            int IVsExpansionClient.FormatSpan(IVsTextLines pBuffer, TextSpan[] ts) {
+                int hr = VSConstants.S_OK;
+                if (_viewTextLines != null) {
+                    int startPos = -1;
+                    int endPos = -1;
+                    if (ErrorHandler.Succeeded(_viewTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
+                        ErrorHandler.Succeeded(_viewTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
+                        SnapshotSpan viewSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, startPos, endPos - startPos);
 
-        public static bool IsValidShortcutChar(char character) {
-            // TODO: {alexgav} Make this settable via the registry and per-language
-            return char.IsLetterOrDigit(character) ||
-                   (character == ':') ||
-                   (character == '/') ||
-                   (character == '-') ||
-                   (character == '@');
-        }
+                        NormalizedSnapshotSpanCollection mappedSpans = TextView.BufferGraph.MapDownToBuffer(
+                            viewSpan, SpanTrackingMode.EdgeInclusive, TextBuffer);
+                        Debug.Assert(mappedSpans.Count == 1);
 
-        #region IVsExpansionClient Members
+                        if (mappedSpans.Count > 0) {
+                            IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
+                            if (document != null) {
+                                document.EditorTree.EnsureTreeReady();
 
-        int IVsExpansionClient.EndExpansion() {
-            if (_expansionSession == null) {
-                _earlyEndExpansionHappened = true;
-            } else {
-                _expansionSession = null;
-            }
-            _title = null;
-            _shortcut = null;
-
-            return VSConstants.S_OK;
-        }
-
-        int IVsExpansionClient.FormatSpan(IVsTextLines pBuffer, TextSpan[] ts) {
-            int hr = VSConstants.S_OK;
-            if (_viewTextLines != null) {
-                int startPos = -1;
-                int endPos = -1;
-                if (ErrorHandler.Succeeded(_viewTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
-                    ErrorHandler.Succeeded(_viewTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
-                    SnapshotSpan viewSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, startPos, endPos - startPos);
-
-                    NormalizedSnapshotSpanCollection mappedSpans = TextView.BufferGraph.MapDownToBuffer(
-                        viewSpan, SpanTrackingMode.EdgeInclusive, TextBuffer);
-                    Debug.Assert(mappedSpans.Count == 1);
-
-                    if (mappedSpans.Count > 0) {
-                        IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
-                        if (document != null) {
-                            document.EditorTree.EnsureTreeReady();
-
-                            RangeFormatter.FormatRange(TextView, TextBuffer, 
-                                new TextRange(mappedSpans[0].Start, mappedSpans[0].Length), 
-                                document.EditorTree.AstRoot, REditorSettings.FormatOptions);
+                                RangeFormatter.FormatRange(TextView, TextBuffer,
+                                    new TextRange(mappedSpans[0].Start, mappedSpans[0].Length),
+                                    document.EditorTree.AstRoot, REditorSettings.FormatOptions);
+                            }
                         }
                     }
                 }
+                return hr;
             }
-            return hr;
-        }
 
         public int GetExpansionFunction(MSXML.IXMLDOMNode xmlFunctionNode, string bstrFieldName, out IVsExpansionFunction pFunc) {
             pFunc = null;
