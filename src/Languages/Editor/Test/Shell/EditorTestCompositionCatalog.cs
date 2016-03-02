@@ -50,6 +50,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private static string _partsData;
         private static string _exportsData;
+        private static bool _traceExportImports = false;
 
         /// <summary>
         /// Assemblies used at the R editor level
@@ -181,63 +182,65 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         private CompositionContainer CreateContainer() {
-            CompositionContainer container = null;
+            lock (_containerLock) {
+                CompositionContainer container = null;
 
-            string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
-            string assemblyLoc = Path.GetDirectoryName(thisAssembly);
+                string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
+                string assemblyLoc = Path.GetDirectoryName(thisAssembly);
 
-            _idePath = GetHostExePath();
-            _editorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Editor");
-            _privatePath = Path.Combine(_idePath, @"PrivateAssemblies\");
-            _cpsPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Project");
-            _sharedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Common Files\Microsoft Shared\MsEnv\PublicAssemblies");
+                _idePath = GetHostExePath();
+                _editorPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Editor");
+                _privatePath = Path.Combine(_idePath, @"PrivateAssemblies\");
+                _cpsPath = Path.Combine(_idePath, @"CommonExtensions\Microsoft\Project");
+                _sharedPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), @"Common Files\Microsoft Shared\MsEnv\PublicAssemblies");
 
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            try {
-                AggregateCatalog aggregateCatalog = new AggregateCatalog();
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+                try {
+                    AggregateCatalog aggregateCatalog = new AggregateCatalog();
 
-                foreach (string asmName in _coreEditorAssemblies) {
-                    string asmPath = Path.Combine(_editorPath, asmName);
-                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+                    foreach (string asmName in _coreEditorAssemblies) {
+                        string asmPath = Path.Combine(_editorPath, asmName);
+                        Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
 
-                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                    aggregateCatalog.Catalogs.Add(editorCatalog);
+                        AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                        aggregateCatalog.Catalogs.Add(editorCatalog);
+                    }
+
+                    foreach (string asmName in _cpsAssemblies) {
+                        string asmPath = Path.Combine(_cpsPath, asmName);
+                        Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+
+                        AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                        aggregateCatalog.Catalogs.Add(editorCatalog);
+                    }
+
+                    foreach (string asmName in _projectAssemblies) {
+                        string asmPath = Path.Combine(_privatePath, asmName);
+                        Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
+
+                        AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
+                        aggregateCatalog.Catalogs.Add(editorCatalog);
+                    }
+
+                    foreach (string assemblyName in _rtvsEditorAssemblies) {
+                        AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
+                    }
+
+                    foreach (string assemblyName in _additionalAssemblies) {
+                        AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
+                    }
+
+                    AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
+                    aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
+
+
+                    container = BuildCatalog(aggregateCatalog);
+                } finally {
+                    AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
                 }
 
-                foreach (string asmName in _cpsAssemblies) {
-                    string asmPath = Path.Combine(_cpsPath, asmName);
-                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
-
-                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                    aggregateCatalog.Catalogs.Add(editorCatalog);
-                }
-
-                foreach (string asmName in _projectAssemblies) {
-                    string asmPath = Path.Combine(_privatePath, asmName);
-                    Assembly editorAssebmly = Assembly.LoadFrom(asmPath);
-
-                    AssemblyCatalog editorCatalog = new AssemblyCatalog(editorAssebmly);
-                    aggregateCatalog.Catalogs.Add(editorCatalog);
-                }
-
-                foreach (string assemblyName in _rtvsEditorAssemblies) {
-                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
-                }
-
-                foreach (string assemblyName in _additionalAssemblies) {
-                    AddAssemblyToCatalog(assemblyLoc, assemblyName, aggregateCatalog);
-                }
-
-                AssemblyCatalog thisAssemblyCatalog = new AssemblyCatalog(Assembly.GetExecutingAssembly());
-                aggregateCatalog.Catalogs.Add(thisAssemblyCatalog);
-
-
-                container = BuildCatalog(aggregateCatalog);
-            } finally {
-                AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+                return container;
             }
-
-            return container;
         }
 
         private static void AddAssemblyToCatalog(string assemblyLoc, string assemblyName, AggregateCatalog aggregateCatalog) {
@@ -269,67 +272,68 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private CompositionContainer BuildCatalog(AggregateCatalog aggregateCatalog) {
             CompositionContainer container = new CompositionContainer(aggregateCatalog, isThreadSafe: true);
+            
+            // We still need to go through the catalong in order to compose
+            StringBuilder parts = _traceExportImports ? new StringBuilder() : null;
+            StringBuilder exports = _traceExportImports ? new StringBuilder() : null;
 
-            StringBuilder parts = new StringBuilder();
-            StringBuilder exports = new StringBuilder();
             foreach (object o in container.Catalog.Parts) {
-
                 ComposablePartDefinition part = o as ComposablePartDefinition;
                 if (part == null) {
-                    parts.AppendLine("PART MISSING: " + o.ToString());
-                    exports.AppendLine("PART MISSING: " + o.ToString());
+                    parts?.AppendLine("PART MISSING: " + o.ToString());
+                    exports?.AppendLine("PART MISSING: " + o.ToString());
                     continue;
                 }
 
-                parts.AppendLine("===============================================================");
-                parts.AppendLine(part.ToString());
+                parts?.AppendLine("===============================================================");
+                parts?.AppendLine(part.ToString());
 
-                exports.AppendLine("===============================================================");
-                exports.AppendLine(part.ToString());
+                exports?.AppendLine("===============================================================");
+                exports?.AppendLine(part.ToString());
 
                 bool first = true;
 
                 if (part.ExportDefinitions.FirstOrDefault() != null) {
-                    parts.AppendLine("\t --- EXPORTS --");
-                    exports.AppendLine("\t --- EXPORTS --");
+                    parts?.AppendLine("\t --- EXPORTS --");
+                    exports?.AppendLine("\t --- EXPORTS --");
 
                     foreach (ExportDefinition exportDefinition in part.ExportDefinitions) {
-                        parts.AppendLine("\t" + exportDefinition.ContractName);
-                        exports.AppendLine("\t" + exportDefinition.ContractName);
+                        parts?.AppendLine("\t" + exportDefinition.ContractName);
+                        exports?.AppendLine("\t" + exportDefinition.ContractName);
 
                         foreach (KeyValuePair<string, object> kvp in exportDefinition.Metadata) {
                             string valueString = kvp.Value != null ? kvp.Value.ToString() : string.Empty;
 
-                            parts.AppendLine("\t" + kvp.Key + " : " + valueString);
-                            exports.AppendLine("\t" + kvp.Key + " : " + valueString);
+                            parts?.AppendLine("\t" + kvp.Key + " : " + valueString);
+                            exports?.AppendLine("\t" + kvp.Key + " : " + valueString);
                         }
 
                         if (first) {
                             first = false;
                         } else {
-                            parts.AppendLine("------------------------------------------------------");
-                            exports.AppendLine("------------------------------------------------------");
+                            parts?.AppendLine("------------------------------------------------------");
+                            exports?.AppendLine("------------------------------------------------------");
                         }
                     }
                 }
 
                 if (part.ImportDefinitions.FirstOrDefault() != null) {
-                    parts.AppendLine("\t --- IMPORTS ---");
+                    parts?.AppendLine("\t --- IMPORTS ---");
 
                     foreach (ImportDefinition importDefinition in part.ImportDefinitions) {
-                        parts.AppendLine("\t" + importDefinition.ContractName);
-                        parts.AppendLine("\t" + importDefinition.Constraint.ToString());
-                        parts.AppendLine("\t" + importDefinition.Cardinality.ToString());
+                        parts?.AppendLine("\t" + importDefinition.ContractName);
+                        parts?.AppendLine("\t" + importDefinition.Constraint.ToString());
+                        parts?.AppendLine("\t" + importDefinition.Cardinality.ToString());
 
                         if (first) {
                             first = false;
                         } else {
-                            parts.AppendLine("------------------------------------------------------");
+                            parts?.AppendLine("------------------------------------------------------");
                         }
                     }
                 }
-                _partsData = parts.ToString();
-                _exportsData = exports.ToString();
+                _partsData = parts?.ToString();
+                _exportsData = exports?.ToString();
             }
 
             return container;
