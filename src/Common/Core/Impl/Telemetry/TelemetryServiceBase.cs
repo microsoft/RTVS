@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core.Diagnostics;
 
@@ -68,11 +71,6 @@ namespace Microsoft.Common.Core.Telemetry {
                 this.TelemetryRecorder.RecordEvent(completeEventName, dictWithPrefix);
             }
         }
-
-        /// <summary>
-        /// Start a telemetry activity, dispose of the return value when the activity is complete
-        /// </summary>
-        public abstract ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
         #endregion
 
         private string MakeEventName(TelemetryArea area, string eventName) {

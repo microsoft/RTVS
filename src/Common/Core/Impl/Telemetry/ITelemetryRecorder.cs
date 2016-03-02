@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 
 namespace Microsoft.Common.Core.Telemetry {
     /// <summary>
@@ -22,11 +25,5 @@ namespace Microsoft.Common.Core.Telemetry {
         /// a collection of string/object pairs.
         /// </summary>
         void RecordEvent(string eventName, object parameters = null);
-
-        /// <summary>
-        /// Records telemetry activity (typically VS TelemetryActivity object)
-        /// </summary>
-        /// <param name="activity"></param>
-        void RecordActivity(object activity);
     }
 }

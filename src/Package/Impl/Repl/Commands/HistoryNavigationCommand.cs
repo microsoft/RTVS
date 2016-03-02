@@ -1,11 +1,16 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -14,9 +19,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class HistoryNavigationCommand : ViewCommand {
         private readonly ICompletionBroker _completionBroker;
         private readonly IEditorOperationsFactoryService _editorFactory;
-        private readonly Lazy<IRHistory> _historyProvider;
+        private readonly IRHistory _history;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
-        public HistoryNavigationCommand(ITextView textView) :
+        public HistoryNavigationCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow, ICompletionBroker completionBroker, IEditorOperationsFactoryService editorFactory) :
             base(textView, new[] {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UP),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.DOWN),
@@ -27,11 +33,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.LEFT_EXT),
                 new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.RIGHT_EXT)
             }, false) {
-
-            var exportProvider = VsAppShell.Current.ExportProvider;
-            _completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
-            _editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
-            _historyProvider = new Lazy<IRHistory>(() => exportProvider.GetExportedValue<IRInteractiveProvider>().GetOrCreate().History);
+            _completionBroker = completionBroker;
+            _editorFactory = editorFactory;
+            _interactiveWorkflow = interactiveWorkflow;
+            _history = interactiveWorkflow.History;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -46,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (_completionBroker.IsCompletionActive(TextView)) {
                 return CommandResult.NotSupported;
             }
-            var window = ReplWindow.Current.GetInteractiveWindow().InteractiveWindow;
+            var window = _interactiveWorkflow.ActiveWindow;
             var curPoint = window.TextView.MapDownToBuffer(
                 window.TextView.Caret.Position.BufferPosition,
                 window.CurrentLanguageBuffer
@@ -65,13 +70,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     case VSConstants.VSStd2KCmdID.UP:
                         if (curLine.LineNumber == 0) {
                             // this leaves the caret at the end which is what we want for up/down to work nicely
-                            _historyProvider.Value.PreviousEntry();
+                            _history.PreviousEntry();
                             return CommandResult.Executed;
                         }
                         break;
                     case VSConstants.VSStd2KCmdID.DOWN:
                         if (curLine.LineNumber == curPoint.Value.Snapshot.LineCount - 1) {
-                            _historyProvider.Value.NextEntry();
+                            _history.NextEntry();
 
                             // move the caret to the 1st line in history so down/up works nicely
                             var firstLine = window.CurrentLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(0);
@@ -86,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                             if (curLine.LineNumber != 0) {
                                 // move to the end of the previous line rather then navigating into the prompts
                                 editorOps.MoveLineUp(extend);
-                                window.Operations.End(extend);
+                                window.InteractiveWindow.Operations.End(extend);
                             }
                             return CommandResult.Executed;
 
@@ -108,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
                                 // Home would be nice here, but it goes to the beginning of the first non-whitespace char
                                 if (extend) {
-                                    Text.VirtualSnapshotPoint anchor = TextView.Selection.AnchorPoint;
+                                    VirtualSnapshotPoint anchor = TextView.Selection.AnchorPoint;
                                     TextView.Caret.MoveTo(MapUp(window, start).Value);
                                     TextView.Selection.Select(anchor.TranslateTo(TextView.TextSnapshot), TextView.Caret.Position.VirtualBufferPosition);
                                 } else {
@@ -145,7 +150,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return CommandResult.Executed;
         }
 
-        private SnapshotPoint? MapUp(InteractiveWindow.IInteractiveWindow window, SnapshotPoint point) {
+        private SnapshotPoint? MapUp(IInteractiveWindowVisualComponent window, SnapshotPoint point) {
             return window.TextView.BufferGraph.MapUpToBuffer(
                 point,
                 PointTrackingMode.Positive,

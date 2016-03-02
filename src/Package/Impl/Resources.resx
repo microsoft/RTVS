@@ -274,6 +274,12 @@
   <data name="PlotExportAsPdfFilter" xml:space="preserve">
     <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
   </data>
+  <data name="DeletePlot" xml:space="preserve">
+    <value>Are you sure you want to remove the current plot?</value>
+  </data>
+  <data name="DeleteAllPlots" xml:space="preserve">
+    <value>Are you sure you want to remove all plots?</value>
+  </data>
   <data name="MicrosoftRHostStarting" xml:space="preserve">
     <value>Starting R Session...</value>
   </data>
@@ -330,10 +336,10 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Commit intellisense selection when Enter key is pressed</value>
   </data>
   <data name="Settings_TriggerOnFirstChar" xml:space="preserve">
-    <value>Intellisense list on first character</value>
+    <value>Completion list on first character</value>
   </data>
   <data name="Settings_TriggerOnFirstChar_Description" xml:space="preserve">
-    <value>Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command</value>
+    <value>Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J)</value>
   </data>
   <data name="VariableWindowCaption" xml:space="preserve">
     <value>Variable Explorer</value>
@@ -383,7 +389,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="GatheringDiagnosticData" xml:space="preserve">
     <value>Gathering diagnostics data...</value>
   </data>
-  <data name="LongOperationProgressMessage" xml:space="preserve">
+  <data name="LongOperationProgressMessage2" xml:space="preserve">
     <value>Processing Item {0} of {1}: {2}</value>
   </data>
   <data name="VariableExplorer_EnvironmentName" xml:space="preserve">
@@ -478,7 +484,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Choose R Install Folder</value>
   </data>
   <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation.</value>
+    <value>Cannot find R binaries in {0}. Please specify valid path to R installation directory such as 'Program Files\R\R-3.2.x' or 'Program Files\MRO\R-3.2.x'.</value>
   </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
@@ -498,11 +504,8 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="OpenFunctionHelp" xml:space="preserve">
     <value>Help on {0}</value>
   </data>
-  <data name="Error_ReplUnicodeCoversion" xml:space="preserve">
-    <value>Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use.</value>
-  </data>
   <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools.</value>
+    <value>Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -523,7 +526,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
   <data name="Warning_SettingsReset" xml:space="preserve">
-    <value>This will reset Visual Studio window layout to the Data Scientist profile. Proceed?</value>
+    <value>This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?</value>
   </data>
   <data name="HelpBrowser_Automatic" xml:space="preserve">
     <value>Automatic</value>
@@ -554,6 +557,39 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="Warning_LogTooLarge" xml:space="preserve">
     <value />
+  </data>
+  <data name="Progress_ExcelRowCounter" xml:space="preserve">
+    <value>Row {0} of {1}</value>
+  </data>
+  <data name="Progress_PreparingExcelData" xml:space="preserve">
+    <value>Preparing data for Microsoft Excel...</value>
+  </data>
+  <data name="Warning_CancelCurrentExcelView" xml:space="preserve">
+    <value>Cancel data conversion for Microsoft Excel?</value>
+  </data>
+  <data name="LongOperationProgressMessage1" xml:space="preserve">
+    <value>Processing Item {0} of {1}</value>
+  </data>
+  <data name="OpenInExcelCommandTooltip" xml:space="preserve">
+    <value>Open in Microsoft Excel</value>
+  </data>
+  <data name="ShowDetailCommandTooltip" xml:space="preserve">
+    <value>Open in a Grid Viewer</value>
+  </data>
+  <data name="Settings_TriggerOnTab" xml:space="preserve">
+    <value>Completion list on Tab key</value>
+  </data>
+  <data name="Settings_TriggerOnTab_Description" xml:space="preserve">
+    <value>If set to on completion list can be invoked by typing one or more characters and pressing Tab.</value>
+  </data>
+  <data name="MailToFrownMessage" xml:space="preserve">
+    <value>If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window.</value>
+  </data>
+  <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
+    <value>Unable to evaluate expression and get data for Microsoft Excel</value>
+  </data>
+  <data name="Error_NoWebTools" xml:space="preserve">
+    <value>R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
   </data>
   <data name="InsertSnippet" xml:space="preserve">
     <value>Insert Snippet</value>

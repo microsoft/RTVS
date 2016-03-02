@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -49,6 +52,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         public bool TriggerOnFirstChar {
             get { return REditorSettings.ShowCompletionOnFirstChar; }
             set { REditorSettings.ShowCompletionOnFirstChar = value; }
+        }
+
+        [LocCategory("Settings_IntellisenseCategory")]
+        [CustomLocDisplayName("Settings_TriggerOnTab")]
+        [LocDescription("Settings_TriggerOnTab_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(false)]
+        public bool TriggerOnTab {
+            get { return REditorSettings.ShowCompletionOnTab; }
+            set { REditorSettings.ShowCompletionOnTab = value; }
         }
 
         [LocCategory("Settings_IntellisenseCategory")]

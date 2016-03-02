@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Diagnostics.CodeAnalysis;
 
 namespace Microsoft.UnitTests.Core.XUnit {
@@ -8,6 +11,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class CoreAttribute : CategoryAttribute {
                 public CoreAttribute() : base("Languages.Core") { }
             }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class HistoryAttribute : CategoryAttribute {
+            public HistoryAttribute() : base("History") { }
         }
 
         [ExcludeFromCodeCoverage]

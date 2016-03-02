@@ -1,8 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;

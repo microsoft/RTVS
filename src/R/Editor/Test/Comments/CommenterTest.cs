@@ -1,9 +1,12 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;

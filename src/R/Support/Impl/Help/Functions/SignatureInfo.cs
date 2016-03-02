@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.R.Support.Help.Definitions;
@@ -20,7 +23,7 @@ namespace Microsoft.R.Support.Help.Functions {
         /// <summary>
         /// Function arguments
         /// </summary>
-        public IReadOnlyList<IArgumentInfo> Arguments { get; internal set; }
+        public IList<IArgumentInfo> Arguments { get; internal set; }
 
         /// <summary>
         /// Creates formatted signature that is presented to the user

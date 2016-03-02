@@ -1,6 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -10,6 +14,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public int Id { get; set; }
 
         public bool IsHostRunning { get; set; }
+
+        public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
 
         public string Prompt { get; set; } = ">";
 
@@ -45,6 +51,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             StopHostAsync().Wait(5000);
             Disposed?.Invoke(this, EventArgs.Empty);
         }
+
+        public IDisposable DisableMutatedOnReadConsole() => Disposable.Empty;
 
         public void FlushLog() {
         }

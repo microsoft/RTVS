@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 locals <- as.environment(list(breakpoints_enabled = FALSE));
 
 # List of all active breakpoints.
@@ -147,6 +150,11 @@ inject_breakpoints <- function(expr) {
         next;
       }
 
+      # Attributes cannot be set on NULL, so wrap it in (), and set attributes on the resulting call object.
+      if (identical(target_expr, NULL)) {
+        target_expr <- quote((NULL));
+      }
+
       new_expr[[step]] <- substitute({
         .doTrace(if (rtvs:::is_breakpoint(FILENAME, LINE_NUMBER)) browser());
         EXPR
@@ -155,7 +163,7 @@ inject_breakpoints <- function(expr) {
         LINE_NUMBER = line_num,
         EXPR = target_expr
       ));
-     
+
       attr(new_expr[[step]], 'rtvs::original_expr') <- target_expr;
       attr(new_expr[[step]][[2]], 'rtvs::is_breakpoint') <- TRUE;
       attr(new_expr[[step]][[3]], 'rtvs::at_breakpoint') <- TRUE;

@@ -1,8 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 using Microsoft.VisualStudio.Text.Operations;

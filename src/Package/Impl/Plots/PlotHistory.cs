@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
@@ -49,6 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private void ClearHistoryInfo() {
             ActivePlotIndex = -1;
             PlotCount = 0;
+            HistoryChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Dispose() {

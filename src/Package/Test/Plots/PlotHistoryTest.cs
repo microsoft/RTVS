@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -135,20 +138,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
                 foreach (var c in _commands) {
                     using (var interaction = await script.Session.BeginInteractionAsync()) {
                         try {
-                            interaction.RespondAsync(c + Environment.NewLine).Wait(1000);
+                            await interaction.RespondAsync(c + Environment.NewLine);
                             EventsPump.DoEvents(100);
-                        } catch (RException) { } catch(AggregateException) { }
+                        } catch (RException) { }
                     }
                 }
 
                 for (int i = _commands.Length - 1; i >= 0; i--) {
-                    history.PlotContentProvider.PreviousPlotAsync().Wait(1000);
-                    EventsPump.DoEvents(100);
+                    try {
+                        await history.PlotContentProvider.PreviousPlotAsync();
+                        EventsPump.DoEvents(100);
+                    } catch (RException) { }
                 }
 
                 for (int i = 0; i < _commands.Length; i++) {
-                    history.PlotContentProvider.NextPlotAsync().Wait(1000);
-                    EventsPump.DoEvents(500);
+                    try {
+                        await history.PlotContentProvider.NextPlotAsync();
+                        EventsPump.DoEvents(500);
+                    } catch (RException) { }
                 }
 
                 EventsPump.DoEvents(1000);

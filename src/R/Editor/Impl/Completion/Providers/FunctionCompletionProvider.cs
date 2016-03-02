@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
@@ -53,7 +56,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     foreach (INamedItemInfo function in functions) {
                         ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
 
-                        var completion = new RCompletion(function.Name, function.Name, function.Description, glyph);
+                        var completion = new RCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph);
                         completions.Add(completion);
                     }
                 }

@@ -14,7 +14,8 @@
     <OutputType>Bundle</OutputType>
     <DDWixExtNugetPackageVersion>14.0.22823.1</DDWixExtNugetPackageVersion>
     <DDWixExtDir>..\..\NugetPackages\DDWixExt.$(DDWixExtNugetPackageVersion)\</DDWixExtDir>
-    <DefineConstants>$(DefineConstants);DDWixExtDir=$(DDWixExtDir)</DefineConstants>
+    <RHostMsi Condition=" '$(RHostMsi)' == '' ">RHost.msi</RHostMsi>
+    <DefineConstants>$(DefineConstants);DDWixExtDir=$(DDWixExtDir);RHostMsi=$(RHostMsi)</DefineConstants>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
@@ -42,8 +43,8 @@
     <Compile Include="RTVS_UX.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EULA R Tools for Visual Studio.txt" />
     <Content Include="packages.config" />
+    <Content Include="EULA R Tools For Visual Studio.html" />
     <Content Include="UXResources\BootstrapperCore.config" />
     <Content Include="UXResources\DarkTheme.xaml" />
     <Content Include="UXResources\HighContrastSkuResources.xaml" />

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Telemetry;
@@ -6,9 +9,11 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Mocks;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class TelemetryTest {
         [Test]
         [Category.Telemetry]

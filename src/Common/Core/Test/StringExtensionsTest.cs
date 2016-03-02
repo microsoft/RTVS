@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
@@ -19,6 +22,13 @@ namespace Microsoft.Common.Core.Test {
         }
 
         [CompositeTest]
+        [InlineData(" ", "")]
+        [InlineData(" \n", "")]
+        [InlineData(" \r\n", "")]
+        [InlineData(" \r\r\n", "")]
+        [InlineData("  \n  ", "")]
+        [InlineData("  \r\n  ", "")]
+        [InlineData("  \r\r\n  ", "")]
         [InlineData("\n", "")]
         [InlineData("\r\n", "")]
         [InlineData("\r\r\n", "")]
@@ -44,5 +54,15 @@ namespace Microsoft.Common.Core.Test {
         public void RemoveWhiteSpaceLines(string s, string expected) {
             s.RemoveWhiteSpaceLines().Should().Be(expected);
         }
+
+        [CompositeTest]
+        [InlineData("a", 0, 1, 10)]
+        [InlineData("a0Bxx", 1, 2, 11)]
+        [InlineData("+1+", 1, 1, 1)]
+        [InlineData("0011c", 1, 3, 17)]
+        public void SubstringToHex(string s, int start, int length, int expected) {
+            s.SubstringToHex(start, length).Should().Be(expected);
+        }
+
     }
 }

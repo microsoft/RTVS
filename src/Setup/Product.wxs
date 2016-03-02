@@ -13,17 +13,9 @@
            UpgradeCode="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
 
     <Package InstallerVersion="350" Compressed="yes" InstallScope="perMachine" Id="*"/>
-    <Icon Id ="ControlPanelIcon" SourceFile="RFile.ico" />
-    <Property Id="ARPPRODUCTICON" Value="ControlPanelIcon" />
-
     <MajorUpgrade AllowDowngrades="no" RemoveFeatures="ALL"
                   Schedule="afterInstallInitialize"
                   DowngradeErrorMessage="A later version of $(var.ProductName) is already installed. Setup will now exit."/>
-
-    <!-- Uninstall Current MSI -->
-    <Upgrade Id="{A33F0FD0-820C-4846-BB8C-4B40D4015A70}">
-      <UpgradeVersion IncludeMinimum="yes" Minimum="0.1.0.0" Property="VS_R_TOOLS" RemoveFeatures="ALL" />
-    </Upgrade>
 
     <MediaTemplate EmbedCab="yes" />
 
@@ -60,39 +52,35 @@
               Impersonate="no"
               ExeCommand='[CommonIdeFolder]devenv.exe /InstallVSTemplates'
               Return='ignore'/>
-
-    <CustomAction Id='AssignVsVersion'
-                  Property='VsVersion'
-                  Value='$(var.VSRegVer)'/>
-
-    <CustomAction Id='DSProfilePrompt'
-          BinaryKey='CustomActions'
-          DllEntry='DSProfilePromptAction'
-          Execute="immediate"
-          Return='ignore'/>
-
-    <CustomAction Id='MROInstallPrompt'
-          BinaryKey='CustomActions'
-          DllEntry='MROInstallPromptAction'
-          Execute="immediate"
-          Return='ignore'/>
-
+    
     <CustomAction Id='VsCommunityInstallPrompt'
           BinaryKey='CustomActions'
           DllEntry='VsCommunityInstallAction'
           Execute="immediate"
           Return='check'/>
 
+    <CustomAction Id='MROInstallPrompt'
+      BinaryKey='CustomActions'
+      DllEntry='MROInstallPromptAction'
+      Execute="immediate"
+      Return='ignore'/>
+
+    <CustomAction Id='ShowMicrosoftROfferings'
+          BinaryKey='CustomActions'
+          DllEntry='ShowMicrosoftROfferingsAction'
+          Execute="immediate"
+          Return='ignore'/>
+    
     <UI>
       <ProgressText Action="VS2015InstallTemplates">Updating Visual Studio project templates... (this may take a few minutes).</ProgressText>
     </UI>
 
     <InstallExecuteSequence>
       <Custom Action="VsCommunityInstallPrompt" Before="InstallFiles">NOT Installed</Custom>
+      <Custom Action="ShowMicrosoftROfferings" After="InstallFinalize">NOT Installed</Custom>
       <Custom Action="VS2015InstallTemplates" Before="InstallFinalize" />
       <Custom Action="VS2015UpdateConfiguration" Before="InstallFinalize" />
-      <Custom Action="MROInstallPrompt" After="InstallFinalize">NOT Installed</Custom>
-      <Custom Action="DSProfilePrompt" After="InstallFinalize">NOT Installed</Custom>
+      <Custom Action="MROInstallPrompt" After="InstallFiles">NOT Installed</Custom>
     </InstallExecuteSequence>
 
     <?include Feature.wxi ?>
@@ -136,23 +124,23 @@
 
                       <Directory Id="HiddenProfilesFolder" Name="Profiles" />
                     </Directory>
-                    
+
                   </Directory>
                 </Directory>
-                
+
                 <Directory Id="ItemTemplatesFolder" Name="ItemTemplates">
                   <Directory Id="ItemTemplatesInstallFolder" Name="R">
-                    <?foreach Lcid in $(var.LcidList)?>
+                    <!--<?foreach Lcid in $(var.LcidList)?>
                     <Directory Id="ItemTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>
+                    <?endforeach?>-->
                   </Directory>
                 </Directory>
-                
+
                 <Directory Id="ProjectTemplatesFolder" Name="ProjectTemplates">
                   <Directory Id="ProjectTemplatesInstallFolder" Name="R">
-                    <?foreach Lcid in $(var.LcidList)?>
+                    <!--<?foreach Lcid in $(var.LcidList)?>
                     <Directory Id="ProjectTemplatesInstallFolder_$(var.Lcid)" Name="$(var.Lcid)" />
-                    <?endforeach?>
+                    <?endforeach?>-->
                   </Directory>
                 </Directory>
                 <Directory Id="ProfilesFolder" Name="Profiles" />
@@ -160,7 +148,7 @@
             </Directory>
           </Directory>
         </Directory>
-        
+
         <Directory Id="MSBuildFolder" Name="MSBuild">
           <Directory Id="MSBuildMicrosoftFolder" Name="Microsoft">
             <Directory Id="MSBuildMicrosoftVisualStudioFolder" Name="VisualStudio">
@@ -173,7 +161,7 @@
           </Directory>
         </Directory>
       </Directory>
-      
+
     </Directory>
 
   </Fragment>

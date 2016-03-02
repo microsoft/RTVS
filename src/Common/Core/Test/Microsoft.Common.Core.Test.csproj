@@ -29,9 +29,6 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="FluentAssertions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
@@ -98,12 +95,15 @@
     <Compile Include="Disposables\CountdownDisposableTest.cs" />
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
+    <Compile Include="Fakes\TestCoreShell.cs" />
     <Compile Include="Script\EventsPump.cs" />
-    <Compile Include="IO\SubstituteFactories\DirectoryInfoFactory.cs" />
-    <Compile Include="IO\SubstituteFactories\FileInfoFactory.cs" />
+    <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
+    <Compile Include="StubFactories\FileInfoStubFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
+    <Compile Include="StubFactories\FileSystemStubFactory.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
+    <Compile Include="Utility\RUtilities.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
     <Compile Include="Utility\TestFiles.cs" />
     <Compile Include="Utility\VisualTreeWriter.cs" />
@@ -122,7 +122,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO\SubstituteFactories\" />
+  </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
       <Authenticode>Microsoft</Authenticode>

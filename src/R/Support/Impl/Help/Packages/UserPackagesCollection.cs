@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
@@ -56,7 +59,7 @@ namespace Microsoft.R.Support.Help.Packages {
             // TODO: this probably possible to get from R.Host instead
             int index = rBasePath.IndexOf("R-", StringComparison.Ordinal);
             if (index >= 0) {
-                version = version.Substring(index + 2);
+                version = rBasePath.Substring(index + 2);
                 int nextSlashIndex = version.IndexOf('\\');
                 if (nextSlashIndex > 0) {
                     version = version.Substring(0, nextSlashIndex);

@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,20 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         //    value.date        RS 2015-08-01            RTVS Date, format: "2015-08-01"
         // NOTE: value.date  HasChildren is true. really?
         object[,] valueTestData = new object[,] {
-            { "value.na <- NA", new VariableExpectation() { Name = "value.na", Value = "NA", TypeName = "logical", Class = "logical", HasChildren = false, CanShowDetail = false } },
-            { "value.null <- NULL", new VariableExpectation() { Name = "value.null", Value = "NULL", TypeName = "NULL", Class = "NULL", HasChildren = false, CanShowDetail = false } },
-            { "value.NaN <- NaN", new VariableExpectation() { Name = "value.NaN", Value = "NaN", TypeName = "double", Class = "numeric", HasChildren = false, CanShowDetail = false } },
-            { "value.character <- 'abcdefghijklmnopqrstuvwxyz'", new VariableExpectation() { Name = "value.character", Value = "\"abcdefghijklmnopqrstuvwxyz\"", TypeName = "character", Class = "character", HasChildren = false, CanShowDetail = false } },
-            { "value.character.1 <- 'abcde\"fhi,kjl \"op,qr\" s @t#u$v%w^x&y*z*()./\\`-+_=!'", new VariableExpectation() { Name = "value.character.1", Value = "\"abcde\\\"fhi,kjl \\\"op,qr\\\" s @t#u$v%w^x&y*z*()./`-+_=!\"", TypeName = "character", Class = "character", HasChildren = false, CanShowDetail = false } },
-            { "value.numeric.1 <- 1", new VariableExpectation() { Name = "value.numeric.1", Value = "1", TypeName = "double", Class = "numeric", HasChildren = false, CanShowDetail = false } },
-            { "value.numeric.negative <- -123456", new VariableExpectation() { Name = "value.numeric.negative", Value = "-123456", TypeName = "double", Class = "numeric", HasChildren = false, CanShowDetail = false } },
-            { "value.numeric.big <- 98765432109876543210.9876543210", new VariableExpectation() { Name = "value.numeric.big", Value = "9.88e+19", TypeName = "double", Class = "numeric", HasChildren = false, CanShowDetail = false } },
-            { "value.integer.1 <- 1L", new VariableExpectation() { Name = "value.integer.1", Value = "1", TypeName = "integer", Class = "integer", HasChildren = false, CanShowDetail = false } },
-            { "value.integer.negative <- -123456L", new VariableExpectation() { Name = "value.integer.negative", Value = "-123456", TypeName = "integer", Class = "integer", HasChildren = false, CanShowDetail = false } },
-            { "value.complex <- complex(real=100, imaginary=100)", new VariableExpectation() { Name = "value.complex", Value = "100+100i", TypeName = "complex", Class = "complex", HasChildren = false, CanShowDetail = false } },
-            { "value.complex.neg <- complex(real=-200, imaginary=-900)", new VariableExpectation() { Name = "value.complex.neg", Value = "-200-900i", TypeName = "complex", Class = "complex", HasChildren = false, CanShowDetail = false } },
-            { "value.logical <- TRUE", new VariableExpectation() { Name = "value.logical", Value = "TRUE", TypeName = "logical", Class = "logical", HasChildren = false, CanShowDetail = false } },
-            { "value.date <- as.Date('2015-08-01')", new VariableExpectation() { Name = "value.date", Value = "Date, format: \"2015-08-01\"", TypeName = "double", Class = "Date", HasChildren = true, CanShowDetail = false } },
+
         };
 
         object[,] factorTestData = new object[,] {
@@ -55,10 +45,35 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             { "makeActiveBinding('z.activebinding1', function() 123, .GlobalEnv);", new VariableExpectation() { Name = "z.activebinding1", Value = "<active binding>", TypeName = "<active binding>", Class = "<active binding>", HasChildren = false, CanShowDetail = false } },
         };
 
-        [Test]
+        [CompositeTest]
+        [InlineData("value.na <- NA", "value.na", "NA", "logical", "logical", false, false)]
+        [InlineData("value.null <- NULL", "value.null", "NULL", "NULL", "NULL", false, false)]
+        [InlineData("value.NaN <- NaN","value.NaN", "NaN", "double", "numeric", false, false)]
+        [InlineData("value.character <- 'abcdefghijklmnopqrstuvwxyz'", "value.character", "\"abcdefghijklmnopqrstuvwxyz\"", "character", "character", false, false)]
+        [InlineData("value.character.1 <- 'abcde\"fhi,kjl \"op,qr\" s @t#u$v%w^x&y*z*()./\\`-+_=!'", "value.character.1", "\"abcde\\\"fhi,kjl \\\"op,qr\\\" s @t#u$v%w^x&y*z*()./`-+_=!\"", "character", "character", false, false)]
+        [InlineData("value.numeric.1 <- 1", "value.numeric.1", "1", "double", "numeric", false, false)]
+        [InlineData("value.numeric.negative <- -123456", "value.numeric.negative", "-123456", "double", "numeric", false, false)]
+        [InlineData("value.numeric.big <- 98765432109876543210.9876543210", "value.numeric.big", "9.88e+19", "double", "numeric", false, false)]
+        [InlineData("value.integer.1 <- 1L", "value.integer.1", "1", "integer", "integer", false, false)]
+        [InlineData("value.integer.negative <- -123456L", "value.integer.negative", "-123456", "integer", "integer", false, false)]
+        [InlineData("value.complex <- complex(real=100, imaginary=100)", "value.complex", "100+100i", "complex", "complex", false, false)]
+        [InlineData("value.complex.neg <- complex(real=-200, imaginary=-900)", "value.complex.neg", "-200-900i", "complex", "complex", false, false)]
+        [InlineData("value.logical <- TRUE", "value.logical", "TRUE", "logical", "logical", false, false)]
+        [InlineData("value.date <- as.Date('2015-08-01')", "value.date", "Date, format: \"2015-08-01\"", "double", "Date", true, false)]
         [Category.Variable.Explorer]
-        public Task ValuesTest() {
-            return RunTest(valueTestData);
+        public async Task ValuesTest(string script, string expectedName, string expectedValue, string expectedTypeName, string expectedClass, bool expectedHasChildren, bool expectedCanShowDetail) {
+            var expected = new VariableExpectation {
+                Name = expectedName,
+                Value = expectedValue,
+                TypeName = expectedTypeName,
+                Class = expectedClass,
+                HasChildren = expectedHasChildren,
+                CanShowDetail = expectedCanShowDetail
+            };
+
+            using (var hostScript = new VariableRHostScript()) {
+                await hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
+            }
         }
 
         [Test]

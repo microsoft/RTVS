@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Include>
-  <?foreach Lcid in $(var.LcidList)?>
-    <DirectoryRef Id="ItemTemplatesInstallFolder_$(var.Lcid)">
-      <Component Id="ItemTemplates_$(var.Lcid)" Guid="{A34A0987-D8B9-4407-ABB6-E71A21985242}">
+  <!--<?foreach Lcid in $(var.LcidList)?>-->
+    <!--<DirectoryRef Id="ItemTemplatesInstallFolder_$(var.Lcid)">-->
+      <DirectoryRef Id="ItemTemplatesInstallFolder">
+        <Component Id="ItemTemplates_$(var.Lcid)" Guid="{A34A0987-D8B9-4407-ABB6-E71A21985242}">
         <File Id="ItemTemplates_datasetrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\datasetrd.zip" />
         <File Id="ItemTemplates_emptymd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptymd.zip" />
         <File Id="ItemTemplates_emptyrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\emptyrd.zip" />
@@ -17,5 +18,7 @@
         <File Id="ItemTemplates_XSLTFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\XSLTFile.zip" />
       </Component>
     </DirectoryRef>
-  <?endforeach?>
+  <!--<?endforeach?>-->
 </Include>
+
+

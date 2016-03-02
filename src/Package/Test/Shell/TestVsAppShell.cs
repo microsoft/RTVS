@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
@@ -26,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         private TestVsAppShell() {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
             ExportProvider = VsTestCompositionCatalog.Current.ExportProvider;
+            MainThread = UIThreadHelper.Instance.Thread;
             _sp = new TestServiceProvider();
         }
 
@@ -38,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
             // VS-specific implementations.
             UIThreadHelper.Instance.Invoke(() => {
                 _instance = new TestVsAppShell();
-                _instance.MainThread = UIThreadHelper.Instance.Thread;
+
                 VsAppShell.Current = _instance;
                 RToolsSettings.Current = new TestRToolsSettings();
             });

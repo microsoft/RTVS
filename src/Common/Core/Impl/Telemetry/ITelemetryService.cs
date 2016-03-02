@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 
 namespace Microsoft.Common.Core.Telemetry {
     /// <summary>
@@ -20,14 +23,5 @@ namespace Microsoft.Common.Core.Telemetry {
         /// collection of string/object pairs.
         /// </param>
         void ReportEvent(TelemetryArea area, string eventName, object parameters = null);
-
-        /// <summary>
-        /// Provides a way to create and start recording user activity.
-        /// Activity is a parent object or scope for multiple telemetry
-        /// events. For example, code refactoring or build may be recorded
-        /// as an activity (i.e. as a set of related events).
-        /// Dispose of the return value when the activity is complete.
-        /// </summary>
-        ITelemetryActivity StartActivity(TelemetryArea area, string eventName);
     }
 }

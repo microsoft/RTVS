@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\R.Settings.targets" />
@@ -36,6 +36,7 @@
       <HintPath>$(WixInstallPath)\sdk\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Common\Core\Impl\IO\DirectoryInfoProxy.cs">
@@ -99,12 +100,6 @@
       <Link>R\SupportedRVersionList.cs</Link>
     </Compile>
     <Compile Include="CustomAction.cs" />
-    <Compile Include="DSProfilePromptForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DSProfilePromptForm.Designer.cs">
-      <DependentUpon>DSProfilePromptForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="InstallVsCommunityForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -124,12 +119,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Content Include="CustomAction.config" />
-    <Content Include="DSProfileScreen.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DSProfilePromptForm.resx">
-      <DependentUpon>DSProfilePromptForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="YesNoMessageBox.resx">
       <DependentUpon>YesNoMessageBox.cs</DependentUpon>
     </EmbeddedResource>

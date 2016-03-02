@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 call_embedded <- function(name, ...) {
   .Call(paste0('Microsoft.R.Host::Call.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
@@ -34,8 +37,8 @@ set_rdebug <- function(obj, debug) {
   call_embedded("set_rdebug", obj, debug)
 }
 
-browser_set_debug <- function(n = 1) {
-  call_embedded("browser_set_debug", n)
+browser_set_debug <- function(n = 1, skip_toplevel = 0) {
+  call_embedded("browser_set_debug", n, skip_toplevel)
 }
 
 NA_if_error <- function(expr) {

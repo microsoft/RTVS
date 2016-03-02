@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
@@ -156,6 +159,43 @@ x<-1
             actual.Should().Be(expected);
         }
 
+        [Test]
+        public void FormatConditionalTest05() {
+            AstRoot ast;
+            string original =
+@"if(true){
+} else {}
+";
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            string expected =
+@"if(true){
+} else { }
+";
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void FormatConditionalTest06() {
+            AstRoot ast;
+            string original =
+@"if(true)
+   while(true) {
+} else {}
+";
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            string expected =
+@"if(true)
+   while(true) {
+   } else { }
+";
+            actual.Should().Be(expected);
+        }
 
         [Test]
         public void FormatOneLine() {

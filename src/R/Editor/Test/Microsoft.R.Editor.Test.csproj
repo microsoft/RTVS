@@ -101,6 +101,14 @@
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
+      <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>
+      <Name>Microsoft.R.Host.Client</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Host\Client\Test\Microsoft.R.Host.Client.Test.csproj">
+      <Project>{E1B1909E-3193-499B-91DB-1E13E6836929}</Project>
+      <Name>Microsoft.R.Host.Client.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Languages\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
       <Name>Microsoft.Languages.Core</Name>
@@ -124,6 +132,10 @@
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
@@ -173,6 +185,7 @@
     <Compile Include="Outline\OutlineBuilderTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="QuickInfo\QuickInfoSourceTest.cs" />
+    <Compile Include="Script\RHostScript.cs" />
     <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />

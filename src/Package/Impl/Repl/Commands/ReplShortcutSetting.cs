@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
 using EnvDTE;
 using Microsoft.R.Editor.Settings;
@@ -37,7 +40,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (REditorSettings.SendToReplOnCtrlEnter) {
                 // Find and save existing binding
-                foreach (Command c in dte.Commands) {
+                Command c = dte.Commands.Item("EditorContextMenus.CodeWindow.ExecuteLineInInteractive");
+                if (c != null) {
                     object[] commandBindings = c.Bindings as object[];
                     if (commandBindings != null && commandBindings.Length > 0) {
                         string commandName = c.Name;

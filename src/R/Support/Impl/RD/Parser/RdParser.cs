@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.Help;
@@ -65,10 +68,29 @@ namespace Microsoft.R.Support.RD.Parser {
                 }
             }
 
+            // Merge descriptions into signatures. Add all arguments
+            // listed in the \arguments{} section since function signature
+            // does not always list all possible arguments.
             if (argumentDescriptions != null && signatureInfos != null) {
-                // Merge descriptions into signatures
                 foreach (ISignatureInfo sigInfo in signatureInfos) {
-                    foreach (var arg in sigInfo.Arguments) {
+                    // Add missing arguments from the \arguments{} section
+                    foreach (string name in argumentDescriptions.Keys) {
+                        // TODO: do we need HashSet here instead? Generally arguments
+                        // list is relatively short, about 10 items on average.
+                        if (sigInfo.Arguments.FirstOrDefault(x => x.Name.Equals(name)) == null) {
+                            sigInfo.Arguments.Add(new ArgumentInfo(name));
+                        }
+                    }
+                    // Relocate ..., if any, to the end
+                    var ellipsisArgument = sigInfo.Arguments.FirstOrDefault(x => x.IsEllipsis);
+                    if (ellipsisArgument != null) {
+                        int index = sigInfo.Arguments.IndexOf(ellipsisArgument);
+                        sigInfo.Arguments.RemoveAt(index);
+                        sigInfo.Arguments.Add(ellipsisArgument);
+                    }
+
+                    // Add description if it is not there yet
+                    foreach (var arg in sigInfo.Arguments.Where(x => string.IsNullOrEmpty(x.Description))) {
                         string description;
                         if (argumentDescriptions.TryGetValue(arg.Name, out description)) {
                             ((NamedItemInfo)arg).Description = description ?? string.Empty;

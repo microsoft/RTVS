@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -44,9 +47,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// <summary>
         /// Resize the current plot or set the default size for future plots.
         /// </summary>
-        /// <param name="width">Width in pixels.</param>
-        /// <param name="height">Height in pixels.</param>
-        Task ResizePlotAsync(int width, int height);
+        /// <param name="pixelWidth">Width in pixels.</param>
+        /// <param name="pixelHeight">Height in pixels.</param>
+        Task ResizePlotAsync(int pixelWidth, int pixelHeight);
 
         /// <summary>
         /// Navigate to the next plot in the plot history.
@@ -63,6 +66,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// </summary>
         /// <returns>Tuple of active index (0-based, -1 for none) and number of plots.</returns>
         Task<PlotHistoryInfo> GetHistoryInfoAsync();
+
+        /// <summary>
+        /// Clear all plots from the plot history.
+        /// </summary>
+        Task ClearAllAsync();
+
+        /// <summary>
+        /// Remove the current plot from the plot history.
+        /// </summary>
+        Task RemoveCurrentPlotAsync();
     }
 
     /// <summary>

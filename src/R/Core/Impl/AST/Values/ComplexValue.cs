@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using Microsoft.Languages.Core.Text;
@@ -35,8 +38,9 @@ namespace Microsoft.R.Core.AST.Values {
             if (tokens.Count == 1) {
                 // Only imaginary part is present
                 Debug.Assert(tokens[0].TokenType == RTokenType.Number);
+                // TODO: handle complex numbers in Hex
                 if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out imaginaryPart)) {
-                    return false;
+                    imaginaryPart = 0;
                 }
             } else if (tokens.Count == 3) {
                 // Real and imaginary parts present
@@ -44,9 +48,12 @@ namespace Microsoft.R.Core.AST.Values {
                 Debug.Assert(tokens[1].TokenType == RTokenType.Operator);
                 Debug.Assert(tokens[2].TokenType == RTokenType.Number);
 
-                if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out realPart)
-                    || !Double.TryParse(text.Substring(tokens[2].Start, tokens[2].Length), out imaginaryPart)) {
-                    return false;
+                // TODO: handle complex numbers in Hex
+                if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out realPart)) {
+                    realPart = 0;
+                }
+                if (!Double.TryParse(text.Substring(tokens[2].Start, tokens[2].Length), out imaginaryPart)) {
+                    imaginaryPart = 0;
                 }
             } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.NumberExpected, context.Tokens.PreviousToken));

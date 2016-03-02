@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -214,7 +217,13 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
+            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled<REvaluationResult>(new CancellationToken(true))
+                : EvaluateAsyncBackground(expression, kind, ct);
+        }
+
+        private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) { 
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (!_canEval) {
@@ -286,7 +295,8 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         public async Task CancelAllAsync() {
             if (_runTask == null) {
-                throw new InvalidOperationException("Not connected to host.");
+                // Nothing to cancel.
+                return;
             }
 
             await TaskUtilities.SwitchToBackgroundThread();

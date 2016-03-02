@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.IO;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
@@ -10,14 +13,14 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdExportPlotAsImage) {
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = PlotHistory.ActivePlotIndex >= 0;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
-                string device = String.Empty;
+                string device = string.Empty;
                 string extension = Path.GetExtension(destinationFilePath).TrimStart('.').ToLowerInvariant();
                 switch (extension) {
                     case "png":

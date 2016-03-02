@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Utility;
@@ -13,6 +16,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion {
+    using Core.Tokens;
     using Languages.Editor.Services;
     using Completion = VisualStudio.Language.Intellisense.Completion;
 
@@ -144,7 +148,7 @@ namespace Microsoft.R.Editor.Completion {
 
             for (int i = linePosition - 1; i >= 0; i--) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
+                if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     start = i + 1;
                     break;
                 }
@@ -152,7 +156,7 @@ namespace Microsoft.R.Editor.Completion {
 
             for (int i = linePosition; i < lineText.Length; i++) {
                 char ch = lineText[i];
-                if (!Char.IsLetterOrDigit(ch) && ch != '_' && ch != '.') {
+                if (!RTokenizer.IsIdentifierCharacter(ch)) {
                     end = i;
                     break;
                 }

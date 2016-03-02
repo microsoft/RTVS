@@ -70,16 +70,6 @@ namespace SetupCustomActions {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap DSProfileScreen {
-            get {
-                object obj = ResourceManager.GetObject("DSProfileScreen", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Setup was unable to locate the R language engine. Would you like setup to open a Web page where you can download and install Microsoft R Open?.
         /// </summary>
         internal static string MicrosoftROpenQuestion {

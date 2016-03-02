@@ -1,6 +1,10 @@
-﻿using System.ComponentModel.Composition;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Classification;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;

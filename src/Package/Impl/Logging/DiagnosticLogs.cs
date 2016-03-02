@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -16,6 +19,8 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
         public const int DaysToRetain = 5;
+        public const int MaximumFileSize = 1024 * 1024;
+        public const string GeneralLogPattern = "Microsoft.R.General*.log";
         public const string RHostLogPattern = "Microsoft.R.Host*.log";
         public const string ProjectSystemLogPattern = "Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring*.log";
         public const string RtvsGeneralDataFile = "RTVSGeneralData.log";
@@ -67,8 +72,11 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             return zipPath;
         }
 
-        private static void CollectRTVSLogs() {
+        private static void CollectRTVSLogs(object o) {
             IEnumerable<string> logs;
+
+            logs = GetRecentLogFiles(GeneralLogPattern);
+            _logFiles.AddRange(logs);
 
             logs = GetRecentLogFiles(RHostLogPattern);
             _logFiles.AddRange(logs);
@@ -83,17 +91,17 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             }
         }
 
-        private static void CollectSystemLogs() {
+        private static void CollectSystemLogs(object o) {
             string systemEventsLog = CollectSystemEvents();
             _logFiles.Add(systemEventsLog);
         }
 
-        private static void CollectGeneralLogs() {
+        private static void CollectGeneralLogs(object o) {
             string generalDataLog = CollectGeneralData();
             _logFiles.Add(generalDataLog);
         }
 
-        private static void CreateArchive() {
+        private static void CreateArchive(object o) {
             ZipFiles(_logFiles);
         }
 
@@ -104,6 +112,9 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Create)) {
                     foreach (string file in files) {
                         using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite)) {
+                            if (fileStream.Length > MaximumFileSize) {
+                                fileStream.Seek(-MaximumFileSize, SeekOrigin.End);
+                            }
                             var entry = zipArchive.CreateEntry(Path.GetFileName(file));
                             using (var zipEntryStream = entry.Open()) {
                                 fileStream.CopyTo(zipEntryStream);

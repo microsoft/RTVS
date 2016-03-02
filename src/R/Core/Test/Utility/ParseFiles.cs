@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
@@ -31,9 +34,7 @@ namespace Microsoft.R.Core.Test.Utility {
 
             if (_regenerateBaselineFiles) {
                 // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\R\Core\Test\Files\Parser";
-                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tree";
-
+                baselineFile = Path.Combine(fixture.SourcePath, name) + ".tree";
                 TestFiles.UpdateBaseline(baselineFile, actual);
             } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);

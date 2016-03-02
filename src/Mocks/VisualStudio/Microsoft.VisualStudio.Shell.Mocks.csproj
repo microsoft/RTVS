@@ -47,11 +47,15 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.ImageCatalog, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -195,6 +199,7 @@
     <Compile Include="ImageHandleMock.cs" />
     <Compile Include="InteractiveEvaluatorMock.cs" />
     <Compile Include="InteractiveWindowMock.cs" />
+    <Compile Include="InteractiveWindowOperationsMock.cs" />
     <Compile Include="MenuCommandServiceMock.cs" />
     <Compile Include="OleComponentManagerMock.cs" />
     <Compile Include="ProjectServiceAccessorMock.cs" />

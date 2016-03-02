@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -18,9 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class VariableProvider: IVariableDataProvider, IDisposable {
         #region members and ctor
 
-        private IRSessionProvider _rSessionProvider;
-        private IDebugSessionProvider _debugSessionProvider;
-
         private DebugSession _debugSession;
 
         [ImportingConstructor]
@@ -28,22 +28,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             [Import(typeof(IRSessionProvider))]IRSessionProvider sessionProvider,
             [Import(typeof(IDebugSessionProvider))] IDebugSessionProvider debugSessionProvider) {
             if (sessionProvider == null) {
-                throw new ArgumentNullException("sessionProvider");
+                throw new ArgumentNullException(nameof(sessionProvider));
             }
             if (debugSessionProvider == null) {
-                throw new ArgumentNullException("debugSessionProvider");
+                throw new ArgumentNullException(nameof(debugSessionProvider));
             }
 
-            _rSessionProvider = sessionProvider;
-            
 
             RSession = sessionProvider.GetInteractiveWindowRSession();
             if (RSession == null) {
                 throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(IVariableDataProvider)}"));
             }
             RSession.Mutated += RSession_Mutated;
-
-            _debugSessionProvider = debugSessionProvider;
 
             IdleTimeAction.Create(() => {
                 PublishAllAsync().SilenceException<Exception>().DoNotWait();
@@ -152,7 +148,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var stackFrame = stackFrames.FirstOrDefault(f => f.Index == token.FrameIndex);
 
             if (stackFrame != null) {
-                DebugEvaluationResult evaluation = await stackFrame.EvaluateAsync(token.Expression);
+                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
+                    | DebugEvaluationResultFields.Expression
+                    | DebugEvaluationResultFields.TypeName
+                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                    | DebugEvaluationResultFields.Dim
+                    | DebugEvaluationResultFields.Length;
+
+                DebugEvaluationResult evaluation = await stackFrame.EvaluateAsync(token.Expression, fields: fields);
 
                 foreach (var sub in subscriptions) {
                     try {

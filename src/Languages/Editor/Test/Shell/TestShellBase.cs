@@ -1,5 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.ComponentModel.Design;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.Threading;
@@ -19,7 +24,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return MessageButtons.OK;
         }
 
-        public void ShowContextMenu(Guid contextMenuGroup, int contextMenuId, int x, int y) { }
+        public void ShowContextMenu(CommandID commandId, int x, int y) { }
 
         public void DoIdle() {
             Idle?.Invoke(null, EventArgs.Empty);
@@ -27,12 +32,11 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void DispatchOnUIThread(Action action) {
-            var disp = GetDispatcher();
-            if (disp != null) {
-                disp.BeginInvoke(action, DispatcherPriority.Normal);
-                return;
-            }
-            action();
+            UIThreadHelper.Instance.Invoke(action);
+        }
+
+        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            await UIThreadHelper.Instance.InvokeAsync(action);
         }
 
         public void DoEvents() {

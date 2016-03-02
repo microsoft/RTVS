@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -25,9 +28,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
             if (_regenerateBaselineFiles) {
                 var serializedActual = SerializeVisualTree(actual);
 
-                // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\Package\TestApp\Files";
-                string baselineFilePath = Path.Combine(enlistmentPath, Path.GetFileName(testFileName));
+                string baselineFilePath = fixture.GetSourcePath(testFileName);
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
                 var deserializedExpected = DeserializeVisualTree(testFilePath);

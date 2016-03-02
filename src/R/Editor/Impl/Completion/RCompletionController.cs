@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
@@ -15,7 +18,10 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
+    using Core.AST.Definitions;
+    using Core.Parser;
     using Core.Tokens;
+    using Engine;
     using Host.Client;
     using Languages.Core.Text;
     using Languages.Editor.Shell;
@@ -128,13 +134,7 @@ namespace Microsoft.R.Editor.Completion {
                 // such as for(), if(), library(), ...
                 if (completionText == "if" || completionText == "for" || completionText == "while" ||
                     completionText == "return" || completionText == "library" || completionText == "require") {
-                    if (typedChar == '(')
-                        return true;
-
-                    if (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique)
-                        return true;
-
-                    return false;
+                    return typedChar == '(' || typedChar == '\t' || (char.IsWhiteSpace(typedChar) && completionSet.SelectionStatus.IsUnique);
                 }
 
                 switch (typedChar) {
@@ -166,18 +166,12 @@ namespace Microsoft.R.Editor.Completion {
                     return false;
 
                 if (char.IsWhiteSpace(typedChar)) {
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextView.TextBuffer);
-                    if (document != null && document.IsTransient) {
-                        return CompletionSession.SelectedCompletionSet.SelectionStatus.IsSelected && typedChar == '\t';
-                    }
-
                     if (typedChar.IsLineBreak()) {
                         if (REditorSettings.CommitOnEnter)
                             return true;
 
                         return !IsAutoShownCompletion();
                     }
-
                     return true;
                 }
             }
@@ -197,23 +191,33 @@ namespace Microsoft.R.Editor.Completion {
         /// passed down to core editor or false otherwise.
         /// </returns>
         public override bool OnPreTypeChar(char typedCharacter) {
-            if (typedCharacter == '\t' && !HasActiveCompletionSession) {
-                // if previous character is not whitespace, bring it on
+            // Allow tab to bring intellisense if
+            //  a) REditorSettings.ShowCompletionOnTab true
+            //  b) Position is at the end of a string so we bring completion for files
+            //  c) There is no selection
+            if (typedCharacter == '\t' && !HasActiveCompletionSession && TextView.Selection.StreamSelectionSpan.Length == 0) {
+                // if previous character is identifier character, bring completion list
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
                     if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        if (!char.IsWhiteSpace(position.Value.Snapshot[pos - 1])) {
+                        bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
+                        bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
+                        if (!showCompletion) {
+                            var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                            string directory;
+                            showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
+                        }
+                        if (showCompletion) {
                             ShowCompletion(autoShownCompletion: false);
-                            return true;
+                            return true; // eat the character
                         }
                     }
                 }
             }
-
             return base.OnPreTypeChar(typedCharacter);
         }
-
+        
         /// <summary>
         /// Should this key press trigger a completion session?
         /// </summary>
@@ -221,7 +225,7 @@ namespace Microsoft.R.Editor.Completion {
             if (!HasActiveCompletionSession) {
                 switch (typedCharacter) {
                     case '$':
-                        //case '@':
+                    case '@':
                         return true;
 
                     case ':':
@@ -338,14 +342,18 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
-            if (CompletionSession != null) {
-                if (CompletionSession.CompletionSets.Count > 0) {
-                    Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
-                    string name = completion.InsertionText;
-                    SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
-                    Task.Run(async () => await InsertFunctionBraces(position, name));
-                }
-            }
+            // Aut-insert of braces is disabled until we have reliable method
+            // of determination if given token is a function or a variable
+            // using both AST and R engine.
+
+            //if (CompletionSession != null) {
+            //    if (CompletionSession.CompletionSets.Count > 0) {
+            //        Completion completion = CompletionSession.SelectedCompletionSet.SelectionStatus.Completion;
+            //        string name = completion.InsertionText;
+            //        SnapshotPoint position = CompletionSession.TextView.Caret.Position.BufferPosition;
+            //        Task.Run(async () => await InsertFunctionBraces(position, name));
+            //    }
+            //}
             base.OnCompletionSessionCommitted(sender, eventArgs);
         }
 
@@ -363,11 +371,21 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         private async Task<bool> IsFunction(string name) {
+            if (Keywords.IsKeyword(name)) {
+                return false;
+            }
+
+            string expression = $"tryCatch(is.function({name}), error = function(e) {{ }})";
+            AstRoot ast = RParser.Parse(expression);
+            if (ast.Errors.Count > 0) {
+                return false;
+            }
+
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync($"tryCatch(is.function({name}), error = function(e) {{ }})");
+                    REvaluationResult result = await eval.EvaluateAsync(expression);
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&
                          (result.StringResult == "T" || result.StringResult == "TRUE")) {

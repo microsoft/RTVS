@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
@@ -10,6 +13,8 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;

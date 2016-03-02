@@ -1,4 +1,7 @@
-﻿namespace Microsoft.R.Core.AST.Operators {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.R.Core.AST.Operators {
 
     public static class OperatorPrecedence {
 
@@ -13,6 +16,9 @@
                 case OperatorType.LeftAssign:
                 case OperatorType.RightAssign:
                     return 20;
+
+                case OperatorType.DataTableAssign:
+                    return 25;
 
                 case OperatorType.Tilde:
                     return 30;

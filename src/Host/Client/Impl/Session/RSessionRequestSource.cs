@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -31,10 +34,6 @@ namespace Microsoft.R.Host.Client.Session {
             if (CreateRequestTask.IsCanceled) {
                 throw new OperationCanceledException();
             }
-        }
-
-        public void FailResponse(string text) {
-            _responseTcs.SetException(new RException(text));
         }
 
         public void CompleteResponse() {

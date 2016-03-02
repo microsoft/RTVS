@@ -1,6 +1,11 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -11,15 +16,17 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
             new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SELECTALL)
         };
 
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public HistoryWindowVsStd97CmdIdSelectAllCommand(ITextView textView, IRHistoryProvider historyProvider)
+        public HistoryWindowVsStd97CmdIdSelectAllCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, SelectAllCommandIds, false) {
+            _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
 
         public override CommandStatus Status(Guid guid, int id) {
-            return ReplWindow.ReplWindowExists && _history.HasEntries
+            return _interactiveWorkflow.ActiveWindow != null && _history.HasEntries
                 ? CommandStatus.SupportedAndEnabled
                 : CommandStatus.Supported;
         }

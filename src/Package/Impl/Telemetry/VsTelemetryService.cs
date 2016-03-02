@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Telemetry;
@@ -12,9 +15,9 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
         private static Lazy<VsTelemetryService> _instance = Lazy.Create(() => new VsTelemetryService());
 
         public VsTelemetryService()
-            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, new StringTelemetryRecorder()) {
-//            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
-        }
+            //: base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, new StringTelemetryRecorder()) {
+            : base(VsTelemetryService.EventNamePrefixString, VsTelemetryService.PropertyNamePrefixString, VsTelemetryRecorder.Current) {
+            }
 
         public static TelemetryServiceBase Current => _instance.Value;
 
@@ -27,17 +30,5 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             (base.TelemetryRecorder as ITelemetryLog)?.Reset();
         }
         #endregion
-
-        /// <summary>
-        /// Start a telemetry activity, dispose of the return value when the activity is complete
-        /// </summary>
-        public override ITelemetryActivity StartActivity(TelemetryArea area, string eventName) {
-            Check.ArgumentStringNullOrEmpty("eventName", eventName);
-
-            string fullEventName = this.EventNamePrefix + area.ToString() + "/" + eventName;
-            string eventPropertyPrefix = this.PropertyNamePrefix + area.ToString() + "." + eventName + '.';
-
-            return new TelemetryActivityWrapper(this.TelemetryRecorder, fullEventName, eventPropertyPrefix);
-        }
     }
 }

@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.Languages.Editor;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
@@ -12,7 +13,7 @@ namespace Microsoft.Markdown.Editor.Commands {
     public class MdMainController : ViewController {
         public MdMainController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
-            ServiceManager.AddService<MdMainController>(this, textView);
+            ServiceManager.AddService(this, textView);
         }
 
         public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer) {
@@ -26,10 +27,6 @@ namespace Microsoft.Markdown.Editor.Commands {
 
         public static MdMainController FromTextView(ITextView textView) {
             return ServiceManager.GetService<MdMainController>(textView);
-        }
-
-        public override CommandStatus Status(Guid group, int id) {
-            return base.Status(group, id);
         }
 
         /// <summary>

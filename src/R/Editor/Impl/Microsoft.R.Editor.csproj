@@ -63,6 +63,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +81,8 @@
     <Compile Include="Commands\RCommandFactory.cs" />
     <Compile Include="Commands\REditorCommands.cs" />
     <Compile Include="Commands\RMainController.cs" />
+    <Compile Include="Commands\RMouseProcessor.cs" />
+    <Compile Include="Commands\RMouseProcessorProvider.cs" />
     <Compile Include="Commands\RTextViewConnectionListener.cs" />
     <Compile Include="Commands\RTypingCommandHandler.cs" />
     <Compile Include="Comments\CommentCommand.cs" />
@@ -87,6 +90,7 @@
     <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completion\Providers\CompletionUtilities.cs" />
     <Compile Include="Data\LoadedPackagesProvider.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
     <Compile Include="Data\RSessionDataObject.cs" />
@@ -111,8 +115,6 @@
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
-    <Compile Include="ContentType\RContentTypeDefinition.cs" />
-    <Compile Include="ContentType\RHistoryContentTypeDefinition.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
@@ -145,6 +147,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Selection\RSelectionTracker.cs" />
+    <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
@@ -155,6 +158,14 @@
     <Compile Include="Signatures\SignatureParameter.cs" />
     <Compile Include="SmartIndent\SmartIndenter.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
+    <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
+    <Compile Include="SuggestedActions\Actions\RSuggestedActionBase.cs" />
+    <Compile Include="SuggestedActions\Definitions\IRSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\Providers\LibraryStatementSuggestedActionProvider.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSource.cs" />
+    <Compile Include="SuggestedActions\RSuggestedActionSourceProvider.cs" />
     <Compile Include="Tree\ApplyTreeChanges.cs" />
     <Compile Include="Tree\ChangeProcessor.cs" />
     <Compile Include="Tree\Debug.cs" />
@@ -218,6 +229,10 @@
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>

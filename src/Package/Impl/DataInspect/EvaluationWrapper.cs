@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -8,7 +11,6 @@ using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
@@ -33,7 +35,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowDetail) {
                 ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
+                ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
+
                 OpenInExcelCommand = new DelegateCommand(OpenInExcel, (o) => CanShowDetail);
+                OpenInExcelCommandTooltip = Resources.OpenInExcelCommandTooltip;
             }
         }
 
@@ -112,8 +117,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanShowDetail { get; }
 
         public ICommand ShowDetailCommand { get; }
+        public string ShowDetailCommandTooltip { get; }
 
         public ICommand OpenInExcelCommand { get; }
+        public string OpenInExcelCommandTooltip { get; }
 
         private void ShowVariableGridWindowPane(object parameter) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
@@ -121,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInExcel(object parameter) {
-            //ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]).DoNotWait();
+            ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]);
          }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };

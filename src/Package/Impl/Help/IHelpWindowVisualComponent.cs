@@ -1,5 +1,8 @@
-﻿using System.Windows.Forms;
-using Microsoft.VisualStudio.R.Package.Definitions;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Windows.Forms;
+using Microsoft.R.Components.View;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     public interface IHelpWindowVisualComponent : IVisualComponent {

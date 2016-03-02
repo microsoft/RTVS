@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Core.Formatting;
@@ -163,8 +166,7 @@ x <- 1";
   repeat {
     x <- 1;
     next;
-  }
-else
+  } else
   z";
             actual.Should().Be(expected);
         }

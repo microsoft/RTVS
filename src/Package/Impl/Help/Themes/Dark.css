@@ -1,11 +1,11 @@
 body {
-    background: black;
+    background: rgb(36,36,36);
     color: white;
     font-family: Segoe UI;
     font-size: 9pt;
     scrollbar-highlight-color: rgb(62,62,66);
     scrollbar-3dlight-color: rgb(62,62,66);
-    scrollbar-darkshadow-color:rgb(62,62,66);
+    scrollbar-darkshadow-color: rgb(62,62,66);
     scrollbar-shadow-color: rgb(62,62,66);
     scrollbar-face-color: rgb(100,100,100);
     scrollbar-arrow-color: rgb(153,153,153);
@@ -18,19 +18,19 @@ p {
 }
 
 a:link {
-    background: black;
+    background: rgb(36,36,36);
     color: #00a4ff;
     font-family: Segoe UI;
 }
 
 a:visited {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(211, 5, 207);
     font-family: Segoe UI;
 }
 
 h1 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(80%, 80%, 80%);
     font-family: Segoe UI;
     font-size: 14pt;
@@ -38,7 +38,7 @@ h1 {
 }
 
 h2 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(65%, 65%, 65%);
     font-family: Segoe UI;
     font-size: 11pt;
@@ -46,14 +46,14 @@ h2 {
 }
 
 h3 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(65%, 65%, 65%);
     font-family: Segoe UI;
     font-size: 11pt;
 }
 
 h4 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(65%, 65%, 65%);
     font-family: Segoe UI;
     font-style: italic;
@@ -61,13 +61,13 @@ h4 {
 }
 
 h5 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(65%, 65%, 65%);
     font-family: Segoe UI;
 }
 
 h6 {
-    background: black;
+    background: rgb(36,36,36);
     color: rgb(65%, 65%, 65%);
     font-family: 'Segoe UI';
     font-style: italic;

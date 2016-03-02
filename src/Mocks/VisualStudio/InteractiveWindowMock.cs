@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -13,9 +16,10 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         private ITextBuffer _textBuffer;
 
-        public InteractiveWindowMock(IWpfTextView textView) {
+        public InteractiveWindowMock(IWpfTextView textView, IInteractiveEvaluator evaluator = null) {
             TextView = textView;
             _textBuffer = textView.TextBuffer;
+            Evaluator = evaluator ?? new InteractiveEvaluatorMock(this);
         }
 
         public ITextBuffer CurrentLanguageBuffer {
@@ -30,23 +34,15 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             }
         }
 
-        public IInteractiveEvaluator Evaluator {
-            get {
-                return new InteractiveEvaluatorMock(this);
-            }
-        }
+        public IInteractiveEvaluator Evaluator { get; }
 
         public bool IsInitializing => false;
 
         public bool IsResetting => false;
 
-        public bool IsRunning => true;
+        public bool IsRunning => false;
 
-        public IInteractiveWindowOperations Operations {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public IInteractiveWindowOperations Operations => new InteractiveWindowOperationsMock(_textBuffer);
 
         public ITextBuffer OutputBuffer => _textBuffer;
 
@@ -56,11 +52,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             }
         }
 
-        public PropertyCollection Properties {
-            get {
-                throw new NotImplementedException();
-            }
-        }
+        public PropertyCollection Properties { get; } = new PropertyCollection();
 
         public IWpfTextView TextView { get; private set; }
 
@@ -82,7 +74,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public System.Threading.Tasks.Task<ExecutionResult> InitializeAsync() {
-            return System.Threading.Tasks.Task.FromResult(ExecutionResult.Success);
+            return Evaluator.InitializeAsync();
         }
 
         public void InsertCode(string text) {

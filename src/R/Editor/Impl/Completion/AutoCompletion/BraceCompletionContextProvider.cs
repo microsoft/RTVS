@@ -1,6 +1,9 @@
-﻿using System.ComponentModel.Composition;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.ComponentModel.Composition;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -18,6 +21,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     [BracePair('(', ')')]
     [BracePair('\'', '\'')]
     [BracePair('\"', '\"')]
+    [BracePair('`', '`')]
     internal sealed class BraceCompletionContextProvider : IBraceCompletionContextProvider {
         /// <summary>
         /// Creates an <see cref="IBraceCompletionContext"/> to handle 
@@ -47,14 +51,11 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
                     return false;
                 }
 
-                // We don't want to complete single quotes after # since
-                // it is not convenient when typing #' in doxygen comments.
-                if (openingBrace == '\'') {
-                    int index = tree.AstRoot.Comments.GetItemContaining(openingPoint.Position);
-                    if (index >= 0 && openingPoint.Position == tree.AstRoot.Comments[index].Start + 1) {
-                        context = null;
-                        return false;
-                    }
+                // We don't want to complete inside comments
+                int index = tree.AstRoot.Comments.GetItemContaining(openingPoint.Position);
+                if (index >= 0) {
+                    context = null;
+                    return false;
                 }
             }
             context = new BraceCompletionContext();

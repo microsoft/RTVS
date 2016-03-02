@@ -130,9 +130,25 @@
         </Strings>
       </Menu>
 
+      <!-- RTVS Documentation flyout -->
+      <Menu guid="guidRToolsCmdSet" id="rtvsDocsSubMenu" type="Menu" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
+        <Strings>
+          <ButtonText>RTVS Doc&amp;umentation and Samples</ButtonText>
+        </Strings>
+      </Menu>
+
+      <!-- R Documentation flyout -->
+      <Menu guid="guidRToolsCmdSet" id="rDocsSubMenu" type="Menu" priority="0x200">
+        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
+        <Strings>
+          <ButtonText>R &amp;Documentation</ButtonText>
+        </Strings>
+      </Menu>
+
       <!-- Feedback flyout -->
-      <Menu guid="guidRToolsCmdSet" id="feedbackSubMenu" type="Menu" priority="0x9000">
-        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+      <Menu guid="guidRToolsCmdSet" id="feedbackSubMenu" type="Menu" priority="0x300">
+        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
         <Strings>
           <ButtonText>&amp;Feedback</ButtonText>
         </Strings>
@@ -154,6 +170,8 @@
         <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
         <CommandFlag>StretchHorizontally</CommandFlag>
         <CommandFlag>ComboCommitsOnDrop</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Select Working Directory</ButtonText>
         </Strings>
@@ -190,6 +208,10 @@
       </Group>
 
       <!-- Main menu groups-->
+      <Group guid="guidRToolsCmdSet" id="docsGroup" priority="0x900">
+        <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="toolsOptionsGroup" priority="0x1000">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
       </Group>
@@ -270,6 +292,14 @@
 
       <Group guid="guidRToolsCmdSet" id="feedbackSubMenuGroup" priority="0x0000">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="rtvsDocsSubMenuGroup" priority="0x0000">
+        <Parent guid="guidRToolsCmdSet" id="rtvsDocsSubMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="rDocsSubMenuGroup" priority="0x0000">
+        <Parent guid="guidRToolsCmdSet" id="rDocsSubMenu"/>
       </Group>
 
       <!-- Plot toolbar -->
@@ -544,6 +574,16 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="RemoveFromCollection"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Remove Plot</ButtonText>
+          <MenuText>Remo&amp;ve Plot</MenuText>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdCopyPlotAsMetafile" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="Copy"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -725,6 +765,75 @@
       </Button>
       <!-- End Windows flyout -->
 
+      <!-- RTVS Documentation flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdRtvsDocumentation" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rtvsDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Documentation...</ButtonText>
+          <CommandName>RTVS Documentation</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdRtvsSamples" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rtvsDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Samples...</ButtonText>
+          <CommandName>RTVS Samples</CommandName>
+        </Strings>
+      </Button>
+      <!-- End Windows flyout -->
+
+      <!-- R Documentation flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdRDocsIntroToR" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Intro to R...</ButtonText>
+          <CommandName>R Intro to R</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdRDocsTaskViews" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Task Views...</ButtonText>
+          <CommandName>R Task Views</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdRDocsDataImportExport" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Data Import/Export...</ButtonText>
+          <CommandName>R Data Import Export</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdRDocsWritingRExtensions" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rDocsSubMenuGroup"/>
+        <Strings>
+          <ButtonText>&amp;Writing R Extensions...</ButtonText>
+          <CommandName>R Writing R Extensions</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Check for Updates -->
+      <Button guid="guidRToolsCmdSet" id="icmdCheckForUpdates" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
+        <Strings>
+          <ButtonText>&amp;Check for Updates...</ButtonText>
+          <CommandName>Check for Updates</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Microsoft R Products -->
+      <Button guid="guidRToolsCmdSet" id="icmdMicrosoftRProducts" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
+        <Strings>
+          <ButtonText>&amp;Microsoft R Products...</ButtonText>
+          <CommandName>Microsoft R Products</CommandName>
+        </Strings>
+      </Button>
+
       <!-- Feedback flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdSendSmile" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
@@ -899,6 +1008,8 @@
         <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Source R Script</ButtonText>
           <MenuText>&amp;Source R Script</MenuText>
@@ -1123,9 +1234,13 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuCopyGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
+    </CommandPlacement>
 
     <!-- Plot window toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
@@ -1152,9 +1267,13 @@
       <Parent guid="guidRToolsCmdSet" id="plotToolbarCopyGroup"/>
     </CommandPlacement>
 
-    <!--<CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRemovePlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarClearGroup"/>
-    </CommandPlacement>-->
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearPlots" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="plotToolbarClearGroup"/>
+    </CommandPlacement>
     <!-- End Plot Window toolbar -->
 
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
@@ -1334,6 +1453,7 @@
       <IDSymbol name="icmdCheckForPackageUpdates" value="602" />
 
       <!-- Plots-->
+      <IDSymbol name="icmdRemovePlot" value="705" />
       <IDSymbol name="icmdNextPlot" value="710" />
       <IDSymbol name="icmdPrevPlot" value="711" />
       <IDSymbol name="icmdClearPlots" value="712" />
@@ -1397,6 +1517,16 @@
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
 
+      <!-- Documentation -->
+      <IDSymbol name="icmdRtvsDocumentation" value="1400" />
+      <IDSymbol name="icmdRtvsSamples" value="1401" />
+      <IDSymbol name="icmdRDocsIntroToR" value="1402" />
+      <IDSymbol name="icmdRDocsTaskViews" value="1403" />
+      <IDSymbol name="icmdRDocsDataImportExport" value="1404" />
+      <IDSymbol name="icmdRDocsWritingRExtensions" value="1405" />
+      <IDSymbol name="icmdMicrosoftRProducts" value="1406" />
+      <IDSymbol name="icmdCheckForUpdates" value="1407" />
+
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
@@ -1407,6 +1537,7 @@
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
       <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
+      <IDSymbol name="docsGroup" value="0x2302"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
@@ -1415,6 +1546,10 @@
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>
       <IDSymbol name="feedbackSubMenuGroup" value="0x2390"/>
+      <IDSymbol name="rtvsDocsSubMenu" value="0x2391"/>
+      <IDSymbol name="rtvsDocsSubMenuGroup" value="0x2392"/>
+      <IDSymbol name="rDocsSubMenu" value="0x2393"/>
+      <IDSymbol name="rDocsSubMenuGroup" value="0x2394"/>
     </GuidSymbol>
 
     <!-- R Editor Factory Guid -->

@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Comments;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -21,6 +25,7 @@ namespace Microsoft.R.Editor.Commands {
                 new FormatDocumentCommand(textView, textBuffer),
                 new FormatSelectionCommand(textView, textBuffer),
                 new FormatOnPasteCommand(textView, textBuffer),
+                new SelectWordCommand(textView, textBuffer),
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView)
             };

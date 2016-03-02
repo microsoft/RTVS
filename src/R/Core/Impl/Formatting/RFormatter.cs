@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 
@@ -147,8 +151,10 @@ namespace Microsoft.R.Core.Formatting {
                 // (scope is in the argument list) or a closing brace 
                 // (last parameter in a function or indexer) or it is followed by 'else'
                 // so 'else' does not get separated from 'if'.
-                if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
-                    _tb.SoftLineBreak();
+                if (!KeepCurlyAndElseTogether()) {
+                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                        _tb.SoftLineBreak();
+                    }
                 }
             }
         }
@@ -371,7 +377,7 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private bool IsClosingToken(RToken token) {
+        private bool IsClosingToken(RToken token, AstRoot ast = null) {
             switch (token.TokenType) {
                 case RTokenType.Comma:
                 case RTokenType.CloseBrace:
@@ -379,29 +385,18 @@ namespace Microsoft.R.Core.Formatting {
                 case RTokenType.CloseDoubleSquareBracket:
                 case RTokenType.Semicolon:
                     return true;
-
-                case RTokenType.Keyword:
-                    if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
-                           _textProvider.GetText(token) == "else") {
-                        // Check what was the most recent keyword indented in this scope.
-                        // If it is 'if' then there should not be a break between 
-                        // the closing brace and the 'else'. This prevents false positives
-                        // in constructs like
-                        //
-                        //      if(TRUE)
-                        //          repeat {
-                        //          } else
-                        //
-                        // in which else should be placed at the next line and indented with the if.
-                        var scope = _formattingScopes.Peek();
-                        if (scope.Keywords.Count > 0) {
-                            return scope.Keywords[scope.Keywords.Count - 1] == "if";
-                        }
-                    }
-                    break;
             }
 
             return false;
+        }
+
+        private bool KeepCurlyAndElseTogether() {
+            if (_tokens.CurrentToken.TokenType != RTokenType.Keyword) {
+                return false;
+            }
+
+            return _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace &&
+                   _textProvider.GetText(_tokens.CurrentToken) == "else";
         }
 
         private void AppendOperator() {

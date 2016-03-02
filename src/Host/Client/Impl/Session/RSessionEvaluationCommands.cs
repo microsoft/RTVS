@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.Threading.Tasks;
 
@@ -5,6 +8,16 @@ namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
         public static Task OptionsSetWidth(this IRSessionEvaluation evaluation, int width) {
             return evaluation.EvaluateNonReentrantAsync($"options(width=as.integer({width}))\n");
+        }
+
+        public static async Task<string> GetRUserDirectory(this IRSessionEvaluation evaluation) {
+            var result = await evaluation.EvaluateAsync("Sys.getenv('R_USER')");
+            return result.StringResult.Replace('/', '\\');
+        }
+
+        public static async Task<string> GetWorkingDirectory(this IRSessionEvaluation evaluation) {
+            var result = await evaluation.EvaluateAsync("getwd()");
+            return result.StringResult.Replace('/', '\\');
         }
 
         public static Task SetWorkingDirectory(this IRSessionEvaluation evaluation, string path) {
@@ -24,7 +37,11 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
-            var script = "options(device=rtvs:::graphics.ide.new)\n";
+            var script = @"
+attach(as.environment(list(ide = function() { rtvs:::graphics.ide.new() })), name='rtvs::graphics::ide')
+options(device='ide')
+grDevices::deviceIsInteractive('ide')
+";
             return evaluation.EvaluateAsync(script);
         }
 
@@ -40,6 +57,16 @@ namespace Microsoft.R.Host.Client.Session {
 
         public static Task PreviousPlot(this IRSessionInteraction evaluation) {
             var script = "rtvs:::graphics.ide.previousplot()\n";
+            return evaluation.RespondAsync(script);
+        }
+
+        public static Task ClearPlotHistory(this IRSessionInteraction evaluation) {
+            var script = "rtvs:::graphics.ide.clearplots()\n";
+            return evaluation.RespondAsync(script);
+        }
+
+        public static Task RemoveCurrentPlot(this IRSessionInteraction evaluation) {
+            var script = "rtvs:::graphics.ide.removeplot()\n";
             return evaluation.RespondAsync(script);
         }
 

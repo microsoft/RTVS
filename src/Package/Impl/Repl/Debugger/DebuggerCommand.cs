@@ -1,4 +1,8 @@
-﻿using Microsoft.R.Host.Client;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -7,15 +11,17 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal abstract class DebuggerCommand : PackageCommand {
         protected readonly IRSession RSession;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly DebuggerCommandVisibility _visibility;
 
-        protected DebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
+        protected DebuggerCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
             : base(RGuidList.RCmdSetGuid, cmdId) {
-            RSession = rSessionProvider.GetInteractiveWindowRSession();
+            RSession = interactiveWorkflow.RSession;
+            _interactiveWorkflow = interactiveWorkflow;
             _visibility = visibility;
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
             Enabled = false;
             Visible = false;
 
@@ -35,20 +41,19 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             if (mode[0] == DBGMODE.DBGMODE_Design) {
                 if (_visibility == DebuggerCommandVisibility.DesignMode) {
+                    Visible = _interactiveWorkflow.ActiveWindow != null;
                     Enabled = true;
-                    Visible = true;
                 }
                 return;
             }
 
             if ((_visibility & DebuggerCommandVisibility.DebugMode) > 0) {
-                Visible = true;
+                Visible = _interactiveWorkflow.ActiveWindow != null;
 
                 if (mode[0] == DBGMODE.DBGMODE_Break) {
                     Enabled = (_visibility & DebuggerCommandVisibility.Stopped) > 0;
                     return;
                 }
-
                 if (mode[0] == DBGMODE.DBGMODE_Run) {
                     Enabled = (_visibility & DebuggerCommandVisibility.Run) > 0;
                     return;

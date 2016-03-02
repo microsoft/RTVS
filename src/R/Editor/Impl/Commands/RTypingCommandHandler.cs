@@ -1,8 +1,11 @@
-﻿using System;
-using Microsoft.Languages.Editor;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.VisualStudio.Text.Editor;

@@ -1,26 +1,27 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace Microsoft.UnitTests.Core.Threading
-{
+namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
-    public class UIThreadHelper
-    {
+    public class UIThreadHelper {
         [DllImport("ole32.dll", ExactSpelling = true, SetLastError = true)]
         private static extern int OleInitialize(IntPtr value);
 
         private static readonly Lazy<UIThreadHelper> LazyInstance = new Lazy<UIThreadHelper>(Create, LazyThreadSafetyMode.ExecutionAndPublication);
 
-        private static UIThreadHelper Create()
-        {
+        private static UIThreadHelper Create() {
             UIThreadHelper uiThreadHelper = new UIThreadHelper();
             ManualResetEventSlim initialized = new ManualResetEventSlim();
 
@@ -35,8 +36,7 @@ namespace Microsoft.UnitTests.Core.Threading
             thread.Start(initialized);
 
             initialized.Wait();
-            uiThreadHelper.Invoke(() =>
-            {
+            uiThreadHelper.Invoke(() => {
                 SynchronizationContext.SetSynchronizationContext(new DispatcherSynchronizationContext(uiThreadHelper._frame.Dispatcher));
 
                 uiThreadHelper._thread = thread;
@@ -54,16 +54,14 @@ namespace Microsoft.UnitTests.Core.Threading
         private SynchronizationContext _syncContext;
         private ControlledTaskScheduler _taskScheduler;
 
-        private UIThreadHelper()
-        {
+        private UIThreadHelper() {
         }
 
         public Thread Thread => _thread;
         public SynchronizationContext SyncContext => _syncContext;
         public ControlledTaskScheduler TaskScheduler => _taskScheduler;
 
-        public void Invoke(Action action)
-        {
+        public void Invoke(Action action) {
             ExceptionDispatchInfo exception = _thread == Thread.CurrentThread
                ? CallSafe(action)
                : _application.Dispatcher.Invoke(() => CallSafe(action));
@@ -71,17 +69,25 @@ namespace Microsoft.UnitTests.Core.Threading
             exception?.Throw();
         }
 
-        public void WaitForUpcomingTasks(IDataflowBlock block, int ms = 1000)
-        {
+        public async Task InvokeAsync(Action action) {
+            ExceptionDispatchInfo exception;
+            if (_thread == Thread.CurrentThread) {
+                exception = CallSafe(action);
+            } else {
+                exception = await _application.Dispatcher.InvokeAsync(() => CallSafe(action));
+            }
+
+            exception?.Throw();
+        }
+
+        public void WaitForUpcomingTasks(IDataflowBlock block, int ms = 1000) {
             TaskScheduler.WaitForUpcomingTasks(ms);
-            if (block.Completion.IsFaulted && block.Completion.Exception != null)
-            {
+            if (block.Completion.IsFaulted && block.Completion.Exception != null) {
                 throw block.Completion.Exception;
             }
         }
 
-        public T Invoke<T>(Func<T> action)
-        {
+        public T Invoke<T>(Func<T> action) {
             var result = _thread == Thread.CurrentThread
                ? CallSafe(action)
                : _application.Dispatcher.Invoke(() => CallSafe(action));
@@ -91,15 +97,25 @@ namespace Microsoft.UnitTests.Core.Threading
             return result.Value;
         }
 
-        private void RunMainThread(object obj)
-        {
-            if (Application.Current != null)
-            {
+        public async Task<T> InvokeAsync<T>(Func<T> action) {
+            CallSafeResult<T> result;
+            if (_thread == Thread.CurrentThread) {
+                result = CallSafe(action);
+            } else {
+                result = await _application.Dispatcher.InvokeAsync(() => CallSafe(action));
+            }
+
+            result.Exception?.Throw();
+
+            return result.Value;
+        }
+
+        private void RunMainThread(object obj) {
+            if (Application.Current != null) {
                 // Need to be on our own sta thread
                 Application.Current.Dispatcher.Invoke(Application.Current.Shutdown);
 
-                if (Application.Current != null)
-                {
+                if (Application.Current != null) {
                     throw new InvalidOperationException("Unable to shut down existing application.");
                 }
             }
@@ -107,8 +123,7 @@ namespace Microsoft.UnitTests.Core.Threading
             // Kick OLE so we can use the clipboard if necessary
             OleInitialize(IntPtr.Zero);
 
-            _application = new Application
-            {
+            _application = new Application {
                 // Application should survive window closing events to be reusable
                 ShutdownMode = ShutdownMode.OnExplicitShutdown
             };
@@ -120,11 +135,9 @@ namespace Microsoft.UnitTests.Core.Threading
             // Initialization completed
             ((ManualResetEventSlim)obj).Set();
 
-            while (_frame.Continue)
-            {
+            while (_frame.Continue) {
                 ExceptionDispatchInfo exception = CallSafe(() => Dispatcher.PushFrame(_frame));
-                if (exception != null)
-                {
+                if (exception != null) {
                     exceptionInfos.Add(exception);
                 }
             }
@@ -134,14 +147,12 @@ namespace Microsoft.UnitTests.Core.Threading
                 dispatcher.InvokeShutdown();
             }
 
-            if (exceptionInfos.Any())
-            {
+            if (exceptionInfos.Any()) {
                 throw new AggregateException(exceptionInfos.Select(ce => ce.SourceException).ToArray());
             }
         }
 
-        private void Destroy(object sender, EventArgs e)
-        {
+        private void Destroy(object sender, EventArgs e) {
             AppDomain.CurrentDomain.DomainUnload -= Destroy;
             AppDomain.CurrentDomain.ProcessExit -= Destroy;
 
@@ -154,35 +165,26 @@ namespace Microsoft.UnitTests.Core.Threading
             mainThread.Join(10000);
         }
 
-        private static ExceptionDispatchInfo CallSafe(Action action)
-        {
-            return CallSafe<object>(() =>
-            {
+        private static ExceptionDispatchInfo CallSafe(Action action) {
+            return CallSafe<object>(() => {
                 action();
                 return null;
             }).Exception;
         }
 
-        private static CallSafeResult<T> CallSafe<T>(Func<T> func)
-        {
-            try
-            {
+        private static CallSafeResult<T> CallSafe<T>(Func<T> func) {
+            try {
                 return new CallSafeResult<T> { Value = func() };
-            }
-            catch (ThreadAbortException tae)
-            {
+            } catch (ThreadAbortException tae) {
                 // Thread should be terminated anyway
                 Thread.ResetAbort();
                 return new CallSafeResult<T> { Exception = ExceptionDispatchInfo.Capture(tae) };
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 return new CallSafeResult<T> { Exception = ExceptionDispatchInfo.Capture(e) };
             }
         }
 
-        private class CallSafeResult<T>
-        {
+        private class CallSafeResult<T> {
             public T Value { get; set; }
             public ExceptionDispatchInfo Exception { get; set; }
         }

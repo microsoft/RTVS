@@ -91,8 +91,8 @@
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGridScroller.cs" />
     <Compile Include="Debugger\Commands\ShowDotPrefixedVariablesCommand.cs" />
-    <Compile Include="Definitions\IVisualComponentContainer.cs" />
-    <Compile Include="Definitions\IVisualComponent.cs" />
+    <Compile Include="Documentation\DocumentationUrls.cs" />
+    <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
     <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
@@ -113,7 +113,6 @@
     <Compile Include="DataInspect\TreeGrid\ITreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\ObservableTreeNode.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeNodeCollection.cs" />
-    <Compile Include="Debugger\RDebugSessionProvider.cs" />
     <Compile Include="Feedback\SendFrownCommand.cs" />
     <Compile Include="Feedback\SendMailCommand.cs" />
     <Compile Include="Feedback\SendSmileCommand.cs" />
@@ -140,23 +139,10 @@
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
-    <Compile Include="History\HistorySelectionTextAdornment.cs" />
-    <Compile Include="History\HistorySelectionTextAdornmentFactory.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
-    <Compile Include="History\HistoryWindowPaneMouseProcessor.cs" />
-    <Compile Include="History\HistoryWindowPaneMouseProcessorProvider.cs" />
-    <Compile Include="History\IRHistory.cs" />
-    <Compile Include="History\IRHistoryEntries.cs" />
-    <Compile Include="History\IRHistoryFiltering.cs" />
-    <Compile Include="History\IRHistoryProvider.cs" />
-    <Compile Include="History\MultilineRHistoryEntries.cs" />
-    <Compile Include="History\RHistory.cs" />
-    <Compile Include="History\RHistoryEntries.cs" />
-    <Compile Include="History\RHistoryFiltering.cs" />
-    <Compile Include="History\RHistoryProvider.cs" />
-    <Compile Include="History\IRHistoryEntry.cs" />
-    <Compile Include="History\ShowHistoryWindowCommand.cs" />
-    <Compile Include="History\SinglelineRHistoryEntries.cs" />
+    <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
+    <Compile Include="Packages\ToolWindowPaneFactory.cs" />
+    <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
     <Compile Include="Logging\LogCleanup.cs" />
@@ -172,8 +158,11 @@
     <Compile Include="Packages\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
+    <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
+    <Compile Include="Plots\Commands\RemovePlotCommand.cs" />
+    <Compile Include="Plots\Commands\ClearPlotsCommand.cs" />
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
@@ -206,20 +195,15 @@
     <Compile Include="Repl\Debugger\StepOverCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
-    <Compile Include="Repl\Definitions\IReplWindow.cs" />
+    <Compile Include="Repl\VsRInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
-    <Compile Include="Repl\Definitions\IRInteractive.cs" />
-    <Compile Include="Repl\Definitions\IRInteractiveProvider.cs" />
-    <Compile Include="Repl\NullInteractiveEvaluator.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
-    <Compile Include="Options\R\SupportedRVersions.cs" />
     <Compile Include="Repl\RHostClientApp.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
-    <Compile Include="Repl\RInteractive.cs" />
-    <Compile Include="Repl\RInteractiveProvider.cs" />
+    <Compile Include="Repl\VsRInteractiveWorkflowProvider.cs" />
     <Compile Include="Repl\Workspace\ResetReplCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
     <Compile Include="Commands\Markdown\MarkdownContextMenuId.cs" />
@@ -309,9 +293,6 @@
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
-    <Compile Include="Repl\Definitions\IVsInteractiveWindowProvider.cs" />
-    <Compile Include="Repl\RInteractiveEvaluator.cs" />
-    <Compile Include="Repl\RInteractiveWindowProvider.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -324,6 +305,8 @@
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
+    <Compile Include="Shell\VisualComponentToolWindow.cs" />
+    <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
     <Compile Include="Shell\VsAppShell.cs" />
     <Compile Include="Packages\R\REditorFactory.cs" />
     <Compile Include="Shell\IApplicationShell.cs" />
@@ -356,12 +339,11 @@
     <Compile Include="Telemetry\Definitions\ITelemetryLog.cs" />
     <Compile Include="Telemetry\StringTelemetryRecorder.cs" />
     <Compile Include="Telemetry\RtvsTelemetry.cs" />
-    <Compile Include="Telemetry\TelemetryActvityWrapper.cs" />
     <Compile Include="Telemetry\VsTelemetryRecorder.cs" />
     <Compile Include="Telemetry\VsTelemetryService.cs" />
     <Compile Include="Telemetry\Windows\ToolWindowTracker.cs" />
     <Compile Include="Utilities\CollectionUtilities.cs" />
-    <Compile Include="Utilities\IActiveWpfTextViewTracker.cs" />
+    <Compile Include="Repl\IActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
@@ -370,6 +352,8 @@
     <Compile Include="Utilities\ToolWindowUtilities.cs" />
     <Compile Include="Utilities\ViewUtilities.cs" />
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
+    <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
+    <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
     <Compile Include="Workspace\VsFileInfo.cs" />
     <Compile Include="Workspace\IVsWorkspaceItem.cs" />
     <Compile Include="Workspace\VsWorkspace.cs" />
@@ -414,13 +398,18 @@
     <Reference Include="$(MSBuildAssembly)">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.InteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.VsInteractiveWindow.dll">
+    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
+      <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -660,6 +649,10 @@
       <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
       <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
@@ -706,7 +699,7 @@
     <Content Include="Templates\ItemTemplates\DatasetRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\EmptyRD\RdFile.png" />
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
-    <Content Include="Templates\ProjectTemplates\EmptyProject\Project_StartPage.html" />
+    <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
     <Content Include="Profiles\R.vssettings">
       <SubType>Designer</SubType>
@@ -718,7 +711,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\script.r">
+    <Content Include="Templates\NewItem\script.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -862,6 +855,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddTemplatesToVsixSources" AfterTargets="GetVsixSourceItems">

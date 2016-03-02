@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Diagnostics;
 using System.Globalization;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
@@ -52,10 +56,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
                 case RInstallStatus.NoRBinaries:
                     Debug.Assert(!string.IsNullOrEmpty(data.Path));
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.BinPath);
 
                 case RInstallStatus.PathNotSpecified:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
+                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine);
             }
 
             return string.Empty;

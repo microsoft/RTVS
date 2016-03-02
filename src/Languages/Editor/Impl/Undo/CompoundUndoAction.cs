@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

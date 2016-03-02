@@ -1,8 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Utility;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
@@ -15,7 +20,17 @@ namespace Microsoft.R.Actions.Test.Installation {
         [Category.R.Install]
         public void RInstallation_Test01() {
             RInstallData data = RInstallation.GetInstallationData(null, 0, 0, 0, 0);
-            Assert.True(data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion);
+            data.Status.Should().BeEither(RInstallStatus.PathNotSpecified, RInstallStatus.UnsupportedVersion);
+        }
+
+        [CompositeTest]
+        [Category.R.Install]
+        [InlineData(@"C:\", @"C:\")]
+        [InlineData(@"C:\R", @"C:\R")]
+        [InlineData(@"C:\R\bin", @"C:\R")]
+        [InlineData(@"C:\R\bin\x64", @"C:\R")]
+        public void NormalizePath(string path, string expected) {
+            RInstallation.NormalizeRPath(path).Should().Be(expected);
         }
 
         [Test]
@@ -29,8 +44,8 @@ namespace Microsoft.R.Actions.Test.Installation {
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
-            data.Path.Should().StartWithEquivalent(@"C:\Program Files");
-            data.Path.Should().Contain("R-");
+            string path = Path.Combine(data.Path, @"bin\x64");
+            Directory.Exists(path).Should().BeTrue();
         }
 
         [Test]

@@ -1,5 +1,9 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens {
@@ -51,29 +55,35 @@ namespace Microsoft.Languages.Core.Tokens {
                 return 0; // +e or +.e is not a number and neither is lonely + or -
             }
 
+            int numberLength;
             if (cs.CurrentChar == 'e' || cs.CurrentChar == 'E') {
-                int numberLength = HandleExponent(cs, start);
-                if (numberLength > 0) {
-                    return IsValidDouble(cs, start, cs.Position) ? numberLength : 0;
-                }
+                isDouble = true;
+                numberLength = HandleExponent(cs, start);
+            } else {
+                numberLength = cs.Position - start;
             }
 
-            if (!isDouble) {
+            // Verify double format
+            if (isDouble && !IsValidDouble(cs, start, cs.Position)) {
+                numberLength = 0;
+            }
+
+            if (numberLength > 0) {
+                // skip over trailing 'L' if any
                 if (cs.CurrentChar == 'L') {
                     cs.MoveToNextChar();
+                    numberLength++;
                 }
-            } else {
-                return IsValidDouble(cs, start, cs.Position) ? cs.Position - start : 0;
             }
 
-            return cs.Position - start;
+            return numberLength;
         }
 
         private static bool IsValidDouble(CharacterStream cs, int start, int end) {
             int len = end - start;
             string s = cs.GetSubstringAt(start, len);
             double n;
-            return Double.TryParse(s, out n);
+            return Double.TryParse(s, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out n);
         }
 
         internal static int HandleHex(CharacterStream cs, int start) {
@@ -94,13 +104,11 @@ namespace Microsoft.Languages.Core.Tokens {
 
             bool hasSign = false;
 
-            if (cs.IsWhiteSpace() || cs.IsEndOfStream()) {
-                // 0.1E
-                cs.MoveToNextChar();
-                return cs.Position - start;
-            }
-
             cs.MoveToNextChar();
+            if (cs.IsWhiteSpace() || cs.IsEndOfStream()) {
+                // 0.1E or 1e
+                return 0;
+            }
 
             if (cs.CurrentChar == '-' || cs.CurrentChar == '+') {
                 hasSign = true;
@@ -119,13 +127,12 @@ namespace Microsoft.Languages.Core.Tokens {
 
             // Technically if letter or braces follows this is not 
             // a number but we'll leave it alone for now.
-            if (char.IsLetter(cs.CurrentChar) && cs.CurrentChar != 'i') {
-                return 0;
-            }
-
-            if (cs.CurrentChar == '[' || cs.CurrentChar == ']' ||
-                cs.CurrentChar == '{' || cs.CurrentChar == '}' ||
-                cs.CurrentChar == '(' || cs.CurrentChar == ')') {
+            
+            // TODO: This code is not language specific and yet it currently
+            // handles complex 'i' as well as R-specific 'L' suffix.
+            // Ideally this needs to be extended in a way so language-specific
+            // tokenizer can specify options or control number format.
+            if (char.IsLetter(cs.CurrentChar) && cs.CurrentChar != 'i' && cs.CurrentChar != 'L') {
                 return 0;
             }
 

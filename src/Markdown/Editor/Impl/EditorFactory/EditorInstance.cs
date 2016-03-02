@@ -1,10 +1,13 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.IO;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.Commands;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -14,13 +17,13 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
 
         public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
             if (workspaceItem == null)
-                throw new ArgumentNullException("workspaceItem");
+                throw new ArgumentNullException(nameof(workspaceItem));
 
             if (diskBuffer == null)
-                throw new ArgumentNullException("diskBuffer");
+                throw new ArgumentNullException(nameof(diskBuffer));
 
             if (documentFactory == null)
-                throw new ArgumentNullException("documentFactory");
+                throw new ArgumentNullException(nameof(documentFactory));
 
             WorkspaceItem = workspaceItem;
             ViewBuffer = diskBuffer;

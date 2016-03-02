@@ -32,6 +32,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Data.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
@@ -94,8 +97,6 @@
     <Compile Include="Composition\ImportComposer.cs" />
     <Compile Include="Controller\Command\Command.cs" />
     <Compile Include="Controller\Command\CommandId.cs" />
-    <Compile Include="Controller\Command\CommandResult.cs" />
-    <Compile Include="Controller\Command\CommandStatus.cs" />
     <Compile Include="Controller\Command\DisabledCommand.cs" />
     <Compile Include="Controller\Command\EditingCommand.cs" />
     <Compile Include="Controller\Command\InvisibleCommand.cs" />
@@ -106,7 +107,6 @@
     <Compile Include="Controller\Controller.cs" />
     <Compile Include="Controller\ICommand.cs" />
     <Compile Include="Controller\ICommandFactory.cs" />
-    <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Controller\IControllerFactory.cs" />
     <Compile Include="Controller\IFileSpecificTextViewCreationListener.cs" />
     <Compile Include="Controller\ITextViewCreationListener.cs" />
@@ -124,11 +124,11 @@
     <Compile Include="Selection\SelectionTracker.cs" />
     <Compile Include="Selection\SelectionUndo.cs" />
     <Compile Include="Services\ServiceManager.cs" />
-    <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Shell\IEditorShell.cs" />
     <Compile Include="Shell\EditorShell.cs" />
     <Compile Include="Settings\CommonSettings.cs" />
     <Compile Include="Shell\IEditorShellProvider.cs" />
+    <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskList.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItem.cs" />
     <Compile Include="TaskList\Definitions\IEditorTaskListItemSource.cs" />
@@ -137,17 +137,13 @@
     <Compile Include="Tasks\IdleTimeAction.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTaskQueue.cs" />
-    <Compile Include="Text\TextViewExtensions.cs" />
     <Compile Include="Text\IncrementalChangeApplication.cs" />
     <Compile Include="Text\ITextSnapshotProvider.cs" />
-    <Compile Include="Text\ITextBufferListener.cs" />
     <Compile Include="Text\ITextViewListener.cs" />
     <Compile Include="Text\StringDifference.cs" />
     <Compile Include="Text\TextProvider.cs" />
     <Compile Include="Text\TextRangeExtensions.cs" />
     <Compile Include="Text\TextUtility.cs" />
-    <Compile Include="Text\TextBufferListenerEventArgs.cs" />
-    <Compile Include="Text\TextBufferListenerEvents.cs" />
     <Compile Include="Text\TextViewListenerEventArgs.cs" />
     <Compile Include="Text\TextViewListenerEvents.cs" />
     <Compile Include="Undo\CompoundUndoAction.cs" />
@@ -166,6 +162,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>

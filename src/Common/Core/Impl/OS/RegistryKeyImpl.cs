@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Win32;
 
 namespace Microsoft.Common.Core.OS {
     internal sealed class RegistryKeyImpl : IRegistryKey {
@@ -14,11 +17,11 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public string[] GetSubKeyNames() {
-            return _key.GetSubKeyNames();
+            return _key != null ? _key.GetSubKeyNames() : new string[0];
         }
 
         public object GetValue(string name) {
-            return _key.GetValue(name);
+            return _key != null ? _key.GetValue(name) : null;
         }
 
         public IRegistryKey OpenSubKey(string name) {

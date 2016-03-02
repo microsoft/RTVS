@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -12,8 +15,6 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
@@ -36,15 +37,31 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
-            IAstNode node = context.AstRoot.NodeFromPosition(context.Position);
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
-                string directory = node.Root.TextProvider.GetText(node);
-                // Bring file/folder completion when either string is empty or ends with /
-                // assuming that / specifies directory where files are.
-                if (directory.Length == 2 || directory.EndsWith("/\"", StringComparison.Ordinal) || directory.EndsWith("/\'", StringComparison.Ordinal)) {
+            // First check file completion - it happens inside strings
+            string directory;
+            if(CanShowFileCompletion(context.AstRoot, context.Position, out directory)) { 
+                if (!string.IsNullOrEmpty(directory)) {
                     providers.Add(new FilesCompletionProvider(directory));
                 }
                 return providers;
+            }
+
+            // Now check if position is inside a string and if so, suppress completion list
+            var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
+            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.String) {
+                // No completion in string
+                return providers;
+            }
+
+            // Identifier character is a trigger but only as a first character so it doesn't suddenly
+            // bring completion back on a second character if user dismissed it after the first one,
+            // or in a middle of 'install.packages' when user types dot or in floating point numbers.
+            if (context.Position > 1 && autoShownCompletion) {
+                char triggerChar = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 1, 1)[0];
+                char charBeforeTigger = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 2, 1)[0];
+                if (RTokenizer.IsIdentifierCharacter(triggerChar) && RTokenizer.IsIdentifierCharacter(charBeforeTigger)) {
+                    return providers;
+                }
             }
 
             if (IsInFunctionArgumentName<FunctionDefinition>(context.AstRoot, context.Position)) {
@@ -80,6 +97,21 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
         public static void Initialize() {
             FunctionIndex.Initialize();
+        }
+
+        public static bool CanShowFileCompletion(AstRoot ast, int position, out string directory) {
+            TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
+            directory = null;
+            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
+                string text = node.Root.TextProvider.GetText(node);
+                // Bring file/folder completion when either string is empty or ends with /
+                // assuming that / specifies directory where files are.
+                if (text.Length == 2 || text.EndsWith("/\"", StringComparison.Ordinal) || text.EndsWith("/\'", StringComparison.Ordinal)) {
+                    directory = text;
+                    return true;
+                }
+            }
+            return false;
         }
 
         private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders {
@@ -184,7 +216,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return false;
         }
 
-         /// <summary>
+        /// <summary>
         /// Determines if position is in object member. Typically used
         /// to suppress general intellisense when typing data member 
         /// name such as 'mtcars$|'

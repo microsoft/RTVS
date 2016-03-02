@@ -1,5 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
@@ -161,6 +165,65 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected = "while (true) {\r\n\r\n}";
                 string actual = script.EditorText;
 
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatScopeBraces09() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("if(TRUE){ENTER}while(TRUE){");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+
+                string expected = "if (TRUE)\r\n    while (TRUE) {\r\n        a\r\n    }";
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+
+                script.MoveDown();
+                script.MoveRight();
+                script.Type("{ENTER}");
+
+                expected = "if (TRUE)\r\n    while (TRUE) {\r\n        a\r\n    }\r\n";
+                actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatScopeBraces10() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("if(TRUE){");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
+                script.MoveDown();
+                script.MoveRight();
+                script.Type("{ENTER}");
+                string expected = "if (TRUE) {\r\n    a\r\n}\r\n";
+
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFunctionArgument() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("zzzz(a=1,{ENTER}");
+                script.DoIdle(300);
+                script.Type("b=2");
+                string expected = "zzzz(a = 1,\r\n    b=2)";
+
+                string actual = script.EditorText;
                 actual.Should().Be(expected);
             }
         }

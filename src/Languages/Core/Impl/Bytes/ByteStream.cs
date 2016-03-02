@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 
 namespace Microsoft.Languages.Core.Bytes {
     /// <summary>
@@ -84,7 +87,7 @@ namespace Microsoft.Languages.Core.Bytes {
         }
 
         public static bool IsWhiteSpace(char ch) {
-            return ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r';
+            return ch <= ' ';
         }
 
         public bool IsWhiteSpace() {

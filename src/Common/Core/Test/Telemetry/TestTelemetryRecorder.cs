@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.VisualStudio.Telemetry;
 
 namespace Microsoft.Common.Core.Test.Telemetry {
 
@@ -27,14 +29,6 @@ namespace Microsoft.Common.Core.Test.Telemetry {
                 } else {
                     WriteDictionary(DictionaryExtension.FromAnonymousObject(parameters));
                 }
-            }
-        }
-
-        public void RecordActivity(object telemetryActivity) {
-            TelemetryActivity activity = telemetryActivity as TelemetryActivity;
-            this.stringBuilder.AppendLine(activity.Name);
-            if (activity.HasProperties) {
-                WriteDictionary(activity.Properties);
             }
         }
         #endregion

@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
@@ -6,7 +9,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     public interface IReplWindow : IDisposable {
         bool IsActive { get; }
-        void Show();
+        void Show(bool activate);
         IVsInteractiveWindow GetInteractiveWindow();
 
         /// <summary>

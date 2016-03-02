@@ -78,33 +78,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
-    <Compile Include="Script\RHostScript.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
-      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
-      <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
+      <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Languages\Core\Test\Microsoft.Languages.Core.Test.csproj">
-      <Project>{ee2504a4-4666-460b-8552-5b342718cb02}</Project>
-      <Name>Microsoft.Languages.Core.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
       <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
       <Name>Microsoft.R.Actions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\R\Support\Test\Microsoft.R.Support.Test.csproj">
-      <Project>{5504f3d6-08d3-401f-8214-409a60735185}</Project>
-      <Name>Microsoft.R.Support.Test</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>

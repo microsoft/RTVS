@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,7 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
-using Microsoft.Common.Core.Test.IO.SubstituteFactories;
+using Microsoft.Common.Core.Test.StubFactories;
 using Microsoft.R.Actions.Logging;
 using NSubstitute.ExceptionExtensions;
 
@@ -71,7 +74,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 using (_taskScheduler.Pause())
                 {
                     foreach (var path in addedFiles) {
-                        FileInfoFactory.Create(_fileSystem, path);
+                        FileInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, addedFiles);
@@ -95,7 +98,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in addedFiles)
                 {
-                    FileInfoFactory.Create(_fileSystem, path);
+                    FileInfoStubFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -148,13 +151,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in createdFiles)
                     {
-                        FileInfoFactory.Create(_fileSystem, path);
+                        FileInfoStubFactory.Create(_fileSystem, path);
                         RaiseCreated(_fileWatcher, path);
                     }
 
                     foreach (var path in deletedFiles)
                     {
-                        FileInfoFactory.Delete(_fileSystem, path);
+                        FileInfoStubFactory.Delete(_fileSystem, path);
                         RaiseDeleted(_fileWatcher, path);
                     }
 
@@ -181,19 +184,19 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in addedFiles)
                     {
-                        FileInfoFactory.Create(_fileSystem, path);
+                        FileInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, addedFiles);
 
                     foreach (var path in addedFiles)
                     {
-                        FileInfoFactory.Delete(_fileSystem, path);
+                        FileInfoStubFactory.Delete(_fileSystem, path);
                     }
 
                     foreach (var path in existingFiles)
                     {
-                        FileInfoFactory.Create(_fileSystem, path);
+                        FileInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseDeleted(_directoryWatcher, deletedDirectories);
@@ -219,7 +222,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in addedDirectories)
                     {
-                        DirectoryInfoFactory.Create(_fileSystem, path);
+                        DirectoryInfoStubFactory.Create(_fileSystem, path);
                         RaiseCreated(_directoryWatcher, path);
                     }
 
@@ -243,7 +246,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in existingDirectories)
                 {
-                    DirectoryInfoFactory.Create(_fileSystem, path);
+                    DirectoryInfoStubFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -284,7 +287,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
   [ghi]
   w.r
 ";
-                DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                DirectoryInfoStubFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
 
                 using (_taskScheduler.Pause())
                 {
@@ -335,14 +338,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     foreach (var path in addedDirectories)
                     {
-                        DirectoryInfoFactory.Create(_fileSystem, path);
+                        DirectoryInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_directoryWatcher, addedDirectories);
 
                     foreach (var path in deletedDirectories)
                     {
-                        DirectoryInfoFactory.Delete(_fileSystem, path);
+                        DirectoryInfoStubFactory.Delete(_fileSystem, path);
                     }
 
                     RaiseDeleted(_directoryWatcher, deletedDirectories);
@@ -374,7 +377,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
   [abc]
   z.r";
 
-                DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                DirectoryInfoStubFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
                 using (_taskScheduler.Pause())
                 {
                     RaiseCreated(_directoryWatcher, addedDirectories);
@@ -401,7 +404,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
     [z.r]
 ";
                 // a\
-                var a = (IDirectoryInfo)DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                var a = (IDirectoryInfo)DirectoryInfoStubFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
                 // a\def\
                 var def = (IDirectoryInfo)a.EnumerateFileSystemInfos().Last();
                 // a\def\z.r\
@@ -457,7 +460,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in existingFiles)
                 {
-                    FileInfoFactory.Create(_fileSystem, path);
+                    FileInfoStubFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -506,7 +509,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             {
                 foreach (var path in existingDirectories)
                 {
-                    DirectoryInfoFactory.Create(_fileSystem, path);
+                    DirectoryInfoStubFactory.Create(_fileSystem, path);
                 }
 
                 using (_taskScheduler.Pause())
@@ -543,7 +546,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 {
                     RaiseDeleted(_directoryWatcher, deletedDirectories);
 
-                    DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                    DirectoryInfoStubFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
 
                     RaiseCreated(_directoryWatcher, createdDirectories);
 
@@ -572,7 +575,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
 
                     foreach (var path in createdFiles)
                     {
-                        FileInfoFactory.Create(_fileSystem, path);
+                        FileInfoStubFactory.Create(_fileSystem, path);
                     }
 
                     RaiseCreated(_fileWatcher, createdFiles);
@@ -606,7 +609,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
                 using (_taskScheduler.Pause())
                 {
                     RaiseDeleted(_fileWatcher, deletedFiles);
-                    DirectoryInfoFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
+                    DirectoryInfoStubFactory.FromIndentedString(_fileSystem, ProjectDirectory, projectDirectorySubtree);
                     RaiseCreated(_directoryWatcher, createdDirectories);
 
                     _taskScheduler.ScheduledTasksCount.Should().Be(1);

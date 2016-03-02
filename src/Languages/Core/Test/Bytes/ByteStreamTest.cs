@@ -1,4 +1,7 @@
-﻿using Microsoft.Languages.Core.Bytes;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Core.Bytes;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;

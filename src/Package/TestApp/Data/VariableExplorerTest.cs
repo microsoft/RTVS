@@ -1,11 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Serialization;
 using Microsoft.Common.Core.Test.Controls;
-using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;

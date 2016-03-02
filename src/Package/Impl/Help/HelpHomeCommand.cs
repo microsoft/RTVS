@@ -1,8 +1,10 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;

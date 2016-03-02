@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Task = System.Threading.Tasks.Task;
@@ -40,12 +44,15 @@ namespace Microsoft.R.Host.Client.Session {
         private RSessionRequestSource _currentRequestSource;
         private readonly IRHostClientApp _hostClientApp;
         private readonly Action _onDispose;
+        private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private volatile bool _isHostRunning;
+        private volatile bool _delayedMutatedOnReadConsole;
 
         public int Id { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
         public int MaxLength { get; private set; } = 0x1000;
         public bool IsHostRunning => _isHostRunning;
+        public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
 
         static RSession() {
             var tcs = new CancellationTokenSource();
@@ -58,6 +65,22 @@ namespace Microsoft.R.Host.Client.Session {
             Id = id;
             _hostClientApp = hostClientApp;
             _onDispose = onDispose;
+            _disableMutatingOnReadConsole = new CountdownDisposable(() => {
+                if (!_delayedMutatedOnReadConsole) {
+                    return;
+                }
+
+                _delayedMutatedOnReadConsole = false;
+                Task.Run(() => Mutated?.Invoke(this, EventArgs.Empty));
+            });
+        }
+
+        private void OnMutated() {
+            if (_disableMutatingOnReadConsole.Count == 0) {
+                Mutated?.Invoke(this, EventArgs.Empty);
+            } else {
+                _delayedMutatedOnReadConsole = true;
+            }
         }
 
         public void Dispose() {
@@ -171,6 +194,10 @@ namespace Microsoft.R.Host.Client.Session {
             await _hostRunTask;
         }
 
+        public IDisposable DisableMutatedOnReadConsole() {
+            return _disableMutatingOnReadConsole.Increment();
+        }
+
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
                 await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
@@ -194,8 +221,11 @@ namespace Microsoft.R.Host.Client.Session {
                 // Load RTVS R package before doing anything in R since the calls
                 // below calls may depend on functions exposed from the RTVS package
                 await LoadRtvsPackage(evaluation);
-
-                await evaluation.SetDefaultWorkingDirectory();
+                if (startupInfo.WorkingDirectory != null) {
+                    await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
+                } else {
+                    await evaluation.SetDefaultWorkingDirectory();
+                }
 
                 if (_hostClientApp != null) {
                     await evaluation.SetVsGraphicsDevice();
@@ -281,7 +311,7 @@ namespace Microsoft.R.Host.Client.Session {
             } else {
                 evaluationCts = null;
                 evaluationTask = Task.CompletedTask;
-                Mutated?.Invoke(this, EventArgs.Empty);
+                OnMutated();
             }
 
             currentRequest?.CompleteResponse();
@@ -341,7 +371,7 @@ namespace Microsoft.R.Host.Client.Session {
                         mutated = false;
                     } else if (mutated) {
                         // EvaluateAll did not raise the event, but we have a pending mutate to inform about.
-                        Mutated?.Invoke(this, EventArgs.Empty);
+                        OnMutated();
                     }
 
                     if (ct.IsCancellationRequested) {
@@ -371,7 +401,7 @@ namespace Microsoft.R.Host.Client.Session {
                 mutated = false;
             } finally {
                 if (mutated) {
-                    Mutated?.Invoke(this, EventArgs.Empty);
+                    OnMutated();
                 }
             }
 
@@ -380,12 +410,6 @@ namespace Microsoft.R.Host.Client.Session {
 
         Task IRCallbacks.WriteConsoleEx(string buf, OutputType otype, CancellationToken ct) {
             Output?.Invoke(this, new ROutputEventArgs(otype, buf));
-
-            if (otype == OutputType.Error) {
-                var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-                currentRequest?.FailResponse(buf);
-            }
-
             return Task.CompletedTask;
         }
 

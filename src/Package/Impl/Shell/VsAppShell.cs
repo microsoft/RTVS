@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
@@ -9,10 +12,10 @@ using System.Threading;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -22,6 +25,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using IServiceProvider = System.IServiceProvider;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -31,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// </summary>
     [Export(typeof(IApplicationShell))]
     public sealed class VsAppShell : IApplicationShell, IIdleTimeService, IDisposable {
-        private static Lazy<VsAppShell> _instance = Lazy.Create(() => new VsAppShell());
+        private static readonly Lazy<VsAppShell> _instance = Lazy.Create(() =>  new VsAppShell());
 
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
@@ -106,7 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return sp.GetService(type ?? typeof(T)) as T;
             }
 
-            return RPackage.GetGlobalService(type ?? typeof(T)) as T;
+            return VisualStudio.Shell.Package.GetGlobalService(type ?? typeof(T)) as T;
         }
 
         /// <summary>
@@ -131,6 +135,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 Debug.Assert(false);
                 ThreadHelper.Generic.BeginInvoke(DispatcherPriority.Normal, () => action());
             }
+        }
+
+        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            action();
         }
 
         /// <summary>
@@ -160,11 +169,11 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
-        public void ShowContextMenu(Guid contextMenuGroup, int contextMenuId, int x, int y) {
+        public void ShowContextMenu(CommandID commandId, int x, int y) {
             var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
             if (package != null) {
                 var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
-                menuService.ShowContextMenu(new CommandID(contextMenuGroup, contextMenuId), x, y);
+                menuService.ShowContextMenu(commandId, x, y);
             }
         }
 
@@ -375,8 +384,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             this.IsUITestEnvironment = false;
         }
 
-        private IVsPackage EnsurePackageLoaded(Guid guidPackage) {
-            var shell = GetGlobalService<IVsShell>();
+        public static IVsPackage EnsurePackageLoaded(Guid guidPackage) {
+            var shell = (IVsShell)VisualStudio.Shell.Package.GetGlobalService(typeof(IVsShell));
             var guid = guidPackage;
             IVsPackage package;
             int hr = ErrorHandler.ThrowOnFailure(shell.IsPackageLoaded(ref guid, out package), VSConstants.E_FAIL);

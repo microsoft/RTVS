@@ -1,5 +1,9 @@
-﻿using System;
-using System.ComponentModel.Composition;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -9,27 +13,20 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class SourceRScriptCommand : PackageCommand {
-        [Import]
-        private IActiveWpfTextViewTracker TextViewTracker { get; set; }
-
-        [Import]
-        private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
-
-        private readonly IReplWindow _replWindow;
+        private readonly IRInteractiveWorkflowOperations _operations;
+        private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IVsMonitorSelection _monitorSelection;
         private readonly uint _debugUIContextCookie;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
-        public SourceRScriptCommand(ICompositionService cs)
+        public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
-           cs.SatisfyImportsOnce(this);
-
-            ReplWindow.EnsureReplWindow();
-            _replWindow = ReplWindow.Current;
-
+            _interactiveWorkflow = interactiveWorkflow;
+            _activeTextViewTracker = activeTextViewTracker;
+            _operations = interactiveWorkflow.Operations;
             _monitorSelection = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
             if (_monitorSelection != null) {
                 var debugUIContextGuid = new Guid(UIContextGuids.Debugging);
@@ -53,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private ITextView GetActiveTextView() {
-            return TextViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+            return _activeTextViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
         }
 
         private string GetFilePath() {
@@ -67,17 +64,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return null;
         }
 
-        internal override void SetStatus() {
+        protected override void SetStatus() {
+            Visible = _interactiveWorkflow.ActiveWindow != null && _interactiveWorkflow.ActiveWindow.Container.IsOnScreen;
             Enabled = GetFilePath() != null;
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             string filePath = GetFilePath();
             if (filePath != null) {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 textView.SaveFile();
-                _replWindow.ExecuteCode($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
+                _operations.ExecuteExpression($"{(IsDebugging() ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
             }
         }
     }

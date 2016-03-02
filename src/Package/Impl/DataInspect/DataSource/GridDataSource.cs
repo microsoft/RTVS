@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
@@ -33,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             GridData data = null;
 
             if (result.HasValue) {
-                data = GridParser.Parse(result.Value.StringResult);
+                data = GridParser.Parse(result.Value.StringResult.ToUnicodeQuotes());
                 data.Range = gridRange;
 
                 if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)

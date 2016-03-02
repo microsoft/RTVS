@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Runtime.InteropServices;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Shell;

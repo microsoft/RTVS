@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -124,9 +127,18 @@ namespace Microsoft.R.Support.Help.Functions {
                 packageName,
                 (string rdData) => {
                     IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
-                    if (functionInfos != null) {
-                        foreach (IFunctionInfo info in functionInfos) {
-                            _functionToInfoMap[info.Name] = info;
+                    foreach (IFunctionInfo info in functionInfos) {
+                        _functionToInfoMap[info.Name] = info;
+                    }
+                    if (!_functionToInfoMap.ContainsKey(functionName)) {
+                        if (functionInfos.Count > 0) {
+                            // RD doesn't contain the requested function.
+                            // e.g. as.Date.character has RD for as.Date but not itself
+                            // without its own named info, this will request indefinitely many times
+                            // as workaround, add the first info with functionName
+                            _functionToInfoMap[functionName] = functionInfos[0];
+                        } else {
+                            // TODO: add some stub function info here to prevent subsequent calls for the same function as we already know the call will fail.
                         }
                     }
 

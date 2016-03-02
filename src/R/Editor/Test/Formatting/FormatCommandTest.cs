@@ -1,9 +1,14 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;

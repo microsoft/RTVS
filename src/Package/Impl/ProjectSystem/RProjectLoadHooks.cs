@@ -1,11 +1,17 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings.Definitions;
@@ -13,9 +19,8 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
@@ -28,16 +33,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
-        private readonly IRSession _session;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
+
+        private IRInteractiveWorkflow _workflow;
+        private IRSession _session;
+        private IRHistory _history;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRSessionProvider sessionProvider, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
             _unconfiguredProject = unconfiguredProject;
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            _workflowProvider = workflowProvider;
+            _componentContainerFactory = componentContainerFactory;
+
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
@@ -54,11 +66,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
 
-            // Force REPL window up
+            // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
-            ReplWindow.EnsureReplWindow();
+            VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
+            _workflow = _workflowProvider.GetOrCreate();
+            _session = _workflow.RSession;
+            _history = _workflow.History;
 
-            if (!_session.IsHostRunning) {
+            if (_workflow.ActiveWindow == null) {
+                var window = await _workflow.GetOrCreateVisualComponent(_componentContainerFactory);
+                window.Container.Show(true);
+            }
+
+            try {
+                await _session.HostStarted;
+            } catch (Exception) {
                 return;
             }
 
@@ -74,8 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
-            var history = GetRHistory();
-            history?.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+            _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
@@ -87,18 +108,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
 
-            using (var evaluation = await _session.BeginEvaluationAsync()) {
-                if (saveDefaultWorkspace) {
-                    await evaluation.SaveWorkspace(rdataPath);
-                }
-                await evaluation.SetDefaultWorkingDirectory();
-            }
+            Task.Run(async () => {
+                try {
+                    using (var evaluation = await _session.BeginEvaluationAsync()) {
+                        if (saveDefaultWorkspace) {
+                            await evaluation.SaveWorkspace(rdataPath);
+                        }
+                        await evaluation.SetDefaultWorkingDirectory();
+                    }
+                } catch (OperationCanceledException) {
+                    return;
+                } 
 
-            if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
-                await _threadHandling.SwitchToUIThread();
-                var history = GetRHistory();
-                history?.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-            }
+                if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
+                    await _threadHandling.SwitchToUIThread();
+                    _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                }
+            }).DoNotWait();
         }
 
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
@@ -127,14 +153,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 default:
                     return false;
             }
-        }
-
-        private static IRHistory GetRHistory() {
-            return GetRInteractiveEvaluator()?.History;
-        }
-
-        private static RInteractiveEvaluator GetRInteractiveEvaluator() {
-            return ReplWindow.Current.GetInteractiveWindow()?.InteractiveWindow.Evaluator as RInteractiveEvaluator;
         }
     }
 }

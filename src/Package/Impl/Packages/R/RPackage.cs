@@ -1,8 +1,15 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.History;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
 using Microsoft.R.Editor.ContentType;
@@ -43,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         ShowMatchingBrace = true, MatchBraces = true, MatchBracesAtCaret = true, ShowCompletion = true, EnableLineNumbers = true,
         EnableFormatSelection = true, DefaultToInsertSpaces = true, RequestStockColors = true)]
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
-    [LanguageEditorOptionsAttribute(RContentTypeDefinition.LanguageName, 2, true, true)]
+    [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
@@ -60,28 +67,29 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
-    [ProvideNewFileTemplatesAttribute(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
-        private readonly Lazy<RInteractiveWindowProvider> _interactiveWindowProvider = new Lazy<RInteractiveWindowProvider>(() => new RInteractiveWindowProvider());
         private System.Threading.Tasks.Task _indexBuildingTask;
-        private IDisposable _activeTextViewTrackerToken;
 
         public static IRPackage Current { get; private set; }
 
-        public RInteractiveWindowProvider InteractiveWindowProvider => _interactiveWindowProvider.Value;
-
         protected override void Initialize() {
             Current = this;
-            CranMirrorList.Download();
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
+            if(IsCommandLineMode()) {
+                return;
+            }
+
+            CranMirrorList.Download();
+            VerifyWebToolsInstalled();
 
             RtvsTelemetry.Initialize();
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p.LoadSettings();
             }
 
@@ -93,9 +101,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
-            InitializeActiveWpfTextViewTracker();
+            AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
+            AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
+            AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
@@ -103,8 +113,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 _indexBuildingTask.Wait(2000);
                 _indexBuildingTask = null;
             }
-
-            _activeTextViewTrackerToken?.Dispose();
 
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
@@ -127,10 +135,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             yield return new RProjectFileGenerator();
         }
 
-        protected override IEnumerable<IVsProjectFactory> CreateProjectFactories() {
-            yield break;
-        }
-
         protected override IEnumerable<MenuCommand> CreateMenuCommands() {
             return PackageCommands.GetCommands(VsAppShell.Current.ExportProvider);
         }
@@ -145,23 +149,37 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         public T FindWindowPane<T>(Type t, int id, bool create) where T : ToolWindowPane {
-            return this.FindWindowPane(t, id, create) as T;
+            return FindWindowPane(t, id, create) as T;
         }
 
         protected override int CreateToolWindow(ref Guid toolWindowType, int id) {
-            if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
-                IVsInteractiveWindow result = _interactiveWindowProvider.Value.Create(id);
-                return result != null ? VSConstants.S_OK : VSConstants.E_FAIL;
-            }
-
-            return base.CreateToolWindow(ref toolWindowType, id);
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.TryCreateToolWindow(toolWindowType, id) ? VSConstants.S_OK : base.CreateToolWindow(ref toolWindowType, id);
         }
 
-        private void InitializeActiveWpfTextViewTracker() {
-            var activeTextViewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<ActiveWpfTextViewTracker>();
-            var shell = (IVsUIShell7)GetService(typeof(SVsUIShell));
-            var cookie = shell.AdviseWindowFrameEvents(activeTextViewTracker);
-            _activeTextViewTrackerToken = Disposable.Create(() => shell.UnadviseWindowFrameEvents(cookie));
+        protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
+            var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
+            return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
+        }
+
+        private void VerifyWebToolsInstalled() {
+            Guid htmlEditorPackage = new Guid("CF49EC7D-92B1-4BBD-9254-9CC13978E82E");
+            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            int installed;
+            int hr = shell.IsPackageInstalled(ref htmlEditorPackage, out installed);
+            if (hr != VSConstants.S_OK || installed == 0) {
+                VsAppShell.Current.ShowErrorMessage(Package.Resources.Error_NoWebTools);
+            }
+        }
+
+        private bool IsCommandLineMode() {
+            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
+            if (shell != null) {
+                object value = null;
+                shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
+                return value is bool && (bool)value;
+            }
+            return false;
         }
     }
 }

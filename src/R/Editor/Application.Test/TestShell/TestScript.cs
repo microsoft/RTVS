@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -16,8 +19,7 @@ using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Application.Test.TestShell {
     [ExcludeFromCodeCoverage]
-    public sealed partial class TestScript: IDisposable
-    {
+    public sealed partial class TestScript : IDisposable {
         /// <summary>
         /// Text content of the editor document
         /// </summary>
@@ -39,16 +41,14 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         public string FilePath { get; private set; }
 
         #region Constructors
-        public TestScript(string contentType)
-        {
+        public TestScript(string contentType) {
             EditorWindow.Create(string.Empty, "filename", contentType);
         }
 
         /// <summary>
         /// Create script with editor window prepopulated with a given content
         /// </summary>
-        public TestScript(string text, string contentType)
-        {
+        public TestScript(string text, string contentType) {
             EditorWindow.Create(text, "filename", contentType);
         }
 
@@ -56,8 +56,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// Create script that opens a disk file in an editor window
         /// </summary>
         /// <param name="fileName">File name</param>
-        public TestScript(DeployFilesFixture fixture, string fileName, bool unused)
-        {
+        public TestScript(DeployFilesFixture fixture, string fileName, bool unused) {
             OpenFile(fixture, fileName);
         }
         #endregion
@@ -78,8 +77,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// </summary>
         /// <param name="id">command id</param>
         /// <param name="msIdle">Timeout to pause before and after execution</param>
-        public void Execute(VSConstants.VSStd2KCmdID id, int msIdle = 0)
-        {
+        public void Execute(VSConstants.VSStd2KCmdID id, int msIdle = 0) {
             Execute(VSConstants.VSStd2K, (int)id, null, msIdle);
         }
 
@@ -89,16 +87,14 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// <param name="group">Command group</param>
         /// <param name="id">command id</param>
         /// <param name="msIdle">Timeout to pause before and after execution</param>
-        public void Execute(Guid group, int id, object commandData = null, int msIdle = 0)
-        {
+        public void Execute(Guid group, int id, object commandData = null, int msIdle = 0) {
             EditorWindow.ExecCommand(group, id, commandData, msIdle);
         }
 
         /// <summary>
         /// Invokes a particular action in the editor window
         /// </summary>
-        public void Invoke(Action action)
-        {
+        public void Invoke(Action action) {
             UIThreadHelper.Instance.Invoke(action);
         }
 
@@ -106,37 +102,32 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         /// Executes editor idle loop
         /// </summary>
         /// <param name="ms">Milliseconds to run idle</param>
-        public void DoIdle(int ms = 100)
-        {
+        public void DoIdle(int ms = 100) {
             EditorWindow.DoIdle(ms);
         }
 
         /// <summary>
         /// Terminates script and closes editor window
         /// </summary>
-        private void Close()
-        {
+        private void Close() {
             EditorWindow.Close();
         }
 
         /// <summary>
         /// Selects range in the editor view
         /// </summary>
-        public void Select(int start, int length)
-        {
+        public void Select(int start, int length) {
             EditorWindow.Select(start, length);
         }
 
         /// <summary>
         /// Selects range in the editor view
         /// </summary>
-        public void Select(int startLine, int startColumn, int endLine, int endColumn)
-        {
+        public void Select(int startLine, int startColumn, int endLine, int endColumn) {
             EditorWindow.Select(startLine, startColumn, endLine, endColumn);
         }
 
-        public IList<ClassificationSpan> GetClassificationSpans()
-        {
+        public IList<ClassificationSpan> GetClassificationSpans() {
             var classifierAggregator = EditorShell.Current.ExportProvider.GetExport<IClassifierAggregatorService>().Value;
             var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
             var classifier = classifierAggregator.GetClassifier(textBuffer);
@@ -144,12 +135,10 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
             return classifier.GetClassificationSpans(new SnapshotSpan(snapshot, 0, snapshot.Length));
         }
 
-        public string WriteClassifications(IList<ClassificationSpan> classifications)
-        {
+        public string WriteClassifications(IList<ClassificationSpan> classifications) {
             var sb = new StringBuilder();
 
-            foreach (var c in classifications)
-            {
+            foreach (var c in classifications) {
                 sb.Append('[');
                 sb.Append(c.Span.Start.Position.ToString());
                 sb.Append(':');
@@ -195,6 +184,19 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
 
             return session;
         }
+
+        public ILightBulbSession GetLightBulbSession() {
+            ILightBulbBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ILightBulbBroker>();
+            var session = broker.GetSession(EditorWindow.CoreEditor.View);
+            int retries = 0;
+            while (session == null && retries < 10) {
+                this.DoIdle(1000);
+                session = broker.GetSession(EditorWindow.CoreEditor.View);
+                retries++;
+            }
+            return session;
+        }
+
 
         public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
             var aggregatorService = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;

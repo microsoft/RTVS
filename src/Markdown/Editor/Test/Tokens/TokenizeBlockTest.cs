@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Test.Tokens;
@@ -77,6 +80,15 @@ block
                 .And.BeAssignableTo<ICompositeToken>()
                 .Which.TokenList.Should().HaveCount(3);
             tokens[2].Should().HaveType(MarkdownTokenType.CodeEnd);
+        }
+
+        [Test]
+        [Category.Md.Tokenizer]
+        public void CodeBlock04() {
+            var tokens = Tokenize(@"`rtoken`", new MdTokenizer());
+
+            tokens.Should().HaveCount(1);
+            tokens[0].Should().HaveType(MarkdownTokenType.Monospace);
         }
     }
 }

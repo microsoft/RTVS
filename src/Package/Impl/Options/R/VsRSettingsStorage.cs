@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.Composition;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Settings;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Package.Options.Common;
 using Microsoft.VisualStudio.R.Packages.R;

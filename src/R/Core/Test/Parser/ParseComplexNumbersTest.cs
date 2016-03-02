@@ -1,15 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    public class ParseComplexNumbersTest
-    {
+    public class ParseComplexNumbersTest {
         [Test]
         [Category.R.Parser]
-        public void ParseComplexNumbersTest1()
-        {
+        public void ParseComplexNumbers01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [(1i+2)/(1e2+.1i)]
@@ -31,6 +32,18 @@ namespace Microsoft.R.Core.Test.Parser {
                     TokenNode  [) [15...16)]
 ";
             ParserTest.VerifyParse(expected, "(1i+2)/(1e2+.1i)");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseHexComplexNumbers01() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [0xAi]
+        Expression  [0xAi]
+            ComplexValue  [0xAi [0...4)]
+";
+            ParserTest.VerifyParse(expected, "0xAi");
         }
     }
 }

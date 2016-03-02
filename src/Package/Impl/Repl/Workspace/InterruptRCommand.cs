@@ -1,22 +1,26 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class InterruptRCommand : PackageCommand {
-        private IReplWindow _replWindow;
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _session;
-        private IVsDebugger _debugger;
+        private readonly IDebuggerModeTracker _debuggerModeTracker;
         private volatile bool _enabled;
 
-        public InterruptRCommand(IReplWindow replWindow, IRSessionProvider rSessionProvider, IVsDebugger debugger) : 
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
-            _replWindow = replWindow;
-            _debugger = debugger;
-            _session = rSessionProvider.GetInteractiveWindowRSession();
+        public InterruptRCommand(IRInteractiveWorkflow interactiveWorkflow, IDebuggerModeTracker debuggerModeTracker)
+            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdInterruptR) {
+
+            _interactiveWorkflow = interactiveWorkflow;
+            _session = interactiveWorkflow.RSession;
+            _debuggerModeTracker = debuggerModeTracker;
             _session.Disconnected += OnDisconnected;
             _session.BeforeRequest += OnBeforeRequest;
             _session.AfterRequest += OnAfterRequest;
@@ -34,22 +38,20 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _enabled = true;
         }
 
-        internal override void SetStatus() {
-            DBGMODE[] mode = new DBGMODE[1];
-            _debugger.GetMode(mode);
-
-            if (_replWindow.IsActive) {
+        protected override void SetStatus() {
+            var window = _interactiveWorkflow.ActiveWindow;
+            if (window != null) {
                 Visible = true;
-                Enabled = _session.IsHostRunning && _enabled && mode[0] != DBGMODE.DBGMODE_Break;
+                Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsEnteredBreakMode;
             } else {
                 Visible = false;
                 Enabled = false;
             }
         }
 
-        internal override void Handle() {
+        protected override void Handle() {
             if (_enabled) {
-                _replWindow.ClearPendingInputs();
+                _interactiveWorkflow.Operations.ClearPendingInputs();
                 _session.CancelAllAsync().DoNotWait();
                 _enabled = false;
             }

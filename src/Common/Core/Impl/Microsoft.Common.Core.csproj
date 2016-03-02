@@ -35,6 +35,7 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Collections\ListExtensions.cs" />
     <Compile Include="IO\FileVersionInfo.cs" />
     <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -45,6 +46,8 @@
     <Compile Include="Disposables\DefaultDisposable.cs" />
     <Compile Include="Disposables\Disposable.cs" />
     <Compile Include="Enums\YesNoAsk.cs" />
+    <Compile Include="Extensions\CompositionBatchExtensions.cs" />
+    <Compile Include="Extensions\CompositionBatchExtensions.FactoryReflectionComposablePart.cs" />
     <Compile Include="IO\DirectoryInfoProxy.cs" />
     <Compile Include="IO\FileInfoProxy.cs" />
     <Compile Include="IO\FileSystem.cs" />
@@ -71,7 +74,6 @@
     <Compile Include="OS\RegistryImpl.cs" />
     <Compile Include="OS\RegistryKeyImpl.cs" />
     <Compile Include="TaskUtilities.cs" />
-    <Compile Include="Telemetry\ITelemetryActivity.cs" />
     <Compile Include="Telemetry\ITelemetryRecorder.cs" />
     <Compile Include="Telemetry\ITelemetryService.cs" />
     <Compile Include="Telemetry\PropertyNames.cs" />

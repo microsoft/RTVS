@@ -1,13 +1,15 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Threading;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
-using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
@@ -18,10 +20,13 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.View;
 using ContentControl = System.Windows.Controls.ContentControl;
+using Microsoft.Languages.Editor.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
-    public sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
+    internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
         /// <summary>
         /// Holds browser control. When R session is restarted
         /// it is necessary to re-create the browser control since
@@ -30,21 +35,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// control changing so instead we keed content control 
         /// unchanged and only replace browser that is inside it.
         /// </summary>
-        private ContentControl _windowContentControl;
+        private readonly ContentControl _windowContentControl;
         private IRSession _session;
         private WindowsFormsHost _host;
-        private Color? _lastDefaultBackground;
 
         public HelpWindowVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
-            _windowContentControl = new System.Windows.Controls.ContentControl();
-            this.Control = _windowContentControl;
+            _windowContentControl = new ContentControl();
+            Control = _windowContentControl;
 
             var c = new Controller();
             c.AddCommandSet(GetCommands());
-            this.Controller = c;
+            Controller = c;
 
             CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
@@ -57,7 +61,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         #region IVisualComponent
         public ICommandTarget Controller { get; }
 
-        public System.Windows.Controls.Control Control { get; }
+        public FrameworkElement Control { get; }
+        public IVisualComponentContainer<IVisualComponent> Container { get; internal set; }
+
         #endregion
 
         #region IHelpWindowVisualComponent
@@ -81,9 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private void OnRSessionDisconnected(object sender, EventArgs e) {
             // Event fires on a background thread
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                CloseBrowser();
-            });
+            VsAppShell.Current.DispatchOnUIThread(CloseBrowser);
         }
 
         private void CreateBrowser() {
@@ -129,11 +133,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 cssfileName = VisualTheme;
             } else {
                 Color defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                if (!_lastDefaultBackground.HasValue || _lastDefaultBackground != defaultBackground) {
-                    _lastDefaultBackground = defaultBackground;
-                    // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
-                    cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
-                }
+                // TODO: We can generate CSS from specific VS colors. For now, just do Dark and Light.
+                cssfileName = defaultBackground.GetBrightness() < 0.5 ? "Dark.css" : "Light.css";
             }
 
             if (!string.IsNullOrEmpty(cssfileName)) {
@@ -152,6 +153,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
+            if (Browser.Document != null && Browser.Document.Window != null) {
+                Browser.Document.Window.Unload -= OnWindowUnload;
+            }
+
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
@@ -162,6 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
             SetThemeColors();
             _host.Child = Browser;
+            Browser.Document.Window.Unload += OnWindowUnload;
 
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
@@ -169,10 +175,31 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             shell.UpdateCommandUI(0);
         }
 
-        private void NavigateTo(string url) {
-            if (Browser != null) {
-                Browser.Navigate(url);
+        private void OnWindowUnload(object sender, HtmlElementEventArgs e) {
+            // Refresh button clicked. Current document state is 'complete'.
+            // We need to delay until it changes to 'loading' and then
+            // delay again until it changes again to 'complete'.
+            Browser.Document.Window.Unload -= OnWindowUnload;
+            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+        }
+
+        private void SetThemeColorsWhenReady() {
+            var domDoc = Browser.Document.DomDocument as IHTMLDocument2;
+            if (Browser.ReadyState == WebBrowserReadyState.Complete) {
+                SetThemeColors();
+                Browser.Document.Window.Unload += OnWindowUnload;
+            } else {
+                // The browser document is not ready yet. Create another idle 
+                // time action that will run after few milliseconds.
+                IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
             }
+        }
+
+        private void NavigateTo(string url) {
+            if (Browser == null) {
+                CreateBrowser();
+            }
+            Browser.Navigate(url);
         }
 
         private static bool IsHelpUrl(string url) {
@@ -211,6 +238,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _windowContentControl.Content = null;
 
             if (Browser != null) {
+                if (Browser.Document != null && Browser.Document.Window != null) {
+                    Browser.Document.Window.Unload += OnWindowUnload;
+                }
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
                 Browser.Dispose();

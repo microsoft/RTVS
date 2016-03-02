@@ -1,11 +1,16 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Images {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class ImagesProviderTest {
         [Test]
         [Category.Project.Services]

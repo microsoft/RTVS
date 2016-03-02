@@ -1,3 +1,6 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +22,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task BeginEvaluationAsync(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
             var evaluation = new RSessionEvaluation(contexts, evaluator, ct);
-            return _tcs.TrySetResult(evaluation) ? evaluation.Task : TaskUtilities.CompletedTask;
+            return _tcs.TrySetResult(evaluation) ? evaluation.Task : System.Threading.Tasks.Task.CompletedTask;
         }
 
         public bool TryCancel() {

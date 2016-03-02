@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -446,7 +449,7 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleFunctionOrIndexer(IRValueNode operatorNode) {
+        private ParseErrorType HandleFunctionOrIndexer(IOperator operatorNode) {
             // Indexing or function call is performed on the topmost operand which 
             // generally should be a variable or a node that evaluates to it.
             // However, we leave syntax check to separate code.
@@ -457,6 +460,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 return ParseErrorType.IndentifierExpected;
             }
 
+            operatorNode.LeftOperand = operand;
             operatorNode.AppendChild(operand);
             _operands.Push(operatorNode);
 

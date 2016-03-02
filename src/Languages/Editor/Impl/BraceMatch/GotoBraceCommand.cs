@@ -1,9 +1,14 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

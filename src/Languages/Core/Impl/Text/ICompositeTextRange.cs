@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Languages.Core.Text {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Represents a set of text ranges. It may or may not be actual collection
     /// internally, but it supports shifting its content according to the supplied start

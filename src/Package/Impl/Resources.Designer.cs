@@ -196,6 +196,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
+        /// </summary>
+        public static string DeleteAllPlots {
+            get {
+                return ResourceManager.GetString("DeleteAllPlots", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
+        /// </summary>
+        public static string DeletePlot {
+            get {
+                return ResourceManager.GetString("DeletePlot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to remove the selected entries from the history?.
         /// </summary>
         public static string DeleteSelectedHistoryEntries {
@@ -241,7 +259,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to 64-bit R installation..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to R installation directory such as &apos;Program Files\R\R-3.2.x&apos; or &apos;Program Files\MRO\R-3.2.x&apos;..
         /// </summary>
         public static string Error_CannotFindRBinariesFormat {
             get {
@@ -264,6 +282,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to evaluate expression and get data for Microsoft Excel.
+        /// </summary>
+        public static string Error_ExcelCannotEvaluateExpression {
+            get {
+                return ResourceManager.GetString("Error_ExcelCannotEvaluateExpression", resourceCulture);
             }
         }
         
@@ -295,6 +322,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
+        /// </summary>
+        public static string Error_NoWebTools {
+            get {
+                return ResourceManager.GetString("Error_NoWebTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
         public static string Error_PackageMissing {
@@ -304,16 +340,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Command line text cannot be converted to default OS code page. Please set locale for non-Unicode programs in Control Panel -&gt; Region -&gt; Administrative to the locale you wish to use..
-        /// </summary>
-        public static string Error_ReplUnicodeCoversion {
-            get {
-                return ResourceManager.GetString("Error_ReplUnicodeCoversion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
+        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R..
         /// </summary>
         public static string Error_UnableToFindR {
             get {
@@ -467,11 +494,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Processing Item {0} of {1}.
+        /// </summary>
+        public static string LongOperationProgressMessage1 {
+            get {
+                return ResourceManager.GetString("LongOperationProgressMessage1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing Item {0} of {1}: {2}.
         /// </summary>
-        public static string LongOperationProgressMessage {
+        public static string LongOperationProgressMessage2 {
             get {
-                return ResourceManager.GetString("LongOperationProgressMessage", resourceCulture);
+                return ResourceManager.GetString("LongOperationProgressMessage2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window..
+        /// </summary>
+        public static string MailToFrownMessage {
+            get {
+                return ResourceManager.GetString("MailToFrownMessage", resourceCulture);
             }
         }
         
@@ -539,6 +584,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open in Microsoft Excel.
+        /// </summary>
+        public static string OpenInExcelCommandTooltip {
+            get {
+                return ResourceManager.GetString("OpenInExcelCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
@@ -602,6 +656,24 @@ namespace Microsoft.VisualStudio.R.Package {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
             }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Row {0} of {1}.
+        /// </summary>
+        public static string Progress_ExcelRowCounter {
+            get {
+                return ResourceManager.GetString("Progress_ExcelRowCounter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Preparing data for Microsoft Excel....
+        /// </summary>
+        public static string Progress_PreparingExcelData {
+            get {
+                return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
+        }
         }
         
         /// <summary>
@@ -1222,7 +1294,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Intellisense list on first character.
+        ///   Looks up a localized string similar to Completion list on first character.
         /// </summary>
         public static string Settings_TriggerOnFirstChar {
             get {
@@ -1231,11 +1303,29 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show intellisense list on first character typed. If set to off, completion list can be invoked by typing one or more characters and pressing Tab or by invoking Edit &gt; IntelliSense &gt; List Members command.
+        ///   Looks up a localized string similar to Show completion list on first character typed. If set to off, completion list can be brought up by invoking Edit &gt; IntelliSense &gt; List Members command (typically Ctrl+J).
         /// </summary>
         public static string Settings_TriggerOnFirstChar_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnFirstChar_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completion list on Tab key.
+        /// </summary>
+        public static string Settings_TriggerOnTab {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnTab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If set to on completion list can be invoked by typing one or more characters and pressing Tab..
+        /// </summary>
+        public static string Settings_TriggerOnTab_Description {
+            get {
+                return ResourceManager.GetString("Settings_TriggerOnTab_Description", resourceCulture);
             }
         }
         
@@ -1245,6 +1335,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_WorkspaceCategory {
             get {
                 return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open in a Grid Viewer.
+        /// </summary>
+        public static string ShowDetailCommandTooltip {
+            get {
+                return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
             }
         }
         
@@ -1339,6 +1438,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel data conversion for Microsoft Excel?.
+        /// </summary>
+        public static string Warning_CancelCurrentExcelView {
+            get {
+                return ResourceManager.GetString("Warning_CancelCurrentExcelView", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
         public static string Warning_LogTooLarge {
@@ -1357,7 +1465,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. Proceed?.
+        ///   Looks up a localized string similar to This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?.
         /// </summary>
         public static string Warning_SettingsReset {
             get {

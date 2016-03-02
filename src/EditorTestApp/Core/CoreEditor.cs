@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -14,6 +17,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -201,6 +205,8 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
         private void SetGlobalEditorOptions() {
             IEditorOptions options = EditorOptionsFactoryService.GlobalOptions;
+
+            options.SetOptionValue("IsCodeLensEnabled", false);
 
             options.SetOptionValue<bool>(DefaultTextViewOptions.UseVisibleWhitespaceId, true);
             options.SetOptionValue<bool>(DefaultTextViewOptions.BraceCompletionEnabledOptionId, true);

@@ -1,7 +1,12 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using Microsoft.Common.Core;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -41,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 var firstSpan = spans.FirstOrDefault();
                 if (firstSpan.Snapshot != null) {
                     var window = firstSpan.Snapshot.TextBuffer.GetInteractiveWindow();
-                    if (window == null || !(window.Evaluator is RInteractiveEvaluator)) {
+                    if (window == null || !((IContentType)window.Properties[typeof(IContentType)]).TypeName.EqualsOrdinal(RContentTypeDefinition.ContentType)) {
                         yield break;
                     }
                 }

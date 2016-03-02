@@ -1,24 +1,30 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Runtime.InteropServices;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
     internal class AttachDebuggerCommand : DebuggerCommand {
-        public AttachDebuggerCommand(IRSessionProvider rSessionProvider)
-            : base(rSessionProvider, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
+        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+
+        public AttachDebuggerCommand(IRInteractiveWorkflow interactiveWorkflow)
+            : base(interactiveWorkflow, RPackageCommandId.icmdAttachDebugger, DebuggerCommandVisibility.DesignMode) {
+            _interactiveWorkflow = interactiveWorkflow;
         }
 
-        protected AttachDebuggerCommand(IRSessionProvider rSessionProvider, int cmdId, DebuggerCommandVisibility visibility)
-            : base(rSessionProvider, cmdId, visibility) {
+        protected AttachDebuggerCommand(IRInteractiveWorkflow interactiveWorkflow, int cmdId, DebuggerCommandVisibility visibility)
+            : base(interactiveWorkflow, cmdId, visibility) {
+            _interactiveWorkflow = interactiveWorkflow;
         }
 
-        internal unsafe override void Handle() {
+        protected unsafe override void Handle() {
             if (!RSession.IsHostRunning) {
                 return;
             }
@@ -58,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             // If we have successfully attached, VS has switched to debugging UI context, which hides
             // the REPL window. Show it again and give it focus.
-            ReplWindow.ShowWindow();
+            _interactiveWorkflow.ActiveWindow?.Container.Show(true);
         }
     }
 }
