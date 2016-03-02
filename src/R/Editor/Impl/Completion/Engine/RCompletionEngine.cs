@@ -34,12 +34,6 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
-            var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
-            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.String) {
-                // No completion in string
-                return providers;
-            }
-
             string directory;
             if(CanShowFileCompletion(context.AstRoot, context.Position, out directory)) { 
                 if (!string.IsNullOrEmpty(directory)) {
