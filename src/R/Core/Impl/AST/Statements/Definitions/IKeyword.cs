@@ -1,4 +1,7 @@
-﻿namespace Microsoft.R.Core.AST.Statements.Definitions {
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+namespace Microsoft.R.Core.AST.Statements.Definitions {
     /// <summary>
     /// Represents keyword sequence. Typically it appears 
     /// in a statement that is based on a keyword such as 

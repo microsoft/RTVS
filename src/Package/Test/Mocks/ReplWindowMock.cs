@@ -1,4 +1,7 @@
-﻿using Microsoft.R.Editor.ContentType;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -35,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
                             new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType)));
         }
 
-        public void Show(bool activate) {
+        public void Show() {
             ReplWindow.ShowWindow();
         }
 

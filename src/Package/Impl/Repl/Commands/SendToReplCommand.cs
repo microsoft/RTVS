@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
@@ -49,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 line = TextView.Selection.End.Position.GetContainingLine();
             }
 
-            _replWindow.Show(activate: false);
+            _replWindow.Show();
             replWindow.EnqueueCode(text, addNewLine: true);
 
             var targetLine = line;
