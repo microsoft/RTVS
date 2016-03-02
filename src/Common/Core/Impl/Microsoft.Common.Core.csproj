@@ -73,6 +73,7 @@
     <Compile Include="OS\IRegistryKey.cs" />
     <Compile Include="OS\RegistryImpl.cs" />
     <Compile Include="OS\RegistryKeyImpl.cs" />
+    <Compile Include="Tasks\EventTaskSource.cs" />
     <Compile Include="TaskUtilities.cs" />
     <Compile Include="Telemetry\ITelemetryRecorder.cs" />
     <Compile Include="Telemetry\ITelemetryService.cs" />
