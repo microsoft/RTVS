@@ -102,6 +102,7 @@
     <Compile Include="Script\TestScript.cs" />
     <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="StubFactories\FileSystemStubFactory.cs" />
+    <Compile Include="Tasks\EventTaskSourceTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Utility\RUtilities.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
