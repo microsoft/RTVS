@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -20,14 +19,6 @@ namespace Microsoft.R.Debugger.Test {
         private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
-
-        private const string Code =
-@"f <- function(x) {
-  x + 1
-}
-x <- 1
-y <- f(x)
-z <- x + y";
 
         public SteppingTest(TestMethodInfoFixture testMethodInfo) {
             _testMethod = testMethodInfo.Method;
@@ -50,96 +41,78 @@ z <- x + y";
         [Test]
         [Category.R.Debugger]
         public async Task StepOver() {
-            
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(Code)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            const string code =
+@"f <- function(x) {
+    x + 1
+  }
+  x <- f(1)
+  print(x)";
 
-                    var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
-                    var bpHit = new TaskCompletionSource<bool>();
-                    bp.BreakpointHit += (s, e) => {
-                        bpHit.TrySetResult(true);
-                    };
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    await sf.Source(_session);
-                    await bpHit.Task;
+                var bp = await debugSession.CreateBreakpointAsync(sf, 4);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().NotBeEmpty();
-                    stackFrames[0].LineNumber.Should().Be(5);
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp.Location);
 
-                    bool stepCompleted = await debugSession.StepOverAsync();
-                    stepCompleted.Should().Be(true);
-
-                    stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().NotBeEmpty();
-                    stackFrames[0].LineNumber.Should().Be(6);
-                } 
+                (await debugSession.StepOverAsync()).Should().Be(true);
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp.Location, +1);
             }
         }
 
         [Test]
         [Category.R.Debugger]
         public async Task StepInto() {
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(Code)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            const string code =
+@"f <- function(x) {
+    x + 1
+  }
+  x <- f(1)
+  print(x)";
 
-                    var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
-                    var bpHit = new TaskCompletionSource<bool>();
-                    bp.BreakpointHit += (s, e) => {
-                        bpHit.TrySetResult(true);
-                    };
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    await sf.Source(_session);
-                    await bpHit.Task;
+                var bp = await debugSession.CreateBreakpointAsync(sf, 4);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().NotBeEmpty();
-                    stackFrames[0].LineNumber.Should().Be(5);
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp.Location);
 
-                    bool stepCompleted = await debugSession.StepIntoAsync();
-                    stepCompleted.Should().Be(true);
-
-                    stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().HaveCount(n => n >= 2);
-                    stackFrames[0].LineNumber.Should().Be(1);
-                    stackFrames[1].Call.Should().Be("f(x)");
-                }
-                
+                (await debugSession.StepIntoAsync()).Should().Be(true);
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(sf, 1, "f(1)");
             }
         }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/975")]
         [Category.R.Debugger]
         public async Task StepOutToGlobal() {
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(Code)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            const string code =
+@"f <- function(x) {
+    x + 1
+  }
+  x <- f(1)
+  print(x)";
 
-                    var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
-                    var bpHit = new TaskCompletionSource<bool>();
-                    bp.BreakpointHit += (s, e) => {
-                        bpHit.TrySetResult(true);
-                    };
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    await sf.Source(_session);
-                    await bpHit.Task;
+                var bp = await debugSession.CreateBreakpointAsync(sf, 2);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().HaveCount(n => n >= 2);
-                    stackFrames[0].LineNumber.Should().Be(bp.Location.LineNumber);
-                    stackFrames[1].Call.Should().Be("f(x)");
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp.Location, "f(1)");
 
-                    bool stepCompleted = await debugSession.StepOutAsync();
-                    stepCompleted.Should().Be(true);
-
-                    stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().HaveCount(n => n >= 2);
-                    stackFrames[0].LineNumber.Should().Be(6);
-                    stackFrames[1].Call.Should().NotBe("f(x)");
-                }
-                
+                (await debugSession.StepOutAsync()).Should().Be(true);
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(sf, 5);
             }
         }
 
@@ -149,69 +122,136 @@ z <- x + y";
             const string code =
 @"f <- function() {
     1
-}
-g <- function() {
+  }
+  g <- function() {
     f()
     1
-}
-g()";
+  }
+  g()";
 
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(code)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
-                    var bpHit = new TaskCompletionSource<bool>();
-                    bp.BreakpointHit += (s, e) => {
-                        bpHit.SetResult(true);
-                    };
+                var bp = await debugSession.CreateBreakpointAsync(sf, 2);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    await sf.Source(_session);
-                    await bpHit.Task;
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+                (await debugSession.GetStackFramesAsync()).Should()
+                    .BeAt(bp.Location, "f()")
+                    .At(sf, 5, "g()");
 
-                    var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().HaveCount(n => n >= 2);
-                    stackFrames[0].LineNumber.Should().Be(bp.Location.LineNumber);
-                    stackFrames[1].Call.Should().Be("f()");
-
-                    bool stepCompleted = await debugSession.StepOutAsync();
-                    stepCompleted.Should().Be(true);
-
-                    stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames.Should().HaveCount(n => n >= 2);
-                    stackFrames[0].LineNumber.Should().Be(6);
-                    stackFrames[1].Call.Should().Be("g()");
-                }
+                (await debugSession.StepOutAsync()).Should().Be(true);
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(sf, 6, "g()");
             }
         }
 
         [Test]
         [Category.R.Debugger]
         public async Task StepOutFromGlobal() {
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(Code)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            const string code =
+@"x <- 1
+  y <- 2";
 
-                    var bp1 = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 4));
-                    var bp2 = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 5));
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    var bpHit = new TaskCompletionSource<bool>();
-                    bp1.BreakpointHit += (s, e) => {
-                        bpHit.SetResult(true);
-                    };
+                var bp1 = await debugSession.CreateBreakpointAsync(sf, 1);
+                var bp2 = await debugSession.CreateBreakpointAsync(sf, 2);
 
-                    await sf.Source(_session);
-                    await bpHit.Task;
+                var bp1Hit = new BreakpointHitDetector(bp1);
 
-                    var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames[0].LineNumber.Should().Be(bp1.Location.LineNumber);
+                await sf.Source(_session);
+                await bp1Hit.ShouldBeHitAtNextPromptAsync();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp1.Location);
 
-                    bool stepSuccessful = await debugSession.StepOutAsync();
-                    stepSuccessful.Should().Be(false);
+                (await debugSession.StepOutAsync()).Should().Be(false);
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp2.Location);
+            }
+        }
 
-                    stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
-                    stackFrames[0].LineNumber.Should().Be(bp2.Location.LineNumber);
-                }
+        [Test]
+        [Category.R.Debugger]
+        public async Task StepOverBreakpoint() {
+            const string code =
+@"f <- function() { 
+    0
+  }
+  x <- f()
+  z <- 3";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                var bp1 = await debugSession.CreateBreakpointAsync(sf, 4);
+                var bp2 = await debugSession.CreateBreakpointAsync(sf, 2);
+
+                var bp1Hit = new BreakpointHitDetector(bp1);
+                var bp2Hit = new BreakpointHitDetector(bp2);
+
+                await sf.Source(_session);
+                await bp1Hit.ShouldBeHitAtNextPromptAsync();
+
+                (await debugSession.StepOverAsync()).Should().Be(false);
+                await bp2Hit.ShouldBeHitAtNextPromptAsync();
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task StepOntoBreakpoint() {
+            const string code =
+@"x <- 1
+  y <- 2";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                var bp1 = await debugSession.CreateBreakpointAsync(sf, 1);
+                var bp2 = await debugSession.CreateBreakpointAsync(sf, 2);
+
+                var bp1Hit = new BreakpointHitDetector(bp1);
+                var bp2Hit = new BreakpointHitDetector(bp2);
+
+                await sf.Source(_session);
+                await bp1Hit.ShouldBeHitAtNextPromptAsync();
+
+                (await debugSession.StepOverAsync()).Should().Be(false);
+                await bp2Hit.ShouldBeHitAtNextPromptAsync();
+            }
+        }
+
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task StepIntoAfterStepOver() {
+            const string code =
+@"f <- function(x) {
+    x + 1
+  }
+  x <- 1
+  x <- f(1)
+  print(x)";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                var bp = await debugSession.CreateBreakpointAsync(sf, 4);
+                var bpHit = new BreakpointHitDetector(bp);
+
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+
+                (await debugSession.StepOverAsync()).Should().BeTrue();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(bp.Location, +1);
+
+                (await debugSession.StepIntoAsync()).Should().BeTrue();
+                (await debugSession.GetStackFramesAsync()).Should().BeAt(sf, 1);
             }
         }
     }
