@@ -81,5 +81,14 @@ block
                 .Which.TokenList.Should().HaveCount(3);
             tokens[2].Should().HaveType(MarkdownTokenType.CodeEnd);
         }
+
+        [Test]
+        [Category.Md.Tokenizer]
+        public void CodeBlock04() {
+            var tokens = Tokenize(@"`rtoken`", new MdTokenizer());
+
+            tokens.Should().HaveCount(1);
+            tokens[0].Should().HaveType(MarkdownTokenType.Monospace);
+        }
     }
 }
