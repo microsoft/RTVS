@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 # Produces JSON from an R object according to the following mappings:
 #
 # NULL, NA, empty vector -> null

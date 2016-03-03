@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,10 +22,12 @@ using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
-    public class ReplCommandTest {
+    [Collection(CollectionNames.NonParallel)]
+    public class ReplCommandTest: IDisposable {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
@@ -34,6 +39,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             _componentContainerFactory = new InteractiveWindowComponentContainerFactoryMock();
             _workflowProvider = TestRInteractiveWorkflowProviderFactory.Create(debuggerModeTracker: _debuggerModeTracker);
             _workflow = _workflowProvider.GetOrCreate();
+        }
+
+        public void Dispose() {
+            _workflow?.Dispose();
         }
 
         [Test]

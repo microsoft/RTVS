@@ -1,4 +1,7 @@
-﻿using Microsoft.Languages.Core.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
 namespace Microsoft.Markdown.Editor.Tokens {
@@ -132,7 +135,8 @@ namespace Microsoft.Markdown.Editor.Tokens {
                 return HandleCode(block: true);
             }
 
-            if (_cs.NextChar == 'r') {
+            // If it is `r ... then it is inline R code
+            if (_cs.NextChar == 'r' && char.IsWhiteSpace(_cs.LookAhead(2))) {
                 return HandleCode(block: false);
             }
 

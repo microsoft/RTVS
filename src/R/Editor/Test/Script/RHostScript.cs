@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Support.Settings;
@@ -6,7 +10,7 @@ using Microsoft.R.Support.Settings;
 namespace Microsoft.R.Host.Client.Test.Script {
     [ExcludeFromCodeCoverage]
     public class RHostScript : IDisposable {
-        private bool disposed = false;
+        private bool _disposed = false;
 
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; private set; }
@@ -27,18 +31,18 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public void Dispose() {
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing) {
-            if (disposed) {
+            if (_disposed) {
                 return;
             }
 
             if (disposing) {
                 if (Session != null) {
-                    Session.StopHostAsync().Wait(5000);
+                    Session.StopHostAsync().Wait(15000);
+                    Debug.Assert(!Session.IsHostRunning);
                     Session.Dispose();
                     Session = null;
                 }
@@ -49,7 +53,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 }
             }
 
-            disposed = true;
+            _disposed = true;
         }
     }
 }

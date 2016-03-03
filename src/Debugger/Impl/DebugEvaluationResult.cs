@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -183,7 +186,7 @@ namespace Microsoft.R.Debugger {
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
         public bool HasAttributes => AttributeCount != null && AttributeCount != 0;
         public bool HasSlots => SlotCount != null && SlotCount != 0;
-        public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || TypeName == "closure" ? 1 : 0)));
+        public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || (TypeName == "closure" || TypeName == "symbol") ? 1 : 0)));
 
         private JObject _reprObj;
 

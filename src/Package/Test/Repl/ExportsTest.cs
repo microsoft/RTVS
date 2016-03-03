@@ -1,17 +1,18 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Components.History;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.History;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class ExportsTest {
         [Test]
         [Category.Repl]

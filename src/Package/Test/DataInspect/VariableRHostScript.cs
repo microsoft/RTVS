@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -18,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     public class VariableRHostScript : RHostScript {
         private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
+        private ManualResetEventSlim _mre = new ManualResetEventSlim(false);
+        private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
@@ -43,11 +48,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             _mre.Set();
         }
 
-        private ManualResetEventSlim _mre;
         public async Task EvaluateAsync(string rScript) {
             VariableSubscription subscription = null;
+
+            // One eval at a time
+            await _sem.WaitAsync();
             try {
-                _mre = new ManualResetEventSlim();
+                _mre.Reset();
 
                 _globalEnv = null;
                 subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
@@ -65,6 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 }
             } finally {
                 _variableProvider.Unsubscribe(subscription);
+                _sem.Release();
             }
         }
 

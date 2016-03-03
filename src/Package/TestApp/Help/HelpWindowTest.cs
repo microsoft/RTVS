@@ -1,4 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using FluentAssertions;
 using Microsoft.Common.Core;
@@ -17,6 +20,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class HelpWindowTest : InteractiveTest {
+        private const string darkThemeCssColor = "rgb(36,36,36)";
+
         [Test]
         [Category.Interactive]
         public void HelpTest() {
@@ -35,7 +40,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
-                    GetBackgroundColor(component.Browser).Should().Be("rgb(36,36,36)");
+                    GetBackgroundColor(component.Browser).Should().Be(darkThemeCssColor);
+
+                    UIThreadHelper.Instance.Invoke(() => {
+                        component.Browser.Refresh();
+                        WaitForDocumentComplete(component.Browser);
+                    });
+                    GetBackgroundColor(component.Browser).Should().Be(darkThemeCssColor);
 
                     component.VisualTheme = "Light.css";
                     ShowHelp("?lm\n", hostScript, clientApp);
@@ -76,6 +87,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         private void WaitForAppReady(RHostClientHelpTestApp clientApp) {
             for (int i = 0; i < 100 && !clientApp.Ready; i++) {
                 DoIdle(200);
+            }
+        }
+
+        private void WaitForDocumentComplete(WebBrowser wb) {
+            for (int i = 0; i < 100 && wb.ReadyState != WebBrowserReadyState.Loading; i++) {
+                DoIdle(50);
+            }
+            for (int i = 0; i < 100 && wb.ReadyState != WebBrowserReadyState.Complete; i++) {
+                DoIdle(50);
             }
         }
 

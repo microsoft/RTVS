@@ -1,9 +1,11 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Host.Client;
@@ -21,12 +23,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public sealed class RInteractiveEvaluatorTest {
+        private readonly IRSessionProvider _sessionProvider;
+
+        public RInteractiveEvaluatorTest() {
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+        }
+
         [Test]
         [Category.Repl]
         public async Task EvaluatorTest01() {
             using (new VsRHostScript()) {
-                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                var session = sessionProvider.GetInteractiveWindowRSession();
+                var session = _sessionProvider.GetInteractiveWindowRSession();
                 using (var eval = new RInteractiveEvaluator(session, RHistoryStubFactory.CreateDefault(), VsAppShell.Current, RToolsSettings.Current)) {
                     var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
                     var tv = new WpfTextViewMock(tb);
@@ -83,10 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         [Category.Repl]
         public async Task EvaluatorTest02() {
             using (new VsRHostScript()) {
-                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
-
-                var session = sessionProvider.GetInteractiveWindowRSession();
+                var session = _sessionProvider.GetInteractiveWindowRSession();
                 using (var eval = new RInteractiveEvaluator(session, RHistoryStubFactory.CreateDefault(), VsAppShell.Current, RToolsSettings.Current)) {
                     var tb = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
                     var tv = new WpfTextViewMock(tb);

@@ -1,3 +1,6 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See LICENSE in the project root for license information.
+
 grid.trim <- function(str, max_length = 100) {
   if (nchar(str) > (100 - 3)) {
     paste(substr(str, 1, 97), '...', sep='');

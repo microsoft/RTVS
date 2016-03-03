@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -20,6 +23,7 @@ using mshtml;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.View;
 using ContentControl = System.Windows.Controls.ContentControl;
+using Microsoft.Languages.Editor.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
@@ -149,6 +153,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
+            if (Browser.Document != null && Browser.Document.Window != null) {
+                Browser.Document.Window.Unload -= OnWindowUnload;
+            }
+
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
@@ -159,11 +167,32 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
             SetThemeColors();
             _host.Child = Browser;
+            Browser.Document.Window.Unload += OnWindowUnload;
 
             // Upon vavigation we need to ask VS to update UI so 
             // Back /Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
+        }
+
+        private void OnWindowUnload(object sender, HtmlElementEventArgs e) {
+            // Refresh button clicked. Current document state is 'complete'.
+            // We need to delay until it changes to 'loading' and then
+            // delay again until it changes again to 'complete'.
+            Browser.Document.Window.Unload -= OnWindowUnload;
+            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+        }
+
+        private void SetThemeColorsWhenReady() {
+            var domDoc = Browser.Document.DomDocument as IHTMLDocument2;
+            if (Browser.ReadyState == WebBrowserReadyState.Complete) {
+                SetThemeColors();
+                Browser.Document.Window.Unload += OnWindowUnload;
+            } else {
+                // The browser document is not ready yet. Create another idle 
+                // time action that will run after few milliseconds.
+                IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+            }
         }
 
         private void NavigateTo(string url) {
@@ -209,6 +238,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _windowContentControl.Content = null;
 
             if (Browser != null) {
+                if (Browser.Document != null && Browser.Document.Window != null) {
+                    Browser.Document.Window.Unload += OnWindowUnload;
+                }
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
                 Browser.Dispose();

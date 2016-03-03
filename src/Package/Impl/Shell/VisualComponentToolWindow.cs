@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.Design;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.ComponentModel.Design;
 using System.Windows;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
@@ -11,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             get { return _adapter.Component; }
             protected set {
                 _adapter.Component = value;
-                Content = value.Control;
+                Content = value?.Control;
             }
         }
 
