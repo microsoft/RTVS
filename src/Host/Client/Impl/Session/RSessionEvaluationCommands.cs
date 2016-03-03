@@ -85,8 +85,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> ExportToPdf(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches, string paper) {
-            string script = string.Format("rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2}, '{3}')", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches, paper);
+        public static Task<REvaluationResult> ExportToPdf(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches) {
+            string script = string.Format("rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
             return evaluation.EvaluateAsync(script);
         }
 
