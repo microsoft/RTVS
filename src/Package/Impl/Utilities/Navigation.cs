@@ -43,7 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 // This is the main buffer for the view
 
                 IVsTextManager textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
-                IVsTextBuffer vsTextBuffer = textBuffer.QueryInterface<IVsTextBuffer>();
+                IVsTextBuffer vsTextBuffer = textBuffer.As<IVsTextBuffer>();
                 Guid viewType = VSConstants.LOGVIEWID_TextView;
 
                 if (vsTextBuffer != null &&
