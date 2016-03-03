@@ -3,12 +3,11 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -25,7 +24,7 @@ namespace Microsoft.R.Debugger.Test {
         public BreakpointsTest(TestMethodInfoFixture testMethodInfo) {
             _testMethod = testMethodInfo.Method;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());   
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
         }
 
         public async Task InitializeAsync() {
@@ -42,62 +41,133 @@ namespace Microsoft.R.Debugger.Test {
 
         [Test]
         [Category.R.Debugger]
-        public async Task SetRemoveBreakpoint() {
-            using (var debugSession = new DebugSession(_session)) {
-                var content =
+        public async Task AddRemoveBreakpoint() {
+            const string code =
 @"x <- 1
-y <- 2
-z <- 3
-";
-                using (var sf = new SourceFile(content)) {
-                    var bpl1 = new DebugBreakpointLocation(sf.FilePath, 1);
-                    DebugBreakpoint bp1 = await debugSession.CreateBreakpointAsync(bpl1);
+  y <- 2
+  z <- 3";
 
-                    bp1.Location.Should().Be(bpl1);
-                    bp1.Session.Should().Be(debugSession);
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                var bp1Loc = new DebugBreakpointLocation(sf.FilePath, 1);
+                var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
 
-                    debugSession.Breakpoints.Count.Should().Be(1);
+                bp1.Location.Should().Be(bp1Loc);
+                bp1.Session.Should().Be(debugSession);
 
-                    var bpl2 = new DebugBreakpointLocation(sf.FilePath, 3);
-                    DebugBreakpoint bp2 = await debugSession.CreateBreakpointAsync(bpl2);
+                debugSession.Breakpoints.Count.Should().Be(1);
 
-                    bp2.Location.Should().Be(bpl2);
-                    bp2.Session.Should().Be(debugSession);
+                var bp2Loc = new DebugBreakpointLocation(sf.FilePath, 3);
+                var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
 
-                    debugSession.Breakpoints.Count.Should().Be(2);
+                bp2.Location.Should().Be(bp2Loc);
+                bp2.Session.Should().Be(debugSession);
 
-                    await bp1.DeleteAsync();
-                    debugSession.Breakpoints.Count.Should().Be(1);
-                }
+                debugSession.Breakpoints.Count.Should().Be(2);
+
+                await bp1.DeleteAsync();
+                debugSession.Breakpoints.Count.Should().Be(1);
+                debugSession.Breakpoints.First().Should().BeSameAs(bp2);
+            }
+
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task SetAndHitToplevelBreakpoint() {
+            const string code =
+@"x <- 1
+  y <- 2
+  z <- 3";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bpHit = new BreakpointHitDetector(bp);
+
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
             }
         }
 
         [Test]
         [Category.R.Debugger]
-        public async Task HitBreakpoint() {
-            using (var debugSession = new DebugSession(_session)) {
-                string content =
-@"x <- 1
-y <- 2
-z <- 3
-";
-                using (var sf = new SourceFile(content)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+        public async Task SetAndHitBreakpointInsideUnloadedFunction() {
+            const string code =
+@"f <- function() {
+    0
+  }
+  f()";
 
-                    var bpl = new DebugBreakpointLocation(sf.FilePath, 2);
-                    DebugBreakpoint bp = await debugSession.CreateBreakpointAsync(bpl);
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
 
-                    int eventCount = 0;
-                    bp.BreakpointHit += (s, e) => {
-                        eventCount++;
-                    };
+                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    await sf.Source(_session);
+                await sf.Source(_session);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+            }
+        }
 
-                    // Allow pending thread transitions and async/awaits to complete
-                    EventsPump.DoEvents(3000);
+        [Test]
+        [Category.R.Debugger]
+        public async Task SetAndHitBreakpointInsideLoadedFunction() {
+            const string code =
+@"f <- function() {
+    0
+  }";
 
-                    eventCount.Should().Be(1);
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+                await sf.Source(_session);
+
+                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bpHit = new BreakpointHitDetector(bp);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task RemovedBreakpointNotHit() {
+            const string code =
+@"f <- function() {
+    0
+  }";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+                await sf.Source(_session);
+
+                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bpHit = new BreakpointHitDetector(bp);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+
+                await bp.DeleteAsync();
+                await debugSession.ContinueAsync();
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    inter.Contexts.IsBrowser().Should().BeFalse();
                 }
             }
         }
@@ -107,29 +177,110 @@ z <- 3
         public async Task SetBreakpointOnNull() {
             const string code =
 @"f <- function() {
-NULL
-}";
+    NULL
+  }";
 
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            using (new RHostScript(sessionProvider)) {
-                IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, new RHostClientTestApp());
-                using (var debugSession = new DebugSession(session)) {
-                    using (var sf = new SourceFile(code)) {
-                        var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
-                        debugSession.Breakpoints.Count.Should().Be(1);
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                debugSession.Breakpoints.Count.Should().Be(1);
 
-                        await sf.Source(session);
+                await sf.Source(_session);
 
-                        var res = await debugSession.EvaluateAsync("is.function(f)");
-                        res.Should().BeAssignableTo<DebugValueEvaluationResult>();
+                var res = (await debugSession.EvaluateAsync("is.function(f)")).As<DebugValueEvaluationResult>();
+                res.GetRepresentation(DebugValueRepresentationKind.Normal).Deparse
+                    .Should().Be("TRUE");
+            }
+        }
 
-                        var valueRes = (DebugValueEvaluationResult)res;
-                        valueRes.GetRepresentation(DebugValueRepresentationKind.Normal).Deparse
-                            .Should().Be("TRUE");
-                    }
+        [Test]
+        [Category.R.Debugger]
+        public async Task OverlappingBreakpoints() {
+            const string code =
+@"f <- function() {
+    1
+  }";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+                await sf.Source(_session);
+
+                var bp1 = await debugSession.CreateBreakpointAsync(sf, 1);
+                var bp2 = await debugSession.CreateBreakpointAsync(sf, 1);
+
+                bp1.Should().BeSameAs(bp2);
+                debugSession.Breakpoints.Should().HaveCount(1);
+
+                var bp1Hit = new BreakpointHitDetector(bp1);
+                var bp2Hit = new BreakpointHitDetector(bp2);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                await bp1Hit.ShouldBeHitAtNextPromptAsync();
+                bp2Hit.WasHit.Should().BeTrue();
+
+                await debugSession.ContinueAsync();
+
+                await bp1.DeleteAsync();
+                debugSession.Breakpoints.Should().HaveCount(1);
+                debugSession.Breakpoints.Should().Contain(bp2);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                await bp2Hit.ShouldBeHitAtNextPromptAsync();
+
+                await debugSession.ContinueAsync();
+
+                await bp2.DeleteAsync();
+                debugSession.Breakpoints.Should().HaveCount(0);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f()\n");
+                }
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    inter.Contexts.IsBrowser().Should().BeFalse();
                 }
             }
         }
 
+        [Test]
+        [Category.R.Debugger]
+        public async Task BreakpointsInDifferentFiles() {
+            using (var debugSession = new DebugSession(_session))
+            using (var sf1 = new SourceFile("1"))
+            using (var sf2 = new SourceFile($"eval(parse({sf1.FilePath.ToRStringLiteral()}))")) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                var bp1Loc = new DebugBreakpointLocation(sf1.FilePath, 1);
+                var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
+                bp1.Location.Should().Be(bp1Loc);
+
+                var bp2Loc = new DebugBreakpointLocation(sf2.FilePath, 1);
+                var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
+                bp2.Location.Should().Be(bp2Loc);
+
+                debugSession.Breakpoints.Should().HaveCount(2);
+
+                var bp1Hit = new BreakpointHitDetector(bp1);
+                var bp2Hit = new BreakpointHitDetector(bp2);
+
+                await sf2.Source(_session);
+
+                await bp2Hit.ShouldBeHitAtNextPromptAsync();
+                bp1Hit.WasHit.Should().BeFalse();
+
+                bp2Hit.Reset();
+                await debugSession.ContinueAsync();
+
+                await bp1Hit.ShouldBeHitAtNextPromptAsync();
+                bp2Hit.WasHit.Should().BeFalse();
+            }
+        }
     }
 }

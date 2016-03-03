@@ -168,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsPdfAsync(string fileName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToPdf(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), "special");
+                    await eval.ExportToPdf(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
                 }
             }
         }

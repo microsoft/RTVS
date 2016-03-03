@@ -18,8 +18,8 @@ graphics.ide.exportimage <- function(filename, device, width, height) {
     dev.off()
 }
 
-graphics.ide.exportpdf <- function(filename, width, height, paper) {
-    dev.copy(device=pdf,file=filename,width=width,height=height,paper=paper)
+graphics.ide.exportpdf <- function(filename, width, height) {
+    dev.copy(device=pdf,file=filename,width=width,height=height)
     dev.off()
 }
 
