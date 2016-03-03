@@ -14,7 +14,7 @@ namespace Microsoft.Languages.Editor.Application.Host
     [ExcludeFromCodeCoverage]
     internal class EditorInstanceFactory
     {
-        public static IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, ITextBuffer textBuffer, ICompositionService cs)
+        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService cs)
         {
             var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
             var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
@@ -24,7 +24,7 @@ namespace Microsoft.Languages.Editor.Application.Host
 
             // Debug.Assert(factory != null, String.Format("No editor factory found for content type {0}", textBuffer.ContentType.TypeName));
             if(factory != null) // may be null if file type only support colorization, like VBScript
-                return factory.CreateEditorInstance(workspaceItem, textBuffer, documentFactory);
+                return factory.CreateEditorInstance(textBuffer, documentFactory);
 
             return null;
         }

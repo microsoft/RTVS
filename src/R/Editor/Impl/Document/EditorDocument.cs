@@ -12,13 +12,11 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor.Classification;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
@@ -39,20 +37,7 @@ namespace Microsoft.R.Editor.Document {
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
 
-        /// <summary>
-        /// Project (workspace) the document is in
-        /// </summary>
-        [Import(AllowDefault = true)]
-        public IWorkspace Workspace { get; set; }
-
-        /// <summary>
-        /// Item in the workspace that represents this document
-        /// </summary>
-        public IWorkspaceItem WorkspaceItem { get; private set; }
-
 #pragma warning disable 67
-        public event EventHandler<EventArgs> Activated;
-        public event EventHandler<EventArgs> Deactivated;
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
         #endregion
@@ -76,11 +61,10 @@ namespace Microsoft.R.Editor.Document {
         private TreeValidator _validator;
 
         #region Constructors
-        public REditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem) {
+        public REditorDocument(ITextBuffer textBuffer) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             this.TextBuffer = textBuffer;
-            this.WorkspaceItem = workspaceItem;
 
             IsClosed = false;
             TextDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
@@ -293,14 +277,16 @@ namespace Microsoft.R.Editor.Document {
         /// created elsewhere as in VS Interactive Window case.
         /// </summary>
         public bool IsTransient {
-            get { return WorkspaceItem == null || WorkspaceItem.Path.Length == 0; }
+            get {
+                return string.IsNullOrEmpty(TextBuffer.GetFilePath());
+            }
         }
 
         /// <summary>
         /// Tells document that massive change to text buffer is about to commence.
         /// Document will then stop tracking text buffer changes, will suspend
-        /// HTML parser anc classifier and remove all projections. HTML tree is
-        /// no longer valid after this call.
+        /// R parser anc classifier and remove all projections. AST is no longer 
+        /// valid after this call.
         /// </summary>
         public void BeginMassiveChange() {
             if (_inMassiveChange == 0) {

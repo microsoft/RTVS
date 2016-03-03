@@ -17,21 +17,22 @@ namespace Microsoft.R.Editor.EditorFactory
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class EditorInstanceFactory : IEditorFactory
     {
-        public IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, object textBuffer, IEditorDocumentFactory documentFactory)
+        public IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory)
         {
-            if (textBuffer == null)
-                throw new ArgumentNullException("textBuffer");
-
-            if (documentFactory == null)
-                throw new ArgumentNullException("documentFactory");
-
-            if (!(textBuffer is ITextBuffer))
+            if (textBuffer == null) {
+                throw new ArgumentNullException(nameof(textBuffer));
+            }
+            if (documentFactory == null) {
+                throw new ArgumentNullException(nameof(documentFactory));
+            }
+            if (!(textBuffer is ITextBuffer)) {
                 throw new ArgumentException("textBuffer parameter must be a text buffer");
+            }
 
-            if (documentFactory == null)
+            if (documentFactory == null) {
                 documentFactory = new DocumentFactory();
-
-            return new EditorInstance(workspaceItem, textBuffer as ITextBuffer, documentFactory);
+            }
+            return new EditorInstance(textBuffer as ITextBuffer, documentFactory);
         }
     }
 }

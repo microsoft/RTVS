@@ -9,14 +9,11 @@ using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Microsoft.Languager.Editor.Application;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -63,7 +60,6 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private string _filePath;
         private ICompositionService _compositionService;
         private IEditorInstance _editorIntance;
-        private IWorkspaceItem _workspaceItem;
 
         public CoreEditor(string text, string filePath, string contentTypeName) {
             _compositionService = EditorShell.Current.CompositionService;
@@ -72,7 +68,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
 
             if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0) {
                 if (contentTypeName == null)
-                    throw new ArgumentNullException("contentTypeName");
+                    throw new ArgumentNullException(nameof(contentTypeName));
 
                 _contentType = ContentTypeRegistryService.GetContentType(contentTypeName);
             }
@@ -151,9 +147,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
                 text = string.Empty;
 
             var diskBuffer = TextBufferFactoryService.CreateTextBuffer(text, ContentType);
-
-            _workspaceItem = new WorkspaceItem(filePath, filePath);
-            _editorIntance = EditorInstanceFactory.CreateEditorInstance(_workspaceItem, diskBuffer, _compositionService);
+            _editorIntance = EditorInstanceFactory.CreateEditorInstance(diskBuffer, _compositionService);
 
             ITextDataModel textDataModel;
 

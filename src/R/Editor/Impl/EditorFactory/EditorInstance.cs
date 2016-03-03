@@ -2,38 +2,29 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.EditorFactory
-{
+namespace Microsoft.R.Editor.EditorFactory {
     /// <summary>
     /// Represents instance of the editor to the host application
     /// </summary>
-    internal class EditorInstance : IEditorInstance
-    {
+    internal class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public EditorInstance(IWorkspaceItem workspaceItem, ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory)
-        {
-            if (workspaceItem == null)
-                throw new ArgumentNullException(nameof(workspaceItem));
-
-            if (diskBuffer == null)
+        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
+            if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
-
-            if (documentFactory == null)
+            }
+            if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
+            }
 
-            WorkspaceItem = workspaceItem;
             ViewBuffer = diskBuffer;
-
             _document = documentFactory.CreateDocument(this);
 
             ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
@@ -42,41 +33,24 @@ namespace Microsoft.R.Editor.EditorFactory
         #region IEditorInstance
         public object WpfControl => null;
 
-        public IWorkspaceItem WorkspaceItem { get; private set; }
         public ITextBuffer ViewBuffer { get; private set; }
 
-        public ICommandTarget GetCommandTarget(ITextView textView)
-        {
+        public ICommandTarget GetCommandTarget(ITextView textView) {
             return RMainController.FromTextView(textView);
         }
-
-        public string Caption
-        {
-            get { return Path.GetFileName(WorkspaceItem.Path); }
-        }
-
         #endregion
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_document != null)
-            {
+        protected virtual void Dispose(bool disposing) {
+            if (_document != null) {
                 ServiceManager.RemoveService<IEditorInstance>(ViewBuffer);
 
                 _document.Dispose();
                 _document = null;
             }
-
-            if (WorkspaceItem != null)
-            {
-                WorkspaceItem.Dispose();
-                WorkspaceItem = null;
-            }
         }
 
-        public void Dispose()
-        {
+        public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }

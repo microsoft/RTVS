@@ -202,4 +202,7 @@
   <data name="8012" xml:space="preserve">
     <value>Customizes the environment to improve the visibility of commands and options that are most relevant to doing data science and machine learning work using R. Includes RStudio-compatible keyboard shortcuts.</value>
   </data>
+  <data name="RFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>images\rfile.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

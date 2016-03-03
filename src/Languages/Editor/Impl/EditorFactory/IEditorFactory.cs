@@ -15,6 +15,6 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// </summary>
         /// <param name="workspaceItem">Workspace item that represents document in the workspace</param>
         /// <returns>An editor instance</returns>
-        IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, object textBuffer, IEditorDocumentFactory documentFactory);
+        IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory);
     }
 }
