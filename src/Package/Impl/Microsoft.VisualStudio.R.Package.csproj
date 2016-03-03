@@ -141,6 +141,7 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
+    <Compile Include="Packages\Attributes\ProvideCodeSnippetsAttribute.cs" />
     <Compile Include="Packages\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
@@ -154,10 +155,10 @@
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
-    <Compile Include="Packages\PackageCommand.cs" />
-    <Compile Include="Packages\LanguageEditorOptionsAttribute.cs" />
+    <Compile Include="Packages\Attributes\PackageCommand.cs" />
+    <Compile Include="Packages\Attributes\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
-    <Compile Include="Packages\ProvideNewFileTemplatesAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
     <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
@@ -243,12 +244,12 @@
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
     <Compile Include="Options\Attributes\ReplShortcutTypeConverter.cs" />
     <Compile Include="Options\R\Tools\RToolsSettingsImplementation.cs" />
-    <Compile Include="Packages\ProvideDebugEngineAttribute.cs" />
-    <Compile Include="Packages\ProvideDebugExceptionAttribute.cs" />
-    <Compile Include="Packages\ProvideDebugLanguageAttribute.cs" />
-    <Compile Include="Packages\ProvideComClassAttribute.cs" />
-    <Compile Include="Packages\ProvideDebugPortSupplierAttribute.cs" />
-    <Compile Include="Packages\ShowBraceCompletionAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideDebugEngineAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideDebugExceptionAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideDebugLanguageAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideComClassAttribute.cs" />
+    <Compile Include="Packages\Attributes\ProvideDebugPortSupplierAttribute.cs" />
+    <Compile Include="Packages\Attributes\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
     <Compile Include="Plots\XamlPresenter.xaml.cs">
       <DependentUpon>XamlPresenter.xaml</DependentUpon>
@@ -375,6 +376,7 @@
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Snippets\Files\for.snippet" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -687,6 +689,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Snippets\Files\SnippetsIndex.xml" />
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />

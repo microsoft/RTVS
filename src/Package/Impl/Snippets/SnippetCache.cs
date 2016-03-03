@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Snippets.Definitions;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TextManager.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Snippets {
-    internal sealed class SnippetCache: ISnippetCache {
+    internal sealed class SnippetCache : ISnippetCache {
         private static SnippetCache _instance;
         private Dictionary<string, VsExpansion> _expansions = new Dictionary<string, VsExpansion>();
 
@@ -22,8 +23,15 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
 
         public static ISnippetCache Current => _instance;
 
+        public static void Load() {
+            IVsExpansionManager expansionManager;
+            var textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            textManager2.GetExpansionManager(out expansionManager);
+            _instance = new SnippetCache(expansionManager);
+        }
+
         public VsExpansion? GetExpansion(string shortcut) {
-            if(_expansions.ContainsKey(shortcut)) {
+            if (_expansions.ContainsKey(shortcut)) {
                 return _expansions[shortcut];
             }
             return null;
@@ -37,31 +45,45 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
                 return;
             }
 
-            IVsExpansionEnumeration expansionEnumeration = null;
+            IVsExpansionEnumeration expansionEnumerator = null;
 
             int hr = expansionManager.EnumerateExpansions(
                 RGuidList.RLanguageServiceGuid,
-                0, /* fShortcutsOnly */
-                ExpansionClient.AllStandardSnippetTypes,
-                ExpansionClient.AllStandardSnippetTypes.Length,
-                1, /* fIncludeNULLType */
-                0, /* fIncludeDuplicates */
-                out expansionEnumeration
+                0,    // return all info
+                null, // return all types
+                0,    // return all types
+                0,    // do not return NULL type
+                0,    // do not return duplicates
+                out expansionEnumerator
             );
             ErrorHandler.ThrowOnFailure(hr);
 
-            var buffer = new ExpansionBuffer();
-            GCHandle handle = GCHandle.Alloc(buffer, GCHandleType.Pinned);
-            try {
-                uint fetched;
-                while (VSConstants.S_OK == (hr = expansionEnumeration.Next(1, new IntPtr[] { handle.AddrOfPinnedObject() }, out fetched))) {
-                    var expansion = ConvertToVsExpansionAndFree((ExpansionBuffer)handle.Target);
-                    Debug.Assert(!_expansions.ContainsKey(expansion.shortcut), Invariant($"Duplicate snippet shortcut {expansion.shortcut}"));
-                    _expansions[expansion.shortcut] = expansion;
+            if (expansionEnumerator != null) {
+                VsExpansion expansion = new VsExpansion();
+                IntPtr[] pExpansionInfo = new IntPtr[1];
+                try {
+                    // Allocate enough memory for one VSExpansion structure.
+                    // This memory is filled in by the Next method.
+                    pExpansionInfo[0] = Marshal.AllocCoTaskMem(Marshal.SizeOf(expansion));
+
+                    uint count = 0;
+                    expansionEnumerator.GetCount(out count);
+                    for (uint i = 0; i < count; i++) {
+                        uint fetched = 0;
+                        expansionEnumerator.Next(1, pExpansionInfo, out fetched);
+                        if (fetched > 0) {
+                            // Convert the returned blob of data into a structure.
+                            expansion = (VsExpansion)Marshal.PtrToStructure(pExpansionInfo[0], typeof(VsExpansion));
+                            if (!string.IsNullOrEmpty(expansion.shortcut)) {
+                                _expansions[expansion.shortcut] = expansion;
+                            }
+                        }
+                    }
+                } finally {
+                    if (pExpansionInfo[0] != null) {
+                        Marshal.FreeCoTaskMem(pExpansionInfo[0]);
+                    }
                 }
-                ErrorHandler.ThrowOnFailure(hr);
-            } finally {
-                handle.Free();
             }
         }
 

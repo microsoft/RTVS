@@ -7,6 +7,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -32,6 +33,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Snippets;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
@@ -68,6 +70,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    [ProvideCodeSnippetsAttribute(RContentTypeDefinition.LanguageName, RGuidList.RLanguageServiceGuidString, RGuidList.RPackageGuidString, "106")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
@@ -80,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
-            if(IsCommandLineMode()) {
+            if (IsCommandLineMode()) {
                 return;
             }
 
@@ -105,7 +108,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+
+            IdleTimeAction.Create(() => SnippetCache.Load(), 200, typeof(SnippetCache));
         }
 
         protected override void Dispose(bool disposing) {
