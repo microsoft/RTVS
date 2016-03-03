@@ -175,6 +175,7 @@
     <?include Profiles.wxi ?>
     <?include Themes.wxi ?>
     <?include RtvsPackage.wxi ?>
+    <?include Associations.wxi ?>
 
     <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>

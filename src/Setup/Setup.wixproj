@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Product.wxs" />
     <Content Include="Assemblies.wxi" />
+    <Content Include="Associations.wxi" />
     <Content Include="Themes.wxi" />
     <Content Include="FileNewTemplates.wxi" />
     <Content Include="packages.config" />

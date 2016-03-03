@@ -23,8 +23,9 @@
     <ComponentRef Id="Profiles" />
     <ComponentRef Id="HiddenProfiles" />
     <ComponentRef Id="HelpThemes" />
+    <ComponentRef Id="RegistryEntries" />
 
     <ComponentGroupRef Id="RtvsPackage" />
-    
+
   </Feature>
 </Include>
