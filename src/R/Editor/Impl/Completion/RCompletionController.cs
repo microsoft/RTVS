@@ -327,6 +327,17 @@ namespace Microsoft.R.Editor.Completion {
             return false;
         }
 
+        public override bool IsMuteCharacter(char typedCharacter) {
+            if(typedCharacter == '=') {
+                bool equalsCompletion = CompletionSession.SelectedCompletionSet
+                                                         .SelectionStatus.Completion
+                                                         .InsertionText.TrimEnd().EndsWith("=", StringComparison.Ordinal);
+                if (equalsCompletion) {
+                    return true;
+                }
+            }
+            return base.IsMuteCharacter(typedCharacter);
+        }
         /// <summary>
         /// Updates insertion text so it excludes final commit character 
         /// </summary>
