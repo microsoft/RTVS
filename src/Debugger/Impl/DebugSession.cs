@@ -126,7 +126,7 @@ namespace Microsoft.R.Debugger {
                     }
                 }
 
-                if (IsBrowserContext(inter.Contexts)) {
+                if (inter.Contexts.IsBrowser()) {
                     await inter.RespondAsync(command + "\n");
                     return true;
                 }
@@ -190,14 +190,14 @@ namespace Microsoft.R.Debugger {
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
 
-        public async Task Break(CancellationToken ct = default(CancellationToken)) {
+        public async Task BreakAsync(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
             using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
                 await inter.RespondAsync("browser()\n");
             }
         }
 
-        public async Task Continue(CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
             ExecuteBrowserCommandAsync("c", null, cancellationToken)
                 .SilenceException<MessageTransportException>()
@@ -310,17 +310,12 @@ namespace Microsoft.R.Debugger {
             _breakpoints.Remove(breakpoint.Location);
         }
 
-        private bool IsBrowserContext(IReadOnlyList<IRContext> contexts) {
-            return contexts.SkipWhile(context => context.CallFlag.HasFlag(RContextType.Restart))
-                .FirstOrDefault()?.CallFlag.HasFlag(RContextType.Browser) == true;
-        }
-
         private void InterruptBreakpointHitProcessing() {
             _bpHitFrame = null;
         }
 
         private void ProcessBrowsePrompt(IReadOnlyList<IRContext> contexts) {
-            if (!IsBrowserContext(contexts)) {
+            if (!contexts.IsBrowser()) {
                 InterruptBreakpointHitProcessing();
                 return;
             }
