@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>runif</Title>
+      <Shortcut>runif</Shortcut>
+      <Description>Code snippet for 'runif' function that generates random deviates</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>n</ID>
+          <Default>n</Default>
+          <ToolTip>Number of observations</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>min</ID>
+          <Default>min</Default>
+          <ToolTip>Lower limit of the distribution</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>max</ID>
+          <Default>max</Default>
+          <ToolTip>Upper limit of the distribution</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[runif($n$, min = $min$, max = $max$)]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

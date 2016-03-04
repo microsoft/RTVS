@@ -70,11 +70,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
-    [ProvideLanguageCodeExpansion(typeof(RLanguageService), 
-                                  RContentTypeDefinition.LanguageName, 0, 
-                                  RContentTypeDefinition.LanguageName, 
-                                  @"%InstallRoot%\R\Snippets\SnippetsIndex.xml",
-                                  SearchPaths = @"%InstallRoot%\R\Snippets\")]
+    [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0, 
+                           RContentTypeDefinition.LanguageName, @"Snippets\Files\SnippetsIndex.xml")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "General", @"Snippets\Files\General")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "Base", @"Snippets\Files\Base")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "Stats", @"Snippets\Files\Stats")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

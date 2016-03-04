@@ -5,8 +5,22 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>%InstallRoot%\R\Snippets\General\</DirPath>
+      <DirPath>Snippets\Files\General\</DirPath>
       <LocalizedName>Snippets</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>1033</Locale>
+      <DirPath>Snippets\Files\Base\</DirPath>
+      <LocalizedName>Base</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>1033</Locale>
+      <DirPath>Snippets\Files\Stats\</DirPath>
+      <LocalizedName>Stats</LocalizedName>
     </SnippetDir>
   </Language>
 </SnippetCollection>
