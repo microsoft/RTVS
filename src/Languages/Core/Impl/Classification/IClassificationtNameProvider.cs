@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Core.Classification {
     /// Provides classification names for a particular token types
     /// </summary>
     public interface IClassificationNameProvider<T> {
-        string GetClassificationName(T t);
+        string GetClassificationName(T t, ITextProvider textProvider);
     }
 
     /// <summary>
@@ -17,6 +17,6 @@ namespace Microsoft.Languages.Core.Classification {
     /// but editor projections are not supported yet.
     /// </summary>
     public interface IClassificationNameProvider {
-        string GetClassificationName(object o, out ITextRange range);
+        string GetClassificationName(object o, ITextProvider textProvider, out ITextRange range);
     }
 }

@@ -17,9 +17,9 @@ namespace Microsoft.R.Core.Test.Parser {
 "    ExpressionStatement  [\"str\" + 'abc']\r\n" +
 "        Expression  [\"str\" + 'abc']\r\n" +
 "            TokenOperator  [+ [6...7)]\r\n" +
-"                StringValue  [\"str\" [0...5)]\r\n" +
+"                Variable  [\"str\"]\r\n" +
 "                TokenNode  [+ [6...7)]\r\n" +
-"                StringValue  ['abc' [8...13)]\r\n";
+"                Variable  ['abc']\r\n";
 
             ParserTest.VerifyParse(expected, "\"str\" + 'abc'");
         }

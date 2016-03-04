@@ -7,25 +7,27 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Classification;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Classification
-{
+namespace Microsoft.R.Editor.Classification {
     [Export(typeof(IClassificationNameProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class RClassificationNameProvider: IClassificationNameProvider<RToken>, IClassificationNameProvider
     {
-        public string GetClassificationName(object o, out ITextRange range)
+        public string GetClassificationName(object o, ITextProvider textProvider, out ITextRange range)
         {
             var token = (RToken)o;
             range = token;
-            return GetClassificationName(token);
+            return GetClassificationName(token, textProvider);
         }
 
-        public string GetClassificationName(RToken t)
+        public string GetClassificationName(RToken t, ITextProvider textProvider)
         {
+            if(t.IsString(textProvider)) {
+                return PredefinedClassificationTypeNames.String;
+            }
+
             switch (t.TokenType)
             {
                 case RTokenType.Comment:
@@ -36,8 +38,6 @@ namespace Microsoft.R.Editor.Classification
                 case RTokenType.Keyword:
                     return PredefinedClassificationTypeNames.Keyword;
 
-                case RTokenType.String:
-                    return PredefinedClassificationTypeNames.String;
                 case RTokenType.Number:
                     return PredefinedClassificationTypeNames.Number;
                 case RTokenType.Operator:
@@ -66,7 +66,7 @@ namespace Microsoft.R.Editor.Classification
                     {
                         return RClassificationTypes.TypeFunction;
                     }
-                    break;
+                    return PredefinedClassificationTypeNames.Identifier;
             }
 
             return "Default";
