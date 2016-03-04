@@ -21,6 +21,7 @@
 [314:1] identifier
 [315:1] operator
 [316:1] number
+[320:2] identifier
 [320:3] Markdown Code
 [329:6] Markdown Alt Text
 [380:8] Markdown List Item

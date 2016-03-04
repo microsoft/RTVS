@@ -29,8 +29,8 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [CompositeTest]
-        [InlineData(1, 0, "", TextChangeType.Structure)]
-        [InlineData(1, 2, "a", TextChangeType.Structure)]
+        [InlineData(1, 0, "", TextChangeType.Trivial)]
+        [InlineData(1, 2, "a", TextChangeType.Trivial)]
         [InlineData(1, 2, "\"", TextChangeType.Structure)]
         public void TextChange_EditString(int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- a + \"boo\"";
