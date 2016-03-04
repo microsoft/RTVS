@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.R.Debugger;
@@ -53,9 +54,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     var wrapper = new EvaluationWrapper(evaluation);
 
-                    if (wrapper.Dimensions.Count != 2) {
+                    if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
+                        // the variable should have been removed
+                        SetError(
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                Package.Resources.VariableGrid_Missing,
+                                evaluation.Expression));
+                    } else if (wrapper.Dimensions.Count != 2) {
                         // the same evaluation changed to non-matrix
-                        SetError(Invariant($"object '{evaluation.Expression}' is not two dimensional."));
+                        SetError(
+                            string.Format(
+                                CultureInfo.InvariantCulture,
+                                Package.Resources.VariableGrid_NotTwoDimension,
+                                evaluation.Expression));
                     } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
                         || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
                         ClearError();

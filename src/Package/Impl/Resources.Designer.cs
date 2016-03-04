@@ -1411,6 +1411,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to object {0} is missing..
+        /// </summary>
+        public static string VariableGrid_Missing {
+            get {
+                return ResourceManager.GetString("VariableGrid_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to object {0} is not two dimensional..
+        /// </summary>
+        public static string VariableGrid_NotTwoDimension {
+            get {
+                return ResourceManager.GetString("VariableGrid_NotTwoDimension", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Variable Explorer.
         /// </summary>
         public static string VariableWindowCaption {
