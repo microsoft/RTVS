@@ -77,6 +77,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     case RTokenType.Number:
                     case RTokenType.Complex:
                     case RTokenType.Logical:
+                    case RTokenType.String:
                     case RTokenType.Null:
                     case RTokenType.Missing:
                     case RTokenType.NaN:
@@ -84,6 +85,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                         currentOperationType = HandleConstant(context);
                         break;
 
+                    // Variables and function calls
                     case RTokenType.Identifier:
                         currentOperationType = HandleIdentifier(context);
                         break;
@@ -587,6 +589,10 @@ namespace Microsoft.R.Core.AST.Expressions {
 
                 case RTokenType.Logical:
                     term = new LogicalValue();
+                    break;
+
+                case RTokenType.String:
+                    term = new StringValue();
                     break;
 
                 case RTokenType.Null:

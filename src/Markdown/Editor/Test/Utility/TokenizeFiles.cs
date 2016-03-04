@@ -10,15 +10,17 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 
-namespace Microsoft.Markdown.Editor.Test.Utility {
+namespace Microsoft.Markdown.Editor.Test.Utility
+{
     [ExcludeFromCodeCoverage]
-    public static class TokenizeFiles {
+    public static class TokenizeFiles
+    {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void TokenizeFile<TToken, TTokenType, TTokenizer>(MarkdownTestFilesFixture fixture, string name, string language)
-            where TTokenizer : ITokenizer<TToken>, new()
-            where TToken : IToken<TTokenType> {
+        public static void TokenizeFile<TToken, TTokenType, TTokenizer>(MarkdownTestFilesFixture fixture, string name, string language) 
+            where TTokenizer: ITokenizer<TToken>, new()
+            where TToken: IToken<TTokenType> {
             Action a = () => TokenizeFileImplementation<TToken, TTokenType, TTokenizer>(fixture, name);
             a.ShouldNotThrow();
         }
@@ -36,7 +38,10 @@ namespace Microsoft.Markdown.Editor.Test.Utility {
             string actual = DebugWriter.WriteTokens<TToken, TTokenType>(tokens);
 
             if (_regenerateBaselineFiles) {
-                baselineFile = Path.Combine(fixture.SourcePath, @"Tokenization\", Path.GetFileName(testFile)) + ".tokens";
+                // Update this to your actual enlistment if you need to update baseline
+                string enlistmentPath = @"F:\RTVS\src\Markdown\Editor\Test\Files\Tokenization";
+                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
+
                 TestFiles.UpdateBaseline(baselineFile, actual);
             } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);

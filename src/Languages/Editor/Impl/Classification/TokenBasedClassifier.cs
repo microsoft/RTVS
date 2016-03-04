@@ -204,7 +204,7 @@ namespace Microsoft.Languages.Editor.Classification {
 
         private void AddClassificationFromToken(List<ClassificationSpan> classifications, ITextSnapshot textSnapshot, TTokenClass token) {
             // We don't necessarily map each token to a classification
-            string classificationName = _classificationNameProvider.GetClassificationName(token, new TextProvider(textSnapshot));
+            string classificationName = _classificationNameProvider.GetClassificationName(token);
 
             if (!string.IsNullOrEmpty(classificationName)) {
                 IClassificationType ct = ClassificationRegistryService.GetClassificationType(classificationName);
@@ -239,7 +239,7 @@ namespace Microsoft.Languages.Editor.Classification {
             foreach (object token in composite.TokenList) {
                 // We don't necessarily map each token to a classification
                 ITextRange range;
-                string classificationName = compositeNameProvider.GetClassificationName(token, new TextProvider(textSnapshot), out range);
+                string classificationName = compositeNameProvider.GetClassificationName(token, out range);
 
                 if (!string.IsNullOrEmpty(classificationName)) {
                     IClassificationType ct = ClassificationRegistryService.GetClassificationType(classificationName);

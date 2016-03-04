@@ -28,7 +28,7 @@ namespace Microsoft.R.Core.Test.Parser {
                                 ArgumentList  [11...28)
                                     ExpressionArgument  [11...20)
                                         Expression  ['^check']
-                                            Variable  ['^check']
+                                            StringValue  ['^check' [11...19)]
                                         TokenNode  [, [19...20)]
                                     ExpressionArgument  [21...28)
                                         Expression  [install]

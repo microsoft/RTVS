@@ -136,7 +136,7 @@ GlobalScope  [Global]
                                                                     ArgumentList  [964...990)
                                                                         ExpressionArgument  [964...990)
                                                                             Expression  ["'subset' must be logical"]
-                                                                                Variable  ["'subset' must be logical"]
+                                                                                StringValue  ["'subset' must be logical" [964...990)]
                                                                     TokenNode  [) [990...991)]
                                                 ExpressionStatement  [r & !is.na(r)]
                                                     Expression  [r & !is.na(r)]
@@ -295,7 +295,7 @@ GlobalScope  [Global]
                                     ArgumentList  [1425...1433)
                                         ExpressionArgument  [1425...1433)
                                             Expression  ["subset"]
-                                                Variable  ["subset"]
+                                                StringValue  ["subset" [1425...1433)]
                                     TokenNode  [) [1433...1434)]
     ExpressionStatement  [subset.default <- function(x, subset, ...) {\n    if(!is.logical(subset)) stop("'subset' must be logical")\n    x[subset & !is.na(subset)]\n}]
         Expression  [subset.default <- function(x, subset, ...) {\n    if(!is.logical(subset)) stop("'subset' must be logical")\n    x[subset & !is.na(subset)]\n}]
@@ -343,7 +343,7 @@ GlobalScope  [Global]
                                             ArgumentList  [1514...1540)
                                                 ExpressionArgument  [1514...1540)
                                                     Expression  ["'subset' must be logical"]
-                                                        Variable  ["'subset' must be logical"]
+                                                        StringValue  ["'subset' must be logical" [1514...1540)]
                                             TokenNode  [) [1540...1541)]
                         ExpressionStatement  [x[subset & !is.na(subset)]]
                             Expression  [x[subset & !is.na(subset)]]
@@ -546,7 +546,7 @@ GlobalScope  [Global]
                                                         ArgumentList  [1881...1907)
                                                             ExpressionArgument  [1881...1907)
                                                                 Expression  ["'subset' must be logical"]
-                                                                    Variable  ["'subset' must be logical"]
+                                                                    StringValue  ["'subset' must be logical" [1881...1907)]
                                                         TokenNode  [) [1907...1908)]
                         ExpressionStatement  [x[subset & !is.na(subset), vars, drop = drop]]
                             Expression  [x[subset & !is.na(subset), vars, drop = drop]]
@@ -768,7 +768,7 @@ GlobalScope  [Global]
                                             ArgumentList  [2493...2536)
                                                 ExpressionArgument  [2493...2506)
                                                     Expression  ["data.frame"]
-                                                        Variable  ["data.frame"]
+                                                        StringValue  ["data.frame" [2493...2505)]
                                                     TokenNode  [, [2505...2506)]
                                                 ExpressionArgument  [2507...2536)
                                                     Expression  [c(list(`_data`), e[!matched])]
@@ -833,7 +833,7 @@ GlobalScope  [Global]
                                     ArgumentList  [2603...2614)
                                         ExpressionArgument  [2603...2614)
                                             Expression  ["transform"]
-                                                Variable  ["transform"]
+                                                StringValue  ["transform" [2603...2614)]
                                     TokenNode  [) [2614...2615)]
     ExpressionStatement  [transform.default <- function(`_data`,...)\n    transform.data.frame(data.frame(`_data`),...)]
         Expression  [transform.default <- function(`_data`,...)\n    transform.data.frame(data.frame(`_data`),...)]

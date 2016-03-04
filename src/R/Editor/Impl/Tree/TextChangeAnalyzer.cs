@@ -21,10 +21,14 @@ namespace Microsoft.R.Editor.Tree {
                 IAstNode node;
                 PositionType positionType;
 
-                positionType = change.EditorTree.AstRoot.GetPositionNode(change.NewStart, out node);
-                change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
-                if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+                change.PendingChanges.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
+                if (change.PendingChanges.TextChangeType == TextChangeType.Token) {
                     return;
+                } else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+                    change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
+                    if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+                        return;
+                    }
                 }
             }
 
@@ -57,16 +61,17 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         private static bool IsChangeDestructiveForChildNodes(IAstNode node, ITextRange changedRange) {
-            if (changedRange.End <= node.Start || changedRange.Start >= node.End) {
+            if(changedRange.End <= node.Start || changedRange.Start >= node.End) {
                 return false;
-            } else if (node.Children.Count == 0) {
+            }
+            else if(node.Children.Count == 0) {
                 return true;
             }
 
             bool result = false;
             foreach (var child in node.Children) {
                 result |= IsChangeDestructiveForChildNodes(child, changedRange);
-                if (result) {
+                if(result) {
                     break;
                 }
             }
@@ -120,6 +125,31 @@ namespace Microsoft.R.Editor.Tree {
 
             context.ChangedComment = comment;
             return TextChangeType.Comment;
+        }
+
+        private static TextChangeType CheckChangeInsideString(TextChangeContext context, out IAstNode node, out PositionType positionType) {
+            positionType = context.EditorTree.AstRoot.GetPositionNode(context.NewStart, out node);
+
+            if (positionType == PositionType.Token) {
+                TokenNode tokenNode = node as TokenNode;
+                Debug.Assert(tokenNode != null);
+
+                if (tokenNode.Token.TokenType == RTokenType.String) {
+
+                    if (context.OldText.IndexOfAny(_stringSensitiveCharacters) >= 0) {
+                        return TextChangeType.Structure;
+                    }
+
+                    if (context.NewText.IndexOfAny(_stringSensitiveCharacters) >= 0) {
+                        return TextChangeType.Structure;
+                    }
+
+                    context.ChangedNode = node;
+                    return TextChangeType.Token;
+                }
+            }
+
+            return TextChangeType.Trivial;
         }
     }
 }

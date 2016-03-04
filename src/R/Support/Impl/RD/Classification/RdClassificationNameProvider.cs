@@ -2,13 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Classification;
-using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.RD.Tokens;
 using Microsoft.VisualStudio.Language.StandardClassification;
 
 namespace Microsoft.R.Support.RD.Classification {
     internal sealed class RdClassificationNameProvider : IClassificationNameProvider<RdToken> {
-        public string GetClassificationName(RdToken t, ITextProvider textProvider) {
+        public string GetClassificationName(RdToken t) {
             switch (t.TokenType) {
                 case RdTokenType.Comment:
                     return PredefinedClassificationTypeNames.Comment;

@@ -39,11 +39,6 @@ namespace Microsoft.R.Core.Tokens {
             return false;
         }
 
-        public bool IsString(ITextProvider textProvider) {
-            var text = textProvider.GetText(this);
-            return text.Length > 0 && text[0] == '\'' || text[0] == '\"';
-        }
-
         public int CompareTo(RToken other) {
             if (other == null)
                 return -1;

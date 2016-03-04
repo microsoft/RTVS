@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Classification;
-using Microsoft.Languages.Core.Text;
 using Microsoft.Markdown.Editor.Tokens;
 
 namespace Microsoft.Markdown.Editor.Classification {
     internal sealed class MarkdownClassificationNameProvider : IClassificationNameProvider<MarkdownToken> {
-        public string GetClassificationName(MarkdownToken t, ITextProvider textProvider) {
+        public string GetClassificationName(MarkdownToken t) {
             switch (t.TokenType) {
                 case MarkdownTokenType.AltText:
                     return MarkdownClassificationTypes.AltText;
