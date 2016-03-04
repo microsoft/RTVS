@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -11,6 +12,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -76,13 +78,14 @@ namespace Microsoft.R.Debugger.Test {
                     }
                     await bpHit.ShouldBeHitAtNextPromptAsync();
 
-                    (await debugSession.GetStackFramesAsync()).Should()
-                        .BeAt(sf1, 5, "f(n - 1)")
-                        .At(sf2, 3, "g(n - 1)")
-                        .At(sf1, 3, "f(n - 1)")
-                        .At(sf2, 3, "g(n - 1)")
-                        .At(sf1, 3, "f(4)")
-                        .At((string)null, null);
+                    (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                        { (string)null, null, "f(4)" },
+                        { sf1, 3, "g(n - 1)" },
+                        { sf2, 3, "f(n - 1)" },
+                        { sf1, 3, "g(n - 1)" },
+                        { sf2, 3, "f(n - 1)" },
+                        { sf1, 5, MatchAny<string>.Instance },
+                    });
                 }
             }
         }
