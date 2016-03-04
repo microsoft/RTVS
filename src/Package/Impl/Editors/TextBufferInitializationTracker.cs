@@ -12,7 +12,6 @@ using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -79,8 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                 IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
 
                 if (factory != null && editorInstance == null) {
-                    VsWorkspaceItem workspaceItem = new VsWorkspaceItem(_documentName, _documentName, _hierarchy, _itemid);
-                    editorInstance = factory.CreateEditorInstance(workspaceItem, diskBuffer, documentFactory);
+                    editorInstance = factory.CreateEditorInstance(diskBuffer, documentFactory);
                     adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
                 }
             } finally {

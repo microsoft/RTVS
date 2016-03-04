@@ -14,8 +14,7 @@ namespace Microsoft.Markdown.Editor.Document {
     [ContentType(MdContentTypeDefinition.ContentType)]
     public class MdDocumentFactory : IEditorDocumentFactory {
         public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            var document = new MdEditorDocument(editorInstance.ViewBuffer, editorInstance.WorkspaceItem);
-            return document;
+            return new MdEditorDocument(editorInstance.ViewBuffer);
         }
     }
 }

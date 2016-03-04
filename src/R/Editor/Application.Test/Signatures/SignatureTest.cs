@@ -91,6 +91,26 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
+        [Test]
+        [Category.Interactive]
+        public void R_EqualsCompletion01() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                PrepareFunctionIndex();
+                FunctionIndexUtility.GetFunctionInfoAsync("addmargins").Wait(3000);
+
+                script.DoIdle(100);
+                script.Type("addmargins(FU");
+                script.DoIdle(300);
+                script.Type("=");
+                script.DoIdle(300);
+
+                string expected = "addmargins(FUN = )";
+                string actual = script.EditorText;
+
+                actual.Should().Be(expected);
+            }
+        }
+
         private void PrepareFunctionIndex() {
             FunctionIndex.Initialize();
             FunctionIndex.BuildIndexAsync().Wait();

@@ -146,7 +146,7 @@ namespace Microsoft.R.Core.AST {
         public static bool IsPositionInsideString(this AstRoot ast, int position) {
             // We don't want to auto-format inside strings
             TokenNode node = ast.NodeFromPosition(position) as TokenNode;
-            return node != null && node.Token.TokenType == RTokenType.String;
+            return node != null && node.Token.TokenType == RTokenType.Identifier;
         }
 
         public static string IsInLibraryStatement(this AstRoot ast, int position) {

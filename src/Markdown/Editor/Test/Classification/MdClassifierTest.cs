@@ -19,8 +19,7 @@ using Microsoft.VisualStudio.Text.Classification;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
-    public class MarkdownClassifierTest
-    {
+    public class MarkdownClassifierTest {
         private readonly MarkdownTestFilesFixture _files;
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
@@ -31,14 +30,12 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
         [Test]
         [Category.Md.Classifier]
-        public void ClassifyMarkdownFileTest01()
-        {
+        public void ClassifyMarkdownFileTest01() {
             Action a = () => ClassifyFile(_files, @"Classification\01.md");
             a.ShouldNotThrow();
         }
 
-        private static void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName)
-        {
+        private static void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName) {
             string testFile = fixture.GetDestinationPath(fileName);
             string content = fixture.LoadDestinationFile(fileName);
 
@@ -54,16 +51,10 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             string baselineFile = testFile + ".colors";
 
-            if (_regenerateBaselineFiles)
-            {
-                // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\Markdown\Editor\Test\Files\Classification";
-                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".colors";
-
+            if (_regenerateBaselineFiles) {
+                baselineFile = Path.Combine(fixture.SourcePath, @"Classification\", Path.GetFileName(testFile)) + ".colors";
                 TestFiles.UpdateBaseline(baselineFile, actual);
-            }
-            else
-            {
+            } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);
             }
         }

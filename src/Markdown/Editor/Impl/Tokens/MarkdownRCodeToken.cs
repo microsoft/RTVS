@@ -24,7 +24,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
         public ReadOnlyCollection<object> TokenList {
             get {
                 var rTokenizer = new RTokenizer();
-                var tokens = rTokenizer.Tokenize(_textProvider, Start, Length);
+                var tokens = rTokenizer.Tokenize(_textProvider, Start, Length, excludePartialTokens: true);
                 var list = new List<object>(tokens);
                 return new ReadOnlyCollection<object>(list);
             }

@@ -193,7 +193,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.Break()
+            DebugSession.BreakAsync()
                 .SilenceException<MessageTransportException>()
                 .SilenceException<RException>()
                 .DoNotWait();
@@ -331,7 +331,7 @@ namespace Microsoft.R.Debugger.Engine {
                 lock (_browseLock) {
                     if (_sentContinue != true) {
                         _sentContinue = true;
-                        continueMethod = ct => DebugSession.Continue(ct);
+                        continueMethod = ct => DebugSession.ContinueAsync(ct);
                     }
                 }
 

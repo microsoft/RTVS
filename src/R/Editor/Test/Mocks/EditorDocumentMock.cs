@@ -42,16 +42,6 @@ namespace Microsoft.R.Editor.Test.Mocks
             get { return EditorTree.TextBuffer; }
         }
 
-        public IWorkspace Workspace
-        {
-            get { return null; }
-        }
-
-        public IWorkspaceItem WorkspaceItem
-        {
-            get { return null; }
-        }
-
 #pragma warning disable 67
         private readonly object _syncObj = new object();
 

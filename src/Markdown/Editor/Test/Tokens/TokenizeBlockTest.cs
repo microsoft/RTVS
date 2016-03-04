@@ -78,7 +78,7 @@ block
             tokens[0].Should().HaveType(MarkdownTokenType.CodeStart);
             tokens[1].Should().BeOfType<MarkdownRCodeToken>()
                 .And.BeAssignableTo<ICompositeToken>()
-                .Which.TokenList.Should().HaveCount(3);
+                .Which.TokenList.Should().HaveCount(4);
             tokens[2].Should().HaveType(MarkdownTokenType.CodeEnd);
         }
 

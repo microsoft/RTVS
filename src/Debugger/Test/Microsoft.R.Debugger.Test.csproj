@@ -62,6 +62,10 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BreakpointHitDetector.cs" />
+    <Compile Include="CallStackTest.cs" />
+    <Compile Include="DebugStackFrameAssertions.cs" />
+    <Compile Include="DebugSessionExtensions.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="DebugReplTest.cs" />
     <Compile Include="ValuesTest.cs" />

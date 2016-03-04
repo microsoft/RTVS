@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.VisualStudio.Text;
-using Microsoft.Languages.Editor.Workspace;
 
 namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
@@ -21,29 +20,8 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         event EventHandler<EventArgs> DocumentClosing;
 
         /// <summary>
-        /// Fires when document is activated in the host IDE and its view is getting focus.
-        /// </summary>
-        event EventHandler<EventArgs> Activated;
-
-        /// <summary>
-        /// Fires when document is deactivated in the IDE such as when user switches 
-        /// to another tab in a tabbed interface or to another window.
-        /// </summary>
-        event EventHandler<EventArgs> Deactivated;
-
-        /// <summary>
-        /// Document representation in the current workspace.
-        /// </summary>
-        IWorkspaceItem WorkspaceItem { get; }
-
-        /// <summary>
         /// Document text buffer
         /// </summary>
         ITextBuffer TextBuffer { get; }
-
-        /// <summary>
-        /// Workspace (project/site/application).
-        /// </summary>
-        IWorkspace Workspace { get; }
     }
 }

@@ -90,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
                     if (doc == null) {
-                        var editorDocument = new REditorDocument(tb, new ReplWorkspaceItem());
+                        var editorDocument = new REditorDocument(tb);
                     }
                 }
             }
@@ -102,19 +102,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                         doc.Close();
                     }
                 }
-            }
-        }
-
-        sealed class ReplWorkspaceItem : IWorkspaceItem {
-            public string Moniker {
-                get { return "Interactive Window"; }
-            }
-
-            public string Path {
-                get { return string.Empty; }
-            }
-
-            public void Dispose() {
             }
         }
     }

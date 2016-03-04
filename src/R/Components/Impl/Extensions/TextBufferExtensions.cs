@@ -1,4 +1,7 @@
-﻿using Microsoft.VisualStudio.Text;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.Extensions {
     public static class TextBufferExtensions {
@@ -26,5 +29,21 @@ namespace Microsoft.R.Components.Extensions {
             return true;
         }
 
+        public static ITextDocument ToTextDocument(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = null;
+            textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
+            return textDocument;
+        }
+
+        public static string GetFilePath(this ITextBuffer textBuffer) {
+            return textBuffer.ToTextDocument()?.FilePath;
+        }
+
+        public static void Save(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = textBuffer.ToTextDocument();
+            if (textDocument != null && textDocument.IsDirty) {
+                textDocument.Save();
+            }
+        }
     }
 }

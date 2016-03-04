@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             // Now check if position is inside a string and if so, suppress completion list
             var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
-            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.String) {
+            if (tokenNode != null && tokenNode.Token.IsString(context.AstRoot.TextProvider)) {
                 // No completion in string
                 return providers;
             }
@@ -102,7 +102,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
         public static bool CanShowFileCompletion(AstRoot ast, int position, out string directory) {
             TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
             directory = null;
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
+            if ((node is TokenNode) && ((TokenNode)node).Token.IsString(ast.TextProvider)) {
                 string text = node.Root.TextProvider.GetText(node);
                 // Bring file/folder completion when either string is empty or ends with /
                 // assuming that / specifies directory where files are.

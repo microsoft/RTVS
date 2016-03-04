@@ -264,12 +264,11 @@ rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2})
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportpdf({0}, {1}, {2}, '{3}')
+rtvs:::graphics.ide.exportpdf({0}, {1}, {2})
 ",
                 QuotedRPath(exportedFilePath),
                 7,
-                7,
-                "special"
+                7
             );
 
             var inputs = Interactive(code);

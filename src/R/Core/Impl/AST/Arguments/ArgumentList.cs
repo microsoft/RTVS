@@ -31,7 +31,6 @@ namespace Microsoft.R.Core.AST.Arguments {
                     return new MissingArgument();
 
                 case RTokenType.Identifier:
-                case RTokenType.String:
                 case RTokenType.Logical:
                 case RTokenType.Complex:
                 case RTokenType.NaN:

@@ -3,10 +3,10 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static void SaveFile(this ITextView textView) {
             RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
-            string filePath = VsFileInfo.GetFileName(textView);
+            string filePath = textView.TextBuffer.GetFilePath();
             rdt.SaveFileIfDirty(filePath);
         }
     }
