@@ -16,8 +16,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         private readonly MethodInfo _testMethod;
 
-        public RSessionTest(TestMethodInfoFixture testMethod) {
-            _testMethod = testMethod.Method;
+        public RSessionTest(TestMethodFixture testMethod) {
+            _testMethod = testMethod.MethodInfo;
         }
 
         [Test]

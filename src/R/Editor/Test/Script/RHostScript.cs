@@ -48,7 +48,6 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 }
 
                 if (SessionProvider != null) {
-                    SessionProvider.Dispose();
                     SessionProvider = null;
                 }
             }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
@@ -63,7 +64,23 @@ namespace Microsoft.UnitTests.Core.XUnit {
             TestTraceListener.Ensure();
             MessageBusOverride messageBusOverride = new MessageBusOverride(messageBus)
                 .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, _testCase.TestMethod.TestClass.Class));
-            return RunAsyncOverride(diagnosticMessageSink, messageBusOverride, constructorArguments, aggregator, cancellationTokenSource);
+
+            var testInformationFixtureIndex = Array.IndexOf(constructorArguments, ClassRunner.TestMethodFixtureDummy);
+            if (testInformationFixtureIndex == -1) {
+                return RunAsyncOverride(diagnosticMessageSink, messageBusOverride, constructorArguments, aggregator, cancellationTokenSource);
+            }
+
+            var testMethodFixture = new TestMethodFixture(_testCase.TestMethod.Method.ToRuntimeMethod());
+            var constructorArgumentsCopy = InjectTestMethodFixture(constructorArguments, testInformationFixtureIndex, testMethodFixture);
+            var testCaseRunTask = RunAsyncOverride(diagnosticMessageSink, messageBusOverride, constructorArgumentsCopy, aggregator, cancellationTokenSource);
+            var observeTask = CreateObserveTask(testMethodFixture.FailedObservedTask, messageBusOverride, cancellationTokenSource);
+
+            return Task.WhenAny(testCaseRunTask, observeTask)
+                .Unwrap()
+                .ContinueWith((t, s) => {
+                    ((IDisposable) s).Dispose();
+                    return t.Result;
+                }, testMethodFixture, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
         }
 
         protected abstract Task<RunSummary> RunAsyncOverride(IMessageSink diagnosticMessageSink, MessageBusOverride messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource);
@@ -76,6 +93,31 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public void Serialize(IXunitSerializationInfo info) {
             info.AddValue("testCase", _testCase);
             info.AddValue("suppressDebugFail", _suppressDebugFail);
+        }
+
+        private static object[] InjectTestMethodFixture(object[] constructorArguments, int testInformationFixtureIndex, TestMethodFixture testMethodFixture) {
+            var constructorArgumentsCopy = new object[constructorArguments.Length];
+            Array.Copy(constructorArguments, constructorArgumentsCopy, constructorArguments.Length);
+            constructorArgumentsCopy[testInformationFixtureIndex] = testMethodFixture;
+            return constructorArgumentsCopy;
+        }
+        
+        private Task<RunSummary> CreateObserveTask(Task failedObservedTask, IMessageBus messageBus, CancellationTokenSource cancellationTokenSource) {
+            var tcs = new TaskCompletionSource<RunSummary>();
+            var stopwatch = Stopwatch.StartNew();
+
+            failedObservedTask.ContinueWith(t => {
+                stopwatch.Stop();
+                if (!t.IsFaulted) {
+                    return;
+                }
+
+                var runSummary = new RunSummary { Total = 1, Failed = 1, Time = (decimal)stopwatch.Elapsed.TotalSeconds };
+                messageBus.QueueMessage(new TestFailed(new XunitTest(TestCase, DisplayName), runSummary.Time, string.Empty, t.Exception));
+                cancellationTokenSource.Cancel();
+                tcs.SetResult(runSummary);
+            }, TaskContinuationOptions.ExecuteSynchronously);
+            return tcs.Task;
         }
     }
 }

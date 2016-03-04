@@ -31,9 +31,9 @@ namespace Microsoft.R.Host.Client.Test {
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<string> OriginalPlotFilePaths { get; } = new List<string>();
 
-        public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodInfoFixture testMethod) {
+        public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
-            _testMethod = testMethod.Method;
+            _testMethod = testMethod.MethodInfo;
         }
 
         private int X(double percentX) {

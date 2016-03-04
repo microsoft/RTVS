@@ -14,11 +14,13 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class CancelAll : IAsyncLifetime {
+            private readonly TestMethodFixture _testMethodFixture;
             private readonly MethodInfo _testMethod;
             private readonly RSession _session;
 
-            public CancelAll(TestMethodInfoFixture testMethod) {
-                _testMethod = testMethod.Method;
+            public CancelAll(TestMethodFixture testMethod) {
+                _testMethodFixture = testMethod;
+                _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, null, () => {});
             }
 
@@ -27,6 +29,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
                 }, 50000);
+
+                _testMethodFixture.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
@@ -42,7 +46,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     responceTask = interaction.RespondAsync("while(TRUE){}\n");
                 }
 
-                await ParallelTools.InvokeAsync(4, i => _session.CancelAllAsync()).FailOnTimeout(5000);
+                await ParallelTools.InvokeAsync(4, i => _session.CancelAllAsync());
 
                 _session.IsHostRunning.Should().BeTrue();
                 responceTask.Status.Should().Be(TaskStatus.Canceled);

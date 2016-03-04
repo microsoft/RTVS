@@ -21,8 +21,8 @@ namespace Microsoft.R.Debugger.Test {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
 
-        public DebugReplTest(TestMethodInfoFixture testMethodInfo) {
-            _testMethod = testMethodInfo.Method;
+        public DebugReplTest(TestMethodFixture testMethod) {
+            _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
             _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
         }
