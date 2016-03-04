@@ -72,10 +72,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0, 
                            RContentTypeDefinition.LanguageName, @"Snippets\Files\SnippetsIndex.xml")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "General", @"Snippets\Files\General")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "Base", @"Snippets\Files\Base")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "GGPlot", @"Snippets\Files\GGPlot")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "Stats", @"Snippets\Files\Stats")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "R", @"Snippets\Files\R")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "base", @"Snippets\Files\base")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "ggplot", @"Snippets\Files\ggplot")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "stats", @"Snippets\Files\stats")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

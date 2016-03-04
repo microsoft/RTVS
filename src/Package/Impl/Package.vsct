@@ -1159,6 +1159,11 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
+    <!-- Snippets group -->
+    <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS" priority="0x0500">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+    </CommandPlacement>
+
     <!-- Formatting group -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>

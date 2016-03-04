@@ -5,29 +5,29 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\General\</DirPath>
-      <LocalizedName>Snippets</LocalizedName>
+      <DirPath>Snippets\Files\R\</DirPath>
+      <LocalizedName>R</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\Base\</DirPath>
-      <LocalizedName>Base</LocalizedName>
+      <DirPath>Snippets\Files\base\</DirPath>
+      <LocalizedName>base</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\Stats\</DirPath>
-      <LocalizedName>Stats</LocalizedName>
+      <DirPath>Snippets\Files\stats\</DirPath>
+      <LocalizedName>stats</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\GGplot\</DirPath>
-      <LocalizedName>GGplot</LocalizedName>
+      <DirPath>Snippets\Files\ggplot\</DirPath>
+      <LocalizedName>ggplot</LocalizedName>
     </SnippetDir>
   </Language>
 </SnippetCollection>
