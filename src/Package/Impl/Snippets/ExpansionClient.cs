@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
@@ -141,10 +142,11 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
                 var expansion = TextBuffer.As<IVsExpansion>();
 
                 _earlyEndExpansionHappened = false;
-                _shortcut = "for"; // Get non-ws text before caret
+                Span span;
+                _shortcut = TextView.GetItemBeforeCaret(out span);
 
                 VsExpansion? exp = SnippetCache.Current.GetExpansion(_shortcut);
-                var ts = TextSpanFromPoint(caretPoint);
+                var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
                 if (exp.HasValue) {
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
@@ -164,13 +166,23 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
             return hr;
         }
 
-        private TextSpan TextSpanFromPoint(SnapshotPoint point) {
+        private static TextSpan TextSpanFromPoint(SnapshotPoint point) {
             var ts = new TextSpan();
             ITextSnapshotLine line = point.GetContainingLine();
             ts.iStartLine = line.LineNumber;
             ts.iEndLine = line.LineNumber;
             ts.iStartIndex = point.Position;
             ts.iEndIndex = point.Position;
+            return ts;
+        }
+
+        private static TextSpan TextSpanFromSpan(ITextView textView, Span span) {
+            var ts = new TextSpan();
+            ITextSnapshotLine line = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
+            ts.iStartLine = line.LineNumber;
+            ts.iEndLine = line.LineNumber;
+            ts.iStartIndex = span.Start - line.Start;
+            ts.iEndIndex = span.End - line.Start;
             return ts;
         }
 

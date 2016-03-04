@@ -91,6 +91,7 @@
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
     <Compile Include="Completion\Providers\CompletionUtilities.cs" />
+    <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\LoadedPackagesProvider.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
     <Compile Include="Data\RSessionDataObject.cs" />
@@ -115,7 +116,6 @@
     <Compile Include="Completion\RCompletionSource.cs" />
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
-    <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\DocumentFactory.cs" />

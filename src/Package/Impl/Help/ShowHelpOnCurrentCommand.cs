@@ -54,16 +54,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     return;
                 }
 
-                    // Fetch identifier under the cursor
-                    string item = GetItemUnderCaret();
+                // Fetch identifier under the cursor
+                string item = GetItemUnderCaret();
                 if (item == null || item.Length >= MaxHelpItemLength) {
                     return;
                 }
 
-                        // First check if expression can be evaluated. If result is non-empty
-                        // then R knows about the item and '?item' interaction will succed.
-                        // If response is empty then we'll try '??item' instead.
-                        string prefix = "?";
+                // First check if expression can be evaluated. If result is non-empty
+                // then R knows about the item and '?item' interaction will succed.
+                // If response is empty then we'll try '??item' instead.
+                string prefix = "?";
                 ShowHelpOnCurrentAsync(prefix, item).DoNotWait();
             } catch (Exception ex) {
                 Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
@@ -75,54 +75,52 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private async Task ShowHelpOnCurrentAsync(string prefix, string item) {
-                        try {
+            try {
                 using (IRSessionEvaluation evaluation = await _workflow.RSession.BeginEvaluationAsync(isMutating: false)) {
-                                REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                    REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
                     if (result.ParseStatus == RParseStatus.OK &&
                         string.IsNullOrEmpty(result.Error)) {
                         if (string.IsNullOrEmpty(result.StringResult) ||
                             result.StringResult == "NA") {
-                                        prefix = "??";
-                                    }
-                                } else {
-                                    // Parsing or other errors, bail out
-                                    Debug.Assert(false,
-                                        string.Format(CultureInfo.InvariantCulture,
-                                        "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
+                            prefix = "??";
+                        }
+                    } else {
+                        // Parsing or other errors, bail out
+                        Debug.Assert(false,
+                            string.Format(CultureInfo.InvariantCulture,
+                            "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
                     }
-                                }
+                }
             } catch (RException) {
             } catch (OperationCanceledException) {
-                            }
+            }
 
-                        // Now actually request the help. First call may throw since 'starting help server...'
-                        // message in REPL is actually an error (comes in red) so we'll get RException.
-                        int retries = 0;
-                        while (retries < 3) {
+            // Now actually request the help. First call may throw since 'starting help server...'
+            // message in REPL is actually an error (comes in red) so we'll get RException.
+            int retries = 0;
+            while (retries < 3) {
                 using (IRSessionInteraction interaction = await _workflow.RSession.BeginInteractionAsync(isVisible: false)) {
-                                try {
-                                    await interaction.RespondAsync(prefix + item + Environment.NewLine);
-                                } catch (RException ex) {
-                        if ((uint) ex.HResult == 0x80131500) {
-                                        // Typically 'starting help server...' so try again
-                                        retries++;
-                                        continue;
-                                    }
-                    } catch (OperationCanceledException) {}
-                            }
-
-                            break;
+                    try {
+                        await interaction.RespondAsync(prefix + item + Environment.NewLine);
+                    } catch (RException ex) {
+                        if ((uint)ex.HResult == 0x80131500) {
+                            // Typically 'starting help server...' so try again
+                            retries++;
+                            continue;
                         }
-                    }
+                    } catch (OperationCanceledException) { }
+                }
+
+                break;
+            }
+        }
 
         private string GetItemUnderCaret() {
             ITextView textView = GetActiveView();
-            if (textView != null && !textView.Caret.InVirtualSpace) {
-                SnapshotPoint position = textView.Caret.Position.BufferPosition;
-                ITextSnapshotLine line = position.GetContainingLine();
-                string lineText = line.GetText();
-                return GetItem(lineText, position.Position - line.Start);
-            }
+            if (textView != null) {
+                Span span;
+                return textView.GetItemUnderCaret(out span);
+             }
             return string.Empty;
         }
 
@@ -136,31 +134,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 return textView;
             }
             return null;
-        }
-
-        private string GetItem(string lineText, int position) {
-            int start = 0;
-            int end = lineText.Length;
-            for (int i = position - 1; i >= 0; i--) {
-                char ch = lineText[i];
-                if (!RTokenizer.IsIdentifierCharacter(ch)) {
-                    start = i + 1;
-                    break;
-                }
-            }
-            for (int i = position; i < lineText.Length; i++) {
-                char ch = lineText[i];
-                if (!RTokenizer.IsIdentifierCharacter(ch)) {
-                    end = i;
-                    break;
-                }
-            }
-
-            if (end > start) {
-                return lineText.Substring(start, end - start);
-            }
-
-            return string.Empty;
         }
     }
 }
