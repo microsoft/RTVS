@@ -5,8 +5,8 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>%InstallRoot%\R\Snippets\</DirPath>
-      <LocalizedName>R</LocalizedName>
+      <DirPath>%InstallRoot%\R\Snippets\General\</DirPath>
+      <LocalizedName>Snippets</LocalizedName>
     </SnippetDir>
   </Language>
 </SnippetCollection>

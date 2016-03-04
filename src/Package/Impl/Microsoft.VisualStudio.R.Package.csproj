@@ -141,7 +141,6 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
-    <Compile Include="Packages\Attributes\ProvideCodeSnippetsAttribute.cs" />
     <Compile Include="Packages\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
