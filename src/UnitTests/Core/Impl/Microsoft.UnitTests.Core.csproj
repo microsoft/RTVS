@@ -95,6 +95,7 @@
     <Compile Include="NSubstitute\Mef\NSubstituteExportProvider.cs" />
     <Compile Include="Threading\ControlledTaskScheduler.cs" />
     <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
+    <Compile Include="Threading\ParallelTools.cs" />
     <Compile Include="Threading\UIThreadHelper.cs" />
     <Compile Include="UI\ContainerHost.cs" />
     <Compile Include="XUnit\AssemblyRunner.cs" />
