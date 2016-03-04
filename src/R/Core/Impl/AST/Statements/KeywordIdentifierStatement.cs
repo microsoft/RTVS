@@ -22,7 +22,7 @@ namespace Microsoft.R.Core.AST.Statements {
                 if (this.OpenBrace != null) {
                     RToken token = context.Tokens.CurrentToken;
 
-                    if (token.TokenType == RTokenType.Identifier || token.TokenType == RTokenType.String) {
+                    if (token.TokenType == RTokenType.Identifier || token.IsString(context.TextProvider)) {
                         this.Identifier = RParser.ParseToken(context, this);
 
                         this.CloseBrace = RParser.ParseCloseBraceSequence(context, this);

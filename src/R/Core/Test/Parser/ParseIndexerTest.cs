@@ -234,10 +234,10 @@ namespace Microsoft.R.Core.Test.Parser {
 "                                                    Variable  [data]\r\n" +
 "                                        TokenNode  [) [28...29)]\r\n" +
 "                                    TokenNode  [== [29...31)]\r\n" +
-"                                    StringValue  [\"old_name\" [31...41)]\r\n" +
+"                                    Variable  [\"old_name\"]\r\n" +
 "                    TokenNode  [] [41...42)]\r\n" +
 "                TokenNode  [<- [43...45)]\r\n" +
-"                StringValue  [\"new_name\" [46...56)]\r\n";
+"                Variable  [\"new_name\"]\r\n";
 
             ParserTest.VerifyParse(expected, "colnames(data)[colnames(data)==\"old_name\"] <- \"new_name\"");
         }

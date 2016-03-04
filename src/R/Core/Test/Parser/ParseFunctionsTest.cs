@@ -213,7 +213,7 @@ ExpressionExpected Token [3...4)
                         TokenNode  [1.0 [8...11)]
                         TokenNode  [= [11...12)]
                         Expression  ['z']
-                            StringValue  ['z' [12...15)]
+                            Variable  ['z']
                 TokenNode  [) [15...16)]
 
 ExpressionExpected Token [5...6)

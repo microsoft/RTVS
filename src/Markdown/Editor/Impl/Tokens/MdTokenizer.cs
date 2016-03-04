@@ -153,9 +153,6 @@ namespace Microsoft.Markdown.Editor.Tokens {
             // block in R: '''{r qplot, x=y, ...}
             bool rLanguage = block && (_cs.CurrentChar == '{' && (_cs.NextChar == 'r' || _cs.NextChar == 'R'));
             rLanguage |= !block && (_cs.CurrentChar == 'r' || _cs.CurrentChar == 'R');
-
-            // Move past {
-            _cs.MoveToNextChar();
             int codeStart = _cs.Position;
 
             while (!_cs.IsEndOfStream()) {

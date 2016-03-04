@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
@@ -36,28 +37,6 @@ namespace Microsoft.R.Editor.Test.Tree {
 
             EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 10, oldLength, newLength, newText);
             tree.PendingChanges.TextChangeType.Should().Be(expected);
-        }
-
-        [Test]
-        public void TextChange_EditString04() {
-            string expression = "\"boo\"";
-
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
-            tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
-
-            var token = tree.AstRoot.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IScope>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IStatement>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IExpression>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<TokenNode>()
-                .Which.Token;
-
-            token.TokenType.Should().Be(RTokenType.String);
-            token.Start.Should().Be(0);
-            token.Length.Should().Be(6);
         }
 
         [CompositeTest]

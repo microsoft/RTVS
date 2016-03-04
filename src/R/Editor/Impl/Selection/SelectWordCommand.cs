@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Selection {
                         var positionInLine = rCaretPosition - line.Start;
                         var token = tokens.FirstOrDefault(t => t.Contains(positionInLine));
                         if (token != null) {
-                            if (token.TokenType == RTokenType.String) {
+                            if (token.IsString(new TextStream(text))) {
                                 // Select word inside string
                                 spanToSelect = GetWordSpan(text, line.Start, positionInLine);
                             } else {
