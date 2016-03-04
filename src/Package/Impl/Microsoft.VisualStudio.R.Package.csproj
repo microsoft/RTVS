@@ -406,6 +406,7 @@
     </Content>
     <Content Include="Snippets\Files\GGPlot\barchart.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>

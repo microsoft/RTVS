@@ -22,5 +22,12 @@
       <DirPath>Snippets\Files\Stats\</DirPath>
       <LocalizedName>Stats</LocalizedName>
     </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>1033</Locale>
+      <DirPath>Snippets\Files\GGplot\</DirPath>
+      <LocalizedName>GGplot</LocalizedName>
+    </SnippetDir>
   </Language>
 </SnippetCollection>
