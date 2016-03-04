@@ -155,8 +155,6 @@
     <Compile Include="Utility\StringUtility.cs" />
     <Compile Include="Workspace\IFile.cs" />
     <Compile Include="Workspace\IFolder.cs" />
-    <Compile Include="Workspace\IWorkspace.cs" />
-    <Compile Include="Workspace\IWorkspaceItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

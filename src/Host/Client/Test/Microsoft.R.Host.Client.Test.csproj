@@ -78,6 +78,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
+    <Compile Include="Session\RSessionProviderTest.cs" />
+    <Compile Include="Session\RSessionTest.cs" />
+    <Compile Include="Session\RSessionTest.CancelAll.cs" />
+    <Compile Include="Session\RSessionTest.InteractionEvaluation.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>

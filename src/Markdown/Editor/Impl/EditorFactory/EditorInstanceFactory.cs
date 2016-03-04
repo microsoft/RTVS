@@ -19,12 +19,12 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
     [Export(typeof(IEditorFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class EditorInstanceFactory : IEditorFactory {
-        public IEditorInstance CreateEditorInstance(IWorkspaceItem workspaceItem, object textBuffer, IEditorDocumentFactory documentFactory) {
+        public IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory) {
             if (textBuffer == null)
-                throw new ArgumentNullException("textBuffer");
+                throw new ArgumentNullException(nameof(textBuffer));
 
             if (documentFactory == null)
-                throw new ArgumentNullException("documentFactory");
+                throw new ArgumentNullException(nameof(documentFactory));
 
             if (!(textBuffer is ITextBuffer))
                 throw new ArgumentException("textBuffer parameter must be a text buffer");
@@ -32,7 +32,7 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
             if (documentFactory == null)
                 documentFactory = new MdDocumentFactory();
 
-            return new EditorInstance(workspaceItem, textBuffer as ITextBuffer, documentFactory);
+            return new EditorInstance(textBuffer as ITextBuffer, documentFactory);
         }
     }
 }

@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
@@ -15,7 +14,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document.Markdown;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -82,12 +80,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                 textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
                 Debug.Assert(textDocument != null);
 
-                VsWorkspaceItem workspaceItem = new VsWorkspaceItem(textDocument.FilePath, textDocument.FilePath);
-
                 ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
-                IEditorInstance editorInstance = factory.CreateEditorInstance(workspaceItem, textBuffer, new VsMdEditorDocumentFactory());
+                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new VsMdEditorDocumentFactory());
             }
         }
     }

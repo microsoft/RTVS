@@ -20,14 +20,7 @@ namespace Microsoft.Markdown.Editor.Document {
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
 
-        [Import(AllowDefault = true)]
-        public IWorkspace Workspace { get; set; }
-
-        public IWorkspaceItem WorkspaceItem { get; private set; }
-
 #pragma warning disable 67
-        public event EventHandler<EventArgs> Activated;
-        public event EventHandler<EventArgs> Deactivated;
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
 
@@ -35,12 +28,10 @@ namespace Microsoft.Markdown.Editor.Document {
         #endregion
 
         #region Constructors
-        public MdEditorDocument(ITextBuffer textBuffer, IWorkspaceItem workspaceItem) {
+        public MdEditorDocument(ITextBuffer textBuffer) {
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             this.TextBuffer = textBuffer;
-            this.WorkspaceItem = workspaceItem;
-
             ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
         }
         #endregion

@@ -291,7 +291,6 @@
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
     <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
-    <Compile Include="Repl\ReplWindow.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -345,10 +344,6 @@
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
     <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
-    <Compile Include="Workspace\VsFileInfo.cs" />
-    <Compile Include="Workspace\IVsWorkspaceItem.cs" />
-    <Compile Include="Workspace\VsWorkspace.cs" />
-    <Compile Include="Workspace\VsWorkspaceItem.cs" />
     <Compile Include="Wpf\Commands.cs" />
     <Compile Include="Wpf\ConfigurationControl.cs" />
     <Compile Include="Wpf\Controls.cs" />
@@ -668,6 +663,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Images\ReplWindowIcon.png" />
+    <Content Include="Images\RFile.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Profiles\RCombined.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -843,7 +842,9 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Workspace\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddTemplatesToVsixSources" AfterTargets="GetVsixSourceItems">

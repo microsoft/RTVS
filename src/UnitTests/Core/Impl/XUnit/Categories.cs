@@ -90,6 +90,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class CompletionAttribute : CategoryAttribute {
                 public CompletionAttribute() : base("R.Completion") {}
             }
+            
+            [ExcludeFromCodeCoverage]
+            public class DebuggerAttribute : CategoryAttribute {
+                public DebuggerAttribute() : base("R.Debugger") { }
+            }
 
             [ExcludeFromCodeCoverage]
             public class EditorTreeAttribute : CategoryAttribute {
@@ -122,10 +127,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
-            public class DebuggerAttribute : CategoryAttribute {
-                public DebuggerAttribute() : base("R.Debugger") { }
+            public class SessionAttribute : CategoryAttribute {
+                public SessionAttribute() : base("R.Session") {}
             }
-
 
             [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {

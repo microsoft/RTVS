@@ -4,19 +4,16 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document.R;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Workspace;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -83,12 +80,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
                 textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
                 Debug.Assert(textDocument != null);
 
-                VsWorkspaceItem workspaceItem = new VsWorkspaceItem(textDocument.FilePath, textDocument.FilePath);
-
                 ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
-                IEditorInstance editorInstance = factory.CreateEditorInstance(workspaceItem, textBuffer, new VsREditorDocumentFactory());
+                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new VsREditorDocumentFactory());
             }
         }
     }

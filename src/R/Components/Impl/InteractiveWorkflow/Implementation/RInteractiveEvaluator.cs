@@ -45,7 +45,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     await Session.StartHostAsync(new RHostStartupInfo {
                         Name = "REPL",
                         RBasePath = _settings.RBasePath,
-                        RCommandLineArguments = _settings.RCommandLineArguments,
+                        RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         WorkingDirectory = _settings.WorkingDirectory
                     });
@@ -79,23 +79,24 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public bool CanExecuteCode(string text) {
-            if (!text.StartsWith("?", StringComparison.Ordinal)) {
-                var ast = RParser.Parse(text);
-                if (ast.Errors.Count > 0) {
-                    // if we have any errors other than an incomplete statement send the
-                    // bad code to R.  Otherwise continue reading input.
-                    foreach (var error in ast.Errors) {
-                        if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
-                            error.ErrorType != ParseErrorType.CloseBraceExpected &&
-                            error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
-                            error.ErrorType != ParseErrorType.FunctionBodyExpected &&
-                            error.ErrorType != ParseErrorType.RightOperandExpected) {
-                            return true;
-                        }
-                    }
+            if (text.StartsWith("?", StringComparison.Ordinal)) {
+                return true;
+            }
 
-                    return false;
+            var ast = RParser.Parse(text);
+            if (ast.Errors.Count > 0) {
+                // if we have any errors other than an incomplete statement send the
+                // bad code to R.  Otherwise continue reading input.
+                foreach (var error in ast.Errors) {
+                    if (error.ErrorType != ParseErrorType.CloseCurlyBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseBraceExpected &&
+                        error.ErrorType != ParseErrorType.CloseSquareBracketExpected &&
+                        error.ErrorType != ParseErrorType.FunctionBodyExpected &&
+                        error.ErrorType != ParseErrorType.RightOperandExpected) {
+                        return true;
+                    }
                 }
+                return false;
             }
             return true;
         }
@@ -189,7 +190,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 var spanCount = projectionBuffer.CurrentSnapshot.SpanCount;
-                projectionBuffer.ReplaceSpans(spanCount - 2, 1, new List<object> {GetPrompt()}, EditOptions.None, new object());
+                projectionBuffer.ReplaceSpans(spanCount - 2, 1, new List<object> { GetPrompt() }, EditOptions.None, new object());
             });
         }
 

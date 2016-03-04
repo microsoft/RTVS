@@ -29,5 +29,21 @@ namespace Microsoft.R.Components.Extensions {
             return true;
         }
 
+        public static ITextDocument ToTextDocument(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = null;
+            textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
+            return textDocument;
+        }
+
+        public static string GetFilePath(this ITextBuffer textBuffer) {
+            return textBuffer.ToTextDocument()?.FilePath;
+        }
+
+        public static void Save(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = textBuffer.ToTextDocument();
+            if (textDocument != null && textDocument.IsDirty) {
+                textDocument.Save();
+            }
+        }
     }
 }

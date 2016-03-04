@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define VsApp="VisualStudio.$(var.VSRegVer)" ?>
+  <?define Extensions=.r;.rmd;.md;.rd?>
+  <DirectoryRef Id="TARGETDIR">
+    <Component Id="RegistryEntries" Guid="{D13D77B0-D6B1-4E23-94CD-479FA22BC3C9}">
+      <!-- Icons -->
+      <RegistryKey Root="HKCR" Key="VisualStudio.r.$(var.VSRegVer)\DefaultIcon">
+        <RegistryValue Type="string" Value="[INSTALLFOLDER]RFile.ico" />
+      </RegistryKey>
+      
+      <!-- TODO: add more icons: RMD, RD -->
+      <!--<RegistryKey Root="HKCR" Key="VisualStudio.rmd.$(var.VSRegVer)\DefaultIcon">
+        <RegistryValue Type="string" Value="[INSTALLFOLDER]Microsoft.VisualStudio.R.Package.dll,502" />
+      </RegistryKey>-->
+
+      <!-- Open With... and Edit verbs -->
+      <?foreach Ext in $(var.Extensions)?>
+      
+      <RegistryKey Root="HKCR" Key="VisualStudio$(var.Ext).$(var.VSRegVer)\shell\open\Command">
+        <RegistryValue Type="string" Value="&quot;[CommonIdeFolder]devenv.exe&quot; /dde &quot;%1&quot;"/>
+      </RegistryKey>
+      <RegistryKey Root="HKCR" Key="VisualStudio$(var.Ext).$(var.VSRegVer)\shell\Open\ddeexec">
+        <RegistryValue Type="string" Value="Open(&quot;%1&quot;)" />
+      </RegistryKey>
+      <RegistryKey Root="HKCR" Key="VisualStudio$(var.Ext).$(var.VSRegVer)\shell\Open\ddeexec\Application">
+        <RegistryValue Type="string" Value="VisualStudio.$(var.VSRegVer)" />
+      </RegistryKey>
+      <RegistryKey Root="HKCR" Key="VisualStudio$(var.Ext).$(var.VSRegVer)\shell\Open\ddeexec\Topic">
+        <RegistryValue Type="string" Value="system" />
+      </RegistryKey>
+      <RegistryKey Root="HKCR" Key="$(var.Ext)\OpenWithProgids">
+        <RegistryValue Type="string" Name="VisualStudio$(var.Ext).$(var.VSRegVer)" Value="Default Value"/>
+      </RegistryKey>
+      
+      <?endforeach?>
+    </Component>
+  </DirectoryRef>
+</Include>
