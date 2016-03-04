@@ -6,6 +6,13 @@ using System.Collections.Generic;
 
 namespace Microsoft.Common.Core.Collections {
     public static class ListExtensions {
+        public static void RemoveWhere<T>(this IList<T> list, Func<T, bool> predicate) {
+            for (var i = list.Count - 1; i >= 0; i--) {
+                if (predicate(list[i])) {
+                    list.RemoveAt(i);
+                }
+            }
+        }
 
         public static bool AddSorted<T>(this IList<T> list, T value, IComparer<T> comparer = null) {
             var index = list.BinarySearch(value, comparer);

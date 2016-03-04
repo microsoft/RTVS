@@ -45,6 +45,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly IRHostClientApp _hostClientApp;
         private readonly Action _onDispose;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
+        private readonly DisposeToken _disposeToken;
         private volatile bool _isHostRunning;
         private volatile bool _delayedMutatedOnReadConsole;
 
@@ -65,6 +66,7 @@ namespace Microsoft.R.Host.Client.Session {
             Id = id;
             _hostClientApp = hostClientApp;
             _onDispose = onDispose;
+            _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
                 if (!_delayedMutatedOnReadConsole) {
                     return;
@@ -84,6 +86,10 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public void Dispose() {
+            if (!_disposeToken.TryMarkDisposed()) {
+                return;
+            }
+
             _host?.Dispose();
             Disposed?.Invoke(this, EventArgs.Empty);
             _onDispose();
@@ -144,10 +150,11 @@ namespace Microsoft.R.Host.Client.Session {
             _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
             ClearPendingRequests();
 
+            var initializationTask = _initializationTcs.Task;
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
             ScheduleAfterHostStarted(startupInfo);
 
-            await _initializationTcs.Task;
+            await initializationTask;
         }
 
         public async Task StopHostAsync() {
@@ -200,7 +207,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RCommandLineArguments, timeout);
+                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce.CancellationToken);
             } catch (Exception ex) {
