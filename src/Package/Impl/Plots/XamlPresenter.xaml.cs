@@ -3,10 +3,8 @@
 
 using System.Windows;
 using System.Windows.Controls;
-using System.Xaml;
 
-namespace Microsoft.VisualStudio.R.Package.Plots
-{
+namespace Microsoft.VisualStudio.R.Package.Plots {
     /// <summary>
     /// Interaction logic for XamlPresenter.xaml
     /// </summary>
@@ -14,55 +12,29 @@ namespace Microsoft.VisualStudio.R.Package.Plots
     {
         private readonly IPlotContentProvider _contentProvider;
 
-        private UIElement _watermarkElement;
-
         public XamlPresenter(IPlotContentProvider contentProvider)
         {
             InitializeComponent();
-
-            SetWatermark();
 
             _contentProvider = contentProvider;
             _contentProvider.PlotChanged += ContentProvider_PlotChanged;
         }
 
-        public UIElement PlotElement
-        {
-            get
-            {
-                return this.RootContainer.Child;
-            }
-        }
-
-        private void SetWatermark()
-        {
-            if (_watermarkElement == null)
-            {
-                // TODO: define this in XAML file. why dynamic creation? you lazy boy
-                _watermarkElement = (UIElement)XamlServices.Parse(
-                    "<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\" " +
-                    "Foreground=\"DarkGray\" " +
-                    "TextAlignment=\"Center\" " +
-                    "VerticalAlignment=\"Center\" " +
-                    "HorizontalAlignment=\"Center\" " +
-                    "TextWrapping=\"Wrap\">" +
-                    Package.Resources.EmptyPlotWindowWatermark +
-                    "</TextBlock>");
-            }
-            this.RootContainer.Child = _watermarkElement;
-
-            //XamlServices.Save(this.RootContainer.Child);
-        }
-
         private void ContentProvider_PlotChanged(object sender, PlotChangedEventArgs e)
         {
-            if (e.NewPlotElement == null)
+            this.RootContainer.Child = e.NewPlotElement;
+            this.Watermark.Visibility = e.NewPlotElement == null ? Visibility.Visible : Visibility.Hidden;
+            this.Scroller.Visibility = e.NewPlotElement == null ? Visibility.Hidden : Visibility.Visible;
+
+            var element = e.NewPlotElement as FrameworkElement;
+            if (element != null)
             {
-                SetWatermark();
-            }
-            else
-            {
-                this.RootContainer.Child = e.NewPlotElement;
+                // Force calculate the size of the plot element
+                element.UpdateLayout();
+
+                // If it doesn't fit into our available space, display the scrollbars
+                bool showScrollbars = element.ActualWidth > ActualWidth || element.ActualHeight > ActualHeight;
+                Scroller.HorizontalScrollBarVisibility = Scroller.VerticalScrollBarVisibility  = showScrollbars ? ScrollBarVisibility.Visible : ScrollBarVisibility.Hidden;
             }
         }
     }
