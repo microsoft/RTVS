@@ -16,6 +16,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Snippets;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -23,12 +24,17 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// <summary>
-    /// Main HTML editor command controller
+    /// Main interactive window command controller
     /// </summary>
     public class ReplCommandController : ViewController {
+        private SnippetController _snippetController;
+
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
             ServiceManager.AddService(this, textView);
+
+            // TODO: make this extensible via MEF like commands and controllers in the editor
+            _snippetController = new SnippetController(textView, textBuffer);
         }
 
         public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer) {
@@ -58,6 +64,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 return CommandStatus.SupportedAndEnabled;
             }
 
+            var status = _snippetController.Status(group, id);
+            if(status != CommandStatus.NotSupported) {
+                return status;
+            }
+
             return base.Status(group, id);
         }
 
@@ -81,6 +92,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                         return CommandResult.Executed;
                     }
                 }
+            }
+
+            var status = _snippetController.Status(group, id);
+            if (status != CommandStatus.NotSupported) {
+                return _snippetController.Invoke(group, id, inputArg, ref outputArg);
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);
