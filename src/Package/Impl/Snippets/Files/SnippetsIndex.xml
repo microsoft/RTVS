@@ -5,8 +5,8 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\R\</DirPath>
-      <LocalizedName>R</LocalizedName>
+      <DirPath>Snippets\Files\general\</DirPath>
+      <LocalizedName>General</LocalizedName>
     </SnippetDir>
     <SnippetDir>
       <OnOff>On</OnOff>
@@ -28,6 +28,13 @@
       <Locale>1033</Locale>
       <DirPath>Snippets\Files\ggplot\</DirPath>
       <LocalizedName>ggplot</LocalizedName>
+    </SnippetDir>
+    <SnippetDir>
+      <OnOff>On</OnOff>
+      <Installed>true</Installed>
+      <Locale>1033</Locale>
+      <DirPath>Snippets\Files\rodbc\</DirPath>
+      <LocalizedName>rodbc</LocalizedName>
     </SnippetDir>
   </Language>
 </SnippetCollection>
