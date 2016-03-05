@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Annotate</Title>
+      <Shortcut>ggann</Shortcut>
+      <Description>Code snippet for the graph annotation text</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>x</ID>
+          <Default>x</Default>
+          <ToolTip>Label x position</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>y</ID>
+          <Default>y</Default>
+          <ToolTip>Label y position</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>label</ID>
+          <Default>label</Default>
+          <ToolTip>Label expression</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[annotate("text", x = $x$, y = $y$, label = "$label$")]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
