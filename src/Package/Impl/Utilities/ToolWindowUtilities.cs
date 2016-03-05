@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -13,6 +14,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 return RPackage.Current.FindWindowPane<T>(typeof(T), id, true) as T;
             }
             return null;
+        }
+
+        public static IVsWindowFrame FindToolWindow(Guid guid) {
+            var uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+            IVsWindowFrame frame = null;
+            uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out frame);
+            return frame;
         }
 
         public static T ShowWindowPane<T>(int id, bool focus) where T : ToolWindowPane {
