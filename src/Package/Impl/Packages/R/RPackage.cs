@@ -72,11 +72,20 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0, 
                            RContentTypeDefinition.LanguageName, @"Snippets\Files\SnippetsIndex.xml")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "general", @"Snippets\Files\general")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "base",    @"Snippets\Files\base")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "ggplot",  @"Snippets\Files\ggplot")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "stats",   @"Snippets\Files\stats")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",   @"Snippets\Files\rodbc")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis",      @"Snippets\Files\analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "datasets",      @"Snippets\Files\datasets")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "distributions", @"Snippets\Files\distributions")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "flow",          @"Snippets\Files\flow")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics",      @"Snippets\Files\graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators",     @"Snippets\Files\operators")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",         @"Snippets\Files\rodbc")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\Files\mrs\analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\Files\mrs\chunking")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\Files\mrs\computeContext")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\Files\mrs\data")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\Files\mrs\distributed")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\Files\mrs\graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\Files\mrs\transforms")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

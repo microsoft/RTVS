@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <DirectoryRef Id="INSTALLFOLDER">
+    <Component Id="ProductAssemblies" Guid="{37B3AC0F-F90A-441F-A2FE-2991AF6C2E03}">
+      <File Source="$(var.BinDir)\extension.vsixmanifest" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Languages.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Actions.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Components.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Debugger.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Debugger.Engine.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.dll" />
+      <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pkgdef" />
+      <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
+      <File Source="$(var.BinDir)\websocket-sharp.dll" />
+      <File Source="$(var.BinDir)\Images\RFile.ico" />
+    </Component>
+    <?ifdef Debug?>
+      <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
+        <File Source="$(var.BinDir)\Microsoft.VisualStudio.R.Package.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Debugger.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Debugger.Engine.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Actions.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Support.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Components.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.Languages.Editor.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Host.Client.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.pdb" />
+      </Component>
+    <?endif?>
+  </DirectoryRef>
+</Include>

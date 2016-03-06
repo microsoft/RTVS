@@ -119,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             ITextView textView = GetActiveView();
             if (textView != null) {
                 Span span;
-                return textView.GetItemUnderCaret(out span);
+                return textView.GetIdentifierUnderCaret(out span);
              }
             return string.Empty;
         }

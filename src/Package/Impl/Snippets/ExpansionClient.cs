@@ -143,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.Snippets {
 
                 _earlyEndExpansionHappened = false;
                 Span span;
-                _shortcut = TextView.GetItemBeforeCaret(out span);
+                _shortcut = TextView.GetItemBeforeCaret((x) => !char.IsWhiteSpace(x), out span);
 
                 VsExpansion? exp = SnippetCache.Current.GetExpansion(_shortcut);
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
