@@ -29,8 +29,8 @@ namespace Microsoft.R.Host.Client.Test {
 
         private readonly MethodInfo _testMethod;
 
-        public XamlGraphicsDeviceTest(TestMethodInfoFixture testMethod) {
-            _testMethod = testMethod.Method;
+        public XamlGraphicsDeviceTest(TestMethodFixture testMethod) {
+            _testMethod = testMethod.MethodInfo;
         }
 
         private double X(double percentX) {

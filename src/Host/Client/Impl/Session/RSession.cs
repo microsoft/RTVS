@@ -55,6 +55,12 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
 
+        /// <summary>
+        /// For testing purpose only
+        /// Do not expose this property to the IRSession interface
+        /// </summary>
+        internal RHost RHost => _host;
+
         static RSession() {
             var tcs = new CancellationTokenSource();
             tcs.Cancel();

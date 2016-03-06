@@ -609,5 +609,7 @@ namespace Microsoft.R.Host.Client {
                 }
             }
         }
+
+        internal Task GetRHostRunTask() => _runTask;
     }
 }
