@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.Snippets {
+namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Export(typeof(IControllerFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Snippets Command Controller")]

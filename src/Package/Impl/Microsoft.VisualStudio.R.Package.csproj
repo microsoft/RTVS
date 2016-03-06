@@ -320,12 +320,12 @@
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
-    <Compile Include="Snippets\Definitions\ISnippetCache.cs" />
-    <Compile Include="Snippets\ExpansionBuffer.cs" />
-    <Compile Include="Snippets\ExpansionClient.cs" />
-    <Compile Include="Snippets\SnippetCache.cs" />
-    <Compile Include="Snippets\SnippetController.cs" />
-    <Compile Include="Snippets\SnippetControllerFactory.cs" />
+    <Compile Include="Expansions\ISnippetCache.cs" />
+    <Compile Include="Expansions\ExpansionBuffer.cs" />
+    <Compile Include="Expansions\ExpansionClient.cs" />
+    <Compile Include="Expansions\SnippetCache.cs" />
+    <Compile Include="Expansions\SnippetController.cs" />
+    <Compile Include="Expansions\SnippetControllerFactory.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
@@ -372,399 +372,399 @@
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Snippets\Files\flow\else.snippet">
+    <Content Include="Snippets\flow\else.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\trycatch.snippet">
+    <Content Include="Snippets\flow\trycatch.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\repeat.snippet">
+    <Content Include="Snippets\flow\repeat.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\if.snippet">
+    <Content Include="Snippets\flow\if.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\while.snippet">
+    <Content Include="Snippets\flow\while.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\for.snippet">
+    <Content Include="Snippets\flow\for.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\bargraph.snippet">
+    <Content Include="Snippets\graphics\bargraph.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\annotate.snippet">
+    <Content Include="Snippets\graphics\annotate.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\dotplot.snippet">
+    <Content Include="Snippets\graphics\dotplot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\linegraph.snippet">
+    <Content Include="Snippets\graphics\linegraph.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\linegraphdot.snippet">
+    <Content Include="Snippets\graphics\linegraphdot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\areagraph.snippet">
+    <Content Include="Snippets\graphics\areagraph.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\areastackgraph.snippet">
+    <Content Include="Snippets\graphics\areastackgraph.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\boxplot.snippet">
+    <Content Include="Snippets\graphics\boxplot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\annotatef.snippet">
+    <Content Include="Snippets\graphics\annotatef.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\labels.snippet">
+    <Content Include="Snippets\graphics\labels.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\logscale.snippet">
+    <Content Include="Snippets\graphics\logscale.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\circulargraph.snippet">
+    <Content Include="Snippets\graphics\circulargraph.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\function.snippet">
+    <Content Include="Snippets\flow\function.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\df2n.snippet">
+    <Content Include="Snippets\datasets\df2n.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\df2c.snippet">
+    <Content Include="Snippets\datasets\df2c.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\seql.snippet">
+    <Content Include="Snippets\datasets\seql.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\section.snippet">
+    <Content Include="Snippets\flow\section.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\roxygen.snippet">
+    <Content Include="Snippets\flow\roxygen.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\rodbc\connect.snippet">
+    <Content Include="Snippets\rodbc\connect.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\rodbc\sqlquery.snippet">
+    <Content Include="Snippets\rodbc\sqlquery.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\operators\assign.snippet">
+    <Content Include="Snippets\operators\assign.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\ifelse.snippet">
+    <Content Include="Snippets\flow\ifelse.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\lm.snippet">
+    <Content Include="Snippets\analysis\lm.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\lmplot.snippet">
+    <Content Include="Snippets\analysis\lmplot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\loess.snippet">
+    <Content Include="Snippets\analysis\loess.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\clara.snippet">
+    <Content Include="Snippets\analysis\clara.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\xtabs.snippet">
+    <Content Include="Snippets\analysis\xtabs.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\analysis\summary.snippet">
+    <Content Include="Snippets\analysis\summary.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\readcsv.snippet">
+    <Content Include="Snippets\datasets\readcsv.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\recode.snippet">
+    <Content Include="Snippets\datasets\recode.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\naomit.snippet">
+    <Content Include="Snippets\datasets\naomit.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\readtable.snippet">
+    <Content Include="Snippets\datasets\readtable.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\dfv.snippet">
+    <Content Include="Snippets\datasets\dfv.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\factor.snippet">
+    <Content Include="Snippets\datasets\factor.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\matrix.snippet">
+    <Content Include="Snippets\datasets\matrix.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\rep.snippet">
+    <Content Include="Snippets\datasets\rep.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\seqby.snippet">
+    <Content Include="Snippets\datasets\seqby.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\transform.snippet">
+    <Content Include="Snippets\datasets\transform.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\writecsv.snippet">
+    <Content Include="Snippets\datasets\writecsv.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\datasets\writetable.snippet">
+    <Content Include="Snippets\datasets\writetable.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\distributions\pnorm.snippet">
+    <Content Include="Snippets\distributions\pnorm.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\distributions\runif.snippet">
+    <Content Include="Snippets\distributions\runif.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\distributions\rnorm.snippet">
+    <Content Include="Snippets\distributions\rnorm.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\elseif.snippet">
+    <Content Include="Snippets\flow\elseif.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\flow\switch.snippet">
+    <Content Include="Snippets\flow\switch.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\levelplot.snippet">
+    <Content Include="Snippets\graphics\levelplot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\xyplot.snippet">
+    <Content Include="Snippets\graphics\xyplot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\graphics\xyplotc.snippet">
+    <Content Include="Snippets\graphics\xyplotc.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\operators\pipe.snippet">
+    <Content Include="Snippets\operators\pipe.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxCovCor.snippet">
+    <Content Include="Snippets\mrs\analysis\rxCovCor.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxCrossTabs.snippet">
+    <Content Include="Snippets\mrs\analysis\rxCrossTabs.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxCube.snippet">
+    <Content Include="Snippets\mrs\analysis\rxCube.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxDTree.snippet">
+    <Content Include="Snippets\mrs\analysis\rxDTree.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxGlm.snippet">
+    <Content Include="Snippets\mrs\analysis\rxGlm.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxKmeans.snippet">
+    <Content Include="Snippets\mrs\analysis\rxKmeans.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxLinMod.snippet">
+    <Content Include="Snippets\mrs\analysis\rxLinMod.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxLogit.snippet">
+    <Content Include="Snippets\mrs\analysis\rxLogit.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\analysis\rxSummary.snippet">
+    <Content Include="Snippets\mrs\analysis\rxSummary.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\chunking\rxClose.snippet">
+    <Content Include="Snippets\mrs\chunking\rxClose.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\chunking\rxOpen.snippet">
+    <Content Include="Snippets\mrs\chunking\rxOpen.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\chunking\rxReadNext.snippet">
+    <Content Include="Snippets\mrs\chunking\rxReadNext.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\chunking\RxXdfData.snippet">
+    <Content Include="Snippets\mrs\chunking\RxXdfData.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxAzureBurst.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxAzureBurst.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxComputeCluster.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxComputeCluster.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxForeachDoPar.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxForeachDoPar.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\rxGetComputeContext.snippet">
+    <Content Include="Snippets\mrs\computeContext\rxGetComputeContext.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxHpcServer.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxHpcServer.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxHpcServerClone.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxHpcServerClone.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxLocalParallel.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxLocalParallel.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxLocalSeq.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxLocalSeq.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxLsfCluster.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxLsfCluster.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxLsfClusterClone.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxLsfClusterClone.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\computeContext\RxSetComputeContext.snippet">
+    <Content Include="Snippets\mrs\computeContext\RxSetComputeContext.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxDataStep.snippet">
+    <Content Include="Snippets\mrs\data\rxDataStep.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxFactors.snippet">
+    <Content Include="Snippets\mrs\data\rxFactors.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxGetInfo.snippet">
+    <Content Include="Snippets\mrs\data\rxGetInfo.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxGetVarInfo.snippet">
+    <Content Include="Snippets\mrs\data\rxGetVarInfo.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxImport.snippet">
+    <Content Include="Snippets\mrs\data\rxImport.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxMerge.snippet">
+    <Content Include="Snippets\mrs\data\rxMerge.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\RxOdbcData.snippet">
+    <Content Include="Snippets\mrs\data\RxOdbcData.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxReadXdf.snippet">
+    <Content Include="Snippets\mrs\data\rxReadXdf.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\RxSasData.snippet">
+    <Content Include="Snippets\mrs\data\RxSasData.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxSetVarInfo.snippet">
+    <Content Include="Snippets\mrs\data\rxSetVarInfo.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxSort.snippet">
+    <Content Include="Snippets\mrs\data\rxSort.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\RxSpssData.snippet">
+    <Content Include="Snippets\mrs\data\RxSpssData.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\RxTeradata.snippet">
+    <Content Include="Snippets\mrs\data\RxTeradata.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\RxTextData.snippet">
+    <Content Include="Snippets\mrs\data\RxTextData.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxXdfToDataFrame.snippet">
+    <Content Include="Snippets\mrs\data\rxXdfToDataFrame.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\data\rxXdfToText.snippet">
+    <Content Include="Snippets\mrs\data\rxXdfToText.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\distributed\rxExec.snippet">
+    <Content Include="Snippets\mrs\distributed\rxExec.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\graphics\rxHistogram.snippet">
+    <Content Include="Snippets\mrs\graphics\rxHistogram.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\graphics\rxLinePlot.snippet">
+    <Content Include="Snippets\mrs\graphics\rxLinePlot.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\mrs\transforms\transformFunc.snippet">
+    <Content Include="Snippets\mrs\transforms\transformFunc.snippet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1084,7 +1084,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Snippets\Files\SnippetsIndex.xml">
+    <Content Include="Snippets\SnippetsIndex.xml">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

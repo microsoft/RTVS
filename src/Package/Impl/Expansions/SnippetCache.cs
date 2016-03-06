@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Snippets.Definitions;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TextManager.Interop;
-using static System.FormattableString;
 
-namespace Microsoft.VisualStudio.R.Package.Snippets {
+namespace Microsoft.VisualStudio.R.Package.Expansions {
     internal sealed class SnippetCache : ISnippetCache {
         private static SnippetCache _instance;
         private Dictionary<string, VsExpansion> _expansions = new Dictionary<string, VsExpansion>();

@@ -5,7 +5,7 @@
       <OnOff>On</OnOff>
       <Installed>true</Installed>
       <Locale>1033</Locale>
-      <DirPath>Snippets\Files\</DirPath>
+      <DirPath>Snippets\</DirPath>
       <LocalizedName>General</LocalizedName>
     </SnippetDir>
   </Language>

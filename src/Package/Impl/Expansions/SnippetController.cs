@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Snippets {
+namespace Microsoft.VisualStudio.R.Package.Expansions {
     public class SnippetController : ICommandTarget {
         private ExpansionClient _expansionClient;
         private ITextView _textView;

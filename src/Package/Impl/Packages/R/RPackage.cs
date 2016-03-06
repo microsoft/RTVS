@@ -5,15 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Disposables;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.History;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
 using Microsoft.R.Debugger.Engine.PortSupplier;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
@@ -21,6 +16,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Definitions;
+using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
@@ -33,7 +29,6 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Snippets;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
@@ -71,21 +66,21 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0, 
-                           RContentTypeDefinition.LanguageName, @"Snippets\Files\SnippetsIndex.xml")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis",      @"Snippets\Files\analysis")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "datasets",      @"Snippets\Files\datasets")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "distributions", @"Snippets\Files\distributions")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "flow",          @"Snippets\Files\flow")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics",      @"Snippets\Files\graphics")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators",     @"Snippets\Files\operators")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",         @"Snippets\Files\rodbc")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\Files\mrs\analysis")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\Files\mrs\chunking")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\Files\mrs\computeContext")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\Files\mrs\data")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\Files\mrs\distributed")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\Files\mrs\graphics")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\Files\mrs\transforms")]
+                           RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis",      @"Snippets\analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "datasets",      @"Snippets\datasets")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "distributions", @"Snippets\distributions")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "flow",          @"Snippets\flow")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics",      @"Snippets\graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators",     @"Snippets\operators")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",         @"Snippets\rodbc")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\mrs\analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\mrs\chunking")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\mrs\computeContext")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\mrs\data")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\mrs\distributed")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\mrs\graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\mrs\transforms")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

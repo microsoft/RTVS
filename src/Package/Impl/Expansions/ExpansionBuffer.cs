@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Microsoft.VisualStudio.R.Package.Snippets {
+namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
     /// Facilitates the interop calls to the methods exposed by IVsExpansionEnumeration.
     /// </summary>

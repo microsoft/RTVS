@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.Snippets {
+namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
     /// Text view client that manages insertion of snippets
     /// </summary>
