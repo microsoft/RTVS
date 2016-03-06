@@ -127,7 +127,7 @@
                       <Directory Id="SnippetsFolder" Name="Snippets">
                         <Directory Id="SnippetsAnalysisFolder" Name="analysis" />
                         <Directory Id="SnippetsDatasetsFolder" Name="datasets" />
-                        <Directory Id="SnippetsdistributionsFolder" Name="distributions" />
+                        <Directory Id="SnippetsDistributionsFolder" Name="distributions" />
                         <Directory Id="SnippetsFlowFolder" Name="flow" />
                         <Directory Id="SnippetsGraphicsFolder" Name="graphics" />
                         <Directory Id="SnippetsOperatorsFolder" Name="operators" />
@@ -195,6 +195,7 @@
     <?include Themes.wxi ?>
     <?include RtvsPackage.wxi ?>
     <?include Associations.wxi ?>
+    <?include Snippets.wxi ?>
 
     <!--<?ifdef LabBuild?>
     <?include LocalizedResources.wxi ?>

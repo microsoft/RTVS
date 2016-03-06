@@ -26,6 +26,24 @@
     <ComponentRef Id="RegistryEntries" />
 
     <ComponentGroupRef Id="RtvsPackage" />
+    
+    <ComponentRef Id="SnippetsIndex" />
+    <ComponentRef Id="SnippetsAnalysis" />
+    <ComponentRef Id="SnippetsDatasets" />
+    <ComponentRef Id="SnippetsDistributions" />
+    <ComponentRef Id="SnippetsFlow" />
+    <ComponentRef Id="SnippetsGraphics" />
+    <ComponentRef Id="SnippetsOperators" />
+    <ComponentRef Id="SnippetsRodbc" />
+    
+    <ComponentRef Id="SnippetsMrsAnalysis" />
+    <ComponentRef Id="SnippetsMrsChunking" />
+    <ComponentRef Id="SnippetsMrsComputeContext" />
+    <ComponentRef Id="SnippetsMrsData" />
+    <ComponentRef Id="SnippetsMrsDistributed" />
+    <ComponentRef Id="SnippetsMrsGraphics" />
+    <ComponentRef Id="SnippetsMrsTransforms" />
+    <ComponentRef Id="SnippetsMrsData" />
 
   </Feature>
 </Include>
