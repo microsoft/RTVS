@@ -320,12 +320,12 @@
     <Compile Include="Packages\R\RPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\IdleTimeSource.cs" />
-    <Compile Include="Expansions\ISnippetCache.cs" />
+    <Compile Include="Expansions\IExpansionsCache.cs" />
     <Compile Include="Expansions\ExpansionBuffer.cs" />
     <Compile Include="Expansions\ExpansionClient.cs" />
-    <Compile Include="Expansions\SnippetCache.cs" />
-    <Compile Include="Expansions\SnippetController.cs" />
-    <Compile Include="Expansions\SnippetControllerFactory.cs" />
+    <Compile Include="Expansions\ExpansionsCache.cs" />
+    <Compile Include="Expansions\ExpansionsController.cs" />
+    <Compile Include="Expansions\ExpansionsControllerFactory.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />

@@ -10,12 +10,12 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
-    public class SnippetController : ICommandTarget {
+    public class ExpansionsController : ICommandTarget {
         private ExpansionClient _expansionClient;
         private ITextView _textView;
         private ITextBuffer _textBuffer;
 
-        public SnippetController(ITextView textView, ITextBuffer textBuffer) {
+        public ExpansionsController(ITextView textView, ITextBuffer textBuffer) {
             _textView = textView;
             _textBuffer = textBuffer;
             _expansionClient = new ExpansionClient(textView, textBuffer);

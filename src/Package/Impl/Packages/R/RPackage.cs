@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
-            IdleTimeAction.Create(() => SnippetCache.Load(), 200, typeof(SnippetCache));
+            IdleTimeAction.Create(() => ExpansionsCache.Load(), 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {

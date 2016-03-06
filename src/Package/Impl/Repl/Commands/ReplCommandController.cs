@@ -26,14 +26,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// Main interactive window command controller
     /// </summary>
     public class ReplCommandController : ViewController {
-        private SnippetController _snippetController;
+        private ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
             ServiceManager.AddService(this, textView);
 
             // TODO: make this extensible via MEF like commands and controllers in the editor
-            _snippetController = new SnippetController(textView, textBuffer);
+            _snippetController = new ExpansionsController(textView, textBuffer);
         }
 
         public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer) {

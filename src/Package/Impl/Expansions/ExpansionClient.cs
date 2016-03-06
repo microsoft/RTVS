@@ -145,7 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 Span span;
                 _shortcut = TextView.GetItemBeforeCaret((x) => !char.IsWhiteSpace(x), out span);
 
-                VsExpansion? exp = SnippetCache.Current.GetExpansion(_shortcut);
+                VsExpansion? exp = ExpansionsCache.Current.GetExpansion(_shortcut);
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
                 if (exp.HasValue) {
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);

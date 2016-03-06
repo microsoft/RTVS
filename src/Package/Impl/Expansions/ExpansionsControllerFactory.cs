@@ -15,10 +15,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Snippets Command Controller")]
     [Order(Before = "Default")]
-    internal class SnippetControllerFactory : IControllerFactory {
+    internal class ExpansionsControllerFactory : IControllerFactory {
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {
             return new List<ICommandTarget>() {
-                new SnippetController(textView, textBuffer)
+                new ExpansionsController(textView, textBuffer)
             };
         }
     }

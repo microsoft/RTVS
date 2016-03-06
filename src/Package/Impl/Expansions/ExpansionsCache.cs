@@ -6,11 +6,11 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
-    internal sealed class SnippetCache : ISnippetCache {
-        private static SnippetCache _instance;
+    internal sealed class ExpansionsCache : IExpansionsCache {
+        private static ExpansionsCache _instance;
         private Dictionary<string, VsExpansion> _expansions = new Dictionary<string, VsExpansion>();
 
-        internal SnippetCache(IVsExpansionManager expansionManager) {
+        internal ExpansionsCache(IVsExpansionManager expansionManager) {
             // Caching language expansion structs requires access to the IVsExpansionManager
             // service which is valid on the main thread only. So we create cache on the main 
             // thread so we can then access objects from background threads.
@@ -18,13 +18,13 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             _instance = this;
         }
 
-        public static ISnippetCache Current => _instance;
+        public static IExpansionsCache Current => _instance;
 
         public static void Load() {
             IVsExpansionManager expansionManager;
             var textManager2 = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
             textManager2.GetExpansionManager(out expansionManager);
-            _instance = new SnippetCache(expansionManager);
+            _instance = new ExpansionsCache(expansionManager);
         }
 
         public VsExpansion? GetExpansion(string shortcut) {
