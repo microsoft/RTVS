@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Random numbers - uniform</Title>
+      <Shortcut>runif</Shortcut>
+      <Description>Uniform random number generator</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>vecName</ID>
+          <ToolTip>Name of vector of random numbers to create</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>num</ID>
+          <ToolTip>Number of random numbers to generate</ToolTip>
+          <Default>100</Default>
+        </Literal>
+        <Literal>
+          <ID>min</ID>
+          <ToolTip>Lower limit of distribution.  Must be finite.</ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>max</ID>
+          <ToolTip>Upper limit of distribution.  Must be finite.</ToolTip>
+          <Default>1</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[$vecName$ <- runif($num$, min=$min$, max=$max$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

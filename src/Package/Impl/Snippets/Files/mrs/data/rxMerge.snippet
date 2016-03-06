@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Merge .xdf files or data frames</Title>
+      <Shortcut>rxMerge</Shortcut>
+      <Description>Merge two data sets (.xdf files or data frames)</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>inData1</ID>
+          <ToolTip>First input .xdf data file or data frame. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"inFile1.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>inData2</ID>
+          <ToolTip>Second input .xdf data file or data frame. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"inFile2.xdf"</Default>
+        </Literal>
+        <Literal>
+            <ID>outFile</ID>
+            <ToolTip>Optional output .xdf data file name. If NULL a data frame is returned. (Use / instead of \ when specifying a path.)</ToolTip>
+            <Default>"outFile.xdf"</Default>
+          </Literal>        
+        <Literal>
+          <ID>matchVars</ID>
+          <ToolTip>
+            Character vector of names of the variables to match for merging
+          </ToolTip>
+          <Default>c("x1", "x2")</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>
+            Merge method to use: inner (only matched rows retained), oneToOne (appends columns), 
+            left (all rows from inData1 retained), right (all rows from inData2 retained), 
+            full (all rows from both data sets retained), or union (appends rows)
+          </ToolTip>
+          <Default>inner</Default>
+        </Literal>
+        <Literal>
+          <ID>decreasing</ID>
+          <ToolTip>
+            Logical scalar or vector defining whether or not the sortByVars variables 
+            are to be sorted in decreasing or increasing order
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>missingsLow</ID>
+          <ToolTip>
+            If TRUE, missing values in the data are treated as the lowest value.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>autoSort</ID>
+          <ToolTip>
+            If TRUE, the input data sets will be sorted by the matchVars before merging.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep1</ID>
+          <ToolTip>
+            Character vector of variable names to keep from the first input data.
+            If NULL, all are kept or varsToDrop1 is used.
+            Cannot have both varsToKeep1 and varsToDrop1 variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop1</ID>
+          <ToolTip>
+            Character vector of variable names to omit from the first input data.
+            If NULL, all are kept or varsToKeep1 is used.
+            Cannot have both varsToKeep1 and varsToDrop1 variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep2</ID>
+          <ToolTip>
+            Character vector of variable names to keep from the second input data.
+            If NULL, all are kept or varsToDrop2 is used.
+            Cannot have both varsToKeep2 and varsToDrop2 variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop2</ID>
+          <ToolTip>
+            Character vector of variable names to omit from the second input data.
+            If NULL, all are kept or varsToKeep2 is used.
+            Cannot have both varsToKeep2 and varsToDrop2 variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxMerge(inData1 = $inData1$, inData2 = $inData2$, outFile = $outFile$, 
+    type = "$type$", matchVars = $matchVars$, decreasing = $decreasing$, 
+    missingsLow = $missingsLow$, autoSort = $autoSort$, 
+    varsToKeep1 = $varsToKeep1$, varsToDrop1 = $varsToDrop1$,
+    varsToKeep2 = $varsToKeep2$, varsToDrop2 = $varsToDrop2$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

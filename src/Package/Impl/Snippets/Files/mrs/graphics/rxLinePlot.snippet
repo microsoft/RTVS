@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Line or scatter plot</Title>
+      <Shortcut>rxLinePlot</Shortcut>
+      <Description>Line or scatter plot using variables from .xdf file or data frame.</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>formula</ID>
+          <ToolTip>Formula describing the data to plot, taking the form of y~x|g1 + g2 where 
+           g1 and g2 are optional conditioning factor variables. The data to be plotted must
+           fit in memory.
+          </ToolTip>
+          <Default>y~x</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip> 
+          data frame or .xdf file name, including the path relative to the working 
+          directory or the absolute path. Use / instead of \.
+          </ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>
+            Name of a logical variable or a logical expression for row selection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            An expression of the form list(name = expression, ...) representing variable
+            transformations required for the formula or rowSelection
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks of data to read into each chunk extracting the data to plot.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>
+            Character vector specifying the type of plot. Use "l" for line, "p" for points, "b" for both, 
+            "smooth" for a loess fit, "s" for stair steps, or "r" for a regression line. They can be
+            combined, such as c("p", "smooth").
+          </ToolTip>
+          <Default>"l"</Default>
+        </Literal>
+        <Literal>
+          <ID>title</ID>
+          <ToolTip>Main title for the plot.
+          </ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal>
+          <ID>legend</ID>
+          <ToolTip>
+            If TRUE and more than one line or set of symbols is plotted,
+            a legend is is created.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>lineColor</ID>
+          <ToolTip>The line color for the plot. For example, "red", "blue", "green".
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>lineStyle</ID>
+          <ToolTip>
+            The line style for the plot. For example, "solid", "dashed", "dotted", "dotdash", 
+            "longdash", or "twodash".
+          </ToolTip>
+          <Default>"solid"</Default>
+        </Literal>
+        <Literal>
+          <ID>symbolColor</ID>
+          <ToolTip>
+            The symbol color for the plot. For example, "red", "blue", "green".
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>symbolStyle</ID>
+          <ToolTip>
+            The symbol style for the plot. For example, "circle", "solid circle", "square","solid square", 
+            "triangle", "solid triangle", "diamond", or "solid diamond".
+          </ToolTip>
+          <Default>"solid circle"</Default>
+        </Literal>
+        <Literal>
+          <ID>symbolSize</ID>
+          <ToolTip>
+            Numerical value giving the amount by which symbols should be magnified.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxLinePlot(formula = $formula$, data = $data$, rowSelection = $rowSelection$, transforms = $transforms$, 
+    blocksPerRead = $blocksPerRead$, type = c($type$), title = "$title$", legend = $legend$,
+    lineColor = $lineColor$, lineStyle = $lineStyle$, 
+    symbolColor = $symbolColor$, symbolStyle = $symbolStyle$, symbolSize = $symbolSize$)
+  $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

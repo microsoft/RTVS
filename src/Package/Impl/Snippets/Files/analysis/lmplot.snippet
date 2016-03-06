@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Linear model with plot</Title>
+      <Shortcut>lmplot</Shortcut>
+      <Description>Fit a linear model and create a plot</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>xCol</ID>
+          <ToolTip>
+            Predictor terms using column names.  Use + for additive, : for interactions, and * for cross.
+            "first + second + first:second" is the same as "first*second"
+          </ToolTip>
+          <Default>x</Default>
+        </Literal>
+        <Literal>
+          <ID>yCol</ID>
+          <ToolTip>Response data column name</ToolTip>
+          <Default>y</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>Optional name of data frame, list or environment containing the variables in the model</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>subset</ID>
+          <ToolTip>An optional vector specifying a subset of observations to be used in the fitting process.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>weights</ID>
+          <ToolTip>An optional numeric vector of weights to be used in the fitting process. 
+          If non-NULL, weighted least squares is used with weights(that is, minimizing sum(weights*e^2))</ToolTip>
+          <Default>NULL </Default>
+        </Literal>
+        <Literal>
+          <ID>na.action</ID>
+          <ToolTip>Method for handling missing values. 
+          Use na.omit to omit observations with missing values.
+          Use na.exclude to behave as na.omit, but to pad residuals and predictions to the correct 
+             length by inserting NAs for cases omitted.
+          Use na.fail to fail in any missing values are present.</ToolTip>
+          <Default>na.omit</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+lmObj <- lm($yCol$ ~ $xCol$, data = $data$, subset = $subset$, weights = $weights$, na.action = $na.action$)
+summary(lmObj)
+plot(lmObj, which=c(1)) # Plot residuals versus fitted$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

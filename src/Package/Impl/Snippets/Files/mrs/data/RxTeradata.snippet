@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data source: Teradata</Title>
+      <Shortcut>RxTeradata</Shortcut>
+      <Description>Create a Teradata data source object</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>
+An RxTeradata data source object.
+This can be used as the 'inData' argument in the rxImport function or as the 'data' 
+argument for RevoScaleR analysis functions.
+          </ToolTip>
+          <Default>myTeradataDS</Default>
+        </Literal>
+        <Literal>
+          <ID>table</ID>
+          <ToolTip>NULL or character string specifying the table name. Cannot be used with 'sqlQuery'.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>sqlQuery</ID>
+          <ToolTip>NULL or character string specifying a valid SQL select query. Cannot be used with 'table'.
+          </ToolTip>
+          <Default>SELECT * FROM myData</Default>
+        </Literal>
+        <Literal>
+          <ID>connectionString</ID>
+          <ToolTip>
+            NULL or character string specifying the connection string.
+          </ToolTip>
+          <Default>DRIVER=Teradata;DBCNAME=machineNameorIP;DATABASE=myDB;UID=myUserID;PWD=myPassword;</Default>
+        </Literal>
+        <Literal>
+         <ID>user</ID>
+          <ToolTip>
+            NULL or character string specifying the User ID (required if UID is not specified in the connection string).
+          </ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal>
+          <ID>password</ID>
+          <ToolTip>
+            NULL or character string specifying the password (required if PWD is not specified in the connection string).
+          </ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal>
+          <ID>teradataId</ID>
+          <ToolTip>
+            NULL or character string specifying the teradata ID (required if DBCNAME is not specified in the connection string).
+          </ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>Whether or not to automatically convert strings to factors on import.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+            <ID>rowsPerRead</ID>
+            <ToolTip>
+              Number of rows to read into each block of data.
+            </ToolTip>
+            <Default>500000</Default>
+          </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- RxTeradata( table = $table$, sqlQuery = "$sqlQuery$",
+    connectionString = "$connectionString$", user = "$user$",
+    password = "$password$", teradataId = "$teradataId$",
+    stringsAsFactors = $stringsAsFactors$, rowsPerRead = $rowsPerRead$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

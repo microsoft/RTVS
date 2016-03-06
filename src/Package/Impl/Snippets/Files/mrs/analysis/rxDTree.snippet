@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Decision trees</Title>
+      <Shortcut>rxDTree</Shortcut>
+      <Description>Classification and regression trees</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>depVar</ID>
+          <ToolTip>Dependent variable for the model</ToolTip>
+          <Default>y</Default>
+        </Literal>
+        <Literal>
+          <ID>indVars</ID>
+          <ToolTip>Expression containing dependent variables for the model</ToolTip>
+          <Default>x1 + x2</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>.xdf file name (including the path), data frame, or data source object</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>outFile</ID>
+          <ToolTip>.xdf file for storing the resulting node indices if input data is in an .xdf file</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>outColName</ID>
+          <ToolTip>character string to be used as a column name for the resulting node indices if outFile is not NULL. </ToolTip>
+          <Default>.rxNode</Default>
+        </Literal>
+        <Literal>
+          <ID>minSplit</ID>
+          <ToolTip>The minimum number of observations that must exist in a node before a split is attempted.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>maxDepth</ID>
+          <ToolTip>The maximum depth of any tree node</ToolTip>
+          <Default>10</Default>
+        </Literal>
+        <Literal>
+          <ID>cp</ID>
+          <ToolTip>
+            Numeric scalar specifying the complexity parameter. Any split that does not decrease 
+            overall lack-of-fit by at least 'cp' is not attempted.
+          </ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>xVal</ID>
+          <ToolTip>Number of cross-validations performed in the model fit</ToolTip>
+          <Default>2</Default>
+        </Literal>
+        <Literal>
+          <ID>maxNumBins</ID>
+          <ToolTip>The maximum number of bins to use to cut numeric data.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>        
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>
+            Name of a logical variable or a logical expression (using variables in the data set) 
+            for selecting observations.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable
+            transformations used in the formula or rowSelection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+           Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxDTree($depVar$ ~ $indVars$, data = $data$, outFile = $outFile$, outColName = "$outColName$",
+    minSplit = $minSplit$, maxDepth = $maxDepth$, 
+    cp = $cp$, xVal = $xVal$, maxNumBins = $maxNumBins$,
+    rowSelection = $rowSelection$, transforms = $transforms$, 
+    blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

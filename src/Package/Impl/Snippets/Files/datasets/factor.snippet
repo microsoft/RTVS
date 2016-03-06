@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Categorical variable</Title>
+      <Shortcut>factor</Shortcut>
+      <Description>Create a factor (categorical variable) from a vector</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outFactor</ID>
+          <ToolTip>Name of factor to create</ToolTip>
+          <Default>myFactor</Default>
+        </Literal>
+        <Literal>
+          <ID>dataVec</ID>
+          <ToolTip>A vector of data, usually taking a small number of distinct values.
+For example, c("a", "b", "c", "a", "b", "c")</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>levels</ID>
+          <ToolTip>An optional vector of the values for the factors. The default is the set of values taken by the data vector, 
+ sorted into increasing order.</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>exclude</ID>
+          <ToolTip>A vector of values to be excluded when forming the set of levels. This should be of the same type as data vector.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        </Declarations>
+      <Code Language="R">
+        <![CDATA[$outFactor$ <- factor(x = $dataVec$, levels = $levels$, exclude = $exclude$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

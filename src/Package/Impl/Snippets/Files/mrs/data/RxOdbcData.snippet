@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data source: ODBC</Title>
+      <Shortcut>RxOdbcData</Shortcut>
+      <Description>Create an ODBC data source object</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>
+An RxOdbcData data source object.
+This can be used as the 'inData' argument in the rxImport function or as the 'data' 
+argument for RevoScaleR analysis functions.
+          </ToolTip>
+          <Default>myOdbcDS</Default>
+        </Literal>
+        <Literal>
+          <ID>table</ID>
+          <ToolTip>NULL or character string specifying the table name. Cannot be used with 'sqlQuery'.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>sqlQuery</ID>
+          <ToolTip>NULL or character string specifying a valid SQL select query. Cannot be used with 'table'.
+          </ToolTip>
+          <Default>SELECT * FROM claims</Default>
+        </Literal>
+        <Literal>
+          <ID>connectionString</ID>
+          <ToolTip>
+            NULL or character string specifying the connection string.
+          </ToolTip>
+          <Default>Driver=SQLite3 ODBC Driver;Database=C:/Revolution/Data/claims.sqlite</Default>
+        </Literal>
+        <Literal>
+          <ID>useFastRead</ID>
+          <ToolTip>Whether or not to use a direct ODBC connection. On Linux systems, this is the only ODBC connection available.
+            </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>rowBuffering</ID>
+          <ToolTip>
+Whether or not to buffer rows on read from the database. 
+If you are having problems with your ODBC driver, try setting this to FALSE.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>Whether or not to automatically convert strings to factors on import.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+            <ID>rowsPerRead</ID>
+            <ToolTip>
+              Number of rows to read into each block of data.
+            </ToolTip>
+            <Default>500000</Default>
+          </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- RxOdbcData( table = $table$, sqlQuery = "$sqlQuery$",
+    connectionString = "$connectionString$", useFastRead = $useFastRead$,
+    rowBuffering = $rowBuffering$, stringsAsFactors = $stringsAsFactors$, 
+    rowsPerRead = $rowsPerRead$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

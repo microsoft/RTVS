@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>remove missings</Title>
+      <Shortcut>naomit</Shortcut>
+      <Description>Remove all rows with missing values from data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+         <Literal>
+          <ID>newdataframe</ID>
+          <ToolTip>Output data frame name; can be the same as the input data frame </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>dataframe</ID>
+          <ToolTip>Input data frame name </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$newdataframe$ <- na.omit($dataframe$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Categorical variable from numeric</Title>
+      <Shortcut>recode</Shortcut>
+      <Description>Create new categorical variable in a data frame from existing numeric variable</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>newCol</ID>
+          <ToolTip>New column name</ToolTip>
+          <Default>myNewCol</Default>
+        </Literal>
+        <Literal>
+          <ID>newdataframe</ID>
+          <ToolTip>Output data frame name; can be the same as the input data frame </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>dataframe</ID>
+          <ToolTip>Input data frame name </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>numericVar</ID>
+          <ToolTip>Name of the numeric column to recode</ToolTip>
+          <Default>numericVar</Default>
+        </Literal>
+        <Literal>
+          <ID>breaks</ID>
+          <ToolTip>Breakpoints establishing categories</ToolTip>
+          <Default>0, 50, 100</Default>
+        </Literal>
+        </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$newdataframe$ <- transform($dataframe$, $newCol$ = cut($numericVar$, breaks = c($breaks$)))
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

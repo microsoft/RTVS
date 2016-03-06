@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Get data object or .xdf info</Title>
+      <Shortcut>rxGetInfo</Shortcut>
+      <Description>Get basic information about a data object of an .xdf file</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>Data object or path and file name of the .xdf data file. (Use / instead of \.)</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>getVarInfo</ID>
+          <ToolTip>If TRUE, include information about variables. (See getVarInfo())</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>getBlockSizes</ID>
+          <ToolTip>If TRUE, the block sizes are returned for an .xdf file.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>getValueLabels</ID>
+          <ToolTip>
+            If TRUE, factor value labels are included in the output (if getVarInfo is set to TRUE).
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to include if getVarInfo is TRUE.
+            If NULL, all are read in or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to exclude if getVarInfo is TRUE.
+            If NULL, all are read in or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>startRow</ID>
+          <ToolTip>
+            The first row of data to be returned if numRows > 0
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>numRows</ID>
+          <ToolTip>
+            Number of rows of data to include in the returned information.
+          </ToolTip>
+          <Default>0</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxGetInfo(data = $data$, getVarInfo = $getVarInfo$, getBlockSizes = $getBlockSizes$,
+     getValueLabels = $getValueLabels$, varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$,
+     startRow = $startRow$, numRows = $numRows$ )
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

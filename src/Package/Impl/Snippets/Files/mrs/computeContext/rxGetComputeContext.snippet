@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Get Compute Context</Title>
+      <Shortcut>rxGetComputeContext</Shortcut>
+      <Description>Get the active compute context</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>computeContext</ID>
+          <ToolTip>The currently active compute context.</ToolTip>
+          <Default>currentCC</Default>
+        </Literal>        
+         </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$computeContext$ <- rxGetComputeContext()
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

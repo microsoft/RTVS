@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Normal density</Title>
+      <Shortcut>pnorm</Shortcut>
+      <Description>Normal density function</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <HelpUrl>http://www.revolutionanalytics.com/forum</HelpUrl>
+      <Keywords>
+        <Keyword>normal</Keyword>
+        <Keyword>density</Keyword>
+        <Keyword>distribution</Keyword>
+      </Keywords>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>vecName</ID>
+          <ToolTip>Name of vector of densities to compute</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>q</ID>
+          <ToolTip>Vector of quantiles</ToolTip>
+          <Default>q</Default>
+        </Literal>
+        <Literal>
+          <ID>mean</ID>
+          <ToolTip>Mean</ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>sd</ID>
+          <ToolTip>Standard deviation</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>lowertail</ID>
+          <ToolTip>If TRUE, probabilities are P[X &lt;= x], otherwise, P[X > x]</ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>logp</ID>
+          <ToolTip>If TRUE, probabilities p are given as log(p)</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[$vecName$ <- pnorm($q$, mean = $mean$, sd = $sd$, lower.tail = $lowertail$, log.p = $logp$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

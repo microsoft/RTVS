@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Read .xdf file into memory</Title>
+      <Shortcut>rxReadXdf</Shortcut>
+      <Description>Read all or part of an .xdf file into a data frame or list in memory</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>Path and file name of the .xdf data file. (Use / instead of \.)</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to include. If NULL, all are read in or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to exclude. If NULL, all are read in or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowVarName</ID>
+          <ToolTip>
+            Optional name of variable to use as row names in the output data frame.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>startRow</ID>
+          <ToolTip>
+            The first row of data to be read.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>numRows</ID>
+          <ToolTip>
+            The number of rows to read.  If -1, all rows are read. You may run out of memory if your data file is very large.
+          </ToolTip>
+          <Default>-1</Default>
+        </Literal>
+        <Literal>
+          <ID>returnDataFrame</ID>
+          <ToolTip>
+            If FALSE, variables will be returned in a list instead of a data frame.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>
+            If TRUE, character data will be converted to factors when read.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>        
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>        
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxReadXdf(file = $file$, varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$, rowVarName = $rowVarName$, 
+    startRow = $startRow$, numRows = $numRows$,returnDataFrame = $returnDataFrame$, 
+    stringsAsFactors = $stringsAsFactors$,  reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

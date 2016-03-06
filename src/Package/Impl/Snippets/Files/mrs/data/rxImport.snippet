@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Import to .xdf or data frame</Title>
+      <Shortcut>rxImport</Shortcut>
+      <Description>Import a SAS, SPSS, ODBC, or text data source into an .xdf file or data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+           <ID>outData</ID>
+           <ToolTip>Output data frame or RxXdfData data source object representing the output .xdf file</ToolTip>
+           <Default>myData</Default>
+        </Literal>
+        <Literal>
+          <ID>inData</ID>
+          <ToolTip>Input file name (with path if not in working directory) or data source</ToolTip>
+          <Default>"myFile.csv"</Default>
+        </Literal>
+        <Literal>
+          <ID>outFile</ID>
+          <ToolTip>Optional .xdf file name or data source. 
+          If NULL, a data frame is returned.</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+  Character vector of variable names to read (keep) from the input data.
+  If NULL, all are read in or varsToDrop is used.
+  Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+   Character vector of variable names to not read (drop) from the input data.
+   If NULL, all are read in or varsToKeep is used.
+   Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>
+            Name of a logical variable or a logical expression for row selection.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>   
+        <Literal>
+            <ID>transforms</ID>
+            <ToolTip>
+ A list of expressions defining variable transformations, 
+ of the form list(name = expression, ...). For example,
+ list(newVar1 = V1 * 100, newVar2 = V2 + V3), where 
+ V1, V2, and V3 are in the original imported data set.
+            </ToolTip>
+            <Default>NULL</Default>
+          </Literal>
+        <Literal>
+          <ID>append</ID>
+          <ToolTip>If "rows", rows will be appended to an existing .xdf file. </ToolTip>
+          <Default>none</Default>
+        </Literal>
+        <Literal>
+          <ID>overwrite</ID>
+          <ToolTip>
+ If TRUE, an existing outFile will be overwritten, 
+ or if appending columns, existing columns with the 
+ same name will be overwritten. Ignored if appending rows.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>numRows</ID>
+          <ToolTip>
+The maximum number of rows to import. 
+If set to -1, all rows will be imported.</ToolTip>
+          <Default>-1</Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>
+If TRUE, all of the imported string columns will be converted to factors.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>colClasses</ID>
+          <ToolTip>
+Named character vector specifying the column storage types to use when importing.
+Available types include: logical, integer, float32, numeric, character, factor,
+Date, and POSIXct. For example, c(V1 = "integer", V2 = "logical"), where V1 and
+V2 are input column names.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>        
+        <Literal>
+          <ID>rowsPerRead</ID>
+          <ToolTip>Number of rows to read in for each block. </ToolTip>
+          <Default>500000</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>
+File type of inData: "auto", "text", "fixed", "sas", "spss", "odbc", 
+"textFast", or "odbcFast". </ToolTip>
+          <Default>auto</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Integer from 0 to 3.  Set to 0 for no progress reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- rxImport(inData = $inData$, outFile = $outFile$, 
+    varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$, rowSelection = $rowSelection$, 
+    transforms = $transforms$, append = "$append$", overwrite = $overwrite$,  
+    numRows = $numRows$, stringsAsFactors = $stringsAsFactors$,
+    colClasses = $colClasses$, rowsPerRead = $rowsPerRead$, type = "$type$",
+    reportProgress = $reportProgress$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

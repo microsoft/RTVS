@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>New transformed variable</Title>
+      <Shortcut>transform</Shortcut>
+      <Description>Create new variable in a data frame by transforming existing variables</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>newCol</ID>
+          <ToolTip>New column name</ToolTip>
+          <Default>myNewCol</Default>
+        </Literal>
+        <Literal>
+          <ID>newdataframe</ID>
+          <ToolTip>Output data frame name; can be the same as the input data frame </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>dataframe</ID>
+          <ToolTip>Input data frame name </ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>expression</ID>
+          <ToolTip>The transformation expression for creating the new column.  For example, with existing columns A and B
+ the expression (A + B)/2 would create the mean as an additional column.</ToolTip>
+          <Default>(A + B)</Default>
+        </Literal>
+        </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$newdataframe$ <- transform($dataframe$, $newCol$ = $expression$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

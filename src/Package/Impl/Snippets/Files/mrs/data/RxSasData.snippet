@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data source: SAS</Title>
+      <Shortcut>RxSasData</Shortcut>
+      <Description>Create a SAS data source object</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>
+An RxSasData data source object. 
+This can be used as the 'inData' argument in the rxImport function.</ToolTip>
+          <Default>mySasDS</Default>
+        </Literal>        
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>Name of SAS data file</ToolTip>
+          <Default>"mySasFile.sas7bdat"</Default>
+        </Literal>
+        <Literal>
+          <ID>formatFile</ID>
+          <ID>file</ID>
+          <ToolTip>
+Optional name of a .sas7cat file containing value labels 
+for the variables stored in file</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+          <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>TRUE if all string columns in the SAS file should be converted to factors.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>        
+         <Literal>
+            <ID>rowsPerRead</ID>
+            <ToolTip>
+              Number of rows to read into each block of data.
+            </ToolTip>
+            <Default>500000</Default>
+          </Literal>
+        <Literal>
+          <ID>labelsAsLevels</ID>
+          <ToolTip>
+If TRUE, variables containing value labels in the SAS format file will be converted to factors
+(when it appears appropriate), using the value labels as factor levels.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>labelsAsInfo</ID>
+          <ToolTip>
+If TRUE, variables containing value labels in the SAS format file that are not converted to factors 
+will retain the information as valueInfoCodes and valueInfoLabels in the .xdf file.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- RxSasData( file = $file$, formatFile = $formatFile$, 
+    stringsAsFactors = $stringsAsFactors$, rowsPerRead = $rowsPerRead$, 
+    labelsAsLevels = $labelsAsLevels$, labelsAsInfo = $labelsAsInfo$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

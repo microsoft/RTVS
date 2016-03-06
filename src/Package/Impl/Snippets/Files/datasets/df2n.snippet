@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
   <CodeSnippet Format="1.0.0">
     <Header>
-      <Title>Sequence</Title>
-      <Shortcut>seq</Shortcut>
-      <Description>Code snippet for sequence generation</Description>
+      <Title>Empty data frame (numeric)</Title>
+      <Shortcut>df2n</Shortcut>
+      <Description>Code snippet for an empty numerical data frame</Description>
       <Author>Microsoft Corporation</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -13,23 +13,23 @@
     <Snippet>
       <Declarations>
         <Literal>
-          <ID>from</ID>
-          <Default>0</Default>
-          <ToolTip>Start value</ToolTip>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame to create</ToolTip>
+          <Default>myDataFrame</Default>
         </Literal>
         <Literal>
-          <ID>to</ID>
-          <Default>10</Default>
-          <ToolTip>End value</ToolTip>
+          <ID>x</ID>
+          <Default>x</Default>
+          <ToolTip>First parameter</ToolTip>
         </Literal>
         <Literal>
-          <ID>length</ID>
-          <Default>11</Default>
-          <ToolTip>Sequence length</ToolTip>
+          <ID>y</ID>
+          <Default>y</Default>
+          <ToolTip>Second parameter</ToolTip>
         </Literal>
       </Declarations>
       <Code Language="R">
-        <![CDATA[seq(from = $from$, to = $to$, length.out = $length$)]]>
+        <![CDATA[$dfname$ <- data.frame($x$ = numeric(), $y$ = numeric())]]>
       </Code>
     </Snippet>
   </CodeSnippet>

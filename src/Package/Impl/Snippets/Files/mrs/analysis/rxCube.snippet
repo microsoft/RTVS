@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Cube</Title>
+      <Shortcut>rxCube</Shortcut>
+      <Description>Compute cubes</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>depVar</ID>
+          <ToolTip>Optional numeric dependent variable for the model</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>indVars</ID>
+          <ToolTip>Expression containing one or more categorical dependent variables for the model</ToolTip>
+          <Default>x1 : x2</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>.xdf file name (including the path), data frame, or data source object</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>pweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for probability weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>fweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for frequency weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>Optional expression for subsetting rows from the data for the analysis.</ToolTip>
+          <Default>NULL</Default>
+        </Literal> 
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable
+            transformations used in the formula or rowSelection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>returnDataFrame</ID>
+          <ToolTip>
+            If TRUE, a data frame is output, otherwise a list is returned (which is faster).
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxCube($depVar$ ~ $indVars$, data = $data$, pweights = $pweights$, fweights = $fweights$,
+    rowSelection = $rowSelection$, transforms = $transforms$, 
+    returnDataFrame = $returnDataFrame$, blocksPerRead = $blocksPerRead$, 
+    reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

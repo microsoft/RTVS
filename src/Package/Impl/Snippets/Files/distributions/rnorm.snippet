@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Random numbers - normal</Title>
+      <Shortcut>rnorm</Shortcut>
+      <Description>Normal random number generator</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>vecName</ID>
+          <ToolTip>Name of vector of random numbers to create</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>num</ID>
+          <ToolTip>Number of random numbers to generate</ToolTip>
+          <Default>100</Default>
+        </Literal>
+        <Literal>
+          <ID>mean</ID>
+          <ToolTip>Mean</ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>sd</ID>
+          <ToolTip>Standard deviation</ToolTip>
+          <Default>1</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[$vecName$ <- rnorm($num$, mean=$mean$, sd=$sd$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

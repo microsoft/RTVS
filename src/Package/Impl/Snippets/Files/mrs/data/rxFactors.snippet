@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Recode or create factor variables in an .xdf file or data frame</Title>
+      <Shortcut>rxFactors</Shortcut>
+      <Description>Recode or create factor variables (.xdf file or data frame)</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>inData</ID>
+          <ToolTip>Input .xdf data file or data frame. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"inFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>factorInfo</ID>
+          <ToolTip>
+  Character vector of variable names to factorize, or a list of named variable information lists.
+  If 'sortLevels' is TRUE and factorInfo is NULL, all the factors levels will be sorted.
+  The named variable information lists can contain the following:
+  -- varName - the name of an existing variable to recode
+  -- levels - optional vector of levels to match in converting non-factor data to a factor
+  -- newLevels - vector or list used to convert existing levels to new levels
+  -- otherLevel - level to assign to all factor values not listed in newLevels
+  -- sortLevels - logical scalar indicating whether or not to sort levels
+  -- description - description for the recoded/new factor variable
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+            <ID>outFile</ID>
+            <ToolTip>Optional output .xdf data file name. If NULL a data frame is returned. (Use / instead of \ when specifying a path.)</ToolTip>
+            <Default>"outFile.xdf"</Default>
+          </Literal>        
+        <Literal>
+          <ID>sortLevels</ID>
+          <ToolTip>
+            Default value for whether or not to sort levels
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>otherLevel</ID>
+          <ToolTip>The default value for observations with an unspecified level</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to read (keep) from the input data.
+            If NULL, all are read in or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to not read (drop) from the input data.
+            If NULL, all are read in or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>overwrite</ID>
+          <ToolTip>
+            If TRUE, existing outFile may be overwritten.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxFactors(inData = $inData$, factorInfo = $factorInfo$, outFile = $outFile$, 
+    sortLevels = $sortLevels$, otherLevel = $otherLevel$,  
+    varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$,
+    overwrite = $overwrite$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

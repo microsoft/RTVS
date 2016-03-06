@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
   <CodeSnippet Format="1.0.0">
     <Header>
-      <Title>dunif</Title>
-      <Shortcut>dunif</Shortcut>
-      <Description>Code snippet for 'dunif' function that gives density deviates</Description>
+      <Title>Sequence</Title>
+      <Shortcut>seql</Shortcut>
+      <Description>Code snippet for sequence generation</Description>
       <Author>Microsoft Corporation</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -13,23 +13,23 @@
     <Snippet>
       <Declarations>
         <Literal>
-          <ID>x</ID>
-          <Default>x</Default>
-          <ToolTip>Vector of quantiles</ToolTip>
+          <ID>from</ID>
+          <Default>0</Default>
+          <ToolTip>Start value</ToolTip>
         </Literal>
         <Literal>
-          <ID>min</ID>
-          <Default>min</Default>
-          <ToolTip>Lower limit of the distribution</ToolTip>
+          <ID>to</ID>
+          <Default>10</Default>
+          <ToolTip>End value</ToolTip>
         </Literal>
         <Literal>
-          <ID>max</ID>
-          <Default>max</Default>
-          <ToolTip>Upper limit of the distribution</ToolTip>
+          <ID>length</ID>
+          <Default>11</Default>
+          <ToolTip>Sequence length</ToolTip>
         </Literal>
       </Declarations>
       <Code Language="R">
-        <![CDATA[runif($n$, min = $min$, max = $max$, log = FALSE)]]>
+        <![CDATA[seq(from = $from$, to = $to$, length.out = $length$)$end$]]>
       </Code>
     </Snippet>
   </CodeSnippet>

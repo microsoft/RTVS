@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Histogram</Title>
+      <Shortcut>rxHistogram</Shortcut>
+      <Description>Histogram plot for a variable in an .xdf file or data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>formula</ID>
+          <ToolTip>Formula describing the variable to plot, taking the form of ~x|g1 + g2 where 
+           g1 and g2 are optional conditioning factor variables
+          </ToolTip>
+          <Default>x</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>data frame or .xdf file name, including the path relative to the working directory or the absolute path. Use / instead of \.</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>
+            Name of a logical variable or a logical expression for row selection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks of data to read into each chunk when using rxCube to compute histogram data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>histType</ID>
+          <ToolTip>
+            Character string specifying "Counts" or "Percent"
+          </ToolTip>
+          <Default>Counts</Default>
+        </Literal>
+        <Literal>
+          <ID>title</ID>
+          <ToolTip>Main title for the plot.
+          </ToolTip>
+          <Default></Default>
+        </Literal>
+        <Literal>
+          <ID>fillColor</ID>
+          <ToolTip>The fill color for the histogram.
+          </ToolTip>
+          <Default>"cyan"</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxHistogram(formula = ~$formula$, data = $data$, rowSelection = $rowSelection$, 
+    blocksPerRead = $blocksPerRead$, histType = "$histType$", 
+    title = "$title$", fillColor = $fillColor$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

@@ -2,9 +2,9 @@
 <CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
   <CodeSnippet Format="1.0.0">
     <Header>
-      <Title>runif</Title>
-      <Shortcut>runif</Shortcut>
-      <Description>Code snippet for 'runif' function that generates random deviates</Description>
+      <Title>Empty data frame (character)</Title>
+      <Shortcut>df2c</Shortcut>
+      <Description>Code snippet for an empty character data frame</Description>
       <Author>Microsoft Corporation</Author>
       <SnippetTypes>
         <SnippetType>Expansion</SnippetType>
@@ -13,23 +13,23 @@
     <Snippet>
       <Declarations>
         <Literal>
-          <ID>n</ID>
-          <Default>n</Default>
-          <ToolTip>Number of observations</ToolTip>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame to create</ToolTip>
+          <Default>myDataFrame</Default>
         </Literal>
         <Literal>
-          <ID>min</ID>
-          <Default>min</Default>
-          <ToolTip>Lower limit of the distribution</ToolTip>
+          <ID>a</ID>
+          <Default>a</Default>
+          <ToolTip>First parameter</ToolTip>
         </Literal>
         <Literal>
-          <ID>max</ID>
-          <Default>max</Default>
-          <ToolTip>Upper limit of the distribution</ToolTip>
+          <ID>b</ID>
+          <Default>b</Default>
+          <ToolTip>Second parameter</ToolTip>
         </Literal>
       </Declarations>
       <Code Language="R">
-        <![CDATA[runif($n$, min = $min$, max = $max$)]]>
+        <![CDATA[$dfname$ <- data.frame($a$ = character(), $b$ = character())]]>
       </Code>
     </Snippet>
   </CodeSnippet>

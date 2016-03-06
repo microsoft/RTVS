@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Clone HPC Server compute context</Title>
+      <Shortcut>RxHpcServer</Shortcut>
+      <Description>Clone and modify a Microsoft HPC Server compute context</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>computeContext</ID>
+          <ToolTip>A new RxHpcServer object based on an existing one</ToolTip>
+          <Default>myNewComputeContext</Default>
+        </Literal>     
+        <Literal>
+          <ID>object</ID>
+          <ToolTip>An RxHpcServer object on which to base a new one</ToolTip>
+          <Default>myFirstComputeContext</Default>
+        </Literal>
+        <Literal>
+          <ID>wait</ID>
+          <ToolTip>
+ If TRUE, a job will be blocking and will not return until it has 
+ completed or has failed.</ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>consoleOutput</ID>
+          <ToolTip>
+ If TRUE, console output from the R processes on the cluster will be 
+ printed to the user console,</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>dataDistType</ID>
+          <ToolTip> 
+ "all" if the entire data set has been copied to each compute node;
+ "split" if each compute node contains a different set of rows
+          </ToolTip>
+          <Default>all</Default>
+        </Literal>
+        <Literal>
+          <ID>packagesToLoad</ID>
+          <ToolTip>
+ Optional vector of names of additional packages to be loaded 
+ on the nodes when jobs are run in this compute context</ToolTip>
+          <Default>NULL</Default>
+        </Literal>     
+        <Literal>
+          <ID>workingDir</ID>
+          <ToolTip>Your working directory for the computations on the cluster</ToolTip>
+          <Default>C:\\Users\\yourname</Default>
+        </Literal>
+        <Literal>
+          <ID>dataPath</ID>
+          <ToolTip>
+            Search path(s) for the file-based data sets on the cluster nodes.
+          </ToolTip>
+          <Default>C:\\Revolution\\R-Enterprise-7.0\\R-2.15.3\\library\\RevoScaleR\\SampleData</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$computeContext$ <- RxHpcServer( object = $object$, wait = $wait$, 
+    consoleOutput = $consoleOutput$, dataDistType = "$dataDistType$", 
+    packagesToLoad = $packagesToLoad$, workingDir = "$workingDir$", 
+    dataPath = "$dataPath$"
+    )
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

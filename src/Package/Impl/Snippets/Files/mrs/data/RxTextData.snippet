@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data source: text</Title>
+      <Shortcut>RxTextData</Shortcut>
+      <Description>Create a text data source object</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>
+An RxTextData data source object.
+This can be used as the 'inData' argument in the rxImport function.
+          </ToolTip>
+          <Default>myTextDS</Default>
+        </Literal>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>Name of delimited or fixed format text data file</ToolTip>
+          <Default>"myTxtFile.txt"</Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>TRUE if all string columns in the text file should be converted to factors.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>colInfo</ID>
+          <ToolTip>
+            List of named variable information lists. Each information list can contain:
+            -type (data type)
+            -newName (new name for the variable)
+            -description (description for the variable)
+            -levels (vector of levels for a factor)
+            -newLevels (replacement labels for a factor)
+            -start (the left-most position for fixed format)
+            -width (the number of bytes for fixed format)
+            -decimalPlaces (the number of decimal places for fixed format)
+            For example, 
+            list(V1 = list(type = "integer", description = "Age"), 
+                 V2 = list(newName = "Var2"))
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>        
+        <Literal>
+          <ID>missingValueString</ID>
+          <ToolTip>
+            Character string containing the missing value code.
+          </ToolTip>
+          <Default>NA</Default>
+        </Literal>
+         <Literal>
+            <ID>rowsPerRead</ID>
+            <ToolTip>
+              Number of rows to read into each block of data.
+            </ToolTip>
+            <Default>500000</Default>
+          </Literal>
+          <Literal>
+          <ID>delimiter</ID>
+          <ToolTip>
+            Character to use as the separator between variables. If NULL 
+            and the colInfo argument does not contain "start" and 
+            "width" information (which implies a fixed-formatted file),
+            the delimiter is auto-sensed from the list ",", "\t", ";", 
+            and " ".
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- RxTextData( file = $file$, stringsAsFactors = $stringsAsFactors$, 
+    colInfo = $colInfo$, 
+    missingValueString = "$missingValueString$", rowsPerRead = $rowsPerRead$,
+    delimiter = $delimiter$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
