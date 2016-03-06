@@ -10,6 +10,9 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Expansions {
+    /// <summary>
+    /// Code expansions (aka snippets) command controller
+    /// </summary>
     public class ExpansionsController : ICommandTarget {
         private ExpansionClient _expansionClient;
         private ITextView _textView;

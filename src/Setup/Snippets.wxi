@@ -90,74 +90,74 @@
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsAnalysisFolder">
     <Component Id="SnippetsMrsAnalysis" Guid="{014A15B7-D355-4C91-B879-645897DC0BF6}">
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxCovCor.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxCrossTabs.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxCube.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxDTree.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxGlm.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxKmeans.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxLinMod.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxLogit.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\analysis\rxSummary.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxCovCor.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxCrossTabs.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxCube.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxDTree.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxGlm.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxKmeans.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxLinMod.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxLogit.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-analysis\rxSummary.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsChunkingFolder">
     <Component Id="SnippetsMrsChunking" Guid="{1C69CF62-903B-4E5C-9152-C7B04A45A3DC}">
-      <File Source="$(var.BinDir)\Snippets\mrs\chunking\rxClose.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\chunking\rxOpen.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\chunking\rxReadNext.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\chunking\RxXdfData.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-chunking\rxClose.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-chunking\rxOpen.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-chunking\rxReadNext.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-chunking\RxXdfData.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsComputeContextFolder">
     <Component Id="SnippetsMrsComputeContext" Guid="{43C3BB5B-37C9-4367-9020-1088BB06057E}">
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxAzureBurst.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxComputeCluster.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxForeachDoPar.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\rxGetComputeContext.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxHpcServer.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxHpcServerClone.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxLocalParallel.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxLocalSeq.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxLsfCluster.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxLsfClusterClone.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\computeContext\RxSetComputeContext.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxAzureBurst.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxComputeCluster.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxForeachDoPar.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\rxGetComputeContext.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxHpcServer.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxHpcServerClone.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxLocalParallel.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxLocalSeq.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxLsfCluster.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxLsfClusterClone.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-computeContext\RxSetComputeContext.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsDataFolder">
     <Component Id="SnippetsMrsData" Guid="{968F7E54-FAEB-4B22-9BB0-2322855A11E1}">
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxDataStep.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxFactors.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxGetInfo.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxGetVarInfo.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxImport.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxMerge.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\RxOdbcData.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxReadXdf.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\RxSasData.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxSetVarInfo.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxSort.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\RxSpssData.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\RxTeradata.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\RxTextData.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxXdfToDataFrame.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\data\rxXdfToText.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxDataStep.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxFactors.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxGetInfo.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxGetVarInfo.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxImport.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxMerge.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\RxOdbcData.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxReadXdf.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\RxSasData.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxSetVarInfo.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxSort.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\RxSpssData.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\RxTeradata.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\RxTextData.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxXdfToDataFrame.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-data\rxXdfToText.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsDistributedFolder">
     <Component Id="SnippetsMrsDistributed" Guid="{63E378E2-C0A9-4475-8BA4-9AFD5484F11B}">
-      <File Source="$(var.BinDir)\Snippets\mrs\distributed\rxExec.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-distributed\rxExec.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsGraphicsFolder">
     <Component Id="SnippetsMrsGraphics" Guid="{5D720903-ED68-4841-B47D-73B2303E6C78}">
-      <File Source="$(var.BinDir)\Snippets\mrs\graphics\rxHistogram.snippet" />
-      <File Source="$(var.BinDir)\Snippets\mrs\graphics\rxLinePlot.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-graphics\rxHistogram.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-graphics\rxLinePlot.snippet" />
     </Component>
   </DirectoryRef>
   <DirectoryRef Id="SnippetsMrsTransformsFolder">
     <Component Id="SnippetsMrsTransforms" Guid="{1332FC0D-34CD-4B3D-8BBA-D92C51A1A85A}">
-      <File Source="$(var.BinDir)\Snippets\mrs\transforms\transformFunc.snippet" />
+      <File Source="$(var.BinDir)\Snippets\mrs-transforms\transformFunc.snippet" />
     </Component>
   </DirectoryRef>
 </Include>

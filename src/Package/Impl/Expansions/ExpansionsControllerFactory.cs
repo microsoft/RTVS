@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Expansions {
     [Export(typeof(IControllerFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    [Name("R Snippets Command Controller")]
+    [Name("R Expansions Command Controller")]
     [Order(Before = "Default")]
     internal class ExpansionsControllerFactory : IControllerFactory {
         public IEnumerable<ICommandTarget> GetControllers(ITextView textView, ITextBuffer textBuffer) {

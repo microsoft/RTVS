@@ -74,13 +74,13 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics",      @"Snippets\graphics")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators",     @"Snippets\operators")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",         @"Snippets\rodbc")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\mrs\analysis")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\mrs\chunking")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\mrs\computeContext")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\mrs\data")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\mrs\distributed")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\mrs\graphics")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\mrs\transforms")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\mrs-analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\mrs-chunking")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\mrs-computeContext")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\mrs-data")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\mrs-distributed")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\mrs-graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\mrs-transforms")]
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 

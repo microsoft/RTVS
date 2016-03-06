@@ -274,14 +274,20 @@
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
 
+      <!-- REPL context menu groups -->
       <Group guid="guidRToolsCmdSet" id="interactiveWindowContextGroup" priority="0x0250">
+        <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup" priority="0x0400">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup" priority="0x0500">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
       </Group>
-
+      <!--  End REPL context menu -->
+      
       <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
@@ -1341,6 +1347,15 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup"/>
     </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_INSERTSNIPPET" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidVSStd2K" id="ECMD_SURROUNDWITH" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
+    </CommandPlacement>
+
   </CommandPlacements>
 
   <KeyBindings>
@@ -1452,6 +1467,7 @@
       <IDSymbol name="icmdRexecuteReplCmd" value="571"/>
       <IDSymbol name="icmdPasteReplCmd" value="572"/>
       <IDSymbol name="interactiveWindowHelpGroup" value="573"/>
+      <IDSymbol name="interactiveWindowSnippetsGroup" value="574"/>
 
       <!-- Packages-->
       <IDSymbol name="icmdInstallPackages" value="601" />
