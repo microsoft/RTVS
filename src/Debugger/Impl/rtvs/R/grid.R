@@ -13,7 +13,9 @@ grid.format <- function(x) {
   sapply(format(x, trim = TRUE), grid.trim);
 }
 
-grid.data <- function(x, rows, cols) {
+grid.data <- function(expr, env, rows, cols) {
+  x <- safe_eval(expr, env);
+
   d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
     stop('grid.data requires two dimensional object');

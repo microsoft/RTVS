@@ -11,7 +11,15 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
     public class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange, IRSession rSession = null) {
+        /// <summary>
+        /// Evaluatoin R expression and return grid data
+        /// </summary>
+        /// <param name="expression">expression for R object</param>
+        /// <param name="environment">R environment where R object is attached</param>
+        /// <param name="gridRange">range of data to return</param>
+        /// <param name="rSession">R session, nullable. If null, default interactive session is used</param>
+        /// <returns></returns>
+        public static async Task<IGridData<string>> GetGridDataAsync(string expression, string environment, GridRange gridRange, IRSession rSession = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (rSession == null) {
@@ -26,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
 
             REvaluationResult? result = null;
             using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
-                result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+                result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {environment ?? "NULL"}, {rows}, {columns}))", REvaluationKind.Normal);
 
                 if (result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
                     throw new InvalidOperationException($"Grid data evaluation failed:{result}");

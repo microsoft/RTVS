@@ -135,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 2);
                 Range columnRange = new Range(1, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
@@ -170,7 +170,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 2);
                 Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[2].ShouldBeEquivalentTo("c");
@@ -205,7 +205,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 2);
                 Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[2].ShouldBeEquivalentTo("NA");
@@ -243,7 +243,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 1);
                 Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
@@ -266,7 +266,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 rowRange = new Range(0, 3);
                 columnRange = new Range(0, 1);
-                grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
@@ -297,7 +297,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 2);
                 Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
@@ -329,7 +329,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 2);
                 Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[0].ShouldBeEquivalentTo("col1");
@@ -364,7 +364,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 1);
                 Range columnRange = new Range(0, 1);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
@@ -388,7 +388,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 Range rowRange = new Range(0, 3);
                 Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
                 grid.ColumnHeader[0].ShouldBeEquivalentTo("X101.103");

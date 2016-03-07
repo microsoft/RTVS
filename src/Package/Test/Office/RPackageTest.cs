@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Office {
                 var o = await GetMtCars(script);
                 o.Should().NotBeNull();
 
-                ExcelData xlData = ExcelInterop.GenerateExcelData("x", o.Dimensions[0], o.Dimensions[1]);
+                ExcelData xlData = ExcelInterop.GenerateExcelData("x", null, o.Dimensions[0], o.Dimensions[1]);
 
                 int rows = o.Dimensions[0];
                 int cols = o.Dimensions[1];
@@ -46,14 +46,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Office {
 
         [Test]
         public void FetchDataErrors01() {
-            ExcelData xlData = ExcelInterop.GenerateExcelData("x", -10, -10);
+            ExcelData xlData = ExcelInterop.GenerateExcelData("x", null, -10, -10);
             xlData.Should().BeNull();
          }
 
         [Test]
         public void FetchDataErrors02() {
             using (var script = new VariableRHostScript()) {
-                ExcelData xlData = ExcelInterop.GenerateExcelData("zzzzzz", 2, 2);
+                ExcelData xlData = ExcelInterop.GenerateExcelData("zzzzzz", null, 2, 2);
                 xlData.Should().BeNull();
             }
         }

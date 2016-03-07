@@ -24,8 +24,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         public const string WorkbookName = "RTVS_View.xlsx";
         private static Application _excel;
 
-        public static void OpenDataInExcel(string variableName, string expression, int rows, int cols) {
-            ExcelData xlData = GenerateExcelData(expression, Math.Min(10000, rows), Math.Min(10000, cols));
+        public static void OpenDataInExcel(string variableName, string expression, string environment, int rows, int cols) {
+            ExcelData xlData = GenerateExcelData(expression, environment, Math.Min(10000, rows), Math.Min(10000, cols));
             if (xlData != null) {
                 VsAppShell.Current.DispatchOnUIThread(() => {
                     Workbook wb = RunExcel();
@@ -39,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             }
         }
 
-        public static ExcelData GenerateExcelData(string expression, int rows, int cols) {
+        public static ExcelData GenerateExcelData(string expression, string environment, int rows, int cols) {
             if (rows <= 0 || cols <= 0) {
                 return null;
             }
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                         new LongAction() {
                             Data = i,
                             Name = Resources.Progress_PreparingExcelData,
-                            Action = (o) => FetchChunk(expression, ((int)o) * chunkSize, chunkSize, xlData, rows, cols)
+                            Action = (o) => FetchChunk(expression, environment, ((int)o) * chunkSize, chunkSize, xlData, rows, cols)
                         }
                     );
                 }
@@ -75,9 +75,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             return null;
         }
 
-        private static void FetchChunk(string expression, int start, int chunkSize, ExcelData xlData, int totalRows, int totalCols) {
+        private static void FetchChunk(string expression, string environment, int start, int chunkSize, ExcelData xlData, int totalRows, int totalCols) {
             IGridData<string> data =
                 GridDataSource.GetGridDataAsync(expression,
+                                environment,
                                 new GridRange(new Range(start, chunkSize),
                                 new Range(0, totalCols))).Result;
 
