@@ -33,7 +33,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
-            if (tokens.CurrentToken.TokenType == RTokenType.Identifier) {
+            if (tokens.CurrentToken.IsVariableKind()) {
                 this.VariableName = new TokenNode();
                 this.VariableName.Parse(context, this);
 

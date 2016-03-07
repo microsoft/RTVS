@@ -363,7 +363,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                 if (tokens.PreviousToken.TokenType == RTokenType.CloseBrace ||
                     tokens.PreviousToken.TokenType == RTokenType.CloseSquareBracket ||
                     tokens.PreviousToken.TokenType == RTokenType.CloseDoubleSquareBracket ||
-                    tokens.PreviousToken.TokenType == RTokenType.Identifier) {
+                    tokens.PreviousToken.IsVariableKind()) {
                     FunctionCall functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 

@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
@@ -11,11 +10,9 @@ using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Core.Test.Tokens
-{
+namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
-    public class TokenizeFiles
-    {
+    public class TokenizeFiles {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
@@ -24,8 +21,7 @@ namespace Microsoft.R.Core.Test.Tokens
             a.ShouldNotThrow();
         }
 
-        public static void TokenizeFileImplementation(CoreTestFilesFixture fixture, string name)
-        {
+        public static void TokenizeFileImplementation(CoreTestFilesFixture fixture, string name) {
             string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".tokens";
             string text = fixture.LoadDestinationFile(name);
@@ -38,9 +34,7 @@ namespace Microsoft.R.Core.Test.Tokens
 
             if (_regenerateBaselineFiles) {
                 // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Tokenization";
-                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".tokens";
-
+                baselineFile = Path.Combine(fixture.SourcePath, @"Tokenization\", Path.GetFileName(testFile)) + ".tokens";
                 TestFiles.UpdateBaseline(baselineFile, actual);
             } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);
