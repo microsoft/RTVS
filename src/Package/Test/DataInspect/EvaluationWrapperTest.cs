@@ -13,7 +13,12 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class EvaluationWrapperTest {
+    public class EvaluationWrapperTest : IClassFixture<VariableRHostScript> {
+        private VariableRHostScript _hostScript;
+        public EvaluationWrapperTest(VariableRHostScript hostScript) {
+            _hostScript = hostScript;
+        }
+
         // TODO: RStudio difference
         //    value.integer.1   RS 1L                    RTVS just 1
         //    value.numeric.big RS 98765432109876543210  RTVS 9.88e+19
@@ -71,9 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 CanShowDetail = expectedCanShowDetail
             };
 
-            using (var hostScript = new VariableRHostScript()) {
-                await hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
-            }
+            await _hostScript.EvaluateAndAssert(script, expected, VariableRHostScript.AssertEvaluationWrapper);
         }
 
         [Test]
@@ -109,16 +112,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task TruncateGrandChildrenTest() {
-            using (var hostScript = new VariableRHostScript()) {
-                await hostScript.EvaluateAsync("x.truncate.children<-1:100");
-                var children = await hostScript.GlobalEnvrionment.GetChildrenAsync();
-                var child = children.First(c => c.Name == "x.truncate.children");
+            await _hostScript.EvaluateAsync("x.truncate.children<-1:100");
+            var children = await _hostScript.GlobalEnvrionment.GetChildrenAsync();
+            var child = children.First(c => c.Name == "x.truncate.children");
 
-                var grandChildren = await child.GetChildrenAsync();
+            var grandChildren = await child.GetChildrenAsync();
 
-                grandChildren.Count.ShouldBeEquivalentTo(21);   // truncate 20 + ellipsis
-                grandChildren[20].Value.ShouldBeEquivalentTo(Resources.VariableExplorer_Truncated);
-            }
+            grandChildren.Count.ShouldBeEquivalentTo(21);   // truncate 20 + ellipsis
+            grandChildren[20].Value.ShouldBeEquivalentTo(Resources.VariableExplorer_Truncated);
         }
 
         [Test]
@@ -127,33 +128,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.10x100 <-matrix(1:1000, 10, 100)";
             var expectation = new VariableExpectation() { Name = "matrix.10x100", Value = "int [1:10, 1:100] 1 2 3 4 5 6 7 8 9 10 ...", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(1, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(1, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
-                grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
-                grid.ColumnHeader[3].ShouldBeEquivalentTo("[,4]");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
+            grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
+            grid.ColumnHeader[3].ShouldBeEquivalentTo("[,4]");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-                grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 1].ShouldBeEquivalentTo("11");
-                grid.Grid[0, 2].ShouldBeEquivalentTo("21");
-                grid.Grid[0, 3].ShouldBeEquivalentTo("31");
-                grid.Grid[1, 1].ShouldBeEquivalentTo("12");
-                grid.Grid[1, 2].ShouldBeEquivalentTo("22");
-                grid.Grid[1, 3].ShouldBeEquivalentTo("32");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 1].ShouldBeEquivalentTo("11");
+            grid.Grid[0, 2].ShouldBeEquivalentTo("21");
+            grid.Grid[0, 3].ShouldBeEquivalentTo("31");
+            grid.Grid[1, 1].ShouldBeEquivalentTo("12");
+            grid.Grid[1, 2].ShouldBeEquivalentTo("22");
+            grid.Grid[1, 3].ShouldBeEquivalentTo("32");
         }
 
         [Test]
@@ -162,33 +161,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.named <- matrix(1:10, 2, 5, dimnames = list(r = c('r1', 'r2'), c = c('a', 'b', 'c', 'd', 'e')))";
             var expectation = new VariableExpectation() { Name = "matrix.named", Value = "int [1:2, 1:5] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(2, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[2].ShouldBeEquivalentTo("c");
-                grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
-                grid.ColumnHeader[4].ShouldBeEquivalentTo("e");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[2].ShouldBeEquivalentTo("c");
+            grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
+            grid.ColumnHeader[4].ShouldBeEquivalentTo("e");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("r1");
-                grid.RowHeader[1].ShouldBeEquivalentTo("r2");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("r1");
+            grid.RowHeader[1].ShouldBeEquivalentTo("r2");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].ShouldBeEquivalentTo("5");
-                grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
-                grid.Grid[1, 2].ShouldBeEquivalentTo("6");
-                grid.Grid[1, 3].ShouldBeEquivalentTo("8");
-                grid.Grid[1, 4].ShouldBeEquivalentTo("10");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].ShouldBeEquivalentTo("5");
+            grid.Grid[0, 3].ShouldBeEquivalentTo("7");
+            grid.Grid[0, 4].ShouldBeEquivalentTo("9");
+            grid.Grid[1, 2].ShouldBeEquivalentTo("6");
+            grid.Grid[1, 3].ShouldBeEquivalentTo("8");
+            grid.Grid[1, 4].ShouldBeEquivalentTo("10");
         }
 
         [Test]
@@ -197,33 +194,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.na.header <- matrix(c(1, 2, 3, 4, NA, NaN, 7, 8, 9, 10), 2, 5, dimnames = list(r = c('r1', NA), c = c('a', 'b', NA, 'd', NA)))";
             var expectation = new VariableExpectation() { Name = "matrix.na.header", Value = "num [1:2, 1:5] 1 2 3 4 NA NaN 7 8 9 10", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(2, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(2, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[2].ShouldBeEquivalentTo("NA");
-                grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
-                grid.ColumnHeader[4].ShouldBeEquivalentTo("NA");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[2].ShouldBeEquivalentTo("NA");
+            grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
+            grid.ColumnHeader[4].ShouldBeEquivalentTo("NA");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("r1");
-                grid.RowHeader[1].ShouldBeEquivalentTo("NA");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("r1");
+            grid.RowHeader[1].ShouldBeEquivalentTo("NA");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 2].ShouldBeEquivalentTo("NA");
-                grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-                grid.Grid[0, 4].ShouldBeEquivalentTo("9");
-                grid.Grid[1, 2].ShouldBeEquivalentTo("NaN");
-                grid.Grid[1, 3].ShouldBeEquivalentTo("8");
-                grid.Grid[1, 4].ShouldBeEquivalentTo("10");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].ShouldBeEquivalentTo("NA");
+            grid.Grid[0, 3].ShouldBeEquivalentTo("7");
+            grid.Grid[0, 4].ShouldBeEquivalentTo("9");
+            grid.Grid[1, 2].ShouldBeEquivalentTo("NaN");
+            grid.Grid[1, 3].ShouldBeEquivalentTo("8");
+            grid.Grid[1, 4].ShouldBeEquivalentTo("10");
         }
 
         [Test]
@@ -235,52 +230,50 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script2 = "matrix.singlecolumn <- matrix(1:3, ncol=1);";
             var expectation2 = new VariableExpectation() { Name = "matrix.singlecolumn", Value = "int [1:3, 1] 1 2 3", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script1,
-                    expectation1,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script1,
+                expectation1,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 1);
-                Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 1);
+            Range columnRange = new Range(0, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
-                grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
-                grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
+            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
+            grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-                grid.Grid[0, 1].ShouldBeEquivalentTo("2");
-                grid.Grid[0, 2].ShouldBeEquivalentTo("3");
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+            grid.Grid[0, 1].ShouldBeEquivalentTo("2");
+            grid.Grid[0, 2].ShouldBeEquivalentTo("3");
 
 
-                evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script2,
-                    expectation2,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script2,
+                expectation2,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                rowRange = new Range(0, 3);
-                columnRange = new Range(0, 1);
-                grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            rowRange = new Range(0, 3);
+            columnRange = new Range(0, 1);
+            grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-                grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
-                grid.RowHeader[2].ShouldBeEquivalentTo("[3,]");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+            grid.RowHeader[2].ShouldBeEquivalentTo("[3,]");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-                grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-                grid.Grid[2, 0].ShouldBeEquivalentTo("3");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
+            grid.Grid[2, 0].ShouldBeEquivalentTo("3");
         }
 
         [Test]
@@ -289,30 +282,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.rowname.na <- matrix(c(1,2,3,4), nrow=2, ncol=2);rownames(matrix.rowname.na)<-c(NA, 'row2');";
             var expectation = new VariableExpectation() { Name = "matrix.rowname.na", Value = "num [1:2, 1:2] 1 2 3 4", TypeName = "double", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(0, 2);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
-                grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
+            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("NA");
-                grid.RowHeader[1].ShouldBeEquivalentTo("row2");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("NA");
+            grid.RowHeader[1].ShouldBeEquivalentTo("row2");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-                grid.Grid[0, 1].ShouldBeEquivalentTo("3");
-                grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-                grid.Grid[1, 1].ShouldBeEquivalentTo("4");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+            grid.Grid[0, 1].ShouldBeEquivalentTo("3");
+            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
+            grid.Grid[1, 1].ShouldBeEquivalentTo("4");
         }
 
         [Test]
@@ -321,33 +312,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.colname.na <- matrix(1:6, nrow=2, ncol=3);colnames(matrix.colname.na)<-c('col1',NA,'col3');";
             var expectation = new VariableExpectation() { Name = "matrix.colname.na", Value = "int [1:2, 1:3] 1 2 3 4 5 6", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 2);
-                Range columnRange = new Range(0, 3);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 2);
+            Range columnRange = new Range(0, 3);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[0].ShouldBeEquivalentTo("col1");
-                grid.ColumnHeader[1].ShouldBeEquivalentTo("NA");
-                grid.ColumnHeader[2].ShouldBeEquivalentTo("col3");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[0].ShouldBeEquivalentTo("col1");
+            grid.ColumnHeader[1].ShouldBeEquivalentTo("NA");
+            grid.ColumnHeader[2].ShouldBeEquivalentTo("col3");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-                grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-                grid.Grid[0, 1].ShouldBeEquivalentTo("3");
-                grid.Grid[0, 2].ShouldBeEquivalentTo("5");
-                grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-                grid.Grid[1, 1].ShouldBeEquivalentTo("4");
-                grid.Grid[1, 2].ShouldBeEquivalentTo("6");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
+            grid.Grid[0, 1].ShouldBeEquivalentTo("3");
+            grid.Grid[0, 2].ShouldBeEquivalentTo("5");
+            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
+            grid.Grid[1, 1].ShouldBeEquivalentTo("4");
+            grid.Grid[1, 2].ShouldBeEquivalentTo("6");
         }
 
         [Test]
@@ -356,22 +345,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";
             var expectation = new VariableExpectation() { Name = "matrix.largecell", Value = "List of 4", TypeName = "list", Class = "matrix", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 1);
-                Range columnRange = new Range(0, 1);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 1);
+            Range columnRange = new Range(0, 1);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
 
-                grid.Grid[0, 0].ShouldBeEquivalentTo("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
-            }
+            grid.Grid[0, 0].ShouldBeEquivalentTo("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
         }
 
         [Test]
@@ -380,33 +367,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "df.test <- data.frame(101:103, c('a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper);
 
-                Range rowRange = new Range(0, 3);
-                Range columnRange = new Range(0, 2);
-                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
+            Range rowRange = new Range(0, 3);
+            Range columnRange = new Range(0, 2);
+            var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-                grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-                grid.ColumnHeader[0].ShouldBeEquivalentTo("X101.103");
-                grid.ColumnHeader[1].ShouldBeEquivalentTo("c..a....b....c..");
+            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
+            grid.ColumnHeader[0].ShouldBeEquivalentTo("X101.103");
+            grid.ColumnHeader[1].ShouldBeEquivalentTo("c..a....b....c..");
 
-                grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-                grid.RowHeader[0].ShouldBeEquivalentTo("1");
-                grid.RowHeader[1].ShouldBeEquivalentTo("2");
-                grid.RowHeader[2].ShouldBeEquivalentTo("3");
+            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
+            grid.RowHeader[0].ShouldBeEquivalentTo("1");
+            grid.RowHeader[1].ShouldBeEquivalentTo("2");
+            grid.RowHeader[2].ShouldBeEquivalentTo("3");
 
-                grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 0].ShouldBeEquivalentTo("101");
-                grid.Grid[0, 1].ShouldBeEquivalentTo("a");
-                grid.Grid[1, 0].ShouldBeEquivalentTo("102");
-                grid.Grid[1, 1].ShouldBeEquivalentTo("b");
-                grid.Grid[2, 0].ShouldBeEquivalentTo("103");
-                grid.Grid[2, 1].ShouldBeEquivalentTo("c");
-            }
+            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].ShouldBeEquivalentTo("101");
+            grid.Grid[0, 1].ShouldBeEquivalentTo("a");
+            grid.Grid[1, 0].ShouldBeEquivalentTo("102");
+            grid.Grid[1, 1].ShouldBeEquivalentTo("b");
+            grid.Grid[2, 0].ShouldBeEquivalentTo("103");
+            grid.Grid[2, 1].ShouldBeEquivalentTo("c");
         }
 
         [Test]
@@ -418,18 +403,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
             var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
 
-            using (var hostScript = new VariableRHostScript()) {
-                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
-                    script,
-                    expectation,
-                    VariableRHostScript.AssertEvaluationWrapper_ValueStartWith);
+            var evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
+                script,
+                expectation,
+                VariableRHostScript.AssertEvaluationWrapper_ValueStartWith);
 
-                var children = await evaluation.GetChildrenAsync();
+            var children = await evaluation.GetChildrenAsync();
 
-                children.Count.ShouldBeEquivalentTo(2);
-                VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
-                VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
-            }
+            children.Count.ShouldBeEquivalentTo(2);
+            VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
+            VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
         }
 
         object[,] arrayTestData = new object[,] {
@@ -445,16 +428,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             return RunTest(arrayTestData);
         }
 
-        private static async Task RunTest(object[,] testData) {
-            using (var hostScript = new VariableRHostScript()) {
-                int testCount = testData.GetLength(0);
+        private async Task RunTest(object[,] testData) {
+            int testCount = testData.GetLength(0);
 
-                for (int i = 0; i < testCount; i++) {
-                    await hostScript.EvaluateAndAssert(
-                        (string)testData[i, 0],
-                        (VariableExpectation)testData[i, 1],
-                        VariableRHostScript.AssertEvaluationWrapper);
-                }
+            for (int i = 0; i < testCount; i++) {
+                await _hostScript.EvaluateAndAssert(
+                    (string)testData[i, 0],
+                    (VariableExpectation)testData[i, 1],
+                    VariableRHostScript.AssertEvaluationWrapper);
             }
         }
     }
