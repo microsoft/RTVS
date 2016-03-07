@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             private readonly RSession _session;
 
             public InteractionEvaluation(TestMethodFixture testMethod) {
-                _testMethod = testMethod.Method;
+                _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, null, () => {});
             }
 

@@ -20,24 +20,21 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// Text view client that manages insertion of snippets
     /// </summary>
     public sealed class ExpansionClient : IVsExpansionClient {
-        public static readonly string[] AllStandardSnippetTypes = { "Expansion" };
+        public static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundWith" };
 
         private IVsExpansionManager _expansionManager;
         private IVsExpansionSession _expansionSession;
-        private IVsTextManager _textManager;
+        private IExpansionsCache _cache;
 
         private bool _earlyEndExpansionHappened = false;
         private string _shortcut = null;
         private string _title = null;
 
-        public ExpansionClient(ITextView textView, ITextBuffer textBuffer) {
+        public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
             TextView = textView;
             TextBuffer = textBuffer;
-
-            _textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
-
-            var tm2 = _textManager as IVsTextManager2;
-            tm2.GetExpansionManager(out _expansionManager);
+            _expansionManager = expansionManager;
+            _cache = cache;
         }
 
         public ITextBuffer TextBuffer { get; }
@@ -145,7 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 Span span;
                 _shortcut = TextView.GetItemBeforeCaret((x) => !char.IsWhiteSpace(x), out span);
 
-                VsExpansion? exp = ExpansionsCache.Current.GetExpansion(_shortcut);
+                VsExpansion? exp = _cache.GetExpansion(_shortcut);
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
                 if (exp.HasValue) {
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
@@ -187,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         #region IVsExpansionClient
-        int IVsExpansionClient.EndExpansion() {
+        public int EndExpansion() {
             if (_expansionSession == null) {
                 _earlyEndExpansionHappened = true;
             } else {
@@ -199,7 +196,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.FormatSpan(IVsTextLines pBuffer, TextSpan[] ts) {
+        public int FormatSpan(IVsTextLines pBuffer, TextSpan[] ts) {
             int hr = VSConstants.S_OK;
             int startPos = -1;
             int endPos = -1;
@@ -231,25 +228,25 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.IsValidKind(IVsTextLines pBuffer, TextSpan[] ts, string bstrKind, out int pfIsValidKind) {
+        public int IsValidKind(IVsTextLines pBuffer, TextSpan[] ts, string bstrKind, out int pfIsValidKind) {
             pfIsValidKind = 1;
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.IsValidType(IVsTextLines pBuffer, TextSpan[] ts, string[] rgTypes, int iCountTypes, out int pfIsValidType) {
+        public int IsValidType(IVsTextLines pBuffer, TextSpan[] ts, string[] rgTypes, int iCountTypes, out int pfIsValidType) {
             pfIsValidType = 1;
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.OnAfterInsertion(IVsExpansionSession pSession) {
+        public int OnAfterInsertion(IVsExpansionSession pSession) {
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.OnBeforeInsertion(IVsExpansionSession pSession) {
+        public int OnBeforeInsertion(IVsExpansionSession pSession) {
             return VSConstants.S_OK;
         }
 
-        int IVsExpansionClient.OnItemChosen(string pszTitle, string pszPath) {
+        public int OnItemChosen(string pszTitle, string pszPath) {
             int hr = VSConstants.E_FAIL;
             if (!TextView.Caret.InVirtualSpace) {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
@@ -273,7 +270,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return hr;
         }
 
-        int IVsExpansionClient.PositionCaretForEditing(IVsTextLines pBuffer, TextSpan[] ts) {
+        public int PositionCaretForEditing(IVsTextLines pBuffer, TextSpan[] ts) {
             return VSConstants.S_OK;
         }
         #endregion

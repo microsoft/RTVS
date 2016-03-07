@@ -18,10 +18,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         private ITextView _textView;
         private ITextBuffer _textBuffer;
 
-        public ExpansionsController(ITextView textView, ITextBuffer textBuffer) {
+        public ExpansionsController(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
             _textView = textView;
             _textBuffer = textBuffer;
-            _expansionClient = new ExpansionClient(textView, textBuffer);
+            _expansionClient = new ExpansionClient(textView, textBuffer, expansionManager, cache);
         }
 
         internal IVsExpansionClient ExpansionClient {

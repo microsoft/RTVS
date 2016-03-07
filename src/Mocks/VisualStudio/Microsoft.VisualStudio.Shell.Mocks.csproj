@@ -40,6 +40,9 @@
       <HintPath>..\..\..\NugetPackages\FluentAssertions.4.1.1\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.MSXML, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
@@ -215,6 +218,8 @@
     <Compile Include="VSConstants.cs" />
     <Compile Include="VsDebuggerMock.cs" />
     <Compile Include="VsEditorAdaptersFactoryServiceMock.cs" />
+    <Compile Include="VsExpansionManagerMock.cs" />
+    <Compile Include="VsExpansionSessionMock.cs" />
     <Compile Include="VsImageMonikerImageListMock.cs" />
     <Compile Include="VsImageServiceMock.cs" />
     <Compile Include="VsInteractiveWindowFactoryMock.cs" />

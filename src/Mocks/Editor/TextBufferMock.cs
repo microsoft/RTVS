@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.Editor.Mocks
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TextBufferMock : ITextBuffer
+    public class TextBufferMock : ITextBuffer
     {
         public TextBufferMock(string content, string contentTypeName)
         {
