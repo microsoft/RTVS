@@ -597,4 +597,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="VariableGrid_NotTwoDimension" xml:space="preserve">
     <value>object {0} is not two dimensional.</value>
   </data>
+  <data name="OpenRProjMessage" xml:space="preserve">
+    <value>In order to open RStudio project file as Visual Studio R project please select File | Open Project, locate .rproj file and click Open.</value>
+  </data>
 </root>

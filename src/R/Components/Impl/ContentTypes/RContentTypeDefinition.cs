@@ -14,7 +14,10 @@ namespace Microsoft.R.Components.ContentTypes
         public const string LanguageName = "R";
         public const string ContentType = "R";
         public const string FileExtension = ".r";
-        public const string RStudioProjectExtension = "rproj";
+
+        public const string RStudioProjectExtension = ".rproj";
+        public const string VsRProjectExtension = ".rxproj";
+        public const string RProjectName = "RProject";
 
         /// <summary>
         /// Exports the R content type
