@@ -38,33 +38,41 @@
       
       <?endforeach?>
       
-      <!-- rproj association -->
-      <RegistryKey Root="HKCR" Key=".rproj">
+      <!-- rxproj association -->
+      <RegistryKey Root="HKCR" Key=".rxproj">
         <RegistryValue Type="string" Name="ContentType" Value="Application/xml"/>
       </RegistryKey>
 
-      <RegistryKey Root="HKCR" Key=".rproj\OpenWithProgids">
-        <RegistryValue Type="string" Name="VisualStudio.rproj.$(var.VSRegVer)" Value="Default Value"/>
-        <RegistryValue Type="string" Name="VisualStudio.Launcher.rproj.$(var.VSRegVer)" Value="Default Value"/>
+      <RegistryKey Root="HKCR" Key=".rxproj\OpenWithProgids">
+        <RegistryValue Type="string" Name="VisualStudio.rxproj.$(var.VSRegVer)" Value="Default Value"/>
+        <RegistryValue Type="string" Name="VisualStudio.Launcher.rxproj.$(var.VSRegVer)" Value="Default Value"/>
       </RegistryKey>
 
-      <RegistryKey Root="HKCR" Key=".rproj\PersistentHandler" >
+      <RegistryKey Root="HKCR" Key=".rxproj\PersistentHandler" >
         <RegistryValue Type="string" Value="{7E9D8D44-6926-426F-AA2B-217A819A5CCE}"/>
       </RegistryKey>
 
-      <RegistryKey Root="HKCR" Key="VisualStudio.rproj.$(var.VSRegVer)" >
+      <RegistryKey Root="HKCR" Key="VisualStudio.rxproj.$(var.VSRegVer)" >
         <RegistryValue Type="string" Value="R Tools for Visual Studio Project file"/>
         <RegistryValue Type="string" Name="AllowSilentDefaultTakeOver" Value="Default Value"/>
         <RegistryValue Type="string" Name="AppUserModelID" Value="VisualStudio.$(var.VSRegVer)"/>
       </RegistryKey>
 
-      <RegistryKey Root="HKCR" Key="VisualStudio.rproj.$(var.VSRegVer)\DefaultIcon" >
+      <RegistryKey Root="HKCR" Key="VisualStudio.rxproj.$(var.VSRegVer)\DefaultIcon" >
         <RegistryValue Type="string" Value="[INSTALLFOLDER]RFile.ico"/>
       </RegistryKey>
 
-      <RegistryKey Root="HKCR" Key="VisualStudio.rproj.$(var.VSRegVer)\shell\Open\Command" >
+      <RegistryKey Root="HKCR" Key="VisualStudio.rxproj.$(var.VSRegVer)\shell\Open\Command" >
         <RegistryValue Type="string" Value="&quot;[CommonIdeFolder]devenv.exe&quot; &quot;%1&quot;"/>
       </RegistryKey>
-    </Component>
+
+        <RegistryKey Root="HKCR" Key="VisualStudio.Launcher.rxproj.$(var.VSRegVer)\DefaultIcon" >
+        <RegistryValue Type="string" Value="[INSTALLFOLDER]RFile.ico"/>
+      </RegistryKey>
+
+      <RegistryKey Root="HKCR" Key="VisualStudio.Launcher.rxproj.$(var.VSRegVer)\shell\Open\Command" >
+        <RegistryValue Type="string" Value="&quot;[CommonIdeFolder]devenv.exe&quot; &quot;%1&quot;"/>
+      </RegistryKey>
+</Component>
   </DirectoryRef>
 </Include>
