@@ -6,8 +6,11 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     public sealed class VsExpansionSessionMock : IVsExpansionSession {
+
+        public int ExpansionFieldIndex { get; private set; }
+        
         public int EndCurrentExpansion(int fLeaveCaret) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int GetDeclarationNode(string bstrNode, out global::MSXML.IXMLDOMNode pNode) {
@@ -39,11 +42,13 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GoToNextExpansionField(int fCommitIfLast) {
-            throw new NotImplementedException();
+            ExpansionFieldIndex++;
+            return VSConstants.S_OK;
         }
 
         public int GoToPreviousExpansionField() {
-            throw new NotImplementedException();
+            ExpansionFieldIndex--;
+            return VSConstants.S_OK;
         }
 
         public int SetEndSpan(TextSpan ts) {

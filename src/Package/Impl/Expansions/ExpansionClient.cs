@@ -8,7 +8,6 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -40,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         public ITextBuffer TextBuffer { get; }
         public ITextView TextView { get; }
 
+        internal IVsExpansionSession Session => _expansionSession;
 
         public bool IsEditingExpansion() {
             return _expansionSession != null;
