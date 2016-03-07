@@ -7,8 +7,11 @@
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.Plots"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Border x:Name="RootContainer">
-        </Border>
-    </ScrollViewer>
+    <Grid>
+        <TextBlock x:Name="Watermark" Visibility="Visible" Foreground="DarkGray" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">Run plotting command in R Interactive Window</TextBlock>
+        <ScrollViewer x:Name="Scroller" Visibility="Hidden" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+            <Border x:Name="RootContainer">
+            </Border>
+        </ScrollViewer>
+    </Grid>
 </UserControl>

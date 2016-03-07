@@ -6,14 +6,17 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading;
+using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.R.Host.Client.Session {
     [Export(typeof(IRSessionProvider))]
     public class RSessionProvider : IRSessionProvider {
         private int _sessionCounter;
         private readonly ConcurrentDictionary<Guid, IRSession> _sessions = new ConcurrentDictionary<Guid, IRSession>();
+        private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
 
         public IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp) {
+            _disposeToken.ThrowIfDisposed();
             return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), hostClientApp, () => DisposeSession(guid)));
         }
 
@@ -22,6 +25,10 @@ namespace Microsoft.R.Host.Client.Session {
         }
         
         public void Dispose() {
+            if (!_disposeToken.TryMarkDisposed()) {
+                return;
+            }
+
             foreach (var session in _sessions.Values) {
                 session.Dispose();
             }

@@ -18,42 +18,45 @@ grid.data <- function(x, rows, cols) {
   if (is.null(d) || (length(d) != 2)) {
     stop('grid.data requires two dimensional object');
   }
-  
-  if ((length(rows) == 1) || (length(cols) == 1)) {
-    x1 <- grid.format(x[rows, cols]);
+
+  # get values for column/row names and data
+  if (is.matrix(x)) {
+    x.df <- as.data.frame(x[rows, cols]);
+    rn <- row.names(x)[rows];
+    cn <- colnames(x)[cols];
   } else {
-    x0 <- as.data.frame(x[rows, cols]);
-    x1 <- sapply(x0, grid.format, USE.NAMES=FALSE);
+    x.df <- as.data.frame(x)[rows, cols];
+    rn <- row.names(x.df);
+    cn <- colnames(x.df);
   }
 
+  #format data
+  data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
+
+
+  # format row names
+  dimnames <- 0;
+  if (length(rn) > 0) {
+    x.rownames <- sapply(rn, format, USE.NAMES = FALSE);
+    dimnames <- dimnames + 1;
+  } else {
+    x.rownames <- 'dummy';
+  }
+
+  #format column names
+  if (!is.null(cn) && (length(cn)>0)) {
+    x.colnames <- sapply(cn, format, USE.NAMES = FALSE);
+    dimnames <- dimnames + 2;
+  } else {
+    x.colnames <- 'dummy';
+  }
+
+  # assign return value
   vp<-list();
-
-  dn <- dimnames(x);
-  if (!is.null(dn) && (length(dn)==2)) {
-    dnvalue <- 0;
-    vp$dimnames <- dnvalue;
-    if (!is.null(dn[[1]])) {
-      vp$row.names <- sapply(row.names(x)[rows], format, USE.NAMES = FALSE);
-      dnvalue <- dnvalue + 1;
-    } else {
-      vp$row.names <- 'dummy';
-    }
-    
-    if (!is.null(dn[[2]])) {
-      vp$col.names <- sapply(colnames(x)[cols], format, USE.NAMES = FALSE);
-      dnvalue <- dnvalue + 2;
-    } else {
-      vp$col.names <- 'dummy';
-    }
-    vp$dimnames <- format(dnvalue);
-  } else {
-    vp$dimnames <- '0';
-    vp$row.names <- 'dummy';  # dummy required for parser
-    vp$col.names <- 'dummy';
-  }
-
-  vp$data<-x1;
-
+  vp$dimnames <- format(dimnames);
+  vp$row.names <- x.rownames;
+  vp$col.names <- x.colnames;
+  vp$data<-data;
   vp;
 }
 

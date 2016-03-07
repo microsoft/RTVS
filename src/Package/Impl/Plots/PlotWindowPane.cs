@@ -21,9 +21,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
     internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
 
-        // Anything below 150 is impractical, and prone to rendering errors
-        private const int MinPixelWidth = 150;
-        private const int MinPixelHeight = 150;
+        // Anything below 200 pixels at fixed 96dpi is impractical, and prone to rendering errors
+        private const int MinPixelWidth = 200;
+        private const int MinPixelHeight = 200;
 
         private IPlotHistory _plotHistory;
 

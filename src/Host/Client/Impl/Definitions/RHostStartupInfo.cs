@@ -5,7 +5,8 @@ namespace Microsoft.R.Host.Client {
     public class RHostStartupInfo {
         public string Name { get; set; }
         public string RBasePath { get; set; }
-        public string RCommandLineArguments { get; set; }
+        public string RHostDirectory { get; set; }
+        public string RHostCommandLineArguments { get; set; }
         public string CranMirrorName { get; set; }
         public string WorkingDirectory { get; set; }
     }
