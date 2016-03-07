@@ -102,6 +102,14 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 ptr = IntPtr.Zero;
             }
         }
+
+        #region ISnippetInformationSource
+        public bool IsSnippet(string name) {
+            return _expansions.ContainsKey(name);
+        }
+
+        public IEnumerable<string> SnippetNames => _expansions.Keys;
+        #endregion
     }
 }
 

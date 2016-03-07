@@ -91,6 +91,7 @@
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
     <Compile Include="Completion\Providers\CompletionUtilities.cs" />
+    <Compile Include="Completion\Providers\SnippetCompletionProvider.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\LoadedPackagesProvider.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
@@ -158,6 +159,8 @@
     <Compile Include="Signatures\SignatureParameter.cs" />
     <Compile Include="SmartIndent\SmartIndenter.cs" />
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
+    <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
+    <Compile Include="Snippets\ISnippetInformationSource.cs" />
     <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
