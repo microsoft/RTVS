@@ -32,8 +32,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     if (wb != null) {
                         // Try finding existing worksheet first
                         Worksheet ws = GetOrCreateWorksheet(wb, variableName);
-                        PopulateWorksheet(ws, xlData.RowNames, xlData.ColNames, xlData.CellData);
-                        _excel.Visible = true;
+                        try {
+                            PopulateWorksheet(ws, xlData.RowNames, xlData.ColNames, xlData.CellData);
+                            _excel.Visible = true;
+                        }
+                        catch(COMException) { }
                     }
                 });
             }
@@ -47,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             try {
                 ExcelData xlData = new ExcelData();
                 xlData.CellData = new object[rows, cols];
-                int chunkSize = 100;
+                int chunkSize = 1000;
 
                 int steps = (rows + chunkSize - 1) / chunkSize;
                 List<LongAction> actions = new List<LongAction>();

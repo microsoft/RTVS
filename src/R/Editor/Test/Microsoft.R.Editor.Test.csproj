@@ -158,9 +158,7 @@
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Classification\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Files\01.r" />
     <None Include="Files\01.r.outline" />

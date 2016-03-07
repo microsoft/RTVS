@@ -6,7 +6,6 @@ using FluentAssertions;
 using Microsoft.Languages.Core.Test.Tokens;
 using Microsoft.R.Core.Tokens;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.R.Core.Test.Tokens {
     [ExcludeFromCodeCoverage]
@@ -34,7 +33,7 @@ namespace Microsoft.R.Core.Test.Tokens {
             var tokens = Tokenize("\"odd name\" <- 1", new RTokenizer());
 
             tokens.Should().HaveCount(3);
-            tokens[0].Should().HaveType(RTokenType.Identifier)
+            tokens[0].Should().HaveType(RTokenType.String)
                 .And.StartAt(0)
                 .And.HaveLength(10);
         }
@@ -45,7 +44,7 @@ namespace Microsoft.R.Core.Test.Tokens {
             var tokens = Tokenize("1 -> \"odd name\"", new RTokenizer());
 
             tokens.Should().HaveCount(3);
-            tokens[2].Should().HaveType(RTokenType.Identifier)
+            tokens[2].Should().HaveType(RTokenType.String)
                 .And.StartAt(5)
                 .And.HaveLength(10);
         }
