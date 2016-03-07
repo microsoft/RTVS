@@ -2,10 +2,55 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core {
     public static class TaskExtensions {
+        public static Task FailOnTimeout(this Task task, int millisecondsTimeout) {
+            return task.TimeoutAfterImpl<object>(millisecondsTimeout);
+        }
+
+        public static Task<T> FailOnTimeout<T>(this Task task, int millisecondsTimeout) {
+            return (Task<T>) task.TimeoutAfterImpl<T>(millisecondsTimeout);
+        }
+
+        public static Task TimeoutAfterImpl<T>(this Task task, int millisecondsTimeout) {
+            if (task.IsCompleted || (millisecondsTimeout == Timeout.Infinite)) {
+                return task;
+            }
+
+            if (millisecondsTimeout == 0) {
+                return Task.FromException<T>(new TimeoutException());
+            }
+
+            var tcs = new TaskCompletionSource<T>();
+            var cancelByTimeout = new TimerCallback(state => ((TaskCompletionSource<T>)state).TrySetException(new TimeoutException()));
+            var timer = new Timer(cancelByTimeout, tcs, millisecondsTimeout, Timeout.Infinite);
+            var taskState = new TimeoutAfterState<T>(timer, tcs);
+
+            var continuation = new Action<Task, object>((source, state) => {
+                var timeoutAfterState = (TimeoutAfterState<T>)state;
+                timeoutAfterState.Timer.Dispose();
+
+                switch (source.Status) {
+                    case TaskStatus.Faulted:
+                        timeoutAfterState.Tcs.TrySetException(source.Exception);
+                        break;
+                    case TaskStatus.Canceled:
+                        timeoutAfterState.Tcs.TrySetCanceled();
+                        break;
+                    case TaskStatus.RanToCompletion:
+                        var typedTask = source as Task<T>;
+                        timeoutAfterState.Tcs.TrySetResult(typedTask != null ? typedTask.Result : default(T));
+                        break;
+                }
+            });
+
+            task.ContinueWith(continuation, taskState, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            return tcs.Task;
+        }
+        
         public static Task ContinueOnRanToCompletion<TResult>(this Task<TResult> task, Action<TResult> action) {
             return task.ContinueWith(t => action(t.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
@@ -60,6 +105,16 @@ namespace Microsoft.Common.Core {
                 }
             });
             return tcs.Task;
+        }
+
+        public class TimeoutAfterState<T> {
+            public Timer Timer { get; }
+            public TaskCompletionSource<T> Tcs { get; }
+
+            public TimeoutAfterState(Timer timer, TaskCompletionSource<T> tcs) {
+                Timer = timer;
+                Tcs = tcs;
+            }
         }
     }
 }

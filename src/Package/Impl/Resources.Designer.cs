@@ -232,15 +232,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Run plotting command in R Interactive Window.
-        /// </summary>
-        public static string EmptyPlotWindowWatermark {
-            get {
-                return ResourceManager.GetString("EmptyPlotWindowWatermark", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to collect and package logs. Exception: {0}.
         /// </summary>
         public static string Error_CannotCollectLogs {
@@ -593,6 +584,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In order to open RStudio project file as Visual Studio R project please select File | Open Project, locate .rproj file and click Open..
+        /// </summary>
+        public static string OpenRProjMessage {
+            get {
+                return ResourceManager.GetString("OpenRProjMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
@@ -646,6 +646,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotExportUnsupportedImageFormat {
             get {
                 return ResourceManager.GetString("PlotExportUnsupportedImageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading plot from file &apos;{0}&apos;..
+        /// </summary>
+        public static string PlotLoadError {
+            get {
+                return ResourceManager.GetString("PlotLoadError", resourceCulture);
             }
         }
         
@@ -1425,6 +1434,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableGrid_Caption {
             get {
                 return ResourceManager.GetString("VariableGrid_Caption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to object {0} is missing..
+        /// </summary>
+        public static string VariableGrid_Missing {
+            get {
+                return ResourceManager.GetString("VariableGrid_Missing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to object {0} is not two dimensional..
+        /// </summary>
+        public static string VariableGrid_NotTwoDimension {
+            get {
+                return ResourceManager.GetString("VariableGrid_NotTwoDimension", resourceCulture);
             }
         }
         

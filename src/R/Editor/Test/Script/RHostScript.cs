@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
             Session.StartHostAsync(new RHostStartupInfo {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,
-                RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
+                RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
             }, 50000).Wait();
         }
@@ -48,7 +48,6 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 }
 
                 if (SessionProvider != null) {
-                    SessionProvider.Dispose();
                     SessionProvider = null;
                 }
             }

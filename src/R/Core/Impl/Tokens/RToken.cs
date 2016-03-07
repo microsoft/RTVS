@@ -39,9 +39,26 @@ namespace Microsoft.R.Core.Tokens {
             return false;
         }
 
-        public bool IsString(ITextProvider textProvider) {
-            var text = textProvider.GetText(this);
-            return text.Length > 0 && text[0] == '\'' || text[0] == '\"';
+        /// <summary>
+        /// Determines if token defines item that can be used as a variable.
+        /// For example, string token depending on context can be used
+        /// as identifiers and so are other constant types.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsVariableKind() {
+            switch (TokenType) {
+                case RTokenType.Number:
+                case RTokenType.Complex:
+                case RTokenType.Logical:
+                case RTokenType.String:
+                case RTokenType.Null:
+                case RTokenType.NaN:
+                case RTokenType.Infinity:
+                case RTokenType.Missing:
+                case RTokenType.Identifier:
+                    return true;
+            }
+            return false;
         }
 
         public int CompareTo(RToken other) {

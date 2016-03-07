@@ -86,7 +86,7 @@ namespace Microsoft.R.Core.Test.Parser {
                 ArgumentList  [8...15)
                     ExpressionArgument  [8...15)
                         Expression  ['abind']
-                            Variable  ['abind']
+                            StringValue  ['abind' [8...15)]
                 TokenNode  [) [15...16)]
 ";
             ParserTest.VerifyParse(expected, "library('abind')");

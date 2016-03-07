@@ -16,7 +16,7 @@ namespace Microsoft.R.Core.AST.Values {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
 
-            Debug.Assert(currentToken.IsString(context.TextProvider));
+            Debug.Assert(currentToken.TokenType == RTokenType.String);
 
             NodeValue = new RString(text);
             return base.Parse(context, parent);

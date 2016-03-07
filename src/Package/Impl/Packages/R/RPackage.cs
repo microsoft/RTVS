@@ -81,6 +81,15 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\mrs-distributed")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\mrs-graphics")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\mrs-transforms")]
+    #region RProj editor factory
+    // Provide editor factory that instead of opening .rproj file in the editor
+    // locates matching .rxproj file, if any, and opens the project instead.
+    [ProvideEditorExtension(typeof(RProjEditorFactory), RContentTypeDefinition.RStudioProjectExtension, 0x32, NameResourceID = 108, ProjectGuid = RGuidList.CpsProjectFactoryGuidString)]
+    [ProvideLanguageExtension(RGuidList.RProjEditorFactoryGuidString, RContentTypeDefinition.RStudioProjectExtension)]
+    [ProvideLanguageService(typeof(RProjLanguageService), RContentTypeDefinition.RProjectName, 108)]
+    [ProvideEditorFactory(typeof(RProjEditorFactory), 200, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
+    [ProvideEditorLogicalView(typeof(RProjEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+    #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
@@ -118,7 +127,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
             IdleTimeAction.Create(() => ExpansionsCache.Load(), 200, typeof(ExpansionsCache));
         }
@@ -143,7 +152,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() {
-            yield return new REditorFactory(this);
+            return new List<IVsEditorFactory>() {
+                new REditorFactory(this),
+                new RProjEditorFactory(this)
+            };
         }
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {

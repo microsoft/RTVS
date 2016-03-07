@@ -45,7 +45,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     await Session.StartHostAsync(new RHostStartupInfo {
                         Name = "REPL",
                         RBasePath = _settings.RBasePath,
-                        RCommandLineArguments = _settings.RCommandLineArguments,
+                        RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         WorkingDirectory = _settings.WorkingDirectory
                     });

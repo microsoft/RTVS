@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
@@ -31,6 +32,12 @@ namespace Microsoft.R.Core.AST.Arguments {
                     return new MissingArgument();
 
                 case RTokenType.Identifier:
+                case RTokenType.String:
+                    if (nextToken.TokenType == RTokenType.Operator && context.TextProvider.GetText(nextToken) == "=") {
+                        return new NamedArgument();
+                    }
+                    break;
+
                 case RTokenType.Logical:
                 case RTokenType.Complex:
                 case RTokenType.NaN:
@@ -38,7 +45,8 @@ namespace Microsoft.R.Core.AST.Arguments {
                 case RTokenType.Number:
                 case RTokenType.Infinity:
                     if (nextToken.TokenType == RTokenType.Operator && context.TextProvider.GetText(nextToken) == "=") {
-                        return new NamedArgument();
+                        context.AddError(new ParseError(ParseErrorType.IndentifierExpected, ErrorLocation.Token, currentToken));
+                        return new ErrorArgument(CollectErrorArgumentTokens(context));
                     }
                     break;
 
@@ -47,6 +55,23 @@ namespace Microsoft.R.Core.AST.Arguments {
             }
 
             return new ExpressionArgument();
+        }
+
+        private IEnumerable<RToken> CollectErrorArgumentTokens(ParseContext context) {
+            var tokens = new List<RToken>();
+            while(!context.Tokens.IsEndOfStream()) {
+                if(context.Tokens.CurrentToken.TokenType == RTokenType.Comma ||
+                    context.Tokens.CurrentToken.TokenType == RTokenType.CloseBrace ||
+                    context.Tokens.CurrentToken.TokenType == RTokenType.CloseSquareBracket ||
+                    context.Tokens.CurrentToken.TokenType == RTokenType.CloseDoubleSquareBracket ||
+                    context.Tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace ||
+                    context.Tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace) {
+                    break;
+                }
+                tokens.Add(context.Tokens.CurrentToken);
+                context.Tokens.MoveToNextToken();
+            }
+            return tokens;
         }
     }
 }

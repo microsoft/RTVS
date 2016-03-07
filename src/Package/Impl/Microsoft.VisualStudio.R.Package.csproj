@@ -143,6 +143,8 @@
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
+    <Compile Include="Packages\R\RProjLanguageService.cs" />
+    <Compile Include="Packages\R\RProjEditorFactory.cs" />
     <Compile Include="Packages\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />

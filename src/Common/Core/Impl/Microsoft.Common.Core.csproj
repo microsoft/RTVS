@@ -40,6 +40,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Collections\ListExtensions.cs" />
+    <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="IO\FileVersionInfo.cs" />
     <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

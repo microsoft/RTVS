@@ -17,7 +17,6 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.Plots {
     internal sealed class PlotContentProvider : IPlotContentProvider {
         private IRSession _rSession;
-        private string _lastLoadFile;
         private int _lastPixelWidth;
         private int _lastPixelHeight;
 
@@ -26,11 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             _lastPixelHeight = -1;
 
             _rSession = session;
-            _rSession.Mutated += RSession_Mutated;
             _rSession.Connected += RSession_Connected;
-        }
-
-        private void RSession_Mutated(object sender, EventArgs e) {
         }
 
         private async void RSession_Connected(object sender, EventArgs e) {
@@ -56,28 +51,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                     if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
                         var fileInfo = new FileInfo(fileName);
                         if (fileInfo.Length > 0) {
-                            // Use Begin/EndInit to avoid locking the file on disk
-                            var bmp = new BitmapImage();
-                            bmp.BeginInit();
-                            bmp.UriSource = new Uri(fileName);
-                            bmp.CacheOption = BitmapCacheOption.OnLoad;
-                            bmp.EndInit();
-
-                            var image = new NonScaledImage();
-                            image.Source = bmp;
-
-                            element = image;
+                            element = CreateBitmapContent(fileName);
                         } else {
                             // A zero-sized .png file means a blank image
-                            element = new TextBlock();
+                            element = CreateBlankContent();
                         }
                     } else {
-                        element = (UIElement)XamlServices.Load(fileName);
+                        element = CreateXamlContent(fileName);
                     }
-                    _lastLoadFile = fileName;
                 } catch (Exception e) when (!e.IsCriticalException()) {
                     element = CreateErrorContent(
-                        new FormatException(string.Format("Couldn't load XAML file from {0}", fileName), e));
+                        new FormatException(string.Format(Resources.PlotLoadError, fileName), e));
                 }
             }
 
@@ -251,8 +235,30 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private static UIElement CreateErrorContent(Exception e) {
             return new TextBlock() {
-                Text = e.ToString()    // TODO: change to user-friendly error XAML. TextBlock with exception is for dev
+                Text = e.Message
             };
+        }
+
+        private static UIElement CreateBitmapContent(string fileName) {
+            // Use Begin/EndInit to avoid locking the file on disk
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.UriSource = new Uri(fileName);
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+
+            var image = new NonScaledImage();
+            image.Source = bmp;
+
+            return image;
+        }
+
+        private static UIElement CreateXamlContent(string fileName) {
+            return (UIElement)XamlServices.Load(fileName);
+        }
+
+        private static UIElement CreateBlankContent() {
+            return new TextBlock();
         }
 
         private void OnPlotChanged(UIElement element) {
@@ -268,15 +274,10 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // Errors like invalid graphics state which go to the REPL stderr will come back
             // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
             // as the user can see them in the REPL.
-            // TODO:
-            // See if we can fix the cause of those errors - to be
-            // determined based on the various errors we see displayed
-            // in REPL during testing.
             task.SilenceException<MessageTransportException>()
                 .SilenceException<Microsoft.R.Host.Client.RException>()
                 .DoNotWait();
         }
-
     }
 
     internal static class WpfUnitsConversion {

@@ -363,8 +363,7 @@ namespace Microsoft.R.Core.Tokens {
         /// </summary>
         /// <param name="openQuote"></param>
         private void HandleString(char openQuote) {
-            // Strings are treated as identifiers as R allows "abc" <- 1 and "def"(...) names.
-            Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.Identifier, start, length));
+            Tokenizer.HandleString(openQuote, _cs, (start, length) => AddToken(RTokenType.String, start, length));
         }
 
         private bool AddIdentifier() {

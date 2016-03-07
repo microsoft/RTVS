@@ -19,8 +19,8 @@ namespace Microsoft.R.Debugger.Test {
     public class ValuesTest {
         private readonly MethodInfo _testMethod;
 
-        public ValuesTest(TestMethodInfoFixture testMethodInfo) {
-            _testMethod = testMethodInfo.Method;
+        public ValuesTest(TestMethodFixture testMethod) {
+            _testMethod = testMethod.MethodInfo;
         }
 
         [Test]

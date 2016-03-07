@@ -12,7 +12,6 @@ namespace Microsoft.R.Core.Tokens {
         /// <summary>
         /// Any non-whitespace sequence not recognized as
         /// anything else. Leaves to the parser to handle this.
-        /// May also be `any text` or "any text" sequence.
         /// </summary>
         Identifier,
 
@@ -20,6 +19,11 @@ namespace Microsoft.R.Core.Tokens {
         /// # comment, lasts to the end of the line
         /// </summary>
         Comment,
+
+        /// <summary>
+        /// "..." sequence
+        /// </summary>
+        String,
 
         /// <summary>
         /// Known language keyword like 'if', 'while', 'for', ...

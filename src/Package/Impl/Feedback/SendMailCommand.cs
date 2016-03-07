@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Office.Interop.Outlook;
+using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -20,7 +21,10 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             Application outlookApp = null;
             try {
                 outlookApp = new Application();
-            } catch (System.Exception) { }
+            } catch (System.Exception ex) {
+                GeneralLog.Write("Unable to start Outlook (exception data follows)");
+                GeneralLog.Write(ex);
+            }
 
             if (outlookApp == null) {
                 if (attachmentFile != null) {
@@ -50,20 +54,25 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                 }
 
             } else {
-                MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
+                try {
+                    MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
 
-                mail.Subject = subject;
-                mail.Body = body;
-                AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
-                if (currentUser.Type == "EX") {
-                    mail.To = "rtvsuserfeedback@microsoft.com";
-                    mail.Recipients.ResolveAll();
+                    mail.Subject = subject;
+                    mail.Body = body;
+                    AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
+                    if (currentUser.Type == "EX") {
+                        mail.To = "rtvsuserfeedback@microsoft.com";
+                        mail.Recipients.ResolveAll();
+                    }
 
                     if (!string.IsNullOrEmpty(attachmentFile)) {
                         mail.Attachments.Add(attachmentFile, OlAttachmentType.olByValue);
                     }
 
                     mail.Display(Modal: false);
+                } catch (System.Exception ex) {
+                    GeneralLog.Write("Error composing Outlook e-mail (exception data follows)");
+                    GeneralLog.Write(ex);
                 }
             }
         }

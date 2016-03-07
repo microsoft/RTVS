@@ -8,17 +8,12 @@
 [243:15] Markdown Bold Italic Text
 [258:1] Markdown Italic Text
 [263:3] Markdown Code
-[267:1] identifier
 [271:7] comment
-[280:1] identifier
 [282:2] operator
 [285:3] number
-[290:1] identifier
 [292:2] operator
 [295:8] keyword
-[304:1] identifier
 [307:6] keyword
-[314:1] identifier
 [315:1] operator
 [316:1] number
 [320:3] Markdown Code

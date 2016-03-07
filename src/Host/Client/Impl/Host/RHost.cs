@@ -503,10 +503,13 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task CreateAndRun(string rHome, string rCommandLineArguments, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
+        public async Task CreateAndRun(string rHome, string rhostDirectory = null, string rCommandLineArguments = null, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string rhostExe = Path.Combine(Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath()), RHostExe);
+            rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof (RHost).Assembly.GetAssemblyPath());
+            rCommandLineArguments = rCommandLineArguments ?? string.Empty;
+
+            string rhostExe = Path.Combine(rhostDirectory, RHostExe);
             string rBinPath = Path.Combine(rHome, RBinPathX64);
 
             if (!File.Exists(rhostExe)) {
@@ -606,5 +609,7 @@ namespace Microsoft.R.Host.Client {
                 }
             }
         }
+
+        internal Task GetRHostRunTask() => _runTask;
     }
 }

@@ -31,7 +31,6 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             string actual = GetSpans(cls, textBuffer);
             actual.TrimEnd().Should().Be(
 @"[0:3] Markdown Code
-[4:1] identifier
 [6:2] comment
 [9:3] Markdown Code");
 
@@ -39,7 +38,6 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             actual = GetSpans(cls, textBuffer);
             actual.TrimEnd().Should().Be(
 @"[0:3] Markdown Code
-[4:1] identifier
 [7:2] comment
 [10:3] Markdown Code");
 
@@ -47,14 +45,13 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             actual = GetSpans(cls, textBuffer);
             actual.TrimEnd().Should().Be(
 @"[0:3] Markdown Code
-[3:6] Markdown Code
+[4:5] Markdown Code
 [9:3] Markdown Code");
 
             Typing.Type(textBuffer, 4, "R");
             actual = GetSpans(cls, textBuffer);
             actual.TrimEnd().Should().Be(
 @"[0:3] Markdown Code
-[4:1] identifier
 [7:2] comment
 [10:3] Markdown Code");
         }
