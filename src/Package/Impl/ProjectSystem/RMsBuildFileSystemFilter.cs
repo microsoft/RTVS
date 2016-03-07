@@ -5,13 +5,14 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal sealed class RMsBuildFileSystemFilter : IMsBuildFileSystemFilter {
         public bool IsFileAllowed(string relativePath, FileAttributes attributes) {
             return !attributes.HasFlag(FileAttributes.Hidden)
-                && !HasExtension(relativePath, ".user", ".rxproj", ".sln");
+                && !HasExtension(relativePath, ".user", RContentTypeDefinition.VsRProjectExtension, ".sln");
         }
 
         public bool IsDirectoryAllowed(string relativePath, FileAttributes attributes) {

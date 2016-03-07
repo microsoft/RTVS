@@ -68,6 +68,15 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
+    #region RProj editor factory
+    // Provide editor factory that instead of opening .rproj file in the editor
+    // locates matching .rxproj file, if any, and opens the project instead.
+    [ProvideEditorExtension(typeof(RProjEditorFactory), RContentTypeDefinition.RStudioProjectExtension, 0x32, NameResourceID = 108, ProjectGuid = RGuidList.CpsProjectFactoryGuidString)]
+    [ProvideLanguageExtension(RGuidList.RProjEditorFactoryGuidString, RContentTypeDefinition.RStudioProjectExtension)]
+    [ProvideLanguageService(typeof(RProjLanguageService), RContentTypeDefinition.RProjectName, 108)]
+    [ProvideEditorFactory(typeof(RProjEditorFactory), 200, CommonPhysicalViewAttributes = 0x2, TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
+    [ProvideEditorLogicalView(typeof(RProjEditorFactory), VSConstants.LOGVIEWID.TextView_string)]
+    #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
 
@@ -128,7 +137,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override IEnumerable<IVsEditorFactory> CreateEditorFactories() {
-            yield return new REditorFactory(this);
+            return new List<IVsEditorFactory>() {
+                new REditorFactory(this),
+                new RProjEditorFactory(this)
+            };
         }
 
         protected override IEnumerable<IVsProjectGenerator> CreateProjectFileGenerators() {

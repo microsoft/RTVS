@@ -575,6 +575,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In order to open RStudio project file as Visual Studio R project please select File | Open Project, locate .rproj file and click Open..
+        /// </summary>
+        public static string OpenRProjMessage {
+            get {
+                return ResourceManager.GetString("OpenRProjMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Packages.
         /// </summary>
         public static string OutputWindowName_InstallPackages {
