@@ -14,7 +14,7 @@ grid.format <- function(x) {
 }
 
 grid.data <- function(expr, env, rows, cols) {
-  x <- safe_eval(expr, env);
+  x <- eval(expr, envir = env);
 
   d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
@@ -23,18 +23,21 @@ grid.data <- function(expr, env, rows, cols) {
 
   # get values for column/row names and data
   if (is.matrix(x)) {
-    x.df <- as.data.frame(x[rows, cols]);
+    if ((length(rows) == 1) || (length(cols) == 1)) { 
+      data <- grid.format(x[rows, cols]);
+    } else {
+      x.df <- as.data.frame(x[rows, cols]);
+      data <- sapply(x.df, grid.format, USE.NAMES=FALSE);  
+    }
+
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
   } else {
     x.df <- as.data.frame(x)[rows, cols];
+    data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);
   }
-
-  #format data
-  data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
-
 
   # format row names
   dimnames <- 0;
