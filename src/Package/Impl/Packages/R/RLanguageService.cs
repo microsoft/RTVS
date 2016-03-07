@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.InteropServices;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.R.Languages;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.TextManager.Interop;

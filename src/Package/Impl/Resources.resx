@@ -591,4 +591,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="Error_NoWebTools" xml:space="preserve">
     <value>R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
   </data>
+  <data name="OpenRProjMessage" xml:space="preserve">
+    <value>In order to open RStudio project file as Visual Studio R project please select File | Open Project, locate .rproj file and click Open.</value>
+  </data>
 </root>
