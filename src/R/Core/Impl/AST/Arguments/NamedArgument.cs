@@ -29,6 +29,9 @@ namespace Microsoft.R.Core.AST.Arguments {
         public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
+            Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Identifier || 
+                         context.Tokens.CurrentToken.TokenType == RTokenType.String);
+
             this.Identifier = RParser.ParseToken(context, this);
             this.EqualsSign = RParser.ParseToken(context, this);
 

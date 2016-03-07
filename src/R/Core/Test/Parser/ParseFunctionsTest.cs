@@ -209,14 +209,14 @@ ExpressionExpected Token [3...4)
                         TokenNode  ['s' [2...5)]
                         TokenNode  [= [5...6)]
                         TokenNode  [, [6...7)]
-                    NamedArgument  [8...15)
+                    ErrorArgument  [8...15)
                         TokenNode  [1.0 [8...11)]
                         TokenNode  [= [11...12)]
-                        Expression  ['z']
-                            StringValue  ['z' [12...15)]
+                        TokenNode  ['z' [12...15)]
                 TokenNode  [) [15...16)]
 
 ExpressionExpected Token [5...6)
+IndentifierExpected Token [8...11)
 ";
             ParserTest.VerifyParse(expected, "x(\'s\'=, 1.0='z')");
         }
