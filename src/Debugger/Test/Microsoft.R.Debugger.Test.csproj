@@ -64,7 +64,6 @@
     </Compile>
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="CallStackTest.cs" />
-    <Compile Include="DebugStackFrameAssertions.cs" />
     <Compile Include="DebugSessionExtensions.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Match.cs" />
