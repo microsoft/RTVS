@@ -69,6 +69,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public string Environment {
+            get {
+                return null;
+            }
+        }
+
         protected override async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 

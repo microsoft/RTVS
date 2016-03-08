@@ -118,8 +118,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
             var grandChildren = await child.GetChildrenAsync();
 
-            grandChildren.Count.ShouldBeEquivalentTo(21);   // truncate 20 + ellipsis
-            grandChildren[20].Value.ShouldBeEquivalentTo(Resources.VariableExplorer_Truncated);
+            grandChildren.Count.Should().Be(21);   // truncate 20 + ellipsis
+            grandChildren[20].Value.Should().Be(Resources.VariableExplorer_Truncated);
         }
 
         [Test]
@@ -137,22 +137,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(1, 3);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
-            grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
-            grid.ColumnHeader[3].ShouldBeEquivalentTo("[,4]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader[2].Should().Be("[,3]");
+            grid.ColumnHeader[3].Should().Be("[,4]");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 1].ShouldBeEquivalentTo("11");
-            grid.Grid[0, 2].ShouldBeEquivalentTo("21");
-            grid.Grid[0, 3].ShouldBeEquivalentTo("31");
-            grid.Grid[1, 1].ShouldBeEquivalentTo("12");
-            grid.Grid[1, 2].ShouldBeEquivalentTo("22");
-            grid.Grid[1, 3].ShouldBeEquivalentTo("32");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 1].Should().Be("11");
+            grid.Grid[0, 2].Should().Be("21");
+            grid.Grid[0, 3].Should().Be("31");
+            grid.Grid[1, 1].Should().Be("12");
+            grid.Grid[1, 2].Should().Be("22");
+            grid.Grid[1, 3].Should().Be("32");
         }
 
         [Test]
@@ -170,22 +170,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(2, 3);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[2].ShouldBeEquivalentTo("c");
-            grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
-            grid.ColumnHeader[4].ShouldBeEquivalentTo("e");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[2].Should().Be("c");
+            grid.ColumnHeader[3].Should().Be("d");
+            grid.ColumnHeader[4].Should().Be("e");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("r1");
-            grid.RowHeader[1].ShouldBeEquivalentTo("r2");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("r1");
+            grid.RowHeader[1].Should().Be("r2");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 2].ShouldBeEquivalentTo("5");
-            grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-            grid.Grid[0, 4].ShouldBeEquivalentTo("9");
-            grid.Grid[1, 2].ShouldBeEquivalentTo("6");
-            grid.Grid[1, 3].ShouldBeEquivalentTo("8");
-            grid.Grid[1, 4].ShouldBeEquivalentTo("10");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].Should().Be("5");
+            grid.Grid[0, 3].Should().Be("7");
+            grid.Grid[0, 4].Should().Be("9");
+            grid.Grid[1, 2].Should().Be("6");
+            grid.Grid[1, 3].Should().Be("8");
+            grid.Grid[1, 4].Should().Be("10");
         }
 
         [Test]
@@ -203,22 +203,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(2, 3);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[2].ShouldBeEquivalentTo("NA");
-            grid.ColumnHeader[3].ShouldBeEquivalentTo("d");
-            grid.ColumnHeader[4].ShouldBeEquivalentTo("NA");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[2].Should().Be("NA");
+            grid.ColumnHeader[3].Should().Be("d");
+            grid.ColumnHeader[4].Should().Be("NA");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("r1");
-            grid.RowHeader[1].ShouldBeEquivalentTo("NA");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("r1");
+            grid.RowHeader[1].Should().Be("NA");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 2].ShouldBeEquivalentTo("NA");
-            grid.Grid[0, 3].ShouldBeEquivalentTo("7");
-            grid.Grid[0, 4].ShouldBeEquivalentTo("9");
-            grid.Grid[1, 2].ShouldBeEquivalentTo("NaN");
-            grid.Grid[1, 3].ShouldBeEquivalentTo("8");
-            grid.Grid[1, 4].ShouldBeEquivalentTo("10");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 2].Should().Be("NA");
+            grid.Grid[0, 3].Should().Be("7");
+            grid.Grid[0, 4].Should().Be("9");
+            grid.Grid[1, 2].Should().Be("NaN");
+            grid.Grid[1, 3].Should().Be("8");
+            grid.Grid[1, 4].Should().Be("10");
         }
 
         [Test]
@@ -239,18 +239,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(0, 3);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
-            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
-            grid.ColumnHeader[2].ShouldBeEquivalentTo("[,3]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
+            grid.ColumnHeader[1].Should().Be("[,2]");
+            grid.ColumnHeader[2].Should().Be("[,3]");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-            grid.Grid[0, 1].ShouldBeEquivalentTo("2");
-            grid.Grid[0, 2].ShouldBeEquivalentTo("3");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("2");
+            grid.Grid[0, 2].Should().Be("3");
 
 
             evaluation = (EvaluationWrapper)await _hostScript.EvaluateAndAssert(
@@ -262,18 +262,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             columnRange = new Range(0, 1);
             grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
-            grid.RowHeader[2].ShouldBeEquivalentTo("[3,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
+            grid.RowHeader[2].Should().Be("[3,]");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-            grid.Grid[2, 0].ShouldBeEquivalentTo("3");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[2, 0].Should().Be("3");
         }
 
         [Test]
@@ -291,19 +291,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(0, 2);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[0].ShouldBeEquivalentTo("[,1]");
-            grid.ColumnHeader[1].ShouldBeEquivalentTo("[,2]");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("[,1]");
+            grid.ColumnHeader[1].Should().Be("[,2]");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("NA");
-            grid.RowHeader[1].ShouldBeEquivalentTo("row2");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("NA");
+            grid.RowHeader[1].Should().Be("row2");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-            grid.Grid[0, 1].ShouldBeEquivalentTo("3");
-            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-            grid.Grid[1, 1].ShouldBeEquivalentTo("4");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("3");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[1, 1].Should().Be("4");
         }
 
         [Test]
@@ -321,22 +321,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(0, 3);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[0].ShouldBeEquivalentTo("col1");
-            grid.ColumnHeader[1].ShouldBeEquivalentTo("NA");
-            grid.ColumnHeader[2].ShouldBeEquivalentTo("col3");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("col1");
+            grid.ColumnHeader[1].Should().Be("NA");
+            grid.ColumnHeader[2].Should().Be("col3");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("[1,]");
-            grid.RowHeader[1].ShouldBeEquivalentTo("[2,]");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("[1,]");
+            grid.RowHeader[1].Should().Be("[2,]");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 0].ShouldBeEquivalentTo("1");
-            grid.Grid[0, 1].ShouldBeEquivalentTo("3");
-            grid.Grid[0, 2].ShouldBeEquivalentTo("5");
-            grid.Grid[1, 0].ShouldBeEquivalentTo("2");
-            grid.Grid[1, 1].ShouldBeEquivalentTo("4");
-            grid.Grid[1, 2].ShouldBeEquivalentTo("6");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("1");
+            grid.Grid[0, 1].Should().Be("3");
+            grid.Grid[0, 2].Should().Be("5");
+            grid.Grid[1, 0].Should().Be("2");
+            grid.Grid[1, 1].Should().Be("4");
+            grid.Grid[1, 2].Should().Be("6");
         }
 
         [Test]
@@ -354,11 +354,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(0, 1);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
 
-            grid.Grid[0, 0].ShouldBeEquivalentTo("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
+            grid.Grid[0, 0].Should().Be("1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27...");
         }
 
         [Test]
@@ -376,22 +376,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             Range columnRange = new Range(0, 2);
             var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, null, new GridRange(rowRange, columnRange));
 
-            grid.ColumnHeader.Range.ShouldBeEquivalentTo(columnRange);
-            grid.ColumnHeader[0].ShouldBeEquivalentTo("X101.103");
-            grid.ColumnHeader[1].ShouldBeEquivalentTo("c..a....b....c..");
+            grid.ColumnHeader.Range.Should().Be(columnRange);
+            grid.ColumnHeader[0].Should().Be("X101.103");
+            grid.ColumnHeader[1].Should().Be("c..a....b....c..");
 
-            grid.RowHeader.Range.ShouldBeEquivalentTo(rowRange);
-            grid.RowHeader[0].ShouldBeEquivalentTo("1");
-            grid.RowHeader[1].ShouldBeEquivalentTo("2");
-            grid.RowHeader[2].ShouldBeEquivalentTo("3");
+            grid.RowHeader.Range.Should().Be(rowRange);
+            grid.RowHeader[0].Should().Be("1");
+            grid.RowHeader[1].Should().Be("2");
+            grid.RowHeader[2].Should().Be("3");
 
-            grid.Grid.Range.ShouldBeEquivalentTo(new GridRange(rowRange, columnRange));
-            grid.Grid[0, 0].ShouldBeEquivalentTo("101");
-            grid.Grid[0, 1].ShouldBeEquivalentTo("a");
-            grid.Grid[1, 0].ShouldBeEquivalentTo("102");
-            grid.Grid[1, 1].ShouldBeEquivalentTo("b");
-            grid.Grid[2, 0].ShouldBeEquivalentTo("103");
-            grid.Grid[2, 1].ShouldBeEquivalentTo("c");
+            grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+            grid.Grid[0, 0].Should().Be("101");
+            grid.Grid[0, 1].Should().Be("a");
+            grid.Grid[1, 0].Should().Be("102");
+            grid.Grid[1, 1].Should().Be("b");
+            grid.Grid[2, 0].Should().Be("103");
+            grid.Grid[2, 1].Should().Be("c");
         }
 
         [Test]
@@ -410,7 +410,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
             var children = await evaluation.GetChildrenAsync();
 
-            children.Count.ShouldBeEquivalentTo(2);
+            children.Count.Should().Be(2);
             VariableRHostScript.AssertEvaluationWrapper(children[0], x_expectation);
             VariableRHostScript.AssertEvaluationWrapper(children[1], y_expectation);
         }

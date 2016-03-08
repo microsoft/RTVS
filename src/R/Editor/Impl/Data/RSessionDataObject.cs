@@ -161,12 +161,6 @@ namespace Microsoft.R.Editor.Data {
             }
         }
 
-        public string Environment {
-            get {
-                return null;
-            }
-        }
-
         #endregion
 
         /// <summary>
