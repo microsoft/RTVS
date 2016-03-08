@@ -9,6 +9,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.R.Package.Expansions;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -18,7 +19,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Package {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class ExpansionsTest {
+    public class ExpansionsTest: IDisposable {
         private IVsExpansionManager _expansionManager;
         private IExpansionsCache _cache;
 
@@ -32,11 +33,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
                 shortcut = "if",
                 title = "if statement"
             });
+
+            TextBufferUtilities.AdaptersFactoryService = new VsEditorAdaptersFactoryServiceMock();
+        }
+
+        public void Dispose() {
+            TextBufferUtilities.AdaptersFactoryService = null;
         }
 
         [Test]
        public void ExpansionClientTest() {
-            var textBuffer = new VsTextBufferMock("if");
+            var textBuffer = new TextBufferMock("if", RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
             var client = new ExpansionClient(textView, textBuffer, _expansionManager, _cache);
 
@@ -69,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
 
         [Test]
         public void ExpansionControllerTest() {
-            var textBuffer = new VsTextBufferMock("if");
+            var textBuffer = new TextBufferMock("if", RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
             var o = new object();
 

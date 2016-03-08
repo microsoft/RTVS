@@ -9,8 +9,18 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class TextBufferUtilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
-        private static IVsEditorAdaptersFactoryService AdaptersFactoryService => 
-            _adaptersFactoryService ?? (_adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>());
+
+        public static IVsEditorAdaptersFactoryService AdaptersFactoryService {
+            get {
+                if (_adaptersFactoryService == null) {
+                    _adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
+                }
+                return _adaptersFactoryService;
+            }
+            internal set {
+                _adaptersFactoryService = value;
+            }
+        }
 
         public static T As<T>(this ITextBuffer textBuffer) where T : class {
             var t = textBuffer as T;
