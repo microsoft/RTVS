@@ -24,10 +24,8 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
         }
 
         public static AndConstraint<GenericCollectionAssertions<TActual>> HaveHead<TActual, TExpected>(
-            this GenericCollectionAssertions<TActual> assertions, IEnumerable<TExpected> expectation, Func<TActual, TExpected, bool> predicate, string because = "", params object[] reasonArgs)
-            where TExpected : IEquatable<TActual> {
-
-
+            this GenericCollectionAssertions<TActual> assertions, IEnumerable<TExpected> expectation, Func<TActual, TExpected, bool> predicate, string because = "", params object[] reasonArgs
+        ) {
             if (expectation == null) {
                 throw new ArgumentNullException(nameof(expectation), "Cannot compare collection with <null>.");
             }
@@ -61,10 +59,8 @@ namespace Microsoft.UnitTests.Core.FluentAssertions {
         }
 
         public static AndConstraint<GenericCollectionAssertions<TActual>> HaveTail<TActual, TExpected>(
-            this GenericCollectionAssertions<TActual> assertions, IEnumerable<TExpected> expectation, Func<TActual, TExpected, bool> predicate, string because = "", params object[] reasonArgs)
-            where TExpected : IEquatable<TActual> {
-
-
+            this GenericCollectionAssertions<TActual> assertions, IEnumerable<TExpected> expectation, Func<TActual, TExpected, bool> predicate, string because = "", params object[] reasonArgs
+        ) {
             if (expectation == null) {
                 throw new ArgumentNullException(nameof(expectation), "Cannot compare collection with <null>.");
             }
