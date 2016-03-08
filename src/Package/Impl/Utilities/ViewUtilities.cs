@@ -16,12 +16,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class ViewUtilities {
         private static IVsEditorAdaptersFactoryService _adaptersFactoryService;
-        private static IVsEditorAdaptersFactoryService AdaptersFactoryService {
+        public static IVsEditorAdaptersFactoryService AdaptersFactoryService {
             get {
-                if (_adaptersFactoryService == null)
+                if (_adaptersFactoryService == null) {
                     _adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-
+                }
                 return _adaptersFactoryService;
+            }
+            internal set {
+                _adaptersFactoryService = value;
             }
         }
 
@@ -61,9 +64,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return sp.GetService(type) as T;
         }
 
-        public static T As<T>(this ITextView textView) where T : class {
+        public static T GetViewAdapter<T>(this ITextView textView) where T : class, IVsTextView {
             var vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
-
             return vsTextView as T;
         }
 

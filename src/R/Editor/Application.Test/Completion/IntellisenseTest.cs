@@ -279,6 +279,25 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
+        public void R_NoCompletionOnTabWhenNoMatch() {
+            // Tab only completes when selected item starts
+            // with the text typed so far in the buffer
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                script.DoIdle(100);
+                script.Type("while aaa");
+                script.DoIdle(300);
+                script.Type("{TAB}");
+                script.DoIdle(100);
+
+                string actual = script.EditorText;
+                actual.Should().Be("while aaa"); // nothing was inserted from the completion list
+
+                EditorWindow.CoreEditor.View.Caret.Position.BufferPosition.Position.Should().Be(actual.Length);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_SnippetsCompletion01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);

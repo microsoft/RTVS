@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public YesNoAsk LoadRDataOnProjectLoad { get; set; } = YesNoAsk.No;
 
-        public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.Ask;
+        public YesNoAsk SaveRDataOnProjectUnload { get; set; } = YesNoAsk.No;
 
         public bool AlwaysSaveHistory { get; set; } = true;
 

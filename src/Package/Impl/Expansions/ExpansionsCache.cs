@@ -18,7 +18,14 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             _instance = this;
         }
 
-        public static IExpansionsCache Current => _instance;
+        public static IExpansionsCache Current {
+            get {
+                if(_instance == null) {
+                    Load();
+                }
+                return _instance;
+            }
+        }
 
         public static void Load() {
             IVsExpansionManager expansionManager;

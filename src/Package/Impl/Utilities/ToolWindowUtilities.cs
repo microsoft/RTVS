@@ -16,13 +16,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return null;
         }
 
-        public static IVsWindowFrame FindToolWindow(Guid guid) {
-            var uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            IVsWindowFrame frame = null;
-            uiShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fFindFirst, ref guid, out frame);
-            return frame;
-        }
-
         public static T ShowWindowPane<T>(int id, bool focus) where T : ToolWindowPane {
             T window = RPackage.Current.FindWindowPane<T>(typeof(T), id, true) as T;
             if (window == null) {

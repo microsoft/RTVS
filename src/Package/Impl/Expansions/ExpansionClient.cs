@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
             // Convert text span to stream positions
             int snippetStart, snippetEnd;
-            var vsTextLines = TextBuffer.As<IVsTextLines>();
+            var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
 
@@ -97,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 }
 
                 return _expansionManager.InvokeInsertionUI(
-                    TextView.As<IVsTextView>(),
+                    TextView.GetViewAdapter<IVsTextView>(),
                     this,
                     RGuidList.RLanguageServiceGuid,
                     snippetTypes,
@@ -136,7 +136,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // determine if it is a snippet shortcut.
             if (!TextView.Caret.InVirtualSpace) {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
-                var expansion = TextBuffer.As<IVsExpansion>();
+                var expansion = TextBuffer.GetBufferAdapter<IVsExpansion>();
 
                 _earlyEndExpansionHappened = false;
                 Span span;
@@ -200,7 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             int hr = VSConstants.S_OK;
             int startPos = -1;
             int endPos = -1;
-            var vsTextLines = TextBuffer.As<IVsTextLines>();
+            var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
                 SnapshotSpan viewSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, startPos, endPos - startPos);
@@ -251,7 +251,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             if (!TextView.Caret.InVirtualSpace) {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
 
-                IVsExpansion expansion = TextBuffer.As<IVsExpansion>();
+                IVsExpansion expansion = TextBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
                 _title = pszTitle;
                 var ts = TextSpanFromPoint(caretPoint);

@@ -5,14 +5,17 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using MSXML;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public class VsTextBufferMock : TextBufferMock, IVsTextBuffer, IVsExpansion {
+    public class VsTextBufferMock : IVsTextBuffer, IVsExpansion {
         private Guid _guidLangService = Guid.Empty;
+
+        public ITextBuffer TextBuffer { get; internal set; }
 
         public VsTextBufferMock() :
             this(string.Empty) { }
@@ -20,11 +23,16 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         public VsTextBufferMock(string content) :
             this(content, "text") { }
 
-        public VsTextBufferMock(string content, string contentType) :
-            base(content, contentType) { }
-
         public VsTextBufferMock(IContentType contentType) :
-            base(string.Empty, contentType.TypeName) { }
+            this(string.Empty, contentType.TypeName) { }
+
+        public VsTextBufferMock(ITextBuffer buffer) {
+            TextBuffer = buffer;
+        }
+
+        public VsTextBufferMock(string content, string contentType) {
+            TextBuffer = new TextBufferMock(content, contentType);
+        }
 
         #region IVsTextBuffer
         public int GetLanguageServiceID(out Guid pguidLangService) {
@@ -212,19 +220,19 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
 
         #region IVsExpansion
         public int InsertExpansion(TextSpan tsContext, TextSpan tsInsertPos, IVsExpansionClient pExpansionClient, Guid guidLang, out IVsExpansionSession pSession) {
-            this.Insert(0, "expansion");
+            TextBuffer.Insert(0, "expansion");
             pSession = new VsExpansionSessionMock();
             return VSConstants.S_OK;
         }
 
         public int InsertNamedExpansion(string bstrTitle, string bstrPath, TextSpan tsInsertPos, IVsExpansionClient pExpansionClient, Guid guidLang, int fShowDisambiguationUI, out IVsExpansionSession pSession) {
-            this.Insert(0, bstrTitle);
+            TextBuffer.Insert(0, bstrTitle);
             pSession = new VsExpansionSessionMock();
             return VSConstants.S_OK;
         }
 
         public int InsertSpecificExpansion(IXMLDOMNode pSnippet, TextSpan tsInsertPos, IVsExpansionClient pExpansionClient, Guid guidLang, string pszRelativePath, out IVsExpansionSession pSession) {
-            this.Insert(0, "specific-expansion");
+            TextBuffer.Insert(0, "specific-expansion");
             pSession = new VsExpansionSessionMock();
             return VSConstants.S_OK;
         }

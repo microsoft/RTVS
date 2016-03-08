@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_SaveRDataOnProjectUnload")]
         [LocDescription("Settings_SaveRDataOnProjectUnload_Description")]
         [TypeConverter(typeof(YesNoAskTypeConverter))]
-        [DefaultValue(YesNoAsk.Ask)]
+        [DefaultValue(YesNoAsk.No)]
         public YesNoAsk SaveRDataOnProjectUnload {
             get { return RToolsSettings.Current.SaveRDataOnProjectUnload; }
             set { RToolsSettings.Current.SaveRDataOnProjectUnload = value; }

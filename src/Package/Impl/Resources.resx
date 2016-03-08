@@ -603,4 +603,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="InsertSnippet" xml:space="preserve">
     <value>Insert Snippet...</value>
   </data>
+  <data name="Warning_UncPath" xml:space="preserve">
+    <value>The project appears to be on a network share. R Tools for Visual Studio may not work correctly when files are on a remote share. </value>
+  </data>
 </root>

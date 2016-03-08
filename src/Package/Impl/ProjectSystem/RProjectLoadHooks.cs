@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -68,7 +69,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
+
+            // Make sure R package is loaded
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
+
+            // Verify project is not on a network share and give warning if it is
+            CheckRemoteDrive(_projectDirectory);
+
             _workflow = _workflowProvider.GetOrCreate();
             _session = _workflow.RSession;
             _history = _workflow.History;
@@ -118,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     }
                 } catch (OperationCanceledException) {
                     return;
-                } 
+                }
 
                 if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
                     await _threadHandling.SwitchToUIThread();
@@ -152,6 +159,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
                     return false;
+            }
+        }
+
+        private void CheckRemoteDrive(string path) {
+            bool remoteDrive = NativeMethods.PathIsUNC(path);
+            if (!remoteDrive) {
+                var pathRoot = Path.GetPathRoot(path);
+                var driveType = (NativeMethods.DriveType)NativeMethods.GetDriveType(pathRoot);
+                remoteDrive = driveType == NativeMethods.DriveType.Remote;
+            }
+            if(remoteDrive) {
+                VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
     }

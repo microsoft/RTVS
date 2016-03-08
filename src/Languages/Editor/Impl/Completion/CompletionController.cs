@@ -296,14 +296,14 @@ namespace Microsoft.Languages.Editor.Completion {
                 return true;
             }
 
-            // Tab character commit any entry, whether it's really selected or not.
+            // Tab character commits any entry, whether it's really selected or not.
             // However, it should not complete if entry doesn't start with the text
             // typed so far. Otherwise it interferes with snippet insertion on Tab-Tab.
             if (typedCharacter == '\t') {
                 try {
                     var viewSnapshot = TextView.TextBuffer.CurrentSnapshot;
                     SnapshotSpan span = completionSet.ApplicableTo.GetSpan(viewSnapshot);
-                    if (status.Completion.InsertionText.StartsWith(viewSnapshot.GetText())) {
+                    if (status.Completion.InsertionText.StartsWith(span.GetText())) {
                         return true;
                     }
                 } catch (ArgumentException) { }

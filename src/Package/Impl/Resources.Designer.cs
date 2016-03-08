@@ -1492,6 +1492,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The project appears to be on a network share. R Tools for Visual Studio may not work correctly when files are on a remote share. .
+        /// </summary>
+        public static string Warning_UncPath {
+            get {
+                return ResourceManager.GetString("Warning_UncPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Data Files (*.rdata)|*.rdata|All Files (*.*)|*.*.
         /// </summary>
         public static string WorkspaceFileFilter {
