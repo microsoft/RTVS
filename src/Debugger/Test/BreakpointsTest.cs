@@ -288,10 +288,7 @@ namespace Microsoft.R.Debugger.Test {
         [Category.R.Debugger]
         public async Task BrowseOnNewPrompt() {
             using (var debugSession = new DebugSession(_session)) {
-                var browseTaskSource = new EventTaskSource<DebugSession, DebugBrowseEventArgs>(
-                    (o, e) => o.Browse += e,
-                    (o, e) => o.Browse -= e);
-                var browseTask = browseTaskSource.Create(debugSession);
+                var browseTask = EventTaskSources.DebugSession.Browse.Create(debugSession);
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("browser()\n");
@@ -315,11 +312,7 @@ namespace Microsoft.R.Debugger.Test {
 
             using (var debugSession = new DebugSession(_session)) {
                 await debugSession.InitializeAsync();
-
-                var browseTaskSource = new EventTaskSource<DebugSession, DebugBrowseEventArgs>(
-                    (o, e) => o.Browse += e,
-                    (o, e) => o.Browse -= e);
-                await browseTaskSource.Create(debugSession);
+                await EventTaskSources.DebugSession.Browse.Create(debugSession);
             }
         }
     }

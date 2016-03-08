@@ -57,10 +57,7 @@ eval(substitute(f(P, x), list(P = x)))
             using (var sf = new SourceFile(code)) {
                 await debugSession.EnableBreakpointsAsync(true);
 
-                var browseEts = new EventTaskSource<DebugSession, DebugBrowseEventArgs>(
-                    (o, e) => o.Browse += e,
-                    (o, e) => o.Browse -= e);
-                var browseTask = browseEts.Create(debugSession);
+                var browseTask = EventTaskSources.DebugSession.Browse.Create(debugSession);
 
                 await sf.Source(_session);
                 await browseTask;
