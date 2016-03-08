@@ -47,7 +47,7 @@ NA_if_error <- function(expr) {
 
 # Like toString, but guarantees that result is a single-element character vector.
 force_toString <- function(obj) {
-  if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj))) {
+  if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj) && !is.nan(obj))) {
     return('');
   }
   s <- paste0(toString(obj), collapse='');
@@ -96,7 +96,7 @@ fancy_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffi
   tryCatch({
     if (length(obj) == 1) {
       if (any(class(obj) == 'factor')) {
-        if (is.na(obj)) {
+        if (is.na(obj) && !is.nan(obj)) {
           cat('NA', file = con);
         } else {
           capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE), file = con);

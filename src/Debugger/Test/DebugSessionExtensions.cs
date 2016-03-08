@@ -50,9 +50,5 @@ namespace Microsoft.R.Debugger.Test {
         public static Task<DebugBreakpoint> CreateBreakpointAsync(this DebugSession session, SourceFile sf, int lineNumber) {
             return session.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, lineNumber));
         }
-
-        public static DebugStackFramesAssertions Should(this IEnumerable<DebugStackFrame> frames) {
-            return new DebugStackFramesAssertions(frames);
-        }
     }
 }

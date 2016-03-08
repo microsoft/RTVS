@@ -38,7 +38,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
     }
     
     if (field('repr.toString')) {
-      repr$toString <- NA_if_error(force_toString(obj));
+      repr$toString <- NA_if_error(paste0(toString(obj), collapse = ''));
     }
     
     if (field('repr.str')) {

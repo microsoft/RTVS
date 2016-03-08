@@ -78,5 +78,9 @@ namespace Microsoft.R.Debugger {
         ) {
             return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
+
+        public override string ToString() {
+            return Invariant($"{Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber != null ? LineNumber.ToString() : "<null>")}");
+        }
     }
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -280,6 +281,38 @@ namespace Microsoft.R.Debugger.Test {
 
                 await bp1Hit.ShouldBeHitAtNextPromptAsync();
                 bp2Hit.WasHit.Should().BeFalse();
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task BrowseOnNewPrompt() {
+            using (var debugSession = new DebugSession(_session)) {
+                var browseTask = EventTaskSources.DebugSession.Browse.Create(debugSession);
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("browser()\n");
+                }
+
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                await browseTask;
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task BrowseOnExistingPrompt() {
+            using (var inter = await _session.BeginInteractionAsync()) {
+                await inter.RespondAsync("browser()\n");
+            }
+
+            using (var inter = await _session.BeginInteractionAsync()) {
+                inter.Contexts.IsBrowser().Should().BeTrue();
+            }
+
+            using (var debugSession = new DebugSession(_session)) {
+                await debugSession.InitializeAsync();
+                await EventTaskSources.DebugSession.Browse.Create(debugSession);
             }
         }
     }
