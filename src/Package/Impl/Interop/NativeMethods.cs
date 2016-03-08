@@ -44,5 +44,9 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
 
         [DllImport("shell32.dll")]
         public static extern void ILFree(IntPtr pidl);
+
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        internal static extern bool PathIsUNC([MarshalAs(UnmanagedType.LPWStr), In] string pszPath);
     }
 }

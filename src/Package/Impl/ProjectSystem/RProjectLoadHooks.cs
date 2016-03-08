@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
@@ -68,7 +69,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
+            
+            // Make sure R package is loaded
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
+
+            // Verify project is not on a network share and give warning if it is
+            CheckUncPath(_projectDirectory);
+
             _workflow = _workflowProvider.GetOrCreate();
             _session = _workflow.RSession;
             _history = _workflow.History;
@@ -152,6 +159,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         MessageButtons.YesNo) == MessageButtons.Yes;
                 default:
                     return false;
+            }
+        }
+
+        private void CheckUncPath(string path) {
+            if(NativeMethods.PathIsUNC(path)) {
+                VsAppShell.Current.ShowErrorMessage(Resources.Warning_UncPath);
             }
         }
     }

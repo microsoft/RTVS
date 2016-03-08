@@ -430,7 +430,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Insert Snippet.
+        ///   Looks up a localized string similar to .
         /// </summary>
         public static string InsertSnippet {
             get {
@@ -682,7 +682,7 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Progress_PreparingExcelData {
             get {
                 return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
-        }
+            }
         }
         
         /// <summary>
@@ -1357,15 +1357,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Surround With.
-        /// </summary>
-        public static string SurroundWith {
-            get {
-                return ResourceManager.GetString("SurroundWith", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Format Document.
         /// </summary>
         public static string UndoActionFormatDocument {
@@ -1497,6 +1488,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Warning_SettingsReset {
             get {
                 return ResourceManager.GetString("Warning_SettingsReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The project appears to be on a network share. R Tools for Visual Studio may not work correctly when files are on a remote share. .
+        /// </summary>
+        public static string Warning_UncPath {
+            get {
+                return ResourceManager.GetString("Warning_UncPath", resourceCulture);
             }
         }
         
