@@ -45,6 +45,26 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         [DllImport("shell32.dll")]
         public static extern void ILFree(IntPtr pidl);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        internal static extern int GetDriveType([MarshalAs(UnmanagedType.LPWStr)] string lpRootPathName);
+
+        public enum DriveType {
+            /// <summary>The drive type cannot be determined.</summary>
+            Unknown = 0,
+            /// <summary>The root path is invalid, for example, no volume is mounted at the path.</summary>
+            Error = 1,
+            /// <summary>The drive is a type that has removable media, for example, a floppy drive or removable hard disk.</summary>
+            Removable = 2,
+            /// <summary>The drive is a type that cannot be removed, for example, a fixed hard drive.</summary>
+            Fixed = 3,
+            /// <summary>The drive is a remote (network) drive.</summary>
+            Remote = 4,
+            /// <summary>The drive is a CD-ROM drive.</summary>
+            CDROM = 5,
+            /// <summary>The drive is a RAM disk.</summary>
+            RAMDisk = 6
+        }
+
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         internal static extern bool PathIsUNC([MarshalAs(UnmanagedType.LPWStr), In] string pszPath);

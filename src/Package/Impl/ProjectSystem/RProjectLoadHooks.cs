@@ -69,12 +69,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
-            
+
             // Make sure R package is loaded
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
 
             // Verify project is not on a network share and give warning if it is
-            CheckUncPath(_projectDirectory);
+            CheckRemoteDrive(_projectDirectory);
 
             _workflow = _workflowProvider.GetOrCreate();
             _session = _workflow.RSession;
@@ -125,7 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     }
                 } catch (OperationCanceledException) {
                     return;
-                } 
+                }
 
                 if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
                     await _threadHandling.SwitchToUIThread();
@@ -162,9 +162,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
-        private void CheckUncPath(string path) {
-            if(NativeMethods.PathIsUNC(path)) {
-                VsAppShell.Current.ShowErrorMessage(Resources.Warning_UncPath);
+        private void CheckRemoteDrive(string path) {
+            bool remoteDrive = NativeMethods.PathIsUNC(path);
+            if (!remoteDrive) {
+                var pathRoot = Path.GetPathRoot(path);
+                var driveType = (NativeMethods.DriveType)NativeMethods.GetDriveType(pathRoot);
+                remoteDrive = driveType == NativeMethods.DriveType.Remote;
+            }
+            if(remoteDrive) {
+                VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
     }
