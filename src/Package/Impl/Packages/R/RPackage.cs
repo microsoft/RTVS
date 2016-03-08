@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
-    [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtension, DisplayGeneratorFilter = 300)]
+    [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
@@ -89,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             // Force app shell creation before everything else
             var shell = VsAppShell.Current;
-            if(IsCommandLineMode()) {
+            if (IsCommandLineMode()) {
                 return;
             }
 
@@ -114,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
         }
 
         protected override void Dispose(bool disposing) {
