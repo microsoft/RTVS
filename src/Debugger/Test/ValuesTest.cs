@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -56,30 +57,22 @@ eval(substitute(f(P, x), list(P = x)))
             using (var sf = new SourceFile(code)) {
                 await debugSession.EnableBreakpointsAsync(true);
 
-                var paused = new TaskCompletionSource<bool>();
-                debugSession.Browse += delegate {
-                    paused.SetResult(true);
-                };
+                var browseEts = new EventTaskSource<DebugSession, DebugBrowseEventArgs>(
+                    (o, e) => o.Browse += e,
+                    (o, e) => o.Browse -= e);
+                var browseTask = browseEts.Create(debugSession);
 
                 await sf.Source(_session);
-                await paused.Task;
+                await browseTask;
 
-                var stackFrames = (await debugSession.GetStackFramesAsync()).Reverse().ToArray();
+                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var evalResult = await stackFrames[0].GetEnvironmentAsync();
-                evalResult.Should().BeAssignableTo<DebugValueEvaluationResult>();
-
-                var frame = (DebugValueEvaluationResult)evalResult;
+                var frame = (await stackFrames.Last().GetEnvironmentAsync()).As<DebugValueEvaluationResult>();
                 var children = (await frame.GetChildrenAsync()).ToDictionary(er => er.Name);
 
-                children.Should().ContainKey("p");
-                children["p"].Should().BeAssignableTo<DebugPromiseEvaluationResult>();
-                var p = (DebugPromiseEvaluationResult)children["p"];
-
-                children.Should().ContainKey("d");
-                children["d"].Should().BeAssignableTo<DebugValueEvaluationResult>();
-                var d = (DebugValueEvaluationResult)children["d"];
+                var p = children.Should().ContainKey("p").WhichValue.As<DebugPromiseEvaluationResult>();
+                var d = children.Should().ContainKey("d").WhichValue.As<DebugValueEvaluationResult>();
 
                 p.Code.Should().Be(d.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse);
             }
