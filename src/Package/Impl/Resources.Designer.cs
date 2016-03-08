@@ -430,7 +430,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Insert Snippet....
         /// </summary>
         public static string InsertSnippet {
             get {
@@ -682,7 +682,7 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Progress_PreparingExcelData {
             get {
                 return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
-            }
+        }
         }
         
         /// <summary>
