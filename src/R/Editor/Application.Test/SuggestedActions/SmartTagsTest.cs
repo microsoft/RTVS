@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class SmartTagsTest {
-        [Test]
+        [Test(Skip = "MEF cannot find ILightBulbBroker in tests")]
         [Category.Interactive]
         public void R_LibrarySuggestedActions() {
             using (var script = new TestScript(" library(base)", RContentTypeDefinition.ContentType)) {
