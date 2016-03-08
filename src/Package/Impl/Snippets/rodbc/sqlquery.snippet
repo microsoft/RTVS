@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>SQL query to database via ODBC</Title>
+      <Shortcut>sql</Shortcut>
+      <Description>Code snippet for SQL query to a database via ODBC</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>connection</ID>
+          <Default>connection</Default>
+          <ToolTip>Database connection</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>query</ID>
+          <Default>SELECT * FROM</Default>
+          <ToolTip>SQL query</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[dataframe <- sqlQuery("$connection$", query = "$query$"))$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

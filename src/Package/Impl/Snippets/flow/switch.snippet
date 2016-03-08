@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>switch</Title>
+      <Shortcut>switch</Shortcut>
+      <Description>Code snippet for 'switch' function to select one of a list of alternatives to evaluate</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>expression</ID>
+          <ToolTip>Expression evaluating to a string or integer</ToolTip>
+          <Default>myString</Default>
+        </Literal>
+        <Literal>
+          <ID>alternatives</ID>
+          <ToolTip>List of alternative 'value=expression' statements, separated by commas.
+ For example, switch(myString, aa=1, bb=2, cc=3) will return 2 if myString is "bb"</ToolTip>
+          <Default>strVal1=1</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[switch(expression, $alternatives$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

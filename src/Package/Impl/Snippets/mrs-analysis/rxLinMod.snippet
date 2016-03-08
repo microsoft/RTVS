@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Linear model (regression)</Title>
+      <Shortcut>rxLinMod</Shortcut>
+      <Description>Fit a linear model</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>depVar</ID>
+          <ToolTip>Dependent variable for the model</ToolTip>
+          <Default>y</Default>
+        </Literal>
+        <Literal>
+          <ID>indVars</ID>
+          <ToolTip>Expression containing dependent variables for the model</ToolTip>
+          <Default>x1 + x2</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>.xdf file name (including the path), data frame, or data source object</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>pweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for probability weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>fweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for frequency weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>Optional expression for subsetting rows from the data for the analysis.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable
+            transformations used in the formula or rowSelection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>dropFirst</ID>
+          <ToolTip>
+            If FALSE, the last level is dropped in all sets of factor levels in the model.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>cube</ID>
+          <ToolTip>
+           If TRUE and the first term of the independent variables is categorical 
+           (a factor or an interaction of factors), the regression is done using a 
+           partitioned inverse and the intercept term is automatically dropped.
+           The output object will have a countDF element containing category counts.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>cubePredictions</ID>
+          <ToolTip>
+            If TRUE and cube is TRUE, the countDF element of the output object
+            will also contain predicted values for each of the cube
+            categories.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxLinMod($depVar$ ~ $indVars$, data = $data$, 
+    pweights = $pweights$, fweights = $fweights$,
+    rowSelection = $rowSelection$, transforms = $transforms$, 
+    dropFirst = $dropFirst$, cube = $cube$, cubePredictions = $cubePredictions$,
+    blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Run a Function on Multiple Nodes or Cores</Title>
+      <Shortcut>rxExec</Shortcut>
+      <Description>Distribute execution of a function in parallel across nodes (computers) or 
+      cores of a "compute context" such as a cluster</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>Value</ID>
+          <ToolTip>A list of values returned by calls to FUN</ToolTip>
+          <Default>myResults</Default>
+        </Literal>        
+        <Literal>
+          <ID>FUN</ID>
+          <ToolTip>The function to be executed. For example,
+specify a function 'myFun' before your call to rxExec:
+myFun &lt;- function(myArg1, myArg2){ paste(myArg1, myArg2) } </ToolTip>
+          <Default>myFun</Default>
+        </Literal>
+        <Literal>
+          <ID>elipses</ID>
+          <ToolTip>
+The argument values that are the same for all of the nodes or cores.
+For example, set the argument 'myArg1' to 7 for all nodes or cores.</ToolTip>
+          <Default>myArg1 = 7</Default>
+        </Literal>
+        <Literal>
+          <ID>rxElemArg</ID>
+          <ToolTip>Separate argument values can be sent for each computation by wrapping a vector or list of 
+argument values in rxElemArg. For example, set 'myArg2' to "a" for the first node, "b" for
+the second node, etc.</ToolTip>
+          <Default>myArg2 = rxElemArg(c("a", "b", "c", "d", "e"))</Default>
+        </Literal>
+        <Literal>
+          <ID>elemType</ID>
+          <ToolTip>
+"nodes" for one instance of FUN to be run on each node (computer); 
+"cores" for one instance of FUN to be run on each core
+          </ToolTip>
+          <Default>nodes</Default>
+        </Literal>
+        <Literal>
+          <ID>packagesToLoad</ID>
+          <ToolTip>Optional vector of names of additional packages to be loaded before processing FUN</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>execObjects</ID>
+          <ToolTip>Additional R objects to be exported to the nodes for this job</ToolTip>
+          <Default>NULL</Default>
+        </Literal>        
+        <Literal>
+          <ID>taskChunkSize</ID>
+          <ToolTip>Optional integer specifying the number of tasks to be executed per compute element, or worker</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$Value$ <- rxExec( FUN = $FUN$, $elipses$, $rxElemArg$,
+    elemType = "$elemType$", packagesToLoad = $packagesToLoad$, 
+    execObjects = $execObjects$, taskChunkSize = $taskChunkSize$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

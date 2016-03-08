@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Axis labels</Title>
+      <Shortcut>gglab</Shortcut>
+      <Description>Code snippet for labeling graph axis</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>x</ID>
+          <Default>X label</Default>
+          <ToolTip>X axis label</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>y</ID>
+          <Default>Y label</Default>
+          <ToolTip>Y axis label</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[labs(x = "$x$","y = "$y$")$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

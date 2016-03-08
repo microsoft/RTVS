@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>User transformFunc</Title>
+      <Shortcut>transformFunc</Shortcut>
+      <Description>Code snippet for creating a user-defined transformFunc to be used in RevoScaleR functions</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>fnName</ID>
+          <ToolTip>Function name</ToolTip>
+          <Default>myTransformFunc</Default>
+        </Literal>
+        <Literal>
+          <ID>expressions</ID>
+          <ToolTip>Expressions in the function 
+(e.g.,create a new variable y from an existing variable x by specifying:
+data$y &lt;- data$x*100)</ToolTip>
+          <Default>data$y &lt;- data$x * 100 </Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$fnName$ <- function(data)
+{
+    # data is a list of variables from the original data file
+    # It will be read in and processed in chunks
+    # Specify the variables used from the original data in transformVars
+    $expressions$$end$ 
+    return(data)
+}
+        ]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

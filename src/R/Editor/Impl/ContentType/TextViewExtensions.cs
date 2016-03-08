@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -71,6 +72,65 @@ namespace Microsoft.R.Editor.ContentType {
             }
 
             return new NormalizedSnapshotSpanCollection(spans);
+        }
+
+        public static string GetItemUnderCaret(this ITextView textView, Func<char, bool> charSelector, out Span span) {
+            if (!textView.Caret.InVirtualSpace) {
+                SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                ITextSnapshotLine line = position.GetContainingLine();
+                return GetItem(line, position.Position, charSelector, out span);
+            }
+            span = Span.FromBounds(0, 0);
+            return string.Empty;
+        }
+
+        public static string GetItemBeforeCaret(this ITextView textView, Func<char, bool> charSelector, out Span span) {
+            if (!textView.Caret.InVirtualSpace) {
+                SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                ITextSnapshotLine line = position.GetContainingLine();
+                if (position.Position > line.Start) {
+                    return GetItem(line, position.Position - 1, charSelector, out span);
+                }
+            }
+            span = Span.FromBounds(0, 0);
+            return string.Empty;
+        }
+
+        public static string GetIdentifierUnderCaret(this ITextView textView, out Span span) {
+            return GetItemUnderCaret(textView, RTokenizer.IsIdentifierCharacter, out span);
+        }
+
+        public static string GetIdentifierBeforeCaret(this ITextView textView, out Span span) {
+            return GetItemBeforeCaret(textView, RTokenizer.IsIdentifierCharacter, out span);
+        }
+
+        private static string GetItem(ITextSnapshotLine line, int position, Func<char, bool> charSelector, out Span span) {
+            string lineText = line.GetText();
+            int linePosition = position - line.Start;
+            int start = 0;
+            int end = lineText.Length;
+            for (int i = linePosition - 1; i >= 0; i--) {
+                char ch = lineText[i];
+                if (!charSelector(ch)) {
+                    start = i + 1;
+                    break;
+                }
+            }
+            for (int i = linePosition; i < lineText.Length; i++) {
+                char ch = lineText[i];
+                if (!charSelector(ch)) {
+                    end = i;
+                    break;
+                }
+            }
+
+            if (end > start) {
+                span = Span.FromBounds(start + line.Start, end + line.Start);
+                return lineText.Substring(start, end - start);
+            }
+
+            span = Span.FromBounds(0, 0);
+            return string.Empty;
         }
     }
 }

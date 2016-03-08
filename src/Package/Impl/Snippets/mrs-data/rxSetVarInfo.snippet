@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Set .xdf or data frame variable info</Title>
+      <Shortcut>rxSetVarInfo</Shortcut>
+      <Description>Set basic variable information (e.g., names and descriptions) in an .xdf file or data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>newData</ID>
+          <ToolTip>
+            A new data frame or RxXdfData object representing the modified .xdf file
+          </ToolTip>
+          <Default>myNewData</Default>
+        </Literal>        
+        <Literal>
+          <ID>varInfo</ID>
+          <ToolTip>
+            List containing a list of information for each variable to be changed. For example, change the name of the variable x to X1 and add a description.
+          </ToolTip>
+          <Default>x=list(newName="X1", description="Independent Variable")</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>
+Data frame, RxXdfData object, or path and file name of 
+the .xdf data file. (Use / instead of \.)</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$newData$ <- rxSetVarInfo(varInfo = list($varInfo$), 
+    data = $data$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

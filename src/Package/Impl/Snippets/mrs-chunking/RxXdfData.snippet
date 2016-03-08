@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>.xdf data source</Title>
+      <Shortcut>RxXdfData</Shortcut>
+      <Description>Create a data source for an existing .xdf file</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>.xdf file name (including the path)</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+           Number of blocks from the input file to read for each call to rxReadNext.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to include when reading in data. 
+            If NULL, all are read in.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to exclude when reading in data. 
+            If NULL, all are read in. An alternative to varsToKeep.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>returnDataFrame</ID>
+          <ToolTip>
+            If TRUE, a data frame is output, otherwise a list is returned (which is faster).
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+XdfData(file=$file$, blocksPerRead = $blocksPerRead$, varsToKeep = $varsToKeep$,
+    varsToDrop = $varsToDrop$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

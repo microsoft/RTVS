@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Sequence</Title>
+      <Shortcut>seqb</Shortcut>
+      <Description>Create a numeric vector by generating a sequence</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outvec</ID>
+          <ToolTip>Name of vector to create</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>from</ID>
+          <ToolTip>Starting value for the sequence</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>to</ID>
+          <ToolTip>Ending value for the sequence</ToolTip>
+          <Default>10</Default>
+        </Literal>
+        <Literal>
+          <ID>by</ID>
+          <ToolTip>Increment of the sequence</ToolTip>
+          <Default>1</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[$outvec$ <- seq(from = $from$, to = $to$, by = $by$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

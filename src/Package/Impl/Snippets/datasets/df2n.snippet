@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Empty data frame (numeric)</Title>
+      <Shortcut>df2n</Shortcut>
+      <Description>Code snippet for an empty numerical data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame to create</ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>x</ID>
+          <Default>x</Default>
+          <ToolTip>First parameter</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>y</ID>
+          <Default>y</Default>
+          <ToolTip>Second parameter</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[$dfname$ <- data.frame($x$ = numeric(), $y$ = numeric())$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

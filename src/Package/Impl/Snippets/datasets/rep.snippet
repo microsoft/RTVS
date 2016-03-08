@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Repeated values</Title>
+      <Shortcut>rep</Shortcut>
+      <Description>Create a vector by repeating values of any mode</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outvec</ID>
+          <ToolTip>Name of vector to create</ToolTip>
+          <Default>myVec</Default>
+        </Literal>
+        <Literal>
+          <ID>vals</ID>
+          <ToolTip>Value(s) to repeat. For example, 1, 1:5, c(1,3,7), c('A','B','C'), or c(T,F,T)</ToolTip>
+          <Default>myVals</Default>
+        </Literal>
+        <Literal>
+          <ID>times</ID>
+          <ToolTip>Number of times to replicate the values. If this is a vector of the same length as the 
+values vector, each value will be replicated the corresponding number of times.</ToolTip>
+          <Default>times</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[$outvec$ <- rep($vals$, $times$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

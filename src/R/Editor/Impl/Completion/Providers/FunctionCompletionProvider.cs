@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -34,6 +35,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
         [Import]
         private ILoadedPackagesProvider LoadedPackagesProvider { get; set; }
 
+        [Import(AllowDefault = true)]
+        private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
+
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
@@ -41,6 +45,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
             ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
+            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+            var infoSource = SnippetInformationSource?.InformationSource;
 
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
@@ -54,10 +60,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 IEnumerable<INamedItemInfo> functions = pkg.Functions;
                 if (functions != null) {
                     foreach (INamedItemInfo function in functions) {
-                        ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
-
-                        var completion = new RCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph);
-                        completions.Add(completion);
+                        bool? isSnippet = infoSource?.IsSnippet(function.Name);
+                        if (!isSnippet.HasValue || !isSnippet.Value) {
+                            ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
+                            var completion = new RCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph);
+                            completions.Add(completion);
+                        }
                     }
                 }
             }

@@ -7,6 +7,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completion.Providers {
@@ -15,6 +16,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
     public class KeywordCompletionProvider : IRCompletionListProvider {
+        [Import(AllowDefault = true)]
+        private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
+
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
@@ -22,15 +26,19 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
 
             if (!context.IsInNameSpace()) {
+                var infoSource = SnippetInformationSource?.InformationSource;
                 ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
 
                 foreach (string keyword in Keywords.KeywordList) {
-                    completions.Add(new RCompletion(keyword, keyword, string.Empty, keyWordGlyph));
+                    bool? isSnippet = infoSource?.IsSnippet(keyword);
+                    if (!isSnippet.HasValue || !isSnippet.Value) {
+                        completions.Add(new RCompletion(keyword, keyword, string.Empty, keyWordGlyph));
+                    }
                 }
 
-                ImageSource buildInGlyth = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+                ImageSource buildInGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
                 foreach (string s in Builtins.BuiltinList) {
-                    completions.Add(new RCompletion(s, s, string.Empty, buildInGlyth));
+                    completions.Add(new RCompletion(s, s, string.Empty, buildInGlyph));
                 }
             }
 

@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Covariance or correlation matrix</Title>
+      <Shortcut>rxCovCor</Shortcut>
+      <Description>Calculate the covariance, correlation, or sum of squares / cross-product matrix
+        for a set of variables.
+      </Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>vars</ID>
+          <ToolTip>Expression containing variables to use</ToolTip>
+          <Default>x1 + x2</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>.xdf file name (including the path), data frame, or data source object</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>pweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for probability weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>fweights</ID>
+          <ToolTip>Optional character string specifying the variable to use for frequency weights</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>Optional expression for subsetting rows from the data for the analysis.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable
+            transformations used in the formula or rowSelection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>
+ Type of matrix to return:"SSCP" for Sums of Squares/Cross Poducts matrix,
+ "Cov" for covariance matrix, or "Cor" correlation matrix.
+          </ToolTip>
+          <Default>Cov</Default>
+        </Literal>        
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxCovCor(~ $vars$, data = $data$, 
+    pweights = $pweights$, fweights = $fweights$,
+    rowSelection = $rowSelection$, transforms = $transforms$, 
+    type = $type$, 
+    blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

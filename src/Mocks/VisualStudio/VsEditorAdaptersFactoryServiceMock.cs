@@ -31,24 +31,24 @@ namespace Microsoft.VisualStudio.Shell.Mocks
         public IVsTextBuffer CreateVsTextBufferAdapter(OLE.Interop.IServiceProvider serviceProvider)
         {
             VsTextBufferMock tb = new VsTextBufferMock();
-            _textBufferAdapters[tb.TextBuffer] = tb;
-            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            _textBufferAdapters[(ITextBuffer)tb] = tb;
+            _vsTextBufferAdapters[tb] = (ITextBuffer)tb;
             return tb;
         }
 
         public IVsTextBuffer CreateVsTextBufferAdapter(OLE.Interop.IServiceProvider serviceProvider, IContentType contentType)
         {
             VsTextBufferMock tb = new VsTextBufferMock(contentType);
-            _textBufferAdapters[tb.TextBuffer] = tb;
-            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            _textBufferAdapters[(ITextBuffer)tb] = tb;
+            _vsTextBufferAdapters[tb] = (ITextBuffer)tb;
             return tb;
         }
 
         public IVsTextBuffer CreateVsTextBufferAdapterForSecondaryBuffer(OLE.Interop.IServiceProvider serviceProvider, ITextBuffer secondaryBuffer)
         {
-            VsTextBufferMock tb = new VsTextBufferMock(secondaryBuffer);
-            _textBufferAdapters[tb.TextBuffer] = tb;
-            _vsTextBufferAdapters[tb] = tb.TextBuffer;
+            VsTextBufferMock tb = new VsTextBufferMock(secondaryBuffer.ContentType);
+            _textBufferAdapters[(ITextBuffer)tb] = tb;
+            _vsTextBufferAdapters[tb] = (ITextBuffer)tb;
             return tb;
         }
 
@@ -127,9 +127,6 @@ namespace Microsoft.VisualStudio.Shell.Mocks
                 _vsTextBufferAdapters.Remove(bufferAdapter);
                 _textBufferAdapters.Remove(tb);
             }
-
-            VsTextBufferMock mock = bufferAdapter as VsTextBufferMock;
-            mock.TextBuffer = dataBuffer;
 
             _vsTextBufferAdapters[bufferAdapter] = dataBuffer;
             _textBufferAdapters[dataBuffer] = bufferAdapter;

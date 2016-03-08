@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data frame</Title>
+      <Shortcut>dfv</Shortcut>
+      <Description>Create a data frame from vectors</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame to create</ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>varlist</ID>
+          <ToolTip>List of vectors separated by commas, optionally with column names.
+For example, X = 1:3, Y = c("a", "b", "c")</ToolTip>
+          <Default>myVar1 = 1:10</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[$dfname$ <- data.frame($varlist$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

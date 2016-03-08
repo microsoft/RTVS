@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>k-means clustering</Title>
+      <Shortcut>rxKmeans</Shortcut>
+      <Description>Perform k-means clustering</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>vars</ID>
+          <ToolTip>Expression containing variables to use for clustering</ToolTip>
+          <Default>x1 + x2</Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>.xdf file name (including the path), data frame, or data source object</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>outFile</ID>
+          <ToolTip>.xdf file for storing the resulting cluster indices if input data is in an .xdf file</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>outColName</ID>
+          <ToolTip>character string to be used as a column name for the resulting cluster indices if outFile is not NULL. </ToolTip>
+          <Default>.rxCluster</Default>
+        </Literal>
+        <Literal>
+          <ID>numClusters</ID>
+          <ToolTip>Number of clusters to create. If NULL, then the centers argument must be specified.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>centers</ID>
+          <ToolTip>
+            A k x p numeric matrix containing a set of initial (distinct) cluster centers. 
+            If NULL, then the numClusters argument must be specified.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>numStartRows</ID>
+          <ToolTip>
+            Integer specifying the size of the sample used to choose initial centers. 
+            If 0, the size is chosen as the minimum of the number of observations or 
+            10 times the number of clusters.
+          </ToolTip>
+          <Default>0</Default>
+        </Literal>
+        <Literal>
+          <ID>maxIterations</ID>
+          <ToolTip>Maximum number of iterations allowed.</ToolTip>
+          <Default>100</Default>
+        </Literal>
+        <Literal>
+          <ID>numStarts</ID>
+          <ToolTip>
+            If centers is NULL, k rows are randomly selected from the data source for use 
+            as initial starting points. numStarts is the number of these random sets that 
+            are to be chosen and evaluated, and the best result is returned.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>        
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>
+            Name of a logical variable or a logical expression (using variables in the data set) 
+            for selecting observations.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable
+            transformations used in the formula or rowSelection.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+           Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxKmeans(~ $vars$, data = $data$, outFile = $outFile$, outColName = "$outColName$",
+    numClusters = $numClusters$, centers = $centers$, numStartRows = $numStartRows$, 
+    maxIterations = $maxIterations$, numStarts = $numStarts$,
+    rowSelection = $rowSelection$, transforms = $transforms$, 
+    blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

@@ -244,6 +244,7 @@
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\VariableExpectation.cs" />
     <Compile Include="DataInspect\VariableRHostScript.cs" />
+    <Compile Include="Expansions\ExpansionsTest.cs" />
     <Compile Include="FakeFactories\TestRInteractiveWorkflowProviderFactory.cs" />
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
@@ -279,6 +280,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

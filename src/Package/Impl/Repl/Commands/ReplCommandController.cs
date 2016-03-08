@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
@@ -15,20 +14,31 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     /// <summary>
-    /// Main HTML editor command controller
+    /// Main interactive window command controller
     /// </summary>
     public class ReplCommandController : ViewController {
+        private ExpansionsController _snippetController;
+
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
             ServiceManager.AddService(this, textView);
+
+            var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
+            IVsExpansionManager expansionManager;
+            textManager.GetExpansionManager(out expansionManager);
+
+            // TODO: make this extensible via MEF like commands and controllers in the editor
+            _snippetController = new ExpansionsController(textView, textBuffer, expansionManager, ExpansionsCache.Current);
         }
 
         public static ReplCommandController Attach(ITextView textView, ITextBuffer textBuffer) {
@@ -58,6 +68,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 return CommandStatus.SupportedAndEnabled;
             }
 
+            var status = _snippetController.Status(group, id);
+            if(status != CommandStatus.NotSupported) {
+                return status;
+            }
+
             return base.Status(group, id);
         }
 
@@ -81,6 +96,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                         return CommandResult.Executed;
                     }
                 }
+            }
+
+            var status = _snippetController.Status(group, id);
+            if (status != CommandStatus.NotSupported) {
+                return _snippetController.Invoke(group, id, inputArg, ref outputArg);
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);

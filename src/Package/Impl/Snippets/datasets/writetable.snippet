@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Write table data</Title>
+      <Shortcut>writet</Shortcut>
+      <Description>Write a data frame or matrix to a file</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame or matrix to write to a file. If the object is not a data frame or matrix,
+           R will attempt to coerce it to a data frame.</ToolTip>
+          <Default>myDF</Default>
+        </Literal>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>Either a file name (character string) or a connection open for writing. 
+          "" indicates output to the console.</ToolTip>
+          <Default>myFile</Default>
+        </Literal>
+        <Literal>
+          <ID>append</ID>
+          <ToolTip>If TRUE, the output is appended to the file. If FALSE, any existing file of the name is destroyed.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>quote</ID>
+          <ToolTip>If TRUE, any character or factor values will be surrounded by double quotes and 
+           row and column names are quoted if they are written. If FALSE, nothing is quoted.</ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>sep</ID>
+          <ToolTip>The character string separating values on each row. For tab use "\t".</ToolTip>
+          <Default> , </Default>
+        </Literal>
+        <Literal>
+          <ID>rownames</ID>
+          <ToolTip>TRUE if row names are to be written along with data values, otherwise FALSE. 
+            Alternatively, a specify a character vector of row names to be written.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>colnames</ID>
+          <ToolTip>
+            TRUE if column names are to be written along with data values, otherwise FALSE.
+            If col.names = NA and row.names = TRUE a blank column name is added for the row names column.
+            Alternatively, specify a character vector of column names to be written.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>na</ID>
+          <ToolTip>
+            The string to use for missing values in the data
+          </ToolTip>
+          <Default>NA</Default>
+        </Literal>
+        <Literal>
+          <ID>dec</ID>
+          <ToolTip>
+            The character to use for decimal points.
+          </ToolTip>
+          <Default>.</Default>
+        </Literal>
+        <Literal>
+          <ID>eol</ID>
+          <ToolTip>The character(s) to print at the end of each line (row). 
+           For example, "\n" or "\r\n" </ToolTip>
+          <Default>\r\n</Default>
+        </Literal>
+           </Declarations>
+      <Code Language="R">
+        <![CDATA[
+write.table(x = $dfname$, file = "$file$", append = $append$, sep = "$sep$", quote = $quote$, na = "$na$",
+   row.names = $rownames$, col.names = $colnames$, dec = "$dec$", eol = "$eol$")
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

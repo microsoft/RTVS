@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data source: SPSS</Title>
+      <Shortcut>RxSpssData</Shortcut>
+      <Description>Create a SPSS data source object</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>
+An RxSpssData data source object.
+This can be used as the 'inData' argument in the rxImport function.
+          </ToolTip>
+          <Default>mySpssDS</Default>
+        </Literal>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>Name of SPSS (.sav) data file</ToolTip>
+          <Default>"mySpssFile.sav"</Default>
+        </Literal>
+          <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>TRUE if all string columns in the SPSS file should be converted to factors.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>        
+         <Literal>
+            <ID>rowsPerRead</ID>
+            <ToolTip>
+              Number of rows to read into each block of data.
+            </ToolTip>
+            <Default>500000</Default>
+          </Literal>
+        <Literal>
+          <ID>labelsAsLevels</ID>
+          <ToolTip>
+            If TRUE, variables containing value labels in the SPSS file will be converted to factors
+            (when it appears appropriate), using the value labels as factor levels.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>labelsAsInfo</ID>
+          <ToolTip>
+If TRUE, variables containing value labels in the SPSS file that are not converted to factors 
+will retain the information as valueInfoCodes and valueInfoLabels in the .xdf file.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- RxSpssData( file = $file$, stringsAsFactors = $stringsAsFactors$, 
+    rowsPerRead = $rowsPerRead$, labelsAsLevels = $labelsAsLevels$,
+    labelsAsInfo = $labelsAsInfo$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

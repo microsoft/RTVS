@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Descriptive statistics summary</Title>
+      <Shortcut>summary</Shortcut>
+      <Description>Mean, median, 25th and 75th quartiles, min, and max of variables</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dataName</ID>
+          <ToolTip>
+            Data object name
+          </ToolTip>
+          <Default>dataName</Default>
+        </Literal>
+        <Literal>
+          <ID>digits</ID>
+          <ToolTip>Optional maximum precision </ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>maxsum</ID>
+          <ToolTip>Optional number of levels (for factors)</ToolTip>
+          <Default> </Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+summary($dataName$,digits = $digits$, maxsum = $maxsum$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

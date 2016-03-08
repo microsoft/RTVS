@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Area graph</Title>
+      <Shortcut>ggash</Shortcut>
+      <Description>Code snippet for a graph with shaded area using ggplot package</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>data</ID>
+          <Default>data</Default>
+          <ToolTip>Data frame</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>x</ID>
+          <Default>x</Default>
+          <ToolTip>X axis data</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>y</ID>
+          <Default>y</Default>
+          <ToolTip>Y axis data</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[ggplot($data$, aes(x = $x$, y = $y$)) + geom_area()$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

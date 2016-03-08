@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Clustering</Title>
+      <Shortcut>clara</Shortcut>
+      <Description>Cluster data into k clusters (library: cluster)</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>xData</ID>
+          <ToolTip>
+           Data matrix or data frame, where rows represent observations and columns represent numeric variables.</ToolTip>
+          <Default>x</Default>
+        </Literal>
+        <Literal>
+          <ID>k</ID>
+          <ToolTip>
+            The number of clusters, a number between 0 and the number of observations
+          </ToolTip>
+          <Default>2</Default>
+        </Literal>
+        <Literal>
+          <ID>metric</ID>
+          <ToolTip>
+            "euclidean" or "manhattan": the metric to be used for calculating dissimilarities between observations. 
+             Euclidean distances are root sum-of-squares of differences.
+             Manhattan distances are the sum of absolute differences. </ToolTip>
+          <Default>"euclidean"</Default>
+        </Literal>
+        <Literal>
+          <ID>stand</ID>
+          <ToolTip>
+           Should variables be standardized before calculating the dissimilarities? 
+           Standardization is done by subtracting the variable's mean value and dividing by the variable's mean absolute deviation.</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>samples</ID>
+          <ToolTip>The number of samples to be drawn from the dataset</ToolTip>
+          <Default>5</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+ library(cluster)  # Make sure cluster package is loaded
+ clara($xData$, k = $k$, metric = $metric$, stand = $stand$, samples = $samples$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

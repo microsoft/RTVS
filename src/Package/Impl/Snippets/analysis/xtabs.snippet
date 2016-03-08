@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Crosstabs</Title>
+      <Shortcut>xtabs</Shortcut>
+      <Description>Crosstabulations for variables in a data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dataName</ID>
+          <ToolTip>
+            Data frame name
+          </ToolTip>
+          <Default>dataName</Default>
+        </Literal>
+        <Literal>
+          <ID>varNames</ID>
+          <ToolTip>Variable names separated by +, or . to include all variables </ToolTip>
+          <Default>.</Default>
+        </Literal>
+        <Literal>
+          <ID>subset</ID>
+          <ToolTip>An optional vector specifying a subset of observations to be used </ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>exclude</ID>
+          <ToolTip>A vector of values to be excluded when forming the set of levels of the classifying factors. </ToolTip>
+          <Default>NA, NaN</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+crossTable <- xtabs(~$varNames$, data= $dataName$,exclude = c($exclude$), subset = $subset$)
+ftable(crossTable)  # print crosstabs
+summary(crossTable) # chi-square tests$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

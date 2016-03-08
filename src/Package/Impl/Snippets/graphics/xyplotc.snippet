@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>XY plot with conditioning</Title>
+      <Shortcut>xyplotc</Shortcut>
+      <Description>Plot y versus x in panels for different conditions(package: lattice)</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+       </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>xCol</ID>
+          <ToolTip>X data column name</ToolTip>
+          <Default>x</Default>
+        </Literal>
+        <Literal>
+          <ID>yCol</ID>
+          <ToolTip>Y data column name</ToolTip>
+          <Default>y</Default>
+        </Literal>
+        <Literal>
+          <ID>condCol</ID>
+          <ToolTip>Conditioning data column name. A panel will be created for each value of this variable.</ToolTip>
+          <Default>c</Default>
+        </Literal>
+        <Literal>
+          <ID>groups</ID>
+          <ToolTip>Grouping data column name. Groups will be plotted separately on each panel.</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>Data frame name</ToolTip>
+          <Default>MyDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>xlab</ID>
+          <ToolTip>Label for X axis</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>ylab</ID>
+          <ToolTip>Label for Y axis</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>main</ID>
+          <ToolTip>Title for plot</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>sub</ID>
+          <ToolTip>Subtitle for plot placed at bottom of page</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>xmin</ID>
+          <ToolTip>Minimum value on X axis. (Uncomment line to use.)</ToolTip>
+          <Default>min(x)</Default>
+        </Literal>
+        <Literal>
+          <ID>xmax</ID>
+          <ToolTip>Maximum value on X axis. (Uncomment line to use.)</ToolTip>
+          <Default>max(x)</Default>
+        </Literal>
+        <Literal>
+          <ID>ymin</ID>
+          <ToolTip>Minimum value on Y axis. (Uncomment line to use.)</ToolTip>
+          <Default>min(y) </Default>
+        </Literal>
+        <Literal>
+          <ID>ymax</ID>
+          <ToolTip>Maximum value on Y axis. (Uncomment line to use.)</ToolTip>
+          <Default>max(y)</Default>
+        </Literal>
+        <Literal>
+          <ID>legend</ID>
+          <ToolTip>TRUE or FALSE to create a legend if a grouping variable is used</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>type</ID>
+          <ToolTip>Type of plot:"l" for line, "p" for points, "b" for both, "g" for grid,
+          "r" for regression line, "smooth" for a smoothed line, "s" to pre-sort data.
+          These can be combined, for example: c("r", "p")
+          </ToolTip>
+          <Default>"p"</Default>
+        </Literal>
+        <Literal>
+          <ID>numrows</ID>
+          <ToolTip>The number of rows of panels. (Uncomment line to use.)</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>numcols</ID>
+          <ToolTip>The number of columns of panels. (Uncomment line to use.)</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+library(lattice)  # Make sure lattice package is loaded
+xyplot($yCol$ ~ $xCol$ | $condCol$, 
+       groups=$groups$,
+       type = c($type$),
+       data=$data$,
+       main="$main$",
+       sub="$sub$",
+       xlab="$xlab$",
+       ylab="$ylab$",
+       auto.key=$legend$,
+       #layout=c($numrows$, $numcols$),
+       #xlim=c($xmin$, $xmax$),
+       #ylim=c($ymin$, $ymax$),
+       )$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

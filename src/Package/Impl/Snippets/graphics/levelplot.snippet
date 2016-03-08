@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Level or image plot</Title>
+      <Shortcut>xlevelplot</Shortcut>
+      <Description>Plot y versus x showing z as colors(package: lattice)</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+       </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>zCol</ID>
+          <ToolTip>Z data column name to show as color</ToolTip>
+          <Default>z</Default>
+        </Literal>
+        <Literal>
+          <ID>xCol</ID>
+          <ToolTip>X data column name</ToolTip>
+          <Default>x</Default>
+        </Literal>
+        <Literal>
+          <ID>yCol</ID>
+          <ToolTip>Y data column name</ToolTip>
+          <Default>y</Default>
+        </Literal>
+        <Literal>
+          <ID>cuts</ID>
+          <ToolTip>Number of cuts to make in the z data</ToolTip>
+          <Default>15</Default>
+        </Literal>
+        <Literal>
+          <ID>groups</ID>
+          <ToolTip>Optional grouping data column name. Groups will be plotted separately on each panel.</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>data</ID>
+          <ToolTip>Data frame name</ToolTip>
+          <Default>MyDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>xlab</ID>
+          <ToolTip>Label for X axis</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>ylab</ID>
+          <ToolTip>Label for Y axis</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>main</ID>
+          <ToolTip>Title for plot</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>sub</ID>
+          <ToolTip>Subtitle for plot placed at bottom of page</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>at</ID>
+          <ToolTip>Optional numeric vector giving breaks along the range of z. (Uncomment line to use.)</ToolTip>
+          <Default>c(10,20)</Default>
+        </Literal>
+        <Literal>
+          <ID>xmax</ID>
+          <ToolTip>Maximum value on X axis. (Uncomment line to use.)</ToolTip>
+          <Default>max(x)</Default>
+        </Literal>
+        <Literal>
+          <ID>ymin</ID>
+          <ToolTip>Minimum value on Y axis. (Uncomment line to use.)</ToolTip>
+          <Default>min(y) </Default>
+        </Literal>
+        <Literal>
+          <ID>ymax</ID>
+          <ToolTip>Maximum value on Y axis. (Uncomment line to use.)</ToolTip>
+          <Default>max(y)</Default>
+        </Literal>
+        <Literal>
+          <ID>colorkey</ID>
+          <ToolTip>TRUE or FALSE specifying whether a color key is to be drawn alongside the plot</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>contour</ID>
+          <ToolTip>TRUE or FALSE specifying whether to draw contour lines</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>numrows</ID>
+          <ToolTip>The number of rows of panels. (Uncomment line to use.)</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>numcols</ID>
+          <ToolTip>The number of columns of panels. (Uncomment line to use.)</ToolTip>
+          <Default>1</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+library(lattice) #Make sure lattice library is loaded
+levelplot($zCol$ ~ $xCol$*$yCol$, 
+       cuts = $cuts$,
+       groups = $groups$,
+       data = $data$,
+       main = "$main$",
+       sub = "$sub$",
+       xlab = "$xlab$",
+       ylab = "$ylab$",
+       colorkey = $colorkey$,
+       contour = $contour$,
+       #layout = c($numrows$, $numcols$),
+       #xlim = c($xmin$, $xmax$),
+       #ylim = c($ymin$, $ymax$),
+       )$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

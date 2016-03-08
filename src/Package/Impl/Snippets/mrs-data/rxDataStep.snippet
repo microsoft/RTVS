@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Data step</Title>
+      <Shortcut>rxDataStep</Shortcut>
+      <Description>Transform data from in an .xdf file or data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>Output data frame or RxXdfData data source object representing the output .xdf file</ToolTip>
+          <Default>myData</Default>
+        </Literal>        
+        <Literal>
+          <ID>inData</ID>
+          <ToolTip>Input data frame or .xdf file name. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"myInFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>outFile</ID>
+          <ToolTip>Optional output .xdf file name. If NULL, a data frame is returned. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"myOutFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to read (keep) from the input data.
+            If NULL, all are read in or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to not read (drop) from the input data.
+            If NULL, all are read in or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>An optional expression for selecting rows from the input data.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing 
+            transformations for creating or modifying variables
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transformObjects</ID>
+          <ToolTip>
+            A list of R objects to be used in transformations or rowSelection
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>        
+        <Literal>
+          <ID>append</ID>
+          <ToolTip>
+          "rows" to add rows from the input file to an exisiting output file, 
+          or "cols" to add columns to an existing output file. If "none", a new file 
+          or data frame is created </ToolTip>
+          <Default>"none"</Default>
+        </Literal>
+        <Literal>
+          <ID>overwrite</ID>
+          <ToolTip>
+            If TRUE, an existing outFile will be overwritten, or if appending columns, 
+            existing columns with the same name will be overwritten. 
+            Ignored if appending rows.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>removeMissings</ID>
+          <ToolTip>
+            If TRUE, rows with missing values will be removed when the input data is read.
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>rowsPerRead</ID>
+          <ToolTip>
+            Number of rows to read from the input data for each block 
+            in a new output data file.
+          </ToolTip>
+          <Default>-1</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks from the input file to read for each chunk of data. 
+            Ignored if rowsPerRead is greater than 0.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>
+          Specify an integer from 0 to 3 to report progress, 
+          with 0 for no reporting.</ToolTip>
+          <Default>1</Default>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- rxDataStep(inData = $inData$, outFile = $outFile$, 
+    varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$,
+    rowSelection = $rowSelection$, transforms = $transforms$, transformObjects = $transformObjects$, 
+    append = $append$,  overwrite = $overwrite$, removeMissings = $removeMissings$, 
+    rowsPerRead = $rowsPerRead$, blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

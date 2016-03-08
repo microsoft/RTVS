@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Read CSV</Title>
+      <Shortcut>readc</Shortcut>
+      <Description>Read a data table from a comma-separated file (CSV) and create a data frame</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>dfname</ID>
+          <ToolTip>Name of data frame to create</ToolTip>
+          <Default>myDataFrame</Default>
+        </Literal>
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>File name, including the path relative to the working directory or the absolute path. Use / instead of \.</ToolTip>
+          <Default>myFile</Default>
+        </Literal>
+        <Literal>
+          <ID>header</ID>
+          <ToolTip>TRUE if the file contains the names of the variables as its first line</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>sep</ID>
+          <ToolTip>The character separating values on each line. If sep = "" the separator is 
+one or more spaces, tabs, newlines or carriage returns. For tab use "\t".</ToolTip>
+          <Default>,</Default>
+        </Literal>
+        <Literal>
+          <ID>rownames</ID>
+          <ToolTip>
+            Optional variable containing row names.
+          </ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>stringsAsFactors</ID>
+          <ToolTip>If TRUE, strings are converted to factors</ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$dfname$ <- read.csv(file = "$file$", header = $header$, sep = "$sep$", row.names = "$rownames$", stringsAsFactors = $stringsAsFactors$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

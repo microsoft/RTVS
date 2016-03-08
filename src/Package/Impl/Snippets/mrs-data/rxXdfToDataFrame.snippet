@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>xdf to data frame</Title>
+      <Shortcut>rxXdfToDataFrame</Shortcut>
+      <Description>Extract a data frame into memory from an .xdf file, subsetting rows and columns. </Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outData</ID>
+          <ToolTip>Output data frame</ToolTip>
+          <Default>myData</Default>
+        </Literal>        
+        <Literal>
+          <ID>file</ID>
+          <ToolTip>.xdf file name, including the path relative to the working directory or the absolute path. (Use / instead of \.)</ToolTip>
+          <Default>"myFile.xdf"</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to read (keep) from the input data file.
+            If NULL, all are read in or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to exclude (drop) from the input data file.
+            If NULL, all are read in or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowVarName</ID>
+          <ToolTip>
+            An optional character string specifying the variable in the data file to use as row names for the output data frame.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>rowSelection</ID>
+          <ToolTip>Name of a logical variable or a logical expression for row selection.</ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>transforms</ID>
+          <ToolTip>
+            A list in the form of list(name = expression, ...) representing the variable transformations.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>blocksPerRead</ID>
+          <ToolTip>
+            Number of blocks from the input file to read for each chunk of data.
+          </ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>reportProgress</ID>
+          <ToolTip>Specify an integer from 0 to 3 to report progress, with 0 for no reporting.</ToolTip>
+          <Default>2</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$outData$ <- rxXdfToDataFrame(file = $file$,  varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$, rowVarName = $rowVarName$, 
+    rowSelection = $rowSelection$, transforms = $transforms$, blocksPerRead = $blocksPerRead$, reportProgress = $reportProgress$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

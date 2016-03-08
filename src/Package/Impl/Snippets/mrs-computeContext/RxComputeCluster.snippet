@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Create a compute context</Title>
+      <Shortcut>RxComputeContext</Shortcut>
+      <Description>Create or clone a compute context</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>newComputeContext</ID>
+          <ToolTip>A new compute context</ToolTip>
+          <Default>myCC</Default>
+        </Literal>     
+        <Literal>
+          <ID>computeContext</ID>
+          <ToolTip>
+ An existing compute context or a compute context class or description. Choices include: 
+"RxLocalSeq" or "local", "RxLocalParallel" or "localpar", "RxHpcServer" or "mshpc", 
+"RxAzureBurst" or "azureburst", "RxLsfCluster" or "lsf", and "RxForeachDoPar" or "dopar".
+Additional arguments appropriate to the compute context can be added.
+ </ToolTip>
+          <Default>"local"</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+$newComputeContext$ <- RxComputeContext(computeContext = $computeContext$)
+ $end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

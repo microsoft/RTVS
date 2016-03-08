@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Matrix</Title>
+      <Shortcut>matrix</Shortcut>
+      <Description>Create a matrix from a vector</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>outMatrix</ID>
+          <ToolTip>Name of matrix to create</ToolTip>
+          <Default>myMatrix</Default>
+        </Literal>
+        <Literal>
+          <ID>dataVec</ID>
+          <ToolTip>Optional data vector.  If set to NA, matrix will be filled with NA.
+              If set to a value, matrix will be filled with that value.
+           </ToolTip>
+          <Default>NA</Default>
+        </Literal>
+        <Literal>
+          <ID>nrow</ID>
+          <ToolTip>Desired number of rows</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>ncol</ID>
+          <ToolTip>Desired number of columns</ToolTip>
+          <Default>1</Default>
+        </Literal>
+        <Literal>
+          <ID>byRow</ID>
+          <ToolTip>If FALSE the matrix is filled by columns, otherwise the matrix is filled by rows</ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[$outMatrix$ <- matrix(data = $dataVec$, nrow = $nrow$, ncol = $ncol$, byrow = $byRow$)$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

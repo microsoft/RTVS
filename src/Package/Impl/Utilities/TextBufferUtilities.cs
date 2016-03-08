@@ -12,9 +12,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         private static IVsEditorAdaptersFactoryService AdaptersFactoryService => 
             _adaptersFactoryService ?? (_adaptersFactoryService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>());
 
-        public static T QueryInterface<T>(this ITextBuffer textBuffer) where T : class {
-            var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);
-            return vsTextBuffer as T;
+        public static T As<T>(this ITextBuffer textBuffer) where T : class {
+            var t = textBuffer as T;
+            if (t == null) {
+                var vsTextBuffer = AdaptersFactoryService.GetBufferAdapter(textBuffer);
+                return vsTextBuffer as T;
+            }
+            return t;
         }
 
         public static ITextBuffer ToITextBuffer(this IVsTextBuffer vsTextBuffer) {

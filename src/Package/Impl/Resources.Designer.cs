@@ -430,6 +430,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Insert Snippet.
+        /// </summary>
+        public static string InsertSnippet {
+            get {
+                return ResourceManager.GetString("InsertSnippet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R.
         /// </summary>
         public static string LanguageName {
@@ -673,7 +682,7 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Progress_PreparingExcelData {
             get {
                 return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
-            }
+        }
         }
         
         /// <summary>
@@ -1344,6 +1353,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ShowDetailCommandTooltip {
             get {
                 return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Surround With.
+        /// </summary>
+        public static string SurroundWith {
+            get {
+                return ResourceManager.GetString("SurroundWith", resourceCulture);
             }
         }
         

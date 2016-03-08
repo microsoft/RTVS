@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Connect to database via ODBC</Title>
+      <Shortcut>dbconn</Shortcut>
+      <Description>Code snippet for establishing connection to database via ODBC</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>database</ID>
+          <Default>database</Default>
+          <ToolTip>Database location</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>user</ID>
+          <Default>user</Default>
+          <ToolTip>User name</ToolTip>
+        </Literal>
+        <Literal>
+          <ID>password</ID>
+          <Default>password</Default>
+          <ToolTip>Password</ToolTip>
+        </Literal>
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[connection <- odbcConnect("$database$", uid="$user$", pwd="$password$", believeNRows=FALSE))$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

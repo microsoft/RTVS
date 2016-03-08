@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Sort an .xdf file or data frame</Title>
+      <Shortcut>rxSort</Shortcut>
+      <Description>Sort an .xdf file or data frame by key variables</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>inData</ID>
+          <ToolTip>Input .xdf data file or data frame. (Use / instead of \ when specifying a path.)</ToolTip>
+          <Default>"inFile.xdf"</Default>
+        </Literal>
+        <Literal>
+            <ID>outFile</ID>
+            <ToolTip>Optional output .xdf data file name. If NULL a data frame is returned. (Use / instead of \ when specifying a path.)</ToolTip>
+            <Default>"outFile.xdf"</Default>
+          </Literal>        
+        <Literal>
+          <ID>sortByVars</ID>
+          <ToolTip>
+            Character vector of names of the variables to use as keys for sorting
+          </ToolTip>
+          <Default>x1, x2</Default>
+        </Literal>
+        <Literal>
+          <ID>decreasing</ID>
+          <ToolTip>
+            Logical scalar or vector defining whether the sortByVars variables 
+            are to be sorted in decreasing or increasing order
+          </ToolTip>
+          <Default>FALSE</Default>
+        </Literal>
+        <Literal>
+          <ID>missingsLow</ID>
+          <ToolTip>
+            If TRUE, missing values in the data are treated as the lowest value.
+          </ToolTip>
+          <Default>TRUE</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToKeep</ID>
+          <ToolTip>
+            Character vector of variable names to keep from the input data.
+            If NULL, all are kept or varsToDrop is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>
+        <Literal>
+          <ID>varsToDrop</ID>
+          <ToolTip>
+            Character vector of variable names to omit from the input data.
+            If NULL, all are kept or varsToKeep is used.
+            Cannot have both varsToKeep and varsToDrop variable lists.
+          </ToolTip>
+          <Default>NULL</Default>
+        </Literal>               
+      </Declarations>
+      <Code Language="R">
+        <![CDATA[
+rxSort(inData = $inData$, outFile = $outFile$, sortByVars = c("$sortByVars$"),
+    decreasing = $decreasing$, missingsLow = $missingsLow$, 
+    varsToKeep = $varsToKeep$, varsToDrop = $varsToDrop$)
+$end$]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

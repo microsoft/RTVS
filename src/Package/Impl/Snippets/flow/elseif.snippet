@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>elseif</Title>
+      <Shortcut>elseif</Shortcut>
+      <Description>Code snippet for 'else if' statement</Description>
+      <Author>Microsoft Corporation</Author>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+        <SnippetType>SurroundsWith</SnippetType>
+      </SnippetTypes>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal>
+          <ID>case</ID>
+          <ToolTip>Condition defining next case</ToolTip>
+          <Default> </Default>
+        </Literal>
+        <Literal>
+          <ID>expression</ID>
+          <ToolTip>Expression to be evaluated for next case</ToolTip>
+          <Default> </Default>
+        </Literal>
+       </Declarations>
+      <Code Language="R">
+        <![CDATA[
+else if ($case$) {
+    $expression$ $end$
+}]]>
+      </Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
