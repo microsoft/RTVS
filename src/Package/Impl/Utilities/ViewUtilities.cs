@@ -61,9 +61,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return sp.GetService(type) as T;
         }
 
-        public static T As<T>(this ITextView textView) where T : class {
+        public static T As<T>(this ITextView textView) where T : class, IVsTextView {
             var vsTextView = AdaptersFactoryService.GetViewAdapter(textView);
-
             return vsTextView as T;
         }
 

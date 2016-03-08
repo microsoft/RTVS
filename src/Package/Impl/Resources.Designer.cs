@@ -682,7 +682,7 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Progress_PreparingExcelData {
             get {
                 return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
-        }
+            }
         }
         
         /// <summary>

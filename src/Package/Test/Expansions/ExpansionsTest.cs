@@ -19,30 +19,36 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class ExpansionsTest {
-        [Test]
-       public void ExpansionClientTest() {
-            var tb = new VsTextBufferMock("if");
-            var tv = new TextViewMock(tb);
-            var em = Substitute.For<IVsExpansionManager>();
-            var cache = Substitute.For<IExpansionsCache>();
-            var client = new ExpansionClient(tv, tb, em, cache);
+        private IVsExpansionManager _expansionManager;
+        private IExpansionsCache _cache;
 
-            client.IsEditingExpansion().Should().BeFalse();
-            client.IsCaretInsideSnippetFields().Should().BeFalse();
+        public ExpansionsTest() {
+            _expansionManager = Substitute.For<IVsExpansionManager>();
 
-            em.InvokeInsertionUI(null, null, Guid.Empty, new string[0], 0, 0, new string[0], 0, 0, string.Empty, string.Empty)
-                .ReturnsForAnyArgs(VSConstants.S_OK);
-
-            client.InvokeInsertionUI((int)VSConstants.VSStd2KCmdID.INSERTSNIPPET).Should().Be(VSConstants.S_OK);
-
-            cache.GetExpansion("if").Returns(new VsExpansion() {
+            _cache = Substitute.For<IExpansionsCache>();
+            _cache.GetExpansion("if").Returns(new VsExpansion() {
                 description = "if statement",
                 path = "path",
                 shortcut = "if",
                 title = "if statement"
             });
+        }
 
-            tv.Caret.MoveTo(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, 2));
+        [Test]
+       public void ExpansionClientTest() {
+            var textBuffer = new VsTextBufferMock("if");
+            var textView = new TextViewMock(textBuffer);
+            var client = new ExpansionClient(textView, textBuffer, _expansionManager, _cache);
+
+            client.IsEditingExpansion().Should().BeFalse();
+            client.IsCaretInsideSnippetFields().Should().BeFalse();
+
+            _expansionManager.InvokeInsertionUI(null, null, Guid.Empty, new string[0], 0, 0, new string[0], 0, 0, string.Empty, string.Empty)
+                .ReturnsForAnyArgs(VSConstants.S_OK);
+
+            client.InvokeInsertionUI((int)VSConstants.VSStd2KCmdID.INSERTSNIPPET).Should().Be(VSConstants.S_OK);
+
+            textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, 2));
 
             bool inserted;
             client.StartSnippetInsertion(out inserted);
@@ -63,20 +69,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
 
         [Test]
         public void ExpansionControllerTest() {
-            var tb = new VsTextBufferMock("if");
-            var tv = new TextViewMock(tb);
-            var em = Substitute.For<IVsExpansionManager>();
-            var cache = Substitute.For<IExpansionsCache>();
+            var textBuffer = new VsTextBufferMock("if");
+            var textView = new TextViewMock(textBuffer);
             var o = new object();
 
-            cache.GetExpansion("if").Returns(new VsExpansion() {
-                description = "if statement",
-                path = "path",
-                shortcut = "if",
-                title = "if statement"
-            });
-
-            var controller = new ExpansionsController(tv, tb, em, cache);
+            var controller = new ExpansionsController(textView, textBuffer, _expansionManager, _cache);
             controller.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.INSERTSNIPPET).Should().Be(CommandStatus.SupportedAndEnabled);
             controller.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.SURROUNDWITH).Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -84,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
             controller.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.BACKTAB, null, ref o).Should().Be(CommandResult.NotSupported);
             controller.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.CANCEL, null, ref o).Should().Be(CommandResult.NotSupported);
 
-            tv.Caret.MoveTo(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, 2));
+            textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, 2));
             bool inserted;
 
             var client = controller.ExpansionClient as ExpansionClient;

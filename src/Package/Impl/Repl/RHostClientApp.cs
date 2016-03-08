@@ -74,15 +74,5 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public string CranUrlFromName(string mirrorName) {
             return CranMirrorList.UrlFromName(mirrorName);
         }
-
-        private static IVsWindowFrame FindPlotWindow(__VSFINDTOOLWIN flags) {
-            IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-
-            // First just find. If it exists, use it. 
-            IVsWindowFrame frame;
-            Guid persistenceSlot = typeof(PlotWindowPane).GUID;
-            shell.FindToolWindow((uint)flags, ref persistenceSlot, out frame);
-            return frame;
-        }
     }
 }

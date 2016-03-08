@@ -33,7 +33,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, _contentType);
 
             var toolWindow = (ToolWindowPane) vsWindow;
-            ((IVsWindowFrame)toolWindow.Frame).SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
+            var frame = (IVsWindowFrame)toolWindow.Frame;
+            frame.SetProperty((int)__VSFPROPID4.VSFPROPID_TabImage, Resources.ReplWindowIcon);
+            // TODO: figure out why REPL window doesn't get 'force create' flag set
+            // For now, set it forcibly when window is shown
+            object value;
+            frame.GetProperty((int)__VSFPROPID.VSFPROPID_CreateToolWinFlags, out value);
+            frame.SetProperty((int)__VSFPROPID.VSFPROPID_CreateToolWinFlags, (int)value | (int)__VSCREATETOOLWIN.CTW_fForceCreate);
 
             var componentContainer = new VisualComponentToolWindowAdapter<IInteractiveWindowVisualComponent>(toolWindow);
             var component = new RInteractiveWindowVisualComponent(vsWindow.InteractiveWindow, componentContainer);

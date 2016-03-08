@@ -5,6 +5,7 @@ using System;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -31,12 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             interactiveWorkflow
                 .GetOrCreateVisualComponent(_componentContainerFactory)
                 .ContinueOnRanToCompletion(w => w.Container.Show(true));
-
-            var frame = ToolWindowUtilities.FindToolWindow(RGuidList.ReplInteractiveWindowProviderGuid);
-
-            object value;
-            frame.GetProperty((int)__VSFPROPID.VSFPROPID_CreateToolWinFlags, out value);
-            frame.SetProperty((int)__VSFPROPID.VSFPROPID_CreateToolWinFlags, (int)value | (int)__VSCREATETOOLWIN.CTW_fForceCreate);
         }
     }
 }
