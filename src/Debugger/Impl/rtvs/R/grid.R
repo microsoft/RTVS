@@ -14,7 +14,7 @@ grid.format <- function(x) {
 }
 
 grid.data <- function(expr, env, rows, cols) {
-  x <- safe_eval(expr, env);
+  x <- expr;
 
   d <- dim(x);
   if (is.null(d) || (length(d) != 2)) {
