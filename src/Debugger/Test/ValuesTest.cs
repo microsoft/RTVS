@@ -117,7 +117,11 @@ eval(substitute(f(P, x), list(P = x)))
         [InlineData("4-2.4i", "4-2.4i", "4-2.4i", "4-2.4i")]
         [InlineData("-4.2+4i", "-4.2+4i", "-4.2+4i", "-4.2+4i")]
         [InlineData("-4.2-2.4i", "-4.2-2.4i", "-4.2-2.4i", "-4.2-2.4i")]
-        [InlineData("-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", Skip = "https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16752")]
+        //[InlineData("-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", "-4.2e+10+2.4e-10i", Skip = "https://bugs.r-project.org/bugzilla/show_bug.cgi?id=16752")]
+        [InlineData("''", "\"\"", "\"\"", "")]
+        [InlineData(@"'abc'", @"""abc""", @"""abc""", "abc")]
+        [InlineData(@"'\'\""\n\r\t\b\a\f\v\\\001'", @"""'\""\n\r\t\b\a\f\v\\\001""", @"""'\""\n\r\t\b\a\f\v\\\001""", "'\"\n\r\t\b\a\f\v\\\x01")]
+        //[InlineData(@"'\u2260'", @"""≠""", @"""≠""", "≠")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
             using (var debugSession = new DebugSession(_session)) {
                 var res = (await debugSession.EvaluateAsync(expr)).As<DebugValueEvaluationResult>();
