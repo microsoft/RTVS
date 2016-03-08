@@ -8,17 +8,17 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
@@ -274,6 +274,32 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                     REditorSettings.ShowCompletionOnTab = false;
                 }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_SnippetsCompletion01() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                script.DoIdle(100);
+                script.Type("whil");
+                script.DoIdle(300);
+
+                EditorShell.Current.DispatchOnUIThread(() => {
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+
+                    var infoSourceProvider = EditorShell.Current.ExportProvider.GetExportedValue<ISnippetInformationSourceProvider>();
+                    var infoSource = infoSourceProvider.InformationSource;
+                    var completion = session.SelectedCompletionSet.SelectionStatus.Completion;
+
+                    bool isSnippet = infoSource.IsSnippet(completion.DisplayText);
+                    isSnippet.Should().BeTrue();
+
+                    var glyph = completion.IconSource;
+                    var snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+                    glyph.Should().Be(snippetGlyph);
+                });
             }
         }
 
