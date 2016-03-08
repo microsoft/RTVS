@@ -42,18 +42,18 @@ toJSON <- function(data, con) {
       } else if (is.integer(data)) {
         dput(as.double(data), con);
       } else if (is.character(data)) {
-	    escaped <- vapply(strsplit(data, '')[[1]], function(ch) {
-			cp <- utf8ToInt(ch);
-			if (cp <= 31 || cp >= 127 || ch == '\\' || ch == '"') {
-				sprintf("\\u%04x", cp)
-			} else {
-				ch
-			}
-		}, FUN.VALUE = '', USE.NAMES = FALSE);
+        escaped <- vapply(strsplit(data, '')[[1]], function(ch) {
+          cp <- utf8ToInt(ch);
+          if (cp <= 31 || cp >= 127 || ch == '\\' || ch == '"') {
+            sprintf("\\u%04x", cp)
+          } else {
+            ch
+          }
+        }, FUN.VALUE = '', USE.NAMES = FALSE);
         cat('"', escaped, '"', file = con, sep = '');
       } else {
         stop("vector must be of logical, integer, double or character type to be convertible to JSON:\n\n", data);
-	  }
+      }
     } else {
       stop("vector must have 0 or 1 element to be convertible to JSON:\n\n", data);
     }
