@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public int RowCount { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange) {
-            var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, gridRange);
+            var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, _evaluation.Environment, gridRange);
             if (t == null) {
                 // May happen when R host is not running
                 Trace.Fail(Invariant($"{nameof(EvaluationWrapper)} returned null grid data"));

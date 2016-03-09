@@ -69,6 +69,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public string Environment {
+            get {
+                return null;
+            }
+        }
+
         protected override async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 
@@ -128,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInExcel(object parameter) {
-            ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]);
+            ExcelInterop.OpenDataInExcel(Name, Expression, Environment, Dimensions[0], Dimensions[1]);
          }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
