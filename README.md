@@ -1,7 +1,6 @@
-# RTVS
-## R Tools for Visual Studio.
+# R Tools for Visual Studio.
 
-### Building instructions
+## Building instructions
 
 1. You must be using Visual Studio 2015 Update 1 or higher.
 1. You must have C++, Web Tools and VS Extensibility components (aka VS SDK) installed.
@@ -20,7 +19,7 @@
 1. Start Debugging (F5).
 1. VS experimental instance should start, and you should see "R Tools" entry in the main menu.
 
-### Building Setup
+## Building Setup
 
 1. If you are _not_ planning to build burn bundle, skip to step 5.
 1. Install [WiX Toolset 3.7](https://wix.codeplex.com/releases/view/99514) - note that it must be this exact version, and _not_ any later version.
@@ -31,7 +30,7 @@
    It will fail otherwise, because the WiX toolset caches certain information in the `obj` folder, and is unable to correctly
    build more than one MSI project in the solution at once.
 
-### Building Burn bundle (SetupBundle)
+## Building Burn bundle (SetupBundle)
 
 1. Burn bundle project has to be built from command line using WiX 3.7.
 1. Open VS 2015 developer command line (Start -> All Apps -> Visual Studio 2015 -> Developer Command Prompt).
