@@ -62,7 +62,7 @@ namespace Microsoft.R.Debugger.Engine {
 
         private string CreateReprToString() {
             var ev = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
-            return (ev as DebugValueEvaluationResult)?.GetRepresentation(DebugValueRepresentationKind.Raw).ToString;
+            return (ev as DebugValueEvaluationResult)?.GetRepresentation().ToString;
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -294,7 +294,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
                 if (valueResult != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse;
+                    dpi.bstrValue = valueResult.GetRepresentation().Deparse;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (promiseResult != null) {
                     dpi.bstrValue = promiseResult.Code;
@@ -324,7 +324,7 @@ namespace Microsoft.R.Debugger.Engine {
                     switch (valueResult.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
-                            if (valueResult.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse == "TRUE") {
+                            if (valueResult.GetRepresentation().Deparse == "TRUE") {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN_TRUE;
                             }
                             break;

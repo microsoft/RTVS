@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Data {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
                 Value = GetValue(valueEvaluation)?.Trim();
-                ValueDetail = valueEvaluation.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse;
+                ValueDetail = valueEvaluation.GetRepresentation().Deparse;
                 TypeName = valueEvaluation.TypeName;
 
                 if (valueEvaluation.Classes != null) {
@@ -125,7 +125,7 @@ namespace Microsoft.R.Editor.Data {
 
         private static string DataFramePrefix = "'data.frame':([^:]+):";
         private string GetValue(DebugValueEvaluationResult v) {
-            var value = v.GetRepresentation(DebugValueRepresentationKind.Normal).Str;
+            var value = v.GetRepresentation().Str;
             if (value != null) {
                 Match match = Regex.Match(value, DataFramePrefix);
                 if (match.Success) {

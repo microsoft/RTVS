@@ -71,7 +71,7 @@ eval(substitute(f(P, x), list(P = x)))
                 var p = children.Should().ContainKey("p").WhichValue.As<DebugPromiseEvaluationResult>();
                 var d = children.Should().ContainKey("d").WhichValue.As<DebugValueEvaluationResult>();
 
-                p.Code.Should().Be(d.GetRepresentation(DebugValueRepresentationKind.Raw).Deparse);
+                p.Code.Should().Be(d.GetRepresentation().Deparse);
             }
         }
 
@@ -116,7 +116,7 @@ eval(substitute(f(P, x), list(P = x)))
         public async Task Representation(string expr, string deparse, string str, string toString) {
             using (var debugSession = new DebugSession(_session)) {
                 var res = (await debugSession.EvaluateAsync(expr)).As<DebugValueEvaluationResult>();
-                var repr = res.GetRepresentation(DebugValueRepresentationKind.Normal);
+                var repr = res.GetRepresentation();
 
                 repr.Deparse.Should().Be(deparse);
                 repr.Str.Should().Be(str);
