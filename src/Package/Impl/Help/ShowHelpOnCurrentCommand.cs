@@ -6,7 +6,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
@@ -27,44 +29,44 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// command target - it never calls IOlecommandTarget::QueryStatus
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
-    internal sealed class ShowHelpOnCurrentCommand : PackageCommand {
+    internal sealed class ShowHelpOnCurrentCommand : ViewCommand {
         private const int MaxHelpItemLength = 128;
         private readonly IRInteractiveWorkflow _workflow;
-        private readonly IActiveWpfTextViewTracker _textViewTracker;
 
-        public ShowHelpOnCurrentCommand(IRInteractiveWorkflow workflow, IActiveWpfTextViewTracker textViewTracker) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) {
+        public ShowHelpOnCurrentCommand(ITextView textView, IRInteractiveWorkflow workflow) :
+            base(textView, new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent), needCheckout: false) {
             _workflow = workflow;
-            _textViewTracker = textViewTracker;
         }
 
-        protected override void SetStatus() {
-            string item = GetItemUnderCaret();
+        public override CommandStatus Status(Guid group, int id) {
+            Span span;
+            var item = TextView.GetIdentifierUnderCaret(out span);
             if (!string.IsNullOrEmpty(item)) {
-                Enabled = true;
-                Text = string.Format(CultureInfo.InvariantCulture, Resources.OpenFunctionHelp, item);
-            } else {
-                Enabled = false;
+                //Text = string.Format(CultureInfo.InvariantCulture, Resources.OpenFunctionHelp, item);
+                return CommandStatus.SupportedAndEnabled;
             }
+            return CommandStatus.Supported;
         }
 
-        protected override void Handle() {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             try {
                 if (!_workflow.RSession.IsHostRunning) {
-                    return;
+                    return CommandResult.NotSupported;
                 }
 
                 // Fetch identifier under the cursor
-                string item = GetItemUnderCaret();
+                Span span;
+                var item = TextView.GetIdentifierUnderCaret(out span);
                 if (item == null || item.Length >= MaxHelpItemLength) {
-                    return;
+                    return CommandResult.NotSupported;
                 }
 
                 // First check if expression can be evaluated. If result is non-empty
                 // then R knows about the item and '?item' interaction will succed.
                 // If response is empty then we'll try '??item' instead.
                 string prefix = "?";
-                ShowHelpOnCurrentAsync(prefix, item).DoNotWait();
+                item = AddQuotes(item);
+                ShowHelpOnCurrentAsync(prefix, "'" + item + "'").DoNotWait();
             } catch (Exception ex) {
                 Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
                 // Catch everything so exceptions don't leave the async void method
@@ -72,6 +74,19 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     throw;
                 }
             }
+            return CommandResult.Executed;
+        }
+
+        private static string AddQuotes(string s) {
+            if (s.Length > 0) {
+                if (s[0] != '\'') {
+                    s = "'" + s;
+                }
+                if (s[s.Length - 1] != '\'') {
+                    s = s + "'";
+                }
+            }
+            return s;
         }
 
         private async Task ShowHelpOnCurrentAsync(string prefix, string item) {
@@ -113,27 +128,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
                 break;
             }
-        }
-
-        private string GetItemUnderCaret() {
-            ITextView textView = GetActiveView();
-            if (textView != null) {
-                Span span;
-                return textView.GetIdentifierUnderCaret(out span);
-             }
-            return string.Empty;
-        }
-
-        private ITextView GetActiveView() {
-            ITextView textView = _workflow.ActiveWindow?.InteractiveWindow.TextView;
-            if (textView != null && textView.HasAggregateFocus) {
-                return textView;
-            }
-            textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-            if (textView != null) {
-                return textView;
-            }
-            return null;
         }
     }
 }

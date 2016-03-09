@@ -77,7 +77,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker),
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands

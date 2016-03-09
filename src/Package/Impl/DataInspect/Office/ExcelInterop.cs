@@ -81,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private static void FetchChunk(string expression, int start, int chunkSize, ExcelData xlData, int totalRows, int totalCols) {
             IGridData<string> data =
                 GridDataSource.GetGridDataAsync(expression,
-                                new GridRange(new Range(start, chunkSize),
+                                new GridRange(new Range(start, Math.Min(chunkSize, totalRows - start)),
                                 new Range(0, totalCols))).Result;
 
             if (data != null) {
