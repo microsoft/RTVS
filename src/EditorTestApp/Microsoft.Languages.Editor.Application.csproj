@@ -13,7 +13,7 @@
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Microsoft.Languages.Editor.Application\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
