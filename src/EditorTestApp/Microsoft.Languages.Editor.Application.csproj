@@ -30,7 +30,6 @@
     <Compile Include="Core\DefaultTextViewRoleSet.cs" />
     <Compile Include="Core\TextDataModel.cs" />
     <Compile Include="Core\TextViewRoleSet.cs" />
-    <Compile Include="Core\WaitIndicator.cs" />
     <Compile Include="Host\EditorInstanceFactory.cs" />
     <Compile Include="Packages\TextPackage.cs" />
     <Compile Include="Packages\RPackage.cs" />
