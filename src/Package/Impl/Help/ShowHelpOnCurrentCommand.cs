@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 // then R knows about the item and '?item' interaction will succed.
                 // If response is empty then we'll try '??item' instead.
                 string prefix = "?";
-                item = SurroundWithBackticks(item);
+                item = item.SurroundWithBackticks();
                 ShowHelpOnCurrentAsync(prefix, item).DoNotWait();
             } catch (Exception ex) {
                 Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
@@ -120,17 +120,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
-        private static string SurroundWithBackticks(string s) {
-            if (s.Length > 0) {
-                if (s[0] != '`') {
-                    s = "`" + s;
-                }
-                if (s[s.Length - 1] != '`') {
-                    s = s + "`";
-                }
-            }
-            return s;
-        }
         private string GetItemUnderCaret() {
             ITextView textView = GetActiveView();
             if (textView != null) {
