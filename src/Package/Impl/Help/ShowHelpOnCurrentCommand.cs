@@ -12,6 +12,8 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
@@ -32,8 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
+        private IActiveRInteractiveWindowTracker _activeReplTracker;
         public ShowHelpOnCurrentCommand(IRInteractiveWorkflow workflow, IActiveWpfTextViewTracker textViewTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) {
+            _activeReplTracker = VsAppShell.Current.ExportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
             _workflow = workflow;
             _textViewTracker = textViewTracker;
         }
@@ -120,20 +124,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (textView != null) {
                 Span span;
                 return textView.GetIdentifierUnderCaret(out span);
-             }
+            }
             return string.Empty;
         }
 
         private ITextView GetActiveView() {
-            ITextView textView = _workflow.ActiveWindow?.InteractiveWindow.TextView;
-            if (textView != null && textView.HasAggregateFocus) {
-                return textView;
+            var activeReplWindow = _activeReplTracker.LastActiveWindow;
+            if (activeReplWindow != null && _activeReplTracker.IsActive) {
+                return activeReplWindow.InteractiveWindow.TextView;
             }
-            textView = _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-            if (textView != null) {
-                return textView;
-            }
-            return null;
+            return _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
         }
     }
 }
