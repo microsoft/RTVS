@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
@@ -32,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var plotHistoryProvider = exportProvider.GetExportedValue<IPlotHistoryProvider>();
             var plotHistory = plotHistoryProvider.GetPlotHistory(interactiveWorkflow.RSession);
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
+            var replTracker = exportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
             var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
 
             return new List<MenuCommand> {
@@ -77,7 +79,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowRInteractiveWindowsCommand(interactiveWorkflowProvider, interactiveWorkflowComponentContainerFactory),
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
-                new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker),
+                new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new ShowHistoryWindowCommand(),
 
                 // Plot commands

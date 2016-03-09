@@ -8,13 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -35,9 +33,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
         private IActiveRInteractiveWindowTracker _activeReplTracker;
-        public ShowHelpOnCurrentCommand(IRInteractiveWorkflow workflow, IActiveWpfTextViewTracker textViewTracker) :
+        public ShowHelpOnCurrentCommand(IRInteractiveWorkflow workflow, IActiveWpfTextViewTracker textViewTracker, IActiveRInteractiveWindowTracker activeReplTracker) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpOnCurrent) {
-            _activeReplTracker = VsAppShell.Current.ExportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
+            _activeReplTracker = activeReplTracker;
             _workflow = workflow;
             _textViewTracker = textViewTracker;
         }
@@ -68,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 // then R knows about the item and '?item' interaction will succed.
                 // If response is empty then we'll try '??item' instead.
                 string prefix = "?";
-                item = item.SurroundWithBackticks();
+                item = item.ToRName();
                 ShowHelpOnCurrentAsync(prefix, item).DoNotWait();
             } catch (Exception ex) {
                 Debug.Assert(false, string.Format(CultureInfo.InvariantCulture, "Help on current item failed. Exception: {0}", ex.Message));
