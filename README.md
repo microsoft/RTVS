@@ -21,7 +21,7 @@
 
 ## Building Setup
 
-1. If you are _not_ planning to build burn bundle, skip to step 5.
+1. If you are _not_ planning to build the Burn bundle, skip to step 5.
 1. Install [WiX Toolset 3.7](https://wix.codeplex.com/releases/view/99514) - note that it must be this exact version, and _not_ any later version.
 1. Copy `C:\Program Files (x86)\WiX Toolset v3.7` somewhere or simply rename the folder. For example, copy to `C:\WiX.3.7`.
 1. Uninstall WiX 3.7.
