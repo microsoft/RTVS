@@ -132,15 +132,13 @@
                         <Directory Id="SnippetsGraphicsFolder" Name="graphics" />
                         <Directory Id="SnippetsOperatorsFolder" Name="operators" />
                         <Directory Id="SnippetsRodbcFolder" Name="rodbc" />
-                        <Directory Id="SnippetsMrsFolder" Name="mrs">
-                          <Directory Id="SnippetsMrsAnalysisFolder" Name="analysis" />
-                          <Directory Id="SnippetsMrsChunkingFolder" Name="chunking" />
-                          <Directory Id="SnippetsMrsComputeContextFolder" Name="computeContext" />
-                          <Directory Id="SnippetsMrsDataFolder" Name="data" />
-                          <Directory Id="SnippetsMrsDistributedFolder" Name="distributed" />
-                          <Directory Id="SnippetsMrsGraphicsFolder" Name="graphics" />
-                          <Directory Id="SnippetsMrsTransformsFolder" Name="transforms" />
-                        </Directory>
+                        <Directory Id="SnippetsMrsAnalysisFolder" Name="mrs-analysis" />
+                        <Directory Id="SnippetsMrsChunkingFolder" Name="mrs-chunking" />
+                        <Directory Id="SnippetsMrsComputeContextFolder" Name="mrs-computeContext" />
+                        <Directory Id="SnippetsMrsDataFolder" Name="mrs-data" />
+                        <Directory Id="SnippetsMrsDistributedFolder" Name="mrs-distributed" />
+                        <Directory Id="SnippetsMrsGraphicsFolder" Name="mrs-graphics" />
+                        <Directory Id="SnippetsMrsTransformsFolder" Name="mrs-transforms" />
                       </Directory>
                     </Directory>
 
