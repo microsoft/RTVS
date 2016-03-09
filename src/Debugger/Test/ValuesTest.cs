@@ -112,6 +112,7 @@ eval(substitute(f(P, x), list(P = x)))
         [InlineData(@"'abc'", @"""abc""", @"""abc""", "abc")]
         [InlineData(@"'\'\""\n\r\t\b\a\f\v\\\001'", @"""'\""\n\r\t\b\a\f\v\\\001""", @"""'\""\n\r\t\b\a\f\v\\\001""", "'\"\n\r\t\b\a\f\v\\\x01")]
         //[InlineData(@"'\u2260'", @"""≠""", @"""≠""", "≠")]
+        [InlineData(@"'‘’“”'", @"""‘’“”""", @"""‘’“”""", "‘’“”")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
             using (var debugSession = new DebugSession(_session)) {
                 var res = (await debugSession.EvaluateAsync(expr)).As<DebugValueEvaluationResult>();
