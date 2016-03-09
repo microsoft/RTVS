@@ -36,7 +36,3 @@ If you **already** have VS2015 with Update 1 installed and R installed, you can 
 
 1. Install [Wix Tools 3.10](https://wix.codeplex.com/releases/view/617257).
 1. Build `Setup` project.
-1. Delete the `obj` folder.
-1. Build `RHostSetup` project.  
-   (This is necessary because the WiX toolset caches certain information in the `obj` folder, and is unable to correctly
-   build more than one MSI project in the solution at once.

@@ -19,7 +19,6 @@
     <Time Condition="'$(Time)' == ''">$([System.DateTime]::Now.ToString("HHmm"))</Time>
 
     <Solution Condition="'$(Solution)' == ''">$(SourceDirectory)\R.sln</Solution>
-    <SetupRHost Condition="'$(SetupRHost)' == ''">$(SourceDirectory)SetupRHost\SetupRHost.wixproj</SetupRHost>
     <Setup Condition="'$(Setup)' == ''">$(SourceDirectory)Setup\Setup.wixproj</Setup>
     <SetupBundle Condition="'$(SetupBundle)' == ''">$(SourceDirectory)SetupBundle\SetupBundle.wixproj</SetupBundle>
    
@@ -44,7 +43,6 @@
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Clean" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
-    <MSBuild Targets="Clean" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
     <MSBuild Targets="Clean" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <MSBuild Targets="Clean" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
   </Target>
@@ -53,7 +51,6 @@
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
-    <MSBuild Targets="Build" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
     <MSBuild Targets="Build" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <CallTarget Targets="RenameRHostMSI" />
     <MSBuild Targets="Build" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
@@ -64,7 +61,6 @@
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
-    <MSBuild Targets="Rebuild" Projects="$(SetupRHost)" Properties="$(SetupProperties)" />
     <MSBuild Targets="Rebuild" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <CallTarget Targets="RenameRHostMSI" />
     <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
