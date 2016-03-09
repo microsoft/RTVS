@@ -157,17 +157,6 @@ namespace Microsoft.R.Debugger {
             Deparse = repr.Value<string>("deparse");
             ToString = repr.Value<string>("toString");
             Str = repr.Value<string>("str");
-            if (kind == DebugValueRepresentationKind.Normal) {
-                if (!string.IsNullOrEmpty(Deparse)) {
-                    Deparse = Deparse.ToUnicodeQuotes();
-                }
-                if (!string.IsNullOrEmpty(ToString)) {
-                    ToString = ToString.ToUnicodeQuotes();
-                }
-                if (!string.IsNullOrEmpty(Str)) {
-                    Str = Str.ToUnicodeQuotes();
-                }
-            }
         }
     }
 
@@ -253,7 +242,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public DebugValueEvaluationResultRepresentation GetRepresentation(DebugValueRepresentationKind kind) {
+        public DebugValueEvaluationResultRepresentation GetRepresentation(DebugValueRepresentationKind kind = DebugValueRepresentationKind.Normal) {
             return new DebugValueEvaluationResultRepresentation(_reprObj, kind);
         }
 
@@ -298,7 +287,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {GetRepresentation(DebugValueRepresentationKind.Raw).Deparse}");
+            return Invariant($"VALUE: {TypeName} {GetRepresentation().Deparse}");
         }
     }
 

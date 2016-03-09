@@ -69,6 +69,7 @@
     <Compile Include="Match.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="DebugReplTest.cs" />
+    <Compile Include="JsonTest.cs" />
     <Compile Include="ValuesTest.cs" />
     <Compile Include="SteppingTest.cs" />
     <Compile Include="BreakpointsTest.cs" />
