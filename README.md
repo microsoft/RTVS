@@ -7,15 +7,11 @@
 1. You must have C++, Web Tools and VS Extensibility components (aka VS SDK) installed.
 1. You may also choose to install GitHub extensions for Visual Studio (check the option in the VS 2015 setup).
 1. Install R 3.2.2 or later (either from [CRAN](https://cran.r-project.org/bin/windows/) or [Microsoft R Open](https://mran.revolutionanalytics.com/open/)).
-1. Clone repository:
-```sh
-git clone https://github.com/Microsoft/RTVS.git
-```
+1. Clone repository:  
+`git clone https://github.com/Microsoft/RTVS.git`  
 (or use your favorite Git GUI tool.)
-1. Update [R-Host](github.com/Microsoft/R-Host) submodule: 
-```sh
-git submodule update --init --recursive
-```
+1. Update [R-Host](https://github.com/Microsoft/R-Host) submodule:  
+`git submodule update --init --recursive`
 1. Open `R.sln` solution file in Visual Studio.
 1. Set `Microsoft.VisualStudio.R.Package` as a startup project.
 1. Unload `SetupBundle` project since you may not be able to build it.
@@ -40,7 +36,5 @@ git submodule update --init --recursive
 1. Burn bundle project has to be built from command line using WiX 3.7.
 1. Open VS 2015 developer command line (Start -> All Apps -> Visual Studio 2015 -> Developer Command Prompt).
 1. Go to `src\SetupBundle`.
-1. Run (substitute for the actual 3.7 location):
-```sh
-   msbuild SetupBundle.wixproj /p:Configuration=Debug /p:WIX="C:\WiX.3.7"
-```
+1. Run (substitute for the actual 3.7 location):  
+`msbuild SetupBundle.wixproj /p:Configuration=Debug /p:WIX="C:\WiX.3.7"`
