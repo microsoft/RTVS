@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
@@ -106,8 +107,11 @@ namespace Microsoft.R.Editor.SmartIndent {
 
                 IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
                 if (scopeStatement == null) {
-                    // Line start position won't find function definition in x <- function(a) { ...
+                    // Line start position works for typical scope-defining statements like if() or while()
+                    // but it won't find function definition in x <- function(a) { ...
                     // Try end of the line instead
+                    nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                    scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
                 }
 
                 if (scopeStatement != null) {
