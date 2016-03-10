@@ -24,7 +24,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [Category.R.Formatting]
     public class FormatCommandTest {
         [Test]
-        public void FormatDocument() {
+        public void FormatDocument01() {
             string content = "if(x<1){x<-2}";
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ITextView textView = new TextViewMock(textBuffer);
@@ -38,7 +38,25 @@ namespace Microsoft.R.Editor.Test.Formatting {
             }
 
             string actual = textBuffer.CurrentSnapshot.GetText();
-            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
+            actual.Should().Be("if (x < 1) {\n    x <- 2\n}");
+        }
+
+        [Test]
+        public void FormatDocument02() {
+            string content = "\r\nif(x<1){x<-2}";
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            ITextView textView = new TextViewMock(textBuffer);
+
+            using (var command = new FormatDocumentCommand(textView, textBuffer)) {
+                var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
+                status.Should().Be(CommandStatus.SupportedAndEnabled);
+
+                object o = new object();
+                command.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT, null, ref o);
+            }
+
+            string actual = textBuffer.CurrentSnapshot.GetText();
+            actual.Should().Be("\r\nif (x < 1) {\r\n    x <- 2\r\n}");
         }
 
         [Test]

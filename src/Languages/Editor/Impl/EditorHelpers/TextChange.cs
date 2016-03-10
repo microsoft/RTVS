@@ -185,6 +185,10 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
                         newChunkLength += 1;
                         oldChunkLength += 1;
                     }
+                    else if ((newText[newChunkLastIndex] == '\n') && (newChunkLastIndex + 1 < newText.Length) && (newText[newChunkLastIndex + 1] == '\r')) {
+                        newChunkLength += 1;
+                        oldChunkLength += 1;
+                    }
                 }
 
                 string newChunkText = newText.Substring(newChunkStart, newChunkLength);

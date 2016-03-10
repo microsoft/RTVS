@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Formatting {
@@ -152,55 +153,6 @@ namespace Microsoft.Languages.Core.Formatting {
                 return _indentStrings[IndentLevel];
             }
         }
-
-        ///// <summary>
-        ///// Converts a string of spaces and tabs to number of spaces based on the tabsize.
-        ///// It assumes this string starts at the absolute beginning of the line to convert
-        ///// the tabs correctly
-        ///// </summary>
-        ///// <param name="indentString"></param>
-        ///// <param name="tabSize"></param>
-        ///// <returns></returns>
-        //public static int ConvertStringToNumberOfSpaces(string indentString, int tabSize, bool fromStartOfLine)
-        //{
-        //    if (String.IsNullOrEmpty(indentString))
-        //    {
-        //        return 0;
-        //    }
-
-        //    int count = 0;
-
-        //    for (int i = 0; i < indentString.Length; i++)
-        //    {
-        //        char currentChar = indentString[i];
-
-        //        if (currentChar == '\t')
-        //        {
-        //            int tabAdder = tabSize;
-
-        //            if (fromStartOfLine)
-        //            {
-        //                tabAdder -= (count % tabSize);
-        //            }
-
-        //            count += tabAdder;
-        //        }
-        //        else if (currentChar == '\r' || currentChar == '\n')
-        //        {
-        //            Debug.Fail("We don't expect any new lines in the indent string");
-        //        }
-        //        else if (Char.IsWhiteSpace(currentChar))
-        //        {
-        //            count++;
-        //        }
-        //        else
-        //        {
-        //            Debug.Fail("We don't expect any non whitespace or tabs in the indent string");
-        //        }
-        //    }
-
-        //    return count;
-        //}
 
         /// <summary>
         /// Returns a conversion of tabs or space to space count.

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {

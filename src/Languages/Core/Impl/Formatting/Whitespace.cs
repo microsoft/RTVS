@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Formatting {
@@ -50,17 +51,15 @@ namespace Microsoft.Languages.Core.Formatting {
                         return count;
 
                     if (ch == '\r') {
+                        count++;
                         if (i > 0 && textProvider[i - 1] == '\n') {
                             i--;
                         }
-
-                        count++;
                     } else if (ch == '\n') {
+                        count++;
                         if (i > 0 && textProvider[i - 1] == '\r') {
                             i--;
                         }
-
-                        count++;
                     }
                 }
             }
@@ -81,20 +80,17 @@ namespace Microsoft.Languages.Core.Formatting {
                     return count;
 
                 if (ch == '\r') {
+                    count++;
                     if (i < textProvider.Length - 1 && textProvider[i + 1] == '\n') {
                         i++;
                     }
-
-                    count++;
                 } else if (ch == '\n') {
+                    count++;
                     if (i < textProvider.Length - 1 && textProvider[i + 1] == '\r') {
                         i++;
                     }
-
-                    count++;
                 }
             }
-
             return count;
         }
 

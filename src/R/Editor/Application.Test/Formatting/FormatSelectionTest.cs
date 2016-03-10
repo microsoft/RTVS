@@ -6,7 +6,6 @@ using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -17,21 +16,10 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Test]
         [Category.Interactive]
         public void R_FormatSelection01() {
-            string content =
-@"
-while (TRUE) {
-        if(x>1) {
-   }
-}";
-
-            string expected =
-@"
-while (TRUE) {
-    if (x > 1) {
-    }
-}";
+            string content = "\nwhile (TRUE) {\n        if(x>1) {\n   }\n}";
+            string expected = "\nwhile (TRUE) {\n    if (x > 1) {\n    }\n}";
             using (var script = new TestScript(content, RContentTypeDefinition.ContentType)) {
-                script.Select(20, 21);
+                script.Select(20, 20);
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATSELECTION, 50);
                 string actual = script.EditorText;
 

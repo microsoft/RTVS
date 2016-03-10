@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
+    using Common.Core;
     using Core.AST.Definitions;
     using Core.Parser;
     using Core.Tokens;

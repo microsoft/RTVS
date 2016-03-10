@@ -104,5 +104,24 @@ namespace Microsoft.Common.Core {
             }
             return result;
         }
+
+        public static string GetLineBreakSequence(this string s) {
+            int i = s.IndexOfAny(CharExtensions.LineBreakChars);
+            if (i >= 0) {
+                if (s[i] == '\n') {
+                    if (i + 1 < s.Length && s[i + 1] == '\r') {
+                        return "\n\r";
+                    }
+                    return "\n";
+                }
+                if (s[i] == '\r') {
+                    if (i + 1 < s.Length && s[i + 1] == '\n') {
+                        return "\r\n";
+                    }
+                    return "\r";
+                }
+            }
+            return "\n"; // default
+        }
     }
 }

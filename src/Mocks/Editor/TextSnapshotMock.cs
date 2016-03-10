@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Languages.Core.Text;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.Editor.Mocks
 {

@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using Microsoft.Common.Core;
 
 namespace Microsoft.Languages.Core.Text {
     /// <summary>
@@ -65,8 +65,9 @@ namespace Microsoft.Languages.Core.Text {
                 if (ch.IsLineBreak()) {
                     lines.Add(text.Substring(lineStart, i - lineStart));
 
-                    // Skip '\n' but only in "\r\n" sequence. 
                     if (ch == '\r' && i + 1 < text.Length && text[i + 1] == '\n') {
+                        i++;
+                    } else if (ch == '\n' && i + 1 < text.Length && text[i + 1] == '\r') {
                         i++;
                     }
 
@@ -75,7 +76,6 @@ namespace Microsoft.Languages.Core.Text {
             }
 
             lines.Add(text.Substring(lineStart, text.Length - lineStart));
-
             return lines;
         }
     }

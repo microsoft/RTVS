@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
@@ -128,19 +129,24 @@ namespace Microsoft.R.Editor.Formatting {
             var sb = new StringBuilder();
             IList<string> lines = TextHelper.SplitTextIntoLines(formattedText);
 
+            string lineBreak = textBuffer.CurrentSnapshot.GetLineFromLineNumber(0).GetLineBreakText();
+            if(string.IsNullOrEmpty(lineBreak)) {
+                lineBreak = "\n";
+            }
+
             for (int i = 0; i < lines.Count; i++) {
                 string lineText = lines[i];
 
                 if (i == 0 && lineText.Trim() == "{") {
                     if (options.BracesOnNewLine && !LineBreakBeforePosition(textBuffer, rangeStartPosition)) {
-                        sb.Append("\r\n");
+                        sb.Append(lineBreak);
                     }
                     if (scopeStatementPosition < 0 || options.BracesOnNewLine) {
                         sb.Append(indentString);
                     }
                     sb.Append('{');
                     if (i < lines.Count - 1) {
-                        sb.Append("\r\n");
+                        sb.Append(lineBreak);
                     }
                     continue;
                 }
@@ -158,7 +164,7 @@ namespace Microsoft.R.Editor.Formatting {
 
                 sb.Append(lineText);
                 if (i < lines.Count - 1) {
-                    sb.Append("\r\n");
+                    sb.Append(lineBreak);
                 }
             }
 

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.VisualStudio.R.Package.Shell;
 

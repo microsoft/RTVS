@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
@@ -44,6 +45,8 @@ namespace Microsoft.R.Core.Formatting {
         /// Format string containing R code
         /// </summary>
         public string Format(string text) {
+            _tb.LineBreak = GetLineBreakSequence(text);
+
             // Tokenize incoming text
             Tokenize(text);
 
@@ -709,6 +712,25 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
             return true;
+        }
+
+        private static string GetLineBreakSequence(string s) {
+            int i = s.IndexOfAny(CharExtensions.LineBreakChars);
+            if (i >= 0) {
+                if (s[i] == '\n') {
+                    if (i + 1 < s.Length && s[i + 1] == '\r') {
+                        return "\n\r";
+                    }
+                    return "\n";
+                }
+                if (s[i] == '\r') {
+                    if (i + 1 < s.Length && s[i + 1] == '\n') {
+                        return "\r\n";
+                    }
+                    return "\r";
+                }
+            }
+            return "\n"; // default
         }
     }
 }
