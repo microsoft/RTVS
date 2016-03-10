@@ -5,9 +5,8 @@ using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
@@ -90,6 +89,7 @@ namespace Microsoft.R.Editor.SmartIndent {
 
         public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
+            ITextSnapshotLine prevLine = null;
 
             if (ast == null) {
                 IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
@@ -100,8 +100,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             if (line.LineNumber > 0) {
-                ITextSnapshotLine prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
-
+                prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
                 string prevLineText = prevLine.GetText();
                 int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
@@ -119,7 +118,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                             // Indent line one level deeper that the statement
                             return GetBlockIndent(line) + REditorSettings.IndentSize;
                         }
-                        
+
                         // Line is not part of the scope, hence regular indent
                         return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
                     }
@@ -143,13 +142,26 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             // See if we are in function arguments and indent at the function level
-            var fc = ast.GetNodeOfTypeFromPosition<FunctionCall>(line.Start);
-            if(fc != null && fc.Arguments != null && fc.OpenBrace != null && line.Start >= fc.OpenBrace.End) {
-                return InnerIndentSizeFromNode(textBuffer, fc, REditorSettings.FormatOptions);
+            var fc = ast.GetNodeOfTypeFromPosition<IFunction>(line.Start);
+            if (fc != null && fc.Arguments != null && fc.OpenBrace != null && line.Start >= fc.OpenBrace.End) {
+                return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
             }
 
-            // If nothing is found, default to block indent
-            return GetBlockIndent(line);
+            // We can be at the end of the incomplete function call line just pressed Enter after func(a,
+            // Let's see if this is the case
+            if (prevLine != null && prevLine.Length > 0) {
+                fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
+                if (fc != null && fc.Arguments != null && fc.OpenBrace != null && fc.CloseBrace == null && line.Start >= fc.OpenBrace.End) {
+                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                }
+            }
+
+            return 0;
+        }
+
+        private static int GetFirstArgumentIndent(ITextSnapshot snapshot, IFunction fc) {
+            var line = snapshot.GetLineFromPosition(fc.OpenBrace.End);
+            return fc.OpenBrace.End - line.Start;
         }
 
         public static int InnerIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {

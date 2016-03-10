@@ -221,7 +221,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("zzzz(a=1,{ENTER}");
                 script.DoIdle(300);
                 script.Type("b=2");
-                string expected = "zzzz(a = 1,\r\n    b=2)";
+                string expected = "zzzz(a = 1,\r\n     b=2)";
 
                 string actual = script.EditorText;
                 actual.Should().Be(expected);
@@ -260,20 +260,18 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         [Category.Interactive]
         public void R_AutoFormatFuncionDefinition01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                REditorSettings.FormatOptions.BracesOnNewLine = true;
-                string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
+                string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07,{ENTER}yname = NULL){ENTER}{{ENTER}abind(a, )";
 
                 script.Type(text);
                 script.DoIdle(300);
 
                 string actual = script.EditorText;
                 string expected =
-@"library(abind)
-x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-          yname = NULL) 
-{
-    abind(a, )
-}";
+"library(abind)\r\n" +
+"x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,\r\n" +
+"              yname = NULL) {\r\n" +
+"    abind(a, )\r\n" +
+"}";
                 actual.Should().Be(expected);
             }
         }
