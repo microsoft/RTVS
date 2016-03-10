@@ -105,6 +105,11 @@ namespace Microsoft.R.Editor.SmartIndent {
                 int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
                 IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+                if (scopeStatement == null) {
+                    // Line start position won't find function definition in x <- function(a) { ...
+                    // Try end of the line instead
+                }
+
                 if (scopeStatement != null) {
                     if (scopeStatement.Scope == null) {
                         // No scope of any kind, use block indent
