@@ -4,9 +4,9 @@ THANK YOU for checking out this early version of R Tools for Visual Studio (RTVS
 
 ### Installation
 
-If you **already** have VS2015 with Update 1 installed and R installed, you can download RTVS from the link below - but we highly recommend following the Installation guide:
+If you **already** have **VS2015 with Update 1** installed **and a 64-bit R interpreter** installed, you can download RTVS from the link below - but we highly recommend following the Installation guide:
 
-* [Installation guide](http://microsoft.github.io/RTVS-docs/installation.html):
+* [Installation guide](http://microsoft.github.io/RTVS-docs/installation.html)
 * [Download and install R Tools for Visual Studio](https://aka.ms/rtvs-current)
 
 ### Documentation
@@ -27,7 +27,7 @@ If you need to reach the team, please use rtvsuserfeedback@microsoft.com.
 
 ### Builds and PR's
 
-If you'd like to build RTVS yourself and send a PR (highly appreciated!):
+If you'd like to build RTVS yourself and send a PR (highly appreciated!)
 
 * [Build instructions](https://github.com/Microsoft/RTVS/blob/master/Build.md)
 
