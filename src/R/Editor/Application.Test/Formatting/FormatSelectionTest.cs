@@ -19,7 +19,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             string content = "\nwhile (TRUE) {\n        if(x>1) {\n   }\n}";
             string expected = "\nwhile (TRUE) {\n    if (x > 1) {\n    }\n}";
             using (var script = new TestScript(content, RContentTypeDefinition.ContentType)) {
-                script.Select(20, 20);
+                script.Select(20, 18);
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATSELECTION, 50);
                 string actual = script.EditorText;
 

@@ -86,8 +86,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             try {
                 // Now format the scope
-                changed = RangeFormatter.FormatRangeExact(textView, textBuffer, scope, ast,
-                                           REditorSettings.FormatOptions, baseIndentPosition, indentCaret);
+                changed = RangeFormatter.FormatRangeExact(textView, textBuffer, scope, ast, REditorSettings.FormatOptions, baseIndentPosition);
                 if (indentCaret) {
                     IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
                     changed = true;
@@ -124,6 +123,26 @@ namespace Microsoft.R.Editor.Formatting {
             } finally {
                 undoAction.Close(!changed);
             }
+        }
+
+        public static IAstNode GetIndentDefiningNode(AstRoot ast, int position) {
+            IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+            // Scope indentation is defined by its parent statement.
+            IAstNodeWithScope parentStatement = scope.Parent as IAstNodeWithScope;
+            if (parentStatement != null && parentStatement.Scope == scope) {
+                return parentStatement;
+            }
+            return scope;
+        }
+
+        public static int GetBaseIndentFromNode(ITextBuffer textBuffer, AstRoot ast, int position) {
+            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+            IAstNode node = GetIndentDefiningNode(ast, position);
+            if (node != null) {
+                ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(node.Start);
+                return SmartIndenter.GetSmartIndent(baseLine, ast);
+            }
+            return 0;
         }
 
         private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {

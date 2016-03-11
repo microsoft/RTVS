@@ -128,8 +128,12 @@ namespace Microsoft.R.Editor.SmartIndent {
             // Examples: 'call(a,\n<Enter>' or 'x <- function(a,<Enter>'
             if (prevLine.Length > 0) {
                 var fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
-                if (fc != null && fc.Arguments != null && fc.OpenBrace != null && fc.CloseBrace == null && line.Start >= fc.OpenBrace.End) {
-                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                if (fc != null && fc.Arguments != null && fc.OpenBrace != null) {
+                    // We only want to indent here if position is in arguments
+                    // and not in the function scope.
+                    if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
+                        return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                    }
                 }
             }
 
@@ -144,10 +148,10 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             if (scopeStatement != null) {
                 if (scopeStatement.Scope == null) {
-                    // This is not normal condition as there is always a scope
-                    // if node implements IAstNodeWithScope. It has to be simple 
-                    // scope then. For safety, indent one level deeper.
-                    return GetBlockIndent(line) + REditorSettings.IndentSize;
+                    // This is not normal condition as scope statement always has 
+                    // some sort of a scope even if there are no braces
+                    Debug.Assert(false, "Scope statement without the scope");
+                    return GetBlockIndent(line);
                 }
 
                 if (scopeStatement.Scope is SimpleScope) {
@@ -161,8 +165,9 @@ namespace Microsoft.R.Editor.SmartIndent {
                     return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
                 }
 
-                // Check if line is the last line in scope and if so, it should be indented 
-                // at the outer indent such as when it is the closing }
+                // Check if line is the last line in a real scope (i.e. scope with { }) and only consists
+                // of the closing }, it should be indented at the outer indent so closing scope aligns with
+                // the beginning of the statement.
                 if (scopeStatement.Scope.CloseCurlyBrace != null) {
                     int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
                     if (endOfScopeLine == line.LineNumber) {
@@ -190,6 +195,19 @@ namespace Microsoft.R.Editor.SmartIndent {
 
         public static int InnerIndentSizeFromNode(ITextBuffer textBuffer, IAstNode node, RFormatOptions options) {
             if (node != null) {
+                // Scope indentation is based on the scope defining node i.e.
+                // x <- function(a) {
+                //      |
+                // }
+                // caret indent is based on the function definition and not
+                // on the position of the opening {
+                var scope = node as IScope;
+                if(scope != null) {
+                    var scopeDefiningNode = node.Parent as IAstNodeWithScope;
+                    if(scopeDefiningNode != null && scopeDefiningNode.Scope == scope) {
+                        node = scopeDefiningNode;
+                    }
+                }
                 ITextSnapshotLine startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.Start);
                 return InnerIndentSizeFromLine(startLine, options);
             }

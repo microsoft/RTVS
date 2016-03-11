@@ -216,14 +216,44 @@ foo(cache=TRUE)
         }
 
         [Test]
-        public void FormatSimpleScope() {
+        public void FormatScope01() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("{}", out ast);
 
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, 1), ast, new RFormatOptions());
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-
             actual.Should().Be("{ }");
+        }
+
+        [Test]
+        public void FormatScope02() {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("{\n}", out ast);
+
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, 1), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            actual.Should().Be("{\n}");
+        }
+
+        [Test]
+        public void FormatScope03() {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("{\n if(TRUE) {\n}}", out ast);
+
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(14, 2), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            actual.Should().Be("{\n if(TRUE) {\n }}");
+        }
+
+        [Test]
+        public void FormatScope04() {
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView("{\n    {\n  } }", out ast);
+
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(6, 7), ast, new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+
+            actual.Should().Be("{\n    {\n    }\n}");
         }
 
         [Test]

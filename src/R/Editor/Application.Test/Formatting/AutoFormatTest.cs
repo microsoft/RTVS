@@ -258,11 +258,70 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition01() {
+        public void R_AutoFormatFunctonArguments01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07,{ENTER}yname = NULL){ENTER}{{ENTER}abind(a, )";
+                string text = "x <-function (x,{ENTER}y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x,\r\n" +
+"              y,\r\n" +
+"              wt = NULL)\r\n";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFunctonArguments02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text = "x <-function (x,y,{ENTER}wt= NULL){ENTER}";
+
+                script.Type(text);
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"              wt = NULL)\r\n";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition01() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
+
+                script.Type(text);
+                script.DoIdle(300);
+                script.Type("a");
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"              wt = NULL) {\r\n" +
+"    a\r\n" +
+"}";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text1 = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07,{ENTER}";
+                string text2 = "yname = NULL){{ENTER}abind(a, )";
+
+                script.Type(text1);
+                script.DoIdle(300);
+                script.Type(text2);
                 script.DoIdle(300);
 
                 string actual = script.EditorText;
