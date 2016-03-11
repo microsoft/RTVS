@@ -8,5 +8,5 @@ If you **already** have VS2015 with Update 1 installed and R installed, you can 
 
 ### Docs: [RTVS Documentation](http://microsoft.github.io/RTVS-docs/)
 
-### Build info: [Instructions](RTVS/Build.md)
+### Build: [Build instructions](RTVS/Build.md)
 
