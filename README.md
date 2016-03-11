@@ -31,6 +31,14 @@ Please use the **R Tools / Send Feedback / Send Frown** feature to send us the l
 If you need to reach the team, please use rtvsuserfeedback@microsoft.com.
 
 
+### Support and roadmap
+
+RTVS is created and fully supported by Microsoft (and the community!).  Currently support is via githuband email but we hope to add more channels soon.
+
+We are planning approximately monthly releases (bugs fixes and features) as we march toward 1.0 RTM later this calendar year.
+
+If you'd like to see what features are likely to go in each milestone, you can filter the bug/feature list by that milestone.  If you have a key bug or feature that should be attended to, please thumbs up / comment on it.  
+
 ### Builds and PR's
 
 If you'd like to build RTVS yourself and send a PR (highly appreciated!)
