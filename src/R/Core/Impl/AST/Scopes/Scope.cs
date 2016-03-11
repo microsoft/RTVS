@@ -54,6 +54,17 @@ namespace Microsoft.R.Core.AST.Scopes {
         }
         #endregion
 
+        #region ITextRange
+        public override int End {
+            get {
+                if (CloseCurlyBrace == null && Root != null) {
+                    return Root.TextProvider.Length;
+                }
+                return base.End;
+            }
+        }
+        #endregion
+
         public Scope() :
             this("_Anonymous_") {
         }

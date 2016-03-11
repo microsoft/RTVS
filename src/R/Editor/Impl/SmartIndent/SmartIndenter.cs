@@ -2,12 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
@@ -92,6 +94,11 @@ namespace Microsoft.R.Editor.SmartIndent {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
 
+            if (line.LineNumber == 0) {
+                // Nothing to indent at the first line
+                return 0;
+            }
+
             if (ast == null) {
                 IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
                 if (document == null) {
@@ -100,69 +107,77 @@ namespace Microsoft.R.Editor.SmartIndent {
                 ast = document.EditorTree.AstRoot;
             }
 
-            if (line.LineNumber > 0) {
-                prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
-                string prevLineText = prevLine.GetText();
-                int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+            // The challenge here is to find scope to base the indent on.
+            // The scope may or may not have braces and may or may not be closed. 
+            // Current line is normally empty so we use previous line data assuming 
+            // it is not empty. If previous line is empty, we do not look up 
+            // to the nearest non-empty. This is the same as C# behavior.
+            // So we need to locate nearest node that implements IAstNodeWithScope
+            // or the scope (implemeting IScope) itself is scope is just '{ }'.
 
-                IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
-                if (scopeStatement == null) {
-                    // Line start position works for typical scope-defining statements like if() or while()
-                    // but it won't find function definition in x <- function(a) { ...
-                    // Try end of the line instead
-                    nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
-                    scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
-                }
+            // First try based on the previous line. We will try start of the line
+            // like in 'if(...)' { in order to locate 'if' and then, if nothing is found,
+            // try end of the line as in 'x <- function(...) {'
+            prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
+            string prevLineText = prevLine.GetText();
+            int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
-                if (scopeStatement != null) {
-                    if (scopeStatement.Scope == null) {
-                        // No scope of any kind, use block indent
-                        return GetBlockIndent(line) + REditorSettings.IndentSize;
-                    }
-
-                    if (scopeStatement.Scope is SimpleScope) {
-                        // There is statement with a simple scope above. We need to check 
-                        // if the line that is being formatted is actually part of this scope.
-                        if (line.Start < scopeStatement.Scope.End) {
-                            // Indent line one level deeper that the statement
-                            return GetBlockIndent(line) + REditorSettings.IndentSize;
-                        }
-
-                        // Line is not part of the scope, hence regular indent
-                        return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
-                    }
-
-                    // Check if line is the last line in scope and if so, 
-                    // it should be indented at the outer indent
-                    if (scopeStatement.Scope.CloseCurlyBrace != null) {
-                        int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
-                        if (endOfScopeLine == line.LineNumber) {
-                            return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
-                        }
-                    }
-
-                    return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
-                }
-            }
-
-            IAstNodeWithScope node = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
-            if (node != null && node.Scope != null && node.Scope.OpenCurlyBrace != null) {
-                return InnerIndentSizeFromNode(textBuffer, node, REditorSettings.FormatOptions);
-            }
-
-            // See if we are in function arguments and indent at the function level
-            var fc = ast.GetNodeOfTypeFromPosition<IFunction>(line.Start);
-            if (fc != null && fc.Arguments != null && fc.OpenBrace != null && line.Start >= fc.OpenBrace.End) {
-                return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
-            }
-
-            // We can be at the end of the incomplete function call line just pressed Enter after func(a,
-            // Let's see if this is the case
-            if (prevLine != null && prevLine.Length > 0) {
-                fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
+            // First, let's see if we are in a function argument list and then indent based on 
+            // the opening brace position. This needs to be done before looking for scopes
+            // since function definition is a scope-defining statement.
+            // Examples: 'call(a,\n<Enter>' or 'x <- function(a,<Enter>'
+            if (prevLine.Length > 0) {
+                var fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
                 if (fc != null && fc.Arguments != null && fc.OpenBrace != null && fc.CloseBrace == null && line.Start >= fc.OpenBrace.End) {
                     return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
                 }
+            }
+
+            IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+            if (scopeStatement == null) {
+                // Line start position works for typical scope-defining statements like if() or while()
+                // but it won't find function definition in 'x <- function(a) {'
+                // Try end of the line instead
+                nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+            }
+
+            if (scopeStatement != null) {
+                if (scopeStatement.Scope == null) {
+                    // This is not normal condition as there is always a scope
+                    // if node implements IAstNodeWithScope. It has to be simple 
+                    // scope then. For safety, indent one level deeper.
+                    return GetBlockIndent(line) + REditorSettings.IndentSize;
+                }
+
+                if (scopeStatement.Scope is SimpleScope) {
+                    // There is statement with a simple scope above such as 'if' without { }. 
+                    // We need to check if the line that is being formatted is part of this scope.
+                    if (line.Start < scopeStatement.Scope.End) {
+                        // Indent line one level deeper that the statement
+                        return GetBlockIndent(line) + REditorSettings.IndentSize;
+                    }
+                    // Line is not part of the scope, provide regular indent
+                    return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                }
+
+                // Check if line is the last line in scope and if so, it should be indented 
+                // at the outer indent such as when it is the closing }
+                if (scopeStatement.Scope.CloseCurlyBrace != null) {
+                    int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
+                    if (endOfScopeLine == line.LineNumber) {
+                        return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                    }
+                }
+
+                // We are inside a scope so provide inner indent
+                return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+            }
+
+            // Try locate the scope itself, if any
+            var scope = ast.GetNodeOfTypeFromPosition<IScope>(prevLine.End);
+            if (scope != null && scope.OpenCurlyBrace != null) {
+                return InnerIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
             }
 
             return 0;
