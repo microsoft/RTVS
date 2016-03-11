@@ -72,3 +72,79 @@ grid.dput <- function(obj) {
     json;
 }
 
+getEnvRepr <- function(env, startEnvLevel) {
+  envRepr <- NULL;
+
+  if (startEnvLevel > 4L) {    # if within call or unknown, try to get call frame
+    nframe <- sys.nframe();
+    if (nframe > 0) {
+      for (i in 1:nframe) {
+        frame <- sys.frame(i)
+        if (identical(env, frame)) {
+          envRepr <- list(name = deparse(sys.call(i)[[1]]), level = 5L, frameIndex = i);
+          break;
+        }
+      }
+    }
+  }
+
+  if (is.null(envRepr)) {
+    if (identical(env, baseenv())) {
+      envRepr <- list(name = 'package:base', level = 2L);
+    } else if (identical(env, globalenv())) {
+      envRepr <- list(name = '.GlobalEnv', level = 4L);
+    } else if (identical(env, emptyenv())) {
+      envRepr <- list(name = 'EmptyEnv', level = 1L);
+    } else {
+      envRepr <- list(name = environmentName(env), level = 3L);
+    }
+  }
+  envRepr;
+}
+
+# return list of environment statck walking from the given environment up.
+# R environment level: empty(1) > base(2) > packages(3) > global(4) > calls(5) > unknown(10)
+getEnvironments <- function(env) {
+  if (missing(env)) {
+    curEnv <- sys.frame(-1);
+  } else {
+    curEnv <- env;
+  }
+  envs <- list();
+
+  prevEnvLevel <- 10L;
+
+  while (!identical(curEnv, emptyenv())) {
+    repr <- getEnvRepr(curEnv, prevEnvLevel);
+    if (repr$name != "Autoloads"
+      && repr$name != "rtvs::graphics::ide") {
+      envs[[length(envs) + 1]] <- repr;
+    }
+    prevEnvLevel <- repr$level;
+    if (prevEnvLevel == 5L) {
+      curEnv <- sys.frame(repr$frameIndex - 1);
+    } else {
+      curEnv <- parent.env(curEnv);
+    }
+  }
+  envs;
+}
+
+# return variable's frame index
+# look up starts from startFrameIndex and up
+getFrameIndex <- function(varName, startFrameIndex) {
+  if (missing(startFrameIndex)) {
+    startFrameIndex <- sys.nframe() - 1;
+  }
+  frameIndex <- startFrameIndex;
+  
+  while (frameIndex >= 0) {
+    if (exists(varName, frame = frameIndex, inherit = FALSE)) {
+      return(frameIndex);
+    }
+    frameIndex <- frameIndex - 1;
+  }
+  
+  -1L;
+}
+
