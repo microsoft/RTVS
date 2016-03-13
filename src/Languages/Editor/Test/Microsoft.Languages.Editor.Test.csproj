@@ -101,6 +101,8 @@
     <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
     <Compile Include="Helpers\HelpersTest.cs" />
     <Compile Include="Idle\IdleTaskQueueTest.cs" />
+    <Compile Include="Shell\AssemblyLocations.cs" />
+    <Compile Include="Shell\TestAssemblyResolver.cs" />
     <Compile Include="Shell\TestShellBase.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

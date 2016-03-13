@@ -1,40 +1,64 @@
-# RTVS
-R Tools for Visual Studio.
+# R Tools for Visual Studio
 
-Building instructions
+THANK YOU for checking out this early version of R Tools for Visual Studio (RTVS). We’ve decided to make it available early so that we’ll have more time to address your feedback. As such, there are bugs and missing features, so please beware! This release is meant for evaluation purposes only and not for production use.
 
-1. You must be using Visual Studio 2015 Update 1 or higher.
-1. You must have C++, Web Tools and VS Extensibility components (aka VS SDK) installed.
-1. You may choose to also install GitHub extensions for Visual Studio (check the option in the VS 2015 setup).
-1. Install R 3.2.2 or later (either from CRAN or Microsoft R Open: https://mran.revolutionanalytics.com/open/).
-1. Clone repository: 
-    git clone https://github.com/Microsoft/RTVS.git or use your favorite Git GUI tool.
-1. Update RHost submodule: 
-    git submodule update --init --recursive
-1. Open R.sln file.
-1. Set Microsoft.VisualStudio.R.Package as a startup project.
-1. Unload SetupBundle project since you may not be able to build it.
-1. If you are not planning to build MSI setup, you can unload Setup, SetupRHost and SetupCustomActions.
-1. Build the solution.
-1. F5.
-1. VS experimental instance should start and you should see R Tools menu.
+### Installation
 
-Building Setup
+Do you already have **VS2015 with Update 1** installed **and a 64-bit R interpreter** installed?
 
-1. If you are NOT planning to build burn bundle, skip to step 5.
-1. Install Wix Toolset 3.7 http://wixtoolset.org/releases/.
-1. Copy C:\Program Files (x86)\WiX Toolset v3.7 somewhere or simply rename the folder. For example, copy to C:\WiX.3.7.
-1. Uninstall WiX 3.7.
-1. Install Wix Tools 3.10 (http://wixtoolset.org/releases/).
-1. In order to build RHost setup correctly you need first build Setup, then delete obj folder and build RHostSetup. 
-   This is because unfortunately Wix toolset caches certain information in the obj folder and is unable to correctly
-   build more than one MSI in the solution.
+If you do, then install RTVS:
 
-Building burn bundle
+* [Download and install R Tools for Visual Studio](https://aka.ms/rtvs-current)
 
-1. Burn bundle project has to be built from command line using Wix 3.7.
-1. Open VS 2015 developer command line (Start -> All Apps -> Visual Studio 2015 -> Developer Command Prompt).
-1. Go to src\SetupBundle.
-1. Run (substitute for the actual 3.7 location)
-   msbuild SetupBundle.wixproj /p:Configuration=Debug /p:WIX="C:\WiX.3.7"
+Otherwise please see the:
+
+* [VS, RTVS and R Installation guide](http://microsoft.github.io/RTVS-docs/installation.html)
+
+
+### Documentation
+
+The interim docs are available here:
+
+* [RTVS Documentation](http://microsoft.github.io/RTVS-docs/)
+
+
+### Bugs and feature requests
+
+Please file bugs and feature requests here on github.  If you have a favorite issue/feature, please thumbs up or comment on it.
+
+Please use the **R Tools / Send Feedback / Send Frown** feature to send us the logs please (this feature will start your mail client or Exchange/Outlook, attach %TEMP%/RTVSLogs.zip, ask you to examine the contents, then send it to us).
+
+If you need to reach the team, please use rtvsuserfeedback@microsoft.com.
+
+
+### Support and roadmap
+
+RTVS is created and fully supported by Microsoft (and the community!).  Currently support is via github and email but we hope to add more channels soon.
+
+We are planning approximately monthly releases (bugs fixes and features) as we march toward 1.0 RTM later this calendar year.
+
+If you'd like to see what features are likely to go in each milestone, you can filter the bug/feature list by that milestone.  If you have a key bug or feature that should be attended to, please thumbs up / comment on it.  
+
+### Builds and PR's
+
+If you'd like to build RTVS yourself and send a PR (highly appreciated!)
+
+* [Build instructions](https://github.com/Microsoft/RTVS/blob/master/Build.md)
+
+### Miscelaneous
+
+If you use Python, also check out Python Tools for Visual Studio:
+
+* https://github.com/Microsoft/PTVS
+
+If you want to use RTVS with Azure ML (read/write datasets, etc.):
+
+* https://cran.r-project.org/web/packages/AzureML/index.html 
+
+
+
+
+
+
+
 
