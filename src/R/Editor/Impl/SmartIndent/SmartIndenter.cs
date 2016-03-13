@@ -173,6 +173,13 @@ namespace Microsoft.R.Editor.SmartIndent {
                     }
                 }
 
+                if (scopeStatement.Scope.OpenCurlyBrace != null && REditorSettings.FormatOptions.BracesOnNewLine) {
+                    int startOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.OpenCurlyBrace.Start);
+                    if (startOfScopeLine == line.LineNumber) {
+                        return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
+                    }
+                }
+
                 // We are inside a scope so provide inner indent
                 return InnerIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
             }

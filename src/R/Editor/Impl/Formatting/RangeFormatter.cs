@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
         public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,
-                                       AstRoot ast, RFormatOptions options) {
+                                       AstRoot ast, RFormatOptions options, int baseIndentPosition = -1) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int start = formatRange.Start;
             int end = formatRange.End;
@@ -43,7 +43,7 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
-            return FormatRangeExact(textView, textBuffer, formatRange, ast, options, -1);
+            return FormatRangeExact(textView, textBuffer, formatRange, ast, options, baseIndentPosition);
         }
 
         public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,

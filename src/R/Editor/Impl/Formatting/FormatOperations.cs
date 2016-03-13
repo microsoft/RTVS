@@ -48,51 +48,50 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, bool indentCaret) {
+            // Figure out caret position in the document text buffer
             SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
             if (!caretPoint.HasValue) {
                 return;
             }
-            FormatScope(textView, textBuffer, caretPoint.Value, indentCaret);
-        }
-
-        public static void FormatScope(ITextView textView, ITextBuffer textBuffer, int position, bool indentCaret) {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             if (document != null) {
+                // Make sure AST is up to date
                 document.EditorTree.EnsureTreeReady();
 
                 int baseIndentPosition = -1;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
-                IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-
+                
+                // Find scope to format
+                IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
+                
                 // Scope indentation is defined by its parent statement.
-                IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(position);
+                IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(caretPoint.Value);
                 if (parentStatement != null && parentStatement.Scope == scope) {
                     ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(parentStatement.Start);
                     baseIndentPosition = baseLine.Start;
                 }
-                FormatScope(textView, textBuffer, ast, scope, baseIndentPosition, indentCaret);
-            }
-        }
 
-        /// <summary>
-        /// Formats specific scope
-        /// </summary>
-        private static void FormatScope(ITextView textView, ITextBuffer textBuffer,
-                                        AstRoot ast, IScope scope, int baseIndentPosition, bool indentCaret) {
-            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
-            undoAction.Open(Resources.AutoFormat);
-            bool changed = false;
+                ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
+                undoAction.Open(Resources.AutoFormat);
+                bool changed = false;
 
-            try {
-                // Now format the scope
-                changed = RangeFormatter.FormatRangeExact(textView, textBuffer, scope, ast, REditorSettings.FormatOptions, baseIndentPosition);
-                if (indentCaret) {
-                    IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
-                    changed = true;
+                try {
+                    // Now format the scope
+                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, ast, REditorSettings.FormatOptions, baseIndentPosition);
+                    if (indentCaret) {
+                        // Formatting may change AST and the caret position so we need to reacquire both
+                        caretPoint = MapCaretToBuffer(textView, textBuffer);
+                        if (caretPoint.HasValue) {
+                            ast = document.EditorTree.AstRoot;
+                            scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
+                            IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                            changed = true;
+                        }
+                    }
+                } finally {
+                    undoAction.Close(!changed);
                 }
-            } finally {
-                undoAction.Close(!changed);
             }
         }
 
