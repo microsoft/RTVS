@@ -146,9 +146,13 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "x <- function(a,\r\n    b) \r\n{\r\n    a\r\n}";
+                string expected = 
+@"x <- function(a,
+                b)
+{
+    a
+}";
                 string actual = script.EditorText;
-
                 actual.Should().Be(expected);
             }
         }

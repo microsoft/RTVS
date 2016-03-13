@@ -18,6 +18,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
@@ -79,17 +80,12 @@ namespace Microsoft.R.Editor.Test.Formatting {
             }
         }
 
-        [Test]
-        public void FormatOnPaste01() {
-            string actual = FormatFromClipboard("if(x<1){x<-2}");
-            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
-        }
-
-        [Test]
-        public void FormatOnPaste02() {
-            string content = "\"a\r\nb\r\nc\"";
+        [CompositeTest]
+        [InlineData("if(x<1){x<-2}", "if (x < 1) {\n    x <- 2\n}")]
+        [InlineData("\"a\r\nb\r\nc\"", "\"a\r\nb\r\nc\"")]
+        public void FormatOnPaste(string content, string expected) {
             string actual = FormatFromClipboard(content);
-            actual.Should().Be(content);
+            actual.Should().Be(expected);
         }
 
         private string FormatFromClipboard(string content) {

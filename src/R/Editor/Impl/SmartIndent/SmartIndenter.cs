@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
@@ -148,10 +147,9 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             if (scopeStatement != null) {
                 if (scopeStatement.Scope == null) {
-                    // This is not normal condition as scope statement always has 
-                    // some sort of a scope even if there are no braces
-                    Debug.Assert(false, "Scope statement without the scope");
-                    return GetBlockIndent(line);
+                    // There is nothing after statement that allows simple scope
+                    // such as in 'if(...)EOF'
+                    return GetBlockIndent(line) + REditorSettings.IndentSize;
                 }
 
                 if (scopeStatement.Scope is SimpleScope) {
@@ -182,6 +180,12 @@ namespace Microsoft.R.Editor.SmartIndent {
             // Try locate the scope itself, if any
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(prevLine.End);
             if (scope != null && scope.OpenCurlyBrace != null) {
+                if (scope.CloseCurlyBrace != null) {
+                    int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
+                    if (endOfScopeLine == line.LineNumber) {
+                        return OuterIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
+                    }
+                }
                 return InnerIndentSizeFromNode(textBuffer, scope, REditorSettings.FormatOptions);
             }
 

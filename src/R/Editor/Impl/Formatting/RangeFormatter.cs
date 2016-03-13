@@ -2,20 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Selection;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Expressions;
-using Microsoft.R.Core.AST.Functions;
-using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -69,25 +61,36 @@ namespace Microsoft.R.Editor.Formatting {
             // so we can calculate proper line indents from the AST via the smart indenter.
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
                 var selectionTracker = new RSelectionTracker(textView, textBuffer);
+
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
+
                 IncrementalTextChangeApplication.ApplyChangeByTokens(
                     textBuffer,
                     new TextStream(spanText), new TextStream(formattedText),
                     oldTokens, newTokens,
                     formatRange,
-                    Resources.AutoFormat, selectionTracker);
+                    Resources.AutoFormat, selectionTracker,
+                    () => {
+                        ast = UpdateAst(textBuffer);
+                        // Apply indentation
+                        IndentLines(textView, textBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, options);
+                    });
 
-                // Now apply indentation
-                IREditorDocument document = REditorDocument.FromTextBuffer(textBuffer);
-                document.EditorTree.EnsureTreeReady();
-                ast = document.EditorTree.AstRoot;
-                IndentLines(textView, textBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, options);
                 return true;
             }
 
             return false;
+        }
+
+        private static AstRoot UpdateAst(ITextBuffer textBuffer) {
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
+            if (document != null) {
+                document.EditorTree.EnsureTreeReady();
+                return document.EditorTree.AstRoot;
+            }
+            return RParser.Parse(new TextProvider(textBuffer.CurrentSnapshot));
         }
 
         /// <summary>
@@ -98,76 +101,28 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
             ITextSnapshotLine lastLine = snapshot.GetLineFromPosition(range.End);
+            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
 
-            var selectionTracker = new RSelectionTracker(textView, textBuffer);
-            using (var selectionUndo = new SelectionUndo(selectionTracker, Resources.AutoFormat, automaticTracking: false)) {
-                using (ITextEdit edit = textBuffer.CreateEdit()) {
-                    for (int i = lastLine.LineNumber; i >= firstLine.LineNumber; i++) {
-                        ITextSnapshotLine line = snapshot.GetLineFromLineNumber(i);
-                        int indent = SmartIndenter.GetSmartIndent(line, ast);
+            for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
+                // Snapshot is updated after each insertion so do not cache
+                ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
+                int indent = SmartIndenter.GetSmartIndent(line, ast);
+                if (indent > 0 && line.Start >= range.Start) {
+                    // Check current indentation and correct for the difference
+                    int currentIndentSize = line.Length - line.GetText().TrimStart().Length;
+                    indent = Math.Max(0, indent - currentIndentSize);
+                    if (indent > 0) {
                         string indentString = IndentBuilder.GetIndentString(indent, options.IndentType, options.TabSize);
-                        edit.Insert(line.Start, indentString);
+                        textBuffer.Insert(line.Start, indentString);
+                        if (document == null) {
+                            // Typically this is a test scenario only. In the real editor
+                            // instance document is available and automatically updates AST
+                            // when whitespace inserted, not no manual update is necessary.
+                            ast.ReflectTextChange(line.Start, 0, indentString.Length);
+                        }
                     }
-                    edit.Apply();
                 }
             }
-        }
-
-        private static bool LineBreakBeforePosition(ITextBuffer textBuffer, int position) {
-            for (int i = position - 1; i >= 0; i--) {
-                char ch = textBuffer.CurrentSnapshot[i];
-                if (ch.IsLineBreak()) {
-                    return true;
-                }
-                if (!char.IsWhiteSpace(ch)) {
-                    break;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Determines if a given position is in area where user
-        /// specified indentation must be respected. For example,
-        /// in multi-line list of function arguments, 
-        /// multi-line expressions and so on.
-        /// </summary>
-        private static bool RespectUserIndent(ITextBuffer textBuffer, AstRoot ast, int position) {
-            // Look up nearest expression
-            IAstNode node = ast.GetNodeOfTypeFromPosition<Expression>(position);
-            if (IsMultilineNode(textBuffer, node)) {
-                return true;
-            }
-
-            node = ast.GetNodeOfTypeFromPosition<FunctionDefinition>(position);
-            if (IsMultilineNode(textBuffer, node)) {
-                return true;
-            }
-
-            node = ast.GetNodeOfTypeFromPosition<FunctionCall>(position);
-            if (IsMultilineNode(textBuffer, node)) {
-                return true;
-            }
-
-            return false;
-        }
-
-        private static bool IsMultilineNode(ITextBuffer textBuffer, IAstNode node) {
-            if (node == null) {
-                return false;
-            }
-
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            int length = snapshot.Length;
-
-            if (node.End < length) {
-                ITextSnapshotLine startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.Start);
-                ITextSnapshotLine endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(node.End);
-
-                return startLine.LineNumber != endLine.LineNumber;
-            }
-
-            return true;
         }
     }
 }
