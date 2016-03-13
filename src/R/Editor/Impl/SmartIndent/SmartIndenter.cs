@@ -137,13 +137,19 @@ namespace Microsoft.R.Editor.SmartIndent {
                 }
             }
 
-            IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+            // First try new line so in case of 'if () { } else { | }' we find
+            // the 'else' which defines the scope and not the parent 'if'.
+            IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
             if (scopeStatement == null) {
-                // Line start position works for typical scope-defining statements like if() or while()
-                // but it won't find function definition in 'x <- function(a) {'
-                // Try end of the line instead
-                nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                // If not found, try previous line that may define the indent
                 scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+                if (scopeStatement == null) {
+                    // Line start position works for typical scope-defining statements like if() or while()
+                    // but it won't find function definition in 'x <- function(a) {'
+                    // Try end of the line instead
+                    nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                    scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+                }
             }
 
             if (scopeStatement != null) {

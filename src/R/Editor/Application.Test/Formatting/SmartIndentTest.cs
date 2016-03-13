@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
     public class SmartIndentTest {
         [Test]
         [Category.Interactive]
-        public void R_SmartIndentTest() {
+        public void R_SmartIndentTest01() {
             using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
                 script.MoveRight();
@@ -24,6 +24,45 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
 
                 string expected = "{\r\n    a\r\n}";
+                string actual = script.EditorText;
+
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_SmartIndentTest02() {
+            using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+                script.Type("if(TRUE){ENTER}a");
+                script.DoIdle(300);
+                script.Type("{ENTER}x <-1{ENTER}");
+                script.DoIdle(300);
+
+                string expected = "if (TRUE)\r\n    a\r\nx <- 1\r\n";
+                string actual = script.EditorText;
+
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_SmartIndentTest03() {
+            using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+                script.MoveRight();
+                script.Type("while(TRUE){{ENTER}if(1){");
+                script.DoIdle(200);
+                script.Type("{ENTER}a");
+                 script.DoIdle(200);
+                script.MoveDown();
+                script.DoIdle(200);
+                script.Type("else {{ENTER}b");
+                script.DoIdle(200);
+
+                string expected = "while (TRUE) {\r\n    if (1) {\r\n        a\r\n    } else {\r\n        b\r\n    }\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
