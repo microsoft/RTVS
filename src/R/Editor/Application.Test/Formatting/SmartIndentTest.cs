@@ -68,5 +68,25 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 actual.Should().Be(expected);
             }
         }
+
+        [Test]
+        [Category.Interactive]
+        public void R_SmartIndentTest04() {
+            using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+                script.MoveRight();
+                script.Type("{{ENTER}if(1)");
+                script.DoIdle(200);
+                script.Type("{ENTER}a<-1{ENTER}");
+                script.DoIdle(200);
+                script.Type("else {ENTER}b<-2;");
+                script.DoIdle(200);
+
+                string expected = "{\r\n    if (1)\r\n        a <- 1\r\n    else\r\n        b <- 2;\r\n}";
+                string actual = script.EditorText;
+
+                actual.Should().Be(expected);
+            }
+        }
     }
 }
