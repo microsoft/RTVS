@@ -103,6 +103,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 if (document == null) {
                     return 0;
                 }
+                document.EditorTree.EnsureTreeReady();
                 ast = document.EditorTree.AstRoot;
             }
 

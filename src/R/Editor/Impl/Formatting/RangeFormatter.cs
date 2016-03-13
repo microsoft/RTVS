@@ -107,7 +107,7 @@ namespace Microsoft.R.Editor.Formatting {
                 // Snapshot is updated after each insertion so do not cache
                 ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
                 int indent = SmartIndenter.GetSmartIndent(line, ast);
-                if (indent > 0 && line.Start >= range.Start) {
+                if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
                     int currentIndentSize = line.Length - line.GetText().TrimStart().Length;
                     indent = Math.Max(0, indent - currentIndentSize);
