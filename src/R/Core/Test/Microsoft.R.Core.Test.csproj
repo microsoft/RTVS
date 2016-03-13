@@ -116,6 +116,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formatting\FormatCommentsTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
     <Compile Include="Parser\ParseNumbersTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

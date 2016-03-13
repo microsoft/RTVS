@@ -58,7 +58,6 @@ namespace Microsoft.R.Core.Formatting {
 
                 AppendNextToken();
             }
-
             // Append any trailing line breaks
             AppendTextBeforeToken();
 
@@ -90,6 +89,10 @@ namespace Microsoft.R.Core.Formatting {
 
                 case RTokenType.Operator:
                     AppendOperator();
+                    break;
+
+                case RTokenType.Comment:
+                    AppendComment();
                     break;
 
                 default:
@@ -181,11 +184,9 @@ namespace Microsoft.R.Core.Formatting {
                 if (stopAtLineBreak && _tokens.IsLineBreakAfter(_textProvider, _tokens.Position)) {
                     break;
                 }
-
                 if (_tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace) {
                     break;
                 }
-
                 if (stopAtElse && _tokens.CurrentToken.IsKeywordText(_textProvider, "else")) {
                     break;
                 }
@@ -261,6 +262,10 @@ namespace Microsoft.R.Core.Formatting {
                         AppendOperator();
                         break;
 
+                    case RTokenType.Comment:
+                        AppendComment();
+                        break;
+
                     default:
                         AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: false);
                         break;
@@ -292,10 +297,8 @@ namespace Microsoft.R.Core.Formatting {
 
                         _tb.AppendPreformattedText(" ");
                     }
-
                     AppendKeyword();
                 }
-
                 return;
             }
 
@@ -410,6 +413,14 @@ namespace Microsoft.R.Core.Formatting {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
                 AppendToken(leadingSpace: true, trailingSpace: true);
+            }
+        }
+
+        private void AppendComment() {
+            bool lineBreakAfter = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position);
+            AppendToken(leadingSpace: false, trailingSpace: false);
+            if (lineBreakAfter) {
+                AppendTextBeforeToken(copyIndent: true);
             }
         }
 
@@ -592,7 +603,7 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private void AppendTextBeforeToken() {
+        private void AppendTextBeforeToken(bool copyIndent = false) {
             int start = _tokens.Position > 0 ? _tokens.PreviousToken.End : 0;
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
@@ -621,7 +632,7 @@ namespace Microsoft.R.Core.Formatting {
 
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
 
-                if (preserveUserIndent) {
+                if (preserveUserIndent || copyIndent) {
                     int lastLineBreakIndex = text.LastIndexOfAny(CharExtensions.LineBreakChars);
                     if (lastLineBreakIndex >= 0) {
                         text = text.Substring(lastLineBreakIndex + 1);
@@ -656,18 +667,20 @@ namespace Microsoft.R.Core.Formatting {
 
             if (_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace) {
                 return false;
-
             }
 
             if (_tokens.PreviousToken.TokenType == RTokenType.Comma) {
                 if (_tokens.Position > 0 && _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
                     return true; // respect user indentation with line breaks
                 }
-
                 return false;
             }
 
             return true;
+        }
+
+        private bool ShouldAppendTextAfterToken() {
+            return _tokens.CurrentToken.TokenType == RTokenType.Comment;
         }
 
         private bool HasSameLineElse() {

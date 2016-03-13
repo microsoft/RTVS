@@ -4,11 +4,9 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Components;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
@@ -19,6 +17,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
@@ -62,6 +61,19 @@ namespace Microsoft.R.Editor.Formatting {
                         IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(oldText);
                         IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
 
+#if DEBUG
+                        if (oldTokens.Count != newTokens.Count) {
+                            for (int i = 0; i < Math.Min(oldTokens.Count, newTokens.Count); i++) {
+                                if (oldTokens[i].TokenType != newTokens[i].TokenType) {
+                                    Debug.Assert(false, Invariant($"Token type difference at {i}"));
+                                    break;
+                                } else if (oldTokens[i].Length != newTokens[i].Length) {
+                                    Debug.Assert(false, Invariant($"token length difference at {i}"));
+                                    break;
+                                }
+                            }
+                        }
+#endif
                         IncrementalTextChangeApplication.ApplyChangeByTokens(
                             TargetBuffer,
                             new TextStream(oldText), new TextStream(formattedText),

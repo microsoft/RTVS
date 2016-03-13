@@ -127,7 +127,7 @@ namespace Microsoft.R.Editor.Formatting {
                         int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
                         ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(Math.Max(lineNumber - 1, 0));
                         string lineText = line.GetText();
-                        if (lineText.IndexOfAny(new char[] { '{', '}' }) >= 0) {
+                        if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
                             IKeywordScopeStatement scopeStatement = tree.AstRoot.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
                             return scopeStatement != null;
                         }
