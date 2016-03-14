@@ -80,6 +80,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68212AEB-6CCF-481B-8F94-39447EEE2E41}"
 	ProjectSection(SolutionItems) = preProject
 		build.proj = build.proj
+		Performance1.psess = Performance1.psess
 		R.Build.Version.targets = R.Build.Version.targets
 		R.Settings.targets = R.Settings.targets
 		R.Wix.Settings.targets = R.Wix.Settings.targets
@@ -96,6 +97,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components", "R\Components\Impl\Microsoft.R.Components.csproj", "{506141BE-1418-4D75-8E24-54A9280B0A66}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64

@@ -13,18 +13,18 @@ namespace Microsoft.Languages.Core.Formatting {
         /// <summary>
         /// Determines if there is a whitespace before given position
         /// </summary>
-        public static bool IsWhitespaceBeforePosition(ITextProvider textProvider, int position) {
-            char charBefore = position > 0 ? textProvider[position - 1] : 'x';
+        public static bool IsWhitespaceBeforePosition(ITextIterator iterator, int position) {
+            char charBefore = position > 0 ? iterator[position - 1] : 'x';
             return Char.IsWhiteSpace(charBefore);
         }
 
         /// <summary>
         /// Determines if there is only whitespace and a line break before position
         /// </summary>
-        public static bool IsNewLineBeforePosition(ITextProvider textProvider, int position) {
+        public static bool IsNewLineBeforePosition(ITextIterator iterator, int position) {
             if (position > 0) {
                 for (int i = position - 1; i >= 0; i--) {
-                    char ch = textProvider[i];
+                    char ch = iterator[i];
 
                     if (!Char.IsWhiteSpace(ch))
                         return false;
@@ -40,24 +40,24 @@ namespace Microsoft.Languages.Core.Formatting {
         /// <summary>
         /// Determines number of line breaks before position
         /// </summary>
-        public static int LineBreaksBeforePosition(ITextProvider textProvider, int position) {
+        public static int LineBreaksBeforePosition(ITextIterator iterator, int position) {
             int count = 0;
 
             if (position > 0) {
                 for (int i = position - 1; i >= 0; i--) {
-                    char ch = textProvider[i];
+                    char ch = iterator[i];
 
                     if (!Char.IsWhiteSpace(ch))
                         return count;
 
                     if (ch == '\r') {
                         count++;
-                        if (i > 0 && textProvider[i - 1] == '\n') {
+                        if (i > 0 && iterator[i - 1] == '\n') {
                             i--;
                         }
                     } else if (ch == '\n') {
                         count++;
-                        if (i > 0 && textProvider[i - 1] == '\r') {
+                        if (i > 0 && iterator[i - 1] == '\r') {
                             i--;
                         }
                     }
@@ -70,23 +70,23 @@ namespace Microsoft.Languages.Core.Formatting {
         /// <summary>
         /// Determines number of line breaks after position
         /// </summary>
-        public static int LineBreaksAfterPosition(ITextProvider textProvider, int position) {
+        public static int LineBreaksAfterPosition(ITextIterator iterator, int position) {
             int count = 0;
 
-            for (int i = position; i < textProvider.Length; i++) {
-                char ch = textProvider[i];
+            for (int i = position; i < iterator.Length; i++) {
+                char ch = iterator[i];
 
                 if (!Char.IsWhiteSpace(ch))
                     return count;
 
                 if (ch == '\r') {
                     count++;
-                    if (i < textProvider.Length - 1 && textProvider[i + 1] == '\n') {
+                    if (i < iterator.Length - 1 && iterator[i + 1] == '\n') {
                         i++;
                     }
                 } else if (ch == '\n') {
                     count++;
-                    if (i < textProvider.Length - 1 && textProvider[i + 1] == '\r') {
+                    if (i < iterator.Length - 1 && iterator[i + 1] == '\r') {
                         i++;
                     }
                 }
@@ -97,9 +97,9 @@ namespace Microsoft.Languages.Core.Formatting {
         /// <summary>
         /// Determines if there is only whitespace and a line break after position
         /// </summary>
-        public static bool IsNewLineAfterPosition(ITextProvider textProvider, int position) {
-            for (int i = position + 1; i < textProvider.Length; i++) {
-                char ch = textProvider[i];
+        public static bool IsNewLineAfterPosition(ITextProvider iterator, int position) {
+            for (int i = position + 1; i < iterator.Length; i++) {
+                char ch = iterator[i];
 
                 if (!Char.IsWhiteSpace(ch))
                     return false;

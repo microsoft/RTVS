@@ -62,17 +62,17 @@ namespace Microsoft.R.Editor.Formatting {
                         IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
 
 #if DEBUG
-                        if (oldTokens.Count != newTokens.Count) {
-                            for (int i = 0; i < Math.Min(oldTokens.Count, newTokens.Count); i++) {
-                                if (oldTokens[i].TokenType != newTokens[i].TokenType) {
-                                    Debug.Assert(false, Invariant($"Token type difference at {i}"));
-                                    break;
-                                } else if (oldTokens[i].Length != newTokens[i].Length) {
-                                    Debug.Assert(false, Invariant($"token length difference at {i}"));
-                                    break;
-                                }
-                            }
-                        }
+                        //if (oldTokens.Count != newTokens.Count) {
+                        //    for (int i = 0; i < Math.Min(oldTokens.Count, newTokens.Count); i++) {
+                        //        if (oldTokens[i].TokenType != newTokens[i].TokenType) {
+                        //            Debug.Assert(false, Invariant($"Token type difference at {i}"));
+                        //            break;
+                        //        } else if (oldTokens[i].Length != newTokens[i].Length) {
+                        //            Debug.Assert(false, Invariant($"token length difference at {i}"));
+                        //            break;
+                        //        }
+                        //    }
+                        //}
 #endif
                         IncrementalTextChangeApplication.ApplyChangeByTokens(
                             TargetBuffer,

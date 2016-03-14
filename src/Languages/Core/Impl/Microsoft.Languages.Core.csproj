@@ -42,6 +42,7 @@
     <Compile Include="Formatting\IndentState.cs" />
     <Compile Include="Formatting\IndentType.cs" />
     <Compile Include="Formatting\IntentStyle.cs" />
+    <Compile Include="Formatting\StringBuilderIterator.cs" />
     <Compile Include="Formatting\TextBuilder.cs" />
     <Compile Include="Formatting\Whitespace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Text\BraceCounter.cs" />
     <Compile Include="Text\CharacterStream.cs" />
     <Compile Include="Text\ICompositeTextRange.cs" />
+    <Compile Include="Text\ITextIterator.cs" />
     <Compile Include="Text\ITextProvider.cs" />
     <Compile Include="Text\ITextRange.cs" />
     <Compile Include="Text\IReadOnlyTextRangeCollection.cs" />

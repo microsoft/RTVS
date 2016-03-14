@@ -32,8 +32,8 @@ namespace Microsoft.Languages.Core.Formatting {
 
         public bool IsAtNewLine { get { return _currentLineLength == 0; } }
 
-        public int CopyFollowingLineBreaks(ITextProvider textProvider, int position) {
-            int lineBreakCount = Whitespace.LineBreaksAfterPosition(textProvider, position);
+        public int CopyFollowingLineBreaks(ITextIterator iterator, int position) {
+            int lineBreakCount = Whitespace.LineBreaksAfterPosition(iterator, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
@@ -44,8 +44,8 @@ namespace Microsoft.Languages.Core.Formatting {
             return breaks;
         }
 
-        public int CopyPrecedingLineBreaks(ITextProvider textProvider, int position) {
-            int lineBreakCount = Whitespace.LineBreaksBeforePosition(textProvider, position);
+        public int CopyPrecedingLineBreaks(ITextIterator iterator, int position) {
+            int lineBreakCount = Whitespace.LineBreaksBeforePosition(iterator, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
@@ -65,7 +65,7 @@ namespace Microsoft.Languages.Core.Formatting {
         }
 
         private int RecentlyAddedLineBreakCount() {
-            return Whitespace.LineBreaksBeforePosition(new TextStream(_formattedText.ToString()), _formattedText.Length);
+            return Whitespace.LineBreaksBeforePosition(new StringBuilderIterator(_formattedText), _formattedText.Length);
         }
 
         private void AppendNewLine(bool collapseWhitespace = true, bool forceAdd = false) {
