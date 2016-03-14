@@ -9,10 +9,11 @@ using Xunit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
-    public class FormatLineBreaksTest {
+    public class FormatTest {
         [CompositeTest]
         [Category.R.Formatting]
         [InlineData("if(1 && # comment\n   2) x", "if (1 && # comment\n   2)\n  x")]
+        [InlineData("for(i in c('a', # comment\n 'b')) {}", "for (i in c('a', # comment\n 'b')) { }")]
         [InlineData("func(a,\n     b,\n     c)", "func(a,\n     b,\n     c)")]
         [InlineData("for(i in c(a,\n     b,\n     c)) {}", "for (i in c(a,\n     b,\n     c)) { }")]
         public void PreserveBreaks(string original, string expected) {

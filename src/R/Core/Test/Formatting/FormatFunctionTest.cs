@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Core.Formatting;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
@@ -43,89 +44,33 @@ namespace Microsoft.R.Core.Test.Formatting {
             actual.Should().Be(expected);
         }
 
-        [Test]
+        [CompositeTest]
         [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineScope01() {
+        [InlineData("x <- func(a,{return(b)})", "x <- func(a, {\n  return(b)\n})")]
+        [InlineData("x<-func({return(b)})", "x <- func({\n  return(b)\n})")]
+        public void FunctionInlineScope(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("x <- func(a,{return(b)})");
-            string expected = "x <- func(a, {\n  return(b)\n})";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineScope02() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("x <- func({return(b)})");
-            string expected = "x <- func({\n  return(b)\n})";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf01() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("x <- func(a,{if(TRUE) {x} else {y}})");
-            string expected = "x <- func(a, {\n  if (TRUE) {\n    x\n  } else {\n    y\n  }\n})";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf02() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("x <- func(a,{if(TRUE) 1 else 2})");
-            string expected = "x <- func(a, {\n  if (TRUE) 1 else 2\n})";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf03() {
-            RFormatter f = new RFormatter();
-            string original = "x <- func(a,{\nif(TRUE) 1 else 2})";
             string actual = f.Format(original);
-            string expected = "x <- func(a, {\n  if (TRUE) 1 else 2\n})";
             actual.Should().Be(expected);
         }
 
-        [Test]
+        [CompositeTest]
         [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf04() {
+        [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, {\n  if (TRUE) {\n    x\n  } else {\n    y\n  }\n})")]
+        [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
+        [InlineData("x <- func(a,{\nif(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
+        [InlineData("x <- func(a,{\nif(TRUE) {1} else {2}})", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
+        [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
+        [InlineData("x <- func(a,\n   {\n      if(TRUE) 1 else 2\n   })", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
+        public void FunctionInlineIf(string original, string expected) {
             RFormatter f = new RFormatter();
-            string original = "x <- func(a,{\nif(TRUE) {1} else {2}})";
             string actual = f.Format(original);
-            string expected = "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})";
-
             actual.Should().Be(expected);
         }
 
         [Test]
         [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf05() {
-            RFormatter f = new RFormatter();
-            string original = "x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })";
-            string actual = f.Format(original);
-            string expected = "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf06() {
-            RFormatOptions options = new RFormatOptions();
-            options.BracesOnNewLine = true;
-
-            RFormatter f = new RFormatter(options);
-            string original = "x <- func(a,\n   {\n      if(TRUE) 1 else 2\n   })";
-            string actual = f.Format(original);
-            string expected = "x <- func(a,\n   {\n     if (TRUE) 1 else 2\n   })";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionInlineIf07() {
+        public void FormatFunctionInlineIf02() {
             RFormatter f = new RFormatter();
 
             string original = "x <- func(a,\n   {\n      if(TRUE) \n        if(FALSE) {x <-1} else x<-2\nelse\n        if(z) x <-1 else {5}\n    })";

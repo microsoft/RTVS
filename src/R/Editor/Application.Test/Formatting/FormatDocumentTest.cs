@@ -12,17 +12,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class FormatDocumentTest {
-        [Test]
+    public class FormatTest {
+        [CompositeTest]
         [Category.Interactive]
-        public void R_FormatDocument01() {
-            string content = "\nwhile (TRUE) {\n        if(x>1) {\n   }\n}";
-            string expected = "\nwhile (TRUE) {\n    if (x > 1) {\n    }\n}";
-            using (var script = new TestScript(content, RContentTypeDefinition.ContentType)) {
-                script.Select(20, 20);
+        [InlineData("\nwhile (TRUE) {\n        if(x>1) {\n   }\n}", "\nwhile (TRUE) {\n    if (x > 1) {\n    }\n}")]
+        [InlineData("if (1 && # comment\n  2) {x<-1}", "if (1 && # comment\n  2) {\n    x <- 1\n}")]
+        public void R_FormatDocument(string original, string expected) {
+            using (var script = new TestScript(original, RContentTypeDefinition.ContentType)) {
                 script.Execute(VSConstants.VSStd2KCmdID.FORMATDOCUMENT, 50);
                 string actual = script.EditorText;
-
                 actual.Should().Be(expected);
             }
         }

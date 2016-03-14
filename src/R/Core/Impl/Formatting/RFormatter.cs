@@ -91,10 +91,6 @@ namespace Microsoft.R.Core.Formatting {
                     AppendOperator();
                     break;
 
-                case RTokenType.Comment:
-                    AppendComment();
-                    break;
-
                 default:
                     AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: false);
                     break;
@@ -224,7 +220,6 @@ namespace Microsoft.R.Core.Formatting {
                 // Format condition such as (...) after 'if'
                 AppendCondition();
             }
-
             // Format following scope
             AppendStatementsInScope(keyword);
         }
@@ -264,10 +259,6 @@ namespace Microsoft.R.Core.Formatting {
 
                     case RTokenType.Operator:
                         AppendOperator();
-                        break;
-
-                    case RTokenType.Comment:
-                        AppendComment();
                         break;
 
                     default:
@@ -420,14 +411,6 @@ namespace Microsoft.R.Core.Formatting {
             }
         }
 
-        private void AppendComment() {
-            bool lineBreakAfter = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position);
-            AppendToken(leadingSpace: false, trailingSpace: false);
-            if (lineBreakAfter) {
-                AppendTextBeforeToken(copyIndent: true);
-            }
-        }
-
         private string AppendToken(bool leadingSpace, bool trailingSpace) {
             if (leadingSpace) {
                 _tb.AppendSpace();
@@ -440,7 +423,14 @@ namespace Microsoft.R.Core.Formatting {
                 _tb.AppendText(text);
             }
 
-            HandleBrace();
+            if (_tokens.CurrentToken.TokenType == RTokenType.Comment) {
+                // make sure there is a line break between comment
+                // and the next token
+                _tb.SoftLineBreak();
+            } else {
+                HandleBrace();
+            }
+
             _tokens.MoveToNextToken();
 
             if (trailingSpace) {
@@ -607,7 +597,7 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private void AppendTextBeforeToken(bool copyIndent = false) {
+        private void AppendTextBeforeToken() {
             int start = _tokens.Position > 0 ? _tokens.PreviousToken.End : 0;
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
@@ -629,6 +619,7 @@ namespace Microsoft.R.Core.Formatting {
                         case RTokenType.OpenDoubleSquareBracket:
                         case RTokenType.Comma:
                         case RTokenType.Operator:
+                        case RTokenType.Comment:
                             preserveUserIndent = true;
                             break;
                     }
@@ -636,7 +627,7 @@ namespace Microsoft.R.Core.Formatting {
 
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
 
-                if (preserveUserIndent || copyIndent) {
+                if (preserveUserIndent) {
                     int lastLineBreakIndex = text.LastIndexOfAny(CharExtensions.LineBreakChars);
                     if (lastLineBreakIndex >= 0) {
                         text = text.Substring(lastLineBreakIndex + 1);
@@ -665,6 +656,20 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool ShouldAppendTextBeforeToken() {
+            if(_tokens.PreviousToken.TokenType == RTokenType.Comment &&
+                _tokens.CurrentToken.TokenType != RTokenType.Comment) {
+                // TODO: implement function argument alignment instead.
+                //
+                // Copy any possible indentation after comment
+                // at the previous line such as in 
+                //    func(a, #comment
+                //         b
+                // Do not do this when comment follows another comment
+                // since otherwise they won't align.
+                //
+                return true;
+            }
+
             if (IsClosingToken(_tokens.CurrentToken)) {
                 return false;
             }
@@ -674,17 +679,13 @@ namespace Microsoft.R.Core.Formatting {
             }
 
             if (_tokens.PreviousToken.TokenType == RTokenType.Comma) {
-                if (_tokens.Position > 0 && _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
+                if (_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
                     return true; // respect user indentation with line breaks
                 }
                 return false;
             }
 
             return true;
-        }
-
-        private bool ShouldAppendTextAfterToken() {
-            return _tokens.CurrentToken.TokenType == RTokenType.Comment;
         }
 
         private bool HasSameLineElse() {
