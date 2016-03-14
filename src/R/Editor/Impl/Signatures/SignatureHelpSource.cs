@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -17,39 +20,52 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
-    sealed class SignatureHelpSource : ISignatureHelpSource
-    {
-        ITextBuffer _textBuffer;
+    sealed class SignatureHelpSource : ISignatureHelpSource {
+        private ITextBuffer _textBuffer;
+        private IREditorDocument _document;
+        private ITextView _textView;
 
-        public SignatureHelpSource(ITextBuffer textBuffer)
-        {
+        public SignatureHelpSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
+
+            _document = REditorDocument.TryFromTextBuffer(textBuffer);
+            if (_document != null) {
+                _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
+            }
+        }
+
+        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
+            if (_textView != null) {
+                var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                broker.TriggerSignatureHelp(_textView);
+                _textView = null;
+            }
         }
 
         #region ISignatureHelpSource
-        public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures)
-        {
-            if (!REditorSettings.SignatureHelpEnabled || session.IsDismissed)
+        public void AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures) {
+            if (!REditorSettings.SignatureHelpEnabled || session.IsDismissed) {
                 return;
+            }
 
             var document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if (document != null)
-            {
-                document.EditorTree.EnsureTreeReady();
+            if (document != null) {
+                if (!document.EditorTree.IsReady) {
+                    _textView = session.TextView;
+                    return;
+                }
                 AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
             }
         }
 
-        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession)
-        {
+        public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession) {
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(snapshot);
 
             // Retrieve parameter positions from the current text buffer snapshot
             ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(ast, snapshot, position);
-            if (parametersInfo != null)
-            {
+            if (parametersInfo != null) {
                 position = Math.Min(parametersInfo.SignatureEnd, position);
                 int start = Math.Min(position, snapshot.Length);
                 int end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
@@ -58,10 +74,8 @@ namespace Microsoft.R.Editor.Signatures {
 
                 // Get collection of function signatures from documentation (parsed RD file)
                 IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
-                if (functionInfo != null && functionInfo.Signatures != null)
-                {
-                    foreach (ISignatureInfo signatureInfo in functionInfo.Signatures)
-                    {
+                if (functionInfo != null && functionInfo.Signatures != null) {
+                    foreach (ISignatureInfo signatureInfo in functionInfo.Signatures) {
                         ISignature signature = CreateSignature(session, functionInfo, signatureInfo, applicableToSpan, ast, position);
                         signatures.Add(signature);
                     }
@@ -74,25 +88,20 @@ namespace Microsoft.R.Editor.Signatures {
             return false;
         }
 
-        private void TriggerSignatureHelp(object o)
-        {
+        private void TriggerSignatureHelp(object o) {
             SignatureHelp.TriggerSignatureHelp(o as ITextView);
         }
 
-        public ISignature GetBestMatch(ISignatureHelpSession session)
-        {
-            if (session.Signatures.Count > 0)
-            {
+        public ISignature GetBestMatch(ISignatureHelpSession session) {
+            if (session.Signatures.Count > 0) {
                 ITrackingSpan applicableToSpan = session.Signatures[0].ApplicableToSpan;
                 string text = applicableToSpan.GetText(applicableToSpan.TextBuffer.CurrentSnapshot);
 
                 var typedText = text.Trim();
-                foreach (var sig in session.Signatures)
-                {
+                foreach (var sig in session.Signatures) {
                     var jsSig = sig as SignatureHelp;
 
-                    if (jsSig != null && jsSig.FunctionName.StartsWith(text, StringComparison.Ordinal))
-                    {
+                    if (jsSig != null && jsSig.FunctionName.StartsWith(text, StringComparison.Ordinal)) {
                         return sig;
                     }
                 }
@@ -104,8 +113,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
-                                       ITrackingSpan span, AstRoot ast, int position)
-        {
+                                       ITrackingSpan span, AstRoot ast, int position) {
             SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo);
             List<IParameter> paramList = new List<IParameter>();
 
@@ -118,11 +126,9 @@ namespace Microsoft.R.Editor.Signatures {
             sig.Documentation = functionInfo.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
-            for (int i = 0; i < signatureInfo.Arguments.Count; i++)
-            {
+            for (int i = 0; i < signatureInfo.Arguments.Count; i++) {
                 IArgumentInfo p = signatureInfo.Arguments[i];
-                if (p != null)
-                {
+                if (p != null) {
                     int locusStart = locusPoints[i];
                     int locusLength = locusPoints[i + 1] - locusStart;
 
@@ -142,17 +148,23 @@ namespace Microsoft.R.Editor.Signatures {
 
             sig.Parameters = new ReadOnlyCollection<IParameter>(paramList);
             sig.ComputeCurrentParameter(ast, position);
-            
+
             return sig;
         }
 
         #region IDisposable
-        public void Dispose()
-        {
+        public void Dispose() {
+            if (_document != null && _document.EditorTree != null) {
+                _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
+                _document = null;
+            }
+
             if (_textBuffer != null) {
                 ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
                 _textBuffer = null;
             }
+
+            _textView = null;
         }
         #endregion
     }
