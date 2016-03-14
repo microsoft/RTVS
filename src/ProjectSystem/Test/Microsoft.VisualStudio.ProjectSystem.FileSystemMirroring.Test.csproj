@@ -110,9 +110,12 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcherEntriesTest.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherTest.Delay50MsNoFiltering.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherTest.NoDelayNoFiltering.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherTest.cs" />
+    <Compile Include="Assertions\MsBuildFileSystemWatcherChangesetAssertions.cs" />
     <Compile Include="Project\FileSystemMirroringProjectUtilitiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -125,6 +128,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />

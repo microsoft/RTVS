@@ -19,8 +19,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher : IDisposable {
         private readonly string _directory;
         private readonly string _filter;
+        private readonly MsBuildFileSystemWatcherEntries _entries;
         private readonly ConcurrentQueue<IFileSystemChange> _queue;
         private readonly int _delayMilliseconds;
+        private readonly int _recoverDelayMilliseconds;
         private readonly IFileSystem _fileSystem;
         private readonly IMsBuildFileSystemFilter _fileSystemFilter;
         private readonly TaskScheduler _taskScheduler;
@@ -30,8 +32,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         private IFileSystemWatcher _directoryWatcher;
         private IFileSystemWatcher _attributesWatcher;
         private int _consumerIsWorking;
+        private int _hasErrors;
 
         public IReceivableSourceBlock<Changeset> SourceBlock { get; }
+        public event EventHandler<EventArgs> Error;
 
         public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null, IActionLog log = null) {
             Requires.NotNullOrWhiteSpace(directory, nameof(directory));
@@ -43,11 +47,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             _directory = directory;
             _filter = filter;
             _delayMilliseconds = delayMilliseconds;
+            _recoverDelayMilliseconds = 1000;
             _fileSystem = fileSystem;
             _fileSystemFilter = fileSystemFilter;
             _taskScheduler = taskScheduler ?? TaskScheduler.Default;
             _log = log ?? ProjectSystemActionLog.Default;
 
+            _entries = new MsBuildFileSystemWatcherEntries();
             _queue = new ConcurrentQueue<IFileSystemChange>();
             _broadcastBlock = new BroadcastBlock<Changeset>(b => b, new DataflowBlockOptions { TaskScheduler = _taskScheduler });
             SourceBlock = _broadcastBlock.SafePublicize();
@@ -63,23 +69,23 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         public void Start() {
             _log.WatcherStarting();
 
-            Enqueue(new DirectoryCreated(_directory, _fileSystem, _fileSystemFilter, _directory));
+            Enqueue(new DirectoryCreated(_entries, _directory, _fileSystem, _fileSystemFilter, _directory));
 
             _fileWatcher = CreateFileSystemWatcher(NotifyFilters.FileName);
-            _fileWatcher.Created += (sender, e) => Enqueue(new FileCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
-            _fileWatcher.Deleted += (sender, e) => Enqueue(new FileDeleted(_directory, e.FullPath));
-            _fileWatcher.Renamed += (sender, e) => Enqueue(new FileRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
-            _fileWatcher.Error += (sender, e) => TraceError("File Watcher", e);
+            _fileWatcher.Created += (sender, e) => Enqueue(new FileCreated(_entries, _directory, _fileSystem, _fileSystemFilter, e.FullPath));
+            _fileWatcher.Deleted += (sender, e) => Enqueue(new FileDeleted(_entries, _directory, e.FullPath));
+            _fileWatcher.Renamed += (sender, e) => Enqueue(new FileRenamed(_entries, _directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
+            _fileWatcher.Error += (sender, e) => FileSystemWatcherError("File Watcher", e);
 
             _directoryWatcher = CreateFileSystemWatcher(NotifyFilters.DirectoryName);
-            _directoryWatcher.Created += (sender, e) => Enqueue(new DirectoryCreated(_directory, _fileSystem, _fileSystemFilter, e.FullPath));
-            _directoryWatcher.Deleted += (sender, e) => Enqueue(new DirectoryDeleted(_directory, e.FullPath));
-            _directoryWatcher.Renamed += (sender, e) => Enqueue(new DirectoryRenamed(_directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
-            _directoryWatcher.Error += (sender, e) => TraceError("Directory Watcher", e);
+            _directoryWatcher.Created += (sender, e) => Enqueue(new DirectoryCreated(_entries, _directory, _fileSystem, _fileSystemFilter, e.FullPath));
+            _directoryWatcher.Deleted += (sender, e) => Enqueue(new DirectoryDeleted(_entries, _directory, e.FullPath));
+            _directoryWatcher.Renamed += (sender, e) => Enqueue(new DirectoryRenamed(_entries, _directory, _fileSystem, _fileSystemFilter, e.OldFullPath, e.FullPath));
+            _directoryWatcher.Error += (sender, e) => FileSystemWatcherError("Directory Watcher", e);
 
             _attributesWatcher = CreateFileSystemWatcher(NotifyFilters.Attributes);
-            _attributesWatcher.Changed += (sender, e) => Enqueue(new AttributesChanged(e.Name, e.FullPath));
-            _attributesWatcher.Error += (sender, e) => TraceError("Attributes Watcher", e);
+            _attributesWatcher.Changed += (sender, e) => Enqueue(new AttributesChanged(_entries, e.Name, e.FullPath));
+            _attributesWatcher.Error += (sender, e) => FileSystemWatcherError("Attributes Watcher", e);
 
             _log.WatcherStarted();
         }
@@ -102,12 +108,20 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             _log.WatcherConsumeChangesStarted();
 
             try {
-                var changeset = new Changeset();
-                while (!_queue.IsEmpty) {
-                    Consume(changeset);
+                while (!_queue.IsEmpty || _hasErrors != 0) {
+                    Consume();
                     await Task.Delay(_delayMilliseconds);
+                    if (Interlocked.Exchange(ref _hasErrors, 0) == 0) {
+                        continue;
+                    }
+
+                    var isRecovered = await TryRecover();
+                    if (!isRecovered) {
+                        return;
+                    }
                 }
 
+                var changeset = _entries.ProduceChangeset();
                 if (!changeset.IsEmpty()) {
                     _broadcastBlock.Post(changeset);
                     _log.WatcherChangesetSent(changeset);
@@ -121,18 +135,65 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
         }
 
-        private void Consume(Changeset changeset) {
+        private void Consume() {
             IFileSystemChange change;
-            while (_queue.TryDequeue(out change)) {
+            while (_hasErrors == 0 && _queue.TryDequeue(out change)) {
                 try {
                     _log.WatcherApplyChange(change.ToString());
-                    change.Apply(changeset);
+                    change.Apply();
+                    if (_entries.RescanRequired) {
+                        _hasErrors = 1;
+                    }
                 } catch (Exception e) {
+                    _hasErrors = 1;
                     _log.WatcherApplyChangeFailed(change.ToString(), e);
                     Debug.Fail($"Failed to apply change {change}:\n{e}");
-                    throw;
                 }
             }
+        }
+
+        private async Task<bool> TryRecover() {
+            _fileWatcher.EnableRaisingEvents = false;
+            _directoryWatcher.EnableRaisingEvents = false;
+            _attributesWatcher.EnableRaisingEvents = false;
+
+            await Task.Delay(_recoverDelayMilliseconds);
+            EmptyQueue();
+
+            var rescanChange = new DirectoryCreated(_entries, _directory, _fileSystem, _fileSystemFilter, _directory);
+            bool isRecovered;
+            try {
+                _entries.MarkAllDeleted();
+                _log.WatcherApplyRecoveryChange(rescanChange.ToString());
+                rescanChange.Apply();
+                isRecovered = !_entries.RescanRequired;
+            } catch (Exception e) {
+                _log.WatcherApplyRecoveryChangeFailed(rescanChange.ToString(), e);
+                isRecovered = false;
+            }
+
+            if (isRecovered) {
+                try {
+
+                    _fileWatcher.EnableRaisingEvents = true;
+                    _directoryWatcher.EnableRaisingEvents = true;
+                    _attributesWatcher.EnableRaisingEvents = true;
+                } catch (Exception) {
+                    isRecovered = false;
+                }
+            }
+
+            if (!isRecovered) {
+                Error?.Invoke(this, new EventArgs());
+                Dispose();
+            }
+
+            return isRecovered;
+        }
+
+        private void EmptyQueue() {
+            IFileSystemChange change;
+            while (_queue.TryDequeue(out change)) {}
         }
 
         private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter) {
@@ -160,12 +221,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         private interface IFileSystemChange {
-            void Apply(Changeset changeset);
+            void Apply();
         }
 
-        private void TraceError(string watcherName, ErrorEventArgs errorEventArgs) {
-            _log.ErrorInFileWatcher(watcherName, errorEventArgs.GetException());
-            Debug.Fail($"Error in {watcherName}:\n{errorEventArgs.GetException()}");
+        private void FileSystemWatcherError(string watcherName, ErrorEventArgs errorEventArgs) {
+            _log.ErrorInFileSystemWatcher(watcherName, errorEventArgs.GetException());
+            Interlocked.Exchange(ref _hasErrors, 1);
+            StartConsumer();
         }
 
         public class Changeset {
@@ -185,6 +247,5 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     && RenamedDirectories.Count == 0;
             }
         }
-
     }
 }

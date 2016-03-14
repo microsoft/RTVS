@@ -5,9 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Test.StubFactories;
 using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
@@ -97,6 +102,30 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             var directory = Path.GetDirectoryName(fullPath);
             var file = Path.GetFileName(fullPath);
             fileWatcher.Deleted += Raise.Event<FileSystemEventHandler>(fileWatcher, new FileSystemEventArgs(WatcherChangeTypes.Created, directory, file));
+        }
+
+        private static async Task InjectDirectoriesIntoWatcher(IFileSystemWatcher fileWatcher, IFileSystem fileSystem, IEnumerable<string> fullPaths, ControlledTaskScheduler taskScheduler) {
+            var directories = fullPaths.AsList();
+            foreach (var path in directories) {
+                DirectoryInfoStubFactory.Create(fileSystem, path);
+            }
+            RaiseCreated(fileWatcher, directories);
+            await taskScheduler;
+            foreach (var path in directories) {
+                DirectoryInfoStubFactory.Delete(fileSystem, path);
+            }
+        }
+
+        private static async Task InjectFilesIntoWatcher(IFileSystemWatcher fileWatcher, IFileSystem fileSystem, IEnumerable<string> fullPaths, ControlledTaskScheduler taskScheduler) {
+            var files = fullPaths.AsList();
+            foreach (var path in files) {
+                FileInfoStubFactory.Create(fileSystem, path);
+            }
+            RaiseCreated(fileWatcher, files);
+            await taskScheduler;
+            foreach (var path in files) {
+                FileInfoStubFactory.Delete(fileSystem, path);
+            }
         }
 
         private static Watchers GetWatchersFromMsBuildFileSystemWatcher(IFileSystem fileSystem)
