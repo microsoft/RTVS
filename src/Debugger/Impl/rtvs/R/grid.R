@@ -75,7 +75,7 @@ grid.dput <- function(obj) {
 getEnvRepr <- function(env, startEnvLevel) {
   envRepr <- NULL;
 
-  if (startEnvLevel > 4L) {    # if within call or unknown, try to get call frame
+  if (startEnvLevel > 4L) {    # 4L means global
     nframe <- sys.nframe();
     if (nframe > 0) {
       for (i in 1:nframe) {
@@ -93,8 +93,6 @@ getEnvRepr <- function(env, startEnvLevel) {
       envRepr <- list(name = 'package:base', level = 2L);
     } else if (identical(env, globalenv())) {
       envRepr <- list(name = '.GlobalEnv', level = 4L);
-    } else if (identical(env, emptyenv())) {
-      envRepr <- list(name = 'EmptyEnv', level = 1L);
     } else {
       envRepr <- list(name = environmentName(env), level = 3L);
     }
@@ -103,7 +101,7 @@ getEnvRepr <- function(env, startEnvLevel) {
 }
 
 # return list of environment statck walking from the given environment up.
-# R environment level: empty(1) > base(2) > packages(3) > global(4) > calls(5) > unknown(10)
+# R environment level: empty(1) > base(2) > packages, etc.(3) > global(4) > calls(5) > unknown(10)
 getEnvironments <- function(env) {
   if (missing(env)) {
     curEnv <- sys.frame(-1);
@@ -121,11 +119,7 @@ getEnvironments <- function(env) {
       envs[[length(envs) + 1]] <- repr;
     }
     prevEnvLevel <- repr$level;
-    if (prevEnvLevel == 5L) {
-      curEnv <- sys.frame(repr$frameIndex - 1);
-    } else {
-      curEnv <- parent.env(curEnv);
-    }
+    curEnv <- parent.env(curEnv);
   }
   envs;
 }
