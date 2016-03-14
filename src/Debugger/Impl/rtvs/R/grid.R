@@ -72,16 +72,16 @@ grid.dput <- function(obj) {
     json;
 }
 
-getEnvRepr <- function(env, startEnvLevel) {
+getEnvRepr <- function(env, higherThanGlobal) {
   envRepr <- NULL;
 
-  if (startEnvLevel > 4L) {    # 4L means global
+  if (higherThanGlobal) {
     nframe <- sys.nframe();
     if (nframe > 0) {
       for (i in 1:nframe) {
         frame <- sys.frame(i)
         if (identical(env, frame)) {
-          envRepr <- list(name = deparse(sys.call(i)[[1]]), level = 5L, frameIndex = i);
+          envRepr <- list(name = deparse(sys.call(i)[[1]]), higherThanGlobal = TRUE);
           break;
         }
       }
@@ -90,18 +90,17 @@ getEnvRepr <- function(env, startEnvLevel) {
 
   if (is.null(envRepr)) {
     if (identical(env, baseenv())) {
-      envRepr <- list(name = 'package:base', level = 2L);
+      envRepr <- list(name = 'package:base', higherThanGlobal = FALSE);
     } else if (identical(env, globalenv())) {
-      envRepr <- list(name = '.GlobalEnv', level = 4L);
+      envRepr <- list(name = '.GlobalEnv', higherThanGlobal = FALSE);
     } else {
-      envRepr <- list(name = environmentName(env), level = 3L);
+      envRepr <- list(name = environmentName(env), higherThanGlobal = FALSE);
     }
   }
   envRepr;
 }
 
 # return list of environment statck walking from the given environment up.
-# R environment level: empty(1) > base(2) > packages, etc.(3) > global(4) > calls(5) > unknown(10)
 getEnvironments <- function(env) {
   if (missing(env)) {
     curEnv <- sys.frame(-1);
@@ -110,35 +109,16 @@ getEnvironments <- function(env) {
   }
   envs <- list();
 
-  prevEnvLevel <- 10L;
+  higherThanGlobal <- TRUE;
 
   while (!identical(curEnv, emptyenv())) {
-    repr <- getEnvRepr(curEnv, prevEnvLevel);
+    repr <- getEnvRepr(curEnv, higherThanGlobal);
     if (repr$name != "Autoloads"
       && repr$name != "rtvs::graphics::ide") {
       envs[[length(envs) + 1]] <- repr;
     }
-    prevEnvLevel <- repr$level;
+    higherThanGlobal <- repr$higherThanGlobal;
     curEnv <- parent.env(curEnv);
   }
   envs;
 }
-
-# return variable's frame index
-# look up starts from startFrameIndex and up
-getFrameIndex <- function(varName, startFrameIndex) {
-  if (missing(startFrameIndex)) {
-    startFrameIndex <- sys.nframe() - 1;
-  }
-  frameIndex <- startFrameIndex;
-  
-  while (frameIndex >= 0) {
-    if (exists(varName, frame = frameIndex, inherit = FALSE)) {
-      return(frameIndex);
-    }
-    frameIndex <- frameIndex - 1;
-  }
-  
-  -1L;
-}
-
