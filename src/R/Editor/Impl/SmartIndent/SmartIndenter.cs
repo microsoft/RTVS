@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
@@ -103,8 +104,8 @@ namespace Microsoft.R.Editor.SmartIndent {
                 if (document == null) {
                     return 0;
                 }
-                document.EditorTree.EnsureTreeReady();
-                ast = document.EditorTree.AstRoot;
+                var et = document.EditorTree;
+                ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : document.EditorTree.AstRoot;
             }
 
             // The challenge here is to find scope to base the indent on.

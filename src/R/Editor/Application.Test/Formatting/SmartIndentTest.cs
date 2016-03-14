@@ -35,7 +35,9 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         public void R_SmartIndentTest02() {
             using (var script = new TestScript(string.Empty, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
-                script.Type("if(TRUE){ENTER}a");
+                script.Type("if(TRUE)");
+                script.DoIdle(300);
+                script.Type("{ENTER}a");
                 script.DoIdle(300);
                 script.Type("{ENTER}x <-1{ENTER}");
                 script.DoIdle(300);

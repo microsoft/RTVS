@@ -26,6 +26,7 @@ namespace Microsoft.R.Editor.Tree {
     /// validation (syntx check) thread.
     /// </summary>
     public partial class EditorTree : IEditorTree, IDisposable {
+        
         #region IEditorTree
         /// <summary>
         /// Visual Studio core editor text buffer
@@ -45,6 +46,13 @@ namespace Microsoft.R.Editor.Tree {
                 return _astRoot;
             }
         }
+
+        /// <summary>
+        /// Previous AST. May be used in cases when parsing is not acceptable
+        /// due to performance hit and full tree fidelity is not required
+        /// such as in determining smart indent on Enter. 
+        /// </summary>
+        public AstRoot PreviousAstRoot { get; private set; }
 
         /// <summary>
         /// Returns true if tree matches current document snapshot
@@ -341,7 +349,8 @@ namespace Microsoft.R.Editor.Tree {
                 removedNodes.Add(child);
             }
 
-            _astRoot.RemoveChildren(0, _astRoot.Children.Count);
+            PreviousAstRoot = _astRoot;
+            _astRoot = new AstRoot(_astRoot.TextProvider);
 
             if (removedNodes.Count > 0) {
                 FireOnNodesRemoved(removedNodes);

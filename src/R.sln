@@ -80,7 +80,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{68212AEB-6CCF-481B-8F94-39447EEE2E41}"
 	ProjectSection(SolutionItems) = preProject
 		build.proj = build.proj
-		Performance1.psess = Performance1.psess
 		R.Build.Version.targets = R.Build.Version.targets
 		R.Settings.targets = R.Settings.targets
 		R.Wix.Settings.targets = R.Wix.Settings.targets

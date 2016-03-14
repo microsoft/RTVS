@@ -19,6 +19,7 @@ namespace Microsoft.R.Editor.Test.Mocks
             AstRoot = ast;
         }
         public AstRoot AstRoot { get; private set; }
+        public AstRoot PreviousAstRoot  { get; private set; }
 
         public bool IsReady
         {
