@@ -249,6 +249,10 @@ namespace Microsoft.R.Core.Formatting {
                     continue;
                 }
 
+                if (ShouldAppendTextBeforeToken()) {
+                    AppendTextBeforeToken();
+                }
+
                 switch (_tokens.CurrentToken.TokenType) {
                     case RTokenType.Keyword:
                         AppendKeyword();
