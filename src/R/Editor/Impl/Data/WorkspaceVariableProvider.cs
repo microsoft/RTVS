@@ -139,7 +139,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                             var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
                             if (globalStackFrame != null) {
-                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment");
+                                const DebugEvaluationResultFields fields =
+                                    DebugEvaluationResultFields.Expression |
+                                    DebugEvaluationResultFields.Kind |
+                                    DebugEvaluationResultFields.ReprStr |
+                                    DebugEvaluationResultFields.TypeName |
+                                    DebugEvaluationResultFields.Classes |
+                                    DebugEvaluationResultFields.Length |
+                                    DebugEvaluationResultFields.SlotCount |
+                                    DebugEvaluationResultFields.AttrCount |
+                                    DebugEvaluationResultFields.Dim |
+                                    DebugEvaluationResultFields.Flags;
+                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment", fields);
                                 var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
                                 _topLevelVariables.Clear();

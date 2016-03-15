@@ -165,17 +165,29 @@ namespace Microsoft.R.Debugger {
 
             return token;
         }
+        public Task<DebugEvaluationResult> EvaluateAsync(
+            string expression,
+            DebugEvaluationResultFields fields,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            return EvaluateAsync(null, expression, null, null, fields, null, cancellationToken);
+        }
 
-        public Task<DebugEvaluationResult> EvaluateAsync(string expression, CancellationToken cancellationToken = default(CancellationToken)) {
-            return EvaluateAsync(null, expression, cancellationToken: cancellationToken);
+        public Task<DebugEvaluationResult> EvaluateAsync(
+            string expression,
+            DebugEvaluationResultFields fields,
+            int? reprMaxLength,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            return EvaluateAsync(null, expression, null, null, fields, reprMaxLength, cancellationToken);
         }
 
         public async Task<DebugEvaluationResult> EvaluateAsync(
             DebugStackFrame stackFrame,
             string expression,
-            string name = null,
-            string env = null,
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            string name,
+            string env,
+            DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {

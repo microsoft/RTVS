@@ -81,10 +81,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                var fields = (DebugEvaluationResultFields.All & ~DebugEvaluationResultFields.ReprAll) |
-                        DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr;
-
-                // assumption: DebugEvaluationResult returns children in ascending order
+                const DebugEvaluationResultFields fields =
+                    DebugEvaluationResultFields.Expression |
+                    DebugEvaluationResultFields.Kind |
+                    DebugEvaluationResultFields.ReprStr |
+                    DebugEvaluationResultFields.TypeName |
+                    DebugEvaluationResultFields.Classes |
+                    DebugEvaluationResultFields.Length |
+                    DebugEvaluationResultFields.SlotCount |
+                    DebugEvaluationResultFields.AttrCount |
+                    DebugEvaluationResultFields.Dim |
+                    DebugEvaluationResultFields.Flags;
                 IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, 100);
 
                 result = new List<IRSessionDataObject>();

@@ -188,7 +188,7 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
 
-                var res = (await debugSession.EvaluateAsync("is.function(f)")).As<DebugValueEvaluationResult>();
+                var res = (await debugSession.EvaluateAsync("is.function(f)", DebugEvaluationResultFields.ReprDeparse)).As<DebugValueEvaluationResult>();
                 res.GetRepresentation().Deparse
                     .Should().Be("TRUE");
             }
