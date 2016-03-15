@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                             textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                             offset = -1;
                         }
-                        FormatOperations.FormatLine(textView, textView.TextBuffer, ast, offset);
+                        FormatOperations.FormatLine(textView, textView.TextBuffer, offset);
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);

@@ -51,13 +51,12 @@ namespace Microsoft.R.Editor.Formatting {
                 // it will look as if the editor just eats the Enter. Instead, we will not be
                 // autoformatting in this specific case. User can always format either the document
                 // or select the block and reformat it.
-                et.EnsureTreeReady();
                 if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, et.AstRoot , - 1);
+                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, ast , - 1);
                     if (formatScope) {
                         FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
                     } else {
-                        FormatOperations.FormatLine(textView, subjectBuffer, et.AstRoot, -1);
+                        FormatOperations.FormatLine(textView, subjectBuffer, -1);
                     }
                 }
             } else if (typedChar == ';') {
@@ -67,8 +66,7 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    et.EnsureTreeReady();
-                    FormatOperations.FormatLine(textView, subjectBuffer, et.AstRoot, 0);
+                    FormatOperations.FormatLine(textView, subjectBuffer, 0);
                 }
             } else if (typedChar == '}') {
                 FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));

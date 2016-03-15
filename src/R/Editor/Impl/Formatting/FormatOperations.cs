@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Formatting {
                 AstRoot ast = document.EditorTree.AstRoot;
                 IAstNode node = ast.GetNodeOfTypeFromPosition<T>(position) as IAstNode;
                 if (node != null) {
-                    UndoableFormatRange(textView, textBuffer, ast, node);
+                    UndoableFormatRange(textView, textBuffer, node);
                 }
             }
         }
@@ -78,7 +78,7 @@ namespace Microsoft.R.Editor.Formatting {
 
                 try {
                     // Now format the scope
-                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, ast, REditorSettings.FormatOptions, baseIndentPosition);
+                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, baseIndentPosition);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = MapCaretToBuffer(textView, textBuffer);
@@ -98,7 +98,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats line relatively to the line that the caret is currently at
         /// </summary>
-        public static void FormatLine(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int offset) {
+        public static void FormatLine(ITextView textView, ITextBuffer textBuffer, int offset) {
             SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
             if (!caretPoint.HasValue) {
                 return;
@@ -109,16 +109,16 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine line = snapshot.GetLineFromLineNumber(Math.Max(0, lineNumber + offset));
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
-            UndoableFormatRange(textView, textBuffer, ast, formatRange);
+            UndoableFormatRange(textView, textBuffer, formatRange);
         }
 
-        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, AstRoot ast, ITextRange formatRange) {
+        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange) {
             ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
             undoAction.Open(Resources.AutoFormat);
             bool changed = false;
             try {
                 // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, ast, REditorSettings.FormatOptions);
+                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions);
             } finally {
                 undoAction.Close(!changed);
             }
