@@ -44,7 +44,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox Grid.Column="0" x:Name="FilePathBox" />
-                    <Button Grid.Column="1" Content="..."/>
+                    <Button Grid.Column="1" x:Name="FileOpenButton" Content="..." Click="FileOpenButton_Click"/>
                 </Grid>
                 <!-- Name -->
                 <TextBlock Grid.Column="0" Grid.Row="1">Name</TextBlock>
@@ -60,7 +60,7 @@
                     <ComboBoxItem>Automatic</ComboBoxItem>
                 </ComboBox>
                 <!-- Heading -->
-                <TextBlock Grid.Column="0" Grid.Row="3">Heading</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="3">Header</TextBlock>
                 <TextBox Grid.Column="1" Grid.Row="3">...</TextBox>
                 <!-- Row names -->
                 <TextBlock Grid.Column="0" Grid.Row="4">Row names</TextBlock>
@@ -87,7 +87,16 @@
                         <RowDefinition />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Foreground="Yellow">File Preview</TextBlock>
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0">Input File</TextBlock>
+                        <ScrollViewer Grid.Row="1" >
+                            <TextBlock x:Name="InputFilePreview"></TextBlock>
+                        </ScrollViewer>
+                    </Grid>
                     <TextBlock Grid.Row="1" Foreground="Green">Data Frame</TextBlock>
                 </Grid>
             </Grid>
@@ -99,8 +108,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBox x:Name="CommandPreviewBox" Grid.Column="0" />
-            <Button x:Name="RunButton" Content="Run" Grid.Column="1" />
-            <Button x:Name="CancelButton" Content="Cancel" Grid.Column="2" />
+            <Button x:Name="RunButton" Content="Run" Grid.Column="1"
+                    Click="RunButton_Click"/>
+            <Button x:Name="CancelButton" Content="Cancel" Grid.Column="2"
+                    Click="CancelButton_Click"/>
         </Grid>
     </Grid>
 </ui:DialogWindow>
