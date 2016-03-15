@@ -24,26 +24,26 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>
-        public static void FormatCurrentNode<T>(ITextView textView, ITextBuffer textBuffer) where T : class {
+        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer) {
             SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
             if (!caretPoint.HasValue) {
                 return;
             }
-            FormatNode<T>(textView, textBuffer, caretPoint.Value.Position);
-        }
-
-        /// <summary>
-        /// Formats node at position
-        /// </summary>
-        public static void FormatNode<T>(ITextView textView, ITextBuffer textBuffer, int position) where T : class {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             if (document != null) {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
-                IAstNode node = ast.GetNodeOfTypeFromPosition<T>(position) as IAstNode;
-                if (node != null) {
-                    UndoableFormatRange(textView, textBuffer, node);
-                }
+                IAstNode node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Value - 1)) as IAstNode;
+                FormatNode(textView, textBuffer, node);
+            }
+        }
+
+        /// <summary>
+        /// Formats specific AST node 
+        /// </summary>
+        public static void FormatNode(ITextView textView, ITextBuffer textBuffer, IAstNode node) {
+            if (node != null) {
+                UndoableFormatRange(textView, textBuffer, node);
             }
         }
 
@@ -60,11 +60,12 @@ namespace Microsoft.R.Editor.Formatting {
 
                 int baseIndentPosition = -1;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-                AstRoot ast = document.EditorTree.AstRoot;
-                
+                var et = document.EditorTree;
+                var ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : et.AstRoot;
+
                 // Find scope to format
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
-                
+
                 // Scope indentation is defined by its parent statement.
                 IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(caretPoint.Value);
                 if (parentStatement != null && parentStatement.Scope == scope) {
@@ -83,6 +84,7 @@ namespace Microsoft.R.Editor.Formatting {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = MapCaretToBuffer(textView, textBuffer);
                         if (caretPoint.HasValue) {
+                            document.EditorTree.EnsureTreeReady();
                             ast = document.EditorTree.AstRoot;
                             scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
                             IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);

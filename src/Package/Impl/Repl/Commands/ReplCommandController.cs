@@ -145,7 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatNode<IStatement>(textView, textBuffer, position);
+                FormatOperations.FormatCurrentStatement(textView, textBuffer);
             }
         }
 

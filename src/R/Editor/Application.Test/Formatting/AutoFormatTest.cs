@@ -295,6 +295,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
         public void R_AutoFormatFuncionDefinition01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 string text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type(text);
                 script.DoIdle(300);

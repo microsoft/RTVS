@@ -47,9 +47,10 @@ namespace Microsoft.R.Editor.Formatting {
                 // autoformatting in this specific case. User can always format either the document
                 // or select the block and reformat it.
                 if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, ast , - 1);
-                    if (formatScope) {
-                        FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
+                    var scopeStatement = GetFormatScope(textView, subjectBuffer, ast, -1);
+                    // Do not format large scope blocks for performance reasons
+                    if (scopeStatement != null && scopeStatement.Length < 200) {
+                        FormatOperations.FormatNode(textView, subjectBuffer, scopeStatement);
                     } else {
                         FormatOperations.FormatLine(textView, subjectBuffer, -1);
                     }
@@ -64,7 +65,7 @@ namespace Microsoft.R.Editor.Formatting {
                     FormatOperations.FormatLine(textView, subjectBuffer, 0);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer);
             }
         }
 
@@ -100,13 +101,8 @@ namespace Microsoft.R.Editor.Formatting {
             );
         }
 
-        private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-        }
-
-        private static bool ShouldFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int lineOffset) {
-            SnapshotPoint? caret = MapCaretToBuffer(textView, textBuffer);
+        private static IKeywordScopeStatement GetFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int lineOffset) {
+            SnapshotPoint? caret = REditorDocument.MapCaretPositionFromView(textView);
             if (caret.HasValue) {
                 try {
                     int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
@@ -114,12 +110,11 @@ namespace Microsoft.R.Editor.Formatting {
                     string lineText = line.GetText();
                     if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
                         IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
-                        return scopeStatement != null;
+                        return scopeStatement;
                     }
                 } catch (Exception) { }
             }
-
-            return false;
+            return null;
         }
     }
 }

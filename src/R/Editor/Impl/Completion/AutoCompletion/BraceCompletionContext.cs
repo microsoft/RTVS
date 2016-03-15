@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 AutoFormat.IgnoreOnce = false;
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentNode<IStatement>(session.TextView, session.SubjectBuffer);
+                FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer);
             }
         }
 
