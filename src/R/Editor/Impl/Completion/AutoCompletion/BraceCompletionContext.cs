@@ -36,13 +36,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// Called after the session has been removed from the stack.
         /// </summary>
         /// <param name="session">Default brace completion session</param>
-        public void Finish(IBraceCompletionSession session) {
-            //if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
-            //    AutoFormat.IgnoreOnce = false;
-            //    EnsureTreeReady(session.SubjectBuffer);
-            //    FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: false);
-            //}
-        }
+        public void Finish(IBraceCompletionSession session) { }
 
         /// <summary>
         /// Called by the editor when return is pressed while both 

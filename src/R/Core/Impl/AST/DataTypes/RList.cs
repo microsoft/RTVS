@@ -33,7 +33,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
                 if (this.properties.IsValueCreated)
                     return (RObject)properties.Value[index];
 
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
             set {
                 this.properties.Value[index] = value;
@@ -47,7 +47,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
                 if (this.properties.IsValueCreated)
                     return (RObject)this.properties.Value[key];
 
-                throw new ArgumentOutOfRangeException("key");
+                throw new ArgumentOutOfRangeException(nameof(key));
             }
             set {
                 this.properties.Value[key] = value;

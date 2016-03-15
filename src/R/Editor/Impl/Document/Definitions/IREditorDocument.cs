@@ -57,7 +57,5 @@ namespace Microsoft.R.Editor.Document.Definitions
         /// Fires when massive change is complete
         /// </summary>
         event EventHandler<EventArgs> MassiveChangeEnded;
-
-        void InvokeWhenReady(Action<object> action, object p, Type type);
     }
 }

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Func<int, T> GetItem,
             int count) {
             if (GetItem == null) {
-                throw new ArgumentNullException("GetItem");
+                throw new ArgumentNullException(nameof(GetItem));
             }
 
             Index = index;

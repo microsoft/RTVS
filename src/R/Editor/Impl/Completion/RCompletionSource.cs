@@ -24,13 +24,10 @@ namespace Microsoft.R.Editor.Completion {
     /// Provides actual content for the intellisense dropdown
     /// </summary>
     public sealed class RCompletionSource : ICompletionSource {
-        private static readonly string _asyncIntellisenseSession = "Async R Intellisense Session";
         private ITextBuffer _textBuffer;
-        private ICompletionSession _asyncSession;
 
         public RCompletionSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
-            _textBuffer.Changed += OnTextBufferChanged;
         }
 
         /// <summary>
@@ -41,54 +38,26 @@ namespace Microsoft.R.Editor.Completion {
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
             Debug.Assert(EditorShell.IsUIThread);
 
-            if (_asyncSession != null) {
-                return;
-            }
-
             IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
             if (doc == null) {
                 return;
             }
 
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
+            var t = DateTime.Now;
+
             if (!doc.EditorTree.IsReady) {
-                // Parsing is pending. Make completion async.
-                CreateAsyncSession(doc, position, session, completionSets);
+                doc.EditorTree.InvokeWhenReady((o) => {
+                    var d = (DateTime.Now - t).TotalMilliseconds;
+                    RCompletionController controller = ServiceManager.GetService<RCompletionController>(session.TextView);
+                    if (controller != null) {
+                        controller.ShowCompletion(autoShownCompletion: true);
+                        controller.FilterCompletionSession();
+                    }
+                }, null, this.GetType(), processNow: true);
             } else {
                 PopulateCompletionList(position, session, completionSets, doc.EditorTree.AstRoot);
             }
-        }
-
-        private void CreateAsyncSession(IREditorDocument document, int position, ICompletionSession session, IList<CompletionSet> completionSets) {
-            _asyncSession = session;
-            _asyncSession.Properties.AddProperty(_asyncIntellisenseSession, String.Empty);
-            document.EditorTree.ProcessChangesAsync(TreeUpdatedCallback);
-        }
-        private void TreeUpdatedCallback() {
-            if (_asyncSession == null) {
-                return;
-            }
-
-            RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
-            _asyncSession = null;
-            if (controller != null) {
-                controller.ShowCompletion(autoShownCompletion: true);
-                controller.FilterCompletionSession();
-            }
-        }
-
-        private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            DismissAsyncSession();
-        }
-
-        private void DismissAsyncSession() {
-           if (_asyncSession != null && _asyncSession.Properties != null && _asyncSession.Properties.ContainsProperty(_asyncIntellisenseSession) && !_asyncSession.IsDismissed) {
-                RCompletionController controller = ServiceManager.GetService<RCompletionController>(_asyncSession.TextView);
-                if (controller != null) {
-                    controller.DismissCompletionSession();
-                }
-            }
-            _asyncSession = null;
         }
 
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
@@ -171,10 +140,7 @@ namespace Microsoft.R.Editor.Completion {
 
         #region Dispose
         public void Dispose() {
-            if (_textBuffer != null) {
-                _textBuffer.Changed -= OnTextBufferChanged;
-                _textBuffer = null;
-            }
+            _textBuffer = null;
         }
         #endregion
     }

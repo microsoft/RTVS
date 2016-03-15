@@ -72,10 +72,10 @@ namespace Microsoft.R.Core.AST {
                 return;
 
             if (start < 0 || start >= Children.Count)
-                throw new ArgumentOutOfRangeException("start");
+                throw new ArgumentOutOfRangeException(nameof(start));
 
             if (count < 0 || count > Children.Count || start + count > Children.Count)
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
 
             if (Children.Count == count) {
                 _children = new TextRangeCollection<IAstNode>();

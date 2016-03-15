@@ -317,15 +317,14 @@ namespace Microsoft.R.Editor.Document {
                     colorizer.Resume();
 
                 if (changed) {
-                    TextChangeEventArgs textChange = new TextChangeEventArgs(0, 0, TextBuffer.CurrentSnapshot.Length, 0,
-                        new TextProvider(_editorTree.TextSnapshot, partial: true), new TextStream(string.Empty));
+                    TextChangeEventArgs textChange =
+                        new TextChangeEventArgs(0, 0, TextBuffer.CurrentSnapshot.Length, 0,
+                            new TextProvider(_editorTree.TextSnapshot, partial: true),
+                            new TextStream(string.Empty));
 
                     List<TextChangeEventArgs> textChanges = new List<TextChangeEventArgs>();
                     textChanges.Add(textChange);
                     _editorTree.FireOnUpdatesPending(textChanges);
-
-                    _editorTree.FireOnUpdateBegin();
-                    _editorTree.FireOnUpdateCompleted(TreeUpdateType.NewTree);
                 }
 
                 _editorTree.TreeUpdateTask.Resume();

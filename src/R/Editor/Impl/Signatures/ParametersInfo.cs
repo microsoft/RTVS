@@ -43,10 +43,10 @@ namespace Microsoft.R.Editor.Signatures {
 
         public ParameterInfo(string functionName, FunctionCall functionCall, int parameterIndex, string parameterName, bool namedParameter) {
             if (functionName == null)
-                throw new ArgumentNullException("functionName");
+                throw new ArgumentNullException(nameof(functionName));
 
             if (functionCall == null)
-                throw new ArgumentNullException("functionCall");
+                throw new ArgumentNullException(nameof(functionCall));
 
             FunctionName = functionName;
             FunctionCall = functionCall;

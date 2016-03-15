@@ -100,6 +100,29 @@ namespace Microsoft.R.Editor.Tree {
             // OK to run in sync if changes are pending since we need it updated now
             TreeUpdateTask.EnsureProcessingComplete();
         }
+
+        /// <summary>
+        /// Provides a way to automatically invoke particular action
+        /// once when tree becomes ready again. Typically used in
+        /// asynchronous completion and signature help scenarios.
+        /// </summary>
+        /// <param name="action">Action to invoke</param>
+        /// <param name="p">Parameter to pass to the action</param>
+        /// <param name="type">Action identifier</param>
+        /// <param name="processNow">
+        /// If true, change processing begins now. 
+        /// If false, next regular parsing pass with process pending changes.
+        /// </param>
+        public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) {
+            if (IsReady) {
+                action(p);
+            } else {
+                _actionsToInvokeOnReady[type] = new TreeReadyAction() { Action = action, Parameter = p };
+                if(processNow) {
+                    TreeUpdateTask.ProcessPendingTextBufferChanges(async: true);
+                }
+            }
+        }
         #endregion
 
         /// <summary>
@@ -152,6 +175,13 @@ namespace Microsoft.R.Editor.Tree {
         /// Parse tree
         /// </summary>
         private AstRoot _astRoot;
+
+        class TreeReadyAction {
+            public Action<object> Action;
+            public object Parameter;
+        }
+
+        private Dictionary<Type, TreeReadyAction> _actionsToInvokeOnReady = new Dictionary<Type, TreeReadyAction>();
         #endregion
 
         #region Constructors
@@ -205,20 +235,6 @@ namespace Microsoft.R.Editor.Tree {
         internal void ProcessChanges() {
             if (this.IsDirty) {
                 TreeUpdateTask.ProcessPendingTextBufferChanges(false);
-            }
-        }
-
-        /// <summary>
-        /// Initiates processing of pending changes asynchronously. When processing
-        /// completes, tree will invoke completion callback on UI thread. Useful when building 
-        /// completion/intellisense list asynchronously.
-        /// </summary>
-        public void ProcessChangesAsync(Action treeUpdateCompleteCallback) {
-            if (this.IsDirty) {
-                TreeUpdateTask.RegisterCompletionCallback(treeUpdateCompleteCallback);
-                TreeUpdateTask.ProcessPendingTextBufferChanges(true);
-            } else {
-                treeUpdateCompleteCallback.Invoke();
             }
         }
         #endregion

@@ -22,25 +22,10 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
         private ITextBuffer _textBuffer;
-        private IREditorDocument _document;
-        private ITextView _textView;
 
         public SignatureHelpSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
-
-            _document = REditorDocument.TryFromTextBuffer(textBuffer);
-            if (_document != null) {
-                _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
-            }
-        }
-
-        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
-            if (_textView != null) {
-                var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
-                broker.TriggerSignatureHelp(_textView);
-                _textView = null;
-            }
         }
 
         #region ISignatureHelpSource
@@ -50,13 +35,13 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             var document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if (document != null) {
-                if (!document.EditorTree.IsReady) {
-                    _textView = session.TextView;
-                    return;
-                }
-                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
+            if (document != null && !document.EditorTree.IsReady) {
+                document.EditorTree.InvokeWhenReady((p) => {
+                    var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                    broker.TriggerSignatureHelp((ITextView)p);
+                }, session.TextView, this.GetType(), processNow: true);
             }
+            AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
         }
 
         public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession) {
@@ -154,17 +139,10 @@ namespace Microsoft.R.Editor.Signatures {
 
         #region IDisposable
         public void Dispose() {
-            if (_document != null && _document.EditorTree != null) {
-                _document.EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
-                _document = null;
-            }
-
             if (_textBuffer != null) {
                 ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
                 _textBuffer = null;
             }
-
-            _textView = null;
         }
         #endregion
     }

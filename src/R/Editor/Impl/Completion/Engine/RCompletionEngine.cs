@@ -39,7 +39,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             // First check file completion - it happens inside strings
             string directory;
-            if(CanShowFileCompletion(context.AstRoot, context.Position, out directory)) { 
+            if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
                     providers.Add(new FilesCompletionProvider(directory));
                 }
@@ -48,20 +48,18 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             // Now check if position is inside a string and if so, suppress completion list
             var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
-            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.String) {
-                // No completion in string
+            if (tokenNode != null && (tokenNode.Token.TokenType == RTokenType.String ||
+                                      tokenNode.Token.TokenType == RTokenType.Number ||
+                                      tokenNode.Token.TokenType == RTokenType.Complex)) {
+                // No completion in strings or numbers
                 return providers;
             }
 
-            // Identifier character is a trigger but only as a first character so it doesn't suddenly
-            // bring completion back on a second character if user dismissed it after the first one,
-            // or in a middle of 'install.packages' when user types dot or in floating point numbers.
-            if (context.Position > 1 && autoShownCompletion) {
-                char triggerChar = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 1, 1)[0];
-                char charBeforeTigger = context.TextBuffer.CurrentSnapshot.GetText(context.Position - 2, 1)[0];
-                if (RTokenizer.IsIdentifierCharacter(triggerChar) && RTokenizer.IsIdentifierCharacter(charBeforeTigger)) {
-                    return providers;
-                }
+            // Check end of numeric token like 2.- dot should not be bringing completion
+            tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(Math.Max(0, context.Position - 1));
+            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.Number) {
+                // No completion in numbers
+                return providers;
             }
 
             if (IsInFunctionArgumentName<FunctionDefinition>(context.AstRoot, context.Position)) {

@@ -71,14 +71,6 @@ namespace Microsoft.R.Editor.Tree {
         /// </summary>
         private readonly object _disposeLock = new object();
 
-        /// <summary>
-        /// List of tree update completion callbacks supplied called once
-        /// when tree update completes. Typically used by async intellisense
-        /// providers that show intellisense list placeholder if tree is not
-        /// ready and populate it with actual items when tree update completes.
-        /// </summary>
-        private List<Action> _completionCallbacks = new List<Action>();
-
         private DateTime _lastChangeTime = DateTime.UtcNow;
         #endregion
 
@@ -112,10 +104,6 @@ namespace Microsoft.R.Editor.Tree {
 
         internal void TakeThreadOwnership() {
             _ownerThreadId = Thread.CurrentThread.ManagedThreadId;
-        }
-
-        internal void RegisterCompletionCallback(Action action) {
-            _completionCallbacks.Add(action);
         }
 
         internal void ClearChanges() {
@@ -582,8 +570,6 @@ namespace Microsoft.R.Editor.Tree {
             if (!staleChanges) {
                 // Now that tree is fully updated, fire events
                 if (_editorTree != null) {
-                    // First notify registered callbacks
-                    InvokeCompletionCallbacks();
                     _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
 
                     if (changed) {
@@ -595,17 +581,6 @@ namespace Microsoft.R.Editor.Tree {
                     }
                 }
             }
-        }
-
-        private void InvokeCompletionCallbacks() {
-            // Copy collection since callbacks may disconnet on invoke
-            var list = new List<Action>();
-            list.AddRange(_completionCallbacks);
-
-            foreach (var cb in list)
-                cb.Invoke();
-
-            _completionCallbacks.Clear();
         }
 
         List<TreeChangeEventRecord> ApplyTreeChanges(EditorTreeChangeCollection changesToApply) {
