@@ -3,17 +3,12 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
