@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.DataInspect.DataImport;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -22,7 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
         protected override void Handle() {
             base.Handle();
 
-            throw new System.NotImplementedException();
+            var dlg = new ImportDataWindow();
+            dlg.ShowModal();
         }
 
         private IVariableDataProvider VariableDataProvider {

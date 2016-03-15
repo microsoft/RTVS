@@ -56,6 +56,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\DataImport\ImportDataWindow.xaml.cs">
+      <DependentUpon>ImportDataWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataInspect\DataSource\DelegateList.cs" />
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\GridDataSource.cs" />
@@ -1225,6 +1228,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataInspect\DataImport\ImportDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
