@@ -44,6 +44,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("repeat\r\n    if (x > 1)\r\n", 2, 8)]
         [InlineData("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3, 4)]
         [InlineData("if (x > 1)\n", 1, 4)]
+        [InlineData("x <- function(a) {\n  if(TRUE)\n\n}", 2, 6)]
         public void Scope(string content, int lineNum, int expectedIndent) {
             int? indent = GetSmartIndent(content, lineNum);
             indent.Should().HaveValue().And.Be(expectedIndent);

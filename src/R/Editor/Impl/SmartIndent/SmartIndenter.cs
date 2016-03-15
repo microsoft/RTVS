@@ -126,7 +126,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 return GetBlockIndent(line) + REditorSettings.IndentSize;
             }
 
-            int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+            int nonWsPosition1 = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
             // First, let's see if we are in a function argument list and then indent based on 
             // the opening brace position. This needs to be done before looking for scopes
@@ -145,17 +145,35 @@ namespace Microsoft.R.Editor.SmartIndent {
 
             // First try new line so in case of 'if () { } else { | }' we find
             // the 'else' which defines the scope and not the parent 'if'.
-            IAstNodeWithScope scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
-            if (scopeStatement == null) {
+            var scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
+            if (scopeStatement1 == null) {
                 // If not found, try previous line that may define the indent
-                scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
-                if (scopeStatement == null) {
+                scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition1);
+                if (scopeStatement1 == null) {
                     // Line start position works for typical scope-defining statements like if() or while()
                     // but it won't find function definition in 'x <- function(a) {'
                     // Try end of the line instead
-                    nonWsPosition = Math.Max(0, prevLineText.TrimEnd().Length - 1);
-                    scopeStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition);
+                    var nonWsPosition2 = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                    scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition2);
                 }
+            }
+
+            // Pick either function or scope depending what is the narrowest
+            // so in case of 
+            //  x <- function() {
+            //      if(...)<Enter>
+            //  }
+            // we will use the 'if' and not the function definition
+            IAstNodeWithScope scopeStatement;
+            var scopeStatement2 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition1);
+            if(scopeStatement1 != null && scopeStatement2 != null) {
+                scopeStatement = scopeStatement1.Length < scopeStatement2.Length ? scopeStatement1 : scopeStatement2;
+            }
+            else if(scopeStatement1 != null) {
+                scopeStatement = scopeStatement1;
+            }
+            else {
+                scopeStatement = scopeStatement2;
             }
 
             if (scopeStatement != null) {
