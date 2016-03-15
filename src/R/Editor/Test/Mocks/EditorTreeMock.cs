@@ -55,7 +55,7 @@ namespace Microsoft.R.Editor.Test.Mocks
         public void ProcessChangesAsync(Action completeCallback) {
         }
 
-        public void InvokeWhenReady(Action<object> action, object p, Type type) { }
+        public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) { }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;

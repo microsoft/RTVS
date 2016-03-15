@@ -570,9 +570,8 @@ namespace Microsoft.R.Editor.Tree {
             if (!staleChanges) {
                 // Now that tree is fully updated, fire events
                 if (_editorTree != null) {
-                    _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
-
                     if (changed) {
+                        _editorTree.FirePostUpdateEvents(eventsToFire, fullParse);
                         DebugTree.VerifyTree(_editorTree);
                     }
 

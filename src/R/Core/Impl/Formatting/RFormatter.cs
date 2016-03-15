@@ -619,8 +619,12 @@ namespace Microsoft.R.Core.Formatting {
                         case RTokenType.OpenDoubleSquareBracket:
                         case RTokenType.Comma:
                         case RTokenType.Operator:
-                        case RTokenType.Comment:
                             preserveUserIndent = true;
+                            break;
+
+                        case RTokenType.Comment:
+                            // Preserve user indent in argument lists
+                            preserveUserIndent = _openBraces.Count > 0 && _openBraces.Peek() != RTokenType.OpenCurlyBrace;
                             break;
                     }
                 }
