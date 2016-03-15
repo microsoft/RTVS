@@ -43,7 +43,7 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             if (!string.IsNullOrEmpty(formattedText) && !string.Equals(formattedText, originalText, StringComparison.Ordinal)) {
-                var selectionTracker = new RSelectionTracker(TextView, TargetBuffer);
+                var selectionTracker = new RSelectionTracker(TextView, TargetBuffer, new TextRange(0, TargetBuffer.CurrentSnapshot.Length));
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try {
@@ -62,17 +62,17 @@ namespace Microsoft.R.Editor.Formatting {
                         IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
 
 #if DEBUG
-                        if (oldTokens.Count != newTokens.Count) {
-                            for (int i = 0; i < Math.Min(oldTokens.Count, newTokens.Count); i++) {
-                                if (oldTokens[i].TokenType != newTokens[i].TokenType) {
-                                    Debug.Assert(false, Invariant($"Token type difference at {i}"));
-                                    break;
-                                } else if (oldTokens[i].Length != newTokens[i].Length) {
-                                    Debug.Assert(false, Invariant($"token length difference at {i}"));
-                                    break;
-                                }
-                            }
-                        }
+                        //if (oldTokens.Count != newTokens.Count) {
+                        //    for (int i = 0; i < Math.Min(oldTokens.Count, newTokens.Count); i++) {
+                        //        if (oldTokens[i].TokenType != newTokens[i].TokenType) {
+                        //            Debug.Assert(false, Invariant($"Token type difference at {i}"));
+                        //            break;
+                        //        } else if (oldTokens[i].Length != newTokens[i].Length) {
+                        //            Debug.Assert(false, Invariant($"token length difference at {i}"));
+                        //            break;
+                        //        }
+                        //    }
+                        //}
 #endif
                         IncrementalTextChangeApplication.ApplyChangeByTokens(
                             TargetBuffer,

@@ -60,7 +60,7 @@ namespace Microsoft.R.Editor.Formatting {
             // Apply formatted text without indentation. We then will update the parse tree 
             // so we can calculate proper line indents from the AST via the smart indenter.
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
-                var selectionTracker = new RSelectionTracker(textView, textBuffer);
+                var selectionTracker = new RSelectionTracker(textView, textBuffer, formatRange);
 
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);

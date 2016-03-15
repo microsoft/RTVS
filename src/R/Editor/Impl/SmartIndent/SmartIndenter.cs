@@ -121,6 +121,11 @@ namespace Microsoft.R.Editor.SmartIndent {
             // try end of the line as in 'x <- function(...) {'
             prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
             string prevLineText = prevLine.GetText();
+            if(prevLineText.Trim().Equals("else", StringComparison.Ordinal)) {
+                // Quick short circuit for new 'else' since it is not in the ASt yet.
+                return GetBlockIndent(line) + REditorSettings.IndentSize;
+            }
+
             int nonWsPosition = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
             // First, let's see if we are in a function argument list and then indent based on 
