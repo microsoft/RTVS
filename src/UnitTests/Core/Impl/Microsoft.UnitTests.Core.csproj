@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="FluentAssertions\CollectionAssertionsExtensions.cs" />
     <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
+    <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />
     <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
     <Compile Include="Mef\CatalogFactory.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />

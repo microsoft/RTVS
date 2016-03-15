@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
@@ -22,6 +23,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
@@ -38,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IFileSystem _fileSystem;
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
@@ -45,9 +48,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRSession _session;
         private IRHistory _history;
 
+        /// <summary>
+        /// Backing field for the similarly named property.
+        /// </summary>
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject
+            , [ImportMany("Microsoft.VisualStudio.ProjectSystem.Microsoft.VisualStudio.Shell.Interop.IVsProject")] IEnumerable<Lazy<IVsProject>> cpsIVsProjects
+            , IProjectLockService projectLockService
+            , IRInteractiveWorkflowProvider workflowProvider
+            , IInteractiveWindowComponentContainerFactory componentContainerFactory
+            , IRToolsSettings toolsSettings
+            , IFileSystem fileSystem
+            , IThreadHandling threadHandling) {
+
             _unconfiguredProject = unconfiguredProject;
+            _cpsIVsProjects = cpsIVsProjects;
             _workflowProvider = workflowProvider;
             _componentContainerFactory = componentContainerFactory;
 
@@ -57,7 +72,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher.Error += FileWatcherError;
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
         }
 
@@ -106,9 +122,36 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
         }
 
+        private void FileWatcherError(object sender, EventArgs args) {
+            _fileWatcher.Error -= FileWatcherError;
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                foreach (var iVsProjectLazy in _cpsIVsProjects) {
+                    IVsProject iVsProject;
+                    try {
+                        iVsProject = iVsProjectLazy.Value;
+                    } catch (Exception) {
+                        continue;
+                    }
+
+                    if (iVsProject.AsUnconfiguredProject() != _unconfiguredProject) {
+                        continue;
+                    }
+
+                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof (SVsSolution));
+                    solution.CloseSolutionElement((uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
+                    return;
+                }
+            });
+        }
+
         private async Task ProjectUnloading(object sender, EventArgs args) {
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
+            _fileWatcher.Dispose();
             if (!_session.IsHostRunning) {
+                return;
+            }
+
+            if (!_fileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }
 

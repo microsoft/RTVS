@@ -35,6 +35,7 @@
     <Compile Include="IO\MsBuildFileSystemWatcher.FileCreated.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.FileDeleted.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.FileRenamed.cs" />
+    <Compile Include="IO\MsBuildFileSystemWatcherEntries.cs" />
     <Compile Include="Logging\FileSystemMirroringProjectLoggingExtensions.cs" />
     <Compile Include="Logging\MsBuildFileSystemWatcherLoggingExtensions.cs" />
     <Compile Include="MsBuild\XDefaultValueProperty.cs" />

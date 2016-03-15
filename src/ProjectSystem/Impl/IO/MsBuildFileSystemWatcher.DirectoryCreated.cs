@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.IO;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
@@ -11,19 +10,21 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher {
         private class DirectoryCreated : IFileSystemChange {
+            private readonly MsBuildFileSystemWatcherEntries _entries;
             private readonly string _rootDirectory;
             private readonly IFileSystem _fileSystem;
             private readonly IMsBuildFileSystemFilter _fileSystemFilter;
             private readonly string _directoryFullPath;
 
-            public DirectoryCreated(string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string directoryFullPath) {
+            public DirectoryCreated(MsBuildFileSystemWatcherEntries entries, string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string directoryFullPath) {
+                _entries = entries;
                 _rootDirectory = rootDirectory;
                 _fileSystem = fileSystem;
                 _fileSystemFilter = fileSystemFilter;
                 _directoryFullPath = directoryFullPath;
             }
 
-            public void Apply(Changeset changeset) {
+            public void Apply() {
                 if (!_directoryFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
@@ -53,8 +54,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                             continue;
                         }
 
-                        // When we add new directory, we don't remove it from RemovedDirectories, cause the content of the removed directory should be deleted anyway
-                        changeset.AddedDirectories.Add(relativeDirectoryPath);
+                        _entries.AddDirectory(relativeDirectoryPath);
                     }
 
                     foreach (var entry in directory.EnumerateFileSystemInfos()) {
@@ -63,9 +63,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                         } else {
                             var relativeFilePath = PathHelper.MakeRelative(_rootDirectory, entry.FullName);
 
-                            // If file with the same name was removed, just remove it from the RemovedFiles set
-                            if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes) && !changeset.RemovedFiles.Remove(relativeFilePath)) {
-                                changeset.AddedFiles.Add(relativeFilePath);
+                            if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes)) {
+                                _entries.AddFile(relativeFilePath);
                             }
                         }
                     }
