@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         private readonly MsBuildFileSystemWatcherEntries _entries;
         private readonly ConcurrentQueue<IFileSystemChange> _queue;
         private readonly int _delayMilliseconds;
-        private readonly int _recoverDelayMilliseconds;
+        private readonly int _recoveryDelayMilliseconds;
         private readonly IFileSystem _fileSystem;
         private readonly IMsBuildFileSystemFilter _fileSystemFilter;
         private readonly TaskScheduler _taskScheduler;
@@ -37,17 +37,18 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         public IReceivableSourceBlock<Changeset> SourceBlock { get; }
         public event EventHandler<EventArgs> Error;
 
-        public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null, IActionLog log = null) {
+        public MsBuildFileSystemWatcher(string directory, string filter, int delayMilliseconds, int recoveryDelayMilliseconds, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, TaskScheduler taskScheduler = null, IActionLog log = null) {
             Requires.NotNullOrWhiteSpace(directory, nameof(directory));
             Requires.NotNullOrWhiteSpace(filter, nameof(filter));
             Requires.Range(delayMilliseconds >= 0, nameof(delayMilliseconds));
+            Requires.Range(recoveryDelayMilliseconds >= 0, nameof(recoveryDelayMilliseconds));
             Requires.NotNull(fileSystem, nameof(fileSystem));
             Requires.NotNull(fileSystemFilter, nameof(fileSystemFilter));
 
             _directory = directory;
             _filter = filter;
             _delayMilliseconds = delayMilliseconds;
-            _recoverDelayMilliseconds = 1000;
+            _recoveryDelayMilliseconds = recoveryDelayMilliseconds;
             _fileSystem = fileSystem;
             _fileSystemFilter = fileSystemFilter;
             _taskScheduler = taskScheduler ?? TaskScheduler.Default;
@@ -157,7 +158,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             _directoryWatcher.EnableRaisingEvents = false;
             _attributesWatcher.EnableRaisingEvents = false;
 
-            await Task.Delay(_recoverDelayMilliseconds);
+            await Task.Delay(_recoveryDelayMilliseconds);
             EmptyQueue();
 
             var rescanChange = new DirectoryCreated(_entries, _directory, _fileSystem, _fileSystemFilter, _directory);
@@ -174,7 +175,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
             if (isRecovered) {
                 try {
-
                     _fileWatcher.EnableRaisingEvents = true;
                     _directoryWatcher.EnableRaisingEvents = true;
                     _attributesWatcher.EnableRaisingEvents = true;

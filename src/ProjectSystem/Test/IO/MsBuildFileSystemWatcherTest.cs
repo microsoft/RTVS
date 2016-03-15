@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -32,7 +30,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
             var fileSystem = Substitute.For<IFileSystem>();
             var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();
 
-            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, fileSystem, fileSystemFilter, log: NullLog.Instance); 
+            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, delay, fileSystem, fileSystemFilter, log: NullLog.Instance); 
             fileSystemFilter.Received().Seal();
 
             var fileSystemWatchers = new List<IFileSystemWatcher>();
@@ -54,23 +52,24 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
         }
 
         [CompositeTest]
-        [InlineData(null, "*", 0, true, true, typeof(ArgumentNullException))]
-        [InlineData("", "*", 0, true, true, typeof(ArgumentException))]
-        [InlineData(" ", "*", 0, true, true, typeof(ArgumentException))]
+        [InlineData(null, "*", 0, 0, true, true, typeof(ArgumentNullException))]
+        [InlineData("", "*", 0, 0, true, true, typeof(ArgumentException))]
+        [InlineData(" ", "*", 0, 0, true, true, typeof(ArgumentException))]
 
-        [InlineData(@"Z:\abc\", null, 0, true, true, typeof(ArgumentNullException))]
-        [InlineData(@"Z:\abc\", "", 0, true, true, typeof(ArgumentException))]
-        [InlineData(@"Z:\abc\", " ", 0, true, true, typeof(ArgumentException))]
+        [InlineData(@"Z:\abc\", null, 0, 0, true, true, typeof(ArgumentNullException))]
+        [InlineData(@"Z:\abc\", "", 0, 0, true, true, typeof(ArgumentException))]
+        [InlineData(@"Z:\abc\", " ", 0, 0, true, true, typeof(ArgumentException))]
 
-        [InlineData(@"Z:\abc\", "*", -1, true, true, typeof(ArgumentOutOfRangeException))]
-        [InlineData(@"Z:\abc\", "*", 0, false, true, typeof(ArgumentNullException))]
-        [InlineData(@"Z:\abc\", "*", 0, true, false, typeof(ArgumentNullException))]
-        public void Ctor_ThrowArgumentException(string projectFolder, string filter, int delay, bool hasFileSystem, bool hasFileSystemFilter, Type exceptionType)
+        [InlineData(@"Z:\abc\", "*", -1, 0, true, true, typeof(ArgumentOutOfRangeException))]
+        [InlineData(@"Z:\abc\", "*", 0, -1, true, true, typeof(ArgumentOutOfRangeException))]
+        [InlineData(@"Z:\abc\", "*", 0, 0, false, true, typeof(ArgumentNullException))]
+        [InlineData(@"Z:\abc\", "*", 0, 0, true, false, typeof(ArgumentNullException))]
+        public void Ctor_ThrowArgumentException(string projectFolder, string filter, int delay, int recoveryDelay, bool hasFileSystem, bool hasFileSystemFilter, Type exceptionType)
         {
             var fileSystem = hasFileSystem ? Substitute.For<IFileSystem>() : null;
             var fileSystemFilter = hasFileSystemFilter ? Substitute.For<IMsBuildFileSystemFilter>() : null;
 
-            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, fileSystem, fileSystemFilter, log: NullLog.Instance);
+            Action ctor = () => new MsBuildFileSystemWatcher(projectFolder, filter, delay, recoveryDelay, fileSystem, fileSystemFilter, log: NullLog.Instance);
             ctor.ShouldThrow(exceptionType);
         }
 

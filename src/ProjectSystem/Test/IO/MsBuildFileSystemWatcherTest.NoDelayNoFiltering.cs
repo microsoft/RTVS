@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                 _taskScheduler = new ControlledTaskScheduler(SynchronizationContext.Current);
 
                 DirectoryInfoStubFactory.Create(_fileSystem, ProjectDirectory);
-                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, _fileSystem, fileSystemFilter, _taskScheduler, NullLog.Instance);
+                _fileSystemWatcher = new MsBuildFileSystemWatcher(ProjectDirectory, "*", 0, 0, _fileSystem, fileSystemFilter, _taskScheduler, NullLog.Instance);
                 _fileSystemWatcher.Start();
 
                 _fileWatcher = watchers.FileWatcher;
@@ -604,6 +604,41 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                     .And.HaveAddedDirectories(expectedAddedDirectories)
                     .And.HaveRemovedFiles(expectedRemovedFiles)
                     .And.NoOtherChanges();
+            }
+
+            [Test]
+            public async Task FileWatcherError_Recovered() {
+                var errorTask = EventTaskSources.MsBuildFileSystemWatcher.Error.Create(_fileSystemWatcher);
+                using (_taskScheduler.Pause()) {
+                    _fileWatcher.Error += Raise.Event<ErrorEventHandler>(_fileWatcher, new ErrorEventArgs(new InvalidOperationException()));
+                }
+
+                await _taskScheduler;
+                errorTask.IsCompleted.Should().BeFalse();
+
+                using (_taskScheduler.Pause()) {
+                    FileInfoStubFactory.Create(_fileSystem, @"Z:\abc\abc.cs");
+                    RaiseCreated(_fileWatcher, @"Z:\abc\abc.cs");
+                }
+
+                await _taskScheduler;
+
+                _changeset.Should().NotBeNull()
+                    .And.HaveAddedFiles("abc.cs")
+                    .And.NoOtherChanges();
+            }
+
+            [Test]
+            public async Task FileWatcherError_RaiseError() {
+                _fileSystem.GetDirectoryInfo(@"Z:\abc\").Throws<InvalidOperationException>();
+                var errorTask = EventTaskSources.MsBuildFileSystemWatcher.Error.Create(_fileSystemWatcher);
+
+                using (_taskScheduler.Pause()) {
+                    _fileWatcher.Error += Raise.Event<ErrorEventHandler>(_fileWatcher, new ErrorEventArgs(new InvalidOperationException()));
+                }
+
+                await _taskScheduler;
+                errorTask.Status.Should().Be(TaskStatus.RanToCompletion);
             }
         }
     }

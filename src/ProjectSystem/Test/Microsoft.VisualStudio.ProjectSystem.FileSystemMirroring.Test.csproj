@@ -111,6 +111,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="EventTaskSources.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherEntriesTest.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherTest.Delay50MsNoFiltering.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcherTest.NoDelayNoFiltering.cs" />

@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, fileSystem, new RMsBuildFileSystemFilter());
             _fileWatcher.Error += FileWatcherError;
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
         }

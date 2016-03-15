@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
@@ -44,35 +39,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
                 var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
                 var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath);
-
-                //// If directory with the oldRelativePath was previously added, remove it from the AddedDirectories, add newRelativePath and change all its content paths:
-                //if (changeset.AddedDirectories.Contains(oldRelativePath)) {
-                //    UpdatePrefix(changeset.AddedDirectories, oldRelativePath, newRelativePath);
-                //    UpdatePrefix(changeset.AddedFiles, oldRelativePath, newRelativePath);
-                //    return;
-                //}
-
-                //// if directory with the newRelativePath was previously deleted, keep both changes (delete and rename),
-                //// cause the content of the directory to be deleted is different from the content of renamed directory
-
-                //// if there is a directory that was renamed into oldRelativePath, rename it to newRelativePath instead
-                //// or remove from RenamedDirectories if previouslyRenamedRelativePath equal to newRelativePath
-                //var previouslyRenamedRelativePath = changeset.RenamedDirectories.GetFirstKeyByValueIgnoreCase(oldRelativePath);
-                //if (string.IsNullOrEmpty(previouslyRenamedRelativePath)) {
-                //    changeset.RenamedDirectories[oldRelativePath] = newRelativePath;
-                //} else if (previouslyRenamedRelativePath.EqualsIgnoreCase(newRelativePath)) {
-                //    changeset.RenamedDirectories.Remove(previouslyRenamedRelativePath);
-                //} else {
-                //    changeset.RenamedDirectories[previouslyRenamedRelativePath] = newRelativePath;
-                //}
-            }
-
-            private void UpdatePrefix(HashSet<string> items, string oldPrefix, string newPrefix) {
-                var itemsToUpdate = items.Where(a => a.StartsWithIgnoreCase(oldPrefix)).ToList();
-                foreach (var item in itemsToUpdate) {
-                    items.Remove(item);
-                    items.Add(newPrefix + item.Substring(oldPrefix.Length));
-                }
             }
 
             private void DeleteInsteadOfRename() {
