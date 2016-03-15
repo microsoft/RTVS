@@ -255,27 +255,12 @@ namespace Microsoft.R.Editor.Tree {
             }
         }
 
-        /// <summary>
-        /// Notification that a text change has been incorporated into the tree
-        /// </summary>
-        public event EventHandler<TextChangeEventArgs> ReflectTextChange;
-
         internal void NotifyTextChange(int start, int oldLength, int newLength) {
             TextChangeEventArgs change = new TextChangeEventArgs(start, start, oldLength, newLength);
             List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>(1);
             changes.Add(change);
 
-            NotifyTextChanges(changes);
-        }
-
-        internal void NotifyTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
-            _astRoot.ReflectTextChanges(textChanges);
-
-            if (ReflectTextChange != null) {
-                foreach (TextChangeEventArgs curChange in textChanges) {
-                    ReflectTextChange(this, curChange);
-                }
-            }
+            _astRoot.ReflectTextChanges(changes);
         }
 
         internal TextChange PendingChanges {
@@ -365,7 +350,9 @@ namespace Microsoft.R.Editor.Tree {
                 removedNodes.Add(child);
             }
 
-            PreviousAstRoot = _astRoot;
+            if (_astRoot.Children.Count > 0) {
+                PreviousAstRoot = _astRoot;
+            }
             _astRoot = new AstRoot(_astRoot.TextProvider);
 
             if (removedNodes.Count > 0) {

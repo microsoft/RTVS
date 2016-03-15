@@ -16,6 +16,7 @@ namespace Microsoft.R.Core.Test.Formatting {
         [InlineData("for(i in c('a', # comment\n 'b')) {}", "for (i in c('a', # comment\n 'b')) { }")]
         [InlineData("func(a,\n     b,\n     c)", "func(a,\n     b,\n     c)")]
         [InlineData("for(i in c(a,\n     b,\n     c)) {}", "for (i in c(a,\n     b,\n     c)) { }")]
+        [InlineData("for(i in c(a , # comment\n    ))", "for (i in c(a, # comment\n    ))\n")]
         public void PreserveBreaks(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);

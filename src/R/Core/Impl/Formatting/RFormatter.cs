@@ -239,10 +239,7 @@ namespace Microsoft.R.Core.Formatting {
             AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: false);
 
             while (braceCounter.Count > 0 && !_tokens.IsEndOfStream()) {
-                if (braceCounter.CountBrace(_tokens.CurrentToken)) {
-                    AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: false);
-                    continue;
-                }
+                braceCounter.CountBrace(_tokens.CurrentToken);
 
                 if (ShouldAppendTextBeforeToken()) {
                     AppendTextBeforeToken();
@@ -660,7 +657,7 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private bool ShouldAppendTextBeforeToken() {
-            if(_tokens.PreviousToken.TokenType == RTokenType.Comment &&
+            if (_tokens.PreviousToken.TokenType == RTokenType.Comment &&
                 _tokens.CurrentToken.TokenType != RTokenType.Comment) {
                 // TODO: implement function argument alignment instead.
                 //

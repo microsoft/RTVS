@@ -256,6 +256,7 @@ namespace Microsoft.R.Editor.Tree {
                     textChange.NewRange = TextRange.FromBounds(0, context.NewText.Length);
 
                     // Remove all elements from the tree
+                    _editorTree.AstRoot.ReflectTextChange(context.OldStart, context.OldLength, context.NewLength);
                     _editorTree.Invalidate();
                 } else {
                     textChange.OldRange = context.OldRange;
