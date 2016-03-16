@@ -177,7 +177,12 @@
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
     <Compile Include="Plots\PlotHistoryProvider.cs" />
-    <Compile Include="ProjectSystem\ExcludeFromProjectCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\CommandUtilities.cs" />
+    <Compile Include="ProjectSystem\Commands\OpenContainingFolderCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\CopyItemPathCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\SourceFilesCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\SetDirectoryHereCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\ExcludeFromProjectCommand.cs" />
     <Compile Include="ProjectSystem\OpenRDataCommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsStd97CommandGroupHandler.cs" />
     <Compile Include="ProjectSystem\OpenRDataVsUiHierarchyWindowCommandGroupHandler.cs" />
@@ -190,6 +195,7 @@
     <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
+    <Compile Include="Repl\Commands\SourceFileHelper.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
