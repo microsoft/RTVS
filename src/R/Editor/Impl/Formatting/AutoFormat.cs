@@ -9,6 +9,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -32,7 +33,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             var document = REditorDocument.FromTextBuffer(textView.TextBuffer);
             var et = document.EditorTree;
-            var ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : et.AstRoot;
+            var ast = et.GetCurrentRootOrPreviousIfNotReady();
 
             // We don't want to auto-format inside strings
             if (ast.IsPositionInsideString(rPoint.Value.Position)) {

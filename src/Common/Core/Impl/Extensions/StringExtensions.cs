@@ -104,8 +104,12 @@ namespace Microsoft.Common.Core {
             }
             return result;
         }
-
-        public static string GetLineBreakSequence(this string s) {
+        /// <summary>
+        /// Given a string (typically text from a file) determines
+        /// which line break sequence should be used when editing or
+        /// formatting the file. If no line breaks found, LF is returned.
+        /// </summary>
+        public static string GetDefaultLineBreakSequence(this string s) {
             int i = s.IndexOfAny(CharExtensions.LineBreakChars);
             if (i >= 0) {
                 if (s[i] == '\n') {

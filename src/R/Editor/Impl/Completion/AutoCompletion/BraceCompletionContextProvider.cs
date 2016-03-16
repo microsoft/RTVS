@@ -6,6 +6,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
@@ -43,7 +44,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(openingPoint.Snapshot.TextBuffer);
             if (document != null) {
                 var et = document.EditorTree;
-                var ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : et.AstRoot;
+                var ast = et.GetCurrentRootOrPreviousIfNotReady();
 
                 // We don't want to complete inside strings
                 if (ast.IsPositionInsideString(openingPoint.Position)) {

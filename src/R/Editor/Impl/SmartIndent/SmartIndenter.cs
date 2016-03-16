@@ -16,6 +16,7 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -106,7 +107,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                     return 0;
                 }
                 var et = document.EditorTree;
-                ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : document.EditorTree.AstRoot;
+                ast = et.GetCurrentRootOrPreviousIfNotReady();
             }
 
             // The challenge here is to find scope to base the indent on.

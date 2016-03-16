@@ -57,7 +57,8 @@ namespace Microsoft.R.Editor.Completion.Engine {
 
             // Check end of numeric token like 2.- dot should not be bringing completion
             tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(Math.Max(0, context.Position - 1));
-            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.Number) {
+            if (tokenNode != null && (tokenNode.Token.TokenType == RTokenType.Number ||
+                                      tokenNode.Token.TokenType == RTokenType.Complex)) {
                 // No completion in numbers
                 return providers;
             }

@@ -58,17 +58,14 @@ namespace Microsoft.R.Editor.Formatting {
                 document.EditorTree.EnsureTreeReady();
                 var ast = document.EditorTree.AstRoot;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
- 
+
                 // Find scope to format
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
 
-                ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
-                undoAction.Open(Resources.AutoFormat);
-                bool changed = false;
-
-                try {
+                using (var undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer)) {
+                    undoAction.Open(Resources.AutoFormat);
                     // Now format the scope
-                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = MapCaretToBuffer(textView, textBuffer);
@@ -77,11 +74,11 @@ namespace Microsoft.R.Editor.Formatting {
                             ast = document.EditorTree.AstRoot;
                             scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
                             IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
-                            changed = true;
                         }
                     }
-                } finally {
-                    undoAction.Close(!changed);
+                    if (changed) {
+                        undoAction.Commit();
+                    }
                 }
             }
         }
@@ -104,14 +101,12 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange) {
-            ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
-            undoAction.Open(Resources.AutoFormat);
-            bool changed = false;
-            try {
+            using (var undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer)) {
+                undoAction.Open(Resources.AutoFormat);
                 // Now format the scope
-                changed = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions);
-            } finally {
-                undoAction.Close(!changed);
+                if (RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions)) {
+                    undoAction.Commit();
+                }
             }
         }
 
@@ -128,11 +123,8 @@ namespace Microsoft.R.Editor.Formatting {
         public static int GetBaseIndentFromNode(ITextBuffer textBuffer, AstRoot ast, int position) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             IAstNode node = GetIndentDefiningNode(ast, position);
-            if (node != null) {
-                ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(node.Start);
-                return SmartIndenter.GetSmartIndent(baseLine, ast);
-            }
-            return 0;
+            ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(node.Start);
+            return SmartIndenter.GetSmartIndent(baseLine, ast);
         }
 
         private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {

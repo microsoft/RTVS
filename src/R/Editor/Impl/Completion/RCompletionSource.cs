@@ -44,11 +44,9 @@ namespace Microsoft.R.Editor.Completion {
             }
 
             int position = session.GetTriggerPoint(_textBuffer).GetPosition(_textBuffer.CurrentSnapshot);
-            var t = DateTime.Now;
 
             if (!doc.EditorTree.IsReady) {
                 doc.EditorTree.InvokeWhenReady((o) => {
-                    var d = (DateTime.Now - t).TotalMilliseconds;
                     RCompletionController controller = ServiceManager.GetService<RCompletionController>(session.TextView);
                     if (controller != null) {
                         controller.ShowCompletion(autoShownCompletion: true);
