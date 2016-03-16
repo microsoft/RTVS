@@ -18,6 +18,7 @@ namespace Microsoft.Languages.Editor.Undo {
         private IEditorOperations _editorOperations;
         private bool _undoAfterClose;
         private bool _addRollbackOnCancel;
+        private bool _discardChanges = true;
 
         public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel = true) {
             if (!EditorShell.Current.IsUnitTestEnvironment) {
@@ -47,9 +48,16 @@ namespace Microsoft.Languages.Editor.Undo {
             }
         }
 
-        public void Close(bool discardChanges) {
+        /// <summary>
+        /// Marks action as successfull. Dispose will place the undo unit on the undo stack.
+        /// </summary>
+        public void Commit() {
+            _discardChanges = false;
+        }
+
+        public void Dispose() {
             if (_undoTransaction != null) {
-                if (discardChanges) {
+                if (_discardChanges) {
                     _undoTransaction.Cancel();
                 } else {
                     _editorOperations.AddAfterTextBufferChangePrimitive();

@@ -26,6 +26,7 @@ namespace Microsoft.R.Editor.Tree {
     /// validation (syntx check) thread.
     /// </summary>
     public partial class EditorTree : IEditorTree, IDisposable {
+        
         #region IEditorTree
         /// <summary>
         /// Visual Studio core editor text buffer
@@ -45,6 +46,13 @@ namespace Microsoft.R.Editor.Tree {
                 return _astRoot;
             }
         }
+
+        /// <summary>
+        /// Previous AST. May be used in cases when parsing is not acceptable
+        /// due to performance hit and full tree fidelity is not required
+        /// such as in determining smart indent on Enter. 
+        /// </summary>
+        public AstRoot PreviousAstRoot { get; private set; }
 
         /// <summary>
         /// Returns true if tree matches current document snapshot
@@ -91,6 +99,29 @@ namespace Microsoft.R.Editor.Tree {
 
             // OK to run in sync if changes are pending since we need it updated now
             TreeUpdateTask.EnsureProcessingComplete();
+        }
+
+        /// <summary>
+        /// Provides a way to automatically invoke particular action
+        /// once when tree becomes ready again. Typically used in
+        /// asynchronous completion and signature help scenarios.
+        /// </summary>
+        /// <param name="action">Action to invoke</param>
+        /// <param name="p">Parameter to pass to the action</param>
+        /// <param name="type">Action identifier</param>
+        /// <param name="processNow">
+        /// If true, change processing begins now. 
+        /// If false, next regular parsing pass with process pending changes.
+        /// </param>
+        public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) {
+            if (IsReady) {
+                action(p);
+            } else {
+                _actionsToInvokeOnReady[type] = new TreeReadyAction() { Action = action, Parameter = p };
+                if(processNow) {
+                    TreeUpdateTask.ProcessPendingTextBufferChanges(async: true);
+                }
+            }
         }
         #endregion
 
@@ -144,6 +175,13 @@ namespace Microsoft.R.Editor.Tree {
         /// Parse tree
         /// </summary>
         private AstRoot _astRoot;
+
+        class TreeReadyAction {
+            public Action<object> Action;
+            public object Parameter;
+        }
+
+        private Dictionary<Type, TreeReadyAction> _actionsToInvokeOnReady = new Dictionary<Type, TreeReadyAction>();
         #endregion
 
         #region Constructors
@@ -199,20 +237,6 @@ namespace Microsoft.R.Editor.Tree {
                 TreeUpdateTask.ProcessPendingTextBufferChanges(false);
             }
         }
-
-        /// <summary>
-        /// Initiates processing of pending changes asynchronously. When processing
-        /// completes, tree will invoke completion callback on UI thread. Useful when building 
-        /// completion/intellisense list asynchronously.
-        /// </summary>
-        public void ProcessChangesAsync(Action treeUpdateCompleteCallback) {
-            if (this.IsDirty) {
-                TreeUpdateTask.RegisterCompletionCallback(treeUpdateCompleteCallback);
-                TreeUpdateTask.ProcessPendingTextBufferChanges(true);
-            } else {
-                treeUpdateCompleteCallback.Invoke();
-            }
-        }
         #endregion
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
@@ -231,27 +255,12 @@ namespace Microsoft.R.Editor.Tree {
             }
         }
 
-        /// <summary>
-        /// Notification that a text change has been incorporated into the tree
-        /// </summary>
-        public event EventHandler<TextChangeEventArgs> ReflectTextChange;
-
         internal void NotifyTextChange(int start, int oldLength, int newLength) {
             TextChangeEventArgs change = new TextChangeEventArgs(start, start, oldLength, newLength);
             List<TextChangeEventArgs> changes = new List<TextChangeEventArgs>(1);
             changes.Add(change);
 
-            NotifyTextChanges(changes);
-        }
-
-        internal void NotifyTextChanges(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
-            _astRoot.ReflectTextChanges(textChanges);
-
-            if (ReflectTextChange != null) {
-                foreach (TextChangeEventArgs curChange in textChanges) {
-                    ReflectTextChange(this, curChange);
-                }
-            }
+            _astRoot.ReflectTextChanges(changes);
         }
 
         internal TextChange PendingChanges {
@@ -341,7 +350,10 @@ namespace Microsoft.R.Editor.Tree {
                 removedNodes.Add(child);
             }
 
-            _astRoot.RemoveChildren(0, _astRoot.Children.Count);
+            if (_astRoot.Children.Count > 0) {
+                PreviousAstRoot = _astRoot;
+            }
+            _astRoot = new AstRoot(_astRoot.TextProvider);
 
             if (removedNodes.Count > 0) {
                 FireOnNodesRemoved(removedNodes);

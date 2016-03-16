@@ -8,12 +8,11 @@ using System.Globalization;
 using System.Threading;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
+using static System.FormattableString;
 
-namespace Microsoft.R.Editor.Tree
-{
-    public partial class EditorTree
-    {
-        private const string _threadContextInvalidMessage = 
+namespace Microsoft.R.Editor.Tree {
+    public partial class EditorTree {
+        private const string _threadContextInvalidMessage =
             "Editor tree events must be fired on a main thread.";
 
         #region IEditorTree Events
@@ -71,23 +70,16 @@ namespace Microsoft.R.Editor.Tree
         /// Fires 'tree updates pending' event on the main thread context
         /// </summary>
         /// <param name="textChanges">List of pending changes</param>
-        internal void FireOnUpdatesPending(IReadOnlyCollection<TextChangeEventArgs> textChanges)
-        {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-            {
+        internal void FireOnUpdatesPending(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
             }
 
-            try
-            {
-                if (UpdatesPending != null)
-                    UpdatesPending(this, new TreeUpdatePendingEventArgs(textChanges));
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.OnUpdatesPending event handler: {0}", ex.Message));
+            try {
+                UpdatesPending?.Invoke(this, new TreeUpdatePendingEventArgs(textChanges));
+            } catch (Exception ex) {
+                Debug.Assert(false, Invariant($"Exception thrown in a tree.UpdatesPending event handler: {ex.Message}"));
             }
         }
 
@@ -95,23 +87,16 @@ namespace Microsoft.R.Editor.Tree
         /// Fires 'positions changed starting inside this element' event on the main thread context
         /// </summary>
         /// <param name="element">Element</param>
-        internal void FireOnPositionsOnlyChanged()
-        {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-            {
+        internal void FireOnPositionsOnlyChanged() {
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
             }
 
-            try
-            {
-                if (PositionsOnlyChanged != null)
-                    PositionsOnlyChanged(this, new TreePositionsOnlyChangedEventArgs());
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.OnPositionsOnlyChanged event handler: {0}", ex.Message));
+            try {
+                PositionsOnlyChanged?.Invoke(this, new TreePositionsOnlyChangedEventArgs());
+            } catch (Exception ex) {
+                Debug.Assert(false, Invariant($"Exception thrown in a tree.PositionsOnlyChanged event handler: {ex.Message}"));
             }
         }
 
@@ -119,87 +104,51 @@ namespace Microsoft.R.Editor.Tree
         /// Fires 'nodes removed' event on the main thread context
         /// </summary>
         /// <param name="nodes">Collection of removed nodes</param>
-        internal void FireOnNodesRemoved(IReadOnlyCollection<IAstNode> nodes)
-        {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-            {
+        internal void FireOnNodesRemoved(IReadOnlyCollection<IAstNode> nodes) {
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
             }
 
-            try
-            {
+            try {
                 // Don't bother if list is empty
-                if (nodes.Count > 0 && NodesRemoved != null)
-                    NodesRemoved(this, new TreeNodesRemovedEventArgs(nodes));
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.FireOnElementsRemoved event handler: {0}", ex.Message));
+                if (nodes.Count > 0) {
+                    NodesRemoved?.Invoke(this, new TreeNodesRemovedEventArgs(nodes));
+                }
+            } catch (Exception ex) {
+                Debug.Assert(false, Invariant($"Exception thrown in a tree.NodesRemoved event handler: {ex.Message}"));
             }
         }
-
-        /// <summary>
-        /// Fires 'nodes removed' event on the main thread context
-        /// </summary>
-        /// <param name="nodes">Collection of removed nodes</param>
-        //internal void FireOnScopeChanged(IAstNode scopeNode)
-        //{
-        //    if (_creatorThread != Thread.CurrentThread.ManagedThreadId)
-        //    {
-        //        Debug.Fail(_threadContextInvalidMessage);
-        //        return;
-        //    }
-
-        //    try
-        //    {
-        //        if (ScopeChanged != null)
-        //            ScopeChanged(this, new TreeScopeChangedEventArgs(scopeNode));
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-        //            "Exception thrown in a tree.FireOnScopeChanged event handler: {0}", ex.Message));
-        //    }
-        //}
 
         /// <summary>
         /// Fires 'update begin' event on the main thread context
         /// </summary>
-        internal void FireOnUpdateBegin()
-        {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-            {
+        internal void FireOnUpdateBegin() {
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
             }
 
-            try
-            {
-                if (UpdateBegin != null)
-                    UpdateBegin(this, EventArgs.Empty);
-            }
-            catch (Exception ex)
-            {
-                Debug.Assert(false, String.Format(CultureInfo.CurrentCulture,
-                    "Exception thrown in a tree.OnUpdateBegin event handler: {0}", ex.Message));
+            try {
+                UpdateBegin?.Invoke(this, EventArgs.Empty);
+            } catch (Exception ex) {
+                Debug.Assert(false, Invariant($"Exception thrown in a tree.UpdateBegin event handler: {ex.Message}"));
             }
         }
 
         /// <summary>
         /// Fires 'update end' event on the main thread context
         /// </summary>
-        internal void FireOnUpdateCompleted(TreeUpdateType updateType)
-        {
-            if (_ownerThread != Thread.CurrentThread.ManagedThreadId)
-            {
+        internal void FireOnUpdateCompleted(TreeUpdateType updateType) {
+            if (_ownerThread != Thread.CurrentThread.ManagedThreadId) {
                 Debug.Fail(_threadContextInvalidMessage);
                 return;
             }
-
-            if (UpdateCompleted != null)
-                UpdateCompleted(this, new TreeUpdatedEventArgs(updateType));
+            try {
+                UpdateCompleted?.Invoke(this, new TreeUpdatedEventArgs(updateType));
+            } catch (Exception ex) {
+                Debug.Assert(false, Invariant($"Exception thrown in a tree.UpdateCompleted event handler: {ex.Message}"));
+            }
         }
     }
 }

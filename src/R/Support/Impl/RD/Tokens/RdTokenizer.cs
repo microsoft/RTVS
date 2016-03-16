@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;

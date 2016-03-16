@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class VariableSubscriptionToken : IEquatable<VariableSubscriptionToken> {
         public VariableSubscriptionToken(int frameIndex, string variableExpression) {
             if (variableExpression == null) {
-                throw new ArgumentNullException("variableExpression");
+                throw new ArgumentNullException(nameof(variableExpression));
             }
             FrameIndex = frameIndex;
             Expression = variableExpression;

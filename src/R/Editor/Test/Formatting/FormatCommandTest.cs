@@ -18,13 +18,14 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class FormatCommandTest {
         [Test]
-        public void FormatDocument() {
+        public void FormatDocument01() {
             string content = "if(x<1){x<-2}";
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             ITextView textView = new TextViewMock(textBuffer);
@@ -38,7 +39,25 @@ namespace Microsoft.R.Editor.Test.Formatting {
             }
 
             string actual = textBuffer.CurrentSnapshot.GetText();
-            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
+            actual.Should().Be("if (x < 1) {\n    x <- 2\n}");
+        }
+
+        [Test]
+        public void FormatDocument02() {
+            string content = "\r\nif(x<1){x<-2}";
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            ITextView textView = new TextViewMock(textBuffer);
+
+            using (var command = new FormatDocumentCommand(textView, textBuffer)) {
+                var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
+                status.Should().Be(CommandStatus.SupportedAndEnabled);
+
+                object o = new object();
+                command.Invoke(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT, null, ref o);
+            }
+
+            string actual = textBuffer.CurrentSnapshot.GetText();
+            actual.Should().Be("\r\nif (x < 1) {\r\n    x <- 2\r\n}");
         }
 
         [Test]
@@ -61,17 +80,12 @@ namespace Microsoft.R.Editor.Test.Formatting {
             }
         }
 
-        [Test]
-        public void FormatOnPaste01() {
-            string actual = FormatFromClipboard("if(x<1){x<-2}");
-            actual.Should().Be("if (x < 1) {\r\n    x <- 2\r\n}");
-        }
-
-        [Test]
-        public void FormatOnPaste02() {
-            string content = "\"a\r\nb\r\nc\"";
+        [CompositeTest]
+        [InlineData("if(x<1){x<-2}", "if (x < 1) {\n    x <- 2\n}")]
+        [InlineData("\"a\r\nb\r\nc\"", "\"a\r\nb\r\nc\"")]
+        public void FormatOnPaste(string content, string expected) {
             string actual = FormatFromClipboard(content);
-            actual.Should().Be(content);
+            actual.Should().Be(expected);
         }
 
         private string FormatFromClipboard(string content) {

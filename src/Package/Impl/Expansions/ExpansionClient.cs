@@ -210,14 +210,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 Debug.Assert(mappedSpans.Count == 1);
 
                 if (mappedSpans.Count > 0) {
-                    IREditorDocument document = REditorDocument.TryFromTextBuffer(TextBuffer);
-                    if (document != null) {
-                        document.EditorTree.EnsureTreeReady();
-
-                        RangeFormatter.FormatRange(TextView, TextBuffer,
-                            new TextRange(mappedSpans[0].Start, mappedSpans[0].Length),
-                            document.EditorTree.AstRoot, REditorSettings.FormatOptions);
-                    }
+                    RangeFormatter.FormatRange(TextView, TextBuffer,
+                        new TextRange(mappedSpans[0].Start, mappedSpans[0].Length),
+                        REditorSettings.FormatOptions);
                 }
             }
             return hr;

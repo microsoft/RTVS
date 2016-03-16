@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
@@ -80,7 +81,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                             textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                             offset = -1;
                         }
-                        FormatOperations.FormatLine(textView, textView.TextBuffer, ast, offset);
+                        FormatOperations.FormatLine(textView, textView.TextBuffer, offset);
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);

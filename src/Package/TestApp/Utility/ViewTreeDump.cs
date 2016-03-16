@@ -27,12 +27,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
 
             if (_regenerateBaselineFiles) {
                 var serializedActual = SerializeVisualTree(actual);
-
                 string baselineFilePath = fixture.GetSourcePath(testFileName);
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
                 var deserializedExpected = DeserializeVisualTree(testFilePath);
-
                 CompareVisualTree(actual, deserializedExpected);
             }
         }

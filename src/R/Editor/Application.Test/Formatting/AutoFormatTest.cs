@@ -56,7 +56,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "if (x > 1) \r\n{\r\n    a\r\n}";
+                string expected = "if (x > 1)\r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "x <- function(a) \r\n{\r\n    a\r\n}";
+                string expected = "x <- function(a)\r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -146,9 +146,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "x <- function(a,\r\n    b) \r\n{\r\n    a\r\n}";
+                string expected = "x <- function(a,\r\n              b)\r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
-
                 actual.Should().Be(expected);
             }
         }
@@ -214,6 +213,26 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
+        public void R_AutoFormatScopeBraces11() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("{");
+                script.DoIdle(200);
+                script.Type("{ENTER}{");
+                script.DoIdle(200);
+                script.Type("{ENTER}{");
+                script.DoIdle(200);
+                script.Type("{ENTER}a");
+                string expected = "{\r\n    {\r\n        {\r\n            a\r\n        }\r\n    }\r\n}";
+
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatFunctionArgument() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
@@ -221,7 +240,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("zzzz(a=1,{ENTER}");
                 script.DoIdle(300);
                 script.Type("b=2");
-                string expected = "zzzz(a = 1,\r\n    b=2)";
+                string expected = "zzzz(a = 1,\r\n     b=2)";
 
                 string actual = script.EditorText;
                 actual.Should().Be(expected);
@@ -258,22 +277,80 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition01() {
+        public void R_AutoFormatFunctonArguments01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                REditorSettings.FormatOptions.BracesOnNewLine = true;
-                string text = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07, {ENTER}          yname = NULL){ENTER}{{ENTER}abind(a, )";
+                string text = "x <-function (x,{ENTER}y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
                 script.DoIdle(300);
 
                 string actual = script.EditorText;
                 string expected =
-@"library(abind)
-x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
-          yname = NULL) 
-{
-    abind(a, )
-}";
+"x <- function(x,\r\n" +
+"              y,\r\n" +
+"              wt = NULL)\r\n";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFunctonArguments02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text = "x <-function (x,y,{ENTER}wt= NULL){ENTER}";
+
+                script.Type(text);
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"              wt = NULL)\r\n";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition01() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type(text);
+                script.DoIdle(300);
+                script.Type("a");
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"              wt = NULL) {\r\n" +
+"    a\r\n" +
+"}";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition02() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text1 = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07,{ENTER}";
+                string text2 = "yname = NULL){{ENTER}abind(a, )";
+
+                script.Type(text1);
+                script.DoIdle(300);
+                script.Type(text2);
+                script.DoIdle(300);
+
+                string actual = script.EditorText;
+                string expected =
+"library(abind)\r\n" +
+"x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,\r\n" +
+"              yname = NULL) {\r\n" +
+"    abind(a, )\r\n" +
+"}";
                 actual.Should().Be(expected);
             }
         }

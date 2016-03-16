@@ -144,9 +144,12 @@ namespace Microsoft.Languages.Editor.Classification {
 
         public virtual IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span) {
             List<ClassificationSpan> classifications = new List<ClassificationSpan>();
-            ITextSnapshot textSnapshot = TextBuffer.CurrentSnapshot;
+            if(_suspended) {
+                return classifications;
+            }
 
-            if (span.Length <= 2 || _suspended) {
+            ITextSnapshot textSnapshot = TextBuffer.CurrentSnapshot;
+            if (span.Length <= 2) {
                 string ws = textSnapshot.GetText(span);
                 if (String.IsNullOrWhiteSpace(ws))
                     return classifications;

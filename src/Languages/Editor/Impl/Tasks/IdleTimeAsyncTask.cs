@@ -98,7 +98,7 @@ namespace Microsoft.Languages.Editor.Tasks {
                 throw new InvalidOperationException("Task is running");
 
             if (taskAction == null)
-                throw new ArgumentNullException("taskAction");
+                throw new ArgumentNullException(nameof(taskAction));
 
             Tag = tag;
 

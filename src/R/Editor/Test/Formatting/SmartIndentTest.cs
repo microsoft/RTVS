@@ -9,41 +9,45 @@ using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.SmartIndent]
     public class SmartIndentTest {
-        [Test]
-        public void SmartIndent_NoScopeTest01() {
-            int? indent = GetSmartIndent("if (x > 1)\n", 1);
-
-            indent.Should().HaveValue()
-                .And.Be(4);
-        }
-
-        [Test]
-        public void SmartIndent_UnclosedScopeTest01() {
-            int? indent = GetSmartIndent("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3);
-
-            indent.Should().HaveValue()
-                .And.Be(4);
-        }
-
-        [Test]
-        public void SmartIndent_UnclosedScopeTest02() {
-            int? indent = GetSmartIndent("repeat\r\n    if (x > 1)\r\n", 2);
-
-            indent.Should().HaveValue()
-                .And.Be(8);
-        }
-
-        [Test]
-        public void SmartIndent_ScopedIfTest01() {
-            int? indent = GetSmartIndent("if (x > 1) {\r\n\r\n}", 1);
-
-            indent.Should().HaveValue()
-                .And.Be(4);
+        [CompositeTest]
+        [InlineData("x <- function(a) {\n", 1, 4)]
+        [InlineData("x <- function(a) {\n\n", 2, 4)]
+        [InlineData("x <- function(a) {\n\n\n", 3, 4)]
+        [InlineData("x <- function(a,\nb) {\n", 2, 4)]
+        [InlineData("x <- function(a, b, c,\n              d) {\n}", 2, 0)]
+        [InlineData("x <- function(a, b, c,\n              d) {\n\n}", 2, 4)]
+        [InlineData("x <- function(a, b, c,\nd) {\n\n}", 2, 4)]
+        [InlineData("{\n", 1, 4)]
+        [InlineData("{\n    {\n", 2, 8)]
+        [InlineData("{\n    {\n    {\n", 3, 8)]
+        [InlineData("{\n    {\n        {\n", 3, 12)]
+        [InlineData("{\n\n}", 1, 4)]
+        [InlineData("{\n    {\n\n    }\n}", 2, 8)]
+        [InlineData("{\n\n}\n", 3, 0)]
+        [InlineData("{\n    {\n\n    }\n}", 4, 0)]
+        [InlineData("{\n    {\n\n    }\n\n}", 4, 4)]
+        [InlineData("if(1) {\n", 1, 4)]
+        [InlineData("if(1) {\n", 1, 4)]
+        [InlineData("library(abind)\n", 1, 0)]
+        [InlineData("if (x > 1) {\n\n}", 2, 0)]
+        [InlineData("while (TRUE) {\n    if (x > 1) {\n\n    }\n}", 4, 0)]
+        [InlineData("if (x > 1) {\r\n\r\n}", 1, 4)]
+        [InlineData("x <- function(a,\n", 1, 14)]
+        [InlineData("func(a,\n", 1, 5)]
+        [InlineData("if (TRUE)\n    x <- 1\n\n", 3, 0)]
+        [InlineData("repeat\r\n    if (x > 1)\r\n", 2, 8)]
+        [InlineData("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3, 4)]
+        [InlineData("if (x > 1)\n", 1, 4)]
+        [InlineData("x <- function(a) {\n  if(TRUE)\n\n}", 2, 6)]
+        public void Scope(string content, int lineNum, int expectedIndent) {
+            int? indent = GetSmartIndent(content, lineNum);
+            indent.Should().HaveValue().And.Be(expectedIndent);
         }
 
         private int? GetSmartIndent(string content, int lineNumber) {

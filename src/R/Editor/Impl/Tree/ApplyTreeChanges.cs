@@ -59,7 +59,12 @@ namespace Microsoft.R.Editor.Tree {
             FireOnUpdatesPending(textChanges);
             FireOnUpdateBegin();
 
-            FireOnUpdateCompleted(TreeUpdateType.NewTree); // newTree ? TreeUpdateType.NewTree : TreeUpdateType.ScopeChanged);
+            foreach (var a in _actionsToInvokeOnReady.Values) {
+                a.Action(a.Parameter);
+            }
+            _actionsToInvokeOnReady.Clear();
+
+            FireOnUpdateCompleted(TreeUpdateType.NewTree);
         }
     }
 }

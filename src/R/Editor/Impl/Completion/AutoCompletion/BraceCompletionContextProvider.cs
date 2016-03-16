@@ -6,6 +6,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
@@ -42,17 +43,17 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         public bool TryCreateContext(ITextView textView, SnapshotPoint openingPoint, char openingBrace, char closingBrace, out IBraceCompletionContext context) {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(openingPoint.Snapshot.TextBuffer);
             if (document != null) {
-                IEditorTree tree = document.EditorTree;
-                tree.EnsureTreeReady();
+                var et = document.EditorTree;
+                var ast = et.GetCurrentRootOrPreviousIfNotReady();
 
                 // We don't want to complete inside strings
-                if (tree.AstRoot.IsPositionInsideString(openingPoint.Position)) {
+                if (ast.IsPositionInsideString(openingPoint.Position)) {
                     context = null;
                     return false;
                 }
 
                 // We don't want to complete inside comments
-                int index = tree.AstRoot.Comments.GetItemContaining(openingPoint.Position);
+                int index = ast.Comments.GetItemContaining(openingPoint.Position);
                 if (index >= 0) {
                     context = null;
                     return false;

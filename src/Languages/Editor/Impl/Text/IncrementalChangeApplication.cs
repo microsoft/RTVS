@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 
@@ -59,6 +58,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// <param name="formatRange">Range that is being formatted in the text buffer</param>
         /// <param name="transactionName">Name of the undo transaction to open</param>
         /// <param name="selectionTracker">Selection tracker object that will save, track
+        /// <param name="additionalAction">Action to perform after changes are applies by undo unit is not yet closed.</param>
         /// and restore selection after changes have been applied.</param>
         public static void ApplyChangeByTokens(
             ITextBuffer textBuffer,
@@ -68,7 +68,8 @@ namespace Microsoft.Languages.Editor.Text {
             IReadOnlyList<ITextRange> newTokens,
             ITextRange formatRange,
             string transactionName,
-            ISelectionTracker selectionTracker) {
+            ISelectionTracker selectionTracker,
+            Action additionalAction = null) {
 
             Debug.Assert(oldTokens.Count == newTokens.Count);
             if (oldTokens.Count == newTokens.Count) {
@@ -94,9 +95,9 @@ namespace Microsoft.Languages.Editor.Text {
                         } else {
                             string newText = newTextProvider.GetText(TextRange.FromBounds(0, newTextProvider.Length));
                             edit.Replace(formatRange.Start, formatRange.Length, newText);
-
                         }
                         edit.Apply();
+                        additionalAction?.Invoke();
                     }
                 }
             }

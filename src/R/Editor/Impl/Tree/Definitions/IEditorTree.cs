@@ -35,6 +35,13 @@ namespace Microsoft.R.Editor.Tree.Definitions
         AstRoot AstRoot { get; }
 
         /// <summary>
+        /// Previous AST. May be used in cases when parsing is not acceptable
+        /// due to performance hit and full tree fidelity is not required
+        /// such as in determining smart indent on Enter. 
+        /// </summary>
+        AstRoot PreviousAstRoot { get; }
+
+        /// <summary>
         /// Event fires when there are text changes pending in the change queue.
         /// Tree users should stop using the tree and release read locks ASAP.
         /// Fires when user made changes to the text buffer and before initial
@@ -120,10 +127,13 @@ namespace Microsoft.R.Editor.Tree.Definitions
         void EnsureTreeReady();
 
         /// <summary>
-        /// Initiates async processing of text buffer changes 
-        /// accumulated so far. When parsing and tree update completes
-        /// tree will invoke the provided callback.
+        /// Provides a way to automatically invoke particular action
+        /// once when tree becomes ready again. Typically used in
+        /// asynchronous completion and signature help scenarios.
         /// </summary>
-        void ProcessChangesAsync(Action completeCallback);
+        /// <param name="action">Action to invoke</param>
+        /// <param name="p">Parameter to pass to the action</param>
+        /// <param name="type">Action identifier</param>
+        void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false);
     }
 }

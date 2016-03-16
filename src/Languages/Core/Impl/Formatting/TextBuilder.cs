@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Formatting {
@@ -27,10 +28,12 @@ namespace Microsoft.Languages.Core.Formatting {
 
         public IndentBuilder IndentBuilder { get { return _indentBuilder; } }
 
+        public string LineBreak { get; set; }
+
         public bool IsAtNewLine { get { return _currentLineLength == 0; } }
 
-        public int CopyFollowingLineBreaks(ITextProvider textProvider, int position) {
-            int lineBreakCount = Whitespace.LineBreaksAfterPosition(textProvider, position);
+        public int CopyFollowingLineBreaks(ITextIterator iterator, int position) {
+            int lineBreakCount = Whitespace.LineBreaksAfterPosition(iterator, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
@@ -41,8 +44,8 @@ namespace Microsoft.Languages.Core.Formatting {
             return breaks;
         }
 
-        public int CopyPrecedingLineBreaks(ITextProvider textProvider, int position) {
-            int lineBreakCount = Whitespace.LineBreaksBeforePosition(textProvider, position);
+        public int CopyPrecedingLineBreaks(ITextIterator iterator, int position) {
+            int lineBreakCount = Whitespace.LineBreaksBeforePosition(iterator, position);
             int recentlyAddedCount = RecentlyAddedLineBreakCount();
             int breaks = lineBreakCount - recentlyAddedCount;
 
@@ -62,19 +65,7 @@ namespace Microsoft.Languages.Core.Formatting {
         }
 
         private int RecentlyAddedLineBreakCount() {
-            int count = 0;
-
-            for (int i = _formattedText.Length - 1; i >= 0; i--) {
-                char ch = _formattedText[i];
-
-                if (!Char.IsWhiteSpace(ch))
-                    break;
-
-                if (ch == '\n')
-                    count++;
-            }
-
-            return count;
+            return Whitespace.LineBreaksBeforePosition(new StringBuilderIterator(_formattedText), _formattedText.Length);
         }
 
         private void AppendNewLine(bool collapseWhitespace = true, bool forceAdd = false) {
@@ -83,8 +74,9 @@ namespace Microsoft.Languages.Core.Formatting {
 
             // Do not insert new line if it is there already
             if (!IsAtNewLine || forceAdd) {
-                AppendText('\r');
-                AppendText('\n');
+                foreach(var ch in LineBreak) {
+                    AppendText(ch);
+                }
                 _currentLine++;
                 _currentLineLength = 0;
                 _currentIndent = 0;

@@ -29,7 +29,7 @@ namespace Microsoft.R.Core.AST.Arguments {
         public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
 
-            Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Identifier || 
+            Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Identifier ||
                          context.Tokens.CurrentToken.TokenType == RTokenType.String);
 
             this.Identifier = RParser.ParseToken(context, this);
@@ -42,11 +42,6 @@ namespace Microsoft.R.Core.AST.Arguments {
                 }
             } else {
                 this.DefaultValue = new NullExpression();
-                if (context.Tokens.IsEndOfStream()) {
-                    context.AddError(new ParseError(ParseErrorType.ExpressionExpected, ErrorLocation.Token, context.Tokens.CurrentToken));
-                } else {
-                    context.AddError(new ParseError(ParseErrorType.ExpressionExpected, ErrorLocation.Token, EqualsSign));
-                }
             }
 
             return base.Parse(context, parent);
