@@ -213,6 +213,26 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
+        public void R_AutoFormatScopeBraces11() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                REditorSettings.FormatOptions.BracesOnNewLine = false;
+
+                script.Type("{");
+                script.DoIdle(200);
+                script.Type("{ENTER}{");
+                script.DoIdle(200);
+                script.Type("{ENTER}{");
+                script.DoIdle(200);
+                script.Type("{ENTER}a");
+                string expected = "{\r\n    {\r\n        {\r\n            a\r\n        }\r\n    }\r\n}";
+
+                string actual = script.EditorText;
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_AutoFormatFunctionArgument() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;

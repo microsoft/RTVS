@@ -4,7 +4,6 @@
 using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
@@ -57,21 +56,11 @@ namespace Microsoft.R.Editor.Formatting {
             if (document != null) {
                 // Make sure AST is up to date
                 document.EditorTree.EnsureTreeReady();
-
-                int baseIndentPosition = -1;
+                var ast = document.EditorTree.AstRoot;
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-                var et = document.EditorTree;
-                var ast = (!et.IsReady && et.PreviousAstRoot != null) ? et.PreviousAstRoot : et.AstRoot;
-
+ 
                 // Find scope to format
                 IScope scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
-
-                // Scope indentation is defined by its parent statement.
-                IAstNodeWithScope parentStatement = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(caretPoint.Value);
-                if (parentStatement != null && parentStatement.Scope == scope) {
-                    ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(parentStatement.Start);
-                    baseIndentPosition = baseLine.Start;
-                }
 
                 ICompoundUndoAction undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer);
                 undoAction.Open(Resources.AutoFormat);
@@ -79,7 +68,7 @@ namespace Microsoft.R.Editor.Formatting {
 
                 try {
                     // Now format the scope
-                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, baseIndentPosition);
+                    changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = MapCaretToBuffer(textView, textBuffer);

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 

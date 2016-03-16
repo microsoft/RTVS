@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
@@ -121,12 +122,10 @@ namespace Microsoft.R.Editor.SmartIndent {
             // try end of the line as in 'x <- function(...) {'
             prevLine = line.Snapshot.GetLineFromLineNumber(line.LineNumber - 1);
             string prevLineText = prevLine.GetText();
-            if(prevLineText.Trim().Equals("else", StringComparison.Ordinal)) {
+            if (prevLineText.Trim().Equals("else", StringComparison.Ordinal)) {
                 // Quick short circuit for new 'else' since it is not in the ASt yet.
                 return GetBlockIndent(line) + REditorSettings.IndentSize;
             }
-
-            int nonWsPosition1 = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
 
             // First, let's see if we are in a function argument list and then indent based on 
             // the opening brace position. This needs to be done before looking for scopes
@@ -143,37 +142,55 @@ namespace Microsoft.R.Editor.SmartIndent {
                 }
             }
 
-            // First try new line so in case of 'if () { } else { | }' we find
+            // Candidate position #1 is first non-whitespace character
+            // in the the previous line
+            int startOfNoWsOnPreviousLine = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
+            
+            // Try current new line so in case of 'if () { } else { | }' we find
             // the 'else' which defines the scope and not the parent 'if'.
             var scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
             if (scopeStatement1 == null) {
                 // If not found, try previous line that may define the indent
-                scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition1);
+                scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(startOfNoWsOnPreviousLine);
                 if (scopeStatement1 == null) {
                     // Line start position works for typical scope-defining statements like if() or while()
                     // but it won't find function definition in 'x <- function(a) {'
                     // Try end of the line instead
-                    var nonWsPosition2 = Math.Max(0, prevLineText.TrimEnd().Length - 1);
-                    scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition2);
+                    var lastNonWsOnPreviousLine = Math.Max(0, prevLineText.TrimEnd().Length - 1);
+                    scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(lastNonWsOnPreviousLine);
                 }
             }
 
-            // Pick either function or scope depending what is the narrowest
+            IAstNodeWithScope scopeStatement;
+            var scopeStatement2 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(startOfNoWsOnPreviousLine);
+
+            // Locate standalone scope which is not a statement, if any
+            var scope = ast.GetNodeOfTypeFromPosition<IScope>(prevLine.End);
+
+            // Pick the narrowest item
             // so in case of 
             //  x <- function() {
             //      if(...)<Enter>
             //  }
             // we will use the 'if' and not the function definition
-            IAstNodeWithScope scopeStatement;
-            var scopeStatement2 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(nonWsPosition1);
-            if(scopeStatement1 != null && scopeStatement2 != null) {
-                scopeStatement = scopeStatement1.Length < scopeStatement2.Length ? scopeStatement1 : scopeStatement2;
-            }
-            else if(scopeStatement1 != null) {
-                scopeStatement = scopeStatement1;
-            }
-            else {
-                scopeStatement = scopeStatement2;
+            var scopeCandidates = new List<IAstNode>() { scopeStatement1, scopeStatement2, scope };
+            var smallestScope = scopeCandidates.OrderBy(x => x != null ? x.Length : Int32.MaxValue).FirstOrDefault();
+
+            scopeStatement = smallestScope as IAstNodeWithScope;
+            scope = smallestScope as IScope;
+
+            // If IScope is a scope defined by the parent statement, use
+            // the parent statement so in 
+            // x <- function(...) {
+            //      |
+            // }
+            // the indent in scope is defined by the function and not by the opening {
+            if(scope != null) {
+                var parentStarement = scope.Parent as IAstNodeWithScope;
+                if(parentStarement != null && parentStarement.Scope == scope) {
+                    scopeStatement = parentStarement;
+                    scope = null;
+                }
             }
 
             if (scopeStatement != null) {
@@ -216,7 +233,6 @@ namespace Microsoft.R.Editor.SmartIndent {
             }
 
             // Try locate the scope itself, if any
-            var scope = ast.GetNodeOfTypeFromPosition<IScope>(prevLine.End);
             if (scope != null && scope.OpenCurlyBrace != null) {
                 if (scope.CloseCurlyBrace != null) {
                     int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scope.CloseCurlyBrace.Start);
@@ -244,9 +260,9 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // caret indent is based on the function definition and not
                 // on the position of the opening {
                 var scope = node as IScope;
-                if(scope != null) {
+                if (scope != null) {
                     var scopeDefiningNode = node.Parent as IAstNodeWithScope;
-                    if(scopeDefiningNode != null && scopeDefiningNode.Scope == scope) {
+                    if (scopeDefiningNode != null && scopeDefiningNode.Scope == scope) {
                         node = scopeDefiningNode;
                     }
                 }

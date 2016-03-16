@@ -13,14 +13,13 @@ using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.SmartIndent;
-using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange,
-                                       RFormatOptions options, int baseIndentPosition = -1) {
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, 
+                                      ITextRange formatRange, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int start = formatRange.Start;
             int end = formatRange.End;
@@ -44,12 +43,11 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
             formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
-            return FormatRangeExact(textView, textBuffer, formatRange, options, baseIndentPosition);
+            return FormatRangeExact(textView, textBuffer, formatRange, options);
         }
 
         public static bool FormatRangeExact(ITextView textView, ITextBuffer textBuffer,
-                                            ITextRange formatRange, RFormatOptions options,
-                                            int scopeStatementPosition) {
+                                            ITextRange formatRange, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             Span spanToFormat = new Span(formatRange.Start, formatRange.Length);
             string spanText = snapshot.GetText(spanToFormat.Start, spanToFormat.Length);
