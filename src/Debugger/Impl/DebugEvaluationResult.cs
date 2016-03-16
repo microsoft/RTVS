@@ -20,10 +20,9 @@ namespace Microsoft.R.Debugger {
         Expression = 1 << 1,
         Kind = 1 << 2,
         Repr = 1 << 3,
-        ReprDeparse = 1 << 4,
-        ReprToString = 1 << 5,
-        ReprStr = 1 << 6,
-        ReprAll = Repr | ReprDeparse | ReprStr | ReprToString,
+        ReprDeparse = Repr | (1 << 4),
+        ReprToString = Repr | (1 << 5),
+        ReprStr = Repr | (1 << 6),
         TypeName = 1 << 7,
         Classes = 1 << 8,
         Length = 1 << 9,
@@ -33,7 +32,6 @@ namespace Microsoft.R.Debugger {
         Dim = 1 << 13,
         EnvName = 1 << 14,
         Flags = 1 << 15,
-        All = ulong.MaxValue,
     }
 
     internal static class DebugEvaluationResultFieldsExtensions {
@@ -56,10 +54,6 @@ namespace Microsoft.R.Debugger {
         };
 
         public static string ToRVector(this DebugEvaluationResultFields fields) {
-            if (fields == DebugEvaluationResultFields.All) {
-                return null;
-            }
-
             var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
             return Invariant($"base::c({string.Join(", ", fieldNames)})");
         }
@@ -102,11 +96,11 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
 
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), reprMaxLength: 0, cancellationToken: cancellationToken);
+            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), DebugEvaluationResultFields.None, reprMaxLength: 0, cancellationToken: cancellationToken);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
@@ -247,7 +241,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            DebugEvaluationResultFields fields,
             int? maxLength = null,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)

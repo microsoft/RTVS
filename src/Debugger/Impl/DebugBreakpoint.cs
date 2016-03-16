@@ -81,7 +81,8 @@ namespace Microsoft.R.Debugger {
             if (--UseCount == 0) {
                 Session.RemoveBreakpoint(this);
 
-                var res = await Session.EvaluateAsync(Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})"), cancellationToken);
+                var code = Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})");
+                var res = await Session.EvaluateAsync(code, DebugEvaluationResultFields.None, cancellationToken);
                 if (res is DebugErrorEvaluationResult) {
                     throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
                 }
