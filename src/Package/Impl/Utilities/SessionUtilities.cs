@@ -17,8 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return interactiveWorkflow.RSession;
         }
 
-        public static async Task<string> GetRWorkingDirectoryAsync() {
-            var session = GetInteractiveSession();
+        public static async Task<string> GetRWorkingDirectoryAsync(IRInteractiveWorkflow workflow = null) {
+            var session = workflow != null ? workflow.RSession : GetInteractiveSession();
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
@@ -30,8 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return null;
         }
 
-        public static async Task<string> GetRUserDirectoryAsync() {
-            var session = GetInteractiveSession();
+        public static async Task<string> GetRUserDirectoryAsync(IRInteractiveWorkflow workflow = null) {
+            var session = workflow != null ? workflow.RSession : GetInteractiveSession();
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
