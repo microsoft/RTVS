@@ -101,5 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSourceSelectedFiles = 1501;
         public const int icmdOpenContainingFolder = 1502;
         public const int icmdCopyItemPath = 1503;
+        public const int icmdAddRScript = 1504;
+        public const int icmdAddRMarkdown = 1505;
     }
 }

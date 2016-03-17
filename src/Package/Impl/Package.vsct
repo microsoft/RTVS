@@ -360,7 +360,11 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="projectFolderContextMenuGroup" priority="0x300">
+      <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+      </Group>
+      
+      <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
       </Group>
     </Groups>
@@ -1052,7 +1056,7 @@
 
       <!-- Project (Solution Explorer) context menu items -->
       <Button guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="projectFolderContextMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1064,7 +1068,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="projectFolderContextMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="MoveToFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1076,7 +1080,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdOpenContainingFolder" priority="0x0300" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="projectFolderContextMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1088,7 +1092,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdCopyItemPath" priority="0x0400" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="projectFolderContextMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="NavigationPath"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -1096,6 +1100,29 @@
         <Strings>
           <ButtonText>Copy Item &amp;Path</ButtonText>
           <LocCanonicalName>CopyItemPath</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAddRScript" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup"/>
+        <Icon guid="rIconGuid" id="rFileIcon"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Add R Script</ButtonText>
+          <LocCanonicalName>AddRScript</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAddRMarkdown" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="MarkdownFile"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Add R Markdown</ButtonText>
+          <LocCanonicalName>AddRScript</LocCanonicalName>
         </Strings>
       </Button>
       <!-- End of project context menu -->
@@ -1199,6 +1226,7 @@
       <Bitmaps>
         <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
         <Bitmap guid="replWindowIconGuid" href="Images\ReplWindowIcon.png" usedList="replWindowIcon" />
+        <Bitmap guid="rIconGuid" href="Images\RFileNode.png" usedList="rFileIcon" />
       </Bitmaps>
     </Bitmaps>
   </Commands>
@@ -1587,7 +1615,8 @@
       <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
       <IDSymbol name="historyWindowSettingsGroup" value="0x2024"/>
       <IDSymbol name="historyCopySelectedGroup" value="0x2025"/>
-      <IDSymbol name="projectFolderContextMenuGroup" value="0x2026"/>
+      <IDSymbol name="projectNodeContextMenuGroup" value="0x2026"/>
+      <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
@@ -1607,8 +1636,11 @@
       <IDSymbol name="icmdSourceSelectedFiles" value="1501"/>
       <IDSymbol name="icmdOpenContainingFolder" value="1502"/>
       <IDSymbol name="icmdCopyItemPath" value="1503"/>
-
+      <IDSymbol name="icmdAddRScript" value="1504" />
+      <IDSymbol name="icmdAddRMarkdown" value="1505" />
+      
       <!-- Submenus-->
+       
       <IDSymbol name="mainMenuGroup" value="0x100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>
@@ -1642,6 +1674,10 @@
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="rIconGuid" value="{56CF3C9B-3C54-455C-BECE-D88563300B99}">
+      <IDSymbol name="rFileIcon" value="1" />
     </GuidSymbol>
 
     <!-- InteractiveWindow Guid -->

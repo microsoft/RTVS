@@ -177,9 +177,11 @@
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
     <Compile Include="Plots\PlotHistoryProvider.cs" />
+    <Compile Include="ProjectSystem\Commands\AddRMarkdownCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CommandUtilities.cs" />
     <Compile Include="ProjectSystem\Commands\OpenContainingFolderCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CopyItemPathCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\AddRScriptCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SourceFilesCommand.cs" />
     <Compile Include="ProjectSystem\Commands\SetDirectoryHereCommand.cs" />
     <Compile Include="ProjectSystem\Commands\ExcludeFromProjectCommand.cs" />
@@ -796,6 +798,9 @@
   <ItemGroup>
     <Reference Include="$(MSBuildAssembly)">
       <Private>False</Private>
+    </Reference>
+    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
