@@ -3,34 +3,37 @@
 
 using System;
 using System.Collections.Immutable;
+using System.ComponentModel.Composition;
+using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo("RTools")]
-    [OrderPrecedence(203)]
-    internal sealed class CopyItemPathCommand : ICommandGroupHandler {
-        public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
+    [OrderPrecedence(200)]
+    internal sealed class CopyItemPathCommand : IAsyncCommandGroupHandler {
+        public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdCopyItemPath && nodes.IsSingleNodePath()) {
-                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+                return Task.FromResult(new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported));
             }
-            return CommandStatusResult.Unhandled;
+            return Task.FromResult(CommandStatusResult.Unhandled);
         }
 
-        public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
+        public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdCopyItemPath) {
                 var path = nodes.GetSingleNodePath();
                 try {
-                    SessionUtilities.GetFriendlyDirectoryNameAsync(path).ContinueWith((directory) => {
-                        VsAppShell.Current.DispatchOnMainThreadAsync(() =>
-                            Clipboard.SetData(DataFormats.UnicodeText, directory));
-                    });
-                 } catch (Exception) { }
+                    var directory = await SessionUtilities.GetFriendlyDirectoryNameAsync(path);
+                    await VsAppShell.Current.DispatchOnMainThreadAsync(() =>
+                        Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\"")));
+                } catch (Exception) { }
                 return true;
             }
             return false;

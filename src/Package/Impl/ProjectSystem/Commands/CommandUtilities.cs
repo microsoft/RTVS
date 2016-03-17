@@ -9,9 +9,13 @@ using Microsoft.VisualStudio.ProjectSystem.Designers;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal static class CommandUtilities {
+        public static bool IsProjectSelected(this IImmutableSet<IProjectTree> nodes) {
+            return nodes != null && nodes.Count == 1 && nodes.First().Root == nodes.First();
+        }
+
         public static string GetSingleNodePath(this IImmutableSet<IProjectTree> nodes) {
             if (nodes != null && nodes.Count == 1) {
-                return nodes.FirstOrDefault().FilePath;
+                return nodes.First().FilePath;
             }
             return string.Empty;
         }

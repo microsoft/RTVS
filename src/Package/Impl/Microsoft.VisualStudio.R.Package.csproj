@@ -177,6 +177,7 @@
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
     <Compile Include="Plots\PlotHistoryProvider.cs" />
+    <Compile Include="ProjectSystem\Commands\AddItemCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRMarkdownCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CommandUtilities.cs" />
     <Compile Include="ProjectSystem\Commands\OpenContainingFolderCommand.cs" />

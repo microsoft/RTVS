@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo("RTools")]
-    [OrderPrecedence(201)]
+    [OrderPrecedence(200)]
     internal sealed class SetDirectoryHereCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdSetDirectoryHere && nodes.IsSingleNodePath()) {
