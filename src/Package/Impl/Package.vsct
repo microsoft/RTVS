@@ -360,13 +360,8 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
-      </Group>
-      
-      <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
-      </Group>
+      <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
+      <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
     </Groups>
 
     <Buttons>
@@ -1437,6 +1432,21 @@
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>

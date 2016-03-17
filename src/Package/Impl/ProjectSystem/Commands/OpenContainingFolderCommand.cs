@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [OrderPrecedence(202)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdOpenContainingFolder && nodes.IsSingleNodePath()) {
+            if (commandId == RPackageCommandId.icmdOpenContainingFolder && !nodes.IsFolder() && nodes.IsSingleNodePath()) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;

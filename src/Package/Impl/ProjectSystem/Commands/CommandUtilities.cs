@@ -18,7 +18,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public static bool IsSingleNodePath(this IImmutableSet<IProjectTree> nodes) {
             if (nodes != null && nodes.Count == 1) {
-                return !string.IsNullOrEmpty(nodes.FirstOrDefault().FilePath);
+                return !string.IsNullOrEmpty(nodes.First().FilePath);
+            }
+            return false;
+        }
+
+        public static bool IsFolder(this IImmutableSet<IProjectTree> nodes) {
+            if (nodes != null && nodes.Count == 1) {
+                return nodes.First().IsFolder;
             }
             return false;
         }

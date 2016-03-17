@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -21,6 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdAddRMarkdown) {
+                var path = nodes.GetNodeFolderPath();
+                if (!string.IsNullOrEmpty(path)) {
+                    ProjectUtilities.AddNewItem("emptyrmd", "markdown", "rmd", path);
+                }
                 return true;
             }
             return false;

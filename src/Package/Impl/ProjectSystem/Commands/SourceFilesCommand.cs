@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -15,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [OrderPrecedence(200)]
     internal sealed class SourceFilesCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdSourceSelectedFiles && nodes.GetSelectedNodesPaths().Count() > 0) {
+            if (commandId == RPackageCommandId.icmdSourceSelectedFiles && !nodes.IsFolder() && nodes.GetSelectedNodesPaths().Count() > 0) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
@@ -23,7 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdSourceSelectedFiles) {
-                foreach (var filePath in nodes.GetSelectedNodesPaths()) {
+                foreach (var filePath in nodes.GetSelectedNodesPaths()
+                                              .Where(x => Path.GetExtension(x)
+                                                  .Equals("r", StringComparison.OrdinalIgnoreCase))) {
                     SourceFileHelper.SourceFile(filePath);
                 }
                 return true;

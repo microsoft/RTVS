@@ -16,10 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class AddRScriptCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdAddRScript) {
-                var path = nodes.GetSingleNodePath();
-                if (!string.IsNullOrEmpty(path)) {
-                    return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
-                }
+                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
         }
