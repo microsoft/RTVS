@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
@@ -24,8 +26,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == RPackageCommandId.icmdCopyItemPath) {
                 var path = nodes.GetSingleNodePath();
                 try {
-                    Clipboard.SetData(DataFormats.UnicodeText, path.Replace('\\', '/'));
-                } catch (Exception) { }
+                    SessionUtilities.GetFriendlyDirectoryNameAsync(path).ContinueWith((directory) => {
+                        VsAppShell.Current.DispatchOnMainThreadAsync(() =>
+                            Clipboard.SetData(DataFormats.UnicodeText, directory));
+                    });
+                 } catch (Exception) { }
                 return true;
             }
             return false;

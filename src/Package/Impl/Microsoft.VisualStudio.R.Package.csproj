@@ -356,6 +356,7 @@
     <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
+    <Compile Include="Utilities\SessionUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
     <Compile Include="Utilities\CompletionUtilities.cs" />
     <Compile Include="Utilities\ToolWindowUtilities.cs" />

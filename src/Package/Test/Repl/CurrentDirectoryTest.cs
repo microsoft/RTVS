@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
@@ -44,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.UserDirectory.Should().BeEquivalentTo(myDocs);
-                actual = cmd.GetRWorkingDirectoryAsync().Result;
+                actual = SessionUtilities.GetRWorkingDirectoryAsync().Result;
             };
 
             actual.Should().Be(myDocs);
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.SetDirectory(dir).Wait();
-                actual = cmd.GetRWorkingDirectoryAsync().Result;
+                actual = SessionUtilities.GetRWorkingDirectoryAsync().Result;
             }
 
             actual.Should().Be(dir);
