@@ -20,5 +20,9 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
         private void copyToClipboardButton_Click(object sender, RoutedEventArgs e) {
             Clipboard.SetText(MessageBody);
         }
+
+        private void closeButton_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
     }
 }

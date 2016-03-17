@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -40,12 +39,13 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             }
 
             if (outlookApp == null) {
-                VsAppShell.Current.DispatchOnUIThread(() => {
+                VsAppShell.Current.DispatchOnMainThreadAsync(() => {
                     var fallbackWindow = new SendMailFallbackWindow {
                         MessageBody = body
                     };
                     fallbackWindow.Show();
-                });
+                    fallbackWindow.Activate();
+                }).Wait();
 
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;

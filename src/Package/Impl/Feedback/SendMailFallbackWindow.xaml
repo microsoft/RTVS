@@ -17,7 +17,10 @@
             with the following information:
         </TextBlock>
         <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="10,5,10,10">
-            <Button Name="copyToClipboardButton" DockPanel.Dock="Right" Padding="5" Click="copyToClipboardButton_Click">Copy to Clipboard</Button>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                <Button Name="copyToClipboardButton" Padding="7,3" Margin="0,5,4,5" Click="copyToClipboardButton_Click">Copy to Clipboard</Button>
+                <Button Name="closeButton" Padding="7,3" Margin="4,5,0,5" Click="closeButton_Click">Close</Button>
+            </StackPanel>
         </DockPanel>
         <TextBox Name="messageBodyTextBox"
                  IsReadOnly="True"
