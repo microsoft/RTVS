@@ -619,4 +619,15 @@ Additional information:
 
 {1}</value>
   </data>
+  <data name="ReportIssueBody" xml:space="preserve">
+    <value>Please briefly describe what you were doing that led to the issue, if applicable:
+
+...
+
+
+
+Additional information:
+
+{0}</value>
+  </data>
 </root>
