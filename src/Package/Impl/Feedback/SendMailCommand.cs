@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
 
             Application outlookApp = null;
             try {
-                //outlookApp = new Application();
+                outlookApp = new Application();
             } catch (System.Exception ex) {
                 GeneralLog.Write("Unable to start Outlook (exception data follows)");
                 GeneralLog.Write(ex);
