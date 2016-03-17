@@ -706,6 +706,23 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please briefly describe what you were doing that led to the issue, if applicable:
+        ///
+        ///...
+        ///
+        ///
+        ///
+        ///Additional information:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string ReportIssueBody {
+            get {
+                return ResourceManager.GetString("ReportIssueBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RFileNode {
