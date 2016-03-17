@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             var generalData = new StringWriter();
             DiagnosticLogs.WriteGeneralData(generalData, detailed: false);
 
-            SendMail(string.Format(Resources.SendFrownEmailBody, zipPath, generalData.ToString(), zipPath), "RTVS Frown", zipPath);
+            SendMail(string.Format(Resources.SendFrownEmailBody, zipPath, generalData.ToString()), "RTVS Frown", zipPath);
         }
     }
 }

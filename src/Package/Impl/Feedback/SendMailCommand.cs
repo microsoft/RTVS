@@ -47,8 +47,6 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
                     fallbackWindow.Show();
                 });
 
-                //VsAppShell.Current.ShowMessage(Resources.SendMailFallbackMessage + "\r\n\r\n" + body, MessageButtons.OK);
-
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;
                 psi.FileName = string.Format(
