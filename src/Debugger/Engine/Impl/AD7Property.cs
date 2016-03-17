@@ -15,7 +15,7 @@ namespace Microsoft.R.Debugger.Engine {
         internal const int ChildrenMaxLength = 100;
         internal const int ReprMaxLength = 100;
 
-        private const DebugEvaluationResultFields _prefetchedFields =
+        internal const DebugEvaluationResultFields PrefetchedFields =
             DebugEvaluationResultFields.Expression |
             DebugEvaluationResultFields.Kind |
             DebugEvaluationResultFields.Repr |
@@ -56,7 +56,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         private IReadOnlyList<DebugEvaluationResult> CreateChildren() {
-            return TaskExtensions.RunSynchronouslyOnUIThread(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(_prefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
+            return TaskExtensions.RunSynchronouslyOnUIThread(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
                 ?? new DebugEvaluationResult[0];
         }
 
@@ -81,7 +81,7 @@ namespace Microsoft.R.Debugger.Engine {
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
             if (valueResult != null && valueResult.HasAttributes == true) {
                 string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", reprMaxLength: ReprMaxLength, cancellationToken:ct));
+                var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, ReprMaxLength, ct));
                 if (!(attrResult is DebugErrorEvaluationResult)) {
                     var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                     infos = new[] { attrInfo }.Concat(infos);

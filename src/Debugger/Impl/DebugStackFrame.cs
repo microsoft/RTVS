@@ -64,12 +64,21 @@ namespace Microsoft.R.Debugger {
 
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
-            string name = null,
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.All,
+            string name,
+            DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength, cancellationToken);
+        }
+
+        public Task<DebugEvaluationResult> EvaluateAsync(
+            string expression,
+            DebugEvaluationResultFields fields,
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            return EvaluateAsync(expression, null, fields, reprMaxLength, cancellationToken);
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(

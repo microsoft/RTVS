@@ -41,6 +41,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
 
+                new ReportIssueCommand(),
                 new SendSmileCommand(),
                 new SendFrownCommand(),
 

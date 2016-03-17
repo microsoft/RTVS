@@ -181,58 +181,71 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant
         );
 
-        private static string CollectGeneralData() {
-            string generalDataFile = Path.Combine(Path.GetTempPath(), RtvsGeneralDataFile);
-            using (var sw = new StreamWriter(generalDataFile)) {
-                try {
-                    sw.WriteLine("Operating System Information");
-                    sw.WriteLine("    Version:       " + Environment.OSVersion.ToString());
-                    sw.WriteLine("    CPU Count:     " + Environment.ProcessorCount);
-                    sw.WriteLine("    64 bit:        " + Environment.Is64BitOperatingSystem);
-                    sw.WriteLine("    System Folder: " + Environment.SystemDirectory);
-                    sw.WriteLine("    Working set:   " + Environment.WorkingSet);
-                    sw.WriteLine();
+        public static void WriteGeneralData(TextWriter writer, bool detailed) {
+            try {
+                writer.WriteLine("OS Information");
+                writer.WriteLine("    Version:       " + Environment.OSVersion.ToString());
+                if (detailed) {
+                    writer.WriteLine("    CPU Count:     " + Environment.ProcessorCount);
+                    writer.WriteLine("    64 bit:        " + Environment.Is64BitOperatingSystem);
+                    writer.WriteLine("    System Folder: " + Environment.SystemDirectory);
+                    writer.WriteLine("    Working set:   " + Environment.WorkingSet);
+                }
+                writer.WriteLine();
 
-                    Assembly thisAssembly = Assembly.GetExecutingAssembly();
-                    sw.WriteLine("RTVS Information:");
-                    sw.WriteLine("    Assembly: " + thisAssembly.FullName);
-                    sw.WriteLine("    Codebase: " + thisAssembly.CodeBase);
-                    sw.WriteLine();
+                Assembly thisAssembly = Assembly.GetExecutingAssembly();
+                writer.WriteLine("RTVS Information:");
+                writer.WriteLine("    Assembly: " + thisAssembly.FullName);
+                if (detailed) {
+                    writer.WriteLine("    Codebase: " + thisAssembly.CodeBase);
+                }
+                writer.WriteLine();
 
+                if (detailed) {
                     IEnumerable<string> rEngines = RInstallation.GetInstalledEngineVersionsFromRegistry();
-                    sw.WriteLine("Installed R Engines (from registry):");
+                    writer.WriteLine("Installed R Engines (from registry):");
                     foreach (string e in rEngines) {
-                        sw.WriteLine("    " + e);
+                        writer.WriteLine("    " + e);
                     }
-                    sw.WriteLine();
+                    writer.WriteLine();
 
                     string latestEngine = RInstallation.GetCompatibleEnginePathFromRegistry();
-                    sw.WriteLine("Latest R Engine (from registry):");
-                    sw.WriteLine("    " + latestEngine);
-                    sw.WriteLine();
+                    writer.WriteLine("Latest R Engine (from registry):");
+                    writer.WriteLine("    " + latestEngine);
+                    writer.WriteLine();
+                }
 
-                    string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
-                    sw.WriteLine("R Install path:");
-                    sw.WriteLine("    " + rInstallPath);
-                    sw.WriteLine();
+                string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
+                writer.WriteLine("R Install path:");
+                writer.WriteLine("    " + rInstallPath);
+                writer.WriteLine();
 
-                    sw.WriteLine("Loaded assemblies:");
+                if (detailed) {
+                    writer.WriteLine("Assemblies loaded by Visual Studio:");
 
                     foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies().OrderBy(assem => assem.FullName)) {
                         var assemFileVersion = assembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false).OfType<AssemblyFileVersionAttribute>().FirstOrDefault();
 
-                        sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "    {0}, FileVersion={1}",
+                        writer.WriteLine(string.Format(CultureInfo.InvariantCulture, "    {0}, FileVersion={1}",
                             assembly.FullName,
                             assemFileVersion == null ? "(null)" : assemFileVersion.Version
                         ));
                     }
-                } catch (System.Exception ex) {
-                    sw.WriteLine("  Failed to access system data.");
-                    sw.WriteLine(ex.ToString());
-                    sw.WriteLine();
                 }
+            } catch (System.Exception ex) {
+                writer.WriteLine("  Failed to access system data.");
+                writer.WriteLine(ex.ToString());
+                writer.WriteLine();
+            } finally {
+                writer.Flush();
             }
+        }
 
+        private static string CollectGeneralData() {
+            string generalDataFile = Path.Combine(Path.GetTempPath(), RtvsGeneralDataFile);
+            using (var sw = new StreamWriter(generalDataFile)) {
+                WriteGeneralData(sw, detailed: true);
+            }
             return generalDataFile;
         }
     }

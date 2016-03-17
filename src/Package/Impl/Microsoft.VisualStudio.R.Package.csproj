@@ -94,6 +94,10 @@
     <Compile Include="Documentation\DocumentationUrls.cs" />
     <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
+    <Compile Include="Feedback\ReportIssueCommand.cs" />
+    <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
+      <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Help\HelpWindowVisualComponent.cs" />
     <Compile Include="Help\IHelpWindowVisualComponent.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
@@ -1245,6 +1249,10 @@
     <Page Include="DataInspect\VisualGrid\MatrixView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Feedback\SendMailFallbackWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Plots\XamlPresenter.xaml">
       <Generator>MSBuild:Compile</Generator>

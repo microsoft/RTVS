@@ -4,8 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Office.Interop.Outlook;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -18,6 +16,20 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             base(group, id) { }
 
         protected static void SendMail(string body, string subject, string attachmentFile) {
+            if (attachmentFile != null) {
+                IntPtr pidl = IntPtr.Zero;
+                try {
+                    pidl = NativeMethods.ILCreateFromPath(attachmentFile);
+                    if (pidl != IntPtr.Zero) {
+                        NativeMethods.SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
+                    }
+                } finally {
+                    if (pidl != IntPtr.Zero) {
+                        NativeMethods.ILFree(pidl);
+                    }
+                }
+            }
+
             Application outlookApp = null;
             try {
                 outlookApp = new Application();
@@ -27,48 +39,28 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             }
 
             if (outlookApp == null) {
-                if (attachmentFile != null) {
-                    body = string.Format(CultureInfo.InvariantCulture, Resources.MailToFrownMessage,
-                                         Path.GetDirectoryName(Path.GetTempPath()), // Trims trailing slash
-                                         Environment.NewLine + Environment.NewLine);
-                    VsAppShell.Current.ShowMessage(body, MessageButtons.OK);
-                }
+                VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+                    var fallbackWindow = new SendMailFallbackWindow {
+                        MessageBody = body
+                    };
+                    fallbackWindow.Show();
+                    fallbackWindow.Activate();
+                }).Wait();
 
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;
-                psi.FileName = string.Format(CultureInfo.InvariantCulture, "mailto://rtvsuserfeedback@microsoft.com?subject={0}&body={1}", subject, body);
+                psi.FileName = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "mailto:rtvsuserfeedback@microsoft.com?subject={0}&body={1}",
+                    Uri.EscapeDataString(subject),
+                    Uri.EscapeDataString(body));
                 Process.Start(psi);
-
-                if (attachmentFile != null) {
-                    IntPtr pidl = IntPtr.Zero;
-                    try {
-                        pidl = NativeMethods.ILCreateFromPath(attachmentFile);
-                        if (pidl != IntPtr.Zero) {
-                            NativeMethods.SHOpenFolderAndSelectItems(pidl, 0, IntPtr.Zero, 0);
-                        }
-                    } finally {
-                        if (pidl != IntPtr.Zero) {
-                            NativeMethods.ILFree(pidl);
-                        }
-                    }
-                }
-
             } else {
                 try {
                     MailItem mail = outlookApp.CreateItem(OlItemType.olMailItem) as MailItem;
-
                     mail.Subject = subject;
                     mail.Body = body;
-                    AddressEntry currentUser = outlookApp.Session.CurrentUser.AddressEntry;
-                    if (currentUser.Type == "EX") {
-                        mail.To = "rtvsuserfeedback@microsoft.com";
-                        mail.Recipients.ResolveAll();
-                    }
-
-                    if (!string.IsNullOrEmpty(attachmentFile)) {
-                        mail.Attachments.Add(attachmentFile, OlAttachmentType.olByValue);
-                    }
-
+                    mail.To = "rtvsuserfeedback@microsoft.com";
                     mail.Display(Modal: false);
                 } catch (System.Exception ex) {
                     GeneralLog.Write("Error composing Outlook e-mail (exception data follows)");
