@@ -362,6 +362,7 @@
 
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
       <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
+      <Group guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x320" />
     </Groups>
 
     <Buttons>
@@ -852,7 +853,7 @@
           <CommandName>Report Issue</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdSendSmile" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="FeedbackSmile"/>
@@ -1129,9 +1130,34 @@
           <ButtonText>Add R Markdown</ButtonText>
           <LocCanonicalName>AddRScript</LocCanonicalName>
         </Strings>
+
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenCmdPromptHere" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Console"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Open Command &amp;Prompt Here</ButtonText>
+          <LocCanonicalName>OpenCommandPromptHere</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenAdminCmdPromptHere" priority="0x0110" type="Button">
+        <!--<Parent guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup"/>-->
+        <Icon guid="ImageCatalogGuid" id="Console"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Open Command &amp;Prompt Here (Admin)</ButtonText>
+          <LocCanonicalName>OpenAdminCommandPromptHere</LocCanonicalName>
+        </Strings>
       </Button>
       <!-- End of project context menu -->
-     
+
     </Buttons>
   </Commands>
 
@@ -1445,16 +1471,27 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
-      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
-    </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
   </CommandPlacements>
@@ -1638,6 +1675,7 @@
       <IDSymbol name="historyCopySelectedGroup" value="0x2025"/>
       <IDSymbol name="projectNodeContextMenuGroup" value="0x2026"/>
       <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
+      <IDSymbol name="projectCmdPromptContextMenuGroup" value="0x2028"/>
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
@@ -1659,9 +1697,10 @@
       <IDSymbol name="icmdCopyItemPath" value="1503"/>
       <IDSymbol name="icmdAddRScript" value="1504" />
       <IDSymbol name="icmdAddRMarkdown" value="1505" />
-      
+      <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
+      <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
+
       <!-- Submenus-->
-       
       <IDSymbol name="mainMenuGroup" value="0x100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>

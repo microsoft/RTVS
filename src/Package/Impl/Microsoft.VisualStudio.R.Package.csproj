@@ -183,6 +183,9 @@
     <Compile Include="Plots\PlotHistoryProvider.cs" />
     <Compile Include="ProjectSystem\Commands\AddItemCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRMarkdownCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\CommandPromptCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\OpenAdminCommandPromptCommand.cs" />
+    <Compile Include="ProjectSystem\Commands\OpenCommandPromptCommand.cs" />
     <Compile Include="ProjectSystem\Commands\OpenContainingFolderCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CopyItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRScriptCommand.cs" />

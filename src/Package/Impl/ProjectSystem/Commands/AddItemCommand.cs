@@ -12,11 +12,11 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class AddItemCommand : ICommandGroupHandler {
-        private UnconfiguredProject _unconfiguredProject;
-        private int _commandId;
-        private string _templateName;
-        private string _fileName;
-        private string _extension;
+        private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly int _commandId;
+        private readonly string _templateName;
+        private readonly string _fileName;
+        private readonly string _extension;
 
         public AddItemCommand(UnconfiguredProject project, int id, string templateName, string fileName, string extension) {
             _unconfiguredProject = project;

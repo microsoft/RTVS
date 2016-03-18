@@ -104,5 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdCopyItemPath = 1503;
         public const int icmdAddRScript = 1504;
         public const int icmdAddRMarkdown = 1505;
+        public const int icmdOpenCmdPromptHere = 1506;
+        public const int icmdOpenAdminCmdPromptHere = 1507;
     }
 }

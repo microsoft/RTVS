@@ -80,6 +80,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 // Extract template files overwriting any existing ones
                 using (ZipArchive zip = ZipFile.OpenRead(templatePath)) {
                     foreach (ZipArchiveEntry entry in zip.Entries) {
+                        if(!Directory.Exists(uncompressedTemplateFolder)) {
+                            Directory.CreateDirectory(uncompressedTemplateFolder);
+                        }
                         string destFilePath = Path.Combine(uncompressedTemplateFolder, entry.FullName);
                         if (!string.IsNullOrEmpty(entry.Name)) {
                             entry.ExtractToFile(destFilePath, true);
