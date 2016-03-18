@@ -19,32 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return interactiveWorkflow.RSession;
         }
 
-        public static async Task<string> GetRWorkingDirectoryAsync(IRInteractiveWorkflow workflow = null) {
-            var session = workflow != null ? workflow.RSession : GetInteractiveSession();
-            if (session.IsHostRunning) {
-                await TaskUtilities.SwitchToBackgroundThread();
-                try {
-                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
-                        return await evaluation.GetWorkingDirectory();
-                    }
-                } catch (OperationCanceledException) { }
-            }
-            return null;
-        }
-
-        public static async Task<string> GetRUserDirectoryAsync(IRInteractiveWorkflow workflow = null) {
-            var session = workflow != null ? workflow.RSession : GetInteractiveSession();
-            if (session.IsHostRunning) {
-                await TaskUtilities.SwitchToBackgroundThread();
-                try {
-                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
-                        return await evaluation.GetRUserDirectory();
-                    }
-                } catch (OperationCanceledException) { }
-            }
-            return null;
-        }
-
         public static string GetRShortenedPathName(string name, string userDirectory) {
             if (!string.IsNullOrEmpty(userDirectory)) {
                 if (name.StartsWithIgnoreCase(userDirectory)) {
@@ -60,12 +34,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static async Task<string> GetRShortenedPathNameAsync(string name) {
-            var userDirectory = await GetRUserDirectoryAsync();
+            var userDirectory = await GetInteractiveSession().GetRUserDirectoryAsync();
             return GetRShortenedPathName(name, userDirectory);
         }
 
         public static async Task<IEnumerable<string>> GetRShortenedPathNamesAsync(IEnumerable<string> names) {
-            var userDirectory = await GetRUserDirectoryAsync();
+            var userDirectory = await GetInteractiveSession().GetRUserDirectoryAsync();
             var shortenedNames = new List<string>();
             if (!string.IsNullOrEmpty(userDirectory)) {
                 foreach (var name in names) {

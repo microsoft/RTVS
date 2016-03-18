@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 await UpdateRUserDirectoryAsync();
             }
 
-            string directory = await SessionUtilities.GetRWorkingDirectoryAsync(_interactiveWorkflow);
+            string directory = await _interactiveWorkflow.RSession.GetRWorkingDirectoryAsync();
             if (!string.IsNullOrEmpty(directory)) {
                 RToolsSettings.Current.WorkingDirectory = directory;
             }
@@ -165,7 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private async Task UpdateRUserDirectoryAsync() {
-            UserDirectory = await SessionUtilities.GetRUserDirectoryAsync(_interactiveWorkflow);
+            UserDirectory = await _interactiveWorkflow.RSession.GetRUserDirectoryAsync();
         }
     }
 }
