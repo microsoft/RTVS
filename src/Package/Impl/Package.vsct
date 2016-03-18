@@ -24,7 +24,7 @@
         </Strings>
       </Menu>
       <!-- End R code editor context menu -->
-      
+
       <!-- R history context menu -->
       <Menu guid="guidRToolsCmdSet" id="rHistoryContextMenu" type="Context">
         <CommandFlag>DontCache</CommandFlag>
@@ -35,7 +35,7 @@
         </Strings>
       </Menu>
       <!-- End R history context context menu -->
-      
+
       <!-- R debugger Autos/Locals/Watch context menu -->
       <Menu guid="guidRToolsCmdSet" id="debuggerRContextMenu" priority="0x0301" type="Context">
         <Parent guid="guidVSDebugGroup" id="IDG_DEBUG_DISPLAY"/>
@@ -253,7 +253,7 @@
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
-      
+
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenu"/>
       </Group>
@@ -287,7 +287,7 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveContextMenu"/>
       </Group>
       <!--  End REPL context menu -->
-      
+
       <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
@@ -359,6 +359,9 @@
       <Group guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup" priority="0x0650">
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
+
+      <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
+      <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
     </Groups>
 
     <Buttons>
@@ -401,7 +404,7 @@
           <CommandName>Reset</CommandName>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0400" type="Button">
         <Icon guid="guidVsShellIcons" id="cmdidVsShellInteractiveSessionInterrupt"/>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -485,9 +488,9 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Step Over</ButtonText>
-         </Strings>
+        </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -628,7 +631,6 @@
           <MenuText>Save As P&amp;DF</MenuText>
         </Strings>
       </Button>
-
       <!-- End Plots flyout -->
 
       <!-- Data flyout -->
@@ -960,7 +962,7 @@
           <ButtonText>Save History</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdSendHistoryToRepl" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="historyWindowSendToGroup"/>
         <Icon guid="ImageCatalogGuid" id="GoToNextInList"/>
@@ -980,7 +982,7 @@
           <ButtonText>Send selected to source file</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdDeleteSelectedHistoryEntries" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="historyWindowDeleteGroup"/>
         <Icon guid="ImageCatalogGuid" id="DeleteClause"/>
@@ -1000,7 +1002,7 @@
           <ButtonText>Delete all history entries</ButtonText>
         </Strings>
       </Button>
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdToggleMultilineSelection" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="historyWindowSettingsGroup"/>
         <Icon guid="ImageCatalogGuid" id="BlockSelection"/>
@@ -1011,7 +1013,7 @@
         </Strings>
       </Button>
       <!-- End history window buttons -->
-      
+
       <Button guid="guidRToolsCmdSet" id="icmdGoToFormattingOptions" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
         <Strings>
@@ -1056,8 +1058,81 @@
           <LocCanonicalName>ShowDotPrefixedVariables</LocCanonicalName>
         </Strings>
       </Button>
-    </Buttons>
 
+      <!-- Project (Solution Explorer) context menu items -->
+      <Button guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DownloadDocument"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Source Selected File(s)</ButtonText>
+          <LocCanonicalName>SourceSelectedFiles</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="MoveToFolder"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Set Working Directory &amp;Here</ButtonText>
+          <LocCanonicalName>SetWorkingDirectoryHere</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenContainingFolder" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="OpenFolder"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Open Containing &amp;Folder</ButtonText>
+          <LocCanonicalName>OpenContainingFolder</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdCopyItemPath" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="NavigationPath"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Copy Item &amp;Path</ButtonText>
+          <LocCanonicalName>CopyItemPath</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAddRScript" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup"/>
+        <Icon guid="rIconGuid" id="rFileIcon"/>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Add R Script</ButtonText>
+          <LocCanonicalName>AddRScript</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdAddRMarkdown" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="MarkdownFile"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Add R Markdown</ButtonText>
+          <LocCanonicalName>AddRScript</LocCanonicalName>
+        </Strings>
+      </Button>
+      <!-- End of project context menu -->
+     
+    </Buttons>
   </Commands>
 
   <Commands package="MarkdownPackage">
@@ -1083,7 +1158,7 @@
       <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
-      
+
       <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0210">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
@@ -1156,6 +1231,7 @@
       <Bitmaps>
         <Bitmap guid="pdfIconGuid" href="Images\pdf.bmp" usedList="pdfIcon" />
         <Bitmap guid="replWindowIconGuid" href="Images\ReplWindowIcon.png" usedList="replWindowIcon" />
+        <Bitmap guid="rIconGuid" href="Images\RFileNode.png" usedList="rFileIcon" />
       </Bitmaps>
     </Bitmaps>
   </Commands>
@@ -1170,7 +1246,7 @@
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
-   
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
@@ -1186,21 +1262,21 @@
     </CommandPlacement>
     <!-- End R code editor context menu -->
 
-    <!-- RMD context menu -->   
+    <!-- RMD context menu -->
     <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
     <!-- End RMD context menu -->
-    
+
     <!-- R history context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="historyCopySelectedGroup" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="historyWindowSendToGroup" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="historyWindowDeleteGroup" priority="0x300">
       <Parent guid="guidRToolsCmdSet" id="rHistoryContextMenu"/>
     </CommandPlacement>
@@ -1320,7 +1396,7 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdAttachToRInteractive" priority="0x0E01">
       <Parent guid="guidVSDebugGroup" id="IDG_EXECUTION"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdContinueDebugging" priority="0x0460">
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
@@ -1340,12 +1416,12 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdStepOut" priority="0x04A0">
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidVSStd97" id="cmdidLocalsWindow" priority="0x04B0">
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
-  <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
     </CommandPlacement>
 
@@ -1361,11 +1437,26 @@
     <CommandPlacement guid="guidVSStd2K" id="ECMD_INSERTSNIPPET" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
-    
+
     <CommandPlacement guid="guidVSStd2K" id="ECMD_SURROUNDWITH" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>
   </CommandPlacements>
 
   <KeyBindings>
@@ -1489,10 +1580,10 @@
       <IDSymbol name="icmdNextPlot" value="710" />
       <IDSymbol name="icmdPrevPlot" value="711" />
       <IDSymbol name="icmdClearPlots" value="712" />
-      
+
       <IDSymbol name="icmdExportPlotAsImage" value="713" />
       <IDSymbol name="icmdExportPlotAsPdf" value="714" />
-      
+
       <IDSymbol name="icmdCopyPlotAsBitmap" value="716" />
       <IDSymbol name="icmdCopyPlotAsMetafile" value="717" />
 
@@ -1545,6 +1636,8 @@
       <IDSymbol name="historyWindowDeleteGroup" value="0x2023"/>
       <IDSymbol name="historyWindowSettingsGroup" value="0x2024"/>
       <IDSymbol name="historyCopySelectedGroup" value="0x2025"/>
+      <IDSymbol name="projectNodeContextMenuGroup" value="0x2026"/>
+      <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
@@ -1559,7 +1652,16 @@
       <IDSymbol name="icmdMicrosoftRProducts" value="1406" />
       <IDSymbol name="icmdCheckForUpdates" value="1407" />
 
+      <!-- Project -->
+      <IDSymbol name="icmdSetDirectoryHere" value="1500"/>
+      <IDSymbol name="icmdSourceSelectedFiles" value="1501"/>
+      <IDSymbol name="icmdOpenContainingFolder" value="1502"/>
+      <IDSymbol name="icmdCopyItemPath" value="1503"/>
+      <IDSymbol name="icmdAddRScript" value="1504" />
+      <IDSymbol name="icmdAddRMarkdown" value="1505" />
+      
       <!-- Submenus-->
+       
       <IDSymbol name="mainMenuGroup" value="0x100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>
@@ -1588,11 +1690,15 @@
     <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
     <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
-    
+
     <GuidSymbol name="CMDUIGUID_HELP_WINDOW" value="{9E909526-A616-43B2-A82B-FD639DCD40CB}" />
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="rIconGuid" value="{56CF3C9B-3C54-455C-BECE-D88563300B99}">
+      <IDSymbol name="rFileIcon" value="1" />
     </GuidSymbol>
 
     <!-- InteractiveWindow Guid -->
