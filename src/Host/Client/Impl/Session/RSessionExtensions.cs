@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 
@@ -51,6 +52,15 @@ namespace Microsoft.R.Host.Client.Session {
         public static async Task<string> GetRShortenedPathNameAsync(this IRSession session, string name) {
             var userDirectory = await session.GetRUserDirectoryAsync();
             return GetRShortenedPathName(name, userDirectory);
+        }
+
+        public static async Task<IEnumerable<string>> GetRShortenedPathNamesAsync(this IRSession session, IEnumerable<string> names) {
+            var userDirectory = await session.GetRUserDirectoryAsync();
+            var list = new List<string>();
+            foreach (var n in names) {
+                list.Add(await session.GetRShortenedPathNameAsync(n));
+            }
+            return list;
         }
 
         private static string GetRShortenedPathName(string name, string userDirectory) {

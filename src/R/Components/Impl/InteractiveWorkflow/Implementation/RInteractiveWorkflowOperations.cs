@@ -154,14 +154,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public void SourceFiles(IEnumerable<string> files) {
-            var list = new List<string>();
             Task.Run(async () => {
-                foreach (var f in files) {
-                    list.Add(await _workflow.RSession.GetRShortenedPathNameAsync(f));
-                }
+                var shortNames = await _workflow.RSession.GetRShortenedPathNamesAsync(files);
                 _coreShell.DispatchOnUIThread(() => {
-                    foreach (var filePath in list) {
-                        EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})", addNewLine: true);
+                    foreach (var name in shortNames) {
+                        EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({name.ToRStringLiteral()})", addNewLine: true);
                     }
                 });
             });
