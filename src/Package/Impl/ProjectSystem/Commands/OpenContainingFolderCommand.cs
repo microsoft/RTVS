@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [OrderPrecedence(200)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdOpenContainingFolder && !nodes.IsFolder() && nodes.IsSingleNodePath()) {
+            if (commandId == RPackageCommandId.icmdOpenContainingFolder && nodes.IsSingleNodePath()) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
@@ -23,9 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdOpenContainingFolder) {
-                var path = nodes.GetNodeFolderPath();
+                var path = nodes.GetSingleNodePath();
                 if (!string.IsNullOrEmpty(path)) {
-                    Process.Start(path);
+                    if (path.EndsWith("\\", StringComparison.Ordinal)) {
+                        path = path.Substring(0, path.Length - 1);
+                    }
+                    Process.Start(Path.GetDirectoryName(path));
                 }
                 return true;
             }

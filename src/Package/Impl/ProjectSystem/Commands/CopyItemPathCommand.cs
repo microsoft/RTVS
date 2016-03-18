@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Immutable;
-using System.ComponentModel.Composition;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -29,11 +28,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdCopyItemPath) {
                 var path = nodes.GetSingleNodePath();
-                try {
-                    var directory = await SessionUtilities.GetRShortenedPathNameAsync(path);
-                    await VsAppShell.Current.DispatchOnMainThreadAsync(() =>
-                        Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\"")));
-                } catch (Exception) { }
+                var directory = await SessionUtilities.GetRShortenedPathNameAsync(path);
+                await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+                    try {
+                        Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\""));
+                    } catch (ExternalException) { }
+                });
                 return true;
             }
             return false;

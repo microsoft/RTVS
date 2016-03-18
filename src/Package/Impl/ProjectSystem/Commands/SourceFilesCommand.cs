@@ -16,7 +16,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [OrderPrecedence(200)]
     internal sealed class SourceFilesCommand : ICommandGroupHandler {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdSourceSelectedFiles && !nodes.IsFolder() && nodes.GetSelectedNodesPaths().Count() > 0) {
+            if (commandId == RPackageCommandId.icmdSourceSelectedFiles && nodes.GetSelectedNodesPaths().Count() > 0) {
+                foreach (var n in nodes) {
+                    if (n.IsFolder || !Path.GetExtension(n.FilePath).Equals(".r", StringComparison.OrdinalIgnoreCase)) { 
+                        return CommandStatusResult.Unhandled;
+                    }
+                }
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
@@ -27,9 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 var rFiles = nodes.GetSelectedNodesPaths().Where(x =>
                                Path.GetExtension(x).Equals(".r", StringComparison.OrdinalIgnoreCase) &&
                                File.Exists(x));
-                foreach (var filePath in rFiles) {
-                    SourceFileHelper.SourceFile(filePath);
-                }
+                SourceFileHelper.SourceFiles(rFiles);
                 return true;
             }
             return false;

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -44,19 +45,34 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return null;
         }
 
-        public static async Task<string> GetRShortenedPathNameAsync(string directory) {
-            var userDirectory = await GetRUserDirectoryAsync();
+        public static string GetRShortenedPathName(string name, string userDirectory) {
             if (!string.IsNullOrEmpty(userDirectory)) {
-                if (directory.StartsWithIgnoreCase(userDirectory)) {
-                    var relativePath = PathHelper.MakeRelative(userDirectory, directory);
+                if (name.StartsWithIgnoreCase(userDirectory)) {
+                    var relativePath = PathHelper.MakeRelative(userDirectory, name);
                     if (relativePath.Length > 0) {
                         return "~/" + relativePath.Replace('\\', '/');
                     }
                     return "~";
                 }
-                return directory.Replace('\\', '/');
+                return name.Replace('\\', '/');
             }
-            return directory;
+            return name;
+        }
+
+        public static async Task<string> GetRShortenedPathNameAsync(string name) {
+            var userDirectory = await GetRUserDirectoryAsync();
+            return GetRShortenedPathName(name, userDirectory);
+        }
+
+        public static async Task<IEnumerable<string>> GetRShortenedPathNamesAsync(IEnumerable<string> names) {
+            var userDirectory = await GetRUserDirectoryAsync();
+            var shortenedNames = new List<string>();
+            if (!string.IsNullOrEmpty(userDirectory)) {
+                foreach (var name in names) {
+                    shortenedNames.Add(GetRShortenedPathName(name, userDirectory));
+                 }
+            }
+            return shortenedNames;
         }
     }
 }
