@@ -24,9 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdSourceSelectedFiles) {
-                foreach (var filePath in nodes.GetSelectedNodesPaths()
-                                              .Where(x => Path.GetExtension(x)
-                                                  .Equals("r", StringComparison.OrdinalIgnoreCase))) {
+                var rFiles = nodes.GetSelectedNodesPaths().Where(x =>
+                               Path.GetExtension(x).Equals(".r", StringComparison.OrdinalIgnoreCase) &&
+                               File.Exists(x));
+                foreach (var filePath in rFiles) {
                     SourceFileHelper.SourceFile(filePath);
                 }
                 return true;

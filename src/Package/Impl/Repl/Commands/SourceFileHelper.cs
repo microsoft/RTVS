@@ -4,6 +4,7 @@
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
@@ -18,6 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
                     var operations = interactiveWorkflow.Operations;
 
+                    // TODO: need make it not to wait.
+                    filePath = SessionUtilities.GetRShortenedPathNameAsync(filePath).Result;
                     operations.ExecuteExpression($"{(debugging ? "rtvs::debug_source" : "source")}({filePath.ToRStringLiteral()})");
                 }
             }

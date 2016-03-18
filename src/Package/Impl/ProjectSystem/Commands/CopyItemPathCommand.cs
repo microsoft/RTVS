@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == RPackageCommandId.icmdCopyItemPath) {
                 var path = nodes.GetSingleNodePath();
                 try {
-                    var directory = await SessionUtilities.GetFriendlyDirectoryNameAsync(path);
+                    var directory = await SessionUtilities.GetRShortenedPathNameAsync(path);
                     await VsAppShell.Current.DispatchOnMainThreadAsync(() =>
                         Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\"")));
                 } catch (Exception) { }

@@ -21,10 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public static bool IsSingleNodePath(this IImmutableSet<IProjectTree> nodes) {
-            if (nodes != null && nodes.Count == 1) {
-                return !string.IsNullOrEmpty(nodes.First().FilePath);
-            }
-            return false;
+            return !string.IsNullOrEmpty(GetSingleNodePath(nodes));
         }
 
         public static bool IsFolder(this IImmutableSet<IProjectTree> nodes) {
@@ -48,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public static IEnumerable<string> GetSelectedNodesPaths(this IImmutableSet<IProjectTree> nodes) {
             if (nodes != null && nodes.Count > 0) {
-                return nodes.Where(x => (x != null && !string.IsNullOrEmpty(x.FilePath))).Select(x => x.FilePath);
+                return nodes.Where(x => !string.IsNullOrEmpty(x?.FilePath)).Select(x => x.FilePath);
             }
             return Enumerable.Empty<string>();
         }

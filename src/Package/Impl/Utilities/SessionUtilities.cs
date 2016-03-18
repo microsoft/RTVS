@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     using (var evaluation = await session.BeginEvaluationAsync(false)) {
                         return await evaluation.GetWorkingDirectory();
                     }
-                } catch (TaskCanceledException) { }
+                } catch (OperationCanceledException) { }
             }
             return null;
         }
@@ -38,12 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     using (var evaluation = await session.BeginEvaluationAsync(false)) {
                         return await evaluation.GetRUserDirectory();
                     }
-                } catch (TaskCanceledException) { }
+                } catch (OperationCanceledException) { }
             }
             return null;
         }
 
-        public static async Task<string> GetFriendlyDirectoryNameAsync(string directory) {
+        public static async Task<string> GetRShortenedPathNameAsync(string directory) {
             var userDirectory = await GetRUserDirectoryAsync();
             if (!string.IsNullOrEmpty(userDirectory)) {
                 if (directory.StartsWithIgnoreCase(userDirectory)) {

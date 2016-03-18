@@ -165,10 +165,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         private async Task UpdateRUserDirectoryAsync() {
-            await TaskUtilities.SwitchToBackgroundThread();
-            try {
-                UserDirectory = await SessionUtilities.GetRUserDirectoryAsync(_interactiveWorkflow);
-            } catch (TaskCanceledException) { }
+            UserDirectory = await SessionUtilities.GetRUserDirectoryAsync(_interactiveWorkflow);
         }
     }
 }
