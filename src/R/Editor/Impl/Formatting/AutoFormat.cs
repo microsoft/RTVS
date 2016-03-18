@@ -2,17 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Text;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -29,14 +26,17 @@ namespace Microsoft.R.Editor.Formatting {
                 return;
             }
 
-            IEditorTree tree;
-            SnapshotPoint? rPoint = GetCaretPointInBuffer(textView, out tree);
+            SnapshotPoint? rPoint = GetCaretPointInBuffer(textView);
             if (!rPoint.HasValue) {
                 return;
             }
 
+            var document = REditorDocument.FromTextBuffer(textView.TextBuffer);
+            var et = document.EditorTree;
+            var ast = et.GetCurrentRootOrPreviousIfNotReady();
+
             // We don't want to auto-format inside strings
-            if(tree.AstRoot.IsPositionInsideString(rPoint.Value.Position)) {
+            if (ast.IsPositionInsideString(rPoint.Value.Position)) {
                 return;
             }
 
@@ -48,11 +48,12 @@ namespace Microsoft.R.Editor.Formatting {
                 // autoformatting in this specific case. User can always format either the document
                 // or select the block and reformat it.
                 if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                    bool formatScope = ShouldFormatScope(textView, subjectBuffer, -1);
-                    if (formatScope) {
-                        FormatOperations.FormatCurrentNode<IStatement>(textView, subjectBuffer);
+                    var scopeStatement = GetFormatScope(textView, subjectBuffer, ast, -1);
+                    // Do not format large scope blocks for performance reasons
+                    if (scopeStatement != null && scopeStatement.Length < 200) {
+                        FormatOperations.FormatNode(textView, subjectBuffer, scopeStatement);
                     } else {
-                        FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, -1);
+                        FormatOperations.FormatLine(textView, subjectBuffer, -1);
                     }
                 }
             } else if (typedChar == ';') {
@@ -62,10 +63,10 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatLine(textView, subjectBuffer, tree.AstRoot, 0);
+                    FormatOperations.FormatLine(textView, subjectBuffer, 0);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatNode<IStatement>(textView, subjectBuffer, Math.Max(rPoint.Value - 1, 0));
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer);
             }
         }
 
@@ -92,49 +93,29 @@ namespace Microsoft.R.Editor.Formatting {
             return true;
         }
 
-        private static SnapshotPoint? GetCaretPointInBuffer(ITextView textView, out IEditorTree tree) {
-            tree = null;
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textView.TextBuffer);
-            if (document != null) {
-                tree = document.EditorTree;
-                tree.EnsureTreeReady();
-                return textView.BufferGraph.MapDownToFirstMatch(
-                    textView.Caret.Position.BufferPosition,
-                    PointTrackingMode.Positive,
-                    snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType),
-                    PositionAffinity.Successor
-                );
-            }
+        private static SnapshotPoint? GetCaretPointInBuffer(ITextView textView) {
+            return textView.BufferGraph.MapDownToFirstMatch(
+                textView.Caret.Position.BufferPosition,
+                PointTrackingMode.Positive,
+                snapshot => snapshot.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType),
+                PositionAffinity.Successor
+            );
+        }
 
+        private static IKeywordScopeStatement GetFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int lineOffset) {
+            SnapshotPoint? caret = REditorDocument.MapCaretPositionFromView(textView);
+            if (caret.HasValue) {
+                try {
+                    int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
+                    ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(Math.Max(lineNumber - 1, 0));
+                    string lineText = line.GetText();
+                    if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
+                        IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
+                        return scopeStatement;
+                    }
+                } catch (Exception) { }
+            }
             return null;
-        }
-
-        private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-        }
-
-        private static bool ShouldFormatScope(ITextView textView, ITextBuffer textBuffer, int lineOffset) {
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
-            if (document != null) {
-                IEditorTree tree = document.EditorTree;
-                tree.EnsureTreeReady();
-
-                SnapshotPoint? caret = MapCaretToBuffer(textView, textBuffer);
-                if (caret.HasValue) {
-                    try {
-                        int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
-                        ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(Math.Max(lineNumber - 1, 0));
-                        string lineText = line.GetText();
-                        if (lineText.IndexOfAny(new char[] { '{', '}' }) >= 0) {
-                            IKeywordScopeStatement scopeStatement = tree.AstRoot.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
-                            return scopeStatement != null;
-                        }
-                    } catch (Exception) { }
-                }
-            }
-
-            return false;
         }
     }
 }

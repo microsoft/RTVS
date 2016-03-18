@@ -184,11 +184,13 @@ function(a) {
 
                 textView.Caret = new TextCaretMock(textView, 6);
                 TextBufferUtility.ApplyTextChange(textBuffer, 5, 0, 1, ",");
+                tree.EnsureTreeReady();
                 index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
                 index.Should().Be(1);
 
                 textView.Caret = new TextCaretMock(textView, 7);
                 TextBufferUtility.ApplyTextChange(textBuffer, 6, 0, 1, ",");
+                tree.EnsureTreeReady();
                 index = GetCurrentParameterIndex(signatures[0] as SignatureHelp, signatures[0].CurrentParameter);
                 index.Should().Be(2);
             }

@@ -164,8 +164,10 @@ namespace Microsoft.R.Editor.Signatures {
                 if (document != null) {
                     SnapshotPoint? p = REditorDocument.MapCaretPositionFromView(TextView);
                     if (p.HasValue) {
-                        document.EditorTree.EnsureTreeReady();
-                        ComputeCurrentParameter(document.EditorTree.AstRoot, p.Value.Position);
+                        document.EditorTree.InvokeWhenReady((o) => {
+                            p = REditorDocument.MapCaretPositionFromView(TextView);
+                            ComputeCurrentParameter(document.EditorTree.AstRoot, p.Value.Position);
+                        }, null, this.GetType());
                     } else {
                         SignatureHelp.DismissSession(TextView);
                     }

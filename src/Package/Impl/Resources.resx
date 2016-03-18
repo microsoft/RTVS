@@ -594,8 +594,8 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   <data name="Settings_TriggerOnTab_Description" xml:space="preserve">
     <value>If set to on completion list can be invoked by typing one or more characters and pressing Tab.</value>
   </data>
-  <data name="MailToFrownMessage" xml:space="preserve">
-    <value>If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window.</value>
+  <data name="SendMailFallbackMessage" xml:space="preserve">
+    <value>We will now try to open your email client with a pre-created feedback email. If the email client does not open, please send an email message to rtvsuserfeedback@microsoft.com with the following information:</value>
   </data>
   <data name="Error_ExcelCannotEvaluateExpression" xml:space="preserve">
     <value>Unable to evaluate expression and get data for Microsoft Excel</value>
@@ -617,6 +617,34 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="Warning_UncPath" xml:space="preserve">
     <value>The project appears to be on a network share. R Tools for Visual Studio may not work correctly when files are on a remote share. </value>
+  </data>
+  <data name="SendFrownEmailBody" xml:space="preserve">
+    <value>Please briefly describe what you were doing that led to the issue, if applicable:
+
+...
+
+If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+
+A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, and values of variables in your present and past sessions.
+
+
+
+Additional information:
+
+{1}</value>
+  </data>
+  <data name="ReportIssueBody" xml:space="preserve">
+    <value>Please briefly describe what you were doing that led to the issue, if applicable:
+
+...
+
+If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+
+
+
+Additional information:
+
+{0}</value>
   </data>
   <data name="Settings_SurveyNewsCheck" xml:space="preserve">
     <value>Survey/News Check</value>

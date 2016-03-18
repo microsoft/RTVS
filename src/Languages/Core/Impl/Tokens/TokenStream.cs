@@ -24,7 +24,7 @@ namespace Microsoft.Languages.Core.Tokens {
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken) {
             if (tokens == null) {
-                throw new ArgumentNullException("tokens");
+                throw new ArgumentNullException(nameof(tokens));
             }
 
             _index = 0;

@@ -60,7 +60,7 @@ namespace Microsoft.Languages.Core.Utility {
         /// <returns>The property that was requested.</returns>
         public T GetOrCreateSingletonProperty<T>(object key, Func<T> creator) where T : class {
             if (creator == null)
-                throw new ArgumentNullException("creator");
+                throw new ArgumentNullException(nameof(creator));
 
             lock (this.syncLock) {
                 if (this.properties == null) {

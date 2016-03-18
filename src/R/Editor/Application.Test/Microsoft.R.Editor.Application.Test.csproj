@@ -161,6 +161,7 @@
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="EditorAppTestFilesFixture.cs" />
+    <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
@@ -180,6 +181,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Files\01.rd" />
+    <None Include="Files\Check.r" />
     <None Include="Files\lsfit-part.r" />
     <None Include="Files\lsfit.r" />
     <None Include="packages.config" />

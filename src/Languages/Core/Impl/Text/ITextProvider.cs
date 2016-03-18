@@ -9,16 +9,7 @@ namespace Microsoft.Languages.Core.Text {
     /// Can be implemented on a string <seealso cref="TextStream"/> or
     /// over Visual Studio ITextBuffer (see Microsoft.R.Editor implementation)
     /// </summary>
-    public interface ITextProvider {
-        /// <summary>Text length</summary>
-        int Length { get; }
-
-        /// <summary>
-        /// Retrieves character at a given position. 
-        /// Returns 0 if index is out of range. Must not throw.
-        /// </summary>
-        char this[int position] { get; }
-
+    public interface ITextProvider: ITextIterator {
         /// <summary>Retrieves a substring from text rangen</summary>
         string GetText(ITextRange range);
 

@@ -66,7 +66,7 @@ eval(substitute(f(P, x), list(P = x)))
                 stackFrames.Should().NotBeEmpty();
 
                 var frame = (await stackFrames.Last().GetEnvironmentAsync()).As<DebugValueEvaluationResult>();
-                var children = (await frame.GetChildrenAsync()).ToDictionary(er => er.Name);
+                var children = (await frame.GetChildrenAsync(DebugEvaluationResultFields.ReprDeparse)).ToDictionary(er => er.Name);
 
                 var p = children.Should().ContainKey("p").WhichValue.As<DebugPromiseEvaluationResult>();
                 var d = children.Should().ContainKey("d").WhichValue.As<DebugValueEvaluationResult>();
@@ -115,7 +115,8 @@ eval(substitute(f(P, x), list(P = x)))
         [InlineData(@"sQuote(dQuote('x'))", @"""‘“x”’""", @"""‘“x”’""", "‘“x”’")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
             using (var debugSession = new DebugSession(_session)) {
-                var res = (await debugSession.EvaluateAsync(expr)).Should().BeAssignableTo<DebugValueEvaluationResult>().Which;
+                var res = (await debugSession.EvaluateAsync(expr, DebugEvaluationResultFields.ReprDeparse | DebugEvaluationResultFields.ReprStr | DebugEvaluationResultFields.ReprToString))
+                    .Should().BeAssignableTo<DebugValueEvaluationResult>().Which;
                 var repr = res.GetRepresentation();
 
                 repr.Deparse.Should().Be(deparse);

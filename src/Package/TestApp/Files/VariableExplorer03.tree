@@ -31,8 +31,8 @@
     <VisualTreeProperty Name="Name" Value="" />
     <VisualTreeProperty Name="Tag" Value="null" />
     <VisualTreeProperty Name="InputScope" Value="null" />
-    <VisualTreeProperty Name="ActualWidth" Value="784" />
-    <VisualTreeProperty Name="ActualHeight" Value="561" />
+    <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+    <VisualTreeProperty Name="ActualHeight" Value="563.428571428571" />
     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
     <VisualTreeProperty Name="Width" Value="NaN" />
     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -260,8 +260,8 @@
         <VisualTreeProperty Name="Name" Value="" />
         <VisualTreeProperty Name="Tag" Value="null" />
         <VisualTreeProperty Name="InputScope" Value="null" />
-        <VisualTreeProperty Name="ActualWidth" Value="784" />
-        <VisualTreeProperty Name="ActualHeight" Value="561" />
+        <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+        <VisualTreeProperty Name="ActualHeight" Value="563.428571428571" />
         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
         <VisualTreeProperty Name="Width" Value="NaN" />
         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -498,8 +498,8 @@
             <VisualTreeProperty Name="Name" Value="" />
             <VisualTreeProperty Name="Tag" Value="null" />
             <VisualTreeProperty Name="InputScope" Value="null" />
-            <VisualTreeProperty Name="ActualWidth" Value="784" />
-            <VisualTreeProperty Name="ActualHeight" Value="561" />
+            <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+            <VisualTreeProperty Name="ActualHeight" Value="563.428571428571" />
             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
             <VisualTreeProperty Name="Width" Value="NaN" />
             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -733,8 +733,8 @@
                 <VisualTreeProperty Name="Name" Value="" />
                 <VisualTreeProperty Name="Tag" Value="null" />
                 <VisualTreeProperty Name="InputScope" Value="null" />
-                <VisualTreeProperty Name="ActualWidth" Value="784" />
-                <VisualTreeProperty Name="ActualHeight" Value="561" />
+                <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+                <VisualTreeProperty Name="ActualHeight" Value="563.428571428571" />
                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                 <VisualTreeProperty Name="Width" Value="NaN" />
                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -983,7 +983,7 @@
                     <VisualTreeProperty Name="Name" Value="EnvironmentName" />
                     <VisualTreeProperty Name="Tag" Value="null" />
                     <VisualTreeProperty Name="InputScope" Value="null" />
-                    <VisualTreeProperty Name="ActualWidth" Value="776" />
+                    <VisualTreeProperty Name="ActualWidth" Value="778.285714285714" />
                     <VisualTreeProperty Name="ActualHeight" Value="15.96" />
                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -1291,8 +1291,8 @@
                     <VisualTreeProperty Name="Name" Value="RootTreeGrid" />
                     <VisualTreeProperty Name="Tag" Value="null" />
                     <VisualTreeProperty Name="InputScope" Value="null" />
-                    <VisualTreeProperty Name="ActualWidth" Value="784" />
-                    <VisualTreeProperty Name="ActualHeight" Value="537.04" />
+                    <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+                    <VisualTreeProperty Name="ActualHeight" Value="539.468571428571" />
                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                     <VisualTreeProperty Name="Width" Value="NaN" />
                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -1518,8 +1518,8 @@
                         <VisualTreeProperty Name="Name" Value="" />
                         <VisualTreeProperty Name="Tag" Value="null" />
                         <VisualTreeProperty Name="InputScope" Value="null" />
-                        <VisualTreeProperty Name="ActualWidth" Value="784" />
-                        <VisualTreeProperty Name="ActualHeight" Value="537.04" />
+                        <VisualTreeProperty Name="ActualWidth" Value="786.285714285714" />
+                        <VisualTreeProperty Name="ActualHeight" Value="539.468571428571" />
                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                         <VisualTreeProperty Name="Width" Value="NaN" />
                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -1748,11 +1748,11 @@
                             <VisualTreeProperty Name="ComputedVerticalScrollBarVisibility" Value="Visible" />
                             <VisualTreeProperty Name="HorizontalOffset" Value="0" />
                             <VisualTreeProperty Name="VerticalOffset" Value="0" />
-                            <VisualTreeProperty Name="ExtentWidth" Value="765" />
+                            <VisualTreeProperty Name="ExtentWidth" Value="767.142857142857" />
                             <VisualTreeProperty Name="ExtentHeight" Value="1" />
-                            <VisualTreeProperty Name="ScrollableWidth" Value="1.13686837721616E-13" />
+                            <VisualTreeProperty Name="ScrollableWidth" Value="0" />
                             <VisualTreeProperty Name="ScrollableHeight" Value="0" />
-                            <VisualTreeProperty Name="ViewportWidth" Value="765" />
+                            <VisualTreeProperty Name="ViewportWidth" Value="767.142857142857" />
                             <VisualTreeProperty Name="ViewportHeight" Value="1" />
                             <VisualTreeProperty Name="ContentVerticalOffset" Value="0" />
                             <VisualTreeProperty Name="ContentHorizontalOffset" Value="0" />
@@ -1789,8 +1789,8 @@
                             <VisualTreeProperty Name="Name" Value="DG_ScrollViewer" />
                             <VisualTreeProperty Name="Tag" Value="null" />
                             <VisualTreeProperty Name="InputScope" Value="null" />
-                            <VisualTreeProperty Name="ActualWidth" Value="782" />
-                            <VisualTreeProperty Name="ActualHeight" Value="535.04" />
+                            <VisualTreeProperty Name="ActualWidth" Value="784.285714285714" />
+                            <VisualTreeProperty Name="ActualHeight" Value="537.468571428571" />
                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                             <VisualTreeProperty Name="Width" Value="NaN" />
                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -2009,8 +2009,8 @@
                                 <VisualTreeProperty Name="Name" Value="" />
                                 <VisualTreeProperty Name="Tag" Value="null" />
                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                <VisualTreeProperty Name="ActualWidth" Value="782" />
-                                <VisualTreeProperty Name="ActualHeight" Value="535.04" />
+                                <VisualTreeProperty Name="ActualWidth" Value="784.285714285714" />
+                                <VisualTreeProperty Name="ActualHeight" Value="537.468571428571" />
                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -3254,7 +3254,7 @@
                                     <VisualTreeProperty Name="Name" Value="PART_ColumnHeadersPresenter" />
                                     <VisualTreeProperty Name="Tag" Value="null" />
                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -3481,7 +3481,7 @@
                                         <VisualTreeProperty Name="Name" Value="" />
                                         <VisualTreeProperty Name="Tag" Value="null" />
                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                        <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                        <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                         <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -3744,7 +3744,7 @@
                                             <VisualTreeProperty Name="Name" Value="PART_FillerColumnHeader" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -3971,7 +3971,7 @@
                                                 <VisualTreeProperty Name="Name" Value="" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                 <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -4216,7 +4216,7 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -5653,7 +5653,7 @@
                                             <VisualTreeProperty Name="Name" Value="" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -5887,7 +5887,7 @@
                                                 <VisualTreeProperty Name="Name" Value="" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                 <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -6150,7 +6150,7 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="218.571428571429" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="219.183673469388" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -6377,7 +6377,7 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="218.571428571429" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="219.183673469388" />
                                                         <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -6622,7 +6622,7 @@
                                                             <VisualTreeProperty Name="Name" Value="" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="218.571428571429" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="219.183673469388" />
                                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -8092,7 +8092,7 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="327.857142857143" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="328.775510204082" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -8319,7 +8319,7 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="327.857142857143" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="328.775510204082" />
                                                         <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -8564,7 +8564,7 @@
                                                             <VisualTreeProperty Name="Name" Value="" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="327.857142857143" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="328.775510204082" />
                                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -10273,7 +10273,7 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -10500,7 +10500,7 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                         <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -10745,7 +10745,7 @@
                                                             <VisualTreeProperty Name="Name" Value="" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -12454,7 +12454,7 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -12681,7 +12681,7 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                         <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -12926,7 +12926,7 @@
                                                             <VisualTreeProperty Name="Name" Value="" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                             <VisualTreeProperty Name="ActualHeight" Value="23.96" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -14619,8 +14619,8 @@
                                     <VisualTreeProperty Name="Name" Value="PART_ScrollContentPresenter" />
                                     <VisualTreeProperty Name="Tag" Value="null" />
                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
-                                    <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
+                                    <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -14850,8 +14850,8 @@
                                         <VisualTreeProperty Name="Name" Value="" />
                                         <VisualTreeProperty Name="Tag" Value="null" />
                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                        <VisualTreeProperty Name="ActualWidth" Value="765" />
-                                        <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                        <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
+                                        <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -15085,8 +15085,8 @@
                                             <VisualTreeProperty Name="Name" Value="PART_RowsPresenter" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="765" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -15346,7 +15346,7 @@
                                                 <VisualTreeProperty Name="Name" Value="" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                 <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -15573,7 +15573,7 @@
                                                     <VisualTreeProperty Name="Name" Value="DGR_Border" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                     <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -15808,7 +15808,7 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                         <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -16070,7 +16070,7 @@
                                                             <VisualTreeProperty Name="Name" Value="" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                             <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -16294,7 +16294,7 @@
                                                                 <VisualTreeProperty Name="Name" Value="" />
                                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                                <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                                 <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -16528,7 +16528,7 @@
                                                                     <VisualTreeProperty Name="Name" Value="" />
                                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                                                     <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -16784,7 +16784,7 @@
                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                        <VisualTreeProperty Name="ActualWidth" Value="218.571428571429" />
+                                                                        <VisualTreeProperty Name="ActualWidth" Value="219.183673469388" />
                                                                         <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -17013,7 +17013,7 @@
                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                            <VisualTreeProperty Name="ActualWidth" Value="217.571428571429" />
+                                                                            <VisualTreeProperty Name="ActualWidth" Value="218.183673469388" />
                                                                             <VisualTreeProperty Name="ActualHeight" Value="18" />
                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -17251,7 +17251,7 @@
                                                                                 <VisualTreeProperty Name="Name" Value="" />
                                                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                <VisualTreeProperty Name="ActualWidth" Value="215.571428571429" />
+                                                                                <VisualTreeProperty Name="ActualWidth" Value="216.183673469388" />
                                                                                 <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -17489,7 +17489,7 @@
                                                                                     <VisualTreeProperty Name="Name" Value="" />
                                                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                    <VisualTreeProperty Name="ActualWidth" Value="215.571428571429" />
+                                                                                    <VisualTreeProperty Name="ActualWidth" Value="216.183673469388" />
                                                                                     <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -17724,7 +17724,7 @@
                                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                        <VisualTreeProperty Name="ActualWidth" Value="215.571428571429" />
+                                                                                        <VisualTreeProperty Name="ActualWidth" Value="216.183673469388" />
                                                                                         <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -18957,7 +18957,7 @@
                                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                            <VisualTreeProperty Name="ActualWidth" Value="199.571428571429" />
+                                                                                            <VisualTreeProperty Name="ActualWidth" Value="200.183673469388" />
                                                                                             <VisualTreeProperty Name="ActualHeight" Value="15.96" />
                                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -19213,7 +19213,7 @@
                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                        <VisualTreeProperty Name="ActualWidth" Value="327.857142857143" />
+                                                                        <VisualTreeProperty Name="ActualWidth" Value="328.775510204082" />
                                                                         <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -19442,7 +19442,7 @@
                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                            <VisualTreeProperty Name="ActualWidth" Value="326.857142857143" />
+                                                                            <VisualTreeProperty Name="ActualWidth" Value="327.775510204082" />
                                                                             <VisualTreeProperty Name="ActualHeight" Value="18" />
                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -19680,7 +19680,7 @@
                                                                                 <VisualTreeProperty Name="Name" Value="" />
                                                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                <VisualTreeProperty Name="ActualWidth" Value="324.857142857143" />
+                                                                                <VisualTreeProperty Name="ActualWidth" Value="325.775510204082" />
                                                                                 <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -19918,7 +19918,7 @@
                                                                                     <VisualTreeProperty Name="Name" Value="" />
                                                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                    <VisualTreeProperty Name="ActualWidth" Value="324.857142857143" />
+                                                                                    <VisualTreeProperty Name="ActualWidth" Value="325.775510204082" />
                                                                                     <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -20153,7 +20153,7 @@
                                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                        <VisualTreeProperty Name="ActualWidth" Value="324.857142857143" />
+                                                                                        <VisualTreeProperty Name="ActualWidth" Value="325.775510204082" />
                                                                                         <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -20403,7 +20403,7 @@
                                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                            <VisualTreeProperty Name="ActualWidth" Value="324.857142857143" />
+                                                                                            <VisualTreeProperty Name="ActualWidth" Value="325.775510204082" />
                                                                                             <VisualTreeProperty Name="ActualHeight" Value="15.96" />
                                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -21340,7 +21340,7 @@
                                                                                                     <VisualTreeObject>
                                                                                                       <Name>CrispImage</Name>
                                                                                                       <Properties>
-                                                                                                        <VisualTreeProperty Name="ActualDpi" Value="96" />
+                                                                                                        <VisualTreeProperty Name="ActualDpi" Value="168" />
                                                                                                         <VisualTreeProperty Name="ActualImageLibrary" Value="null" />
                                                                                                         <VisualTreeProperty Name="ActualGrayscaleBiasColor" Value="#40FFFFFF" />
                                                                                                         <VisualTreeProperty Name="ActualHighContrast" Value="False" />
@@ -22076,7 +22076,7 @@
                                                                                                     <VisualTreeObject>
                                                                                                       <Name>CrispImage</Name>
                                                                                                       <Properties>
-                                                                                                        <VisualTreeProperty Name="ActualDpi" Value="96" />
+                                                                                                        <VisualTreeProperty Name="ActualDpi" Value="168" />
                                                                                                         <VisualTreeProperty Name="ActualImageLibrary" Value="null" />
                                                                                                         <VisualTreeProperty Name="ActualGrayscaleBiasColor" Value="#40FFFFFF" />
                                                                                                         <VisualTreeProperty Name="ActualHighContrast" Value="False" />
@@ -22368,7 +22368,7 @@
                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                        <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                                        <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                                         <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -22597,7 +22597,7 @@
                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                            <VisualTreeProperty Name="ActualWidth" Value="108.285714285714" />
+                                                                            <VisualTreeProperty Name="ActualWidth" Value="108.591836734694" />
                                                                             <VisualTreeProperty Name="ActualHeight" Value="18" />
                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -22835,7 +22835,7 @@
                                                                                 <VisualTreeProperty Name="Name" Value="" />
                                                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                <VisualTreeProperty Name="ActualWidth" Value="106.285714285714" />
+                                                                                <VisualTreeProperty Name="ActualWidth" Value="106.591836734694" />
                                                                                 <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -23085,7 +23085,7 @@
                                                                                     <VisualTreeProperty Name="Name" Value="" />
                                                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                    <VisualTreeProperty Name="ActualWidth" Value="102.285714285714" />
+                                                                                    <VisualTreeProperty Name="ActualWidth" Value="102.591836734694" />
                                                                                     <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -23337,7 +23337,7 @@
                                                                         <VisualTreeProperty Name="Name" Value="" />
                                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                        <VisualTreeProperty Name="ActualWidth" Value="109.285714285714" />
+                                                                        <VisualTreeProperty Name="ActualWidth" Value="109.591836734694" />
                                                                         <VisualTreeProperty Name="ActualHeight" Value="19" />
                                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                         <VisualTreeProperty Name="Width" Value="NaN" />
@@ -23566,7 +23566,7 @@
                                                                             <VisualTreeProperty Name="Name" Value="" />
                                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                            <VisualTreeProperty Name="ActualWidth" Value="108.285714285714" />
+                                                                            <VisualTreeProperty Name="ActualWidth" Value="108.591836734694" />
                                                                             <VisualTreeProperty Name="ActualHeight" Value="18" />
                                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                             <VisualTreeProperty Name="Width" Value="NaN" />
@@ -23804,7 +23804,7 @@
                                                                                 <VisualTreeProperty Name="Name" Value="" />
                                                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                <VisualTreeProperty Name="ActualWidth" Value="106.285714285714" />
+                                                                                <VisualTreeProperty Name="ActualWidth" Value="106.591836734694" />
                                                                                 <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                 <VisualTreeProperty Name="Width" Value="NaN" />
@@ -24054,7 +24054,7 @@
                                                                                     <VisualTreeProperty Name="Name" Value="" />
                                                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                                                    <VisualTreeProperty Name="ActualWidth" Value="102.285714285714" />
+                                                                                    <VisualTreeProperty Name="ActualWidth" Value="102.591836734694" />
                                                                                     <VisualTreeProperty Name="ActualHeight" Value="16" />
                                                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -26712,8 +26712,8 @@
                                         <VisualTreeProperty Name="Name" Value="" />
                                         <VisualTreeProperty Name="Tag" Value="null" />
                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                        <VisualTreeProperty Name="ActualWidth" Value="765" />
-                                        <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                        <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
+                                        <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -26969,11 +26969,11 @@
                                     <VisualTreeProperty Name="Name" Value="PART_VerticalScrollBar" />
                                     <VisualTreeProperty Name="Tag" Value="null" />
                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                    <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                    <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                    <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                    <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
-                                    <VisualTreeProperty Name="Width" Value="17" />
-                                    <VisualTreeProperty Name="MinWidth" Value="17" />
+                                    <VisualTreeProperty Name="Width" Value="17.1428571428571" />
+                                    <VisualTreeProperty Name="MinWidth" Value="17.1428571428571" />
                                     <VisualTreeProperty Name="MaxWidth" Value="∞" />
                                     <VisualTreeProperty Name="Height" Value="NaN" />
                                     <VisualTreeProperty Name="MinHeight" Value="0" />
@@ -27196,8 +27196,8 @@
                                         <VisualTreeProperty Name="Name" Value="Bg" />
                                         <VisualTreeProperty Name="Tag" Value="null" />
                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                        <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                        <VisualTreeProperty Name="ActualHeight" Value="511.08" />
+                                        <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                        <VisualTreeProperty Name="ActualHeight" Value="513.508571428571" />
                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -27433,8 +27433,8 @@
                                             <VisualTreeProperty Name="Name" Value="" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="477.08" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="479.222857142857" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -27693,8 +27693,8 @@
                                             <VisualTreeProperty Name="Name" Value="PART_LineUpButton" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -27922,8 +27922,8 @@
                                                 <VisualTreeProperty Name="Name" Value="border" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -28160,8 +28160,8 @@
                                                     <VisualTreeProperty Name="Name" Value="contentPresenter" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="13" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="12.5" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="13.1428571428571" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="12.6122448979592" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -28404,8 +28404,8 @@
                                                         <VisualTreeProperty Name="Name" Value="ArrowTop" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="7" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="5.5" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="7.14285714285714" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="5.61224489795918" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -28649,8 +28649,8 @@
                                             <VisualTreeProperty Name="Name" Value="PART_Track" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="477.08" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="479.222857142857" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -29902,8 +29902,8 @@
                                             <VisualTreeProperty Name="Name" Value="PART_LineDownButton" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -30131,8 +30131,8 @@
                                                 <VisualTreeProperty Name="Name" Value="border" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -30369,8 +30369,8 @@
                                                     <VisualTreeProperty Name="Name" Value="contentPresenter" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="13" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="12.5" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="13.1428571428571" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="12.6122448979592" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -30613,8 +30613,8 @@
                                                         <VisualTreeProperty Name="Name" Value="ArrowBottom" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="7" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="5.5" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="7.14285714285714" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="5.61224489795918" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -30859,7 +30859,7 @@
                                     <VisualTreeProperty Name="Name" Value="" />
                                     <VisualTreeProperty Name="Tag" Value="null" />
                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                    <VisualTreeProperty Name="ActualWidth" Value="765" />
+                                    <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
                                     <VisualTreeProperty Name="ActualHeight" Value="0" />
                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                     <VisualTreeProperty Name="Width" Value="NaN" />
@@ -31083,9 +31083,9 @@
                                       <Name>ScrollBar</Name>
                                       <Properties>
                                         <VisualTreeProperty Name="Orientation" Value="Horizontal" />
-                                        <VisualTreeProperty Name="ViewportSize" Value="765" />
+                                        <VisualTreeProperty Name="ViewportSize" Value="767.142857142857" />
                                         <VisualTreeProperty Name="Minimum" Value="0" />
-                                        <VisualTreeProperty Name="Maximum" Value="1.13686837721616E-13" />
+                                        <VisualTreeProperty Name="Maximum" Value="0" />
                                         <VisualTreeProperty Name="Value" Value="0" />
                                         <VisualTreeProperty Name="LargeChange" Value="1" />
                                         <VisualTreeProperty Name="SmallChange" Value="0.1" />
@@ -31119,8 +31119,8 @@
                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                         <VisualTreeProperty Name="MinWidth" Value="0" />
                                         <VisualTreeProperty Name="MaxWidth" Value="∞" />
-                                        <VisualTreeProperty Name="Height" Value="17" />
-                                        <VisualTreeProperty Name="MinHeight" Value="17" />
+                                        <VisualTreeProperty Name="Height" Value="17.1428571428571" />
+                                        <VisualTreeProperty Name="MinHeight" Value="17.1428571428571" />
                                         <VisualTreeProperty Name="MaxHeight" Value="∞" />
                                         <VisualTreeProperty Name="FlowDirection" Value="LeftToRight" />
                                         <VisualTreeProperty Name="Margin" Value="0,0,0,0" />
@@ -31156,7 +31156,7 @@
                                         <VisualTreeProperty Name="Clip" Value="null" />
                                         <VisualTreeProperty Name="SnapsToDevicePixels" Value="True" />
                                         <VisualTreeProperty Name="IsFocused" Value="False" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
+                                        <VisualTreeProperty Name="IsEnabled" Value="False" />
                                         <VisualTreeProperty Name="IsHitTestVisible" Value="True" />
                                         <VisualTreeProperty Name="IsVisible" Value="False" />
                                         <VisualTreeProperty Name="Focusable" Value="False" />
@@ -31340,8 +31340,8 @@
                                             <VisualTreeProperty Name="Name" Value="Bg" />
                                             <VisualTreeProperty Name="Tag" Value="null" />
                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                            <VisualTreeProperty Name="ActualWidth" Value="765" />
-                                            <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                            <VisualTreeProperty Name="ActualWidth" Value="767.142857142857" />
+                                            <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -31383,7 +31383,7 @@
                                             <VisualTreeProperty Name="Clip" Value="null" />
                                             <VisualTreeProperty Name="SnapsToDevicePixels" Value="True" />
                                             <VisualTreeProperty Name="IsFocused" Value="False" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
+                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
                                             <VisualTreeProperty Name="IsHitTestVisible" Value="True" />
                                             <VisualTreeProperty Name="IsVisible" Value="False" />
                                             <VisualTreeProperty Name="Focusable" Value="False" />
@@ -31577,8 +31577,8 @@
                                                 <VisualTreeProperty Name="Name" Value="" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="731" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="732.857142857143" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -31620,7 +31620,7 @@
                                                 <VisualTreeProperty Name="Clip" Value="null" />
                                                 <VisualTreeProperty Name="SnapsToDevicePixels" Value="True" />
                                                 <VisualTreeProperty Name="IsFocused" Value="False" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
+                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
                                                 <VisualTreeProperty Name="IsHitTestVisible" Value="True" />
                                                 <VisualTreeProperty Name="IsVisible" Value="False" />
                                                 <VisualTreeProperty Name="Focusable" Value="False" />
@@ -31837,8 +31837,8 @@
                                                 <VisualTreeProperty Name="Name" Value="PART_LineLeftButton" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -32066,8 +32066,8 @@
                                                     <VisualTreeProperty Name="Name" Value="border" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -32304,8 +32304,8 @@
                                                         <VisualTreeProperty Name="Name" Value="contentPresenter" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="11" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="13" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="11.1020408163265" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="13.1428571428571" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -32529,7 +32529,7 @@
                                                           <Properties>
                                                             <VisualTreeProperty Name="Data" Value="M3.18,7C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7z" />
                                                             <VisualTreeProperty Name="Stretch" Value="Uniform" />
-                                                            <VisualTreeProperty Name="Fill" Value="#FF606060" />
+                                                            <VisualTreeProperty Name="Fill" Value="#FFBFBFBF" />
                                                             <VisualTreeProperty Name="Stroke" Value="null" />
                                                             <VisualTreeProperty Name="StrokeThickness" Value="1" />
                                                             <VisualTreeProperty Name="StrokeStartLineCap" Value="Flat" />
@@ -32548,8 +32548,8 @@
                                                             <VisualTreeProperty Name="Name" Value="ArrowLeft" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="5" />
-                                                            <VisualTreeProperty Name="ActualHeight" Value="7" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="5.10204081632653" />
+                                                            <VisualTreeProperty Name="ActualHeight" Value="7.14285714285714" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                                             <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -32780,9 +32780,9 @@
                                               <Properties>
                                                 <VisualTreeProperty Name="Orientation" Value="Horizontal" />
                                                 <VisualTreeProperty Name="Minimum" Value="0" />
-                                                <VisualTreeProperty Name="Maximum" Value="1.13686837721616E-13" />
+                                                <VisualTreeProperty Name="Maximum" Value="0" />
                                                 <VisualTreeProperty Name="Value" Value="0" />
-                                                <VisualTreeProperty Name="ViewportSize" Value="765" />
+                                                <VisualTreeProperty Name="ViewportSize" Value="767.142857142857" />
                                                 <VisualTreeProperty Name="IsDirectionReversed" Value="False" />
                                                 <VisualTreeProperty Name="Style" Value="null" />
                                                 <VisualTreeProperty Name="OverridesDefaultStyle" Value="False" />
@@ -32793,8 +32793,8 @@
                                                 <VisualTreeProperty Name="Name" Value="PART_Track" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="731" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="732.857142857143" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -32831,7 +32831,7 @@
                                                 <VisualTreeProperty Name="BitmapEffectInput" Value="null" />
                                                 <VisualTreeProperty Name="CacheMode" Value="null" />
                                                 <VisualTreeProperty Name="Uid" Value="" />
-                                                <VisualTreeProperty Name="Visibility" Value="Visible" />
+                                                <VisualTreeProperty Name="Visibility" Value="Hidden" />
                                                 <VisualTreeProperty Name="ClipToBounds" Value="False" />
                                                 <VisualTreeProperty Name="Clip" Value="null" />
                                                 <VisualTreeProperty Name="SnapsToDevicePixels" Value="True" />
@@ -33053,7 +33053,7 @@
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
                                                     <VisualTreeProperty Name="ActualWidth" Value="0" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -33290,7 +33290,7 @@
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
                                                         <VisualTreeProperty Name="ActualWidth" Value="0" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -33551,8 +33551,8 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="1.13686837721616E-13" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="5.68736141906868" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -33788,8 +33788,8 @@
                                                         <VisualTreeProperty Name="Name" Value="" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="1.13686837721616E-13" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="5.68736141906868" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -34039,8 +34039,8 @@
                                                     <VisualTreeProperty Name="Name" Value="" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="731" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="727.169781438074" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -34276,8 +34276,8 @@
                                                         <VisualTreeProperty Name="Name" Value="rectangle" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="731" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="727.169781438074" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -34540,8 +34540,8 @@
                                                 <VisualTreeProperty Name="Name" Value="PART_LineRightButton" />
                                                 <VisualTreeProperty Name="Tag" Value="null" />
                                                 <VisualTreeProperty Name="InputScope" Value="null" />
-                                                <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                 <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                 <VisualTreeProperty Name="Width" Value="NaN" />
                                                 <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -34769,8 +34769,8 @@
                                                     <VisualTreeProperty Name="Name" Value="border" />
                                                     <VisualTreeProperty Name="Tag" Value="null" />
                                                     <VisualTreeProperty Name="InputScope" Value="null" />
-                                                    <VisualTreeProperty Name="ActualWidth" Value="17" />
-                                                    <VisualTreeProperty Name="ActualHeight" Value="17" />
+                                                    <VisualTreeProperty Name="ActualWidth" Value="17.1428571428571" />
+                                                    <VisualTreeProperty Name="ActualHeight" Value="17.1428571428571" />
                                                     <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                     <VisualTreeProperty Name="Width" Value="NaN" />
                                                     <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -35007,8 +35007,8 @@
                                                         <VisualTreeProperty Name="Name" Value="contentPresenter" />
                                                         <VisualTreeProperty Name="Tag" Value="null" />
                                                         <VisualTreeProperty Name="InputScope" Value="null" />
-                                                        <VisualTreeProperty Name="ActualWidth" Value="11" />
-                                                        <VisualTreeProperty Name="ActualHeight" Value="13" />
+                                                        <VisualTreeProperty Name="ActualWidth" Value="11.1020408163265" />
+                                                        <VisualTreeProperty Name="ActualHeight" Value="13.1428571428571" />
                                                         <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                         <VisualTreeProperty Name="Width" Value="NaN" />
                                                         <VisualTreeProperty Name="MinWidth" Value="0" />
@@ -35232,7 +35232,7 @@
                                                           <Properties>
                                                             <VisualTreeProperty Name="Data" Value="M1.81,7C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7z" />
                                                             <VisualTreeProperty Name="Stretch" Value="Uniform" />
-                                                            <VisualTreeProperty Name="Fill" Value="#FF606060" />
+                                                            <VisualTreeProperty Name="Fill" Value="#FFBFBFBF" />
                                                             <VisualTreeProperty Name="Stroke" Value="null" />
                                                             <VisualTreeProperty Name="StrokeThickness" Value="1" />
                                                             <VisualTreeProperty Name="StrokeStartLineCap" Value="Flat" />
@@ -35251,8 +35251,8 @@
                                                             <VisualTreeProperty Name="Name" Value="ArrowRight" />
                                                             <VisualTreeProperty Name="Tag" Value="null" />
                                                             <VisualTreeProperty Name="InputScope" Value="null" />
-                                                            <VisualTreeProperty Name="ActualWidth" Value="5" />
-                                                            <VisualTreeProperty Name="ActualHeight" Value="7" />
+                                                            <VisualTreeProperty Name="ActualWidth" Value="5.10204081632653" />
+                                                            <VisualTreeProperty Name="ActualHeight" Value="7.14285714285714" />
                                                             <VisualTreeProperty Name="LayoutTransform" Value="Identity" />
                                                             <VisualTreeProperty Name="Width" Value="NaN" />
                                                             <VisualTreeProperty Name="MinWidth" Value="0" />

@@ -32,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     DoIdle(100);
 
                     var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
+                    var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
                     var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, activeTextViewTracker: activeViewTrackerMock);
                     var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
@@ -42,7 +43,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     clientApp.Component = component;
 
                     var view = activeViewTrackerMock.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock);
+
+                    var cmd = new ShowHelpOnCurrentCommand(interactiveWorkflow, activeViewTrackerMock, activeReplTrackerMock);
 
                     cmd.Should().BeVisibleAndDisabled();
                     view.Caret.MoveTo(new SnapshotPoint(view.TextBuffer.CurrentSnapshot, 3));

@@ -164,9 +164,6 @@ OpenBraceExpected AfterToken [5...8)";
                         TokenNode  [b [5...6)]
                         TokenNode  [= [6...7)]
                 TokenNode  [) [7...8)]
-
-ExpressionExpected Token [3...4)
-ExpressionExpected Token [6...7)
 ";
             ParserTest.VerifyParse(expected, "x(a=,b=)");
         }
@@ -188,8 +185,6 @@ ExpressionExpected Token [6...7)
                         TokenNode  [, [4...5)]
                     StubArgument  [{Stub}]
                 TokenNode  [) [5...6)]
-
-ExpressionExpected Token [3...4)
 ";
             ParserTest.VerifyParse(expected, "x(a=,)");
         }
@@ -215,7 +210,6 @@ ExpressionExpected Token [3...4)
                         TokenNode  ['z' [12...15)]
                 TokenNode  [) [15...16)]
 
-ExpressionExpected Token [5...6)
 IndentifierExpected Token [8...11)
 ";
             ParserTest.VerifyParse(expected, "x(\'s\'=, 1.0='z')");

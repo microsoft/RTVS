@@ -184,6 +184,7 @@
     <Compile Include="Tree\TreeChangeEventRecord.cs" />
     <Compile Include="Tree\TreeEventArgs.cs" />
     <Compile Include="Tree\EditorTreeEvents.cs" />
+    <Compile Include="Tree\TreeExtensions.cs" />
     <Compile Include="Tree\TreeLock.cs" />
     <Compile Include="Tree\TreeUpdateTask.cs" />
     <Compile Include="Tree\TreeUpdateType.cs" />

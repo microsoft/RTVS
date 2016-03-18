@@ -3,6 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.ContentType;
@@ -23,7 +24,7 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         //[Test]
         //[Category.Interactive]
         public void TypeFile_R() {
-            string actual = TypeFileInEditor("lsfit-part.r", RContentTypeDefinition.ContentType);
+            string actual = TypeFileInEditor("check.r", RContentTypeDefinition.ContentType);
             string expected = "";
             actual.Should().Be(expected);
         }
@@ -42,8 +43,16 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         private string TypeFileInEditor(string fileName, string contentType) {
             using (var script = new TestScript(contentType)) {
                 string text = _files.LoadDestinationFile(fileName);
-
-                script.Type(text, idleTime: 10);
+                string[] lines = text.Split(CharExtensions.LineBreakChars);
+                for (int i = 0; i < lines.Length; i++) {
+                    string lineText = lines[i];
+                    if (!lineText.TrimStart().StartsWith("#", System.StringComparison.Ordinal)) {
+                        lineText = lineText.Replace(" ", string.Empty);
+                    }
+                    script.Type(lineText, idleTime: 10);
+                    script.Enter();
+                    script.DoIdle(300);
+                }
                 return script.EditorText;
             }
         }

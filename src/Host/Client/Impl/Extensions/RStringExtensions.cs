@@ -79,5 +79,17 @@ namespace Microsoft.R.Host.Client {
             }
             return sb.ToString();
         }
+
+        public static string ToRName(this string s) {
+            if (s.Length > 0) {
+                if (s[0] != '`') {
+                    s = "`" + s;
+                }
+                if (s[s.Length - 1] != '`') {
+                    s = s + "`";
+                }
+            }
+            return s;
+        }
     }
 }

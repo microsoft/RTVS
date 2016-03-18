@@ -246,6 +246,7 @@
     <Compile Include="DataInspect\VariableRHostScript.cs" />
     <Compile Include="Expansions\ExpansionsTest.cs" />
     <Compile Include="FakeFactories\TestRInteractiveWorkflowProviderFactory.cs" />
+    <Compile Include="Mocks\ActiveRInteractiveWindowTrackerMock.cs" />
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Office\RPackageTest.cs" />

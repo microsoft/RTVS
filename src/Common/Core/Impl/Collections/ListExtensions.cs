@@ -6,6 +6,14 @@ using System.Collections.Generic;
 
 namespace Microsoft.Common.Core.Collections {
     public static class ListExtensions {
+        public static IList<T> AddIf<T>(this IList<T> list, bool condition, T value) {
+            if (condition) {
+                list.Add(value);
+            }
+
+            return list;
+        }
+
         public static void RemoveWhere<T>(this IList<T> list, Func<T, bool> predicate) {
             for (var i = list.Count - 1; i >= 0; i--) {
                 if (predicate(list[i])) {

@@ -503,15 +503,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to If e-mail client does not open, please create an e-mail message to rtvsuserfeedback@microsoft.com and attach RTVSLogs.zip file that can be found in {0}. Briefly describe what you were doing that led to the issue if applicable.{1}Please be aware that the data contained in the attached logs contain your command history as well as all output displayed in the R Interactive Window..
-        /// </summary>
-        public static string MailToFrownMessage {
-            get {
-                return ResourceManager.GetString("MailToFrownMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -715,6 +706,25 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please briefly describe what you were doing that led to the issue, if applicable:
+        ///
+        ///...
+        ///
+        ///If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+        ///
+        ///
+        ///
+        ///Additional information:
+        ///
+        ///{0}.
+        /// </summary>
+        public static string ReportIssueBody {
+            get {
+                return ResourceManager.GetString("ReportIssueBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RFileNode {
@@ -813,6 +823,30 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SaveWorkspaceOnProjectUnload {
             get {
                 return ResourceManager.GetString("SaveWorkspaceOnProjectUnload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please briefly describe what you were doing that led to the issue, if applicable:
+        ///
+        ///...
+        ///
+        ///If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+        ///
+        ///A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including i [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string SendFrownEmailBody {
+            get {
+                return ResourceManager.GetString("SendFrownEmailBody", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to We will now try to open your email client with a pre-created feedback email. If the email client does not open, please send an email message to rtvsuserfeedback@microsoft.com with the following information:.
+        /// </summary>
+        public static string SendMailFallbackMessage {
+            get {
+                return ResourceManager.GetString("SendMailFallbackMessage", resourceCulture);
             }
         }
         

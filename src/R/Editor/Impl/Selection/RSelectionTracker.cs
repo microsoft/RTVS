@@ -21,20 +21,26 @@ namespace Microsoft.R.Editor.Selection {
         /// Index of token that is nearest to the caret
         /// </summary>
         private int _index;
-        
+
         /// <summary>
         /// Offset from token to the caret position
         /// </summary>
         private int _offset;
+
+        private ITextRange _changingRange;
+        private int _lengthBeforeChange;
 
         /// <summary>
         /// SelectionTracker constructor
         /// </summary>
         /// <param name="textView">Text view</param>
         /// <param name="textBuffer">Editor text buffer (may be different from one attached to text view)</param>
-        public RSelectionTracker(ITextView textView, ITextBuffer textBuffer)
+        /// <param name="changingRange">Range that is changing in the buffer</param>
+        public RSelectionTracker(ITextView textView, ITextBuffer textBuffer, ITextRange changingRange)
             : base(textView) {
             TextBuffer = textBuffer;
+            _changingRange = changingRange;
+            _lengthBeforeChange = TextBuffer.CurrentSnapshot.Length;
         }
 
         #region ISelectionTracker
@@ -42,7 +48,7 @@ namespace Microsoft.R.Editor.Selection {
         /// <summary>
         /// Editor text buffer.
         /// </summary>
-        public ITextBuffer TextBuffer { get; private set; }
+        public ITextBuffer TextBuffer { get; }
 
         /// <summary>
         /// Saves current selection
@@ -69,14 +75,15 @@ namespace Microsoft.R.Editor.Selection {
         }
         #endregion
 
-        private static void TokenFromPosition(ITextSnapshot snapshot, int position, out int itemIndex, out int offset) {
+        private void TokenFromPosition(ITextSnapshot snapshot, int position, out int itemIndex, out int offset) {
             // Normally token stream does not change after formatting so we can simply rely on the fact 
             // that caret position is going to remain relative to the same token index
             itemIndex = -1;
             offset = 0;
 
             var tokenizer = new RTokenizer();
-            IReadOnlyTextRangeCollection<RToken> tokens = tokenizer.Tokenize(new TextProvider(snapshot), 0, snapshot.Length, true);
+            IReadOnlyTextRangeCollection<RToken> tokens =
+                tokenizer.Tokenize(new TextProvider(snapshot), _changingRange.Start, _changingRange.Length, true);
 
             // Check if position is adjacent to previous token
             int prevItemIndex = tokens.GetFirstItemBeforePosition(position);
@@ -111,9 +118,11 @@ namespace Microsoft.R.Editor.Selection {
             }
         }
 
-        private static int PositionFromTokens(ITextSnapshot snapshot, int itemIndex, int offset) {
+        private int PositionFromTokens(ITextSnapshot snapshot, int itemIndex, int offset) {
+            int lengthChange = snapshot.Length - _lengthBeforeChange;
             var tokenizer = new RTokenizer();
-            var tokens = tokenizer.Tokenize(new TextProvider(snapshot), 0, snapshot.Length, true);
+            var tokens = tokenizer.Tokenize(
+                new TextProvider(snapshot), _changingRange.Start, _changingRange.Length + lengthChange, true);
 
             if (itemIndex >= 0 && itemIndex < tokens.Count) {
                 int position = tokens[itemIndex].Start - offset;
@@ -124,7 +133,7 @@ namespace Microsoft.R.Editor.Selection {
                 return position;
             }
 
-            return snapshot.Length;
+            return _changingRange.End + lengthChange;
         }
     }
 }

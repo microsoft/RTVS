@@ -20,7 +20,7 @@ namespace Microsoft.R.Core.AST.DataTypes {
 
         public RVector(RMode mode, int length) {
             if (length < 0)
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
 
             this.Mode = mode;
             this.Length = length;

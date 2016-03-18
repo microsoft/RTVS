@@ -37,6 +37,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
             log.WriteLineAsync(MessageCategory.Error, $"Failed to apply change '{change}':{exception}");
         }
 
+        public static void WatcherApplyRecoveryChange(this IActionLog log, string change) {
+            log.WriteLineAsync(MessageCategory.General, $"Apply recovery change: {change}");
+        }
+
+        public static void WatcherApplyRecoveryChangeFailed(this IActionLog log, string change, Exception exception) {
+            log.WriteLineAsync(MessageCategory.Error, $"Failed to apply recovery change '{change}', closing watcher:{exception}");
+        }
+
         public static void WatcherChangesetSent(this IActionLog log, MsBuildFileSystemWatcher.Changeset changeset) {
             var sb = new StringBuilder();
             sb.AppendLine("MsBuildFileSystemWatcher changeset sent.")
@@ -50,11 +58,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
             log.WriteAsync(MessageCategory.General, sb.ToString());
         }
 
-        public static void ErrorInFileWatcher(this IActionLog log, string watcherName, Exception e) {
+        public static void ErrorInFileSystemWatcher(this IActionLog log, string watcherName, Exception e) {
             log.WriteAsync(MessageCategory.Error, $"{watcherName} failed with exception:{e}");
         }
 
-        private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, HashSet<string> changesetPart, string name) {
+        private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, ISet<string> changesetPart, string name) {
             if (changesetPart.Count > 0) {
                 sb.AppendLine(name);
                 foreach (var item in changesetPart) {
@@ -66,7 +74,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
             return sb;
         }
 
-        private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, Dictionary<string, string> changesetPart, string name) {
+        private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, IDictionary<string, string> changesetPart, string name) {
             if (changesetPart.Count > 0) {
                 sb.AppendLine(name);
                 foreach (var item in changesetPart) {

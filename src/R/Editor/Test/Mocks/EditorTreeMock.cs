@@ -19,6 +19,7 @@ namespace Microsoft.R.Editor.Test.Mocks
             AstRoot = ast;
         }
         public AstRoot AstRoot { get; private set; }
+        public AstRoot PreviousAstRoot  { get; private set; }
 
         public bool IsReady
         {
@@ -53,6 +54,8 @@ namespace Microsoft.R.Editor.Test.Mocks
 
         public void ProcessChangesAsync(Action completeCallback) {
         }
+
+        public void InvokeWhenReady(Action<object> action, object p, Type type, bool processNow = false) { }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> Closing;

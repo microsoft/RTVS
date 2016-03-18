@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
     using System.Threading.Tasks;
+    using Common.Core;
     using Core.AST.Definitions;
     using Core.Parser;
     using Core.Tokens;
@@ -217,7 +218,7 @@ namespace Microsoft.R.Editor.Completion {
             }
             return base.OnPreTypeChar(typedCharacter);
         }
-        
+
         /// <summary>
         /// Should this key press trigger a completion session?
         /// </summary>
@@ -236,12 +237,20 @@ namespace Microsoft.R.Editor.Completion {
 
                     default:
                         if (REditorSettings.ShowCompletionOnFirstChar) {
-                            return Char.IsLetter(typedCharacter) || typedCharacter == '.';
+                            SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
+                            if (position.HasValue) {
+                                int pos = position.Value;
+                                var snapshot = position.Value.Snapshot;
+                                // Trigger on first character
+                                if (RTokenizer.IsIdentifierCharacter(typedCharacter) && !char.IsDigit(typedCharacter)) {
+                                    // Ignore if this is not the first character
+                                    return pos <= 1 || (pos > 1 && !RTokenizer.IsIdentifierCharacter(snapshot[pos - 2]));
+                                }
+                            }
                         }
                         break;
                 }
             }
-
             return false;
         }
 
@@ -328,7 +337,7 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         public override bool IsMuteCharacter(char typedCharacter) {
-            if(typedCharacter == '=') {
+            if (typedCharacter == '=') {
                 bool equalsCompletion = CompletionSession.SelectedCompletionSet
                                                          .SelectionStatus.Completion
                                                          .InsertionText.TrimEnd().EndsWith("=", StringComparison.Ordinal);

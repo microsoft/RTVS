@@ -40,13 +40,13 @@ namespace Microsoft.Languages.Editor.Application.Controller {
 
         internal DefaultKeyProcessor(IWpfTextView textView, IEditorOperations editorOperations, ITextUndoHistoryRegistry undoHistoryRegistry) {
             if (textView == null)
-                throw new ArgumentNullException("textView");
+                throw new ArgumentNullException(nameof(textView));
 
             if (editorOperations == null)
-                throw new ArgumentNullException("editorOperations");
+                throw new ArgumentNullException(nameof(editorOperations));
 
             if (undoHistoryRegistry == null)
-                throw new ArgumentNullException("undoHistoryRegistry");
+                throw new ArgumentNullException(nameof(undoHistoryRegistry));
 
             _textView = textView;
             _editorOperations = editorOperations;

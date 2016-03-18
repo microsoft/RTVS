@@ -33,8 +33,7 @@ namespace Microsoft.R.Core.Test.Formatting {
         public void Formatter_StatementTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x<-2");
-            string expected =
-@"x <- 2";
+            string expected = "x <- 2";
             actual.Should().Be(expected);
         }
 
@@ -44,9 +43,9 @@ namespace Microsoft.R.Core.Test.Formatting {
             RFormatter f = new RFormatter();
             string actual = f.Format("{{}}");
             string expected =
-@"{
-  { }
-}";
+"{\n" +
+"  { }\n" +
+"}";
             actual.Should().Be(expected);
         }
     }

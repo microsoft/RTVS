@@ -15,8 +15,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IActiveRInteractiveWindowTracker))]
     internal class VsActiveRInteractiveWindowTracker : IActiveRInteractiveWindowTracker, IVsWindowFrameEvents {
         private IInteractiveWindowVisualComponent _lastActiveWindow;
+        private bool _isActive;
 
         public IInteractiveWindowVisualComponent LastActiveWindow => _lastActiveWindow;
+        public bool IsActive => _isActive;
+
         public event EventHandler<InteractiveWindowChangedEventArgs> LastActiveWindowChanged;
 
         public void OnFrameCreated(IVsWindowFrame frame) {
@@ -38,7 +41,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
 
             interactiveWindow = GetComponent(newFrame);
-            if (interactiveWindow != null) {
+            _isActive = interactiveWindow != null;
+            if (_isActive) {
                 UpdateInteractiveWindowIfRequired(interactiveWindow);
             }
         }

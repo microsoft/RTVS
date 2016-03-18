@@ -1,24 +1,22 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher {
         private class DirectoryRenamed : IFileSystemChange {
+            private readonly MsBuildFileSystemWatcherEntries _entries;
             private readonly string _rootDirectory;
             private readonly IFileSystem _fileSystem;
             private readonly IMsBuildFileSystemFilter _fileSystemFilter;
             private readonly string _oldFullPath;
             private readonly string _fullPath;
 
-            public DirectoryRenamed(string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string oldFullPath, string fullPath) {
+            public DirectoryRenamed(MsBuildFileSystemWatcherEntries entries, string rootDirectory, IFileSystem fileSystem, IMsBuildFileSystemFilter fileSystemFilter, string oldFullPath, string fullPath) {
+                _entries = entries;
                 _rootDirectory = rootDirectory;
                 _fileSystem = fileSystem;
                 _fileSystemFilter = fileSystemFilter;
@@ -26,48 +24,30 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 _fullPath = fullPath;
             }
 
-            public void Apply(Changeset changeset) {
+            public void Apply() {
                 if (!_fullPath.StartsWithIgnoreCase(_rootDirectory)) {
+                    DeleteInsteadOfRename();
                     return;
                 }
 
                 var newDirectoryInfo = _fileSystem.GetDirectoryInfo(_fullPath);
-                var newRelativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
+                var newRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
                 if (!newDirectoryInfo.Exists || !_fileSystemFilter.IsDirectoryAllowed(newRelativePath, newDirectoryInfo.Attributes)) {
+                    DeleteInsteadOfRename();
                     return;
                 }
 
-                newRelativePath = PathHelper.EnsureTrailingSlash(newRelativePath);
                 var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
-
-                // If directory with the oldRelativePath was previously added, remove it from the AddedDirectories, add newRelativePath and change all its content paths:
-                if (changeset.AddedDirectories.Contains(oldRelativePath)) {
-                    UpdatePrefix(changeset.AddedDirectories, oldRelativePath, newRelativePath);
-                    UpdatePrefix(changeset.AddedFiles, oldRelativePath, newRelativePath);
-                    return;
-                }
-
-                // if directory with the newRelativePath was previously deleted, keep both changes (delete and rename),
-                // cause the content of the directory to be deleted is different from the content of renamed directory
-
-                // if there is a directory that was renamed into oldRelativePath, rename it to newRelativePath instead
-                // or remove from RenamedDirectories if previouslyRenamedRelativePath equal to newRelativePath
-                var previouslyRenamedRelativePath = changeset.RenamedDirectories.GetFirstKeyByValueIgnoreCase(oldRelativePath);
-                if (string.IsNullOrEmpty(previouslyRenamedRelativePath)) {
-                    changeset.RenamedDirectories[oldRelativePath] = newRelativePath;
-                } else if (previouslyRenamedRelativePath.EqualsIgnoreCase(newRelativePath)) {
-                    changeset.RenamedDirectories.Remove(previouslyRenamedRelativePath);
-                } else {
-                    changeset.RenamedDirectories[previouslyRenamedRelativePath] = newRelativePath;
-                }
+                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath);
             }
 
-            private void UpdatePrefix(HashSet<string> items, string oldPrefix, string newPrefix) {
-                var itemsToUpdate = items.Where(a => a.StartsWithIgnoreCase(oldPrefix)).ToList();
-                foreach (var item in itemsToUpdate) {
-                    items.Remove(item);
-                    items.Add(newPrefix + item.Substring(oldPrefix.Length));
+            private void DeleteInsteadOfRename() {
+                if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
+                    return;
                 }
+
+                var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
+                _entries.DeleteDirectory(relativePath);
             }
 
             public override string ToString() {

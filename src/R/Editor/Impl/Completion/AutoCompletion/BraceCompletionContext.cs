@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
@@ -28,7 +27,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 AutoFormat.IgnoreOnce = false;
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentNode<IStatement>(session.TextView, session.SubjectBuffer);
+                FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer);
             }
         }
 
@@ -36,13 +35,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// Called after the session has been removed from the stack.
         /// </summary>
         /// <param name="session">Default brace completion session</param>
-        public void Finish(IBraceCompletionSession session) {
-            //if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
-            //    AutoFormat.IgnoreOnce = false;
-            //    EnsureTreeReady(session.SubjectBuffer);
-            //    FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: false);
-            //}
-        }
+        public void Finish(IBraceCompletionSession session) { }
 
         /// <summary>
         /// Called by the editor when return is pressed while both 

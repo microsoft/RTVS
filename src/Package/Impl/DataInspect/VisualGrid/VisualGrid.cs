@@ -195,7 +195,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override Visual GetVisualChild(int index) {
             if (index < 0 || index >= _visualChildren.Count + 1)
-                throw new ArgumentOutOfRangeException("index");
+                throw new ArgumentOutOfRangeException(nameof(index));
             if (index == 0) return _gridLine;
             return _visualChildren[index - 1];
         }

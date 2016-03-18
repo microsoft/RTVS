@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private T GetItemColumnMode(int rowIndex, int columnIndex) {
             if (rowIndex != 0) {
-                throw new ArgumentOutOfRangeException("rowIndex");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex));
             }
 
             return _data[columnIndex];
@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void SetItemColumnMode(int rowIndex, int columnIndex, T value) {
             if (rowIndex != 0) {
-                throw new ArgumentOutOfRangeException("rowIndex");
+                throw new ArgumentOutOfRangeException(nameof(rowIndex));
             }
 
             _data[columnIndex] = value;
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private T GetItemRowMode(int rowIndex, int columnIndex) {
             if (columnIndex != 0) {
-                throw new ArgumentOutOfRangeException("columnIndex");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex));
             }
 
             return _data[rowIndex];
@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void SetItemRowMode(int rowIndex, int columnIndex, T value) {
             if (columnIndex != 0) {
-                throw new ArgumentOutOfRangeException("columnIndex");
+                throw new ArgumentOutOfRangeException(nameof(columnIndex));
             }
 
             _data[rowIndex] = value;
