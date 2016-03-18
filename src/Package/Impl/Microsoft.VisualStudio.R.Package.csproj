@@ -183,7 +183,6 @@
     <Compile Include="Plots\PlotHistoryProvider.cs" />
     <Compile Include="ProjectSystem\Commands\AddItemCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRMarkdownCommand.cs" />
-    <Compile Include="ProjectSystem\Commands\CommandUtilities.cs" />
     <Compile Include="ProjectSystem\Commands\OpenContainingFolderCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CopyItemPathCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRScriptCommand.cs" />
@@ -202,7 +201,6 @@
     <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
-    <Compile Include="Repl\Commands\SourceFileHelper.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
@@ -361,7 +359,6 @@
     <Compile Include="Utilities\LongOperationNotification.cs" />
     <Compile Include="Utilities\Navigation.cs" />
     <Compile Include="Utilities\ProjectUtilities.cs" />
-    <Compile Include="Utilities\SessionUtilities.cs" />
     <Compile Include="Utilities\TextBufferUtilities.cs" />
     <Compile Include="Utilities\CompletionUtilities.cs" />
     <Compile Include="Utilities\ToolWindowUtilities.cs" />

@@ -7,8 +7,8 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
-    internal static class CommandUtilities {
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
+    public static class ProjectTreeExtensions {
         public static bool IsProjectSelected(this IImmutableSet<IProjectTree> nodes) {
             return nodes != null && nodes.Count == 1 && nodes.First().Root == nodes.First();
         }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -30,5 +31,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         void PositionCaretAtPrompt();
         void ClearPendingInputs();
         Task<ExecutionResult> ResetAsync();
+
+        void SourceFiles(IEnumerable<string> files);
+
+        void SourceFile(string file);
     }
 }

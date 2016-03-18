@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 textView.SaveFile();
-                SourceFileHelper.SourceFile(filePath);
+                _interactiveWorkflow.Operations.SourceFile(filePath);
             }
         }
     }

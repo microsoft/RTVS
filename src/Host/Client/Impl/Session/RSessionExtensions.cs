@@ -23,5 +23,48 @@ namespace Microsoft.R.Host.Client.Session {
                 await function(evaluation);
             } 
         }
+
+        public static async Task<string> GetRWorkingDirectoryAsync(this IRSession session) {
+            if (session.IsHostRunning) {
+                await TaskUtilities.SwitchToBackgroundThread();
+                try {
+                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
+                        return await evaluation.GetWorkingDirectory();
+                    }
+                } catch (OperationCanceledException) { }
+            }
+            return null;
+        }
+
+        public static async Task<string> GetRUserDirectoryAsync(this IRSession session) {
+            if (session.IsHostRunning) {
+                await TaskUtilities.SwitchToBackgroundThread();
+                try {
+                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
+                        return await evaluation.GetRUserDirectory();
+                    }
+                } catch (OperationCanceledException) { }
+            }
+            return null;
+        }
+
+        public static async Task<string> GetRShortenedPathNameAsync(this IRSession session, string name) {
+            var userDirectory = await session.GetRUserDirectoryAsync();
+            return GetRShortenedPathName(name, userDirectory);
+        }
+
+        private static string GetRShortenedPathName(string name, string userDirectory) {
+            if (!string.IsNullOrEmpty(userDirectory)) {
+                if (name.StartsWithIgnoreCase(userDirectory)) {
+                    var relativePath = name.MakeRelativePath(userDirectory);
+                    if (relativePath.Length > 0) {
+                        return "~/" + relativePath.Replace('\\', '/');
+                    }
+                    return "~";
+                }
+                return name.Replace('\\', '/');
+            }
+            return name;
+        }
     }
 }

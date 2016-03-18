@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Immutable;
+using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
@@ -16,6 +17,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo("RTools")]
     [OrderPrecedence(200)]
     internal sealed class SetDirectoryHereCommand : ICommandGroupHandler {
+        private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+
+        [ImportingConstructor]
+        public SetDirectoryHereCommand(IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
+            _interactiveWorkflowProvider = interactiveWorkflowProvider;
+        }
+
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
             if (commandId == RPackageCommandId.icmdSetDirectoryHere && nodes.IsSingleNodePath()) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
@@ -29,8 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                 if (!string.IsNullOrEmpty(path)) {
                     var o = new object();
 
-                    var interactiveWorkflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
-                    var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+                    var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
                     var controller = ReplCommandController.FromTextView(interactiveWorkflow.ActiveWindow.TextView);
 
                     controller.Invoke(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory, path, ref o);
