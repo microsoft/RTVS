@@ -9,7 +9,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class VsExpansionManagerMock : IVsExpansionManager {
         public int EnumerateExpansions(Guid guidLang, int fShortCutOnly, string[] bstrTypes, int iCountTypes, int fIncludeNULLType, int fIncludeDuplicates, out IVsExpansionEnumeration pEnum) {
-            throw new NotImplementedException();
+            pEnum = new VsExpansionEnumerationMock();
+            return VSConstants.S_OK;
         }
 
         public int GetExpansionByShortcut(IVsExpansionClient pClient, Guid guidLang, string szShortcut, IVsTextView pView, TextSpan[] pts, int fShowUI, out string pszExpansionPath, out string pszTitle) {
@@ -25,7 +26,7 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int InvokeInsertionUI(IVsTextView pView, IVsExpansionClient pClient, Guid guidLang, string[] bstrTypes, int iCountTypes, int fIncludeNULLType, string[] bstrKinds, int iCountKinds, int fIncludeNULLKind, string bstrPrefixText, string bstrCompletionChar) {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
     }
 }

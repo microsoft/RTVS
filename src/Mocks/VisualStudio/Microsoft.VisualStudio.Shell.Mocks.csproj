@@ -218,6 +218,7 @@
     <Compile Include="VSConstants.cs" />
     <Compile Include="VsDebuggerMock.cs" />
     <Compile Include="VsEditorAdaptersFactoryServiceMock.cs" />
+    <Compile Include="VsExpansionEnumerationMock.cs" />
     <Compile Include="VsExpansionManagerMock.cs" />
     <Compile Include="VsExpansionSessionMock.cs" />
     <Compile Include="VsImageMonikerImageListMock.cs" />
