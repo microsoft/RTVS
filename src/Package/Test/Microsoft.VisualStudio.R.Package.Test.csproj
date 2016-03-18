@@ -267,6 +267,9 @@
     <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
+    <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />
+    <Compile Include="SurveyNews\SurveyNewsServiceTest.cs" />
+    <Compile Include="SurveyNews\SurveyNewsTestFilesFixture.cs" />
     <Compile Include="Telemetry\TelemetryTest.cs" />
     <Compile Include="Utilities\CollectionUtilitiesTest.cs" />
     <Compile Include="Utility\VsRHostScript.cs" />
@@ -280,7 +283,12 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="SurveyNews\Feeds\Empty.txt" />
+    <Content Include="SurveyNews\Feeds\Invalid.txt" />
+    <Content Include="SurveyNews\Feeds\Items.txt" />
+    <Content Include="SurveyNews\Feeds\NoItems.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

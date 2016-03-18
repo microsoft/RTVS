@@ -135,6 +135,44 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.ShowDotPrefixedVariables = value; }
         }
 
+        [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_SurveyNewsCheck")]
+        [LocDescription("Settings_SurveyNewsCheck_Description")]
+        [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
+        [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
+        public SurveyNewsPolicy SurveyNewsCheck
+        {
+            get { return RToolsSettings.Current.SurveyNewsCheck; }
+            set { RToolsSettings.Current.SurveyNewsCheck = value; }
+        }
+
+        /// <summary>
+        /// The last time that we contacted the survey/news server.
+        /// Used in conjunction with <see cref="SurveyNewsLastCheck"/>
+        /// option to determine if we should contact the survey/news server
+        /// when an R project is opened.
+        /// </summary>
+        [Browsable(false)]
+        public DateTime SurveyNewsLastCheck
+        {
+            get { return RToolsSettings.Current.SurveyNewsLastCheck; }
+            set { RToolsSettings.Current.SurveyNewsLastCheck = value; }
+        }
+
+        [Browsable(false)]
+        public string SurveyNewsFeedUrl
+        {
+            get { return RToolsSettings.Current.SurveyNewsFeedUrl; }
+            set { RToolsSettings.Current.SurveyNewsFeedUrl = value; }
+        }
+
+        [Browsable(false)]
+        public string SurveyNewsIndexUrl
+        {
+            get { return RToolsSettings.Current.SurveyNewsIndexUrl; }
+            set { RToolsSettings.Current.SurveyNewsIndexUrl = value; }
+        }
+
         /// <summary>
         /// REPL working directory: not exposed in Tools | Options dialog,
         /// only saved along with other settings.

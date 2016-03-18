@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Actions.Logging;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -21,6 +22,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -44,9 +46,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private IRInteractiveWorkflow _workflow;
         private IRSession _session;
         private IRHistory _history;
+        private ISurveyNewsService _surveyNews;
 
         [ImportingConstructor]
-        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling) {
+        public RProjectLoadHooks(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory, IRToolsSettings toolsSettings, IFileSystem fileSystem, IThreadHandling threadHandling, ISurveyNewsService surveyNews) {
             _unconfiguredProject = unconfiguredProject;
             _workflowProvider = workflowProvider;
             _componentContainerFactory = componentContainerFactory;
@@ -54,6 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
             _threadHandling = threadHandling;
+            _surveyNews = surveyNews;
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
@@ -104,6 +108,20 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
             _history.TryLoadFromFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+
+            CheckSurveyNews();
+        }
+
+        private async void CheckSurveyNews() {
+            // Don't return a task, the caller doesn't want to await on this
+            // and hold up loading of the project.
+            // We do it this way instead of calling DoNotWait extension in order
+            // to handle any non critical exceptions.
+            try {
+                await _surveyNews.CheckSurveyNewsAsync(false);
+            } catch (Exception ex) when (!ex.IsCriticalException()) {
+                GeneralLog.Write(ex);
+            }
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {

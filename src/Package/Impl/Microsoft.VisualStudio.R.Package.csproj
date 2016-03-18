@@ -142,6 +142,8 @@
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
+    <Compile Include="Options\Attributes\SurveyNewsPolicyTypeConverter.cs" />
+    <Compile Include="Options\R\Tools\SurveyNewsCommand.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionPathAttribute.cs" />
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="Packages\R\RProjLanguageService.cs" />
@@ -329,6 +331,17 @@
     <Compile Include="Expansions\ExpansionsCache.cs" />
     <Compile Include="Expansions\ExpansionsController.cs" />
     <Compile Include="Expansions\ExpansionsControllerFactory.cs" />
+    <Compile Include="SurveyNews\ISurveyNewsFeedClient.cs" />
+    <Compile Include="SurveyNews\ISurveyNewsOptions.cs" />
+    <Compile Include="SurveyNews\ISurveyNewsService.cs" />
+    <Compile Include="SurveyNews\ISurveyNewsBrowserLauncher.cs" />
+    <Compile Include="SurveyNews\SurveyNewsBrowserLauncher.cs" />
+    <Compile Include="SurveyNews\SurveyNewsFeed.cs" />
+    <Compile Include="SurveyNews\SurveyNewsFeedClient.cs" />
+    <Compile Include="SurveyNews\SurveyNewsFeedException.cs" />
+    <Compile Include="SurveyNews\SurveyNewsOptions.cs" />
+    <Compile Include="SurveyNews\SurveyNewsService.cs" />
+    <Compile Include="SurveyNews\SurveyNewsUrls.cs" />
     <Compile Include="TaskList\VsTaskItem.cs" />
     <Compile Include="TaskList\VsTaskList.cs" />
     <Compile Include="TaskList\VsTaskListProvider.cs" />
@@ -1091,6 +1104,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SurveyNews\NoSurveyNewsFeed.html" />
+    <Content Include="SurveyNews\ReadmeStyle.css" />
     <Content Include="Templates\ItemTemplates\EmptyRMD\RmdFile.ico" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\REmptyProject.png" />
     <EmbeddedResource Include="Resources\RInteractiveWindow_16x.png" />
@@ -1117,6 +1132,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Templates\NewItem\NewRItems.vsdir">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="SurveyNews\NoSurveyNewsFeed.mht">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
