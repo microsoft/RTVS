@@ -6,7 +6,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
 
-namespace Microsoft.R.Editor.DataTips {
+namespace Microsoft.R.Core.DataTips {
     public static class RDataTip {
         /// <summary>
         /// Given an R AST, and a range in that AST, determines the DataTip expression for that range.
@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.DataTips {
         /// <remarks>
         /// DataTip expression is defined as the outermost expression enclosing the range, such that the sequence 
         /// of operators from that outermost expression to the innermost node still enclosing the range only consists
-        /// of operators: <c>$ @ :: ::: [ [[[</c>. Furthermore, in case of <c>[ [[</c>, only their left operands
+        /// of operators: <c>$ @ :: ::: [ [[</c>. Furthermore, in case of <c>[ [[</c>, only their left operands
         /// are considered.
         /// </remarks>
         public static IAstNode GetDataTipExpression(IAstNode ast, ITextRange range) {

@@ -5,7 +5,7 @@ using System;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.DataTips;
+using Microsoft.R.Core.DataTips;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;

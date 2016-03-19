@@ -80,6 +80,7 @@
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
     <Compile Include="AST\Variables\Variable.cs" />
+    <Compile Include="DataTips\RDataTip.cs" />
     <Compile Include="Evaluation\Definitions\ICodeEvaluator.cs" />
     <Compile Include="AST\Arguments\ArgumentList.cs" />
     <Compile Include="AST\Arguments\EllipsisArgument.cs" />
