@@ -63,21 +63,8 @@ namespace Microsoft.R.Core.AST.Operators {
         #endregion
 
         #region IOperator
-        public override OperatorType OperatorType {
-            get { return OperatorType.FunctionCall; }
-        }
-
-        public override int Precedence {
-            get { return OperatorPrecedence.GetPrecedence(OperatorType.FunctionCall); }
-        }
-
-        public override bool IsUnary {
-            get { return true; }
-        }
-
-        public override Association Association {
-            get { return Association.Right; }
-        }
+        public override OperatorType OperatorType  => OperatorType.FunctionCall;
+        public override Associativity Associativity  => Associativity.Right;
         #endregion
 
         #region ITextRange

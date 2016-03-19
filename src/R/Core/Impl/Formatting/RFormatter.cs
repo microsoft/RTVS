@@ -399,7 +399,7 @@ namespace Microsoft.R.Core.Formatting {
 
         private void AppendOperator() {
             string text = _textProvider.GetText(_tokens.CurrentToken);
-            if (TokenOperator.IsUnaryOperator(_tokens, TokenOperator.GetOperatorType(text))) {
+            if (_tokens.Position == 0 || TokenOperator.IsUnaryOperator(_tokens, _textProvider, TokenOperator.GetOperatorType(text))) {
                 AppendToken(leadingSpace: true, trailingSpace: false);
             } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);

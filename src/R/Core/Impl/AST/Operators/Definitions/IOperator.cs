@@ -15,6 +15,6 @@ namespace Microsoft.R.Core.AST.Operators.Definitions {
 
         bool IsUnary { get; }
 
-        Association Association { get; }
+        Associativity Associativity { get; }
     }
 }

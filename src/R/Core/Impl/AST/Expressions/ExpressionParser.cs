@@ -23,7 +23,7 @@ namespace Microsoft.R.Core.AST.Expressions {
     /// https://en.wikipedia.org/wiki/Shunting-yard_algorithm
     /// </summary>
     public sealed partial class Expression {
-        private static readonly IOperator Sentinel = new TokenOperator(OperatorType.Sentinel, false);
+        private static readonly IOperator Sentinel = new TokenOperator(OperatorType.Sentinel, unary: false);
 
         /// <summary>
         /// Describes current and previous operation types
@@ -367,7 +367,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     FunctionCall functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 
-                    errorType = HandleFunctionOrIndexer(functionCall);
+                    errorType = HandleFunctionOrIndexer(context, functionCall);
                     return OperationType.Function;
                 }
             }
@@ -383,7 +383,7 @@ namespace Microsoft.R.Core.AST.Expressions {
             Indexer indexer = new Indexer();
             indexer.Parse(context, null);
 
-            errorType = HandleFunctionOrIndexer(indexer);
+            errorType = HandleFunctionOrIndexer(context, indexer);
             return OperationType.Function;
         }
 
@@ -449,33 +449,20 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleFunctionOrIndexer(IOperator operatorNode) {
+        private ParseErrorType HandleFunctionOrIndexer(ParseContext context, IOperator operatorNode) {
             // Indexing or function call is performed on the topmost operand which 
             // generally should be a variable or a node that evaluates to it.
             // However, we leave syntax check to separate code.
 
-            IRValueNode operand = this.SafeGetOperand();
-            if (operand == null) {
-                // Oddly, no operand
-                return ParseErrorType.IndentifierExpected;
-            }
-
-            operatorNode.LeftOperand = operand;
-            operatorNode.AppendChild(operand);
-            _operands.Push(operatorNode);
-
-            return ParseErrorType.None;
+            IOperator lastOperator = _operators.Peek();
+            return HandleOperatorPrecedence(context, operatorNode, lastOperator);
         }
 
         private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
-            ParseErrorType errorType = ParseErrorType.None;
-
             // If operands stack is empty the operator is unary.
             // If operator is preceded by another operator, 
             // it is interpreted as unary.
-
             TokenOperator currentOperator = new TokenOperator(_operands.Count == 0);
-
             currentOperator.Parse(context, null);
             isUnary = currentOperator.IsUnary;
 
@@ -490,14 +477,26 @@ namespace Microsoft.R.Core.AST.Expressions {
                     return ParseErrorType.None;
                 }
             }
+            return HandleOperatorPrecedence(context, currentOperator, lastOperator);
+        }
 
-            if (currentOperator.Precedence <= lastOperator.Precedence &&
-                !(currentOperator.OperatorType == lastOperator.OperatorType && currentOperator.Association == Association.Right)) {
+        private ParseErrorType HandleOperatorPrecedence(ParseContext context, IOperator currentOperator, IOperator lastOperator) {
+            ParseErrorType errorType = ParseErrorType.None;
+
+            if (currentOperator.Precedence <= lastOperator.Precedence ||
+                (currentOperator.OperatorType == lastOperator.OperatorType && 
+                    currentOperator.Associativity == Associativity.Left)) {
                 // New operator has lower or equal precedence. We need to make a tree from
                 // the topmost operator and its operand(s). Example: a*b+c. + has lower priority
                 // and a and b should be on the stack along with * on the operator stack.
                 // Repeat until there are no more higher precendece operators on the stack.
 
+                // If operator cas right associativity (exponent, indexer, function call),
+                // it needs to be processed right away. Consider the expression a~b~c. 
+                // If the operator ~ has left associativity, this expression is interpreted 
+                // as (a~b)~c. If the operator has right associativity, the expression is
+                // interpreted as a~(b~c). a^b^c = a^(b^c). Left-associated indexer works
+                // like x[1][2] = (x[1])[2]
                 errorType = this.ProcessHigherPrecendenceOperators(context, currentOperator);
             }
 
@@ -511,22 +510,33 @@ namespace Microsoft.R.Core.AST.Expressions {
         private ParseErrorType ProcessHigherPrecendenceOperators(ParseContext context, IOperator currentOperator) {
             Debug.Assert(_operators.Count > 1);
             ParseErrorType errorType = ParseErrorType.None;
-            Association association = currentOperator.Association;
+            Associativity associativity = currentOperator.Associativity;
+            IOperator nextOperatorNode = _operators.Peek();
 
             // At least one operator above sentinel is on the stack.
             do {
+                // If associativity is right, we stop if the next operator
+                // on the stack has lower or equal precedence than the current one.
+                // Example: in 'a^b^c' before pushing last ^ on the stack
+                // only b^c is processed since a^b^c = a^(b^c).
+                if (associativity == Associativity.Right &&
+                    nextOperatorNode.Precedence <= currentOperator.Precedence) {
+                    break;
+                }
+
                 errorType = MakeNode(context);
                 if (errorType == ParseErrorType.None) {
-                    IOperator nextOperatorNode = _operators.Peek();
+                    nextOperatorNode = _operators.Peek();
 
-                    if (association == Association.Left && nextOperatorNode.Precedence <= currentOperator.Precedence) {
+                    // If associativity is left, we stop if the next operator
+                    // on the stack has lower precedence than the current one.
+                    // Example: in 'a+b*c*d+e' before pushing last + on the stack
+                    // we need to make subtree out of b*c*d.
+                    if (associativity == Associativity.Left && 
+                        nextOperatorNode.Precedence < currentOperator.Precedence) {
                         break;
                     }
-
-                    if (association == Association.Right && nextOperatorNode.Precedence < currentOperator.Precedence) {
-                        break;
-                    }
-                }
+                 }
             } while (_operators.Count > 1 && errorType == ParseErrorType.None);
 
             return errorType;

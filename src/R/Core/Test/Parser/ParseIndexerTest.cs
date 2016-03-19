@@ -389,6 +389,32 @@ CloseSquareBracketExpected AfterToken [14...15)
         public void ParseIndexerTest16() {
             string expected =
 @"GlobalScope  [Global]
+    ExpressionStatement  [x[1][2]]
+        Expression  [x[1][2]]
+            Indexer  [0...7)
+                Indexer  [0...4)
+                    Variable  [x]
+                    TokenNode  [[ [1...2)]
+                    ArgumentList  [2...3)
+                        ExpressionArgument  [2...3)
+                            Expression  [1]
+                                NumericalValue  [1 [2...3)]
+                    TokenNode  [] [3...4)]
+                TokenNode  [[ [4...5)]
+                ArgumentList  [5...6)
+                    ExpressionArgument  [5...6)
+                        Expression  [2]
+                            NumericalValue  [2 [5...6)]
+                TokenNode  [] [6...7)]
+";
+            ParserTest.VerifyParse(expected, "x[1][2]");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseIndexerTest17() {
+            string expected =
+@"GlobalScope  [Global]
     ExpressionStatement  [x[[1]][[2]]]
         Expression  [x[[1]][[2]]]
             Indexer  [0...11)
@@ -408,6 +434,31 @@ CloseSquareBracketExpected AfterToken [14...15)
                 TokenNode  []] [9...11)]
 ";
             ParserTest.VerifyParse(expected, "x[[1]][[2]]");
+        }
+        [Test]
+        [Category.R.Parser]
+        public void ParseIndexerTest18() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x[[1]][[2]]]
+        Expression  [x[[1]][[2]]]
+            Indexer  [0...11)
+                Indexer  [0...6)
+                    Variable  [x]
+                    TokenNode  [[[ [1...3)]
+                    ArgumentList  [3...4)
+                        ExpressionArgument  [3...4)
+                            Expression  [1]
+                                NumericalValue  [1 [3...4)]
+                    TokenNode  []] [4...6)]
+                TokenNode  [[[ [6...8)]
+                ArgumentList  [8...9)
+                    ExpressionArgument  [8...9)
+                        Expression  [2]
+                            NumericalValue  [2 [8...9)]
+                TokenNode  []] [9...11)]
+";
+            ParserTest.VerifyParse(expected, "x[-1][+1]");
         }
     }
 }
