@@ -12,7 +12,7 @@ namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents logical constant (TRUE or FALSE)
     /// </summary>
-    public sealed class LogicalValue : RValueTokenNode<RLogical> {
+    public sealed class LogicalValue : RValueTokenNode<RLogical>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);

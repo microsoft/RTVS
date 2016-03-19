@@ -46,6 +46,7 @@
     <Compile Include="AST\DataTypes\RFunction.cs" />
     <Compile Include="AST\DataTypes\RMissing.cs" />
     <Compile Include="AST\DataTypes\RNull.cs" />
+    <Compile Include="AST\Definitions\ILiteralNode.cs" />
     <Compile Include="AST\Definitions\PositionType.cs" />
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
