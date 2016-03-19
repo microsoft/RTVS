@@ -5,6 +5,7 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     }
                     var psi = new ProcessStartInfo();
                     SetFlags(psi, path);
-                    Process.Start(psi);
+                    ProcessServices.Current.Start(psi);
                 }
                 return true;
             }

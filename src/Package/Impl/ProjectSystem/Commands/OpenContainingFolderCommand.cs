@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
                     if (path.EndsWith("\\", StringComparison.Ordinal)) {
                         path = path.Substring(0, path.Length - 1);
                     }
-                    Process.Start(Path.GetDirectoryName(path));
+                    ProcessServices.Current.Start(Path.GetDirectoryName(path));
                 }
                 return true;
             }
