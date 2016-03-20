@@ -8,10 +8,10 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Parser {
     [ExcludeFromCodeCoverage]
-    public class ParseAssignmentsTest {
+    public class Assignments {
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest1() {
+        public void Assignments01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- as.matrix(x)]
@@ -33,7 +33,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest2() {
+        public void Assignments02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [as.matrix(x) -> x]
@@ -55,7 +55,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest3() {
+        public void Assignments03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a <- b <- c <- 0]
@@ -76,7 +76,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest4() {
+        public void Assignments04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [0 -> a -> b]
@@ -94,7 +94,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest5() {
+        public void Assignments05() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [z <- .Call(x)]
@@ -116,7 +116,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest6() {
+        public void Assignments06() {
             string expected =
 @"GlobalScope  [Global]
 
@@ -127,7 +127,7 @@ UnexpectedToken Token [0...2)
 
         [Test]
         [Category.R.Parser]
-        public void ParseAssignmentsTest7() {
+        public void Assignments07() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [StudentData$ScoreRounded<-round(StudentData$Score)]
@@ -187,5 +187,22 @@ UnexpectedToken Token [0...2)
             ParserTest.VerifyParse(expected, "dt[, b := letters[1:3]]");
         }
 
+        [Test]
+        [Category.R.Parser]
+        public void LeftSideExpressionAssignments01() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x + y <- 1]
+        Expression  [x + y <- 1]
+            TokenOperator  [<- [6...8)]
+                TokenOperator  [+ [2...3)]
+                    Variable  [x]
+                    TokenNode  [+ [2...3)]
+                    Variable  [y]
+                TokenNode  [<- [6...8)]
+                NumericalValue  [1 [9...10)]
+";
+            ParserTest.VerifyParse(expected, "x + y <- 1");
+        }
     }
 }
