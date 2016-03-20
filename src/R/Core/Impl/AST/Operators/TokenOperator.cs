@@ -11,9 +11,9 @@ namespace Microsoft.R.Core.AST.Operators {
     public sealed class TokenOperator : Operator {
         public TokenNode OperatorToken { get; private set; }
 
-        public TokenOperator(bool unary) {
-            IsUnary = unary;
-            if (unary) {
+        public TokenOperator(bool firstInExpression) {
+            IsUnary = firstInExpression;
+            if (IsUnary) {
                 Associativity = Associativity.Right;
             }
         }

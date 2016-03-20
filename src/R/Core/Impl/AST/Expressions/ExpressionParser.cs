@@ -449,7 +449,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
-            TokenOperator currentOperator = new TokenOperator(_operands.Count == 0);
+            TokenOperator currentOperator = new TokenOperator(firstInExpression: (_operands.Count == 0));
             currentOperator.Parse(context, null);
             isUnary = currentOperator.IsUnary;
 
@@ -460,9 +460,9 @@ namespace Microsoft.R.Core.AST.Expressions {
             ParseErrorType errorType = ParseErrorType.None;
             IOperator lastOperator = _operators.Peek();
 
-            if (currentOperator.Precedence <= lastOperator.Precedence ||
-                (currentOperator.OperatorType == lastOperator.OperatorType && 
-                    currentOperator.Associativity == Associativity.Left)) {
+            if (currentOperator.Precedence < lastOperator.Precedence ||
+                (currentOperator.Precedence == lastOperator.Precedence &&
+                 currentOperator.Associativity == Associativity.Left)) {
                 // New operator has lower or equal precedence. We need to make a tree from
                 // the topmost operator and its operand(s). Example: a*b+c. + has lower priority
                 // and a and b should be on the stack along with * on the operator stack.

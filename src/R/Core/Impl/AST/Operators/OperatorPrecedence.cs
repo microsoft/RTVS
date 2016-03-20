@@ -76,18 +76,22 @@ namespace Microsoft.R.Core.AST.Operators {
                 case OperatorType.Exponent: // ^
                     return 160;
 
+                // Although R table in https://stat.ethz.ch/R-manual/R-devel/library/base/html/Syntax.html 
+                // lists @/$ as higher precedence than () and [] it is not correct. If $ was higher than ()
+                // then func()$a could not be parsed correctly. C++ precedence table describes correct
+                // precedence: (), [], . and -> have same precedence and left associativity.
+                // See http://cs.stmarys.ca/~porter/csc/ref/cpp_operators.html
+
                 case OperatorType.FunctionCall: // (...)
-                case OperatorType.Index: // [] [[]]
+                case OperatorType.Index: // [], [[]]
+                case OperatorType.ListIndex: // $ or @
                     return 170;
 
-                case OperatorType.ListIndex: // $ or @
+                case OperatorType.Namespace: // :: or :::
                     return 180;
 
-                case OperatorType.Namespace: // :: or :::
-                    return 190;
-
                 case OperatorType.Group: // ( ) around expression
-                    return 200;
+                    return 190;
             }
             return 1000;
         }
