@@ -140,8 +140,8 @@ CloseBraceExpected AfterToken [3...4)
 
 CloseBraceExpected AfterToken [3...4)
 UnexpectedToken AfterToken [3...4)
-UnexpectedToken Token [5...8)
-OpenBraceExpected AfterToken [5...8)";
+OpenBraceExpected AfterToken [5...8)
+";
             ParserTest.VerifyParse(expected, "x(,, for");
         }
 

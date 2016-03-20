@@ -4,7 +4,13 @@
 namespace Microsoft.R.Core.AST.Operators {
     public static class OperatorAssociativity {
         public static Associativity GetAssociativity(OperatorType operatorType) {
-            return operatorType == OperatorType.Exponent ? Associativity.Right : Associativity.Left;
+            switch (operatorType) {
+                case OperatorType.Exponent:
+                case OperatorType.LeftAssign:
+                case OperatorType.Equals:
+                    return Associativity.Right;
+            }
+            return Associativity.Left;
         }
     }
 }

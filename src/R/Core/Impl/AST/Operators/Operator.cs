@@ -33,7 +33,7 @@ namespace Microsoft.R.Core.AST.Operators {
         /// <param name="textProvider">Text provider</param>
         /// <param name="operatorType">Operator type</param>
         public static bool IsUnaryOperator(TokenStream<RToken> tokens, ITextProvider textProvider, OperatorType operatorType) {
-            if (operatorType != OperatorType.Subtract && operatorType != OperatorType.Add) {
+            if (!IsPossibleUniary(operatorType)) {
                 return false;
             }
 
@@ -44,6 +44,26 @@ namespace Microsoft.R.Core.AST.Operators {
             }
 
             return tokens.IsLineBreakAfter(textProvider, tokens.Position - 1);
+        }
+
+        private static bool IsPossibleUniary(OperatorType operatorType) {
+            switch (operatorType) {
+                case OperatorType.Subtract:
+                case OperatorType.Add:
+                case OperatorType.Tilde:
+                    return true;
+            }
+            return false;
+        }
+
+        public static OperatorType GetUnaryForm(OperatorType operatorType) {
+            switch (operatorType) {
+                case OperatorType.Subtract:
+                    return OperatorType.UnaryMinus;
+                case OperatorType.Add:
+                    return OperatorType.UnaryPlus;
+            }
+            return operatorType;
         }
     }
 }

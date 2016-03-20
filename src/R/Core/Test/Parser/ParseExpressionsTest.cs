@@ -184,10 +184,9 @@ namespace Microsoft.R.Core.Test.Parser {
                 TokenNode  [~ [2...3)]
                 TokenOperator  [~ [4...5)]
                     TokenNode  [~ [4...5)]
-                    Expression  [~ y]
-                        TokenOperator  [~ [6...7)]
-                            TokenNode  [~ [6...7)]
-                            Variable  [y]
+                    TokenOperator  [~ [6...7)]
+                        TokenNode  [~ [6...7)]
+                        Variable  [y]
 ";
             string content = "x ~ ~ ~ y";
 
