@@ -30,7 +30,9 @@ namespace Microsoft.R.Core.AST.Operators {
             OperatorToken = RParser.ParseToken(context, this);
             Associativity = OperatorAssociativity.GetAssociativity(OperatorType);
 
-            if (IsUnary || IsUnaryOperator(context.Tokens, context.TextProvider, OperatorType)) {
+            // If operator is preceded by an operator, it is then unary
+            // Look back two tokens since operator parsing already consumed its token.
+            if (IsUnary || IsUnaryOperator(context.Tokens, context.TextProvider, OperatorType, -2)) {
                 OperatorType = Operator.GetUnaryForm(OperatorType);
                 IsUnary = true;
                 Associativity = Associativity.Right;

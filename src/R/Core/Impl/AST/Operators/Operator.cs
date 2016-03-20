@@ -32,14 +32,15 @@ namespace Microsoft.R.Core.AST.Operators {
         /// <param name="tokens">Token stream</param>
         /// <param name="textProvider">Text provider</param>
         /// <param name="operatorType">Operator type</param>
-        public static bool IsUnaryOperator(TokenStream<RToken> tokens, ITextProvider textProvider, OperatorType operatorType) {
+        /// <param name="offset">Offset to look back</param>
+        public static bool IsUnaryOperator(TokenStream<RToken> tokens, ITextProvider textProvider, 
+                                           OperatorType operatorType, int offset) {
             if (!IsPossibleUnary(operatorType)) {
                 return false;
             }
 
             // If operator is preceded by an operator, it is then unary
-            // Look back two tokens since operator parsing already consumed its token.
-            return tokens.LookAhead(-2).TokenType == RTokenType.Operator;
+            return tokens.LookAhead(offset).TokenType == RTokenType.Operator;
         }
 
         private static bool IsPossibleUnary(OperatorType operatorType) {
