@@ -47,6 +47,7 @@ namespace Microsoft.R.Core.AST.Operators {
                 case OperatorType.Subtract:
                 case OperatorType.Add:
                 case OperatorType.Tilde:
+                case OperatorType.Not:
                     return true;
             }
             return false;

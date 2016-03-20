@@ -10,6 +10,23 @@ namespace Microsoft.R.Core.Test.Parser {
     public class ParsePrecedenceTest {
         [Test]
         [Category.R.Parser]
+        public void Precedence01() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a && !b]
+        Expression  [a && !b]
+            TokenOperator  [&& [2...4)]
+                Variable  [a]
+                TokenNode  [&& [2...4)]
+                TokenOperator  [! [5...6)]
+                    TokenNode  [! [5...6)]
+                    Variable  [b]
+";
+            ParserTest.VerifyParse(expected, "a && !b");
+        }
+
+        [Test]
+        [Category.R.Parser]
         public void EqualLeftPrecedence1() {
             string expected =
 @"GlobalScope  [Global]
