@@ -93,5 +93,23 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "a::b@c[1]");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void Namespace05() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a:::b::c]
+        Expression  [a:::b::c]
+            TokenOperator  [:: [5...7)]
+                TokenOperator  [::: [1...4)]
+                    Variable  [a]
+                    TokenNode  [::: [1...4)]
+                    Variable  [b]
+                TokenNode  [:: [5...7)]
+                Variable  [c]
+";
+            ParserTest.VerifyParse(expected, "a:::b::c");
+        }
     }
 }

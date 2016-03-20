@@ -193,7 +193,6 @@ namespace Microsoft.R.Core.AST.Expressions {
                     AppendChild(Content);
                 }
             }
-
             return true;
         }
 
@@ -290,7 +289,6 @@ namespace Microsoft.R.Core.AST.Expressions {
                 if (node.Children.Count > 0) {
                     return node.Children[0];
                 }
-
                 return node;
             }
 
@@ -303,7 +301,6 @@ namespace Microsoft.R.Core.AST.Expressions {
                 if (node.Children.Count > 0) {
                     return node.Children[0];
                 }
-
                 return node;
             }
 
@@ -312,7 +309,6 @@ namespace Microsoft.R.Core.AST.Expressions {
 
         private OperationType HandleConstant(ParseContext context) {
             IRValueNode constant = Expression.CreateConstant(context);
-
             _operands.Push(constant);
             return OperationType.Operand;
         }
