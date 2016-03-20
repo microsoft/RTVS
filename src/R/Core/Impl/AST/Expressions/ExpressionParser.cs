@@ -515,6 +515,20 @@ namespace Microsoft.R.Core.AST.Expressions {
             return errorType;
         }
 
+        /// <summary>
+        /// Constructs AST node from operator (root) and one or two operands.
+        /// In order for the node to be successfully created stacks must contain
+        /// an operator and, depending on the operator, one or two operands.
+        /// </summary>
+        /// <example>
+        /// The newly created subtree (operator and root and operands are children)
+        /// is then pushed into the operands stack. Example: in a*b+c before '+'
+        /// can be processed, a*b is turned into an subtree and pushed as an operand
+        /// to the operands stack. Then new subtree can be created with + at the root
+        /// and 'c' and 'a*b' as its child nodes.
+        /// </example>
+        /// <param name="context">Parsing context</param>
+        /// <returns>Parsing error of any</returns>
         private ParseErrorType MakeNode(ParseContext context) {
             IOperator operatorNode = _operators.Pop();
 
