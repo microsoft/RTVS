@@ -24,8 +24,6 @@ namespace Microsoft.R.Core.AST.Variables {
 
         #region IOperator
         public override OperatorType OperatorType => OperatorType.Index;
-
-        public override Associativity Associativity => Associativity.Right;
         #endregion
 
         public Indexer() {

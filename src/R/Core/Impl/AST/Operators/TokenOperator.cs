@@ -13,6 +13,9 @@ namespace Microsoft.R.Core.AST.Operators {
 
         public TokenOperator(bool unary) {
             IsUnary = unary;
+            if(unary) {
+                Associativity = Associativity.Right;
+            }
         }
 
         public TokenOperator(OperatorType operatorType, bool unary) :
@@ -30,6 +33,7 @@ namespace Microsoft.R.Core.AST.Operators {
             if (IsUnary || IsUnaryOperator(context.Tokens, context.TextProvider, OperatorType)) {
                 OperatorType = OperatorType == OperatorType.Subtract ? OperatorType.UnaryMinus : OperatorType.UnaryPlus;
                 IsUnary = true;
+                Associativity = Associativity.Right;
             }
 
             return base.Parse(context, parent);

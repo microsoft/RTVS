@@ -64,7 +64,6 @@ namespace Microsoft.R.Core.AST.Operators {
 
         #region IOperator
         public override OperatorType OperatorType  => OperatorType.FunctionCall;
-        public override Associativity Associativity  => Associativity.Right;
         #endregion
 
         #region ITextRange
@@ -72,6 +71,10 @@ namespace Microsoft.R.Core.AST.Operators {
             get { return SignatureEnd; }
         }
         #endregion
+
+        public FunctionCall() {
+            IsUnary = true;
+        }
 
         public int GetParameterIndex(int position) {
             if (position > End || position < OpenBrace.End) {

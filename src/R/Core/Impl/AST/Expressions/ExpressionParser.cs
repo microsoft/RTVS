@@ -162,9 +162,8 @@ namespace Microsoft.R.Core.AST.Expressions {
             }
 
             if (_operators.Count > 1) {
-                // If there are still operators to process,
-                // construct final node. After this only sentil
-                // operator should be in the operators stack
+                // If there are still operators to process, construct the final subtree. 
+                // After that only the sentinel operator should be in the operators stack
                 // and a single final root node in the operand stack.
                 errorType = this.ProcessHigherPrecendenceOperators(context, Expression.Sentinel);
             }
@@ -367,7 +366,7 @@ namespace Microsoft.R.Core.AST.Expressions {
                     FunctionCall functionCall = new FunctionCall();
                     functionCall.Parse(context, null);
 
-                    errorType = HandleFunctionOrIndexer(context, functionCall);
+                    errorType =  HandleOperatorPrecedence(context, functionCall);
                     return OperationType.Function;
                 }
             }
@@ -383,7 +382,7 @@ namespace Microsoft.R.Core.AST.Expressions {
             Indexer indexer = new Indexer();
             indexer.Parse(context, null);
 
-            errorType = HandleFunctionOrIndexer(context, indexer);
+            errorType = HandleOperatorPrecedence(context, indexer);
             return OperationType.Function;
         }
 
@@ -449,39 +448,17 @@ namespace Microsoft.R.Core.AST.Expressions {
             return s.Equals(_terminatingKeyword, StringComparison.Ordinal);
         }
 
-        private ParseErrorType HandleFunctionOrIndexer(ParseContext context, IOperator operatorNode) {
-            // Indexing or function call is performed on the topmost operand which 
-            // generally should be a variable or a node that evaluates to it.
-            // However, we leave syntax check to separate code.
-
-            IOperator lastOperator = _operators.Peek();
-            return HandleOperatorPrecedence(context, operatorNode, lastOperator);
-        }
-
         private ParseErrorType HandleOperator(ParseContext context, IAstNode parent, out bool isUnary) {
-            // If operands stack is empty the operator is unary.
-            // If operator is preceded by another operator, 
-            // it is interpreted as unary.
             TokenOperator currentOperator = new TokenOperator(_operands.Count == 0);
             currentOperator.Parse(context, null);
             isUnary = currentOperator.IsUnary;
 
-            IOperator lastOperator = _operators.Peek();
-            if (isUnary && lastOperator != null && lastOperator.IsUnary) {
-                // !!!x is treated as !(!(!x)))
-                // Step back and re-parse as expression
-                context.Tokens.Position -= 1;
-                var exp = new Expression(inGroup: false);
-                if (exp.Parse(context, null)) {
-                    _operands.Push(exp);
-                    return ParseErrorType.None;
-                }
-            }
-            return HandleOperatorPrecedence(context, currentOperator, lastOperator);
+            return HandleOperatorPrecedence(context, currentOperator);
         }
 
-        private ParseErrorType HandleOperatorPrecedence(ParseContext context, IOperator currentOperator, IOperator lastOperator) {
+        private ParseErrorType HandleOperatorPrecedence(ParseContext context, IOperator currentOperator) {
             ParseErrorType errorType = ParseErrorType.None;
+            IOperator lastOperator = _operators.Peek();
 
             if (currentOperator.Precedence <= lastOperator.Precedence ||
                 (currentOperator.OperatorType == lastOperator.OperatorType && 
