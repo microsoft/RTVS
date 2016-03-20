@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
+    <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />
     <Compile Include="Parser\ParseSelectorsTest.cs" />
