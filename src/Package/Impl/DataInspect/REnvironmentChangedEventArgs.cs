@@ -5,6 +5,10 @@ using System;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentChangedEventArgs : EventArgs {
-        public REnvironmentCollection Environments;
+        public REnvironmentChangedEventArgs(REnvironmentCollection environments) {
+            Environments = environments;
+        }
+
+        public REnvironmentCollection Environments { get; }
     }
 }

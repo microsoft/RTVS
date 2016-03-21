@@ -65,7 +65,7 @@
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DebugGridViewProvider.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
-    <Compile Include="DataInspect\Definitions\IEnvironmentProvider.cs" />
+    <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
