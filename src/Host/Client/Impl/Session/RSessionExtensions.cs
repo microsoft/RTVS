@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 
@@ -49,21 +50,17 @@ namespace Microsoft.R.Host.Client.Session {
             return null;
         }
 
-        public static async Task<string> GetRShortenedPathNameAsync(this IRSession session, string name) {
+        public static async Task<string> MakeRelativeToRUserDirectoryAsync(this IRSession session, string name) {
             var userDirectory = await session.GetRUserDirectoryAsync();
-            return GetRShortenedPathName(name, userDirectory);
+            return MakeRelativeToUserDirectory(name, userDirectory);
         }
 
-        public static async Task<IEnumerable<string>> GetRShortenedPathNamesAsync(this IRSession session, IEnumerable<string> names) {
+        public static async Task<IEnumerable<string>> MakeRelativeToRUserDirectoryAsync(this IRSession session, IEnumerable<string> names) {
             var userDirectory = await session.GetRUserDirectoryAsync();
-            var list = new List<string>();
-            foreach (var n in names) {
-                list.Add(await session.GetRShortenedPathNameAsync(n));
-            }
-            return list;
+            return names.Select(n => MakeRelativeToUserDirectory(n, userDirectory)); 
         }
 
-        private static string GetRShortenedPathName(string name, string userDirectory) {
+        private static string MakeRelativeToUserDirectory(string name, string userDirectory) {
             if (!string.IsNullOrEmpty(userDirectory)) {
                 if (name.StartsWithIgnoreCase(userDirectory)) {
                     var relativePath = name.MakeRelativePath(userDirectory);

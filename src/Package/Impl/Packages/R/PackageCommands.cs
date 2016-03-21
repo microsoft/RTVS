@@ -40,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
+                new SurveyNewsCommand(),
 
                 new ReportIssueCommand(),
                 new SendSmileCommand(),
