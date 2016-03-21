@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
+using Microsoft.R.Editor.Signatures.Definitions;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -19,11 +21,13 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
+        private static IEnumerable<Lazy<IFunctionInformationProvider>> _informationProviders;
         private ITextBuffer _textBuffer;
 
         public SignatureHelpSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
+
         }
 
         #region ISignatureHelpSource
@@ -143,5 +147,15 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
         #endregion
+
+        private static IEnumerable<Lazy<IFunctionInformationProvider>> CompletionProviders {
+            get {
+                if (_informationProviders == null) {
+                    _informationProviders = ComponentLocator<IFunctionInformationProvider>.ImportMany();
+                }
+                return _informationProviders;
+            }
+        }
+
     }
 }

@@ -13,7 +13,7 @@ namespace Microsoft.R.Editor.Signatures {
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Signature Source Provider")]
     [Order(Before = "default")]
-    sealed class SignatureHelpProvider : ISignatureHelpSourceProvider {
+    sealed class SignatureHelpSourceProvider : ISignatureHelpSourceProvider {
         public ISignatureHelpSource TryCreateSignatureHelpSource(ITextBuffer textBuffer) {
             var helpSource = ServiceManager.GetService<SignatureHelpSource>(textBuffer);
             if (helpSource == null) {
