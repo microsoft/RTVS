@@ -24,56 +24,9 @@ namespace Microsoft.R.Core.DataTips {
         /// are considered.
         /// </remarks>
         public static IAstNode GetDataTipExpression(IAstNode ast, ITextRange range) {
-            var node = ast.NodeFromRange(range, endInclusive: true);
-            if (node == null) {
+            var node = ast.NodeFromRange(range, inclusiveEnd: true);
+            if (node == null || !IsValidInitialNode(node)) {
                 return null;
-            }
-
-            // DataTip can only be triggered by hovering over a literal, an identifier, or one of the operators: $ @ :: ::: [ [[
-            if (!(node is ILiteralNode || node is Variable)) {
-                // Depending on the selected range, we can be looking either at the Operator node, or at the underlying
-                // TokenNode corresponding to the operator token. Either one should be treated identically, so check both.
-                var opNode = node as Operator;
-                if (opNode != null) {
-                    switch (opNode.OperatorType) {
-                        case OperatorType.Index:
-                        case OperatorType.ListIndex:
-                        case OperatorType.Namespace:
-                            break;
-                        default:
-                            return null;
-                    }
-                } else {
-                    var tokenNode = node as TokenNode;
-                    if (tokenNode == null) {
-                        return null;
-                    }
-
-                    switch (tokenNode.Token.TokenType) {
-                        case RTokenType.OpenSquareBracket:
-                        case RTokenType.CloseSquareBracket:
-                        case RTokenType.OpenDoubleSquareBracket:
-                        case RTokenType.CloseDoubleSquareBracket:
-                            break;
-
-                        case RTokenType.Operator: {
-                                string op = ast.Root.TextProvider.GetText(tokenNode.Token);
-                                switch (op) {
-                                    case "$":
-                                    case "@":
-                                    case "::":
-                                    case ":::":
-                                        break;
-                                    default:
-                                        return null;
-                                }
-                                break;
-                            }
-
-                        default:
-                            return null;
-                    }
-                }
             }
 
             // When the lookup starts at [ or [[, the immediate node is the token, but its parent is an Indexer node,
@@ -109,6 +62,60 @@ namespace Microsoft.R.Core.DataTips {
             }
 
             return node;
+        }
+
+        /// <summary>
+        /// Determines whether hovering over the AST node provided should trigger the DataTip.
+        /// </summary>
+        private static bool IsValidInitialNode(IAstNode node) {
+            // DataTip can only be triggered by hovering over a literal, an identifier, or one of the operators: $ @ :: ::: [ [[
+
+            if (node is ILiteralNode || node is Variable) {
+                return true;
+            }
+
+            // Depending on the selected range, we can be looking either at the Operator node, or at the underlying
+            // TokenNode corresponding to the operator token. Either one should be treated identically, so check both.
+            var opNode = node as Operator;
+            if (opNode != null) {
+                switch (opNode.OperatorType) {
+                    case OperatorType.Index:
+                    case OperatorType.ListIndex:
+                    case OperatorType.Namespace:
+                        return true;
+                    default:
+                        return false;
+                }
+            } else {
+                var tokenNode = node as TokenNode;
+                if (tokenNode == null) {
+                    return false;
+                }
+
+                switch (tokenNode.Token.TokenType) {
+                    case RTokenType.OpenSquareBracket:
+                    case RTokenType.CloseSquareBracket:
+                    case RTokenType.OpenDoubleSquareBracket:
+                    case RTokenType.CloseDoubleSquareBracket:
+                        return true;
+
+                    case RTokenType.Operator: {
+                            string op = node.Root.TextProvider.GetText(tokenNode.Token);
+                            switch (op) {
+                                case "$":
+                                case "@":
+                                case "::":
+                                case ":::":
+                                    return true;
+                                default:
+                                    return false;
+                            }
+                        }
+
+                    default:
+                        return false;
+                }
+            }
         }
     }
 }

@@ -19,12 +19,21 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
         }
 
         public void SubjectBuffersConnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
+            if (!textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
+                return;
+            }
+
             var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>();
-            new DataTipTextViewFilter(textView, debugger);
+            DataTipTextViewFilter.GetOrCreate(textView, debugger);
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
-
+            if (!textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
+                var filter = DataTipTextViewFilter.TryGet(textView);
+                if (filter != null) {
+                    filter.Dispose();
+                }
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
@@ -15,26 +16,41 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
-    internal class DataTipTextViewFilter : IOleCommandTarget, IVsTextViewFilter {
+    internal class DataTipTextViewFilter : IOleCommandTarget, IVsTextViewFilter, IDisposable {
         private readonly IVsEditorAdaptersFactoryService _adapterService;
         private readonly IVsDebugger _debugger;
         private readonly IWpfTextView _textView;
+        private readonly IVsTextView _vsTextView;
         private readonly IVsTextLines _vsTextLines;
         private readonly IOleCommandTarget _nextTarget;
 
-        public DataTipTextViewFilter(IWpfTextView textView, IVsDebugger debugger) {
-            if (!textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                return;
-            }
+        private DataTipTextViewFilter(IWpfTextView textView, IVsDebugger debugger) {
+            Trace.Assert(textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType));
 
             _textView = textView;
             _debugger = debugger;
             _adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import();
 
-            var vsTextView = _adapterService.GetViewAdapter(textView);
-            vsTextView.AddCommandFilter(this, out _nextTarget);
+            _vsTextView = _adapterService.GetViewAdapter(textView);
+            _vsTextView.AddCommandFilter(this, out _nextTarget);
+            _vsTextView.GetBuffer(out _vsTextLines);
 
-            vsTextView.GetBuffer(out _vsTextLines);
+            textView.Properties.AddProperty(typeof(DataTipTextViewFilter), this);
+        }
+
+        public void Dispose() {
+            _textView.Properties.RemoveProperty(typeof(DataTipTextViewFilter));
+            _vsTextView.RemoveCommandFilter(this);
+        }
+
+        public static DataTipTextViewFilter GetOrCreate(IWpfTextView textView, IVsDebugger debugger)  {
+            return textView.Properties.GetOrCreateSingletonProperty(() => new DataTipTextViewFilter(textView, debugger));
+        }
+
+        public static DataTipTextViewFilter TryGet(IWpfTextView textView) {
+            DataTipTextViewFilter result;
+            textView.Properties.TryGetProperty(typeof(DataTipTextViewFilter), out result);
+            return result;
         }
 
         public int GetDataTipText(TextSpan[] pSpan, out string pbstrText) {

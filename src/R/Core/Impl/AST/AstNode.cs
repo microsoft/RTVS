@@ -124,10 +124,10 @@ namespace Microsoft.R.Core.AST {
         /// <summary>
         /// Finds deepest node that fully encloses given range
         /// </summary>
-        public virtual IAstNode NodeFromRange(ITextRange range, bool endInclusive = false) {
+        public virtual IAstNode NodeFromRange(ITextRange range, bool inclusiveEnd = false) {
             IAstNode node = null;
 
-            if (endInclusive ? TextRange.ContainsInclusiveEnd(this, range) : TextRange.Contains(this, range)) {
+            if (TextRange.Contains(this, range, inclusiveEnd)) {
                 node = this;
 
                 for (int i = 0; i < this.Children.Count; i++) {
@@ -136,9 +136,9 @@ namespace Microsoft.R.Core.AST {
                     if (range.End < child.Start)
                         break;
 
-                    if (endInclusive ? TextRange.ContainsInclusiveEnd(child, range) : TextRange.Contains(child, range)) {
+                    if (TextRange.Contains(child, range, inclusiveEnd)) {
                         node = (child.Children.Count > 0)
-                            ? child.NodeFromRange(range, endInclusive)
+                            ? child.NodeFromRange(range, inclusiveEnd)
                             : child;
 
                         break;
