@@ -63,21 +63,7 @@ namespace Microsoft.R.Core.AST.Operators {
         #endregion
 
         #region IOperator
-        public override OperatorType OperatorType {
-            get { return OperatorType.FunctionCall; }
-        }
-
-        public override int Precedence {
-            get { return OperatorPrecedence.GetPrecedence(OperatorType.FunctionCall); }
-        }
-
-        public override bool IsUnary {
-            get { return true; }
-        }
-
-        public override Association Association {
-            get { return Association.Right; }
-        }
+        public override OperatorType OperatorType  => OperatorType.FunctionCall;
         #endregion
 
         #region ITextRange
@@ -85,6 +71,10 @@ namespace Microsoft.R.Core.AST.Operators {
             get { return SignatureEnd; }
         }
         #endregion
+
+        public FunctionCall() {
+            IsUnary = true;
+        }
 
         public int GetParameterIndex(int position) {
             if (position > End || position < OpenBrace.End) {

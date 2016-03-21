@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents NA value
     /// </summary>
-    public sealed class MissingValue : RValueTokenNode<RMissing> {
+    public sealed class MissingValue : RValueTokenNode<RMissing>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
             NodeValue = new RMissing();
             return base.Parse(context, parent);

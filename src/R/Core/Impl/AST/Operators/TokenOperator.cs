@@ -9,63 +9,39 @@ using Microsoft.R.Core.Tokens;
 namespace Microsoft.R.Core.AST.Operators {
     [DebuggerDisplay("[{OperatorType} Precedence={Precedence} Unary={IsUnary}]")]
     public sealed class TokenOperator : Operator {
-        private OperatorType _operatorType;
-        private int _precedence;
-        private bool _isUnary;
-
         public TokenNode OperatorToken { get; private set; }
 
-        #region IOperator
-        public override OperatorType OperatorType {
-            get { return _operatorType; }
+        public TokenOperator(bool firstInExpression) {
+            IsUnary = firstInExpression;
+            if (IsUnary) {
+                Associativity = Associativity.Right;
+            }
         }
 
-        public override int Precedence {
-            get { return _precedence; }
-        }
-        public override bool IsUnary {
-            get { return _isUnary; }
-        }
-        #endregion
-
-        public TokenOperator(bool unary) {
-            _isUnary = unary;
-        }
         public TokenOperator(OperatorType operatorType, bool unary) :
             this(unary) {
-            _operatorType = operatorType;
+            OperatorType = operatorType;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent) {
             Debug.Assert(context.Tokens.CurrentToken.TokenType == RTokenType.Operator);
 
-            _operatorType = TokenOperator.GetOperatorType(context.TextProvider.GetText(context.Tokens.CurrentToken));
-            this.OperatorToken = RParser.ParseToken(context, this);
-            this.Association = OperatorAssociation.GetAssociation(_operatorType);
+            OperatorType = TokenOperator.GetOperatorType(context.TextProvider.GetText(context.Tokens.CurrentToken));
+            OperatorToken = RParser.ParseToken(context, this);
+            Associativity = OperatorAssociativity.GetAssociativity(OperatorType);
 
-            bool isUnary;
-            _precedence = this.GetCurrentOperatorPrecedence(context, this.OperatorType, out isUnary);
-
-            if (!_isUnary) {
-                _isUnary = isUnary;
+            // If operator is preceded by an operator, it is then unary
+            // Look back two tokens since operator parsing already consumed its token.
+            if (IsUnary || IsUnaryOperator(context.Tokens, context.TextProvider, OperatorType, -2)) {
+                OperatorType = Operator.GetUnaryForm(OperatorType);
+                IsUnary = true;
+                Associativity = Associativity.Right;
             }
-
             return base.Parse(context, parent);
         }
 
         public override string ToString() {
-            return this.OperatorToken.ToString();
-        }
-
-        private int GetCurrentOperatorPrecedence(ParseContext context, OperatorType operatorType, out bool isUnary) {
-            isUnary = false;
-
-            if (IsUnaryOperator(context.Tokens, operatorType, -1)) {
-                operatorType = OperatorType.Unary;
-                isUnary = true;
-            }
-
-            return OperatorPrecedence.GetPrecedence(operatorType);
+            return OperatorToken.ToString();
         }
 
         public static OperatorType GetOperatorType(string text) {

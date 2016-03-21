@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using System.Globalization;
+using System.IO;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 
@@ -23,9 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             return format != PublishFormat.Pdf;
         }
 
-        public string GetCommandLine(string inputFile, string outputFile, PublishFormat publishFormat) {
+        public string GetCommandLine(string inputFile, string outputFilePath, PublishFormat publishFormat) {
+            string format = GetDocumentTypeString(publishFormat);
+            string outputFile = Path.GetFileName(outputFilePath);
+            string outputFolder = Path.GetDirectoryName(outputFilePath).Replace('\\', '/');
             // Run rmarkdown::render
-            return string.Format(CultureInfo.InvariantCulture, "\"rmarkdown::render(\'{0}\', \'{1}\')\"", inputFile, GetDocumentTypeString(publishFormat));
+            return $"\"rmarkdown::render(\'{inputFile}\', output_format=\'{format}\', output_file='{outputFile}',  output_dir='{outputFolder}')\"";
         }
 
         private string GetDocumentTypeString(PublishFormat publishFormat) {

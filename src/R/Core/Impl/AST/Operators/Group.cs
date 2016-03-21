@@ -24,21 +24,8 @@ namespace Microsoft.R.Core.AST.Variables {
         public TokenNode CloseBrace { get; private set; }
 
         #region IOperator
-        public override bool IsUnary {
-            get { return true; }
-        }
-
-        public override OperatorType OperatorType {
-            get { return OperatorType.Group; }
-        }
-
-        public override int Precedence {
-            get { return OperatorPrecedence.GetPrecedence(OperatorType.Group); }
-        }
-
-        public override Association Association {
-            get { return Association.Right; }
-        }
+        public override OperatorType OperatorType => OperatorType.Group;
+        public override Associativity Associativity => Associativity.Right;
         #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent) {
