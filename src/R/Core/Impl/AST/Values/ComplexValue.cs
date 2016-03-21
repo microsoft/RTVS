@@ -61,7 +61,7 @@ namespace Microsoft.R.Core.AST.Values {
             }
 
             Complex complex = new Complex(realPart, imaginaryPart);
-            NodeValue = new RComplex(complex);
+            Value = new RComplex(complex);
             return base.Parse(context, parent);
         }
     }

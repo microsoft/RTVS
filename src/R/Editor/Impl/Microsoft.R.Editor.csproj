@@ -91,6 +91,7 @@
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
     <Compile Include="Completion\Providers\CompletionUtilities.cs" />
+    <Compile Include="Completion\Providers\UserVariablesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\SnippetCompletionProvider.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\LoadedPackagesProvider.cs" />

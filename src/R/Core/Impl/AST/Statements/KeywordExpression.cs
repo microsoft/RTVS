@@ -17,7 +17,7 @@ namespace Microsoft.R.Core.AST.Statements {
         public TokenNode CloseBrace { get; private set; }
         #endregion
 
-        #region IKeywordExpression
+        #region IKeyword
         public TokenNode Keyword { get; private set; }
         public string Text { get; private set; }
         #endregion

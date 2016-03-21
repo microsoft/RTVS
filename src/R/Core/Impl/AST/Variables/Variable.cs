@@ -33,9 +33,7 @@ namespace Microsoft.R.Core.AST.Variables {
             return true;
         }
 
-        public RObject GetValue() {
-            throw new NotImplementedException();
-        }
+        public RObject Value { get; set; }
 
         public override string ToString() {
             return this.Name;

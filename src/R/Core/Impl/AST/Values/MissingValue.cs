@@ -11,7 +11,7 @@ namespace Microsoft.R.Core.AST.Values {
     /// </summary>
     public sealed class MissingValue : RValueTokenNode<RMissing> {
         public override bool Parse(ParseContext context, IAstNode parent) {
-            NodeValue = new RMissing();
+            Value = new RMissing();
             return base.Parse(context, parent);
         }
     }

@@ -20,9 +20,9 @@ namespace Microsoft.R.Core.AST.Values {
                          currentToken.TokenType == RTokenType.NaN);
 
             if (currentToken.TokenType == RTokenType.Infinity) {
-                NodeValue = new RNumber(Double.PositiveInfinity);
+                Value = new RNumber(Double.PositiveInfinity);
              } else if (currentToken.TokenType == RTokenType.NaN) {
-                NodeValue = new RNumber(Double.NaN);
+                Value = new RNumber(Double.NaN);
             } else {
                 if (text[text.Length - 1] == 'L') {
                     text = text.Substring(0, text.Length - 1);
@@ -35,7 +35,7 @@ namespace Microsoft.R.Core.AST.Values {
                     result = Double.NaN;
                     context.AddError(new ParseError(ParseErrorType.NumberExpected, ErrorLocation.Token, currentToken));
                 }
-                NodeValue = new RNumber(result);
+                Value = new RNumber(result);
             }
             return base.Parse(context, parent);
         }
