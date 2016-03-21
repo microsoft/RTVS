@@ -9,7 +9,7 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Values {
-    public sealed class NumericalValue : RValueTokenNode<RNumber> {
+    public sealed class NumericalValue : RValueTokenNode<RNumber>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);

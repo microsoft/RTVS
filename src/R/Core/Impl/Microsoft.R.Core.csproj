@@ -46,6 +46,7 @@
     <Compile Include="AST\DataTypes\RFunction.cs" />
     <Compile Include="AST\DataTypes\RMissing.cs" />
     <Compile Include="AST\DataTypes\RNull.cs" />
+    <Compile Include="AST\Definitions\ILiteralNode.cs" />
     <Compile Include="AST\Definitions\PositionType.cs" />
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
     <Compile Include="AST\Variables\Variable.cs" />
+    <Compile Include="DataTips\RDataTip.cs" />
     <Compile Include="Evaluation\Definitions\ICodeEvaluator.cs" />
     <Compile Include="AST\Arguments\ArgumentList.cs" />
     <Compile Include="AST\Arguments\EllipsisArgument.cs" />
