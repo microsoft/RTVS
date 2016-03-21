@@ -23,22 +23,12 @@ namespace Microsoft.R.Core.AST.Variables {
         public TokenNode RightBrackets { get; private set; }
 
         #region IOperator
-        public override bool IsUnary {
-            get { return true; }
-        }
-
-        public override OperatorType OperatorType {
-            get { return OperatorType.Index; }
-        }
-
-        public override int Precedence {
-            get { return OperatorPrecedence.GetPrecedence(OperatorType.Index); }
-        }
-
-        public override Association Association {
-            get { return Association.Right; }
-        }
+        public override OperatorType OperatorType => OperatorType.Index;
         #endregion
+
+        public Indexer() {
+            IsUnary = true;
+        }
 
         public override bool Parse(ParseContext context, IAstNode parent) {
             TokenStream<RToken> tokens = context.Tokens;
@@ -47,7 +37,6 @@ namespace Microsoft.R.Core.AST.Variables {
                          tokens.CurrentToken.TokenType == RTokenType.OpenDoubleSquareBracket);
 
             this.LeftBrackets = RParser.ParseToken(context, this);
-
             RTokenType terminatingTokenType = RParser.GetTerminatingTokenType(this.LeftBrackets.Token.TokenType);
 
             this.Arguments = new ArgumentList(terminatingTokenType);
@@ -59,7 +48,6 @@ namespace Microsoft.R.Core.AST.Variables {
             } else {
                 context.AddError(new MissingItemParseError(ParseErrorType.CloseSquareBracketExpected, tokens.PreviousToken));
             }
-
 
             return true;
         }

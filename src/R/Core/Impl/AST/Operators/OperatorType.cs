@@ -38,7 +38,8 @@ namespace Microsoft.R.Core.AST.Operators {
         LeftAssign, // <- <<-
         RightAssign, // -> ->>
         Help, // ? and ??
-        Unary, // pseudo-type since unary-ness is defined from context
+        UnaryMinus,
+        UnaryPlus,
         Group, // ( ) pseudo-operator
         Sentinel // pseudo-type used in expression parsing
     }
