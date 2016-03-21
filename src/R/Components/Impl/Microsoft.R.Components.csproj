@@ -134,9 +134,7 @@
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Commands\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>

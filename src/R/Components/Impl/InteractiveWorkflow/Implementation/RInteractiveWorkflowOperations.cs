@@ -3,14 +3,17 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -20,7 +23,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class RInteractiveWorkflowOperations : IRInteractiveWorkflowOperations {
         private ConcurrentQueue<PendingSubmission> _pendingInputs = new ConcurrentQueue<PendingSubmission>();
         private IInteractiveWindow _interactiveWindow;
-        
+        private readonly IDebuggerModeTracker _debuggerModeTracker;
+        private readonly ICoreShell _coreShell;
+        private readonly IRInteractiveWorkflow _workflow;
+
+        public RInteractiveWorkflowOperations(IRInteractiveWorkflow workflow, IDebuggerModeTracker debuggerModeTracker, ICoreShell coreShell) {
+            _workflow = workflow;
+            _debuggerModeTracker = debuggerModeTracker;
+            _coreShell = coreShell;
+        }
+
         internal IInteractiveWindow InteractiveWindow {
             get { return _interactiveWindow; }
             set {
@@ -140,6 +152,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public Task<ExecutionResult> ResetAsync() {
             return InteractiveWindow.Operations.ResetAsync();
         }
+
+        public void SourceFiles(IEnumerable<string> files) {
+            Task.Run(async () => {
+                var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
+                _coreShell.DispatchOnUIThread(() => {
+                    foreach (var name in shortNames) {
+                        EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({name.ToRStringLiteral()})", addNewLine: true);
+                    }
+                });
+            });
+        }
+
+        public void SourceFile(string file) {
+            Task.Run(async () => {
+                file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
+                _coreShell.DispatchOnUIThread(() => {
+                    ExecuteExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()})");
+                });
+            });
+        }
+
 
         public void Dispose() {
             if (_interactiveWindow != null) {

@@ -42,8 +42,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         private CompositionContainer _container;
         private TestAssemblyResolver _assemblyResolver;
 
-        private static string _partsData;
-        private static string _exportsData;
         private static bool _traceExportImports = false;
 
         /// <summary>
@@ -263,8 +261,17 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                 }
             }
 
-            _partsData = parts.ToString();
-            _exportsData = exports.ToString();
+            WriteTraceToFile(parts.ToString(), "Parts.txt");
+            WriteTraceToFile(exports.ToString(), "Exports.txt");
+        }
+
+        private void WriteTraceToFile(string s, string fileName) {
+            var filePath = Path.Combine(Path.GetTempPath(), fileName);
+            File.Delete(filePath);
+
+            using (var sw = new StreamWriter(filePath)) {
+                sw.Write(s);
+            }
         }
 
         #region ICompositionCatalog
@@ -273,6 +280,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public ExportProvider ExportProvider => _container;
 
         public CompositionContainer Container => _container;
-        #endregion
+        #endregion 
     }
 }

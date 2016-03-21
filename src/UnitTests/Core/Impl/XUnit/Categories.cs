@@ -181,6 +181,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class ProjectAttribute : CategoryAttribute {
+            public ProjectAttribute() : base("Project") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public static class Variable {
             [ExcludeFromCodeCoverage]
             public class ExplorerAttribute : CategoryAttribute {

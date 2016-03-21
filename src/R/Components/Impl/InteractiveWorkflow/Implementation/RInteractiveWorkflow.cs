@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, hostClientApp);
             History = historyProvider.CreateRHistory(this);
-            _operations = new RInteractiveWorkflowOperations();
+            _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, _coreShell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
             RSession.Disconnected += RSessionDisconnected;

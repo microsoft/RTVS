@@ -8,6 +8,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -40,11 +41,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public void DefaultDirectoryTest() {
             string myDocs = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
             string actual;
-            using (new VsRHostScript()) {
+            using (var script = new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.UserDirectory.Should().BeEquivalentTo(myDocs);
-                actual = cmd.GetRWorkingDirectoryAsync().Result;
+                actual = script.Session.GetRWorkingDirectoryAsync().Result;
             };
 
             actual.Should().Be(myDocs);
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 cmd.SetDirectory(dir).Wait();
-                actual = cmd.GetRWorkingDirectoryAsync().Result;
+                actual = _interactiveWorkflow.RSession.GetRWorkingDirectoryAsync().Result;
             }
 
             actual.Should().Be(dir);

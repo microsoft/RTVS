@@ -98,5 +98,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdRDocsWritingRExtensions = 1405;
         public const int icmdMicrosoftRProducts = 1406;
         public const int icmdCheckForUpdates = 1407;
+
+        public const int icmdSetDirectoryHere = 1500;
+        public const int icmdSourceSelectedFiles = 1501;
+        public const int icmdOpenContainingFolder = 1502;
+        public const int icmdCopyItemPath = 1503;
+        public const int icmdAddRScript = 1504;
+        public const int icmdAddRMarkdown = 1505;
+        public const int icmdOpenCmdPromptHere = 1506;
+        public const int icmdOpenAdminCmdPromptHere = 1507;
     }
 }
