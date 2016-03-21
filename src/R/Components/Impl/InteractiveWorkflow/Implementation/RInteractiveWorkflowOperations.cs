@@ -155,7 +155,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public void SourceFiles(IEnumerable<string> files) {
             Task.Run(async () => {
-                var shortNames = await _workflow.RSession.GetRShortenedPathNamesAsync(files);
+                var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
                 _coreShell.DispatchOnUIThread(() => {
                     foreach (var name in shortNames) {
                         EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({name.ToRStringLiteral()})", addNewLine: true);
@@ -166,7 +166,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public void SourceFile(string file) {
             Task.Run(async () => {
-                file = await _workflow.RSession.GetRShortenedPathNameAsync(file);
+                file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
                 _coreShell.DispatchOnUIThread(() => {
                     ExecuteExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()})");
                 });
