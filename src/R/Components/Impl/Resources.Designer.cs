@@ -61,6 +61,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dismiss.
+        /// </summary>
+        public static string Dismiss {
+            get {
+                return ResourceManager.GetString("Dismiss", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Do not show this again.
+        /// </summary>
+        public static string DoNotShowThisAgain {
+            get {
+                return ResourceManager.GetString("DoNotShowThisAgain", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {
@@ -111,6 +138,159 @@ namespace Microsoft.R.Components {
         public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Available.
+        /// </summary>
+        public static string PackageManager_Available {
+            get {
+                return ResourceManager.GetString("PackageManager_Available", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed.
+        /// </summary>
+        public static string PackageManager_Installed {
+            get {
+                return ResourceManager.GetString("PackageManager_Installed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed version: {0}.
+        /// </summary>
+        public static string PackageManager_InstalledVersionToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_InstalledVersionToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest version: {0}.
+        /// </summary>
+        public static string PackageManager_LatestVersionToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_LatestVersionToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Each package is licensed to you by its owner. RTVS is not responsible for, nor does it grant any licenses to, third-party packages..
+        /// </summary>
+        public static string PackageManager_LegalDisclaimer {
+            get {
+                return ResourceManager.GetString("PackageManager_LegalDisclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loaded.
+        /// </summary>
+        public static string PackageManager_Loaded {
+            get {
+                return ResourceManager.GetString("PackageManager_Loaded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not available in this source.
+        /// </summary>
+        public static string PackageManager_NotAvailableInSource {
+            get {
+                return ResourceManager.GetString("PackageManager_NotAvailableInSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest stable version is installed.
+        /// </summary>
+        public static string PackageManager_PackageInstalledToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageInstalledToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package sources:.
+        /// </summary>
+        public static string PackageManager_PackageSources {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prerelease.
+        /// </summary>
+        public static string PackageManager_Prerelease {
+            get {
+                return ResourceManager.GetString("PackageManager_Prerelease", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Retrieving results from one or more sources.
+        /// </summary>
+        public static string PackageManager_SearchIncomplete {
+            get {
+                return ResourceManager.GetString("PackageManager_SearchIncomplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to retrieve results from one or more sources.
+        /// </summary>
+        public static string PackageManager_SearchStopped {
+            get {
+                return ResourceManager.GetString("PackageManager_SearchStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select all packages.
+        /// </summary>
+        public static string PackageManager_SelectAllPackages {
+            get {
+                return ResourceManager.GetString("PackageManager_SelectAllPackages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show errors in output.
+        /// </summary>
+        public static string PackageManager_ShowErrors {
+            get {
+                return ResourceManager.GetString("PackageManager_ShowErrors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package Manager.
+        /// </summary>
+        public static string PackageManager_Title {
+            get {
+                return ResourceManager.GetString("PackageManager_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update available.
+        /// </summary>
+        public static string PackageManager_UpdateAvailableToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_UpdateAvailableToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update.
+        /// </summary>
+        public static string Update {
+            get {
+                return ResourceManager.GetString("Update", resourceCulture);
             }
         }
     }
