@@ -71,11 +71,6 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 // Save the file
                 TextView.TextBuffer.Save();
                 var inputFilePath = TextView.TextBuffer.GetFilePath();
-
-                var buffer = new StringBuilder(NativeMethods.MAX_PATH);
-                NativeMethods.GetShortPathName(inputFilePath, buffer, NativeMethods.MAX_PATH);
-
-                inputFilePath = buffer.ToString();
                 _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
                 try {
