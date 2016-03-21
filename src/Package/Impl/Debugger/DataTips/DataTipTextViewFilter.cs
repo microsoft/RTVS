@@ -17,21 +17,19 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
     internal class DataTipTextViewFilter : IOleCommandTarget, IVsTextViewFilter, IDisposable {
-        private readonly IVsEditorAdaptersFactoryService _adapterService;
         private readonly IVsDebugger _debugger;
         private readonly IWpfTextView _textView;
         private readonly IVsTextView _vsTextView;
         private readonly IVsTextLines _vsTextLines;
         private readonly IOleCommandTarget _nextTarget;
 
-        private DataTipTextViewFilter(IWpfTextView textView, IVsDebugger debugger) {
+        private DataTipTextViewFilter(IWpfTextView textView, IVsEditorAdaptersFactoryService adapterService, IVsDebugger debugger) {
             Trace.Assert(textView.TextBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType));
 
             _textView = textView;
             _debugger = debugger;
-            _adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import();
 
-            _vsTextView = _adapterService.GetViewAdapter(textView);
+            _vsTextView = adapterService.GetViewAdapter(textView);
             _vsTextView.AddCommandFilter(this, out _nextTarget);
             _vsTextView.GetBuffer(out _vsTextLines);
 
@@ -43,8 +41,8 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
             _vsTextView.RemoveCommandFilter(this);
         }
 
-        public static DataTipTextViewFilter GetOrCreate(IWpfTextView textView, IVsDebugger debugger)  {
-            return textView.Properties.GetOrCreateSingletonProperty(() => new DataTipTextViewFilter(textView, debugger));
+        public static DataTipTextViewFilter GetOrCreate(IWpfTextView textView, IVsEditorAdaptersFactoryService adapterService, IVsDebugger debugger)  {
+            return textView.Properties.GetOrCreateSingletonProperty(() => new DataTipTextViewFilter(textView, adapterService, debugger));
         }
 
         public static DataTipTextViewFilter TryGet(IWpfTextView textView) {

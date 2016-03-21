@@ -4,6 +4,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -23,8 +24,9 @@ namespace Microsoft.VisualStudio.R.Package.Debugger.DataTips {
                 return;
             }
 
+            var adapterService = VsAppShell.Current.ExportProvider.GetExportedValue<IVsEditorAdaptersFactoryService>();
             var debugger = VsAppShell.Current.GetGlobalService<IVsDebugger>();
-            DataTipTextViewFilter.GetOrCreate(textView, debugger);
+            DataTipTextViewFilter.GetOrCreate(textView, adapterService, debugger);
         }
 
         public void SubjectBuffersDisconnected(IWpfTextView textView, ConnectionReason reason, Collection<ITextBuffer> subjectBuffers) {
