@@ -116,6 +116,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTips\DataTipTest.cs" />
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
     <Compile Include="Parser\ParseNumbersTest.cs" />

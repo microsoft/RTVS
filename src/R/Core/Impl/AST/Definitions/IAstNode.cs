@@ -54,7 +54,7 @@ namespace Microsoft.R.Core.AST.Definitions {
         /// <summary>
         /// Finds deepest element node that fully encloses given range
         /// </summary>
-        IAstNode NodeFromRange(ITextRange range);
+        IAstNode NodeFromRange(ITextRange range, bool endInclusive = false);
 
         /// <summary>
         /// Determines position type and the enclosing node for 

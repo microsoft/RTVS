@@ -2,9 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Variables;
+using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.DataTips {
     public static class RDataTip {
@@ -21,24 +24,64 @@ namespace Microsoft.R.Core.DataTips {
         /// are considered.
         /// </remarks>
         public static IAstNode GetDataTipExpression(IAstNode ast, ITextRange range) {
-            var node = ast.NodeFromRange(range);
+            var node = ast.NodeFromRange(range, endInclusive: true);
             if (node == null) {
                 return null;
             }
 
             // DataTip can only be triggered by hovering over a literal, an identifier, or one of the operators: $ @ :: ::: [ [[
-            var opNode = node as Operator;
-            if (opNode != null) {
-                switch (opNode.OperatorType) {
-                    case OperatorType.Index:
-                    case OperatorType.ListIndex:
-                    case OperatorType.Namespace:
-                        break;
-                    default:
+            if (!(node is ILiteralNode || node is Variable)) {
+                // Depending on the selected range, we can be looking either at the Operator node, or at the underlying
+                // TokenNode corresponding to the operator token. Either one should be treated identically, so check both.
+                var opNode = node as Operator;
+                if (opNode != null) {
+                    switch (opNode.OperatorType) {
+                        case OperatorType.Index:
+                        case OperatorType.ListIndex:
+                        case OperatorType.Namespace:
+                            break;
+                        default:
+                            return null;
+                    }
+                } else {
+                    var tokenNode = node as TokenNode;
+                    if (tokenNode == null) {
                         return null;
+                    }
+
+                    switch (tokenNode.Token.TokenType) {
+                        case RTokenType.OpenSquareBracket:
+                        case RTokenType.CloseSquareBracket:
+                        case RTokenType.OpenDoubleSquareBracket:
+                        case RTokenType.CloseDoubleSquareBracket:
+                            break;
+
+                        case RTokenType.Operator: {
+                                string op = ast.Root.TextProvider.GetText(tokenNode.Token);
+                                switch (op) {
+                                    case "$":
+                                    case "@":
+                                    case "::":
+                                    case ":::":
+                                        break;
+                                    default:
+                                        return null;
+                                }
+                                break;
+                            }
+
+                        default:
+                            return null;
+                    }
                 }
-            } else if (!(node is ILiteralNode || node is Variable)) {
-                return null;
+            }
+
+            // When the lookup starts at [ or [[, the immediate node is the token, but its parent is an Indexer node,
+            // and the parent of the indexer is the Operator. The loop below assumes that Operator is the immediate
+            // parent, so walk one level up before entering it in this case.
+            var indexer = node.Parent as Indexer;
+            if (indexer != null) {
+                node = indexer;
             }
 
             // Walk the AST tree up to determine the expression that should be evaluated, according to the following rules:
