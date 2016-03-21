@@ -18,6 +18,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R {
@@ -79,6 +80,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string RCommandLineArguments { get; set; }
         public HelpBrowserType HelpBrowser { get; set; }
         public bool ShowDotPrefixedVariables { get; set; }
+        public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.CheckOnceWeek;
+        public DateTime SurveyNewsLastCheck { get; set; }
+        public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
+        public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual

@@ -47,6 +47,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class SurveyNewsAttribute : CategoryAttribute {
+            public SurveyNewsAttribute() : base("SurveyNews") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class TelemetryAttribute : CategoryAttribute {
             public TelemetryAttribute() : base("Telemetry") { }
         }
