@@ -13,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _rSession = session;
         }
 
-        #region IEnvironmentContentProvider
+        #region IREnvironmentProvider
 
         public event EventHandler<REnvironmentChangedEventArgs> EnvironmentChanged;
 
