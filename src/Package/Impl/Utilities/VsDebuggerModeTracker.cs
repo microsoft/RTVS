@@ -11,9 +11,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
     internal class VsDebuggerModeTracker : IDebuggerModeTracker, IVsDebuggerEvents {
         public int OnModeChange(DBGMODE dbgmodeNew) {
             IsEnteredBreakMode = dbgmodeNew == DBGMODE.DBGMODE_Break;
+            IsDebugging = dbgmodeNew != DBGMODE.DBGMODE_Design;
             return VSConstants.S_OK;
         }
 
         public bool IsEnteredBreakMode { get; private set; }
+
+        public bool IsDebugging { get; private set; }
+
     }
 }

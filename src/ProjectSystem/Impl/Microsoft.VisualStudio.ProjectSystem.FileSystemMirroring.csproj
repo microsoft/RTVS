@@ -26,6 +26,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\ProjectTreeExtensions.cs" />
     <Compile Include="IO\IMsBuildFileSystemFilter.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.AttributesChanged.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryCreated.cs" />

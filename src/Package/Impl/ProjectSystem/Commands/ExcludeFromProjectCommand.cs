@@ -6,7 +6,7 @@ using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem
+namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands
 {
     [ExportCommandGroup("1496A755-94DE-11D0-8C3F-00C04FC2AAE2")]
     [AppliesTo("RTools")]

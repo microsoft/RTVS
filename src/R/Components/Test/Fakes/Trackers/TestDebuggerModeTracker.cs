@@ -9,5 +9,7 @@ namespace Microsoft.R.Components.Test.Fakes.Trackers {
     [Export(typeof(TestDebuggerModeTracker))]
     public sealed class TestDebuggerModeTracker : IDebuggerModeTracker {
         public bool IsEnteredBreakMode { get; set; }
+
+        public bool IsDebugging { get; set; }
     }
 }
