@@ -55,11 +55,11 @@
     <Compile Include="AST\Functions\FunctionDefinition.cs" />
     <Compile Include="AST\Functions\Lambda.cs" />
     <Compile Include="AST\Operators\Definitions\IOperator.cs" />
-    <Compile Include="AST\Operators\Association.cs" />
+    <Compile Include="AST\Operators\Associativity.cs" />
     <Compile Include="AST\Operands\InlineIf.cs" />
     <Compile Include="AST\Operators\Group.cs" />
     <Compile Include="AST\Operators\Operator.cs" />
-    <Compile Include="AST\Operators\OperatorAssociation.cs" />
+    <Compile Include="AST\Operators\OperatorAssociativity.cs" />
     <Compile Include="AST\Operators\OperatorPrecedence.cs" />
     <Compile Include="AST\RValueTokenNode.cs" />
     <Compile Include="AST\Search\AstSearch.cs" />

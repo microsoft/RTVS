@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser {
     public class ParseExponentTest {
         [Test]
         [Category.R.Parser]
-        public void ParseExponentTest1() {
+        public void Exponent1() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b]
@@ -25,7 +25,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseExponentTest2() {
+        public void Exponent2() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b^c]
@@ -43,7 +43,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseExponentTest3() {
+        public void Exponent3() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^(b+c)]
@@ -65,7 +65,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void ParseExponentTest4() {
+        public void Exponent4() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a^b::c]
@@ -79,6 +79,52 @@ namespace Microsoft.R.Core.Test.Parser {
                     Variable  [c]
 ";
             ParserTest.VerifyParse(expected, "a^b::c");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void Exponent5() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a^b^c^d]
+        Expression  [a^b^c^d]
+            TokenOperator  [^ [1...2)]
+                Variable  [a]
+                TokenNode  [^ [1...2)]
+                TokenOperator  [^ [3...4)]
+                    Variable  [b]
+                    TokenNode  [^ [3...4)]
+                    TokenOperator  [^ [5...6)]
+                        Variable  [c]
+                        TokenNode  [^ [5...6)]
+                        Variable  [d]
+";
+            ParserTest.VerifyParse(expected, "a^b^c^d");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void Exponent6() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [(a^b)^c^d]
+        Expression  [(a^b)^c^d]
+            TokenOperator  [^ [5...6)]
+                Group  [0...5)
+                    TokenNode  [( [0...1)]
+                    Expression  [a^b]
+                        TokenOperator  [^ [2...3)]
+                            Variable  [a]
+                            TokenNode  [^ [2...3)]
+                            Variable  [b]
+                    TokenNode  [) [4...5)]
+                TokenNode  [^ [5...6)]
+                TokenOperator  [^ [7...8)]
+                    Variable  [c]
+                    TokenNode  [^ [7...8)]
+                    Variable  [d]
+";
+            ParserTest.VerifyParse(expected, "(a^b)^c^d");
         }
     }
 }

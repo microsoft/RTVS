@@ -47,6 +47,7 @@ namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
                 sets = null;
                 script.Invoke(() => {
                     var broker = e.GetExportedValue<ILightBulbBroker>();
+                    broker.DismissSession(EditorWindow.CoreEditor.View);
                     broker.CreateSession(svc.Any, EditorWindow.CoreEditor.View);
                     session = script.GetLightBulbSession();
                     session.Should().NotBeNull();
