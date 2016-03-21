@@ -21,18 +21,19 @@ grid.data <- function(x, rows, cols) {
 
   # get values for column/row names and data
   if (is.matrix(x)) {
-    x.df <- as.data.frame(x[rows, cols]);
+    if ((length(rows) == 1) || (length(cols) == 1)) {
+      data <- grid.format(x[rows, cols]);
+    } else {
+      data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
+    }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
   } else {
-    x.df <- as.data.frame(x)[rows, cols];
+    x.df <- as.data.frame(x)[rows, cols]
+    data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);
   }
-
-  #format data
-  data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
-
 
   # format row names
   dimnames <- 0;
