@@ -710,6 +710,8 @@ namespace Microsoft.VisualStudio.R.Package {
         ///
         ///...
         ///
+        ///If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+        ///
         ///
         ///
         ///Additional information:
@@ -829,7 +831,9 @@ namespace Microsoft.VisualStudio.R.Package {
         ///
         ///...
         ///
-        ///A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including information about installed packages and their contents, your complete R Interactive command history and outputs, an [rest of string was truncated]&quot;;.
+        ///If you have any screenshots demonstrating the issue, please include them as well to help us diagnose it better.
+        ///
+        ///A detailed diagnostic log has been created at {0}, and a Windows Explorer window has been opened for that location with the log file selected. To improve our ability to diagnose the issue, you can attach that file to the email. However, be aware that the log may contain sensitive information, including i [rest of string was truncated]&quot;;.
         /// </summary>
         public static string SendFrownEmailBody {
             get {
