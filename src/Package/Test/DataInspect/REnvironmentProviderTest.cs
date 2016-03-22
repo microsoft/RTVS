@@ -19,7 +19,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class REnvironmentPrividerTest {
+    public class REnvironmentProviderTest {
         private ManualResetEvent _environmentChanged = new ManualResetEvent(false);
         private REnvironmentCollection _environments;
 
