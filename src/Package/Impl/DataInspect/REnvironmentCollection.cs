@@ -6,6 +6,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentCollection : List<REnvironment>{
+        public REnvironmentCollection() { }
+
         public REnvironmentCollection(JToken token) {
             var jarray = token as JArray;
             if (jarray != null) {

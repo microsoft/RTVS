@@ -14,7 +14,8 @@
              d:DesignHeight="300" d:DesignWidth="300"
              img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
              Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
-             HorizontalAlignment="Stretch">
+             HorizontalAlignment="Stretch"
+             FocusManager.FocusedElement="{Binding ElementName=RootTreeGrid}">
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -144,7 +145,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock x:Name="EnvironmentName" Text="{x:Static pkg:Resources.VariableExplorer_EnvironmentName}" Margin="4" />
+        <ComboBox x:Name="EnvironmentComboBox" SelectionChanged="EnvironmentComboBox_SelectionChanged" Margin="4">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
         <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
                   AutoGenerateColumns="False"

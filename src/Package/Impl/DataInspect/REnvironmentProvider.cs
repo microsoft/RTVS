@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -16,6 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public REnvironmentProvider(IRSession session) {
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
+
+            IdleTimeAction.Create(() => {
+                GetEnvironmentAsync().SilenceException<Exception>().DoNotWait();
+            }, 10, typeof(REnvironmentProvider));
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -28,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             await TaskUtilities.SwitchToBackgroundThread();
 
             REvaluationResult result;
-            using (var evaluation = await _rSession.BeginEvaluationAsync()) {
+            using (var evaluation = await _rSession.BeginEvaluationAsync(false)) {
                 result = await evaluation.EvaluateAsync("rtvs:::toJSON(rtvs:::getEnvironments(sys.frame(sys.nframe())))", REvaluationKind.Json);
             }
 
