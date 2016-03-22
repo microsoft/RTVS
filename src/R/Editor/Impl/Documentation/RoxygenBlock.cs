@@ -5,7 +5,6 @@ using System;
 using System.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Text;
@@ -21,38 +20,32 @@ namespace Microsoft.R.Editor.Completion.Documentation {
             // First determine if position is right before the function declaration
             var snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
-            var line = FindFirstNonEmptyLine(snapshot, currentLine.LineNumber + 1);
-            if (line != null) {
-                var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(line.Start + line.Length / 2);
-                if (exp != null) {
-                    Variable v;
 
-                    IFunctionDefinition fd = exp.GetFunctionDefinition(out v);
-                    if (fd != null && v != null && !string.IsNullOrEmpty(v.Name)) {
+            Variable v;
+            IFunctionDefinition fd = FunctionDefinitionExtensions.FindFunctionDefinition(textBuffer, ast, position, out v);
+            if (fd != null && v != null && !string.IsNullOrEmpty(v.Name)) {
 
-                        int definitionStart = Math.Min(v.Start, fd.Start);
-                        if (!HasRoxygenBlock(snapshot, currentLine.LineNumber, definitionStart)) {
-
-                            string lineBreak = currentLine.GetLineBreakText();
-                            if (string.IsNullOrEmpty(lineBreak)) {
-                                lineBreak = "\n";
-                            }
-                            string block = GenerateRoxygenBlock(v.Name, fd, lineBreak);
-                            if (block.Length > 0) {
-                                textBuffer.Replace(new Span(currentLine.Start, currentLine.Length), block);
-                                return true;
-                            }
-                        }
+                int definitionStart = Math.Min(v.Start, fd.Start);
+                int blockPosition = GetRoxygenBlockPosition(snapshot, currentLine.LineNumber, definitionStart);
+                if (blockPosition < 0) {
+                    string lineBreak = currentLine.GetLineBreakText();
+                    if (string.IsNullOrEmpty(lineBreak)) {
+                        lineBreak = "\n";
+                    }
+                    string block = GenerateRoxygenBlock(v.Name, fd, lineBreak);
+                    if (block.Length > 0) {
+                        textBuffer.Replace(new Span(currentLine.Start, currentLine.Length), block);
+                        return true;
                     }
                 }
             }
             return false;
         }
 
-        private static bool HasRoxygenBlock(ITextSnapshot snapshot, int currentlineNumber, int definitionStart) {
+        private static int GetRoxygenBlockPosition(ITextSnapshot snapshot, int currentlineNumber, int definitionStart) {
             var line = snapshot.GetLineFromPosition(definitionStart);
             for (int i = line.LineNumber - 1; i >= 0; i--) {
-                if(i == currentlineNumber) {
+                if (currentlineNumber >= 0 && i == currentlineNumber) {
                     // Skip line where user just typed ###
                     continue;
                 }
@@ -61,14 +54,14 @@ namespace Microsoft.R.Editor.Completion.Documentation {
                     var lineText = line.GetText().TrimStart();
                     if (lineText.Length > 0) {
                         if (lineText.StartsWith("#'", StringComparison.Ordinal)) {
-                            return true;
+                            return line.Start + 1;
                         } else {
                             break;
                         }
                     }
                 }
             }
-            return false;
+            return -1;
         }
 
         private static string GenerateRoxygenBlock(string functionName, IFunctionDefinition fd, string lineBreak) {
@@ -77,7 +70,7 @@ namespace Microsoft.R.Editor.Completion.Documentation {
             IFunctionInfo fi = fd.MakeFunctionInfo(functionName);
             if (fi != null && fi.Signatures.Count > 0) {
 
-                sb.Append(Invariant($"#' Title {lineBreak}"));
+                sb.Append(Invariant($"#' Title{lineBreak}"));
                 sb.Append(Invariant($"#'{lineBreak}"));
 
                 int length = sb.Length;

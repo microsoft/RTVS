@@ -107,6 +107,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DocumentationAttribute : CategoryAttribute {
+                public DocumentationAttribute() : base("R.Documentation") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class FormattingAttribute : CategoryAttribute {
                 public FormattingAttribute() : base("R.Formatting") { }
             }

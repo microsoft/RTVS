@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
+using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor {
     public static class FunctionDefinitionExtensions {
@@ -45,6 +48,31 @@ namespace Microsoft.R.Editor {
                 }
             }
             return si;
+        }
+
+        public static IFunctionDefinition FindFunctionDefinition(ITextBuffer textBuffer, AstRoot ast, int position, out Variable v) {
+            v = null;
+            // First determine if position is right before the function declaration
+            var snapshot = textBuffer.CurrentSnapshot;
+            ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
+            var line = FindFirstNonEmptyLine(snapshot, currentLine.LineNumber + 1);
+            if (line != null) {
+                var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(line.Start + line.Length / 2);
+                if (exp != null) {
+                    return exp.GetFunctionDefinition(out v);
+                }
+            }
+            return null;
+        }
+
+        private static ITextSnapshotLine FindFirstNonEmptyLine(ITextSnapshot snapshot, int lineNumber) {
+            for (int i = lineNumber; i < snapshot.LineCount; i++) {
+                var line = snapshot.GetLineFromLineNumber(i);
+                if (!string.IsNullOrWhiteSpace(line.GetText())) {
+                    return line;
+                }
+            }
+            return null;
         }
     }
 }

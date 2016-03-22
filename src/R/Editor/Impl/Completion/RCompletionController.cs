@@ -12,6 +12,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
@@ -23,8 +24,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
-    using Documentation;
-    using Tree;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
