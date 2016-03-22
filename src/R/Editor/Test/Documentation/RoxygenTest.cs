@@ -40,6 +40,47 @@ namespace Microsoft.R.Editor.Test.Formatting {
 #'
 #' @examples
 x <- function(a) { }");
+
+            int funcStart = tb.CurrentSnapshot.GetText().IndexOf("x <-");
+            tb.Insert(funcStart, "\r\n");
+            RoxygenBlock.TryInsertBlock(tb, ast, funcStart - 2).Should().BeFalse();
+        }
+
+        [Test]
+        public void InsertRoxygen02() {
+            var tb = new TextBufferMock("##\r\nx <- function() { }", RContentTypeDefinition.ContentType);
+            var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
+            RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeTrue();
+            string actual = tb.CurrentSnapshot.GetText();
+            actual.Should().Be(
+@"#' Title
+#'
+#' @return
+#' @export
+#'
+#' @examples
+x <- function() { }");
+        }
+
+        [Test]
+        public void InsertRoxygen03() {
+            var tb = new TextBufferMock("##\r\nx <-\r\n function(a=1, b, c=FALSE) { }", RContentTypeDefinition.ContentType);
+            var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
+            RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeTrue();
+            string actual = tb.CurrentSnapshot.GetText();
+            actual.Should().Be(
+@"#' Title
+#'
+#' @param a
+#' @param b
+#' @param c
+#'
+#' @return
+#' @export
+#'
+#' @examples
+x <-
+ function(a=1, b, c=FALSE) { }");
         }
     }
 }
