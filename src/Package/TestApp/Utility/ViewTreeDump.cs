@@ -17,8 +17,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         private static bool _regenerateBaselineFiles = false;
 
         public static void CompareVisualTrees(DeployFilesFixture fixture, VisualTreeObject actual, string fileName) {
-            Action a = () => CompareVisualTreesImplementation(fixture, actual, fileName);
-            a.ShouldNotThrow();
+            CompareVisualTreesImplementation(fixture, actual, fileName);
         }
 
         private static void CompareVisualTreesImplementation(DeployFilesFixture fixture, VisualTreeObject actual, string fileName) {
@@ -36,27 +35,34 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         }
 
         private static void CompareVisualTree(VisualTreeObject actual, VisualTreeObject expected, bool compareProperty = true) {
+            bool visible = true;
+            
             // compare
-            actual.Name.ShouldBeEquivalentTo(expected.Name);
+            actual.Name.Should().Be(expected.Name);
 
-            if (compareProperty) {
+            var visibility = actual.Properties.FirstOrDefault(p => p.Name == "Visibility");
+            if (visibility != null) {
+                visible = (visibility.Value != "Collapsed");
+            }
+
+            if (compareProperty && visible) {
                 var filteredActual = actual.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
                 var filteredExpected = expected.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
 
-                var onlyInActual = filteredActual.Except(filteredExpected);
-                var onlyInExpected = filteredExpected.Except(filteredActual);
-
-                onlyInActual.Count().ShouldBeEquivalentTo(0);
-                onlyInExpected.Count().ShouldBeEquivalentTo(0);
+                filteredActual.Should().BeEquivalentTo(filteredExpected);
             }
 
             actual.Children.Count.ShouldBeEquivalentTo(expected.Children.Count);
 
-            var sortedActualChildren = actual.Children.OrderBy(c => c.Name);
-            var sortedExpectedChildren = expected.Children.OrderBy(c => c.Name);
+            if (visible) {
+                var sortedActualChildren = actual.Children.OrderBy(c => c.Name).ToList();
+                var sortedExpectedChildren = expected.Children.OrderBy(c => c.Name).ToList();
 
-            for (int i = 0; i < actual.Children.Count; i++) {
-                CompareVisualTree(sortedActualChildren.ElementAt(i), sortedExpectedChildren.ElementAt(i), compareProperty);
+                sortedActualChildren.Count.Should().Be(sortedExpectedChildren.Count);
+
+                for (int i = 0; i < actual.Children.Count; i++) {
+                    CompareVisualTree(sortedActualChildren[i], sortedExpectedChildren[i], compareProperty);
+                }
             }
         }
 

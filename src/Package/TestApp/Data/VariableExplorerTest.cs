@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             }
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1283")]
+        [Test]
         [Category.Interactive]
         public void VariableExplorer_SimpleDataTest() {
             VisualTreeObject actual = null;
