@@ -11,6 +11,15 @@ using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Editor {
     public static class FunctionDefinitionExtensions {
+        public static IFunctionInfo MakeFunctionInfo(this IFunctionDefinition fd, string functionName) {
+            if (fd != null) {
+                var fi = new FunctionInfo(functionName);
+                fi.Signatures = new ISignatureInfo[] { fd.MakeSignature(functionName) };
+                return fi;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Constructs function signature based on function name and 
         /// the function definitions found in the AST.

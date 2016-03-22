@@ -52,8 +52,10 @@
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
     <Compile Include="AST\Expressions\NullExpression.cs" />
     <Compile Include="AST\Extensions\AstRootExtensions.cs" />
+    <Compile Include="AST\Extensions\FunctionInfo.cs" />
     <Compile Include="AST\Extensions\ScopeExtensions.cs" />
     <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
+    <Compile Include="AST\Extensions\StatementExtensions.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
     <Compile Include="AST\Functions\FunctionDefinition.cs" />

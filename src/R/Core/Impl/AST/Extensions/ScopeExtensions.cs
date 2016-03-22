@@ -5,9 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -66,27 +63,12 @@ namespace Microsoft.R.Core.AST {
                     yield break;
                 }
 
-                var c = es.Expression.Children;
-                if (c.Count == 1) {
-                    var op = c[0] as IOperator;
-                    if (op != null) {
-                        Variable v = null;
-
-                        if (op.OperatorType == OperatorType.LeftAssign) {
-                            v = op.LeftOperand as Variable;
-                        } else if (op.OperatorType == OperatorType.RightAssign) {
-                            v = op.LeftOperand as Variable;
-                        }
-
-                        if (v != null) {
-                            var fd = op.RightOperand as IFunctionDefinition;
-                            if (fd != null) {
-                                v.Value = new RFunction(fd);
-                            }
-                            yield return v;
-                        }
-                    }
+                Variable v;
+                var fd = es.GetFunctionDefinition(out v);
+                if (fd != null) {
+                    v.Value = new RFunction(fd);
                 }
+                yield return v;
             }
         }
 

@@ -5,7 +5,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Editor {
     public static class AstRootExtensions {
@@ -15,12 +14,7 @@ namespace Microsoft.R.Editor {
                 return null;
             }
             var fd = scope.FindFunctionByName(functionName, position)?.Value as IFunctionDefinition;
-            if (fd != null) {
-                var fi = new FunctionInfo(functionName);
-                fi.Signatures = new ISignatureInfo[] { fd.MakeSignature(functionName) };
-                return fi;
-            }
-            return null;
+            return fd.MakeFunctionInfo(functionName);
         }
     }
 }
