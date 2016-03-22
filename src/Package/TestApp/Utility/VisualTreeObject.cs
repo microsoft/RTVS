@@ -3,8 +3,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
@@ -28,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 visualTreeObj = new VisualTreeObject();
 
                 visualTreeObj.Name = o.GetType().Name;
-                visualTreeObj.Properties = VisualTreeProperty.GetProperties(o);
+                visualTreeObj.Properties = VisualTreeProperty.GetProperties(o).Where(p => SupportedWpfProperties.IsSupported(p.Name)).ToList();
                 visualTreeObj.Children = GetChildren(o);
             });
 

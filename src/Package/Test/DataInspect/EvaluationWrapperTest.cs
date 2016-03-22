@@ -350,7 +350,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1284")]
+        [Test]
         [Category.Variable.Explorer]
         public async Task MatrixLargeCellTest() {
             var script = "matrix.largecell <- matrix(list(as.double(1:5000), 2, 3, 4), nrow = 2, ncol = 2);";
