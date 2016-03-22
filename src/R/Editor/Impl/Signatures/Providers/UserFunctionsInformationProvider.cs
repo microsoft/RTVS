@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
+using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Variables;
@@ -31,17 +32,20 @@ namespace Microsoft.R.Editor.Signatures.Providers {
 
         private ISignatureInfo MakeSignature(string functionName, IFunctionDefinition fd) {
             var si = new SignatureInfo(functionName);
-            var args = new List<IArgumentInfo>();
+            si.Arguments = new List<IArgumentInfo>();
             foreach (var arg in fd.Arguments) {
                 var na = arg as NamedArgument;
                 if (na != null) {
-                    args.Add(new ArgumentInfo(na.Name));
+                    si.Arguments.Add(new ArgumentInfo(na.Name));
                 } else {
                     var ea = arg as ExpressionArgument;
-                    if (ea != null && ea.Children.Count == 1) {
-                        var v = ea.Children[0] as Variable;
-                        if (v != null) {
-                            args.Add(new ArgumentInfo(v.Name));
+                    if (ea != null && ea.Children.Count > 0) {
+                        var exp = ea.Children[0] as IExpression;
+                        if (ecp != null && exp.Children.Count > 0) {
+                            var v = exp.Children[0] as Variable;
+                            if (v != null) {
+                                si.Arguments.Add(new ArgumentInfo(v.Name));
+                            }
                         }
                     }
                 }

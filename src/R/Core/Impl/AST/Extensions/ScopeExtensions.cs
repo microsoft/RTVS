@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.R.Core.AST.DataTypes;
+using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Scopes;
@@ -50,7 +51,7 @@ namespace Microsoft.R.Core.AST {
                             v = op.LeftOperand as Variable;
                         }
                         if (v != null) {
-                            var fd = op.GetFunctionDefinition();
+                            var fd = op.RightOperand as IFunctionDefinition;
                             if (fd != null) {
                                 v.Value = new RFunction(fd);
                             }

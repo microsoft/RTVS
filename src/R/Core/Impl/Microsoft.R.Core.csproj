@@ -51,7 +51,6 @@
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
     <Compile Include="AST\Expressions\NullExpression.cs" />
-    <Compile Include="AST\Extensions\OperatorExtensions.cs" />
     <Compile Include="AST\Extensions\ScopeExtensions.cs" />
     <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
