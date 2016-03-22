@@ -20,6 +20,6 @@ namespace Microsoft.R.Editor.Signatures.Definitions {
         /// passing <paramref name="parameter"/> as an argument. Callback can then re-trigger
         /// the signature session.
         /// </returns>
-        IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
+        IFunctionInfo GetFunctionInfo(RSignatureHelpContext context, string functionName, Action<object> infoReadyCallback = null, object parameter = null);
     }
 }

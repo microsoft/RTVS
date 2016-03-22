@@ -13,6 +13,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures.Definitions;
+using Microsoft.R.Editor.Signatures.Providers;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -21,7 +22,6 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
-        private static IEnumerable<Lazy<IFunctionInformationProvider>> _informationProviders;
         private ITextBuffer _textBuffer;
 
         public SignatureHelpSource(ITextBuffer textBuffer) {
@@ -58,9 +58,17 @@ namespace Microsoft.R.Editor.Signatures {
                 int end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
 
                 ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
+                IFunctionInfo functionInfo = null;
 
-                // Get collection of function signatures from documentation (parsed RD file)
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                // First try local function
+                var ufip = new UserFunctionsInformationProvider();
+                functionInfo = ufip.GetFunctionInfo(new RSignatureHelpContext(session, _textBuffer, ast, position), parametersInfo.FunctionName);
+                if (functionInfo == null) {
+                    // Then try package functions
+                    // Get collection of function signatures from documentation (parsed RD file)
+                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                }
+
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo signatureInfo in functionInfo.Signatures) {
                         ISignature signature = CreateSignature(session, functionInfo, signatureInfo, applicableToSpan, ast, position);
@@ -110,7 +118,7 @@ namespace Microsoft.R.Editor.Signatures {
             sig.Content = signatureString;
             sig.ApplicableToSpan = span;
 
-            sig.Documentation = functionInfo.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+            sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
             for (int i = 0; i < signatureInfo.Arguments.Count; i++) {
@@ -147,15 +155,5 @@ namespace Microsoft.R.Editor.Signatures {
             }
         }
         #endregion
-
-        private static IEnumerable<Lazy<IFunctionInformationProvider>> CompletionProviders {
-            get {
-                if (_informationProviders == null) {
-                    _informationProviders = ComponentLocator<IFunctionInformationProvider>.ImportMany();
-                }
-                return _informationProviders;
-            }
-        }
-
     }
 }

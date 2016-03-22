@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Operators.Definitions;
@@ -57,6 +59,12 @@ namespace Microsoft.R.Core.AST {
                     }
                 }
             }
+        }
+
+        public static RFunction FindFunctionByName(this IScope scope, string name) {
+            var v = scope.GetApplicableVariables().FirstOrDefault(x =>
+                x.Name.Equals(name, StringComparison.Ordinal) && x.Value is RFunction);
+            return v?.Value as RFunction;
         }
     }
 }

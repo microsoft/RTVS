@@ -152,6 +152,7 @@
     <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
     <Compile Include="Signatures\Definitions\IFunctionInformationProvider.cs" />
+    <Compile Include="Signatures\Definitions\RSignatureHelpContext.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\Providers\UserFunctionsInformationProvider.cs" />
     <Compile Include="Signatures\Providers\PackageFunctionsInformationProvider.cs" />
