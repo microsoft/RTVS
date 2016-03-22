@@ -82,7 +82,7 @@ getEnvRepr <- function(env, higherThanGlobal) {
       for (i in 1:nframe) {
         frame <- sys.frame(i)
         if (identical(env, frame)) {
-          envRepr <- list(name = deparse(sys.call(i)[[1]]), higherThanGlobal = TRUE);
+          envRepr <- list(name = deparse(sys.call(i)[[1]]), frameindex = i, higherThanGlobal = TRUE);
           break;
         }
       }
