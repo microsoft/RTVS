@@ -60,9 +60,8 @@ namespace Microsoft.R.Editor.Signatures {
                 ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
                 IFunctionInfo functionInfo = null;
 
-                // First try local function
-                var ufip = new UserFunctionsInformationProvider();
-                functionInfo = ufip.GetFunctionInfo(new RSignatureHelpContext(session, _textBuffer, ast, position), parametersInfo.FunctionName);
+                // First try user-defined function
+                functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
                 if (functionInfo == null) {
                     // Then try package functions
                     // Get collection of function signatures from documentation (parsed RD file)

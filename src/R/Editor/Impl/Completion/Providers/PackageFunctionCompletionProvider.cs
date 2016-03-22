@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// Provides list of functions from installed packages
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
-    public class FunctionCompletionProvider : IRCompletionListProvider {
+    public class PackageFunctionCompletionProvider : IRCompletionListProvider {
         private static readonly string[] _preloadPackages = new string[]
         {
             "stats",

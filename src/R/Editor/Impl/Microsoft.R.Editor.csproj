@@ -111,7 +111,7 @@
     <Compile Include="Completion\Providers\FilesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
-    <Compile Include="Completion\Providers\FunctionCompletionProvider.cs" />
+    <Compile Include="Completion\Providers\PackageFunctionCompletionProvider.cs" />
     <Compile Include="Completion\Providers\KeywordCompletionProvider.cs" />
     <Compile Include="Completion\Providers\WorkspaceVariableCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSet.cs" />
@@ -123,6 +123,8 @@
     <Compile Include="Document\DocumentFactory.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
+    <Compile Include="Extensions\AstRootExtensions.cs" />
+    <Compile Include="Extensions\FunctionDefinitionExtensions.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />
     <Compile Include="Formatting\Data\ClipboardDataProvider.cs" />
     <Compile Include="Formatting\FormatDocumentCommand.cs" />
@@ -154,7 +156,6 @@
     <Compile Include="Signatures\Definitions\IFunctionInformationProvider.cs" />
     <Compile Include="Signatures\Definitions\RSignatureHelpContext.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
-    <Compile Include="Signatures\Providers\UserFunctionsInformationProvider.cs" />
     <Compile Include="Signatures\Providers\PackageFunctionsInformationProvider.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
     <Compile Include="Signatures\SignatureHelp2.cs" />

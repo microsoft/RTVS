@@ -13,7 +13,9 @@ using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completion.Providers {
     /// <summary>
-    /// Provides list of functions from installed packages
+    /// Provides list of functions and variables applicable to the current scope and 
+    /// the caret position. Enumerates variables and function that appear before the
+    /// current caret position as well as those declared in outer scopes.
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
     public class UserVariablesCompletionProvider : IRCompletionListProvider {
@@ -29,7 +31,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             var ast = context.AstRoot;
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(context.Position);
 
-            var variables = scope.GetApplicableVariables();
+            var variables = scope.GetApplicableVariables(context.Position);
             foreach (var v in variables) {
                 RCompletion completion;
                 RFunction f = v.Value as RFunction;
