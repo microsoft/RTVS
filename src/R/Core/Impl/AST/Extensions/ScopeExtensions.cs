@@ -58,17 +58,20 @@ namespace Microsoft.R.Core.AST {
         /// <param name="scope">Scope to look into</param>
         /// <param name="position">Only variables before this position will be enumerated</param>
         public static IEnumerable<Variable> GetScopeVariables(this IScope scope, int position) {
-            foreach (IExpressionStatement es in scope.Children) {
-                if (es.Start >= position) {
-                    yield break;
-                }
+            foreach (var c in scope.Children) {
+                var es = c as IExpressionStatement;
+                if (es != null) {
+                    if (es.Start >= position) {
+                        yield break;
+                    }
 
-                Variable v;
-                var fd = es.GetFunctionDefinition(out v);
-                if (fd != null) {
-                    v.Value = new RFunction(fd);
+                    Variable v;
+                    var fd = es.GetFunctionDefinition(out v);
+                    if (fd != null && v != null) {
+                        v.Value = new RFunction(fd);
+                        yield return v;
+                    }
                 }
-                yield return v;
             }
         }
 
@@ -78,7 +81,8 @@ namespace Microsoft.R.Core.AST {
         /// </summary>
         /// <returns></returns>
         public static RFunction FindFunctionByName(this IScope scope, string name, int position) {
-            var v = scope.GetApplicableVariables(position).FirstOrDefault(x =>
+            var variables = scope.GetApplicableVariables(position);
+            var v = variables.FirstOrDefault(x =>
                 x.Name.Equals(name, StringComparison.Ordinal) && x.Value is RFunction);
             return v?.Value as RFunction;
         }

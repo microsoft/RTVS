@@ -10,11 +10,8 @@ namespace Microsoft.R.Editor {
     public static class AstRootExtensions {
         public static IFunctionInfo GetUserFunctionInfo(this AstRoot ast, string functionName, int position) {
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            if (scope == null) {
-                return null;
-            }
-            var fd = scope.FindFunctionByName(functionName, position)?.Value as IFunctionDefinition;
-            return fd.MakeFunctionInfo(functionName);
+            var fd = scope?.FindFunctionByName(functionName, position)?.Value as IFunctionDefinition;
+            return fd?.MakeFunctionInfo(functionName);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Microsoft.R.Core.AST {
         public static IScope GetScope(this IAstNode node) {
             var n = node.Parent;
             while (!(n is IScope)) {
-                node = node.Parent;
+                n = n.Parent;
             }
             return n as IScope;
         }

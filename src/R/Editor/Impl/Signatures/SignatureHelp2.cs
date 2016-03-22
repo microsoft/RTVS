@@ -4,6 +4,7 @@
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.Completion;
 using Microsoft.VisualStudio.Text;
@@ -101,6 +102,13 @@ namespace Microsoft.R.Editor.Signatures
             if (functionCall != null && functionCall.Children.Count > 0)
             {
                 functionVariable = functionCall.Children[0] as Variable;
+                if(functionVariable == null) {
+                    // Might be in a namespace
+                    var op = functionCall.Children[0] as IOperator;
+                    if(op != null && op.OperatorType == OperatorType.Namespace) {
+                        functionVariable = op.RightOperand as Variable;
+                    }
+                }
                 return functionVariable != null;
             }
 

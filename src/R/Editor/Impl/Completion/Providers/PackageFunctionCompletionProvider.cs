@@ -60,8 +60,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 IEnumerable<INamedItemInfo> functions = pkg.Functions;
                 if (functions != null) {
                     foreach (INamedItemInfo function in functions) {
-                        bool? isSnippet = infoSource?.IsSnippet(function.Name);
-                        if (!isSnippet.HasValue || !isSnippet.Value) {
+                        bool isSnippet = false;
+                        // Snippets are suppressed if user typed namespace
+                        if (!context.IsInNameSpace() && infoSource != null) {
+                            isSnippet = infoSource.IsSnippet(function.Name);
+                        }
+                        if (!isSnippet) {
                             ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
                             var completion = new RCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph);
                             completions.Add(completion);
@@ -138,7 +142,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<IPackageInfo> packages = new List<IPackageInfo>();
             LoadedPackagesProvider?.Initialize();
 
-            IEnumerable <string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
             IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages));
 
