@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
             bool visible = true;
             
             // compare
-            actual.Name.Should().BeEquivalentTo(expected.Name);
+            actual.Name.Should().Be(expected.Name);
 
             var visibility = actual.Properties.FirstOrDefault(p => p.Name == "Visibility");
             if (visibility != null) {
@@ -49,21 +49,19 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 var filteredActual = actual.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
                 var filteredExpected = expected.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
 
-                var onlyInActual = filteredActual.Except(filteredExpected);
-                var onlyInExpected = filteredExpected.Except(filteredActual);
-
-                onlyInActual.Count().Should().Be(0);
-                onlyInExpected.Count().Should().Be(0);
+                filteredActual.Should().BeEquivalentTo(filteredExpected);
             }
 
             actual.Children.Count.ShouldBeEquivalentTo(expected.Children.Count);
 
             if (visible) {
-                var sortedActualChildren = actual.Children.OrderBy(c => c.Name);
-                var sortedExpectedChildren = expected.Children.OrderBy(c => c.Name);
+                var sortedActualChildren = actual.Children.OrderBy(c => c.Name).ToList();
+                var sortedExpectedChildren = expected.Children.OrderBy(c => c.Name).ToList();
+
+                sortedActualChildren.Count.Should().Be(sortedExpectedChildren.Count);
 
                 for (int i = 0; i < actual.Children.Count; i++) {
-                    CompareVisualTree(sortedActualChildren.ElementAt(i), sortedExpectedChildren.ElementAt(i), compareProperty);
+                    CompareVisualTree(sortedActualChildren[i], sortedExpectedChildren[i], compareProperty);
                 }
             }
         }
