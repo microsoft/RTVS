@@ -54,6 +54,38 @@
         <EventSetter Event="ImageFailed" Handler="PackageIconImage_ImageFailed"/>
     </Style>
 
+    <Rectangle x:Key="IconInstall">
+        <Rectangle.Fill>
+            <DrawingBrush>
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M6.0003,-0.000199999999999534L6.0003,4.9998 2.9993,1.9998 2.9993,8.9998 6.0003,12.0008 2.9993,12.0008 2.9993,15.9998 12.9993,15.9998 12.9993,12.0008 10.0003,12.0008 12.9993,8.9998 12.9993,1.9998 10.0003,4.9998 10.0003,-0.000199999999999534z" />
+                            <GeometryDrawing Brush="#FF414141" Geometry="F1M4,15L12,15 12,13 4,13z M9,8L9,1 7,1 7,8 4,5 4,8 8,12 12,8 12,5z" />
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+        </Rectangle.Fill>
+    </Rectangle>
+
+    <Rectangle x:Key="IconUninstall">
+        <Rectangle.Fill>
+            <DrawingBrush>
+                <DrawingBrush.Drawing>
+                    <DrawingGroup>
+                        <DrawingGroup.Children>
+                            <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                            <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.5254,10.8418L3.6074,15.1658C3.1354,15.6428 2.5314,15.8908 1.8744,15.8848 0.688400000000001,15.8748 0.000399999999999956,14.4528 0.000399999999999956,14.4528L0.000399999999999956,11.9998 4.4144,7.9568 2.1594,5.7018C1.1424,4.6728 1.3394,3.1068 2.1594,2.2878 2.5784,1.8658 3.2314,1.6118 3.9034,1.6118 4.5894,1.6118 5.2144,1.8758 5.6184,2.3358L7.5004,4.9998 12.5414,1.4948 15.5004,1.4998 10.1744,8.0418 16.0004,15.9998 14.0004,15.9998z" />
+                            <GeometryDrawing Brush="#FFA1250C" Geometry="F1M8.9629,7.9951L13.4999,2.5001 12.4999,2.5001 7.4629,6.4951 4.9629,2.9951C4.4839,2.4481 3.4339,2.5201 2.9629,2.9951 2.4759,3.4821 2.3789,4.4031 2.9629,4.9951L5.9629,7.9951 0.962899999999999,12.4951C0.4239,13.0371 0.462899999999999,13.9951 0.962899999999999,14.4951 1.4629,14.9951 2.4249,15.0351 2.9629,14.4951L7.5359,9.4471 13.9629,14.9951 14.4629,14.9881z" />
+                        </DrawingGroup.Children>
+                    </DrawingGroup>
+                </DrawingBrush.Drawing>
+            </DrawingBrush>
+        </Rectangle.Fill>
+    </Rectangle>
+    
     <Rectangle x:Key="IconInstalledIndicator">
         <Rectangle.Fill>
             <DrawingBrush>

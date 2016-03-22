@@ -151,6 +151,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Install {0} version {1}..
+        /// </summary>
+        public static string PackageManager_InstallButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_InstallButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Installed.
         /// </summary>
         public static string PackageManager_Installed {
@@ -277,11 +286,29 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Uninstall this package..
+        /// </summary>
+        public static string PackageManager_UninstallButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_UninstallButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update available.
         /// </summary>
         public static string PackageManager_UpdateAvailableToolTip {
             get {
                 return ResourceManager.GetString("PackageManager_UpdateAvailableToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update {0} to version {1}..
+        /// </summary>
+        public static string PackageManager_UpdateButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_UpdateButtonToolTip", resourceCulture);
             }
         }
         

@@ -21,5 +21,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.Xaml {
         public PackageItemControl() {
             InitializeComponent();
         }
+
+        private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
+            throw new NotImplementedException();
+        }
+
+        private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
+            throw new NotImplementedException();
+        }
+
+        private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {
+            throw new NotImplementedException();
+        }
     }
 }

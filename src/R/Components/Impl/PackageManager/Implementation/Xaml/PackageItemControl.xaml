@@ -122,7 +122,7 @@
                             <Border x:Name="_installedIndicator" Grid.Column="0" Width="12" Height="12" Visibility="Visible" VerticalAlignment="Center" Child="{StaticResource IconGrayInstalledIndicator}" />
 
                             <!-- installed version -->
-                            <TextBlock x:Name="_installedVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center" Visibility="Hidden"
+                            <TextBlock x:Name="TextInstalledVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center" Visibility="Hidden"
                                        Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}"
                                        ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
                         </Grid>
@@ -134,47 +134,40 @@
                         </TextBlock>
 
                         <!-- uninstall button -->
-                        <Button x:Name="_uninstallButton" Style="{StaticResource ButtonStyle}" Grid.Row="0" Grid.Column="1" Command="{x:Static wpf:Commands.UninstallPackageCommand}"
-                                CommandParameter="{Binding}" Visibility="Hidden" ToolTip="{x:Static wpf:Resources.ToolTip_UninstallButton}">
-                            <wpf:UninstallButton Width="16" Height="16" />
+                        <Button x:Name="ButtonUninstall" Style="{StaticResource ButtonStyle}" Grid.Row="0" Grid.Column="1" Visibility="Hidden"
+                                Click="ButtonUninstall_Click" ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
+                            <Border Child="{StaticResource IconUninstall}" Width="16" Height="16" />
                         </Button>
 
                         <!-- install button. It occupies the same position of the install button -->
-                        <Button x:Name="_installButton" Grid.Row="0" Grid.Column="1" Style="{StaticResource ButtonStyle}" 
-                                Command="{x:Static wpf:Commands.InstallPackageCommand}" CommandParameter="{Binding}" Visibility="Hidden">
+                        <Button x:Name="ButtonInstall" Grid.Row="0" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" Visibility="Hidden">
                             <Button.ToolTip>
-                                <MultiBinding Converter="{StaticResource StringFormatConverter}">
-                                    <Binding Source="{x:Static wpf:Resources.ToolTip_InstallButton}" />
+                                <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
                                     <Binding Path="Id" />
-                                    <Binding Path="LatestVersion" Converter="{StaticResource VersionToStringConverter}" />
+                                    <Binding Path="LatestVersion" />
                                 </MultiBinding>
                             </Button.ToolTip>
-                            <wpf:InstallButton Width="16" Height="16" />
+                            <Border Child="{StaticResource IconInstall}" Width="16" Height="16" />
                         </Button>
 
                         <!-- row 1: latest version and the update button-->
                         <!-- version to update to -->
-                        <TextBlock x:Name="_versionToUpdateTo" Grid.Row="1" Grid.Column="0" Margin="2,5,4,0" VerticalAlignment="Center" TextAlignment="Right" Visibility="Hidden"
-                                               Text="{Binding LatestVersion, Converter={StaticResource VersionToStringConverter}, StringFormat={}v{0}}">
+                        <TextBlock x:Name="TextVersionToUpdateTo" Grid.Row="1" Grid.Column="0" Margin="2,5,4,0" VerticalAlignment="Center" TextAlignment="Right" Visibility="Hidden"
+                                   Text="{Binding Path=LatestVersion, StringFormat={}v{0}}">
                             <TextBlock.ToolTip>
-                                <MultiBinding Converter="{StaticResource StringFormatConverter}">
-                                    <Binding Source="{x:Static wpf:Resources.ToolTip_LatestVersion}" />
-                                    <Binding Path="LatestVersion" Converter="{StaticResource VersionToStringConverter}" />
-                                </MultiBinding>
+                                <Binding Path="LatestVersion" StringFormat="{x:Static components:Resources.PackageManager_LatestVersionToolTip}" />
                             </TextBlock.ToolTip>
                         </TextBlock>
 
                         <!-- update button -->
-                        <Button x:Name="_updateButton" Grid.Row="1" Grid.Column="2" Style="{StaticResource ButtonStyle}" Margin="0,5,0,0" 
-                                            Command="{x:Static wpf:Commands.InstallPackageCommand}" CommandParameter="{Binding}" Visibility="Hidden">
+                        <Button x:Name="ButtonUpdate" Grid.Row="1" Grid.Column="1" Style="{StaticResource ButtonStyle}" Margin="0,5,0,0" Click="ButtonUpdate_Click" Visibility="Hidden">
                             <Button.ToolTip>
-                                <MultiBinding Converter="{StaticResource StringFormatConverter}">
-                                    <Binding Source="{x:Static wpf:Resources.ToolTip_UpdateButton}" />
+                                <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
                                     <Binding Path="Id" />
-                                    <Binding Path="LatestVersion" Converter="{StaticResource VersionToStringConverter}" />
+                                    <Binding Path="LatestVersion" />
                                 </MultiBinding>
                             </Button.ToolTip>
-                            <wpf:UpdateButton Width="16" Height="16" />
+                            <Border Child="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
                         </Button>
                     </Grid>
                 </Grid>
@@ -183,35 +176,25 @@
             <!-- triggers -->
             <ControlTemplate.Triggers>
                 <!-- The install button is visible when
-                                     * IsSolution is false;
-                                     * Status is NotInstalled;
-                                     * mouse hovers over the control;
-                                -->
+                    * IsSolution is false;
+                    * Status is NotInstalled;
+                    * mouse hovers over the control;
+                -->
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
                         <Condition Binding="{Binding Status}" Value="NotInstalled" />
-                        <Condition Binding="{Binding IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_installButton" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ButtonInstall" Property="Visibility" Value="Visible" />
                 </MultiDataTrigger>
-
-                <!-- The install button is collapsed when IsSolution is true -->
-                <DataTrigger Binding="{Binding IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="True">
-                    <Setter TargetName="_installButton" Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
 
                 <!-- installed version is visible when
-                                     * IsSolution is false;
-                                     * InstalledVersion is not null;
-                                -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding InstalledVersion, Converter={x:Static wpf:Converters.NullIsTrue}}" Value="False" />
-                        <Condition Binding="{Binding IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_installedVersion" Property="Visibility" Value="Visible" />
-                </MultiDataTrigger>
+                    * IsSolution is false;
+                    * InstalledVersion is not null;
+                -->
+                <DataTrigger Binding="{Binding InstalledVersion, Converter={x:Static wpf:Converters.NullIsTrue}}" Value="False">
+                    <Setter TargetName="TextInstalledVersion" Property="Visibility" Value="Visible" />
+                </DataTrigger>
 
                 <!-- version to install is visible when
                                      * Status is NotInstalled
@@ -225,53 +208,34 @@
                     <Setter TargetName="_versionToInstall" Property="Visibility" Value="Visible" />
                 </MultiDataTrigger>
 
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="True" />
-                        <Condition Binding="{Binding Path=LatestVersion, Converter={x:Static wpf:Converters.NullIsTrue}}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_versionToInstall" Property="Visibility" Value="Visible" />
-                </MultiDataTrigger>
-
                 <!-- version to update to is visible when
-                                     * Status is UpdateAvailable;
-                                     * IsSolution is false
-                                -->
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <Condition Binding="{Binding Path=Status}" Value="UpdateAvailable" />
-                        <Condition Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_versionToUpdateTo" Property="Visibility" Value="Visible" />
-                </MultiDataTrigger>
+                    * Status is UpdateAvailable;
+                    * IsSolution is false
+                -->
+                <DataTrigger Binding="{Binding Path=Status}" Value="UpdateAvailable">
+                    <Setter TargetName="TextVersionToUpdateTo" Property="Visibility" Value="Visible" />
+                </DataTrigger>
 
                 <!-- The uninstall button is visible when
-                                     * IsSolution is false;
-                                     * Status is Installed or UpdateAvailable;
-                                     * mouse hovers over the control;
-                                     Since there is no OR condition in triggers, we need to use two triggers instead.
-                                -->
+                    * IsSolution is false;
+                    * Status is Installed or UpdateAvailable;
+                    * mouse hovers over the control;
+                    Since there is no OR condition in triggers, we need to use two triggers instead.
+                -->
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
                         <Condition Binding="{Binding Path=Status}" Value="Installed" />
-                        <Condition Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_uninstallButton" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ButtonUninstall" Property="Visibility" Value="Visible" />
                 </MultiDataTrigger>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
                         <Condition Binding="{Binding Path=Status}" Value="UpdateAvailable" />
-                        <Condition Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_uninstallButton" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ButtonUninstall" Property="Visibility" Value="Visible" />
                 </MultiDataTrigger>
-
-                <!-- The uninstall button is collapsed when IsSolution is true -->
-                <DataTrigger Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="True">
-                    <Setter TargetName="_uninstallButton" Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
 
                 <!-- The update button is visible when
                         * IsSolution is false;
@@ -282,23 +246,14 @@
                     <MultiDataTrigger.Conditions>
                         <Condition Binding="{Binding Path=IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true" />
                         <Condition Binding="{Binding Path=Status}" Value="UpdateAvailable" />
-                        <Condition Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="False" />
                     </MultiDataTrigger.Conditions>
-                    <Setter TargetName="_updateButton" Property="Visibility" Value="Visible" />
+                    <Setter TargetName="ButtonUpdate" Property="Visibility" Value="Visible" />
                 </MultiDataTrigger>
-
-                <!-- The update button is collapsed when IsSolution is true -->
-                <DataTrigger Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="True">
-                    <Setter TargetName="_updateButton" Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
 
                 <!-- The installed version indicator becomes invisible when
                     * IsSolution is true; or
                     * InstalledVersion is null;
                 -->
-                <DataTrigger Binding="{Binding Path=IsSolution, RelativeSource={RelativeSource AncestorType={x:Type xaml:InfiniteScrollList}}}" Value="true">
-                    <Setter TargetName="_installedIndicator" Property="Visibility" Value="Collapsed" />
-                </DataTrigger>
                 <DataTrigger Binding="{Binding Path=InstalledVersion}" Value="{x:Null}">
                     <Setter TargetName="_installedIndicator" Property="Visibility" Value="Collapsed" />
                 </DataTrigger>

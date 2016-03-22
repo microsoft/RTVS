@@ -195,4 +195,13 @@
   <data name="PackageManager_UpdateAvailableToolTip" xml:space="preserve">
     <value>Update available</value>
   </data>
+  <data name="PackageManager_InstallButtonToolTip" xml:space="preserve">
+    <value>Install {0} version {1}.</value>
+  </data>
+  <data name="PackageManager_UninstallButtonToolTip" xml:space="preserve">
+    <value>Uninstall this package.</value>
+  </data>
+  <data name="PackageManager_UpdateButtonToolTip" xml:space="preserve">
+    <value>Update {0} to version {1}.</value>
+  </data>
 </root>
