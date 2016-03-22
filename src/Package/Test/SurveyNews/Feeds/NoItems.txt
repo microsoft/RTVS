@@ -1,0 +1,5 @@
+{
+ "cannotvoteagain": [], 
+ "notvoted": [], 
+ "canvoteagain": []
+}

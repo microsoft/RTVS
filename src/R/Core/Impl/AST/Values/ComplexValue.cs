@@ -14,7 +14,7 @@ namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents complex number
     /// </summary>
-    public sealed class ComplexValue : RValueTokenNode<RComplex> {
+    public sealed class ComplexValue : RValueTokenNode<RComplex>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
@@ -61,7 +61,7 @@ namespace Microsoft.R.Core.AST.Values {
             }
 
             Complex complex = new Complex(realPart, imaginaryPart);
-            NodeValue = new RComplex(complex);
+            Value = new RComplex(complex);
             return base.Parse(context, parent);
         }
     }

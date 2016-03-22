@@ -464,12 +464,11 @@ namespace Microsoft.R.Core.AST.Expressions {
                 // and a and b should be on the stack along with * on the operator stack.
                 // Repeat until there are no more higher precendece operators on the stack.
 
-                // If operator cas right associativity (exponent, indexer, function call),
-                // it needs to be processed right away. Consider the expression a~b~c. 
-                // If the operator ~ has left associativity, this expression is interpreted 
-                // as (a~b)~c. If the operator has right associativity, the expression is
-                // interpreted as a~(b~c). a^b^c = a^(b^c). Left-associated indexer works
-                // like x[1][2] = (x[1])[2]
+                // If operator cas right associativity (exponent), it needs to be processed right away. 
+                // Consider the expression a~b~c. If the operator ~ has left associativity, this 
+                // expression is interpreted as (a~b)~c. If the operator has right associativity, 
+                // the expression is interpreted as a~(b~c). a^b^c = a^(b^c). 
+                // Left -associated indexer works like x[1][2] = (x[1])[2]
                 errorType = this.ProcessHigherPrecendenceOperators(context, currentOperator);
             }
 

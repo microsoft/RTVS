@@ -9,9 +9,9 @@ namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents NULL value
     /// </summary>
-    public sealed class NullValue : RValueTokenNode<RNull> {
+    public sealed class NullValue : RValueTokenNode<RNull>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
-            NodeValue = new RNull();
+            Value = new RNull();
             return base.Parse(context, parent);
         }
     }

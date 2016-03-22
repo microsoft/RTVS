@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdCopyItemPath) {
                 var path = nodes.GetSingleNodePath();
-                var directory = await _interactiveWorkflowProvider.GetOrCreate().RSession.GetRShortenedPathNameAsync(path);
+                var directory = await _interactiveWorkflowProvider.GetOrCreate().RSession.MakeRelativeToRUserDirectoryAsync(path);
                 if (!string.IsNullOrEmpty(directory)) {
                     await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
                         try {

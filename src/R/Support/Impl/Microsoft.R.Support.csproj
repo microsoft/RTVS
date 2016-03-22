@@ -128,6 +128,7 @@
     <Compile Include="RD\Tokens\RdTokenType.cs" />
     <Compile Include="Settings\Definitions\HelpBrowser.cs" />
     <Compile Include="Settings\Definitions\IRToolsSettings.cs" />
+    <Compile Include="Settings\Definitions\SurveyNewsPolicy.cs" />
     <Compile Include="Settings\RToolsSettings.cs" />
     <Compile Include="Utility\AsyncData.cs" />
   </ItemGroup>

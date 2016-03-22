@@ -17,7 +17,7 @@ namespace Microsoft.R.Core.AST.Functions {
     /// 'function(a, b) { }'
     /// </summary>
     [DebuggerDisplay("Function Definition [{Start}...{End})")]
-    public class FunctionDefinition : RValueNode<RFunction>, IFunctionDefinition {
+    public class FunctionDefinition : RValueNode, IFunctionDefinition {
         #region IKeyword
         public TokenNode Keyword { get; private set; }
 

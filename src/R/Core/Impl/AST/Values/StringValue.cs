@@ -11,14 +11,14 @@ namespace Microsoft.R.Core.AST.Values {
     /// <summary>
     /// Represents string constant
     /// </summary>
-    public sealed class StringValue : RValueTokenNode<RString> {
+    public sealed class StringValue : RValueTokenNode<RString>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
 
             Debug.Assert(currentToken.TokenType == RTokenType.String);
 
-            NodeValue = new RString(text);
+            Value = new RString(text);
             return base.Parse(context, parent);
         }
     }

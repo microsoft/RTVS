@@ -46,10 +46,14 @@
     <Compile Include="AST\DataTypes\RFunction.cs" />
     <Compile Include="AST\DataTypes\RMissing.cs" />
     <Compile Include="AST\DataTypes\RNull.cs" />
+    <Compile Include="AST\Definitions\ILiteralNode.cs" />
     <Compile Include="AST\Definitions\PositionType.cs" />
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
     <Compile Include="AST\Expressions\NullExpression.cs" />
+    <Compile Include="AST\Extensions\OperatorExtensions.cs" />
+    <Compile Include="AST\Extensions\ScopeExtensions.cs" />
+    <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
     <Compile Include="AST\Functions\FunctionDefinition.cs" />
@@ -74,11 +78,11 @@
     <Compile Include="AST\Statements\EmptyStatement.cs" />
     <Compile Include="AST\Statements\Functions\FunctionStatement.cs" />
     <Compile Include="AST\Statements\KeywordExpression.cs" />
-    <Compile Include="AST\Statements\KeywordFunctionStatement.cs" />
     <Compile Include="AST\Utility\AstWriter.cs" />
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
     <Compile Include="AST\Variables\Variable.cs" />
+    <Compile Include="DataTips\RDataTip.cs" />
     <Compile Include="Evaluation\Definitions\ICodeEvaluator.cs" />
     <Compile Include="AST\Arguments\ArgumentList.cs" />
     <Compile Include="AST\Arguments\EllipsisArgument.cs" />
