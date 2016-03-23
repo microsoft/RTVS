@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
     public static class ProjectTreeExtensions {
@@ -53,7 +54,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
         public static string GetSelectedFolderPath(this IImmutableSet<IProjectTree> nodes, UnconfiguredProject unconfiguredProject) {
             if (nodes.Count == 1) {
                 var n = nodes.First();
-                if (n.Root == n) {
+                if (n.IsRoot()) {
                     return Path.GetDirectoryName(unconfiguredProject.FullPath);
                 }
                 return nodes.GetNodeFolderPath();
