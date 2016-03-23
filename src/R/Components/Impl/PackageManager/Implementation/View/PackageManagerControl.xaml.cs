@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Microsoft.R.Components.PackageManager.ViewModel;
 
-namespace Microsoft.R.Components.PackageManager.Implementation.Xaml {
+namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// <summary>
     /// Interaction logic for PackageManagerControl.xaml
     /// </summary>
     public partial class PackageManagerControl : UserControl {
+        private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
+
         public PackageManagerControl() {
             InitializeComponent();
         }

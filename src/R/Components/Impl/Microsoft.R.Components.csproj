@@ -119,33 +119,42 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
+    <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\Implementation\Xaml\InfiniteScrollList.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageInfoListDataSource.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\InfiniteScrollList.xaml.cs">
       <DependentUpon>InfiniteScrollList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\LoadingStatusBar.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\LoadingStatusBar.xaml.cs">
       <DependentUpon>LoadingStatusBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\PackageDetails.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\PackageDetails.xaml.cs">
       <DependentUpon>PackageDetails.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\PackageItemControl.xaml.cs">
-      <DependentUpon>PackageItemControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\PackageManagerControl.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\PackageManagerControl.xaml.cs">
       <DependentUpon>PackageManagerControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\PackageManagerResources.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\PackageManagerResources.xaml.cs">
       <DependentUpon>PackageManagerResources.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\PackageManagerTopPanel.xaml.cs">
+    <Compile Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml.cs">
       <DependentUpon>PackageManagerTopPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\Xaml\Spinner.xaml.cs">
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\Spinner.xaml.cs">
       <DependentUpon>Spinner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PackageManager\IRPackageManager.cs" />
+    <Compile Include="PackageManager\IRPackageManagerProvider.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="PackageManager\ViewModel\IRPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Model\RPackageVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
@@ -201,35 +210,31 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PackageManager\Implementation\Xaml\InfiniteScrollList.xaml">
+    <Page Include="PackageManager\Implementation\View\InfiniteScrollList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\LoadingStatusBar.xaml">
+    <Page Include="PackageManager\Implementation\View\LoadingStatusBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\PackageDetails.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\PackageItemControl.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageManagerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\PackageManagerControl.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\PackageManagerResources.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PackageManager\Implementation\Xaml\PackageManagerTopPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\Xaml\Spinner.xaml">
+    <Page Include="PackageManager\Implementation\View\Spinner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

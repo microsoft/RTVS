@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Microsoft.R.Components.PackageManager.Implementation.Xaml {
+namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// <summary>
     /// Interaction logic for Spinner.xaml
     /// </summary>

@@ -1,8 +1,13 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
 
-namespace Microsoft.R.Components.PackageManager.Implementation.Xaml {
-    internal partial class PackageManagerResources {
+namespace Microsoft.R.Components.PackageManager.Implementation.View {
+    internal partial class PackageManagerResources : ResourceDictionary {
+        public static Collection<ResourceDictionary> Instance { get; } = new Collection<ResourceDictionary> {
+            new PackageManagerResources()
+        };
+
         public PackageManagerResources() {
             InitializeComponent();
         }

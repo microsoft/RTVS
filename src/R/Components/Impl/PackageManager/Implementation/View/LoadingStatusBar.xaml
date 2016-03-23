@@ -1,12 +1,12 @@
-﻿<UserControl x:Class="Microsoft.R.Components.PackageManager.Implementation.Xaml.LoadingStatusBar"
+﻿<UserControl x:Class="Microsoft.R.Components.PackageManager.Implementation.View.LoadingStatusBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:xaml="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.Xaml"
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:valueConverters="clr-namespace:Microsoft.R.Wpf.ValueConverters;assembly=Microsoft.R.Wpf"
+             xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="800">
     <UserControl.Resources>
@@ -112,9 +112,9 @@
                 </Style>
             </Image.Style>
         </Image>
-        <xaml:Spinner Grid.Column="1" Height="16">
-            <xaml:Spinner.Style>
-                <Style TargetType="{x:Type xaml:Spinner}">
+        <view:Spinner Grid.Column="1" Height="16">
+            <view:Spinner.Style>
+                <Style TargetType="{x:Type view:Spinner}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding PackageSearchStatus}" Value="Loading">
@@ -122,8 +122,8 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </xaml:Spinner.Style>
-        </xaml:Spinner>
+            </view:Spinner.Style>
+        </view:Spinner>
         <TextBlock Grid.Column="2" x:Name="SingleSourceStatusMessageTextBlock" Text="{Binding Path=PackageSearchStatus, Converter={StaticResource EnumDescriptionValueConverter}}">
             <TextBlock.Style>
                 <Style TargetType="TextBlock" BasedOn="{StaticResource StatusMessageTextBlockStyle}">

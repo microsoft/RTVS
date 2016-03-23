@@ -73,9 +73,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return workflow.History.GetOrCreateVisualComponent(HistoryComponentContainerFactory.Value, id);
         }
 
-        private IRHistoryWindowVisualComponent CreatePackageManagerToolWindow(int id) {
+        private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
-            return workflow..GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
+            return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
         }
     }
 }

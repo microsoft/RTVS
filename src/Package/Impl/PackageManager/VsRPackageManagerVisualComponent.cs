@@ -7,14 +7,9 @@ using Microsoft.R.Components.View;
 
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
-    internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory {
-
-        [ImportingConstructor]
-        public VsRPackageManagerVisualComponentContainerFactory() {
-        }
-
-        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(int instanceId) {
-            return GetOrCreate(instanceId, i => new PackageManagerWindowPane());
+    internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory { 
+        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId) {
+            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager));
         }
     }
 }

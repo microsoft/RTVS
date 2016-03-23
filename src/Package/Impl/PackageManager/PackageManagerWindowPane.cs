@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
+using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -17,18 +18,20 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Guid(WindowGuidString)]
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
+        private readonly IRPackageManager _packageManager;
         public const string WindowGuidString = "363F84AD-3397-4FDE-97EA-1ABD73C64BB3";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane() {
+        public PackageManagerWindowPane(IRPackageManager packageManager) {
+            _packageManager = packageManager;
             Caption = Resources.PackageManagerWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(this);
             _commandTarget = new CommandTargetToOleShim(null, Component.Controller);
+            Component = new RPackageManagerVisualComponent(_packageManager, this);
 
             base.OnCreate();
         }
@@ -40,9 +43,10 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
         }
 
         protected override void Dispose(bool disposing) {
-            if (disposing && _commandTarget != null) {
-                _commandTarget = null;
+            if (disposing && Component != null) {
+                Component.Dispose();
                 Component = null;
+                _commandTarget = null;
             }
             base.Dispose(disposing);
         }

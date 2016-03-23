@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -16,6 +17,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
+        private readonly IRPackageManagerProvider _pacakagesProvider;
         private readonly ICoreShell _shell;
         private readonly IRSettings _settings;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
@@ -26,6 +28,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
+            , IRPackageManagerProvider pacakagesProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell shell
@@ -33,6 +36,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
             _sessionProvider = sessionProvider;
             _historyProvider = historyProvider;
+            _pacakagesProvider = pacakagesProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
@@ -45,7 +49,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _activeTextViewTracker, _debuggerModeTracker, null, _shell, _settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, null, _shell, _settings, DisposeInstance);
         }
 
         private void DisposeInstance() {
