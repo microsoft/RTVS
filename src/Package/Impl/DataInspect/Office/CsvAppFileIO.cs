@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             folder = Path.Combine(folder, @"RTVS_CSV_Exports\");
-            if(!Directory.Exists(folder)) {
+            if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
 
@@ -60,9 +60,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Task.Run(() => {
                     try {
                         Process.Start(file);
-                    } catch(Win32Exception ex) {
-                        VsAppShell.Current.ShowErrorMessage(
-                            string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
+                    } catch (Win32Exception ex) {
+                        ShowErrorMessage(ex.Message);
+                    } catch (FileNotFoundException ex) {
+                        ShowErrorMessage(ex.Message);
                     }
                 }).DoNotWait();
             } finally {
@@ -70,6 +71,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             }
 
             Interlocked.Exchange(ref _busy, 0);
+        }
+
+        private static void ShowErrorMessage(string message) {
+            VsAppShell.Current.ShowErrorMessage(
+                string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, message));
         }
 
         private static async Task SetStatusTextAsync(string text) {

@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
-            CanShowOpenCsv = ComputCsvAvailability(DebugEvaluation as DebugValueEvaluationResult);
+            CanShowOpenCsv = ComputeCsvAvailability(DebugEvaluation as DebugValueEvaluationResult);
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
                 OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
@@ -154,7 +154,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private bool ComputCsvAvailability(DebugValueEvaluationResult evaluation) {
+        private bool ComputeCsvAvailability(DebugValueEvaluationResult evaluation) {
             bool result = false;
             if (evaluation != null) {
                 result = ComputeDetailAvailability(evaluation);
