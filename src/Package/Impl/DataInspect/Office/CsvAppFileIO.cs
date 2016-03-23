@@ -10,6 +10,7 @@ using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
     internal static class CsvAppFileIO {
         private static int _busy;
 
-        public static async Task OpenDataCsvApp(string expression) {
+        public static async Task OpenDataCsvApp(DebugEvaluationResult result) {
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
                 return;
             }
@@ -37,10 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            // Strip "base::.GlobalEnv$"
-            var index = expression.IndexOf(VariableProvider.GlobalEnvironmentExpression);
-            var variableName = index >= 0 ? expression.Substring(index + VariableProvider.GlobalEnvironmentExpression.Length + 1) : expression;
-
+            var variableName = result.Name;
             var csvFileName = MakeCsvFileName(variableName);
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
             var rfile = file.Replace('\\', '/');
@@ -54,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             try {
                 await SetStatusTextAsync(Resources.Status_WritingCSV);
                 using (var e = await session.BeginEvaluationAsync()) {
-                    await e.EvaluateAsync(Invariant($"write.csv({variableName}, file='{rfile}')") + Environment.NewLine);
+                    await e.EvaluateAsync(Invariant($"write.csv({result.Expression}, file='{rfile}')") + Environment.NewLine);
                 }
 
                 Task.Run(() => {
@@ -107,6 +105,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 csvFileName += "_";
             }
 
+            if(variableName.StartsWith("$", StringComparison.Ordinal)) {
+                variableName = variableName.Substring(1);
+            }
             variableName = variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
             if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
                 variableName = "expression";

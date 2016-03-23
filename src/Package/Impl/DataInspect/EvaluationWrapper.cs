@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(Expression).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
