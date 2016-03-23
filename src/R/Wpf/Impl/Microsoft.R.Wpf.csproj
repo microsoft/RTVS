@@ -46,6 +46,12 @@
     <Compile Include="ValueConverters\IconUrlToImageCacheConverter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+      <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
+      <Name>Microsoft.Common.Wpf</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -53,12 +59,6 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
-      <Project>{9DE5E0B5-C8BD-482C-85C3-B8E20F08453B}</Project>
-      <Name>Microsoft.Common.Wpf</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
