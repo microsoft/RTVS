@@ -114,8 +114,8 @@
                             </Button.Template>
                         </Button>
                         <Button
-                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Command="{Binding Model.Content.OpenInExcelCommand}" ToolTip="{Binding Model.Content.OpenInExcelCommandTooltip}">
+                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}">
                             <Button.Template>
                                 <ControlTemplate>
                                     <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"

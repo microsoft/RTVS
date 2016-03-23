@@ -4,15 +4,21 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -36,9 +42,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (CanShowDetail) {
                 ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
+            }
 
-                OpenInExcelCommand = new DelegateCommand(OpenInExcel, (o) => CanShowDetail);
-                OpenInExcelCommandTooltip = Resources.OpenInExcelCommandTooltip;
+            CanShowOpenCsv = ComputCsvAvailability(DebugEvaluation as DebugValueEvaluationResult);
+            if (CanShowOpenCsv) {
+                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
+                OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
             }
         }
 
@@ -126,17 +135,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public ICommand ShowDetailCommand { get; }
         public string ShowDetailCommandTooltip { get; }
 
-        public ICommand OpenInExcelCommand { get; }
-        public string OpenInExcelCommandTooltip { get; }
+        public bool CanShowOpenCsv { get; }
+
+        public ICommand OpenInCsvAppCommand { get; }
+        public string OpenCsvAppCommandTooltip { get; }
 
         private void ShowVariableGridWindowPane(object parameter) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
             pane.SetEvaluation(this);
         }
 
-        private void OpenInExcel(object parameter) {
-            ExcelIO.OpenDataInExcel(Name).DoNotWait();
-         }
+        private void OpenInCsvApp(object parameter) {
+            CsvAppFileIO.OpenDataCsvApp(Name, MakeCsvFileName(Name)).DoNotWait();
+        }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
         private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
@@ -148,5 +159,42 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return false;
         }
         #endregion
+
+        private bool ComputCsvAvailability(DebugValueEvaluationResult evaluation) {
+            bool result = false;
+            if (evaluation != null) {
+                result = ComputeDetailAvailability(evaluation);
+                if (!result) {
+                    result = evaluation.Length > 1;
+                }
+            }
+            return result;
+        }
+
+        private string MakeCsvFileName(string variableName) {
+            var project = ProjectUtilities.GetActiveProject();
+            var projectName = project?.FileName;
+
+            var contentTypeService = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var viewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
+
+            var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
+            var filePath = activeView.GetFilePath();
+
+            var csvFileName = string.Empty;
+
+            if (!string.IsNullOrEmpty(projectName)) {
+                csvFileName += Path.GetFileNameWithoutExtension(projectName);
+                csvFileName += "_";
+            }
+
+            if (!string.IsNullOrEmpty(filePath)) {
+                csvFileName += Path.GetFileNameWithoutExtension(filePath);
+                csvFileName += "_";
+            }
+
+            csvFileName += variableName.Replace('.', '_');
+            return csvFileName;
+        }
     }
 }

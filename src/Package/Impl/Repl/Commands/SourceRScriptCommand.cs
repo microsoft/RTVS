@@ -26,13 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private string GetFilePath() {
             ITextView textView = GetActiveTextView();
-            if (textView != null && !textView.IsClosed) {
-                ITextDocument document;
-                if (textView.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
-                    return document.FilePath;
-                }
-            }
-            return null;
+            return textView.GetFilePath();
         }
 
         protected override void SetStatus() {
