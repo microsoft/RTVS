@@ -22,41 +22,41 @@ namespace Microsoft.VisualStudio.R.Package.Test.Office {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class RExcelTest {
-        [Test]
-        public async Task FetchData() {
-            using (var script = new VariableRHostScript()) {
-                var o = await GetMtCars(script);
-                o.Should().NotBeNull();
+        //[Test]
+        //public async Task FetchData() {
+        //    using (var script = new VariableRHostScript()) {
+        //        var o = await GetMtCars(script);
+        //        o.Should().NotBeNull();
 
-                ExcelData xlData = ExcelInterop.GenerateExcelData("x", o.Dimensions[0], o.Dimensions[1]);
+        //        ExcelData xlData = ExcelInterop.GenerateExcelData("x", o.Dimensions[0], o.Dimensions[1]);
 
-                int rows = o.Dimensions[0];
-                int cols = o.Dimensions[1];
+        //        int rows = o.Dimensions[0];
+        //        int cols = o.Dimensions[1];
 
-                xlData.CellData.GetLength(0).Should().Be(rows);
-                xlData.CellData.GetLength(1).Should().Be(cols);
+        //        xlData.CellData.GetLength(0).Should().Be(rows);
+        //        xlData.CellData.GetLength(1).Should().Be(cols);
 
-                xlData.RowNames.Length.Should().Be(rows);
-                xlData.ColNames.Length.Should().Be(cols);
+        //        xlData.RowNames.Length.Should().Be(rows);
+        //        xlData.ColNames.Length.Should().Be(cols);
 
-                xlData.CellData[0, 0].Should().Be("21.0");
-                xlData.CellData[rows - 1, cols - 1].Should().Be("2");
-            }
-        }
+        //        xlData.CellData[0, 0].Should().Be("21.0");
+        //        xlData.CellData[rows - 1, cols - 1].Should().Be("2");
+        //    }
+        //}
 
-        [Test]
-        public void FetchDataErrors01() {
-            ExcelData xlData = ExcelInterop.GenerateExcelData("x", -10, -10);
-            xlData.Should().BeNull();
-         }
+        //[Test]
+        //public void FetchDataErrors01() {
+        //    ExcelData xlData = ExcelInterop.GenerateExcelData("x", -10, -10);
+        //    xlData.Should().BeNull();
+        // }
 
-        [Test]
-        public void FetchDataErrors02() {
-            using (var script = new VariableRHostScript()) {
-                ExcelData xlData = ExcelInterop.GenerateExcelData("zzzzzz", 2, 2);
-                xlData.Should().BeNull();
-            }
-        }
+        //[Test]
+        //public void FetchDataErrors02() {
+        //    using (var script = new VariableRHostScript()) {
+        //        ExcelData xlData = ExcelInterop.GenerateExcelData("zzzzzz", 2, 2);
+        //        xlData.Should().BeNull();
+        //    }
+        //}
 
         private async Task<IRSessionDataObject> GetMtCars(VariableRHostScript script) {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();

@@ -68,6 +68,7 @@
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
     <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\Office\ExcelIO.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
     <Compile Include="DataInspect\REnvironmentChangedEventArgs.cs" />
     <Compile Include="DataInspect\REnvironmentCollection.cs" />

@@ -135,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInExcel(object parameter) {
-            ExcelInterop.OpenDataInExcel(Name, Expression, Dimensions[0], Dimensions[1]);
+            ExcelIO.OpenDataInExcel(Name).DoNotWait();
          }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
