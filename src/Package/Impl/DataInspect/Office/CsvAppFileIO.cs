@@ -53,8 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 await SetStatusTextAsync(Resources.Status_WritingCSV);
-                using (var e = await session.BeginInteractionAsync()) {
-                    await e.RespondAsync(Invariant($"write.csv({variableName}, file='{rfile}')") + Environment.NewLine);
+                using (var e = await session.BeginEvaluationAsync()) {
+                    await e.EvaluateAsync(Invariant($"write.csv({variableName}, file='{rfile}')") + Environment.NewLine);
                 }
 
                 Task.Run(() => {
@@ -107,7 +107,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 csvFileName += "_";
             }
 
-            csvFileName += variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
+            variableName = variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
+            if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
+                variableName = "expression";
+            }
+            csvFileName += variableName;
+
             return csvFileName;
         }
     }
