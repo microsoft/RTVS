@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client {
@@ -75,13 +76,13 @@ namespace Microsoft.R.Host.Client {
             while (true) {
                 string r = await ReadLineAsync(" [yes/no/cancel]> ", ct);
 
-                if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase)) {
+                if (r.StartsWithIgnoreCase("y")) {
                     return MessageButtons.Yes;
                 }
-                if (r.StartsWith("n", StringComparison.InvariantCultureIgnoreCase)) {
+                if (r.StartsWithIgnoreCase("n")) {
                     return MessageButtons.No;
                 }
-                if (r.StartsWith("c", StringComparison.InvariantCultureIgnoreCase)) {
+                if (r.StartsWithIgnoreCase("c")) {
                     return MessageButtons.Cancel;
                 }
 
@@ -108,13 +109,13 @@ namespace Microsoft.R.Host.Client {
                 try {
                     string s = await Console.In.ReadLineAsync();
 
-                    if (s.StartsWith("$$", StringComparison.OrdinalIgnoreCase)) {
+                    if (s.StartsWithIgnoreCase("$$")) {
                         s = s.Remove(0, 1);
-                    } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase)) {
+                    } else if (s.StartsWithIgnoreCase("$")) {
                         s = s.Remove(0, 1);
 
                         var kind = REvaluationKind.Normal;
-                        if (s.StartsWith("!", StringComparison.OrdinalIgnoreCase)) {
+                        if (s.StartsWithIgnoreCase("!")) {
                             kind |= REvaluationKind.Reentrant;
                             s = s.Remove(0, 1);
                         }

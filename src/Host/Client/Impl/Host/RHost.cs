@@ -44,7 +44,7 @@ namespace Microsoft.R.Host.Client {
         private Process _process;
         private volatile Task _runTask;
         private int _rLoopDepth;
-        private long _nextMessageId = 1;
+        private long _lastMessageId = -1;
         private readonly ConcurrentDictionary<string, EvaluationRequest> _evalRequests = new ConcurrentDictionary<string, EvaluationRequest>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
@@ -101,8 +101,8 @@ namespace Microsoft.R.Host.Client {
         }
 
         private JArray CreateMessage(out string id, string name, params object[] args) {
-            id = "#" + _nextMessageId + "#";
-            _nextMessageId += 2;
+            long n = Interlocked.Add(ref _lastMessageId, 2);
+            id = "#" + n + "#";
             return new JArray(id, name, args);
         }
 
@@ -323,7 +323,7 @@ namespace Microsoft.R.Host.Client {
                     if (message == null) {
                         return null;
                     } else if (message.RequestId != null) {
-                        if (message.Name.StartsWith("=")) {
+                        if (message.Name.StartsWithIgnoreCase("=")) {
                             ProcessEvaluationResult(message);
                             continue;
                         } else {

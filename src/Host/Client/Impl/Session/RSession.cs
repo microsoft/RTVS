@@ -251,7 +251,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (startupInfo.WorkingDirectory != null) {
                     await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
                 } else {
-                await evaluation.SetDefaultWorkingDirectory();
+                    await evaluation.SetDefaultWorkingDirectory();
                 }
 
                 if (_hostClientApp != null) {
@@ -464,7 +464,7 @@ namespace Microsoft.R.Host.Client.Session {
         async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-                await EvaluateAll(contexts, true, ct);
+            await EvaluateAll(contexts, true, ct);
 
             if (_hostClientApp != null) {
                 return await _hostClientApp.ShowMessage(s, buttons);
