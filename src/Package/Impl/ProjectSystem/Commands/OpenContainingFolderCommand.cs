@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Immutable;
+using System.ComponentModel.Composition;
 using System.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -15,8 +17,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo("RTools")]
     [OrderPrecedence(200)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
+        private readonly UnconfiguredProject _unconfiguredProject;
+
+        [ImportingConstructor]
+        public OpenContainingFolderCommand(UnconfiguredProject unconfiguredProject) {
+            _unconfiguredProject = unconfiguredProject;
+        }
+
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdOpenContainingFolder && nodes.IsSingleNodePath()) {
+            if (commandId == RPackageCommandId.icmdOpenContainingFolder) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
@@ -24,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdOpenContainingFolder) {
-                var path = nodes.GetSingleNodePath();
+                var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
                     if (path.EndsWith("\\", StringComparison.Ordinal)) {
                         path = path.Substring(0, path.Length - 1);

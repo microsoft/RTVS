@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             });
             ProcessServices.Current = ps;
 
-            var cmd = new OpenContainingFolderCommand();
+            var cmd = new OpenContainingFolderCommand(null);
             CheckSingleNodeCommandStatus(cmd, RPackageCommandId.icmdOpenContainingFolder, nodes1, nodes2);
         }
 

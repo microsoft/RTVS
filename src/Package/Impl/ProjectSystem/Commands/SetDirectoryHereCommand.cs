@@ -5,6 +5,7 @@ using System;
 using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -17,15 +18,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [AppliesTo("RTools")]
     [OrderPrecedence(200)]
     internal sealed class SetDirectoryHereCommand : ICommandGroupHandler {
-        private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly UnconfiguredProject _unconfiguredProject;
 
         [ImportingConstructor]
-        public SetDirectoryHereCommand(IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
+        public SetDirectoryHereCommand(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
+            _unconfiguredProject = unconfiguredProject;
             _interactiveWorkflowProvider = interactiveWorkflowProvider;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdSetDirectoryHere && nodes.IsSingleNodePath()) {
+            if (commandId == RPackageCommandId.icmdSetDirectoryHere && nodes.Count == 1) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;
@@ -33,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdSetDirectoryHere) {
-                var path = nodes.GetNodeFolderPath();
+                var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
                     var o = new object();
 

@@ -142,8 +142,17 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static string GetProjectItemTemplatesFolder() {
+            // In F5 (Experimental instance) scenario templates are deployed where the extension is.
             string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-            return Path.Combine(Path.GetDirectoryName(assemblyPath), @"ItemTemplates\");
+            var templatesFolder = Path.Combine(Path.GetDirectoryName(assemblyPath), @"ItemTemplates\");
+            if(!Directory.Exists(templatesFolder)) {
+                // Real install scenario, templates are in 
+                // C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\ItemTemplates\R
+                string vsExecutableFileName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                string vsFolder = Path.GetDirectoryName(vsExecutableFileName);
+                templatesFolder = Path.Combine(vsFolder, @"ItemTemplates\R\");
+            }
+            return templatesFolder;
         }
     }
 }
