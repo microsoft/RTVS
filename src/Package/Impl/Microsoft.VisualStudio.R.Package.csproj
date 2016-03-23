@@ -70,7 +70,6 @@
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
     <Compile Include="DataInspect\REnvironmentChangedEventArgs.cs" />
-    <Compile Include="DataInspect\REnvironmentCollection.cs" />
     <Compile Include="DataInspect\REnvironmentProvider.cs" />
     <Compile Include="DataInspect\GridData.cs" />
     <Compile Include="DataInspect\GridHeader.cs" />

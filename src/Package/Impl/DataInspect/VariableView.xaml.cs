@@ -25,9 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         IRSession _rSession;
         DebugSession _debugSession;
 
-        const string GlobalEnvironmentName = "Global Environment";
-
-        private static REnvironmentCollection _defaultEnvironments = new REnvironmentCollection() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
+        private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
         public VariableView() : this(null) { }
 
@@ -76,8 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var currentItem = EnvironmentComboBox.SelectedItem as REnvironment;
             if (currentItem != null && !e.Environments[0].FrameIndex.HasValue) {
-                int index = e.Environments.FindIndex((env) => env.Name == currentItem.Name);
-                selectedIndex = index == -1 ? selectedIndex : index;
+                var indexes = e.Environments.IndexWhere((env) => env.Name == currentItem.Name);
+                selectedIndex = indexes.Count() > 0 ? indexes.First() : selectedIndex;
             }
 
             EnvironmentComboBox.ItemsSource = e.Environments;
@@ -88,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (!object.Equals(EnvironmentComboBox.ItemsSource, _defaultEnvironments) && e.AddedItems.Count > 0) {
                 var env = e.AddedItems[0] as REnvironment;
                 if (env != null) {
-                    SetRootModelAsync(env).SilenceException<Exception>().DoNotWait();
+                    SetRootModelAsync(env).DoNotWait();
                 }
             }
         }
@@ -139,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (env.FrameIndex.HasValue) {
                 return Invariant($"sys.frame({env.FrameIndex.Value})");
             } else {
-                return Invariant($"as.environment('{env.Name}')");
+                return Invariant($"as.environment({env.Name.ToRStringLiteral()})");
             }
         }
 

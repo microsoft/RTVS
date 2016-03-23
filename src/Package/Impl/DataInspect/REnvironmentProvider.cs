@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -9,6 +10,7 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentProvider : IREnvironmentProvider, IDisposable {
@@ -18,9 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
 
-            IdleTimeAction.Create(() => {
-                GetEnvironmentAsync().SilenceException<Exception>().DoNotWait();
-            }, 10, typeof(REnvironmentProvider));
+            GetEnvironmentAsync().DoNotWait();
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -39,8 +39,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             Debug.Assert(result.JsonResult != null);
 
+            var envs = new List<REnvironment>();
+            var jarray = result.JsonResult as JArray;
+            if (jarray != null) {
+                foreach (var jsonItem in jarray) {
+                    envs.Add(new REnvironment(jsonItem));
+                }
+            }
+
             VsAppShell.Current.DispatchOnUIThread(() => {
-                OnEnvironmentChanged(new REnvironmentChangedEventArgs(new REnvironmentCollection(result.JsonResult)));
+                OnEnvironmentChanged(new REnvironmentChangedEventArgs(envs));
             });
         }
 
