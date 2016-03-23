@@ -1528,6 +1528,7 @@
     </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>	  
 
     <!-- Variable Explorer toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0100">
