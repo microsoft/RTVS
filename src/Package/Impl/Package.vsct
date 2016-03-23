@@ -81,6 +81,19 @@
         </Strings>
       </Menu>
 
+      <!-- Variable Explorer toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="variableWindowToolBarId" type="ToolWindowToolbar" priority="0x100">
+        <Parent guid="guidRToolsCmdSet" id="0" />
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>NoToolbarClose</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Variable Explorer</ButtonText>
+          <CommandName>Variable Explorer</CommandName>
+        </Strings>
+      </Menu>
+      
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
@@ -360,9 +373,16 @@
         <Parent guid="guidInteractiveWindowCmdSet" id="menuIdInteractiveToolbar"/>
       </Group>
 
+
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
       <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
       <Group guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x320" />
+
+      <!-- Variable Window toolbar -->
+      <Group guid="guidRToolsCmdSet" id="variableDataGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
+      </Group>
+
     </Groups>
 
     <Buttons>
@@ -1479,6 +1499,7 @@
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
 
+
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
@@ -1507,6 +1528,10 @@
     </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+
+    <!-- Variable Explorer toolbar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="variableDataGroup"/>
     </CommandPlacement>
   </CommandPlacements>
 
@@ -1691,6 +1716,10 @@
       <IDSymbol name="projectNodeContextMenuGroup" value="0x2026"/>
       <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
       <IDSymbol name="projectCmdPromptContextMenuGroup" value="0x2028"/>
+
+      <!-- Variable Explorer -->
+      <IDSymbol name="variableWindowToolBarId" value="0x2030" />
+      <IDSymbol name="variableDataGroup" value="0x2031" />
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />
