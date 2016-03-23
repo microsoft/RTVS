@@ -253,6 +253,7 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
+    <Compile Include="DataInspect\REnvironmentPrividerTest.cs" />
     <Compile Include="DataInspect\VariableExpectation.cs" />
     <Compile Include="DataInspect\VariableRHostScript.cs" />
     <Compile Include="Expansions\ExpansionsTest.cs" />
