@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 _session.Dispose();
             }
 
-            [Test/*(Skip = "https://github.com/Microsoft/RTVS/issues/1191")*/]
+            [Test]
             [Category.R.Session]
             public async Task CancelAllInParallel() {
                 Task responceTask;
