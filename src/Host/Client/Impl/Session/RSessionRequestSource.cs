@@ -13,7 +13,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task<IRSessionInteraction> CreateRequestTask => _createRequestTcs.Task;
         public bool IsVisible { get; }
-        private IReadOnlyList<IRContext> Contexts { get; }
+        public IReadOnlyList<IRContext> Contexts { get; }
 
         public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts, CancellationToken ct) {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
