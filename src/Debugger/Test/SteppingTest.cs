@@ -74,7 +74,6 @@ namespace Microsoft.R.Debugger.Test {
                     { sf, 6 }
                 });
             }
-
         }
 
         [Test]

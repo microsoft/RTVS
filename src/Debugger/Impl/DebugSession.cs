@@ -88,7 +88,7 @@ namespace Microsoft.R.Debugger {
                 using (var eval = await RSession.BeginEvaluationAsync(cancellationToken: cancellationToken)) {
                     // Re-initialize the breakpoint table.
                     foreach (var bp in _breakpoints.Values) {
-                        await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
+                        await bp.ReapplyBreakpointAsync(cancellationToken);
                     }
 
                     await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
@@ -303,7 +303,9 @@ namespace Microsoft.R.Debugger {
         public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"), ct);
+            using (var eval = await RSession.BeginEvaluationAsync(true, ct)) {
+                await eval.EvaluateAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"));
+            }
         }
 
         public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {

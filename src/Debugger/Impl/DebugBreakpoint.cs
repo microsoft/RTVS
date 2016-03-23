@@ -49,7 +49,7 @@ namespace Microsoft.R.Debugger {
             Location = location;
         }
 
-        internal string GetAddBreakpointExpression(bool reapply) {
+        private string GetAddBreakpointExpression(bool reapply) {
             string fileName = null;
             try {
                 fileName = Path.GetFileName(Location.FileName);
@@ -60,9 +60,15 @@ namespace Microsoft.R.Debugger {
             return Invariant($"rtvs:::add_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber}, {(reapply ? "TRUE" : "FALSE")})");
         }
 
+        internal async Task ReapplyBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+            await Session.RSession.EvaluateAsync(GetAddBreakpointExpression(false), REvaluationKind.Normal, cancellationToken);
+            // TODO: mark breakpoint as invalid if this fails.
+        }
+
         internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.InvokeDebugHelperAsync(GetAddBreakpointExpression(true), cancellationToken);
+            await Session.RSession.EvaluateAsync(GetAddBreakpointExpression(true), REvaluationKind.Normal, cancellationToken);
             ++UseCount;
         }
 
@@ -82,9 +88,9 @@ namespace Microsoft.R.Debugger {
                 Session.RemoveBreakpoint(this);
 
                 var code = Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})");
-                var res = await Session.EvaluateAsync(code, DebugEvaluationResultFields.None, cancellationToken);
-                if (res is DebugErrorEvaluationResult) {
-                    throw new InvalidOperationException(Invariant($"{res.Expression}: {res}"));
+                var res = await Session.RSession.EvaluateAsync(code, REvaluationKind.Normal, cancellationToken);
+                if (res.ParseStatus != RParseStatus.OK || res.Error != null) {
+                    throw new InvalidOperationException(res.ToString());
                 }
             }
         }

@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -223,11 +224,11 @@ namespace Microsoft.R.Debugger.Test {
                 await bp1Hit.ShouldBeHitAtNextPromptAsync();
                 bp2Hit.WasHit.Should().BeTrue();
 
-                await debugSession.ContinueAsync();
-
                 await bp1.DeleteAsync();
                 debugSession.Breakpoints.Should().HaveCount(1);
                 debugSession.Breakpoints.Should().Contain(bp2);
+
+                await debugSession.ContinueAsync();
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("f()\n");
@@ -235,10 +236,10 @@ namespace Microsoft.R.Debugger.Test {
 
                 await bp2Hit.ShouldBeHitAtNextPromptAsync();
 
-                await debugSession.ContinueAsync();
-
                 await bp2.DeleteAsync();
                 debugSession.Breakpoints.Should().HaveCount(0);
+
+                await debugSession.ContinueAsync();
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("f()\n");
@@ -281,6 +282,71 @@ namespace Microsoft.R.Debugger.Test {
 
                 await bp1Hit.ShouldBeHitAtNextPromptAsync();
                 bp2Hit.WasHit.Should().BeFalse();
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task SetBreakpointWhileRunning() {
+            const string code =
+@"browser()
+  f <- function() {
+    NULL
+  }
+  while (TRUE) f()";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                await sf.Source(_session);
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                await debugSession.ContinueAsync();
+                await Task.Delay(100);
+
+                var bp = await debugSession.CreateBreakpointAsync(sf, 3);
+
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                    { bp.Location }
+                });
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task RemoveBreakpointWhileRunning() {
+            const string code =
+@"browser()
+  f <- function() {
+    NULL
+    browser()
+  }
+  b <- FALSE;
+  while (TRUE) if (b) f()";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await debugSession.EnableBreakpointsAsync(true);
+
+                await sf.Source(_session);
+                await debugSession.NextPromptShouldBeBrowseAsync();
+
+                var bp = await debugSession.CreateBreakpointAsync(sf, 3);
+                int hitCount = 0;
+                bp.BreakpointHit += delegate { ++hitCount; };
+
+                await debugSession.ContinueAsync();
+                await Task.Delay(100);
+
+                await bp.DeleteAsync();
+                await _session.EvaluateAsync("b <- TRUE");
+
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                    { sf, 4 }
+                });
+                hitCount.Should().Be(0);
             }
         }
 

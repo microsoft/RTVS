@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client {
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
         Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken));
-        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken));
+        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken));
         Task CancelAllAsync();
         Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000);
         Task StopHostAsync();
