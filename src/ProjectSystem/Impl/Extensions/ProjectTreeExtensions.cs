@@ -49,5 +49,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
             }
             return Enumerable.Empty<string>();
         }
+
+        public static string GetSelectedFolderPath(this IImmutableSet<IProjectTree> nodes, UnconfiguredProject unconfiguredProject) {
+            if (nodes.Count == 1) {
+                var n = nodes.First();
+                if (n.Root == n) {
+                    return Path.GetDirectoryName(unconfiguredProject.FullPath);
+                }
+                return nodes.GetNodeFolderPath();
+            }
+            return string.Empty;
+        }
     }
 }

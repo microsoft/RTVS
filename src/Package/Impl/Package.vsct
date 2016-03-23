@@ -1485,7 +1485,10 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+      <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>

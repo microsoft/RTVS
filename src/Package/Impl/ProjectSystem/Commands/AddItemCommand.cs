@@ -35,24 +35,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == _commandId) {
-                var path = GetSelectedFolderPath(nodes);
+                var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
                     ProjectUtilities.AddNewItem(_templateName, _fileName, _extension, path);
                     return true;
                 }
             }
             return false;
-        }
-
-        private string GetSelectedFolderPath(IImmutableSet<IProjectTree> nodes) {
-            if (nodes.Count == 1) {
-                var n = nodes.First();
-                if(n.Root == n) {
-                    return Path.GetDirectoryName(_unconfiguredProject.FullPath);
-                }
-                return nodes.GetNodeFolderPath();
-            }
-            return string.Empty;
         }
     }
 }
