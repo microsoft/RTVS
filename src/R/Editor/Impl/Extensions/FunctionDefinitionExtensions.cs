@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor {
             if (line != null) {
                 var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(line.Start + line.Length / 2);
                 if (exp != null) {
-                    return exp.GetFunctionDefinition(out v);
+                    return exp.GetVariableOrFunctionDefinition(out v);
                 }
             }
             return null;

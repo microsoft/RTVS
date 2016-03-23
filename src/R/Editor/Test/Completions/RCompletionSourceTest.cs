@@ -144,6 +144,46 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
+        public void UserVariables01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+aaa123 <- 1
+
+bbb123 <- 1
+
+";
+            GetCompletions(content, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.NotContain(c => c.DisplayText == "aaa123")
+                .And.NotContain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 15, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.NotContain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 30, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+        }
+
+        [Test]
         public void UserFunctions01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("aaaa <- function(a,b,c)\r\na", 25, completionSets);

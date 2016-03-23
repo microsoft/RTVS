@@ -6,7 +6,7 @@ using Microsoft.R.Core.AST.Variables;
 
 namespace Microsoft.R.Core.AST {
     public static class StatementExtensions {
-        public static IFunctionDefinition GetFunctionDefinition(this IExpressionStatement es, out Variable v) {
+        public static IFunctionDefinition GetVariableOrFunctionDefinition(this IExpressionStatement es, out Variable v) {
             IFunctionDefinition fd = null;
             v = null;
 
@@ -23,7 +23,6 @@ namespace Microsoft.R.Core.AST {
                     } else if (op.OperatorType == OperatorType.RightAssign) {
                         v = op.LeftOperand as Variable;
                     }
-
                     if (v != null) {
                         fd = op.RightOperand as IFunctionDefinition;
                     }

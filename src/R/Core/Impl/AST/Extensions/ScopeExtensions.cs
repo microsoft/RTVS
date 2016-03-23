@@ -66,9 +66,11 @@ namespace Microsoft.R.Core.AST {
                     }
 
                     Variable v;
-                    var fd = es.GetFunctionDefinition(out v);
+                    var fd = es.GetVariableOrFunctionDefinition(out v);
                     if (fd != null && v != null) {
                         v.Value = new RFunction(fd);
+                    }
+                    if (v != null) {
                         yield return v;
                     }
                 }

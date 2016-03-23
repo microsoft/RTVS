@@ -80,7 +80,9 @@ namespace Microsoft.R.Core.AST {
         public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false) {
             IAstNode deepestNode = null;
             FindSpecificNode(ast, position, match, ref deepestNode, includeEnd);
-
+            if(deepestNode == null && ast.Children.Count > 0) {
+                deepestNode = ast.Children[0]; // Global scope if nothing was found
+            }
             return deepestNode;
         }
 
