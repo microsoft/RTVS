@@ -204,9 +204,14 @@ namespace Microsoft.R.Debugger {
 
         public async Task BreakAsync(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
-                await inter.RespondAsync("browser()\n");
-            }
+
+            // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
+            // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
+            RSession.EvaluateAsync("browser()", REvaluationKind.Reentrant, ct)
+                .SilenceException<MessageTransportException>().DoNotWait();
+
+            // Wait until prompt appears, but don't actually respond to it.
+            using (var inter = await RSession.BeginInteractionAsync(true, ct)) { }
         }
 
         public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {

@@ -19,8 +19,9 @@ using static System.FormattableString;
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
         private readonly static string DefaultPrompt = "> ";
-        private readonly static Task<IRSessionEvaluation> CanceledEvaluationTask;
-        private readonly static Task<IRSessionInteraction> CanceledInteractionTask;
+        private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
+        private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
+        private readonly static Task<REvaluationResult> CanceledEvaluateTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -64,8 +65,9 @@ namespace Microsoft.R.Host.Client.Session {
         static RSession() {
             var tcs = new CancellationTokenSource();
             tcs.Cancel();
-            CanceledEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
-            CanceledInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
+            CanceledBeginEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
+            CanceledBeginInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
+            CanceledEvaluateTask = Task.FromCanceled<REvaluationResult>(tcs.Token);
         }
 
         public RSession(int id, IRHostClientApp hostClientApp, Action onDispose) {
@@ -103,24 +105,36 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken)) {
             if (!_isHostRunning) {
-                return CanceledInteractionTask;
+                return CanceledBeginInteractionTask;
             }
 
             RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts, cancellationToken);
             _pendingRequestSources.Post(requestSource);
 
-            return _isHostRunning ? requestSource.CreateRequestTask : CanceledInteractionTask;
+            return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
             if (!_isHostRunning) {
-                return CanceledEvaluationTask;
+                return CanceledBeginEvaluationTask;
             }
 
             var source = new RSessionEvaluationSource(isMutating, cancellationToken);
             _pendingEvaluationSources.Post(source);
 
-            return _isHostRunning ? source.Task : CanceledEvaluationTask;
+            return _isHostRunning ? source.Task : CanceledBeginEvaluationTask;
+        }
+
+        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            if (!IsHostRunning) {
+                return await CanceledEvaluateTask;
+            }
+
+            try {
+                return await _host.EvaluateAsync(expression, kind, ct);
+            } catch (MessageTransportException) when (!IsHostRunning) {
+                return await CanceledEvaluateTask;
+            }
         }
 
         public async Task CancelAllAsync() {
@@ -237,7 +251,7 @@ namespace Microsoft.R.Host.Client.Session {
                 if (startupInfo.WorkingDirectory != null) {
                     await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
                 } else {
-                    await evaluation.SetDefaultWorkingDirectory();
+                await evaluation.SetDefaultWorkingDirectory();
                 }
 
                 if (_hostClientApp != null) {
@@ -303,7 +317,7 @@ namespace Microsoft.R.Host.Client.Session {
             Prompt = string.Empty;
         }
 
-        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
+        async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
@@ -318,19 +332,12 @@ namespace Microsoft.R.Host.Client.Session {
             CancellationTokenSource evaluationCts;
             Task evaluationTask;
 
-            if (isEvaluationAllowed) {
-                evaluationCts = new CancellationTokenSource();
-                evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct); // will raise Mutate
-            } else {
-                evaluationCts = null;
-                evaluationTask = Task.CompletedTask;
-                OnMutated();
-            }
+            evaluationCts = new CancellationTokenSource();
+            evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct); // will raise Mutate
 
             currentRequest?.CompleteResponse();
 
             string consoleInput = null;
-
             do {
                 ct.ThrowIfCancellationRequested();
                 try {
@@ -437,9 +444,9 @@ namespace Microsoft.R.Host.Client.Session {
         /// Called as a result of R calling R API 'YesNoCancel' callback
         /// </summary>
         /// <returns>Codes that match constants in RApi.h</returns>
-        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
 
-            MessageButtons buttons = await ((IRCallbacks)this).ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
+            MessageButtons buttons = await ((IRCallbacks)this).ShowDialog(contexts, s, MessageButtons.YesNoCancel, ct);
             switch (buttons) {
                 case MessageButtons.No:
                     return Client.YesNoCancel.No;
@@ -454,14 +461,10 @@ namespace Microsoft.R.Host.Client.Session {
         /// Graph app may call Win32 API directly rather than going via R API callbacks.
         /// </summary>
         /// <returns>Pressed button code</returns>
-        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            if (isEvaluationAllowed) {
                 await EvaluateAll(contexts, true, ct);
-            } else {
-                Mutated?.Invoke(this, EventArgs.Empty);
-            }
 
             if (_hostClientApp != null) {
                 return await _hostClientApp.ShowMessage(s, buttons);

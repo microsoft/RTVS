@@ -37,8 +37,8 @@ namespace Microsoft.R.Host.Client {
             return Task.CompletedTask;
         }
 
-        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, bool isEvaluationAllowed, CancellationToken ct) {
-            return (await ReadLineAsync(prompt, isEvaluationAllowed, ct)) + "\n";
+        public async Task<string> ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
+            return (await ReadLineAsync(prompt, ct)) + "\n";
         }
 
         public async Task ShowMessage(string s, CancellationToken ct) {
@@ -54,8 +54,8 @@ namespace Microsoft.R.Host.Client {
         /// Called as a result of R calling R API 'YesNoCancel' callback
         /// </summary>
         /// <returns>Codes that match constants in RApi.h</returns>
-        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, CancellationToken ct) {
-            MessageButtons buttons = await ShowDialog(contexts, s, isEvaluationAllowed, MessageButtons.YesNoCancel, ct);
+        public async Task<YesNoCancel> YesNoCancel(IReadOnlyList<IRContext> contexts, string s, CancellationToken ct) {
+            MessageButtons buttons = await ShowDialog(contexts, s, MessageButtons.YesNoCancel, ct);
             switch (buttons) {
                 case MessageButtons.No:
                     return Client.YesNoCancel.No;
@@ -70,10 +70,10 @@ namespace Microsoft.R.Host.Client {
         /// Graph app may call Win32 API directly rather than going via R API callbacks.
         /// </summary>
         /// <returns>Pressed button code</returns>
-        public async Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, bool isEvaluationAllowed, MessageButtons buttons, CancellationToken ct) {
+        public async Task<MessageButtons> ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
             await Console.Error.WriteAsync(s);
             while (true) {
-                string r = await ReadLineAsync(" [yes/no/cancel]> ", isEvaluationAllowed, ct);
+                string r = await ReadLineAsync(" [yes/no/cancel]> ", ct);
 
                 if (r.StartsWith("y", StringComparison.InvariantCultureIgnoreCase)) {
                     return MessageButtons.Yes;
@@ -101,7 +101,7 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync("Directory changed.");
         }
 
-        private async Task<string> ReadLineAsync(string prompt, bool isEvaluationAllowed, CancellationToken ct) {
+        private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");
                 ++_nesting;
@@ -110,7 +110,7 @@ namespace Microsoft.R.Host.Client {
 
                     if (s.StartsWith("$$", StringComparison.OrdinalIgnoreCase)) {
                         s = s.Remove(0, 1);
-                    } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase) && isEvaluationAllowed) {
+                    } else if (s.StartsWith("$", StringComparison.OrdinalIgnoreCase)) {
                         s = s.Remove(0, 1);
 
                         var kind = REvaluationKind.Normal;

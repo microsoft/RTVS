@@ -19,6 +19,10 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult(new REvaluationResult());
+        }
+
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
             _eval = new RSessionEvaluationMock();
 

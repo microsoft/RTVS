@@ -23,7 +23,7 @@ namespace Microsoft.R.Debugger.Test {
             EventHandler<DebugBrowseEventArgs> handler = null;
             handler = (sender, e) => {
                 session.Browse -= handler;
-                browseTcs.SetResult(true);
+                browseTcs.TrySetResult(true);
             };
             session.Browse += handler;
 
