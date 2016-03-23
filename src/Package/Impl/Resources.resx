@@ -640,4 +640,7 @@ Additional information:
   <data name="Status_WritingCSV" xml:space="preserve">
     <value>Writing data into CSV file...</value>
   </data>
+  <data name="Error_CannotOpenCsv" xml:space="preserve">
+    <value>Unable to open CSV file. Exception: {0}.</value>
+  </data>
 </root>

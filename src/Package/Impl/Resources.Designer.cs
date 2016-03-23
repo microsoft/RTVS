@@ -259,6 +259,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to open CSV file. Exception: {0}..
+        /// </summary>
+        public static string Error_CannotOpenCsv {
+            get {
+                return ResourceManager.GetString("Error_CannotOpenCsv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
         /// </summary>
         public static string Error_CannotSendFeedback1 {

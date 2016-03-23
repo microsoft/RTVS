@@ -4,21 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Utilities;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -146,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OpenInCsvApp(object parameter) {
-            CsvAppFileIO.OpenDataCsvApp(Name, MakeCsvFileName(Name)).DoNotWait();
+            CsvAppFileIO.OpenDataCsvApp(Expression).DoNotWait();
         }
 
         private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
@@ -169,32 +163,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 }
             }
             return result;
-        }
-
-        private string MakeCsvFileName(string variableName) {
-            var project = ProjectUtilities.GetActiveProject();
-            var projectName = project?.FileName;
-
-            var contentTypeService = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var viewTracker = VsAppShell.Current.ExportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
-
-            var activeView = viewTracker.GetLastActiveTextView(contentTypeService.GetContentType(RContentTypeDefinition.ContentType));
-            var filePath = activeView.GetFilePath();
-
-            var csvFileName = string.Empty;
-
-            if (!string.IsNullOrEmpty(projectName)) {
-                csvFileName += Path.GetFileNameWithoutExtension(projectName);
-                csvFileName += "_";
-            }
-
-            if (!string.IsNullOrEmpty(filePath)) {
-                csvFileName += Path.GetFileNameWithoutExtension(filePath);
-                csvFileName += "_";
-            }
-
-            csvFileName += variableName.Replace('.', '_');
-            return csvFileName;
         }
     }
 }
