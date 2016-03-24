@@ -32,8 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var workflow = workflowProvider.GetOrCreate();
             var session = workflow.RSession;
 
-            var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            folder = Path.Combine(folder, @"RTVS_CSV_Exports\");
+            var folder = GetTempCsvFilesFolder();
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
@@ -71,6 +70,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             }
 
             Interlocked.Exchange(ref _busy, 0);
+        }
+
+        public static void Close() {
+            var folder = GetTempCsvFilesFolder();
+            if (Directory.Exists(folder)) {
+                foreach (var f in Directory.EnumerateFiles(folder)) {
+                    try {
+                        File.Delete(f);
+                    } catch(IOException) { } catch (UnauthorizedAccessException) { }
+                }
+            }
+        }
+
+        private static string GetTempCsvFilesFolder() {
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return Path.Combine(folder, @"RTVS_CSV_Exports\");
         }
 
         private static void ShowErrorMessage(string message) {
