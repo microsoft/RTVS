@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
@@ -21,16 +22,13 @@ namespace Microsoft.R.Core.AST.Values {
 
             if (currentToken.TokenType == RTokenType.Infinity) {
                 NodeValue = new RNumber(Double.PositiveInfinity);
-             } else if (currentToken.TokenType == RTokenType.NaN) {
+            } else if (currentToken.TokenType == RTokenType.NaN) {
                 NodeValue = new RNumber(Double.NaN);
             } else {
-                if (text[text.Length - 1] == 'L') {
-                    text = text.Substring(0, text.Length - 1);
-                }
                 // If parsing fails we still need to create node
                 // since we need a range to squiggle
                 result = 0.0;
-                if (!Double.TryParse(text, out result)) {
+                if (!Number.TryParse(text, out result)) {
                     // Something unparsable
                     result = Double.NaN;
                     context.AddError(new ParseError(ParseErrorType.NumberExpected, ErrorLocation.Token, currentToken));
