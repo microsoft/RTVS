@@ -4,12 +4,14 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.History;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IRInteractiveWorkflow : IDisposable {
         IRHistory History { get; }
         IRSession RSession { get; }
+        IRPackageManager Packages { get; }
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 

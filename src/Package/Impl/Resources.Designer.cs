@@ -602,6 +602,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Package Manager.
+        /// </summary>
+        public static string PackageManagerWindowCaption {
+            get {
+                return ResourceManager.GetString("PackageManagerWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error copying plot to the clipboard.
         ///{0}.
         /// </summary>
