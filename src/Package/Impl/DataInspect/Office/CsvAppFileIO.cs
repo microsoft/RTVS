@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            var variableName = result.Name;
+            var variableName = result.Name ?? "variable";
             var csvFileName = MakeCsvFileName(variableName);
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
             var rfile = file.Replace('\\', '/');
@@ -55,15 +55,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     await e.EvaluateAsync(Invariant($"write.csv({result.Expression}, file='{rfile}')") + Environment.NewLine);
                 }
 
-                Task.Run(() => {
-                    try {
-                        Process.Start(file);
-                    } catch (Win32Exception ex) {
-                        ShowErrorMessage(ex.Message);
-                    } catch (FileNotFoundException ex) {
-                        ShowErrorMessage(ex.Message);
-                    }
-                }).DoNotWait();
+                if (File.Exists(file)) {
+                    Task.Run(() => {
+                        try {
+                            Process.Start(file);
+                        } catch (Win32Exception ex) {
+                            ShowErrorMessage(ex.Message);
+                        } catch (FileNotFoundException ex) {
+                            ShowErrorMessage(ex.Message);
+                        }
+                    }).DoNotWait();
+                }
             } finally {
                 await SetStatusTextAsync(currentStatusText);
             }
