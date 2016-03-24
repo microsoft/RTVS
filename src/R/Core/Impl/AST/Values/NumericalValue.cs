@@ -27,10 +27,9 @@ namespace Microsoft.R.Core.AST.Values {
             } else {
                 // If parsing fails we still need to create node
                 // since we need a range to squiggle
-                result = 0.0;
+                result = Double.NaN;
                 if (!Number.TryParse(text, out result)) {
                     // Something unparsable
-                    result = Double.NaN;
                     context.AddError(new ParseError(ParseErrorType.NumberExpected, ErrorLocation.Token, currentToken));
                 }
                 NodeValue = new RNumber(result);

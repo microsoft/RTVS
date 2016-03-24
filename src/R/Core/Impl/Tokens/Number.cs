@@ -11,10 +11,17 @@ namespace Microsoft.R.Core.Tokens {
             doubleResult = Double.NaN;
             int sign = 1;
 
+            if (text.Length == 0) {
+                return false;
+            }
             if (allowLSuffix && text[text.Length - 1] == 'L') {
                 text = text.Substring(0, text.Length - 1);
             }
-            if (text.Length > 0 && (text[0] == '-' || text[0] == '+')) {
+
+            if (text.Length == 0) {
+                return false;
+            }
+            if (text[0] == '-' || text[0] == '+') {
                 text = text.Substring(1);
                 sign = text[0] == '-' ? -1 : 1;
             }
@@ -22,17 +29,11 @@ namespace Microsoft.R.Core.Tokens {
             int intResult = 0;
             if (Int32.TryParse(text, _integerStyle, CultureInfo.InvariantCulture, out intResult)) {
                 doubleResult = sign * intResult;
-            }
-
-            if (doubleResult == Double.NaN) {
+            } else {
                 if (Double.TryParse(text, _doubleStyle, CultureInfo.InvariantCulture, out doubleResult)) {
                     doubleResult = sign * doubleResult;
-                }
-
-                if (doubleResult == Double.NaN) {
-                    if (Int32.TryParse(text, _hexStyle, CultureInfo.InvariantCulture, out intResult)) {
-                        doubleResult = sign * intResult;
-                    }
+                } else if (Int32.TryParse(text, _hexStyle, CultureInfo.InvariantCulture, out intResult)) {
+                    doubleResult = sign * intResult;
                 }
             }
             return doubleResult != Double.NaN;
