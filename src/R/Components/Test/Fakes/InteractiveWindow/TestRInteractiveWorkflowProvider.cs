@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowProvider))]
+    [Export(typeof(TestRInteractiveWorkflowProvider))]
     public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
@@ -24,6 +25,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IDebuggerModeTracker _debuggerModeTracker;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
+        public IRHostClientApp HostClientApp { get; set; }
 
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
@@ -49,7 +51,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, null, _shell, _settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, HostClientApp, _shell, _settings, DisposeInstance);
         }
 
         private void DisposeInstance() {
