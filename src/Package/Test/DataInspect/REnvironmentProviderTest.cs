@@ -25,21 +25,50 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task GetREnvironmentTest() {
             await RunEnvironmentTestAsync("1", (environments) => {
                 environments.Count.Should().BeGreaterOrEqualTo(2);
-                environments[0].Name.Should().BeEquivalentTo(".GlobalEnv");
-                environments[environments.Count - 1].Name.Should().BeEquivalentTo("package:base");
+                environments[0].Name.Should().Be(".GlobalEnv");
+                environments[environments.Count - 1].Name.Should().Be("package:base");
             });
         }
 
         [Test]
         [Category.Variable.Explorer]
-        public async Task GetREnvironmentFuncionTest() {
+        public async Task GetREnvironmentFunctionTest() {
             await RunEnvironmentTestAsync("foo<-function(x){browser();};foo(1);", (environments) => {
                 environments.Count.Should().BeGreaterOrEqualTo(3);
-                environments[0].Name.Should().BeEquivalentTo("foo");
+                environments[0].Name.Should().Be("foo");
                 environments[0].FrameIndex.HasValue.Should().BeTrue();
                 environments[0].FrameIndex.Should().Be(1);
-                environments[1].Name.Should().BeEquivalentTo(".GlobalEnv");
-                environments[environments.Count - 1].Name.Should().BeEquivalentTo("package:base");
+                environments[1].Name.Should().Be(".GlobalEnv");
+                environments[environments.Count - 1].Name.Should().Be("package:base");
+            });
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task GetREnvironmentFunction1Test() {
+            await RunEnvironmentTestAsync("foo<-function(x){browser();};bar<-function(x){foo(x+1);};bar(1);", (environments) => {
+                environments.Count.Should().BeGreaterOrEqualTo(3);
+                environments[0].Name.Should().Be("foo");
+                environments[0].FrameIndex.HasValue.Should().BeTrue();
+                environments[0].FrameIndex.Should().Be(2);
+                environments[1].Name.Should().Be(".GlobalEnv");
+                environments[environments.Count - 1].Name.Should().Be("package:base");
+            });
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task GetREnvironmentFunction2Test() {
+            await RunEnvironmentTestAsync("bar<-function(x){foo<-function(x){browser();};foo(x+1);};bar(1);", (environments) => {
+                environments.Count.Should().BeGreaterOrEqualTo(4);
+                environments[0].Name.Should().Be("foo");
+                environments[0].FrameIndex.HasValue.Should().BeTrue();
+                environments[0].FrameIndex.Should().Be(2);
+                environments[1].Name.Should().Be("bar");
+                environments[1].FrameIndex.HasValue.Should().BeTrue();
+                environments[1].FrameIndex.Should().Be(1);
+                environments[2].Name.Should().Be(".GlobalEnv");
+                environments[environments.Count - 1].Name.Should().Be("package:base");
             });
         }
 

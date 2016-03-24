@@ -74,8 +74,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var currentItem = EnvironmentComboBox.SelectedItem as REnvironment;
             if (currentItem != null && !e.Environments[0].FrameIndex.HasValue) {
-                var indexes = e.Environments.IndexWhere((env) => env.Name == currentItem.Name);
-                selectedIndex = indexes.Count() > 0 ? indexes.First() : selectedIndex;
+                for (int i = 1; i < e.Environments.Count; i++) {
+                    if (e.Environments[i].Name == currentItem.Name) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
             }
 
             EnvironmentComboBox.ItemsSource = e.Environments;
