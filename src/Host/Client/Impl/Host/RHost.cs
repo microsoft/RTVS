@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -42,9 +43,9 @@ namespace Microsoft.R.Host.Client {
         private readonly FileLogWriter _fileLogWriter;
         private Process _process;
         private volatile Task _runTask;
-        private bool _canEval;
         private int _rLoopDepth;
-        private long _nextMessageId = 1;
+        private long _lastMessageId = -1;
+        private readonly ConcurrentDictionary<string, EvaluationRequest> _evalRequests = new ConcurrentDictionary<string, EvaluationRequest>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
@@ -99,9 +100,9 @@ namespace Microsoft.R.Host.Client {
             return new Message(token);
         }
 
-        private JArray CreateMessage(CancellationToken ct, out string id, string name, params object[] args) {
-            id = "#" + _nextMessageId + "#";
-            _nextMessageId += 2;
+        private JArray CreateMessage(out string id, string name, params object[] args) {
+            long n = Interlocked.Add(ref _lastMessageId, 2);
+            id = "#" + n + "#";
             return new JArray(id, name, args);
         }
 
@@ -121,7 +122,7 @@ namespace Microsoft.R.Host.Client {
 
         private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
             string id;
-            var message = CreateMessage(ct, out id, name, args);
+            var message = CreateMessage(out id, name, args);
             await SendAsync(message, ct);
             return id;
         }
@@ -130,7 +131,7 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             string id;
-            var message = CreateMessage(ct, out id, ":", request.Id, request.Name, args);
+            var message = CreateMessage(out id, ":", request.Id, request.Name, args);
             await SendAsync(message, ct);
             return id;
         }
@@ -154,21 +155,14 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task ShowDialog(Message request, bool allowEval, MessageButtons buttons, CancellationToken ct) {
+        private async Task ShowDialog(Message request, MessageButtons buttons, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             request.ExpectArguments(2);
             var contexts = GetContexts(request);
             var s = request.GetString(1, "s", allowNull: true);
 
-            MessageButtons input;
-            try {
-                _canEval = allowEval;
-                input = await _callbacks.ShowDialog(contexts, s, _canEval, buttons, ct);
-            } finally {
-                _canEval = false;
-            }
-
+            MessageButtons input = await _callbacks.ShowDialog(contexts, s, buttons, ct);
             ct.ThrowIfCancellationRequested();
 
             string response;
@@ -192,7 +186,7 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, response);
         }
 
-        private async Task ReadConsole(Message request, bool allowEval, CancellationToken ct) {
+        private async Task ReadConsole(Message request, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             request.ExpectArguments(5);
@@ -203,14 +197,7 @@ namespace Microsoft.R.Host.Client {
             var retryReason = request.GetString(3, "retry_reason", allowNull: true);
             var prompt = request.GetString(4, "prompt", allowNull: true);
 
-            string input;
-            try {
-                _canEval = allowEval;
-                input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, _canEval, ct);
-            } finally {
-                _canEval = false;
-            }
-
+            string input = await _callbacks.ReadConsole(contexts, prompt, len, addToHistory, ct);
             ct.ThrowIfCancellationRequested();
 
             input = input.Replace("\r\n", "\n");
@@ -223,70 +210,41 @@ namespace Microsoft.R.Host.Client {
                 : EvaluateAsyncBackground(expression, kind, ct);
         }
 
-        private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) { 
+        private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            if (!_canEval) {
-                throw new InvalidOperationException("EvaluateAsync can only be called while ReadConsole or YesNoCancel is pending.");
+            JArray message;
+            var request = new EvaluationRequest(this, expression, kind, out message);
+            _evalRequests[request.Id] = request;
+
+            await SendAsync(message, ct);
+            return await request.CompletionSource.Task;
+        }
+
+        private void ProcessEvaluationResult(Message response) {
+            EvaluationRequest request; ;
+            if (!_evalRequests.TryRemove(response.RequestId, out request)) {
+                throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
             }
 
-            bool reentrant = false, jsonResult = false;
-
-            var nameBuilder = new StringBuilder("=");
-            if (kind.HasFlag(REvaluationKind.Reentrant)) {
-                nameBuilder.Append('@');
-                reentrant = true;
+            response.ExpectArguments(1, 3);
+            var firstArg = response[0] as JValue;
+            if (firstArg != null && firstArg.Value == null) {
+                request.CompletionSource.SetCanceled();
             }
-            if (kind.HasFlag(REvaluationKind.Cancelable)) {
-                nameBuilder.Append('/');
-                reentrant = true;
+
+            if (response.Name != request.MessageName) {
+                throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{request.Id}','{request.MessageName}','{request.Expression}']");
             }
-            if (kind.HasFlag(REvaluationKind.Json)) {
-                nameBuilder.Append('j');
-                jsonResult = true;
-            }
-            if (kind.HasFlag(REvaluationKind.BaseEnv)) {
-                nameBuilder.Append('B');
-            }
-            if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
-                nameBuilder.Append('E');
-            }
-            if (kind.HasFlag(REvaluationKind.NewEnv)) {
-                nameBuilder.Append("N");
-            }
-            var name = nameBuilder.ToString();
 
-            _canEval = false;
-            try {
-                expression = expression.Replace("\r\n", "\n");
-                var id = await SendAsync(name, ct, expression);
+            response.ExpectArguments(3);
+            var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
+            var error = response.GetString(1, "error", allowNull: true);
 
-                var response = await RunLoop(ct, reentrant);
-                if (response == null) {
-                    throw new OperationCanceledException("Evaluation canceled because host process has been terminated.");
-                }
-
-                if (response.RequestId != id || response.Name != name) {
-                    throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{id}','{name}','{expression}']");
-                }
-
-                response.ExpectArguments(1, 3);
-                var firstArg = response[0] as JValue;
-                if (firstArg != null && firstArg.Value == null) {
-                    throw new OperationCanceledException(Invariant($"Evaluation canceled: {expression}"));
-                }
-
-                response.ExpectArguments(3);
-                var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
-                var error = response.GetString(1, "error", allowNull: true);
-
-                if (jsonResult) {
-                    return new REvaluationResult(response[2], error, parseStatus);
-                } else {
-                    return new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
-                }
-            } finally {
-                _canEval = true;
+            if (request.Kind.HasFlag(REvaluationKind.Json)) {
+                request.CompletionSource.SetResult(new REvaluationResult(response[2], error, parseStatus));
+            } else {
+                request.CompletionSource.SetResult(new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus));
             }
         }
 
@@ -355,7 +313,7 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<Message> RunLoop(CancellationToken ct, bool allowEval) {
+        private async Task<Message> RunLoop(CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             try {
@@ -365,7 +323,12 @@ namespace Microsoft.R.Host.Client {
                     if (message == null) {
                         return null;
                     } else if (message.RequestId != null) {
-                        return message;
+                        if (message.Name.StartsWithIgnoreCase("=")) {
+                            ProcessEvaluationResult(message);
+                            continue;
+                        } else {
+                            throw ProtocolError($"Unrecognized host response message name:", message);
+                        }
                     }
 
                     try {
@@ -375,19 +338,27 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "?":
-                                await ShowDialog(message, allowEval, MessageButtons.YesNoCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                ShowDialog(message, MessageButtons.YesNoCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
                                 break;
 
                             case "??":
-                                await ShowDialog(message, allowEval, MessageButtons.YesNo, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                ShowDialog(message, MessageButtons.YesNo, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
                                 break;
 
                             case "???":
-                                await ShowDialog(message, allowEval, MessageButtons.OKCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                ShowDialog(message, MessageButtons.OKCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
                                 break;
 
                             case ">":
-                                await ReadConsole(message, allowEval, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token);
+                                ReadConsole(message, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
+                                    .SilenceException<MessageTransportException>()
+                                    .DoNotWait();
                                 break;
 
                             case "!":
@@ -454,7 +425,7 @@ namespace Microsoft.R.Host.Client {
                 var rVersion = message.GetString(1, "R_version");
                 await _callbacks.Connected(rVersion);
 
-                message = await RunLoop(ct, allowEval: true);
+                message = await RunLoop(ct);
                 if (message != null) {
                     throw ProtocolError($"Unexpected host response message:", message);
                 }
@@ -506,7 +477,7 @@ namespace Microsoft.R.Host.Client {
         public async Task CreateAndRun(string rHome, string rhostDirectory = null, string rCommandLineArguments = null, int timeout = 3000, CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof (RHost).Assembly.GetAssemblyPath());
+            rhostDirectory = rhostDirectory ?? Path.GetDirectoryName(typeof(RHost).Assembly.GetAssemblyPath());
             rCommandLineArguments = rCommandLineArguments ?? string.Empty;
 
             string rhostExe = Path.Combine(rhostDirectory, RHostExe);

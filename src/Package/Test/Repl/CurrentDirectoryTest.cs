@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -27,9 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public CurrentDirectoryTest() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
+            var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, activeTextViewTracker, debuggerModeTracker, null, VsAppShell.Current, RToolsSettings.Current, () => {});
+            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, packagesProvider, activeTextViewTracker, debuggerModeTracker, null, VsAppShell.Current, RToolsSettings.Current, () => {});
         }
 
         public void Dispose() {

@@ -119,12 +119,49 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
+    <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageInfoListDataSource.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\InfiniteScrollList.xaml.cs">
+      <DependentUpon>InfiniteScrollList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\LoadingStatusBar.xaml.cs">
+      <DependentUpon>LoadingStatusBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageDetails.xaml.cs">
+      <DependentUpon>PackageDetails.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageManagerControl.xaml.cs">
+      <DependentUpon>PackageManagerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageManagerResources.xaml.cs">
+      <DependentUpon>PackageManagerResources.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml.cs">
+      <DependentUpon>PackageManagerTopPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\Spinner.xaml.cs">
+      <DependentUpon>Spinner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PackageManager\IRPackageManager.cs" />
+    <Compile Include="PackageManager\IRPackageManagerProvider.cs" />
+    <Compile Include="PackageManager\IRPackageManagerVisualComponent.cs" />
+    <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="PackageManager\ViewModel\IRPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Model\RPackageVersion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Resources\Images.cs" />
     <Compile Include="Services\ServiceManagerBase.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Settings\IRSettings.cs" />
@@ -139,6 +176,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Wpf\Impl\Microsoft.Common.Wpf.csproj">
+      <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
+      <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
@@ -156,6 +197,10 @@
       <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
       <Name>Microsoft.R.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Wpf\Impl\Microsoft.R.Wpf.csproj">
+      <Project>{f951311c-d665-4987-95a4-72a2de37e263}</Project>
+      <Name>Microsoft.R.Wpf</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -164,7 +209,45 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <Page Include="PackageManager\Implementation\View\InfiniteScrollList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\LoadingStatusBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\PackageDetails.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\PackageManagerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PackageManager\Implementation\View\Spinner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\StatusOK_32x.png" />
+    <Resource Include="Resources\StatusStop_32x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\packageicon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

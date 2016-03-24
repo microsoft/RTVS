@@ -96,7 +96,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(_historyTextBuffer).Component;
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(_historyTextBuffer, instanceId).Component;
             _textViewSelection = VisualComponent.TextView.Selection;
             _editorOperations = _editorOperationsFactory.GetEditorOperations(VisualComponent.TextView);
             return VisualComponent;

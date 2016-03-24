@@ -19,6 +19,13 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
+        public Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            if (isMutating) {
+                Mutated?.Invoke(this, EventArgs.Empty);
+            }
+            return Task.FromResult(new REvaluationResult());
+        }
+
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
             _eval = new RSessionEvaluationMock();
 
