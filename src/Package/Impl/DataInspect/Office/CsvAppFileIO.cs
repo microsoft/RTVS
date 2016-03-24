@@ -78,11 +78,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         public static void Close() {
             var folder = GetTempCsvFilesFolder();
             if (Directory.Exists(folder)) {
-                foreach (var f in Directory.EnumerateFiles(folder)) {
-                    try {
-                        File.Delete(f);
-                    } catch(IOException) { } catch (UnauthorizedAccessException) { }
-                }
+                // Note: some files may still be locked if they are opened in Excel
+                try {
+                    Directory.Delete(folder, recursive: true);
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
         }
 
@@ -125,14 +124,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 csvFileName += "_";
             }
 
-            if(variableName.StartsWith("$", StringComparison.Ordinal)) {
+            if (variableName.StartsWith("$", StringComparison.Ordinal)) {
                 variableName = variableName.Substring(1);
             }
 
             int invalidCharIndex = variableName.IndexOfAny(Path.GetInvalidFileNameChars());
 
             variableName = MakeFileSystemCompatible(variableName);
-            if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
+            if (variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
                 variableName = _variableNameReplacement;
             }
             csvFileName += variableName;
@@ -144,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var invalidChars = Path.GetInvalidFileNameChars();
             var sb = new StringBuilder();
             foreach (char ch in s) {
-                if(invalidChars.Contains(ch)) {
+                if (invalidChars.Contains(ch)) {
                     sb.Append('_');
                 }
                 sb.Append(ch);
