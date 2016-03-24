@@ -21,6 +21,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
     internal static class CsvAppFileIO {
+        private const string _variableNameReplacement = "variable";
         private static int _busy;
 
         public static async Task OpenDataCsvApp(DebugEvaluationResult result) {
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 Directory.CreateDirectory(folder);
             }
 
-            var variableName = result.Name ?? "variable";
+            var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(variableName);
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
             var rfile = file.Replace('\\', '/');
@@ -125,9 +126,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             if(variableName.StartsWith("$", StringComparison.Ordinal)) {
                 variableName = variableName.Substring(1);
             }
+
             variableName = variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
             if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
-                variableName = "expression";
+                variableName = _variableNameReplacement;
             }
             csvFileName += variableName;
 
