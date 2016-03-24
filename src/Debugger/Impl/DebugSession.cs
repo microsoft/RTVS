@@ -88,7 +88,7 @@ namespace Microsoft.R.Debugger {
                 using (var eval = await RSession.BeginEvaluationAsync(cancellationToken: cancellationToken)) {
                     // Re-initialize the breakpoint table.
                     foreach (var bp in _breakpoints.Values) {
-                        await eval.EvaluateAsync(bp.GetAddBreakpointExpression(false)); // TODO: mark breakpoint as invalid if this fails.
+                        await bp.ReapplyBreakpointAsync(cancellationToken);
                     }
 
                     await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
@@ -204,9 +204,14 @@ namespace Microsoft.R.Debugger {
 
         public async Task BreakAsync(CancellationToken ct = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var inter = await RSession.BeginInteractionAsync(true, ct)) {
-                await inter.RespondAsync("browser()\n");
-            }
+
+            // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
+            // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
+            RSession.EvaluateAsync("browser()", false, REvaluationKind.Reentrant, ct)
+                .SilenceException<MessageTransportException>().DoNotWait();
+
+            // Wait until prompt appears, but don't actually respond to it.
+            using (var inter = await RSession.BeginInteractionAsync(true, ct)) { }
         }
 
         public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -298,7 +303,9 @@ namespace Microsoft.R.Debugger {
         public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            await InvokeDebugHelperAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"), ct);
+            using (var eval = await RSession.BeginEvaluationAsync(true, ct)) {
+                await eval.EvaluateAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"));
+            }
         }
 
         public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {

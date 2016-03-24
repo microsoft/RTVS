@@ -19,13 +19,7 @@ namespace Microsoft.R.Debugger.Test {
             // Now wait until session tells us that it has noticed the prompt and processed it.
             // Note that even if we register the handler after it has already noticed, but
             // before the interaction completed, it will still invoke the handler.
-            var browseTcs = new TaskCompletionSource<bool>();
-            EventHandler<DebugBrowseEventArgs> handler = null;
-            handler = (sender, e) => {
-                session.Browse -= handler;
-                browseTcs.SetResult(true);
-            };
-            session.Browse += handler;
+            var browseTask = EventTaskSources.DebugSession.Browse.Create(session);
 
             // Spin until either Browse is raised, or we see a different non-Browse prompt.
             // If the latter happens, we're not going to see Browse raised for that prompt that we've
@@ -34,9 +28,9 @@ namespace Microsoft.R.Debugger.Test {
             // the state is indeterminate.
             while (true) {
                 var interTask = session.RSession.BeginInteractionAsync();
-                var completedTask = await Task.WhenAny(browseTcs.Task, interTask);
+                var completedTask = await Task.WhenAny(browseTask, interTask);
 
-                if (completedTask == browseTcs.Task) {
+                if (completedTask == browseTask) {
                     interTask.ContinueWith(t => t.Result.Dispose(), TaskContinuationOptions.OnlyOnRanToCompletion).DoNotWait();
                     return;
                 }
