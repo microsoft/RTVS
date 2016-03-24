@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
@@ -127,13 +129,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 variableName = variableName.Substring(1);
             }
 
-            variableName = variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
+            int invalidCharIndex = variableName.IndexOfAny(Path.GetInvalidFileNameChars());
+
+            variableName = MakeFileSystemCompatible(variableName);
             if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
                 variableName = _variableNameReplacement;
             }
             csvFileName += variableName;
 
             return csvFileName;
+        }
+
+        private static string MakeFileSystemCompatible(string s) {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sb = new StringBuilder();
+            foreach (char ch in s) {
+                if(invalidChars.Contains(ch)) {
+                    sb.Append('_');
+                }
+                sb.Append(ch);
+            }
+            return sb.ToString();
         }
     }
 }
