@@ -259,6 +259,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to open CSV file. Exception: {0}..
+        /// </summary>
+        public static string Error_CannotOpenCsv {
+            get {
+                return ResourceManager.GetString("Error_CannotOpenCsv", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error sending e-mail: {0} ({1})..
         /// </summary>
         public static string Error_CannotSendFeedback1 {
@@ -273,15 +282,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_CannotSendFeedback2 {
             get {
                 return ResourceManager.GetString("Error_CannotSendFeedback2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to evaluate expression and get data for Microsoft Excel.
-        /// </summary>
-        public static string Error_ExcelCannotEvaluateExpression {
-            get {
-                return ResourceManager.GetString("Error_ExcelCannotEvaluateExpression", resourceCulture);
             }
         }
         
@@ -557,20 +557,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open in Microsoft Excel or another app registered for CSV files.
+        /// </summary>
+        public static string OpenCsvAppCommandTooltip {
+            get {
+                return ResourceManager.GetString("OpenCsvAppCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Help on {0}.
         /// </summary>
         public static string OpenFunctionHelp {
             get {
                 return ResourceManager.GetString("OpenFunctionHelp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Open in Microsoft Excel.
-        /// </summary>
-        public static string OpenInExcelCommandTooltip {
-            get {
-                return ResourceManager.GetString("OpenInExcelCommandTooltip", resourceCulture);
             }
         }
         
@@ -598,6 +598,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string OutputWindowName_Publish {
             get {
                 return ResourceManager.GetString("OutputWindowName_Publish", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Package Manager.
+        /// </summary>
+        public static string PackageManagerWindowCaption {
+            get {
+                return ResourceManager.GetString("PackageManagerWindowCaption", resourceCulture);
             }
         }
         
@@ -655,24 +664,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Row {0} of {1}.
-        /// </summary>
-        public static string Progress_ExcelRowCounter {
-            get {
-                return ResourceManager.GetString("Progress_ExcelRowCounter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Preparing data for Microsoft Excel....
-        /// </summary>
-        public static string Progress_PreparingExcelData {
-            get {
-                return ResourceManager.GetString("Progress_PreparingExcelData", resourceCulture);
             }
         }
         
@@ -1409,6 +1400,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Writing data into CSV file....
+        /// </summary>
+        public static string Status_WritingCSV {
+            get {
+                return ResourceManager.GetString("Status_WritingCSV", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Once a day.
         /// </summary>
         public static string SurveyNewsPolicyCheckOnceDay {
@@ -1540,24 +1540,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancel data conversion for Microsoft Excel?.
-        /// </summary>
-        public static string Warning_CancelCurrentExcelView {
-            get {
-                return ResourceManager.GetString("Warning_CancelCurrentExcelView", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        public static string Warning_LogTooLarge {
-            get {
-                return ResourceManager.GetString("Warning_LogTooLarge", resourceCulture);
             }
         }
         

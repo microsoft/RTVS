@@ -22,6 +22,11 @@ namespace Microsoft.Common.Wpf {
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider) {
+            var isDesignMode = (bool)DesignerProperties.IsInDesignModeProperty.GetMetadata(typeof(DependencyObject)).DefaultValue;
+            if (isDesignMode) {
+                return null;
+            }
+
             if (Lambda == null) {
                 throw new InvalidOperationException("Lambda not specified");
             }

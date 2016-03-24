@@ -55,9 +55,11 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
         public static EnvDTE.Project GetActiveProject() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
-            var projects = (Array)dte.ActiveSolutionProjects;
-            if (projects != null && projects.Length == 1) {
-                return (EnvDTE.Project)projects.GetValue(0);
+            if (dte.Solution.Projects.Count > 0) {
+                var projects = (Array)dte.ActiveSolutionProjects;
+                if (projects != null && projects.Length == 1) {
+                    return (EnvDTE.Project)projects.GetValue(0);
+                }
             }
             return null;
         }
@@ -127,14 +129,15 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
         }
 
-        public static string GetUniqueFileName(string folder, string prefix, string extension) {
+        public static string GetUniqueFileName(string folder, string prefix, string extension, bool appendUnderscore = false) {
+            string suffix = appendUnderscore ? "_" : string.Empty;
             string name = Path.ChangeExtension(Path.Combine(folder, prefix), extension);
             if (!File.Exists(name)) {
                 return name;
             }
 
             for (int i = 1; ; i++) {
-                name = Path.Combine(folder, Invariant($"{prefix}{i}.{extension}"));
+                name = Path.Combine(folder, Invariant($"{prefix}{suffix}{i}.{extension}"));
                 if (!File.Exists(name)) {
                     return name;
                 }
@@ -142,8 +145,17 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static string GetProjectItemTemplatesFolder() {
+            // In F5 (Experimental instance) scenario templates are deployed where the extension is.
             string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
-            return Path.Combine(Path.GetDirectoryName(assemblyPath), @"ItemTemplates\");
+            var templatesFolder = Path.Combine(Path.GetDirectoryName(assemblyPath), @"ItemTemplates\");
+            if(!Directory.Exists(templatesFolder)) {
+                // Real install scenario, templates are in 
+                // C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\ItemTemplates\R
+                string vsExecutableFileName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+                string vsFolder = Path.GetDirectoryName(vsExecutableFileName);
+                templatesFolder = Path.Combine(vsFolder, @"ItemTemplates\R\");
+            }
+            return templatesFolder;
         }
     }
 }

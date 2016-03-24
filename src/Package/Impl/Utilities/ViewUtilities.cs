@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -82,6 +83,16 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
             string filePath = textView.TextBuffer.GetFilePath();
             rdt.SaveFileIfDirty(filePath);
+        }
+
+        public static string GetFilePath(this ITextView textView) {
+            if (textView != null && !textView.IsClosed) {
+                ITextDocument document;
+                if (textView.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
+                    return document.FilePath;
+                }
+            }
+            return string.Empty;
         }
     }
 }
