@@ -207,7 +207,7 @@ namespace Microsoft.R.Debugger {
 
             // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
             // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
-            RSession.EvaluateAsync("browser()", REvaluationKind.Reentrant, ct)
+            RSession.EvaluateAsync("browser()", false, REvaluationKind.Reentrant, ct)
                 .SilenceException<MessageTransportException>().DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.

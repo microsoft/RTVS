@@ -125,13 +125,17 @@ namespace Microsoft.R.Host.Client.Session {
             return _isHostRunning ? source.Task : CanceledBeginEvaluationTask;
         }
 
-        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+        public async Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledEvaluateTask;
             }
 
             try {
-                return await _host.EvaluateAsync(expression, kind, ct);
+                var result = await _host.EvaluateAsync(expression, kind, ct);
+                if (isMutating) {
+                    OnMutated();
+                }
+                return result;
             } catch (MessageTransportException) when (!IsHostRunning) {
                 return await CanceledEvaluateTask;
             }

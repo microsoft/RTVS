@@ -66,7 +66,7 @@ namespace Microsoft.R.Debugger.Test {
                     { sf, new MatchRange<int>(1, 3) }
                 });
 
-                await _session.EvaluateAsync("x <- -42", REvaluationKind.Normal);
+                await _session.EvaluateAsync("x <- -42", true, REvaluationKind.Normal);
                 await debugSession.ContinueAsync();
 
                 await debugSession.NextPromptShouldBeBrowseAsync();

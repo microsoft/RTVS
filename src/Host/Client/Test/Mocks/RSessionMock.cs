@@ -19,7 +19,10 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+        public Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            if (isMutating) {
+                Mutated?.Invoke(this, EventArgs.Empty);
+            }
             return Task.FromResult(new REvaluationResult());
         }
 
