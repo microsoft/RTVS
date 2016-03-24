@@ -93,11 +93,24 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0">Input File</TextBlock>
-                        <ScrollViewer Grid.Row="1" >
+                        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                             <TextBlock x:Name="InputFilePreview"></TextBlock>
                         </ScrollViewer>
                     </Grid>
-                    <TextBlock Grid.Row="1" Foreground="Green">Data Frame</TextBlock>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0">Data Frame</TextBlock>
+                        <DataGrid Grid.Row="1" x:Name="DataFramePreview" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False">
+                            <DataGrid.RowHeaderStyle>
+                                <Style TargetType="{x:Type DataGridRowHeader}">
+                                    <Setter Property="Content" Value="{Binding RowName}" />
+                                </Style>
+                            </DataGrid.RowHeaderStyle>
+                        </DataGrid>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

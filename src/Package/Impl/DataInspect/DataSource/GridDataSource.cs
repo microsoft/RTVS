@@ -11,7 +11,7 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
     public class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange gridRange, IRSession rSession = null) {
+        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, IRSession rSession = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             if (rSession == null) {
@@ -21,8 +21,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 }
             }
 
-            string rows = gridRange.Rows.ToRString();
-            string columns = gridRange.Columns.ToRString();
+            string rows = gridRange?.Rows.ToRString();
+            string columns = gridRange?.Columns.ToRString();
 
             REvaluationResult? result = null;
             using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
@@ -37,10 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
 
             if (result.HasValue) {
                 data = GridParser.Parse(result.Value.StringResult.ToUnicodeQuotes());
-                data.Range = gridRange;
+                if (gridRange.HasValue) {
+                    data.Range = gridRange.Value;
+                }
 
-                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != gridRange.Rows.Count)
-                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != gridRange.Columns.Count)) {
+                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != data.Range.Rows.Count)
+                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != data.Range.Columns.Count)) {
                     throw new InvalidOperationException("Header names lengths are different from data's length");
                 }
             }

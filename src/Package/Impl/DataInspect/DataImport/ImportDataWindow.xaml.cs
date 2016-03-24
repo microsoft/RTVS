@@ -25,6 +25,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using static System.FormattableString;
 using Microsoft.Common.Core;
 using System.IO;
+using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// <summary>
@@ -51,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private string NAString { get; }
 
-        private string BuildCommandLine() {
+        private string BuildCommandLine(bool preview = false) {
             var parameter = new StringBuilder();
 
             parameter.Append("file=");
@@ -85,7 +86,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 AppendString(parameter, NAString);
             }
 
-            return string.Format(CultureInfo.InvariantCulture, "\"{0}\" <- read.csv({1})", VariableNameBox.Text, parameter);
+            if (preview) {
+                parameter.Append(" ,nrows=20");
+                return string.Format(CultureInfo.InvariantCulture, "read.csv({0})", parameter);
+            } else {
+                return string.Format(CultureInfo.InvariantCulture, "\"{0}\" <- read.csv({1})", VariableNameBox.Text, parameter);
+            }
         }
 
         private void AppendString(StringBuilder builder, string value) {
@@ -113,14 +119,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void RunButton_Click(object sender, RoutedEventArgs e) {
-            RunButton.IsEnabled = false;
-            CancelButton.IsEnabled = false;
+            //RunButton.IsEnabled = false;
+            //CancelButton.IsEnabled = false;
 
-            RunAsync(CommandPreviewBox.Text).DoNotWait();
+            PreviewAsync(BuildCommandLine(true)).DoNotWait();
+            //RunAsync(CommandPreviewBox.Text).DoNotWait();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
             base.Close();
+        }
+
+        private async Task PreviewAsync(string expression) {
+            var grid = await GridDataSource.GetGridDataAsync(expression, null);
+
+            VsAppShell.Current.DispatchOnUIThread(() => PopulateDataFramePreview(grid));
         }
 
         private async Task RunAsync(string expression) {
@@ -132,7 +145,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for importing data set"));
                 }
 
-                using (var evaluator = await rSession.BeginEvaluationAsync()) {
+                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
                     var result = await evaluator.EvaluateAsync(expression);
                     if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
                         VsAppShell.Current.DispatchOnUIThread(() => OnError(result.ToString()));
@@ -153,6 +166,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             // TODO: implement this
         }
 
+        private void PopulateDataFramePreview(IGridData<string> gridData) {
+            var dg = DataFramePreview;
+            dg.Columns.Clear();
+
+            for (int i = 0; i < gridData.ColumnHeader.Range.Count; i++) {
+                dg.Columns.Add(new DataGridTextColumn() {
+                    Header = gridData.ColumnHeader[gridData.ColumnHeader.Range.Start + i],
+                    Binding = new Binding(Invariant($"Values[{i}]")),
+                });
+            }
+
+            List<RowDataItem> rows = new List<RowDataItem>();
+            for (int r = 0; r < gridData.Grid.Range.Rows.Count; r++) {
+                var row = new RowDataItem();
+                row.RowName = gridData.RowHeader[gridData.RowHeader.Range.Start + r];
+                for (int c = 0; c < gridData.Grid.Range.Columns.Count; c++) {
+                    row.Values.Add(gridData.Grid[gridData.Grid.Range.Rows.Start + r, gridData.Grid.Range.Columns.Start + c]);
+                }
+                rows.Add(row);
+            }
+            dg.ItemsSource = rows;
+        }
+
         private string ReadFileALittle(string filePath) {
             const int NumberCharBuffer = 2048;
 
@@ -163,6 +199,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
 
             return new string(buffer, 0, readCount);
+        }
+
+        class RowDataItem {
+            public RowDataItem() {
+                Values = new List<string>();
+            }
+
+            public string RowName { get; set; }
+            public List<string> Values { get; private set; }
         }
     }
 }
