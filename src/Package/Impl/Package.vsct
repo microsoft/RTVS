@@ -752,7 +752,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0500" type="Button">
-        <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>

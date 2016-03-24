@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
+using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -83,6 +84,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new ShowHistoryWindowCommand(),
+                new ShowPackageManagerWindowCommand(),
 
                 // Plot commands
                 new ExportPlotAsImageCommand(plotHistory),

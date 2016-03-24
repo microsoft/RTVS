@@ -66,6 +66,10 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static void SetToolbarToHost(IVsWindowFrame frame, ToolWindowPane toolWindow) {
+            if (toolWindow.ToolBar == null) {
+                return;
+            }
+
             var toolBarHost = GetToolbarHost(frame);
             if (toolBarHost == null) {
                 return;

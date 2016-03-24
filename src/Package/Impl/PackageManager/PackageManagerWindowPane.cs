@@ -25,8 +25,9 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
         }
 
         protected override void OnCreate() {
-            _commandTarget = new CommandTargetToOleShim(null, Component.Controller);
             Component = new RPackageManagerVisualComponent(_packageManager, this);
+            // TODO: Implement RPackageManagerVisualComponent.Controller
+            //_commandTarget = new CommandTargetToOleShim(null, Component.Controller);
 
             base.OnCreate();
         }

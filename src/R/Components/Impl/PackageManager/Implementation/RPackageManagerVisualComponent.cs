@@ -5,6 +5,7 @@ using System.Windows;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.View;
+using Microsoft.R.Wpf;
 using PackageManagerControl = Microsoft.R.Components.PackageManager.Implementation.View.PackageManagerControl;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
