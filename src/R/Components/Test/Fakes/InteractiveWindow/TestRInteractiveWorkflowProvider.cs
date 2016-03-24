@@ -17,7 +17,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
-        private readonly IRPackageManagerProvider _pacakagesProvider;
+        private readonly IRPackageManagerProvider _packagesProvider;
         private readonly ICoreShell _shell;
         private readonly IRSettings _settings;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
-            , IRPackageManagerProvider pacakagesProvider
+            , IRPackageManagerProvider packagesProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell shell
@@ -36,7 +36,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
 
             _sessionProvider = sessionProvider;
             _historyProvider = historyProvider;
-            _pacakagesProvider = pacakagesProvider;
+            _packagesProvider = packagesProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _shell = shell;
@@ -49,7 +49,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, null, _shell, _settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, null, _shell, _settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

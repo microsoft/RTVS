@@ -602,7 +602,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R History.
+        ///   Looks up a localized string similar to R Package Manager.
         /// </summary>
         public static string PackageManagerWindowCaption {
             get {

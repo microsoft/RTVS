@@ -1,4 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.ObjectModel;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -11,7 +14,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             InitializeComponent();
         }
 
-        public double ScaleX => ActualWidth/120;
+        public double ScaleX => ActualWidth / 120;
         public double ScaleY => ActualHeight / 120;
     }
 

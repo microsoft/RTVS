@@ -523,7 +523,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>R History</value>
   </data>
   <data name="PackageManagerWindowCaption" xml:space="preserve">
-    <value>R History</value>
+    <value>R Package Manager</value>
   </data>
   <data name="LoadWorkspaceTitle" xml:space="preserve">
     <value>Load Workspace</value>

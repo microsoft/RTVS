@@ -9,6 +9,7 @@
              xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime1="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
+             xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=designTime1:DesignTimeRPackageInfoListDataSource, IsDesignTimeCreatable=True}"
              d:DesignHeight="300" d:DesignWidth="800">
@@ -45,7 +46,7 @@
                 </Style.Triggers>
             </Style>
 
-            <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type packageManager:IRPackageViewModel}">
+            <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" Padding="0,8,0,0" x:Name="Container">
                     <Grid Margin="16,0,7,0">
                         <Grid.ColumnDefinitions>
