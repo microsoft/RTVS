@@ -19,6 +19,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class PackageManagerAttribute : CategoryAttribute {
+            public PackageManagerAttribute() : base("PackageManager") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class LoggingAttribute : CategoryAttribute {
             public LoggingAttribute() : base("Logging") { }
         }
