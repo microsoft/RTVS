@@ -86,6 +86,9 @@ namespace Microsoft.R.Core.AST {
                 var es = c as IExpressionStatement;
                 if (es != null) {
                     if (!globalScope && es.Start > position) {
+                        // In local scope stop at the predefined location
+                        // so we do not enumerate variables or functions
+                        // that hasn't been declared yet in the scope flow.
                         yield break;
                     }
 

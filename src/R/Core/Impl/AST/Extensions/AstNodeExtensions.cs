@@ -14,12 +14,15 @@ namespace Microsoft.R.Core.AST {
             if(n == null) {
                 var root = node as AstRoot;
                 if(root != null && root.Children.Count > 0) {
-                    return root.Children[0] as IScope;
+                    return root.Children[0] as IScope; // Global scope
                 }
+                return null;
             }
-            while (!(n is IScope)) {
+
+            while (!(n is IScope) && n != null) {
                 n = n.Parent;
             }
+
             return n as IScope;
         }
     }
