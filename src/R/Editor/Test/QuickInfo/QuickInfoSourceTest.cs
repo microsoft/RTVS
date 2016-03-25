@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
@@ -36,7 +35,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             string content = @"x <- as.matrix(x)";
             AstRoot ast = RParser.Parse(content);
 
-            int caretPosition = 6;
+            int caretPosition = 15; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
@@ -59,7 +58,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
             string content = @"x <- as.Date.character(x)";
             AstRoot ast = RParser.Parse(content);
 
-            int caretPosition = 6;
+            int caretPosition = 23; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
