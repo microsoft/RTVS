@@ -34,6 +34,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Editor, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.ImageCatalog, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Imaging, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Data.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
@@ -49,6 +54,10 @@
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.Wpf.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Version=1.9.2.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\NSubstitute.1.9.2.0\lib\net45\NSubstitute.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
@@ -80,9 +89,13 @@
     <Compile Include="CompletionSessionMock.cs" />
     <Compile Include="ContentTypeMock.cs" />
     <Compile Include="ContentTypeRegistryMock.cs" />
+    <Compile Include="DocumentPeekResultMock.cs" />
     <Compile Include="EditorOperationsMock.cs" />
     <Compile Include="EditorOptionsMock.cs" />
     <Compile Include="MappingPointMock.cs" />
+    <Compile Include="PeekResultFactoryMock.cs" />
+    <Compile Include="PeekSessionMock.cs" />
+    <Compile Include="PersistentSpanMock.cs" />
     <Compile Include="QuickInfoSessionMock.cs" />
     <Compile Include="SignatureHelpSessionMock.cs" />
     <Compile Include="TextBufferMock.cs" />
@@ -90,6 +103,7 @@
     <Compile Include="TextChangeCollectionMock.cs" />
     <Compile Include="TextChangeMock.cs" />
     <Compile Include="TextDataModelMock.cs" />
+    <Compile Include="TextDocumentMock.cs" />
     <Compile Include="TextEditMock.cs" />
     <Compile Include="TextLineMock.cs" />
     <Compile Include="TextSelectionMock.cs" />

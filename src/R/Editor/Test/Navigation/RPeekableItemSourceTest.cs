@@ -5,34 +5,85 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
+using Microsoft.R.Editor.Navigation.Peek;
+using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
     public class RPeekableItemSourceTest {
+        [Test]
+        public void PeekFunction01() {
+            List<IPeekableItem> items = new List<IPeekableItem>();
+            string content =
+@"
+x <- function(a) { }
+z <- 1
+x()
+";
 
-        private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
-            AstRoot ast = RParser.Parse(content);
+            GetPeekableItems(content, 3, 0, items);
+            items.Should().ContainSingle().Which.DisplayName.Should().Be("x");
+        }
 
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer, position);
+        [Test]
+        public void PeekVariable01() {
+            List<IPeekableItem> items = new List<IPeekableItem>();
+            string content =
+@"
+x <- function(a) { }
+z <- 1
+x()
+z
+";
 
-            if (selectedRange != null) {
-                textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
-            }
+            GetPeekableItems(content, 4, 0, items);
+            items.Should().ContainSingle().Which.DisplayName.Should().Be("z");
+        }
 
-            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, position);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer);
+        [Test]
+        public void PeekArgument01() {
+            List<IPeekableItem> items = new List<IPeekableItem>();
+            string content =
+@"
+x <- function(a) {
+    z <- 1
+    x()
+    a
+}
+";
 
-            completionSource.PopulateCompletionList(position, completionSession, completionSets, ast);
+            GetPeekableItems(content, 4, 4, items);
+            items.Should().ContainSingle().Which.DisplayName.Should().Be("a");
+        }
+
+        private void GetPeekableItems(string content, int lineNumber, int column, IList<IPeekableItem> items) {
+            var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var line = tb.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            GetPeekableItems(content, line.Start + column, items);
+        }
+
+        private void GetPeekableItems(string content, int position, IList<IPeekableItem> items) {
+            var document = new EditorDocumentMock(content, "file.r");
+
+            TextViewMock textView = new TextViewMock(document.TextBuffer, position);
+            textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));
+
+            var peekSession = new PeekSessionMock(textView, position);
+            var factory = PeekResultFactoryMock.Create();
+            var peekSource = new PeekableItemSource(textView.TextBuffer, factory);
+
+            peekSource.AugmentPeekSession(peekSession, items);
         }
     }
 }

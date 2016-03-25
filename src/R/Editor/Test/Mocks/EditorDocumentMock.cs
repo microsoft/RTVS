@@ -16,10 +16,13 @@ namespace Microsoft.R.Editor.Test.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class EditorDocumentMock : IREditorDocument
     {
-        public EditorDocumentMock(string content) {
+        public EditorDocumentMock(string content, string filePath = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
             ServiceManager.AddService<IREditorDocument>(this, tb);
+            if(!string.IsNullOrEmpty(filePath)) {
+                tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
+            }
         }
 
         public EditorDocumentMock(IEditorTree tree)
