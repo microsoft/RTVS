@@ -12,8 +12,8 @@ namespace Microsoft.R.Components.PackageManager {
 
         IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0);
 
-        Task<IList<RPackage>> GetInstalledPackagesAsync();
+        Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync();
 
-        Task<IList<RPackage>> GetAvailablePackagesAsync();
+        Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
     }
 }

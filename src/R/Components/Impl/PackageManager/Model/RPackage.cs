@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using Newtonsoft.Json;
 
 namespace Microsoft.R.Components.PackageManager.Model {
-    public class RPackage {
+    public class RPackage : ICloneable {
         public string Package { get; set; }
         public string Depends { get; set; }
         public string Imports { get; set; }
@@ -27,5 +28,13 @@ namespace Microsoft.R.Components.PackageManager.Model {
         public string OperatingSystemType { get; set; }
         public string MD5sum { get; set; }
         public string Built { get; set; }
+
+        public RPackage Clone() {
+            return (RPackage)(this as ICloneable).Clone();
+        }
+
+        object ICloneable.Clone() {
+            return MemberwiseClone();
+        }
     }
 }

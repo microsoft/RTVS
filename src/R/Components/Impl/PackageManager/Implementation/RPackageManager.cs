@@ -34,36 +34,32 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return VisualComponent;
         }
 
-        public async Task<IList<RPackage>> GetInstalledPackagesAsync() {
-            if (_interactiveWorkflow.RSession == null || !_interactiveWorkflow.RSession.IsHostRunning) {
-                return new List<RPackage>();
-            }
-
-            REvaluationResult result;
-            using (IRSessionEvaluation eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
-                result = await eval.InstalledPackages();
-            }
-
-            return ParsePackages(result);
+        public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync() {
+            return await GetPackages(async (eval) => await eval.InstalledPackages());
         }
 
-        public async Task<IList<RPackage>> GetAvailablePackagesAsync() {
-            if (_interactiveWorkflow.RSession == null || !_interactiveWorkflow.RSession.IsHostRunning) {
-                return new List<RPackage>();
-            }
-
-            REvaluationResult result;
-            using (IRSessionEvaluation eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
-                result = await eval.AvailablePackages();
-            }
-
-            return ParsePackages(result);
+        public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync() {
+            return await GetPackages(async (eval) => await eval.AvailablePackages());
         }
 
-        private static IList<RPackage> ParsePackages(REvaluationResult result) {
-            return ((JObject)result.JsonResult).Properties()
-                .Select(p => p.Value.ToObject<RPackage>())
-                .ToList();
+        private async Task<IReadOnlyList<RPackage>> GetPackages(Func<IRSessionEvaluation, Task<REvaluationResult>> fetchFunc) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                return new List<RPackage>().AsReadOnly();
+            }
+
+            try {
+                using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                    var result = await fetchFunc(eval);
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        throw new InvalidOperationException(result.ToString());
+                    }
+                    return ((JObject)result.JsonResult).Properties()
+                        .Select(p => p.Value.ToObject<RPackage>())
+                        .ToList().AsReadOnly();
+                }
+            } catch (OperationCanceledException) {
+                return new List<RPackage>().AsReadOnly();
+            }
         }
 
         public void Dispose() {

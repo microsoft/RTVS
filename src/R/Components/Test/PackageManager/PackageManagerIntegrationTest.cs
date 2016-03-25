@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -45,6 +46,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             result.Should().NotBeEmpty();
 
+            // Since this is coming from an internet repo where we don't control the data,
+            // we only test a few of the values that are less likely to change over time.
             var abcPkg = result.SingleOrDefault(pkg => pkg.Package == "abc");
             abcPkg.Should().NotBeNull();
             abcPkg.Version.Length.Should().BeGreaterOrEqualTo(0);
@@ -63,18 +66,13 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var result = await _workflow.Packages.GetAvailablePackagesAsync();
             result.Should().HaveCount(3);
 
-            var rtvslib1Pkg = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1.Package);
-            rtvslib1Pkg.Should().NotBeNull();
-            rtvslib1Pkg.Version.Should().Be(TestPackages.RtvsLib1.Version);
-            rtvslib1Pkg.Depends.Should().Be(TestPackages.RtvsLib1.Depends);
-            rtvslib1Pkg.License.Should().Be(TestPackages.RtvsLib1.License);
-            rtvslib1Pkg.NeedsCompilation.Should().Be("no");
-            rtvslib1Pkg.Enhances.Should().BeNull();
+            var rtvslib1Expected = TestPackages.RtvsLib1.Clone();
+            rtvslib1Expected.Title = null;
+            rtvslib1Expected.Built = null;
+            rtvslib1Expected.Author = null;
 
-            // These fields are not currently provided by the server's PACKAGES
-            rtvslib1Pkg.Author.Should().BeNull();
-            rtvslib1Pkg.Title.Should().BeNull();
-            rtvslib1Pkg.Built.Should().BeNull();
+            var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
+            rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
         }
 
         [Test]
@@ -86,6 +84,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             // Validate some of the base packages
             result.Should().NotBeEmpty();
 
+            // Since we don't control this package, only spot check a few fields unlikely to change
             var graphics = result.SingleOrDefault(pkg => pkg.Package == "graphics");
             graphics.Should().NotBeNull();
             graphics.LibPath.Should().NotBeNullOrWhiteSpace();
@@ -110,8 +109,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             // Since we can't remove Program Files folder from library paths,
             // we'll get some results, but nothing from the test folder.
-            result.Should().NotBeEmpty();
-            result.Where(pkg => pkg.LibPath == _libPath.ToRPath()).Should().BeEmpty();
+            result.Should().NotBeEmpty().And.NotContain(pkg => pkg.LibPath == _libPath.ToRPath());
         }
 
         [Test]
@@ -121,23 +119,17 @@ namespace Microsoft.R.Components.Test.PackageManager {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalRepoAsync(eval, _repo1Path);
                 await SetLocalLibAsync(eval, _libPath);
-                await InstallPackageAsync(eval, TestPackages.RtvsLib1.Package, _libPath);
+                await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
             }
 
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
 
-            result.Should().NotBeEmpty();
+            var rtvslib1Expected = TestPackages.RtvsLib1.Clone();
+            rtvslib1Expected.LibPath = _libPath.ToRPath();
+            rtvslib1Expected.NeedsCompilation = null;
 
-            var rtvslib1Pkg = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1.Package && pkg.LibPath == _libPath.ToRPath());
-            rtvslib1Pkg.Should().NotBeNull();
-            rtvslib1Pkg.Version.Should().Be(TestPackages.RtvsLib1.Version);
-            rtvslib1Pkg.Depends.Should().Be(TestPackages.RtvsLib1.Depends);
-            rtvslib1Pkg.License.Should().Be(TestPackages.RtvsLib1.License);
-            rtvslib1Pkg.Built.Should().Be(TestPackages.RtvsLib1.Built);
-            rtvslib1Pkg.NeedsCompilation.Should().Be(null);
-            rtvslib1Pkg.Author.Should().Be(TestPackages.RtvsLib1.Author);
-            rtvslib1Pkg.Enhances.Should().Be(null);
-            rtvslib1Pkg.Title.Should().Be(TestPackages.RtvsLib1.Title);
+            var rtvslib1Actual = result.Should().ContainSingle(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package && pkg.LibPath == _libPath.ToRPath()).Which;
+            rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
         }
 
         private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
