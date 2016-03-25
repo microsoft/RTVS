@@ -3,8 +3,6 @@
 
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -18,26 +16,11 @@ namespace Microsoft.R.Editor.Navigation {
             if (!string.IsNullOrEmpty(itemName)) {
                  var position = REditorDocument.MapCaretPositionFromView(textView);
                 if (position.HasValue) {
-                    var itemDefinition = FindItemDefinition(textBuffer, position.Value, itemName);
+                    var document = REditorDocument.FromTextBuffer(textBuffer);
+                    var itemDefinition = document.EditorTree.AstRoot.FindItemDefinition(position.Value, itemName);
                     if (itemDefinition != null) {
                         return textView.MapUpToBuffer(itemDefinition.Start, textView.TextBuffer);
                     }
-                }
-            }
-            return null;
-        }
-
-        public static IAstNode FindItemDefinition(ITextBuffer textBuffer, int position, string itemName) {
-            var document = REditorDocument.FromTextBuffer(textBuffer);
-            var ast = document.EditorTree.AstRoot;
-            var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            var func = scope.FindFunctionByName(itemName, position);
-            if (func != null) {
-                return func.Value;
-            } else {
-                var v = scope.FindVariableByName(itemName, position);
-                if (v != null) {
-                    return v;
                 }
             }
             return null;

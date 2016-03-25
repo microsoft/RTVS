@@ -3,7 +3,9 @@
 
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -25,11 +27,12 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             Span span;
             string itemName = session.TextView.GetIdentifierUnderCaret(out span);
             if (!string.IsNullOrEmpty(itemName)) {
-                var definitionNode = CodeNavigator.FindItemDefinition(_textBuffer, triggerPoint.Value, itemName);
+                var document = REditorDocument.FromTextBuffer(_textBuffer);
+                var definitionNode = document.EditorTree.AstRoot.FindItemDefinition(triggerPoint.Value, itemName);
                 if (definitionNode != null) {
-                    ITextDocument document = _textBuffer.GetTextDocument();
-                    if (document != null) {
-                        peekableItems.Add(new PeekItem(document.FilePath, definitionNode, itemName, _peekResultFactory));
+                    ITextDocument textDocument = _textBuffer.GetTextDocument();
+                    if (textDocument != null) {
+                        peekableItems.Add(new PeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory));
                     }
                 }
             }
