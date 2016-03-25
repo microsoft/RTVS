@@ -6,29 +6,35 @@ using Microsoft.R.Core.AST.Variables;
 
 namespace Microsoft.R.Core.AST {
     public static class StatementExtensions {
+        /// <summary>
+        /// Given expression statement determines if it defines a function
+        /// and if so, returns the function definition and the variable
+        /// it is assigned to.
+        /// </summary>
         public static IFunctionDefinition GetVariableOrFunctionDefinition(this IExpressionStatement es, out Variable v) {
-            IFunctionDefinition fd = null;
             v = null;
-
             if (es == null || es.Expression == null) {
                 return null;
             }
 
+            // Tree:
+            //       <-
+            //    x      function(a)
+            //
+            //
             var c = es.Expression.Children;
             if (c.Count == 1) {
                 var op = c[0] as IOperator;
                 if (op != null) {
                     if (op.OperatorType == OperatorType.LeftAssign) {
                         v = op.LeftOperand as Variable;
-                    } else if (op.OperatorType == OperatorType.RightAssign) {
-                        v = op.LeftOperand as Variable;
-                    }
-                    if (v != null) {
-                        fd = op.RightOperand as IFunctionDefinition;
+                        if (v != null) {
+                            return op.RightOperand as IFunctionDefinition;
+                        }
                     }
                 }
             }
-            return fd;
+            return null;
         }
     }
 }

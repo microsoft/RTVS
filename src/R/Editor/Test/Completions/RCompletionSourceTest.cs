@@ -218,6 +218,45 @@ aa
         }
 
         [Test]
+        public void UserFunctions03() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+aaa123 <- function(a,b,c) { }
+while(TRUE) {
+$
+aa
+aaa456 <- function() { }
+#
+aa
+}
+aaa789 <- function(a,b,c) { }
+";
+            GetCompletions(content, content.IndexOf('$') + 4, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            var completions = completionSets[0].Completions;
+            completions.Should().NotBeEmpty();
+            completions.Should().Contain(c => c.DisplayText == "aaa123");
+            completions.Should().NotContain(c => c.DisplayText == "aaa456");
+            completions.Should().Contain(c => c.DisplayText == "aaa789");
+
+            completionSets.Clear();
+            GetCompletions(content, content.IndexOf('#') + 4, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completions = completionSets[0].Completions;
+            completions.Should().NotBeEmpty();
+            completions.Should().Contain(c => c.DisplayText == "aaa123");
+            completions.Should().Contain(c => c.DisplayText == "aaa456");
+            completions.Should().Contain(c => c.DisplayText == "aaa789");
+        }
+
+        [Test]
         public void UserFunctionArguments01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("aaa <- function(a,b,c)\r\naaa(a ", 29, completionSets);

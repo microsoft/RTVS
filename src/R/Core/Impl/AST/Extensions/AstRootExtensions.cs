@@ -10,7 +10,9 @@ namespace Microsoft.R.Core.AST {
     public static class AstRootExtensions {
 
         /// <summary>
-        /// Enumerates function definitions applicable to the current scope and position.
+        /// Enumerates function definitions applicable to the current scope.
+        /// Returns definitions that appear in the file up to the specified
+        /// position.
         /// </summary>
         public static IEnumerable<RFunction> GetFunctionsFromPosition(this AstRoot ast, int position) {
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);

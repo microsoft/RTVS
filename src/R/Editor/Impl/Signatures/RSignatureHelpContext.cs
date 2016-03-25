@@ -5,7 +5,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Signatures.Definitions {
+namespace Microsoft.R.Editor.Signatures {
     /// <summary>
     /// R completion context. Provides information about current document, 
     /// caret position and other necessary data for the completion engine.

@@ -33,7 +33,8 @@ namespace Microsoft.R.Editor {
             foreach (var arg in fd.Arguments) {
                 var na = arg as NamedArgument;
                 if (na != null) {
-                    si.Arguments.Add(new ArgumentInfo(na.Name));
+                    string defaultValue = na.DefaultValue != null ? fd.Root.TextProvider.GetText(na.DefaultValue) : string.Empty;
+                    si.Arguments.Add(new ArgumentInfo(na.Name, string.Empty, defaultValue));
                 } else {
                     var ea = arg as ExpressionArgument;
                     if (ea != null && ea.Children.Count > 0) {
