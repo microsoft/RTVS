@@ -27,21 +27,26 @@ using Microsoft.Common.Core;
 using System.IO;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// <summary>
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
     public partial class ImportDataWindow : DialogWindow {
-        private ObservableCollection<RStringModel> Separators = new ObservableCollection<RStringModel>() { new RStringModel("White space", ""), new RStringModel("Comma (,)", ","), new RStringModel("Semicolon (;)", ";"), new RStringModel(@"Tab (\t)", "\t") };
-        private ObservableCollection<RStringModel> Decimals = new ObservableCollection<RStringModel>() { new RStringModel("Period (.)", "."), new RStringModel("Comma (,)", ",") };
-        private ObservableCollection<RStringModel> Quotes = new ObservableCollection<RStringModel>() { new RStringModel("Double quote (\")", "\""), new RStringModel("Single quote (')", "'"), new RStringModel("None", "") };
-        private ObservableCollection<RStringModel> Comments = new ObservableCollection<RStringModel>() { new RStringModel("None", ""), new RStringModel("#", "#"), new RStringModel("!", "!"), new RStringModel("%", "%"), new RStringModel("@", "@"), new RStringModel("/", "/"), new RStringModel("~", "~") };
+        private ObservableCollection<ComboBoxItemModel> Separators = new ObservableCollection<ComboBoxItemModel>() { new ComboBoxItemModel("White space", ""), new ComboBoxItemModel("Comma (,)", ","), new ComboBoxItemModel("Semicolon (;)", ";"), new ComboBoxItemModel(@"Tab (\t)", "\t") };
+        private ObservableCollection<ComboBoxItemModel> Decimals = new ObservableCollection<ComboBoxItemModel>() { new ComboBoxItemModel("Period (.)", "."), new ComboBoxItemModel("Comma (,)", ",") };
+        private ObservableCollection<ComboBoxItemModel> Quotes = new ObservableCollection<ComboBoxItemModel>() { new ComboBoxItemModel("Double quote (\")", "\""), new ComboBoxItemModel("Single quote (')", "'"), new ComboBoxItemModel("None", "") };
+        private ObservableCollection<ComboBoxItemModel> Comments = new ObservableCollection<ComboBoxItemModel>() { new ComboBoxItemModel("None", ""), new ComboBoxItemModel("#", "#"), new ComboBoxItemModel("!", "!"), new ComboBoxItemModel("%", "%"), new ComboBoxItemModel("@", "@"), new ComboBoxItemModel("/", "/"), new ComboBoxItemModel("~", "~") };
+        private ObservableCollection<ComboBoxItemModel> RowNames = new ObservableCollection<ComboBoxItemModel>() { new ComboBoxItemModel("Automatic", null), new ComboBoxItemModel("Use first column", "1"), new ComboBoxItemModel("Use number", "NULL") };
 
         public ImportDataWindow() {
             InitializeComponent();
 
             Title = "Import Dataset";
+
+            RowNamesComboBox.ItemsSource = RowNames;
+            RowNamesComboBox.SelectedIndex = 0;
 
             SeparatorComboBox.ItemsSource = Separators;
             SeparatorComboBox.SelectedIndex = 1;
@@ -54,9 +59,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             CommentComboBox.ItemsSource = Comments;
             CommentComboBox.SelectedIndex = 0;
+
+            SetEncodingComboBoxAsync().DoNotWait();
+        }
+
+        private IRSession GetRSession() {
+            IRSession rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            if (rSession == null) {
+                throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for importing data set"));
+            }
+            return rSession;
         }
 
         private string BuildCommandLine(bool preview = false) {
+            if (string.IsNullOrEmpty(FilePathBox.Text)) {
+                return null;
+            }
+
             var parameter = new StringBuilder();
 
             parameter.Append("file=");
@@ -64,17 +83,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             parameter.AppendFormat(" ,header={0}", HeaderCheckBox.IsChecked.Value.ToString().ToUpperInvariant());
 
+            var model = (ComboBoxItemModel)RowNamesComboBox.SelectedItem;
+            if (model != null && model.Value != null) {
+                parameter.AppendFormat(" ,row.names={0}", model.Value);
+            }
+
+            var encodingModel = (ComboBoxItemModel)EncodingComboBox.SelectedItem;
+            if (encodingModel != null && model.Value != null) {
+                parameter.AppendFormat(", encoding={0}", model.Value.ToRStringLiteral());
+            }
+
             parameter.Append(" ,sep=");
-            parameter.Append(((RStringModel)SeparatorComboBox.SelectedItem).Value.ToRStringLiteral());
+            parameter.Append(((ComboBoxItemModel)SeparatorComboBox.SelectedItem).Value.ToRStringLiteral());
 
             parameter.Append(" ,dec=");
-            parameter.Append(((RStringModel)DecimalComboBox.SelectedItem).Value.ToRStringLiteral());
+            parameter.Append(((ComboBoxItemModel)DecimalComboBox.SelectedItem).Value.ToRStringLiteral());
 
             parameter.Append(" ,quote=");
-            parameter.Append(((RStringModel)QuoteComboBox.SelectedItem).Value.ToRStringLiteral());
+            parameter.Append(((ComboBoxItemModel)QuoteComboBox.SelectedItem).Value.ToRStringLiteral());
 
             parameter.Append(" ,comment.char=");
-            parameter.Append(((RStringModel)CommentComboBox.SelectedItem).Value.ToRStringLiteral());
+            parameter.Append(((ComboBoxItemModel)CommentComboBox.SelectedItem).Value.ToRStringLiteral());
 
             if (!string.IsNullOrEmpty(NAStringTextBox.Text)) {
                 parameter.Append(" ,na.strings=");
@@ -85,7 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 parameter.Append(" ,nrows=20");
                 return string.Format(CultureInfo.InvariantCulture, "read.csv({0})", parameter);
             } else {
-                return string.Format(CultureInfo.InvariantCulture, "\"{0}\" <- read.csv({1})", VariableNameBox.Text, parameter);
+                return string.Format(CultureInfo.InvariantCulture, "`{0}` <- read.csv({1})", VariableNameBox.Text, parameter);
             }
         }
 
@@ -99,53 +128,81 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             IntPtr dialogOwner;
             uiShell.GetDialogOwnerHwnd(out dialogOwner);
 
-            FilePathBox.Text = Dialogs.BrowseForFileOpen(dialogOwner, "CSV file|*.csv").Replace('\\', '/');
-            FilePathBox.CaretIndex = FilePathBox.Text.Length;
+            FilePathBox.Text = Dialogs.BrowseForFileOpen(dialogOwner, "CSV file|*.csv");
+            if (!string.IsNullOrEmpty(FilePathBox.Text)) {
+                FilePathBox.CaretIndex = FilePathBox.Text.Length;
 
-            var variableName = System.IO.Path.GetFileNameWithoutExtension(FilePathBox.Text);
-            variableName.Replace("\"", "\\\"");
-            VariableNameBox.Text = variableName;
+                var variableName = System.IO.Path.GetFileNameWithoutExtension(FilePathBox.Text);
+                VariableNameBox.Text = variableName;
 
-            CommandPreviewBox.Text = BuildCommandLine();
+                string text = ReadFile(FilePathBox.Text);
+                InputFilePreview.Text = text;
 
-            // TODO: here?
-            string text = ReadFileALittle(FilePathBox.Text);
-            InputFilePreview.Text = text;
+                PreviewAsync().DoNotWait();
+            }
         }
 
         private void RunButton_Click(object sender, RoutedEventArgs e) {
-            //RunButton.IsEnabled = false;
-            //CancelButton.IsEnabled = false;
+            RunButton.IsEnabled = false;
+            CancelButton.IsEnabled = false;
 
-            PreviewAsync(BuildCommandLine(true)).DoNotWait();
-            //RunAsync(CommandPreviewBox.Text).DoNotWait();
+            var expression = BuildCommandLine();
+            if (expression != null) {
+                RunAsync(expression).DoNotWait();
+            }
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
             base.Close();
         }
 
-        private async Task PreviewAsync(string expression) {
-            var grid = await GridDataSource.GetGridDataAsync(expression, null);
+        private async Task PreviewAsync() {
+            var expression = BuildCommandLine(true);
+            if (expression != null) {
+                try {
+                    var grid = await GridDataSource.GetGridDataAsync(expression, null);
 
-            VsAppShell.Current.DispatchOnUIThread(() => PopulateDataFramePreview(grid));
+                    VsAppShell.Current.DispatchOnUIThread(() => PopulateDataFramePreview(grid));
+                } catch (Exception ex) {
+                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
+                }
+            }
         }
 
         private async Task RunAsync(string expression) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             try {
-                IRSession rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
-                if (rSession == null) {
-                    throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for importing data set"));
-                }
+                IRSession rSession = GetRSession();
 
-                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+                using (var evaluator = await rSession.BeginEvaluationAsync()) {
                     var result = await evaluator.EvaluateAsync(expression);
                     if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
                         VsAppShell.Current.DispatchOnUIThread(() => OnError(result.ToString()));
                     } else {
                         VsAppShell.Current.DispatchOnUIThread(() => OnSuccess());
+                    }
+                }
+            } catch (Exception ex) {
+                VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
+            }
+        }
+
+        private async Task SetEncodingComboBoxAsync() {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            try {
+                IRSession rSession = GetRSession();
+
+                using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+                    var result = await evaluator.EvaluateAsync("rtvs:::toJSON(as.list(iconvlist()))", REvaluationKind.Json);
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        VsAppShell.Current.DispatchOnUIThread(() => OnError(result.ToString()));
+                    } else {
+                        var jarray = result.JsonResult as JArray;
+                        if (jarray != null) {
+                            VsAppShell.Current.DispatchOnUIThread(() => PopulateEncoding(jarray));
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -159,6 +216,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private void OnError(string errorText) {
             // TODO: implement this
+        }
+
+        private void PopulateEncoding(JArray jarray) {
+            var encodings = new List<ComboBoxItemModel>();
+            foreach (var item in jarray) {
+                var value =  item.Value<string>();
+                if (!string.IsNullOrEmpty(value)) {
+                    encodings.Add(new ComboBoxItemModel(value, value));
+                }
+            }
+
+            EncodingComboBox.ItemsSource = encodings;
         }
 
         private void PopulateDataFramePreview(IGridData<string> gridData) {
@@ -184,16 +253,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             dg.ItemsSource = rows;
         }
 
-        private string ReadFileALittle(string filePath) {
-            const int NumberCharBuffer = 2048;
-
-            char[] buffer = new char[NumberCharBuffer];
-            int readCount = 0;
+        private string ReadFile(string filePath, int lineCount = 20) {
+            StringBuilder sb = new StringBuilder();
             using(var sr = new StreamReader(filePath)) {
-                readCount = sr.ReadBlock(buffer, 0, NumberCharBuffer);
+                int readCount = 0;
+                while(readCount < lineCount) {
+                    string read = sr.ReadLine();
+                    if (read == null) {
+                        break;
+                    }
+                    sb.AppendLine(read);
+                    readCount++;
+                }
             }
 
-            return new string(buffer, 0, readCount);
+            return sb.ToString();
         }
 
         class DataFramePreviewRowItem {
@@ -205,14 +279,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             public List<string> Values { get; private set; }
         }
 
-        class RStringModel {
-            public RStringModel(string name, string value) {
+        class ComboBoxItemModel {
+            public ComboBoxItemModel(string name, string value) {
                 Name = name;
                 Value = value;
             }
 
             public string Name { get; }
             public string Value { get; }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            PreviewAsync().DoNotWait();
+        }
+
+        private void HeaderCheckBox_Changed(object sender, RoutedEventArgs e) {
+            PreviewAsync().DoNotWait();
         }
     }
 }
