@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
-    [Category.R.Completion]
+    [Category.R.Navigation]
     public class GotoDefinitionTest {
         [Test]
         public void GoToDefFunction01() {

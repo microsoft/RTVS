@@ -16,7 +16,7 @@ using NSubstitute;
 
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
-    [Category.R.Completion]
+    [Category.R.Navigation]
     public class RPeekableItemSourceTest {
         [Test]
         public void PeekFunction01() {
