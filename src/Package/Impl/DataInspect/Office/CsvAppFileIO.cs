@@ -6,6 +6,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
@@ -21,6 +23,7 @@ using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
     internal static class CsvAppFileIO {
+        private const string _variableNameReplacement = "variable";
         private static int _busy;
 
         public static async Task OpenDataCsvApp(DebugEvaluationResult result) {
@@ -32,13 +35,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var workflow = workflowProvider.GetOrCreate();
             var session = workflow.RSession;
 
-            var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            folder = Path.Combine(folder, @"RTVS_CSV_Exports\");
+            var folder = GetTempCsvFilesFolder();
             if (!Directory.Exists(folder)) {
                 Directory.CreateDirectory(folder);
             }
 
-            var variableName = result.Name;
+            var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(variableName);
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
             var rfile = file.Replace('\\', '/');
@@ -55,20 +57,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                     await e.EvaluateAsync(Invariant($"write.csv({result.Expression}, file='{rfile}')") + Environment.NewLine);
                 }
 
-                Task.Run(() => {
-                    try {
-                        Process.Start(file);
-                    } catch (Win32Exception ex) {
-                        ShowErrorMessage(ex.Message);
-                    } catch (FileNotFoundException ex) {
-                        ShowErrorMessage(ex.Message);
-                    }
-                }).DoNotWait();
+                if (File.Exists(file)) {
+                    Task.Run(() => {
+                        try {
+                            Process.Start(file);
+                        } catch (Win32Exception ex) {
+                            ShowErrorMessage(ex.Message);
+                        } catch (FileNotFoundException ex) {
+                            ShowErrorMessage(ex.Message);
+                        }
+                    }).DoNotWait();
+                }
             } finally {
                 await SetStatusTextAsync(currentStatusText);
             }
 
             Interlocked.Exchange(ref _busy, 0);
+        }
+
+        public static void Close() {
+            var folder = GetTempCsvFilesFolder();
+            if (Directory.Exists(folder)) {
+                // Note: some files may still be locked if they are opened in Excel
+                try {
+                    Directory.Delete(folder, recursive: true);
+                } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            }
+        }
+
+        private static string GetTempCsvFilesFolder() {
+            var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return Path.Combine(folder, @"RTVS_CSV_Exports\");
         }
 
         private static void ShowErrorMessage(string message) {
@@ -105,16 +124,31 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 csvFileName += "_";
             }
 
-            if(variableName.StartsWith("$", StringComparison.Ordinal)) {
+            if (variableName.StartsWith("$", StringComparison.Ordinal)) {
                 variableName = variableName.Substring(1);
             }
-            variableName = variableName.Replace('.', '_').Replace('@', '_').Replace('$', '_');
-            if(variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
-                variableName = "expression";
+
+            int invalidCharIndex = variableName.IndexOfAny(Path.GetInvalidFileNameChars());
+
+            variableName = MakeFileSystemCompatible(variableName);
+            if (variableName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) {
+                variableName = _variableNameReplacement;
             }
             csvFileName += variableName;
 
             return csvFileName;
+        }
+
+        private static string MakeFileSystemCompatible(string s) {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sb = new StringBuilder();
+            foreach (char ch in s) {
+                if (invalidChars.Contains(ch)) {
+                    sb.Append('_');
+                }
+                sb.Append(ch);
+            }
+            return sb.ToString();
         }
     }
 }

@@ -69,6 +69,18 @@ namespace Microsoft.R.Core.Test.Tokens {
 
         [Test]
         [Category.R.Tokenizer]
+        public void TokenizeHex1() {
+            var tokens = Tokenize("0x10000", new RTokenizer());
+
+            tokens.Should().HaveCount(1);
+
+            tokens[0].Should().HaveType(RTokenType.Number)
+                .And.StartAt(0)
+                .And.HaveLength(7);
+        }
+
+        [Test]
+        [Category.R.Tokenizer]
         public void TokenizeFile_IntegerFile() {
             TokenizeFiles.TokenizeFile(_files, @"Tokenization\Integers.r");
         }
