@@ -47,6 +47,27 @@ namespace Microsoft.R.Debugger.Test {
         }
     }
 
+    internal class MatchRange<T> : IEquatable<T> where T : IComparable<T> {
+        private readonly T _from, _to;
+
+        public MatchRange(T from, T to) {
+            _from = from;
+            _to = to;
+        }
+
+        public bool Equals(T other) =>
+            other == null ? false : other.CompareTo(_from) >= 0 && other.CompareTo(_to) <= 0;
+
+        public override bool Equals(object other) =>
+            other is T ? Equals((T)other) : false;
+
+        public override int GetHashCode() =>
+            new { _from, _to }.GetHashCode();
+
+        public override string ToString() =>
+            Invariant($"[{_from} .. {_to}]");
+    }
+
     internal class MatchDebugStackFrame : IEquatable<DebugStackFrame> {
         public IEquatable<string> FileName { get; }
         public IEquatable<int> LineNumber { get; }

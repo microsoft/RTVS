@@ -93,6 +93,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupRHost", "SetupRHost\Se
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Components", "R\Components\Impl\Microsoft.R.Components.csproj", "{506141BE-1418-4D75-8E24-54A9280B0A66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Wpf", "R\Wpf\Impl\Microsoft.R.Wpf.csproj", "{F951311C-D665-4987-95A4-72A2DE37E263}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -567,6 +569,18 @@ Global
 		{506141BE-1418-4D75-8E24-54A9280B0A66}.Release|x64.Build.0 = Release|Any CPU
 		{506141BE-1418-4D75-8E24-54A9280B0A66}.Release|x86.ActiveCfg = Release|Any CPU
 		{506141BE-1418-4D75-8E24-54A9280B0A66}.Release|x86.Build.0 = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|x64.Build.0 = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Debug|x86.Build.0 = Debug|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|x64.ActiveCfg = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|x64.Build.0 = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|x86.ActiveCfg = Release|Any CPU
+		{F951311C-D665-4987-95A4-72A2DE37E263}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

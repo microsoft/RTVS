@@ -6,6 +6,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironment {
+        public REnvironment(string name) {
+            Name = name;
+        }
+
         public REnvironment(JToken token) {
             var name = token.Value<string>("name");
             if (name != null) {

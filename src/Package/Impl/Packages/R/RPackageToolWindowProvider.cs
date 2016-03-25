@@ -6,8 +6,10 @@ using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.History;
+using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
@@ -19,6 +21,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private Lazy<IInteractiveWindowComponentContainerFactory> InteractiveWindowComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
+        [Import]
+        private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
 
         public bool TryCreateToolWindow(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -28,6 +32,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             if (toolWindowType == HistoryWindowPane.WindowGuid) {
                 CreateHistoryToolWindow(id);
+                return true;
+            }
+
+            if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
+                CreatePackageManagerToolWindow(id);
                 return true;
             }
 
@@ -47,6 +56,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return CreateHistoryToolWindow(id).Container;
             }
 
+            if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
+                return CreatePackageManagerToolWindow(id).Container;
+            }
+
             return null;
         }
 
@@ -58,6 +71,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private IRHistoryWindowVisualComponent CreateHistoryToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
             return workflow.History.GetOrCreateVisualComponent(HistoryComponentContainerFactory.Value, id);
+        }
+
+        private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
+            var workflow = WorkflowProvider.Value.GetOrCreate();
+            return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
         }
     }
 }

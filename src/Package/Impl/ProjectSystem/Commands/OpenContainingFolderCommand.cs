@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdOpenContainingFolder) {
+            if (commandId == RPackageCommandId.icmdOpenContainingFolder && nodes.Count == 1) {
                 return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
             }
             return CommandStatusResult.Unhandled;

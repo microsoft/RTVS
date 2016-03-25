@@ -11,15 +11,14 @@ using FluentAssertions;
 using Microsoft.Common.Core.OS;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.Test.Fakes.Trackers;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Mocks;
+using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using NSubstitute;
 using Xunit;
 
@@ -32,9 +31,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public ProjectCommandsTest() {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRHistoryProvider>();
-            var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
-            var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflowProvider = new VsRInteractiveWorkflowProvider(sessionProvider, historyProvider, activeTextViewTracker, debuggerModeTracker);
+            var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
+            _interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, historyProvider, packagesProvider);
         }
 
         [Test]

@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 
@@ -15,6 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
+        private readonly IRPackageManagerProvider _pacakagesProvider;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
 
@@ -23,11 +25,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         [ImportingConstructor]
         public VsRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
+            , IRPackageManagerProvider pacakagesProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker) {
 
             _sessionProvider = sessionProvider;
             _historyProvider = historyProvider;
+            _pacakagesProvider = pacakagesProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
         }
@@ -40,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var shell = EditorShell.Current;
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _activeTextViewTracker, _debuggerModeTracker, RHostClientApp.Instance, shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, RHostClientApp.Instance, shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

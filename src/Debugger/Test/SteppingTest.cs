@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -38,6 +39,41 @@ namespace Microsoft.R.Debugger.Test {
         public async Task DisposeAsync() {
             await _session.StopHostAsync();
             _sessionProvider.Dispose();
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task BreakContinue() {
+            const string code =
+@"browser()
+  x <- 0
+  while (x >= 0) {
+    x <- x + 1
+  }
+  browser()";
+
+            using (var debugSession = new DebugSession(_session))
+            using (var sf = new SourceFile(code)) {
+                await sf.Source(_session);
+                await debugSession.NextPromptShouldBeBrowseAsync();
+
+                await debugSession.ContinueAsync();
+                await Task.Delay(100);
+                await debugSession.BreakAsync();
+
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                    { sf, new MatchRange<int>(1, 3) }
+                });
+
+                await _session.EvaluateAsync("x <- -42", true, REvaluationKind.Normal);
+                await debugSession.ContinueAsync();
+
+                await debugSession.NextPromptShouldBeBrowseAsync();
+                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                    { sf, 6 }
+                });
+            }
         }
 
         [Test]
