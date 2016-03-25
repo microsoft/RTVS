@@ -91,5 +91,13 @@ namespace Microsoft.R.Host.Client {
             }
             return s;
         }
+
+        public static string ToRPath(this string s) {
+            return s.Replace("\\", "/");
+        }
+
+        public static string FromRPath(this string s) {
+            return s.Replace("/", "\\");
+        }
     }
 }
