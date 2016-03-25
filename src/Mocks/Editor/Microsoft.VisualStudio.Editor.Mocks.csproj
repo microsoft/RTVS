@@ -93,6 +93,7 @@
     <Compile Include="EditorOperationsMock.cs" />
     <Compile Include="EditorOptionsMock.cs" />
     <Compile Include="MappingPointMock.cs" />
+    <Compile Include="PeekResultCollectionMock.cs" />
     <Compile Include="PeekResultFactoryMock.cs" />
     <Compile Include="PeekSessionMock.cs" />
     <Compile Include="PersistentSpanMock.cs" />

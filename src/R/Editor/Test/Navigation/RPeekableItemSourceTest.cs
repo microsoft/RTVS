@@ -3,13 +3,9 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using FluentAssertions;
-using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.UnitTests.Core.XUnit;
@@ -29,11 +25,8 @@ namespace Microsoft.R.Editor.Test.Navigation {
 @"
 x <- function(a) { }
 z <- 1
-x()
-";
-
-            GetPeekableItems(content, 3, 0, items);
-            items.Should().ContainSingle().Which.DisplayName.Should().Be("x");
+x()";
+            RunPeekTest(content, 3, 0, "x");
         }
 
         [Test]
@@ -44,11 +37,8 @@ x()
 x <- function(a) { }
 z <- 1
 x()
-z
-";
-
-            GetPeekableItems(content, 4, 0, items);
-            items.Should().ContainSingle().Which.DisplayName.Should().Be("z");
+z";
+            RunPeekTest(content, 4, 0, "z");
         }
 
         [Test]
@@ -60,11 +50,33 @@ x <- function(a) {
     z <- 1
     x()
     a
-}
-";
+}";
+            RunPeekTest(content, 4, 4, "a");
+        }
 
-            GetPeekableItems(content, 4, 4, items);
-            items.Should().ContainSingle().Which.DisplayName.Should().Be("a");
+        private void RunPeekTest(string content, int line, int column, string name) {
+            List<IPeekableItem> items = new List<IPeekableItem>();
+
+            GetPeekableItems(content, line, column, items);
+            items.Should().ContainSingle();
+            var item = items[0];
+
+            item.DisplayName.Should().Be(name);
+            var source = item.GetOrCreateResultSource(PredefinedPeekRelationships.Definitions.Name);
+            source.Should().NotBeNull();
+
+            var coll = new PeekResultCollectionMock();
+            int count = 0;
+            var cb = Substitute.For<IFindPeekResultsCallback>();
+            cb.When(x => x.ReportProgress(Arg.Any<int>())).Do(x => count += (int)x[0]);
+            source.FindResults(PredefinedPeekRelationships.Definitions.Name, coll, default(CancellationToken), cb);
+
+            count.Should().Be(1);
+            coll.Should().HaveCount(1);
+
+            coll[0].DisplayInfo.Title.Should().Be("file.r");
+            coll[0].DisplayInfo.Label.Should().Be(name);
+            coll[0].DisplayInfo.TitleTooltip.Should().Be(@"C:\file.r");
         }
 
         private void GetPeekableItems(string content, int lineNumber, int column, IList<IPeekableItem> items) {
@@ -74,7 +86,7 @@ x <- function(a) {
         }
 
         private void GetPeekableItems(string content, int position, IList<IPeekableItem> items) {
-            var document = new EditorDocumentMock(content, "file.r");
+            var document = new EditorDocumentMock(content, @"C:\file.r");
 
             TextViewMock textView = new TextViewMock(document.TextBuffer, position);
             textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));
