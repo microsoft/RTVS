@@ -16,6 +16,7 @@ namespace Microsoft.VisualStudio.Editor.Mocks {
             session.IsDismissed.Returns(false);
             session.Properties.Returns(new PropertyCollection());
             session.GetTriggerPoint(Arg.Any<ITextSnapshot>()).Returns(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, triggerPoint));
+            session.TextView.Returns(tv);
             return session;
         }
     }
