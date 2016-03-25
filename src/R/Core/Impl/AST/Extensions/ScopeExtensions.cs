@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.DataTypes;
+using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -86,13 +87,23 @@ namespace Microsoft.R.Core.AST {
         /// <summary>
         /// Locates function with a given name inside the scope. Only function
         /// definition that appear before the given position are analyzed except
-        /// when scope is a global scope.
+        /// when scope is the global scope.
         /// </summary>
         public static RFunction FindFunctionByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             var v = variables.FirstOrDefault(x =>
                 x.Name.EqualsOrdinal(name) && (x.Value is RFunction));
             return v?.Value as RFunction;
+        }
+
+        /// <summary>
+        /// Locates variable with a given name inside the scope. Only items
+        /// that appear before the given position are analyzed except
+        /// when scope is the global scope.
+        /// </summary>
+        public static Variable FindVariableByName(this IScope scope, string name, int position) {
+            var variables = scope.GetApplicableVariables(position);
+            return variables.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
         }
     }
 }

@@ -11,6 +11,12 @@ namespace Microsoft.R.Core.AST {
         /// </summary>
         public static IScope GetScope(this IAstNode node) {
             var n = node.Parent;
+            if(n == null) {
+                var root = node as AstRoot;
+                if(root != null && root.Children.Count > 0) {
+                    return root.Children[0] as IScope;
+                }
+            }
             while (!(n is IScope)) {
                 n = n.Parent;
             }

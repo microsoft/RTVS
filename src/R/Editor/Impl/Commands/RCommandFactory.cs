@@ -8,6 +8,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Formatting;
+using Microsoft.R.Editor.Navigation;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -27,7 +28,8 @@ namespace Microsoft.R.Editor.Commands {
                 new FormatOnPasteCommand(textView, textBuffer),
                 new SelectWordCommand(textView, textBuffer),
                 new RTypingCommandHandler(textView),
-                new RCompletionCommandHandler(textView)
+                new RCompletionCommandHandler(textView),
+                new GoToDefinitionCommand(textView, textBuffer)
             };
         }
     }
