@@ -26,8 +26,12 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             string itemName = session.TextView.GetIdentifierUnderCaret(out span);
             if (!string.IsNullOrEmpty(itemName)) {
                 var definitionNode = CodeNavigator.FindItemDefinition(_textBuffer, triggerPoint.Value, itemName);
-                ITextDocument document = _textBuffer.GetTextDocument();
-                peekableItems.Add(new PeekItem(document.FilePath, definitionNode, itemName, _peekResultFactory));
+                if (definitionNode != null) {
+                    ITextDocument document = _textBuffer.GetTextDocument();
+                    if (document != null) {
+                        peekableItems.Add(new PeekItem(document.FilePath, definitionNode, itemName, _peekResultFactory));
+                    }
+                }
             }
         }
 
