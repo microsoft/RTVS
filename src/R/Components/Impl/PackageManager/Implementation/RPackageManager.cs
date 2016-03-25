@@ -61,13 +61,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         private static IList<RPackage> ParsePackages(REvaluationResult result) {
-            List<RPackage> packages = new List<RPackage>();
-            foreach (var jsonProp in ((JObject)result.JsonResult).Properties()) {
-                var jsonObj = (JObject)jsonProp.Value;
-                var pkg = jsonObj.ToObject<RPackage>();
-                packages.Add(pkg);
-            }
-            return packages;
+            return ((JObject)result.JsonResult).Properties()
+                .Select(p => p.Value.ToObject<RPackage>())
+                .ToList();
         }
 
         public void Dispose() {
