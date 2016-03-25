@@ -9,7 +9,7 @@ namespace Microsoft.R.Core.AST {
         /// <summary>
         /// Locates enclosing scope for a given node
         /// </summary>
-        public static IScope GetScope(this IAstNode node) {
+        public static IScope GetEnclosingScope(this IAstNode node) {
             var n = node.Parent;
             if(n == null) {
                 var root = node as AstRoot;

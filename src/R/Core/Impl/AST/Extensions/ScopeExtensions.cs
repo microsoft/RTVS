@@ -6,7 +6,6 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
@@ -17,14 +16,13 @@ namespace Microsoft.R.Core.AST {
     public static class ScopeExtensions {
         /// <summary>
         /// Enumerates scopes from the current up to the global scope.
-        /// Does not return current scope, enumeration starts with the
-        /// parent (outer) scope.
         /// </summary>
         public static IEnumerable<IScope> EnumerateTowardsGlobal(this IScope scope) {
-            if (scope is GlobalScope) {
-                yield break;
+            yield return scope;
+            while (!(scope is GlobalScope)) {
+                scope = scope.GetEnclosingScope();
+                yield return scope;
             }
-            yield return scope.GetScope();
         }
 
         /// <summary>
@@ -38,16 +36,11 @@ namespace Microsoft.R.Core.AST {
         /// </summary>
         /// <param name="position"></param>
         public static IEnumerable<IVariable> GetApplicableVariables(this IScope scope, int position) {
-            foreach (var v in scope.GetScopeVariables(position)) {
-                yield return v;
-            }
-
-            var innerScope = scope;
             foreach (var s in scope.EnumerateTowardsGlobal()) {
-                foreach (var v in s.GetScopeVariables(innerScope.Start)) {
+                foreach (var v in s.GetScopeVariables(position)) {
                     yield return v;
+                    position = s.Start;
                 }
-                innerScope = s;
             }
         }
 
@@ -87,22 +80,22 @@ namespace Microsoft.R.Core.AST {
                         }
                     }
                 }
+            }
 
-                foreach (var c in scope.Children) {
-                    var es = c as IExpressionStatement;
-                    if (es != null) {
-                        if (!globalScope && es.Start >= position) {
-                            yield break;
-                        }
+            foreach (var c in scope.Children) {
+                var es = c as IExpressionStatement;
+                if (es != null) {
+                    if (!globalScope && es.Start > position) {
+                        yield break;
+                    }
 
-                        Variable v;
-                        var fd = es.GetVariableOrFunctionDefinition(out v);
-                        if (fd != null && v != null) {
-                            v.Value = new RFunction(fd);
-                        }
-                        if (v != null) {
-                            yield return v;
-                        }
+                    Variable v;
+                    var fd = es.GetVariableOrFunctionDefinition(out v);
+                    if (fd != null && v != null) {
+                        v.Value = new RFunction(fd);
+                    }
+                    if (v != null) {
+                        yield return v;
                     }
                 }
             }

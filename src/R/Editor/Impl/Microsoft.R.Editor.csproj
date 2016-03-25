@@ -135,6 +135,7 @@
     <Compile Include="Formatting\Data\IClipboardDataProvider.cs" />
     <Compile Include="Formatting\RangeFormatter.cs" />
     <Compile Include="Imaging\IImagesProvider.cs" />
+    <Compile Include="Navigation\PeekDefinitionCommand.cs" />
     <Compile Include="Navigation\GoToDefinitionCommand.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />

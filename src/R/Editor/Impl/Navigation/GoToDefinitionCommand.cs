@@ -52,6 +52,7 @@ namespace Microsoft.R.Editor.Navigation {
                         if (viewPoint.HasValue) {
                             TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, viewPoint.Value));
                             TextView.Caret.EnsureVisible();
+                            return CommandResult.Executed;
                         }
                     }
                 }
