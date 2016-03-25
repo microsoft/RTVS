@@ -91,7 +91,7 @@ x <- function(a) {
             TextViewMock textView = new TextViewMock(document.TextBuffer, position);
             textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));
 
-            var peekSession = new PeekSessionMock(textView, position);
+            var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();
             var peekSource = new PeekableItemSource(textView.TextBuffer, factory);
 

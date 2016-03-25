@@ -9,7 +9,6 @@ using Microsoft.VisualStudio.Language.Intellisense;
 namespace Microsoft.VisualStudio.Editor.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class PeekResultCollectionMock : List<IPeekResult>, IPeekResultCollection {
-        private List<IPeekResult> _list = new List<IPeekResult>();
         public void Move(int oldIndex, int newIndex) {
             throw new NotImplementedException();
         }
