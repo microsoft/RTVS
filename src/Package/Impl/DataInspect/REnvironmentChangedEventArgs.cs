@@ -2,13 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentChangedEventArgs : EventArgs {
-        public REnvironmentChangedEventArgs(REnvironmentCollection environments) {
+        public REnvironmentChangedEventArgs(IReadOnlyList<REnvironment> environments) {
             Environments = environments;
         }
 
-        public REnvironmentCollection Environments { get; }
+        public IReadOnlyList<REnvironment> Environments { get; }
     }
 }
