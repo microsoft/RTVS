@@ -194,6 +194,7 @@
     <Compile Include="Settings\ParameterTest.cs" />
     <Compile Include="Settings\TestSettingsStorage.cs" />
     <Compile Include="Assertions\ParameterInfoAssertion.cs" />
+    <Compile Include="Signatures\ComputeCurrentParameterTest.cs" />
     <Compile Include="Signatures\ParameterTest.cs" />
     <Compile Include="Signatures\SignatureHelpSourceTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />

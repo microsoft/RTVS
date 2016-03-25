@@ -106,11 +106,11 @@ namespace Microsoft.R.Core.AST {
         /// definition that appear before the given position are analyzed except
         /// when scope is the global scope.
         /// </summary>
-        public static RFunction FindFunctionByName(this IScope scope, string name, int position) {
+        public static IVariable FindFunctionDefinitionByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             var v = variables.FirstOrDefault(x =>
                 x.Name.EqualsOrdinal(name) && (x.Value is RFunction));
-            return v?.Value as RFunction;
+            return v;
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Microsoft.R.Core.AST {
         /// that appear before the given position are analyzed except
         /// when scope is the global scope.
         /// </summary>
-        public static IVariable FindVariableByName(this IScope scope, string name, int position) {
+        public static IVariable FindVariableDefinitionByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             return variables.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
         }

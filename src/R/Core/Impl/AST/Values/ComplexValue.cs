@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.DataTypes;
@@ -18,8 +19,8 @@ namespace Microsoft.R.Core.AST.Values {
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
             string text = context.TextProvider.GetText(currentToken);
-            double realPart = 0;
-            double imaginaryPart = 0;
+            double realPart = Double.NaN;
+            double imaginaryPart = Double.NaN;
 
             Debug.Assert(currentToken.TokenType == RTokenType.Complex);
 
@@ -38,9 +39,8 @@ namespace Microsoft.R.Core.AST.Values {
             if (tokens.Count == 1) {
                 // Only imaginary part is present
                 Debug.Assert(tokens[0].TokenType == RTokenType.Number);
-                // TODO: handle complex numbers in Hex
-                if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out imaginaryPart)) {
-                    imaginaryPart = 0;
+                if (!Number.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out imaginaryPart)) {
+                    imaginaryPart = Double.NaN;
                 }
             } else if (tokens.Count == 3) {
                 // Real and imaginary parts present
@@ -48,14 +48,18 @@ namespace Microsoft.R.Core.AST.Values {
                 Debug.Assert(tokens[1].TokenType == RTokenType.Operator);
                 Debug.Assert(tokens[2].TokenType == RTokenType.Number);
 
-                // TODO: handle complex numbers in Hex
-                if (!Double.TryParse(text.Substring(tokens[0].Start, tokens[0].Length), out realPart)) {
-                    realPart = 0;
+                string real = text.Substring(tokens[0].Start, tokens[0].Length);
+                if (!Number.TryParse(real, out realPart)) {
+                    realPart = Double.NaN;
                 }
-                if (!Double.TryParse(text.Substring(tokens[2].Start, tokens[2].Length), out imaginaryPart)) {
-                    imaginaryPart = 0;
+                // Imaginary does not allow 'L' suffix
+                string imaginary = text.Substring(tokens[2].Start, tokens[2].Length);
+                if (!Number.TryParse(imaginary, out imaginaryPart, allowLSuffix: false)) {
+                    imaginaryPart = Double.NaN;
                 }
-            } else {
+            }
+
+            if (realPart == Double.NaN || imaginaryPart == Double.NaN) {
                 context.AddError(new MissingItemParseError(ParseErrorType.NumberExpected, context.Tokens.PreviousToken));
                 return false;
             }

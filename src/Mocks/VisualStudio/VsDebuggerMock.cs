@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class VsDebuggerMock : IVsDebugger {
         private Dictionary<uint, IVsDebuggerEvents> _sinks = new Dictionary<uint, IVsDebuggerEvents>();
         private uint _cookie = 1;

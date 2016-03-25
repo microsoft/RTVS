@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class TextDocumentMock : ITextDocument {
         public TextDocumentMock(ITextBuffer textBuffer, string filePath) {
             TextBuffer = textBuffer;

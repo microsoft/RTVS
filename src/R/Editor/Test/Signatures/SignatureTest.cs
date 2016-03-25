@@ -15,14 +15,15 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     public class SignatureTest {
         [CompositeTest]
-        [InlineData(@"x <- as.matrix(x); break;", "as.matrix", 17)]
-        [InlineData(@"x <- as.matrix(x; break;", "as.matrix", 16)]
-        [InlineData(@"x <- as.matrix(x  ; break;", "as.matrix", 18)]
-        public void Signature(string content, string expectedFunctionName, int expectedSignatureEnd) {
+        [InlineData(@"x <- as.matrix(x); break;", 7, "as.matrix", 17)]
+        [InlineData(@"x <- as.matrix(x; break;", 7, "as.matrix", 16)]
+        [InlineData(@"x <- as.matrix(x  ; break;", 7, "as.matrix", 18)]
+        [InlineData(@"x <- as.matrix(func(x))", 16, "as.matrix", 23)]
+        [InlineData(@"x <- as.matrix(func(x))", 20, "func", 22)]
+        public void Signature(string content, int position, string expectedFunctionName, int expectedSignatureEnd) {
             AstRoot ast = RParser.Parse(content);
 
             int signatureEnd;
-            int position = 7;
             string functionName = SignatureHelp.GetFunctionNameFromBuffer(ast, ref position, out signatureEnd);
 
             functionName.Should().Be(expectedFunctionName);

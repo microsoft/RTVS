@@ -28,11 +28,11 @@ namespace Microsoft.R.Core.AST {
         /// <returns>AST node that defines the specified item</returns>
         public static IAstNode FindItemDefinition(this AstRoot ast, int position, string itemName) {
             var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
-            var func = scope.FindFunctionByName(itemName, position);
+            var func = scope.FindFunctionDefinitionByName(itemName, position);
             if (func != null) {
-                return func.Value;
+                return func;
             } else {
-                var v = scope.FindVariableByName(itemName, position);
+                var v = scope.FindVariableDefinitionByName(itemName, position);
                 if (v != null) {
                     return v;
                 }

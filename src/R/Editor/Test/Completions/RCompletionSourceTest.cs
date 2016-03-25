@@ -158,11 +158,54 @@ bbb123 <- 1
             completionSets[0].Filter();
 
             completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 2, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 4, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+        }
+
+        [Test]
+        public void UserVariables02() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+{
+
+    aaa123 <- 1
+
+    bbb123 <- 1
+
+}
+";
+            GetCompletions(content, 2, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
                 .And.NotContain(c => c.DisplayText == "aaa123")
                 .And.NotContain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            GetCompletions(content, 15, completionSets);
+            GetCompletions(content, 4, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -172,7 +215,7 @@ bbb123 <- 1
                 .And.NotContain(c => c.DisplayText == "bbb123");
 
             completionSets.Clear();
-            GetCompletions(content, 30, completionSets);
+            GetCompletions(content, 6, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -223,15 +266,15 @@ aa
 @"
 aaa123 <- function(a,b,c) { }
 while(TRUE) {
-$
+
 aa
 aaa456 <- function() { }
-#
+
 aa
 }
 aaa789 <- function(a,b,c) { }
 ";
-            GetCompletions(content, content.IndexOf('$') + 4, completionSets);
+            GetCompletions(content, 4, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -243,7 +286,7 @@ aaa789 <- function(a,b,c) { }
             completions.Should().Contain(c => c.DisplayText == "aaa789");
 
             completionSets.Clear();
-            GetCompletions(content, content.IndexOf('#') + 4, completionSets);
+            GetCompletions(content, 7, 0, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -258,7 +301,12 @@ aaa789 <- function(a,b,c) { }
         [Test]
         public void UserFunctionArguments01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("aaa <- function(a,b,c)\r\naaa(a ", 29, completionSets);
+            string content =
+@"
+aaa <- function(a, b, c) { }
+aaa(a
+";
+            GetCompletions(content, 2, 5, completionSets);
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
@@ -267,20 +315,26 @@ aaa789 <- function(a,b,c) { }
                 .And.Contain(c => c.DisplayText == "a =");
         }
 
-        private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+        private void GetCompletions(string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            GetCompletions(content, line.Start + column, completionSets, selectedRange);
+        }
+
+        private void GetCompletions(string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
             AstRoot ast = RParser.Parse(content);
 
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer, position);
+            TextViewMock textView = new TextViewMock(textBuffer, caretPosition);
 
             if (selectedRange != null) {
                 textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
             }
 
-            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, position);
+            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
             RCompletionSource completionSource = new RCompletionSource(textBuffer);
 
-            completionSource.PopulateCompletionList(position, completionSession, completionSets, ast);
+            completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }
     }
 }

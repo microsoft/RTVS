@@ -24,7 +24,7 @@ x <- function(a) { }
 z <- 1
 x()
 ";
-            RunGotoDefTest(content, 3, 0, content.IndexOf("function"));
+            RunGotoDefTest(content, 3, 0, content.IndexOf("x <-"));
         }
 
         [Test]
@@ -37,7 +37,7 @@ if(TRUE) {
     if(FALSE)
         x()
 }";
-            RunGotoDefTest(content, 5, 8, content.IndexOf("function"));
+            RunGotoDefTest(content, 5, 8, content.IndexOf("x <-"));
         }
 
         [Test]

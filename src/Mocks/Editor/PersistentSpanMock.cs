@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class PersistentSpanMock : IPersistentSpan {
         private ITextBuffer _textBuffer;
         private Span _span;
