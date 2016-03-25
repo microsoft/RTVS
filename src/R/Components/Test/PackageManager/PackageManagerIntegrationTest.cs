@@ -15,15 +15,17 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Components.Test.PackageManager {
-    public class PackageManagerIntegrationTest : IDisposable {
+    public class PackageManagerIntegrationTest : IDisposable, IAsyncLifetime {
         private readonly ExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly MethodInfo _testMethod;
         private readonly TestFilesFixture _testFiles;
         private readonly string _repo1Path;
         private readonly string _libPath;
+        private IRInteractiveWorkflow _workflow;
 
         public PackageManagerIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
@@ -39,9 +41,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         [Category.PackageManager]
         public async Task AvailablePackagesCranRepo() {
-            var workflow = await CreateWorkflowAsync();
-
-            var result = (await workflow.Packages.GetAvailablePackagesAsync()).ToArray();
+            var result = await _workflow.Packages.GetAvailablePackagesAsync();
 
             result.Should().NotBeEmpty();
 
@@ -56,13 +56,11 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         [Category.PackageManager]
         public async Task AvailablePackagesLocalRepo() {
-            var workflow = await CreateWorkflowAsync();
-
-            using (var eval = await workflow.RSession.BeginEvaluationAsync()) {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalRepoAsync(eval, _repo1Path);
             }
 
-            var result = (await workflow.Packages.GetAvailablePackagesAsync()).ToArray();
+            var result = await _workflow.Packages.GetAvailablePackagesAsync();
             result.Should().HaveCount(3);
 
             var rtvslib1Pkg = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1.Package);
@@ -82,13 +80,11 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         [Category.PackageManager]
         public async Task InstalledPackagesDefault() {
-            var workflow = await CreateWorkflowAsync();
-
             // Get the installed packages from the default locations
-            var result = (await workflow.Packages.GetInstalledPackagesAsync()).ToArray();
+            var result = await _workflow.Packages.GetInstalledPackagesAsync();
 
             // Validate some of the base packages
-            result.Length.Should().NotBe(0);
+            result.Should().NotBeEmpty();
 
             var graphics = result.SingleOrDefault(pkg => pkg.Package == "graphics");
             graphics.Should().NotBeNull();
@@ -105,14 +101,12 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         [Category.PackageManager]
         public async Task InstalledPackagesCustomLibPathNoPackages() {
-            var workflow = await CreateWorkflowAsync();
-
             // Setup library path to point to the test folder, don't install anything in it
-            using (var eval = await workflow.RSession.BeginEvaluationAsync()) {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalLibAsync(eval, _libPath);
             }
 
-            var result = (await workflow.Packages.GetInstalledPackagesAsync()).ToArray();
+            var result = await _workflow.Packages.GetInstalledPackagesAsync();
 
             // Since we can't remove Program Files folder from library paths,
             // we'll get some results, but nothing from the test folder.
@@ -123,16 +117,14 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         [Category.PackageManager]
         public async Task InstalledPackagesCustomLibPathOnePackage() {
-            var workflow = await CreateWorkflowAsync();
-
             // Setup library path to point to the test folder, install a package into it
-            using (var eval = await workflow.RSession.BeginEvaluationAsync()) {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalRepoAsync(eval, _repo1Path);
                 await SetLocalLibAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1.Package, _libPath);
             }
 
-            var result = (await workflow.Packages.GetInstalledPackagesAsync()).ToArray();
+            var result = await _workflow.Packages.GetInstalledPackagesAsync();
 
             result.Should().NotBeEmpty();
 
@@ -203,6 +195,14 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public void Dispose() {
             (_exportProvider as IDisposable)?.Dispose();
+        }
+
+        public async Task InitializeAsync() {
+            _workflow = await CreateWorkflowAsync();
+        }
+
+        public Task DisposeAsync() {
+            return Task.CompletedTask;
         }
     }
 }

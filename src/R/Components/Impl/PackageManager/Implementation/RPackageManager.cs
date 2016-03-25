@@ -34,9 +34,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return VisualComponent;
         }
 
-        public async Task<IEnumerable<RPackage>> GetInstalledPackagesAsync() {
+        public async Task<IList<RPackage>> GetInstalledPackagesAsync() {
             if (_interactiveWorkflow.RSession == null || !_interactiveWorkflow.RSession.IsHostRunning) {
-                return Enumerable.Empty<RPackage>();
+                return new List<RPackage>();
             }
 
             REvaluationResult result;
@@ -47,9 +47,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return ParsePackages(result);
         }
 
-        public async Task<IEnumerable<RPackage>> GetAvailablePackagesAsync() {
+        public async Task<IList<RPackage>> GetAvailablePackagesAsync() {
             if (_interactiveWorkflow.RSession == null || !_interactiveWorkflow.RSession.IsHostRunning) {
-                return Enumerable.Empty<RPackage>();
+                return new List<RPackage>();
             }
 
             REvaluationResult result;
@@ -60,12 +60,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return ParsePackages(result);
         }
 
-        private static IEnumerable<RPackage> ParsePackages(REvaluationResult result) {
+        private static IList<RPackage> ParsePackages(REvaluationResult result) {
+            List<RPackage> packages = new List<RPackage>();
             foreach (var jsonProp in ((JObject)result.JsonResult).Properties()) {
                 var jsonObj = (JObject)jsonProp.Value;
                 var pkg = jsonObj.ToObject<RPackage>();
-                yield return pkg;
+                packages.Add(pkg);
             }
+            return packages;
         }
 
         public void Dispose() {
