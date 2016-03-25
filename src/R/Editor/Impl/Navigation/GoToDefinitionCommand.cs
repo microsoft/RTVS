@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
@@ -36,7 +37,7 @@ namespace Microsoft.R.Editor.Navigation {
                 var position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int positionToNavigateTo = -1;
-                    var scope = ast.GetScope();
+                    var scope = ast.GetNodeOfTypeFromPosition<IScope>(position.Value);
                     var func = scope.FindFunctionByName(itemName, position.Value);
                     if (func != null) {
                         positionToNavigateTo = func.Value.Start;

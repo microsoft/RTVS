@@ -4,8 +4,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -35,7 +37,7 @@ namespace Microsoft.R.Core.AST {
         /// position except in the global scope it enumerates all assignments.
         /// </summary>
         /// <param name="position"></param>
-        public static IEnumerable<Variable> GetApplicableVariables(this IScope scope, int position) {
+        public static IEnumerable<IVariable> GetApplicableVariables(this IScope scope, int position) {
             foreach (var v in scope.GetScopeVariables(position)) {
                 yield return v;
             }
@@ -63,22 +65,44 @@ namespace Microsoft.R.Core.AST {
         /// reflects how variables are visible when file is sources and user types
         /// somewhere in inner scope.
         /// </param>
-        public static IEnumerable<Variable> GetScopeVariables(this IScope scope, int position) {
+        public static IEnumerable<IVariable> GetScopeVariables(this IScope scope, int position) {
             bool globalScope = scope is GlobalScope;
-            foreach (var c in scope.Children) {
-                var es = c as IExpressionStatement;
-                if (es != null) {
-                    if (!globalScope && es.Start >= position) {
-                        yield break;
-                    }
 
-                    Variable v;
-                    var fd = es.GetVariableOrFunctionDefinition(out v);
-                    if (fd != null && v != null) {
-                        v.Value = new RFunction(fd);
+            if (!globalScope) {
+                // See if this is a function scope with arguments
+                var funcDef = scope.Parent as IFunctionDefinition;
+                if (funcDef != null && funcDef.Arguments != null) {
+                    foreach (var arg in funcDef.Arguments) {
+                        var na = arg as IVariable;
+                        if (na != null) {
+                            yield return na;
+                        } else {
+                            var ea = arg as ExpressionArgument;
+                            if (ea != null && ea.ArgumentValue != null && ea.ArgumentValue.Children.Count == 1) {
+                                var v = ea.ArgumentValue.Children[0] as IVariable;
+                                if (v != null) {
+                                    yield return v;
+                                }
+                            }
+                        }
                     }
-                    if (v != null) {
-                        yield return v;
+                }
+
+                foreach (var c in scope.Children) {
+                    var es = c as IExpressionStatement;
+                    if (es != null) {
+                        if (!globalScope && es.Start >= position) {
+                            yield break;
+                        }
+
+                        Variable v;
+                        var fd = es.GetVariableOrFunctionDefinition(out v);
+                        if (fd != null && v != null) {
+                            v.Value = new RFunction(fd);
+                        }
+                        if (v != null) {
+                            yield return v;
+                        }
                     }
                 }
             }
@@ -101,7 +125,7 @@ namespace Microsoft.R.Core.AST {
         /// that appear before the given position are analyzed except
         /// when scope is the global scope.
         /// </summary>
-        public static Variable FindVariableByName(this IScope scope, string name, int position) {
+        public static IVariable FindVariableByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             return variables.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
         }

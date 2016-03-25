@@ -4,23 +4,25 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
+using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
+using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Arguments {
     [DebuggerDisplay("Named Argument [{Start}...{End})")]
-    public class NamedArgument : CommaSeparatedItem {
-        public ITextRange NameRange {
-            get { return this.Identifier; }
-        }
-        public string Name {
-            get { return this.Root.TextProvider.GetText(this.NameRange); }
-        }
+    public class NamedArgument : CommaSeparatedItem, IVariable {
+
+        #region IVariable
+        public ITextRange NameRange => Identifier;
+        public string Name => Root.TextProvider.GetText(NameRange);
 
         public TokenNode Identifier { get; private set; }
+        public RObject Value { get; set; }
+        #endregion
 
         public TokenNode EqualsSign { get; private set; }
 
