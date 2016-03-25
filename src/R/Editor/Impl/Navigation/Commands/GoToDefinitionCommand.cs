@@ -5,20 +5,14 @@ using System;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.Extensions;
-using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Navigation {
-    public sealed class PeekDefinitionCommand : ViewCommand {
+namespace Microsoft.R.Editor.Navigation.Commands {
+    public sealed class GoToDefinitionCommand : ViewCommand {
         private ITextBuffer _textBuffer;
 
-        public PeekDefinitionCommand(ITextView textView, ITextBuffer textBuffer) :
+        public GoToDefinitionCommand(ITextView textView, ITextBuffer textBuffer) :
            base(textView, new CommandId(typeof(VSConstants.VSStd97CmdID).GUID,
                 (int)VSConstants.VSStd97CmdID.GotoDefn), needCheckout: false) {
             _textBuffer = textBuffer;
@@ -29,7 +23,13 @@ namespace Microsoft.R.Editor.Navigation {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            return CommandResult.Executed;
+            var viewPoint = CodeNavigator.FindCurrentItemDefinition(TextView, _textBuffer);
+            if (viewPoint.HasValue) {
+                TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, viewPoint.Value));
+                TextView.Caret.EnsureVisible();
+                return CommandResult.Executed;
+            }
+            return CommandResult.NotSupported;
         }
     }
 }
