@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentProvider : IREnvironmentProvider, IDisposable {
@@ -16,6 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public REnvironmentProvider(IRSession session) {
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
+
+            GetEnvironmentAsync().DoNotWait();
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -28,14 +33,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             await TaskUtilities.SwitchToBackgroundThread();
 
             REvaluationResult result;
-            using (var evaluation = await _rSession.BeginEvaluationAsync()) {
+            using (var evaluation = await _rSession.BeginEvaluationAsync(false)) {
                 result = await evaluation.EvaluateAsync("rtvs:::toJSON(rtvs:::getEnvironments(sys.frame(sys.nframe())))", REvaluationKind.Json);
             }
 
             Debug.Assert(result.JsonResult != null);
 
+            var envs = new List<REnvironment>();
+            var jarray = result.JsonResult as JArray;
+            if (jarray != null) {
+                foreach (var jsonItem in jarray) {
+                    envs.Add(new REnvironment(jsonItem));
+                }
+            }
+
             VsAppShell.Current.DispatchOnUIThread(() => {
-                OnEnvironmentChanged(new REnvironmentChangedEventArgs(new REnvironmentCollection(result.JsonResult)));
+                OnEnvironmentChanged(new REnvironmentChangedEventArgs(envs));
             });
         }
 
