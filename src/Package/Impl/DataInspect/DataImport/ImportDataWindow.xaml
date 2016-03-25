@@ -7,6 +7,11 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         mc:Ignorable="d"
         Title="ImportDataWindow" Height="300" Width="300">
+    <ui:DialogWindow.Resources>
+        <DataTemplate x:Key="RStringTemplate">
+            <TextBlock Text="{Binding Name}" />
+        </DataTemplate>
+    </ui:DialogWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -59,27 +64,27 @@
                     <ComboBoxItem>Automatic</ComboBoxItem>
                     <ComboBoxItem>Automatic</ComboBoxItem>
                 </ComboBox>
-                <!-- Heading -->
+                <!-- Header -->
                 <TextBlock Grid.Column="0" Grid.Row="3">Header</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="3">...</TextBox>
+                <CheckBox Grid.Column="1" Grid.Row="3" x:Name="HeaderCheckBox"  IsChecked="True"/>
                 <!-- Row names -->
                 <TextBlock Grid.Column="0" Grid.Row="4">Row names</TextBlock>
                 <TextBox Grid.Column="1" Grid.Row="4">...</TextBox>
                 <!-- Separator -->
                 <TextBlock Grid.Column="0" Grid.Row="5">Separator</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="5">...</TextBox>
+                <ComboBox Grid.Column="1" Grid.Row="5" x:Name="SeparatorComboBox" ItemTemplate="{StaticResource RStringTemplate}" />
                 <!-- Decimal -->
                 <TextBlock Grid.Column="0" Grid.Row="6">Decimal</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="6">...</TextBox>
+                <ComboBox Grid.Column="1" Grid.Row="6" x:Name="DecimalComboBox" ItemTemplate="{StaticResource RStringTemplate}" />
                 <!-- Quote -->
                 <TextBlock Grid.Column="0" Grid.Row="7">Quote</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="7">...</TextBox>
+                <ComboBox Grid.Column="1" Grid.Row="7" x:Name="QuoteComboBox" ItemTemplate="{StaticResource RStringTemplate}" />
                 <!-- Comment -->
                 <TextBlock Grid.Column="0" Grid.Row="8">Comment</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="8">...</TextBox>
+                <ComboBox Grid.Column="1" Grid.Row="8" x:Name="CommentComboBox" ItemTemplate="{StaticResource RStringTemplate}" />
                 <!-- na.strings -->
                 <TextBlock Grid.Column="0" Grid.Row="9">na.strings</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="9">...</TextBox>
+                <TextBox Grid.Column="1" Grid.Row="9" x:Name="NAStringTextBox" >NA</TextBox>
             </Grid>
             <Grid Grid.Column="1">
                 <Grid>

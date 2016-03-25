@@ -26,64 +26,59 @@ using static System.FormattableString;
 using Microsoft.Common.Core;
 using System.IO;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using System.Collections.ObjectModel;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// <summary>
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
     public partial class ImportDataWindow : DialogWindow {
+        private ObservableCollection<RStringModel> Separators = new ObservableCollection<RStringModel>() { new RStringModel("White space", ""), new RStringModel("Comma (,)", ","), new RStringModel("Semicolon (;)", ";"), new RStringModel(@"Tab (\t)", "\t") };
+        private ObservableCollection<RStringModel> Decimals = new ObservableCollection<RStringModel>() { new RStringModel("Period (.)", "."), new RStringModel("Comma (,)", ",") };
+        private ObservableCollection<RStringModel> Quotes = new ObservableCollection<RStringModel>() { new RStringModel("Double quote (\")", "\""), new RStringModel("Single quote (')", "'"), new RStringModel("None", "") };
+        private ObservableCollection<RStringModel> Comments = new ObservableCollection<RStringModel>() { new RStringModel("None", ""), new RStringModel("#", "#"), new RStringModel("!", "!"), new RStringModel("%", "%"), new RStringModel("@", "@"), new RStringModel("/", "/"), new RStringModel("~", "~") };
+
         public ImportDataWindow() {
             InitializeComponent();
 
             Title = "Import Dataset";
 
-            Header = true;
+            SeparatorComboBox.ItemsSource = Separators;
+            SeparatorComboBox.SelectedIndex = 1;
+
+            DecimalComboBox.ItemsSource = Decimals;
+            DecimalComboBox.SelectedIndex = 0;
+
+            QuoteComboBox.ItemsSource = Quotes;
+            QuoteComboBox.SelectedIndex = 0;
+
+            CommentComboBox.ItemsSource = Comments;
+            CommentComboBox.SelectedIndex = 0;
         }
-
-        private bool Header { get; set; }
-
-        private string Separator { get; }
-
-        private string Decimal { get; }
-
-        private string QuoteChars { get; }
-
-        private string CommentChar { get; }
-
-        private string NAString { get; }
 
         private string BuildCommandLine(bool preview = false) {
             var parameter = new StringBuilder();
 
             parameter.Append("file=");
-            AppendString(parameter, FilePathBox.Text);
+            parameter.Append(FilePathBox.Text.ToRStringLiteral());
 
-            parameter.AppendFormat(" ,header={0}", Header.ToString().ToUpperInvariant());
+            parameter.AppendFormat(" ,header={0}", HeaderCheckBox.IsChecked.Value.ToString().ToUpperInvariant());
 
-            if (!string.IsNullOrEmpty(Separator)) {
-                parameter.Append(" ,separater=");
-                AppendString(parameter, Separator);
-            }
+            parameter.Append(" ,sep=");
+            parameter.Append(((RStringModel)SeparatorComboBox.SelectedItem).Value.ToRStringLiteral());
 
-            if (!string.IsNullOrEmpty(Decimal)) {
-                parameter.Append(" ,dec=");
-                AppendString(parameter, Decimal);
-            }
+            parameter.Append(" ,dec=");
+            parameter.Append(((RStringModel)DecimalComboBox.SelectedItem).Value.ToRStringLiteral());
 
-            if (!string.IsNullOrEmpty(QuoteChars)) {
-                parameter.Append(" ,quote=");
-                AppendString(parameter, QuoteChars);
-            }
+            parameter.Append(" ,quote=");
+            parameter.Append(((RStringModel)QuoteComboBox.SelectedItem).Value.ToRStringLiteral());
 
-            if (!string.IsNullOrEmpty(CommentChar)) {
-                Debug.Assert(CommentChar.Length == 1);
-                parameter.Append(" ,comment.char=");
-                AppendString(parameter, CommentChar);
-            }
+            parameter.Append(" ,comment.char=");
+            parameter.Append(((RStringModel)CommentComboBox.SelectedItem).Value.ToRStringLiteral());
 
-            if (!string.IsNullOrEmpty(NAString)) {
+            if (!string.IsNullOrEmpty(NAStringTextBox.Text)) {
                 parameter.Append(" ,na.strings=");
-                AppendString(parameter, NAString);
+                AppendString(parameter, NAStringTextBox.Text.ToRStringLiteral());
             }
 
             if (preview) {
@@ -177,9 +172,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 });
             }
 
-            List<RowDataItem> rows = new List<RowDataItem>();
+            List<DataFramePreviewRowItem> rows = new List<DataFramePreviewRowItem>();
             for (int r = 0; r < gridData.Grid.Range.Rows.Count; r++) {
-                var row = new RowDataItem();
+                var row = new DataFramePreviewRowItem();
                 row.RowName = gridData.RowHeader[gridData.RowHeader.Range.Start + r];
                 for (int c = 0; c < gridData.Grid.Range.Columns.Count; c++) {
                     row.Values.Add(gridData.Grid[gridData.Grid.Range.Rows.Start + r, gridData.Grid.Range.Columns.Start + c]);
@@ -201,13 +196,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             return new string(buffer, 0, readCount);
         }
 
-        class RowDataItem {
-            public RowDataItem() {
+        class DataFramePreviewRowItem {
+            public DataFramePreviewRowItem() {
                 Values = new List<string>();
             }
 
             public string RowName { get; set; }
             public List<string> Values { get; private set; }
+        }
+
+        class RStringModel {
+            public RStringModel(string name, string value) {
+                Name = name;
+                Value = value;
+            }
+
+            public string Name { get; }
+            public string Value { get; }
         }
     }
 }
