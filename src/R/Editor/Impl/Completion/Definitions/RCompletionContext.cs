@@ -42,12 +42,10 @@ namespace Microsoft.R.Editor.Completion.Definitions {
         }
 
         public static bool IsInNamespace(ITextSnapshot snapshot, int position) {
-            try {
-                ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
-                if (line.Length > 2 && position - line.Start > 2) {
-                    return snapshot[position - 1] == ':';
-                }
-            } catch (Exception) { }
+            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+            if (line.Length > 2 && position - line.Start > 2) {
+                return snapshot[position - 1] == ':';
+            }
 
             return false;
         }
@@ -100,7 +98,7 @@ namespace Microsoft.R.Editor.Completion.Definitions {
                         return true;
                     }
                 }
-            } catch (Exception) { }
+            } catch (ArgumentException) { }
 
             return false;
         }

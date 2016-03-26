@@ -112,7 +112,7 @@ namespace Microsoft.R.Core.AST {
         public static IVariable FindFunctionDefinitionByName(this IScope scope, string name, int position) {
             var variables = scope.GetApplicableVariables(position);
             var v = variables.FirstOrDefault(x =>
-                x.Name.EqualsOrdinal(name) && (x.Value is RFunction));
+                (x.Value is RFunction) && x.Name.EqualsOrdinal(name));
             return v;
         }
 
