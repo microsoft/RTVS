@@ -88,7 +88,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
-            _cranMirror = "0-Cloud [https]";
             RBasePath = RInstallation.GetCompatibleEnginePathFromRegistry();
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
