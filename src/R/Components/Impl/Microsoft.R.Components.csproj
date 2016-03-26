@@ -119,16 +119,14 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
-    <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageInfoListDataSource.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\InfiniteScrollList.xaml.cs">
-      <DependentUpon>InfiniteScrollList.xaml</DependentUpon>
+    <Compile Include="PackageManager\Implementation\View\PackageList.xaml.cs">
+      <DependentUpon>PackageList.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManager\Implementation\View\LoadingStatusBar.xaml.cs">
       <DependentUpon>LoadingStatusBar.xaml</DependentUpon>
@@ -141,9 +139,6 @@
     </Compile>
     <Compile Include="PackageManager\Implementation\View\PackageManagerResources.xaml.cs">
       <DependentUpon>PackageManagerResources.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml.cs">
-      <DependentUpon>PackageManagerTopPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\Spinner.xaml.cs">
@@ -170,6 +165,7 @@
     <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
+    <Compile Include="View\IVisualComponentContainerFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -210,7 +206,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PackageManager\Implementation\View\InfiniteScrollList.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -227,10 +223,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

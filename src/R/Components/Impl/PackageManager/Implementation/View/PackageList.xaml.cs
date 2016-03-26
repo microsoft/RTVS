@@ -8,10 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
-    /// <summary>
-    /// Interaction logic for InfiniteScrollList.xaml
-    /// </summary>
-    public partial class InfiniteScrollList : UserControl {
+    public partial class PackageList : UserControl {
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
         private ScrollViewer _scrollViewer;
@@ -29,7 +26,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             }
         }
 
-        public InfiniteScrollList() {
+        public PackageList() {
             InitializeComponent();
             CheckBoxesEnabled = false;
         }

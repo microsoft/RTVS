@@ -6,10 +6,105 @@
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
+             xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="600" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <view:PackageManagerResources />
+            </ResourceDictionary.MergedDictionaries>
+            <ControlTemplate x:Key="TabToggleButton" TargetType="{x:Type RadioButton}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="MouseOver">
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground)" Storyboard.TargetName="LabelText">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                        <VisualStateGroup x:Name="CheckStates">
+                            <VisualState x:Name="Checked">
+                                <Storyboard>
+                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="Underline">
+                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
+                                    </ObjectAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked" />
+                            <VisualState x:Name="Indeterminate" />
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}"
+                                   Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
+                                   FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static rwpf:Converters.FontScale122}}"/>
+
+                        <!-- the textblock that displays the count -->
+                        <!-- Commented since it is not clear if we want to display anything in this textblock
+                    <Border x:Name="TextBlockCountContainer" CornerRadius="2" Margin="3,0" Padding="3,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}">
+                        <TextBlock x:Name="TextBlockCount" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedTextBrushKey}}"/>
+                    </Border>
+                    -->
+                    </StackPanel>
+
+                    <Rectangle x:Name="Underline" Visibility="Hidden" Margin="0" Height="3" Fill="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}" Grid.Row="1" />
+                </Grid>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
     <DockPanel x:Name="Self" LastChildFill="True" >
-        <view:PackageManagerTopPanel DockPanel.Dock="Top" x:Name="TopPanel" Margin="24,0,24,17" />
+        <!--Header-->
+        <Grid DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="LabelTitle" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,8,8,8" Text="Package Manager"
+                       FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale155}}" />
+
+            <Grid Grid.Row="2" Margin="24,0,24,17">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="35" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="35" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="35" />
+                    <ColumnDefinition Width="*" MinWidth="20"/>
+                    <ColumnDefinition Width="12" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <RadioButton Grid.Column="0" x:Name="TabAvailable" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Available}" Checked="TabAvailable_Checked" />
+                <RadioButton Grid.Column="2" x:Name="TabInstalled" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Installed}" Checked="TabInstalled_Checked" />
+                <RadioButton Grid.Column="4" x:Name="TabLoaded" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Loaded}" Checked="TabLoaded_Checked" />
+
+                <!-- container of the search control -->
+                <Border Grid.Column="6" x:Name="SearchControlHost" VerticalAlignment="Center" HorizontalAlignment="Right" Width="320" MinHeight="22" MinWidth="224" />
+
+                <!-- Settings button -->
+                <Button Grid.Column="8" x:Name="ButtonSettings" VerticalAlignment="Center" Padding="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="ButtonSettings_Click">
+                    <Border Width="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
+                            Height="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
+                            Child="{StaticResource IconSettings}"/>
+                </Button>
+            </Grid>
+        </Grid>
+        
         <Border DockPanel.Dock="Top" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
             <Grid Margin="0,-0.333,0,0">
                 <Grid.ColumnDefinitions>
@@ -25,7 +120,7 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <view:InfiniteScrollList Grid.Row="0" x:Name="ListPackages" Loaded="ListPackages_Loaded" />
+                    <view:PackageList Grid.Row="0" x:Name="ListPackages" Loaded="ListPackages_Loaded" />
                     <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
                             Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackground}}">
                         <StackPanel Orientation="Vertical">
@@ -39,7 +134,7 @@
                               Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
 
                 <!-- right side -->
-                <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" />
+                <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" />
             </Grid>
         </Border>
     </DockPanel>

@@ -392,6 +392,7 @@
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
     <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
+    <Compile Include="Wpf\VsWpfOverrides.cs" />
     <Compile Include="Wpf\Commands.cs" />
     <Compile Include="Wpf\ConfigurationControl.cs" />
     <Compile Include="Wpf\Controls.cs" />

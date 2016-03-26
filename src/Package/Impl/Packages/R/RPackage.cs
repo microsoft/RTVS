@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -108,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
+            VsWpfOverrides.Apply();
             CranMirrorList.Download();
             VerifyWebToolsInstalled();
 
@@ -131,7 +133,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
 			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
-            IdleTimeAction.Create(() => ExpansionsCache.Load(), 200, typeof(ExpansionsCache));
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {
