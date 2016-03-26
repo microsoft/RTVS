@@ -12,6 +12,6 @@ namespace Microsoft.R.Core.AST.Definitions {
     /// is a constant (number, string, logical) or a function call.
     /// </summary>
     public interface IRValueNode : IAstNode {
-        RObject GetValue();
+        RObject Value { get; set; }
     }
 }

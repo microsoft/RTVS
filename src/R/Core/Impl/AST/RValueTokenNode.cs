@@ -10,16 +10,8 @@ namespace Microsoft.R.Core.AST {
     /// function calls, expressions and similar constructs.
     /// </summary>
     public abstract class RValueTokenNode<T> : TokenNode, IRValueNode where T : RObject {
-        protected T NodeValue { get; set; }
-
         #region IRValueNode
-        public RObject GetValue() {
-            if (NodeValue == null) {
-                NodeValue = (T)Root.CodeEvaluator.Evaluate(this);
-            }
-
-            return NodeValue;
-        }
+        public RObject Value { get; set; }
         #endregion
     }
 }

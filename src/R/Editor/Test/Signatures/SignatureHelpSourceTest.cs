@@ -51,5 +51,30 @@ namespace Microsoft.R.Editor.Test.Signatures {
             signatures[0].Content.Should().Be("as.matrix(x, data, nrow, ncol, byrow, dimnames, rownames.force, ...)");
             signatures[0].Documentation.Should().NotBeEmpty();
         }
+
+        [Test]
+        public async Task SignatureHelpSourceTest02() {
+            string content = 
+@"
+x <- function(a, b = TRUE, c = 12/7) { }
+x( )
+";
+
+            AstRoot ast = RParser.Parse(content);
+            int caretPosition = content.IndexOf("( )")+1;
+            ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
+            SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
+            List<ISignature> signatures = new List<ISignature>();
+
+            signatureHelpSession.TrackingPoint = new TrackingPointMock(textBuffer, caretPosition, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
+            await signatureHelpSource.AugmentSignatureHelpSessionAsync(signatureHelpSession, signatures, ast);
+
+            signatures.Should().ContainSingle();
+            signatures[0].Parameters.Should().HaveCount(3);
+            signatures[0].CurrentParameter.Name.Should().Be("a");
+            signatures[0].Content.Should().Be("x(a, b = TRUE, c = 12/7)");
+            signatures[0].Documentation.Should().BeEmpty();
+        }
     }
 }

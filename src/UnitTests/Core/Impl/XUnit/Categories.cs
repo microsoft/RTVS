@@ -107,6 +107,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DocumentationAttribute : CategoryAttribute {
+                public DocumentationAttribute() : base("R.Documentation") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class EditorTreeAttribute : CategoryAttribute {
                 public EditorTreeAttribute() : base("R.EditorTree") { }
             }
@@ -119,6 +124,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class InstallAttribute : CategoryAttribute {
                 public InstallAttribute() : base("R.Install") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class NavigationAttribute : CategoryAttribute {
+                public NavigationAttribute() : base("R.Navigation") { }
             }
 
             [ExcludeFromCodeCoverage]

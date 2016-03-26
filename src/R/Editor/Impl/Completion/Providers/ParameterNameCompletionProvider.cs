@@ -4,10 +4,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
@@ -26,26 +28,16 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
+            FunctionCall funcCall;
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
 
             // Safety checks
-            FunctionCall funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
-            if (funcCall == null || funcCall.OpenBrace == null || funcCall.Arguments == null) {
-                return completions;
-            }
-
-            if (context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
-                return completions;
-            }
-
-            // Retrieve parameter positions from the current text buffer snapshot
-            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(context.AstRoot, context.TextBuffer.CurrentSnapshot, context.Position);
-            if (parametersInfo == null) {
+            if (!ShouldProvideCompletions(context, out funcCall)) {
                 return completions;
             }
 
             // Get collection of function signatures from documentation (parsed RD file)
-            IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+            IFunctionInfo functionInfo = GetFunctionInfo(context);
             if (functionInfo == null) {
                 return completions;
             }
@@ -60,9 +52,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
             // Add names of arguments that  are not yet specified to the completion
             // list with '=' sign so user can tell them from function names.
             IEnumerable<string> declaredArguments = funcCall.Arguments.Where(x => x is NamedArgument).Select(x => ((NamedArgument)x).Name);
-            IEnumerable<KeyValuePair<string, IArgumentInfo>> possibleArguments = arguments.Where(x => x.Key != "..." && !declaredArguments.Contains(x.Key));
+            var possibleArguments = arguments.Where(x => !x.Key.EqualsOrdinal("...") && !declaredArguments.Contains(x.Key));
 
-            foreach (KeyValuePair<string, IArgumentInfo> arg in possibleArguments) {
+            foreach (var arg in possibleArguments) {
                 string displayText = arg.Key + " =";
                 string insertionText = arg.Key + " = ";
                 completions.Add(new RCompletion(displayText, insertionText, arg.Value.Description, functionGlyph));
@@ -71,5 +63,38 @@ namespace Microsoft.R.Editor.Completion.Providers {
             return completions;
         }
         #endregion
+
+        private static bool ShouldProvideCompletions(RCompletionContext context, out FunctionCall funcCall) {
+            // Safety checks
+            funcCall = context.AstRoot.GetNodeOfTypeFromPosition<FunctionCall>(context.Position);
+            if (funcCall == null || funcCall.OpenBrace == null || funcCall.Arguments == null) {
+                return false;
+            }
+
+            if (context.Position < funcCall.OpenBrace.End || context.Position >= funcCall.SignatureEnd) {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Extracts information on the current function in the completion context, if any.
+        /// </summary>
+        /// <returns></returns>
+        private static IFunctionInfo GetFunctionInfo(RCompletionContext context) {
+            // Retrieve parameter positions from the current text buffer snapshot
+            IFunctionInfo functionInfo = null;
+
+            ParameterInfo parametersInfo = SignatureHelp.GetParametersInfoFromBuffer(context.AstRoot, context.TextBuffer.CurrentSnapshot, context.Position);
+            if (parametersInfo != null) {
+                // User-declared functions take priority
+                functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
+                if (functionInfo == null)
+                    // Get collection of function signatures from documentation (parsed RD file)
+                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+            }
+            return functionInfo;
+        }
     }
 }

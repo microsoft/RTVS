@@ -17,7 +17,6 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Comments {
     [ExcludeFromCodeCoverage]
     [Category.R.Commenting]
-    [Collection(CollectionNames.NonParallel)]
     public class CommenterTest {
         [Test]
         public void Commenter_CommentTest01() {

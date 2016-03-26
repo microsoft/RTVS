@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    using System.Diagnostics.CodeAnalysis;
     using Task = System.Threading.Tasks.Task;
 
+    [ExcludeFromCodeCoverage]
     public sealed class InteractiveEvaluatorMock : IInteractiveEvaluator {
         public InteractiveEvaluatorMock(IInteractiveWindow window) {
             CurrentWindow = window;

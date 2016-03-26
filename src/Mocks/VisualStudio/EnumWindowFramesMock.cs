@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class EnumWindowFramesMock : IEnumWindowFrames {
         private List<IVsWindowFrame> _frames;
         private int _index = 0;

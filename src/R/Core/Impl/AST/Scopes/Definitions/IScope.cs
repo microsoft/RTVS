@@ -20,20 +20,6 @@ namespace Microsoft.R.Core.AST.Scopes.Definitions {
 
         TokenNode OpenCurlyBrace { get; }
 
-        IReadOnlyTextRangeCollection<IStatement> Statements { get; }
-
         TokenNode CloseCurlyBrace { get; }
-
-        /// <summary>
-        /// Collection of variables declared inside the scope.
-        /// Does not include variables declared in outer scope.
-        /// </summary>
-        IReadOnlyDictionary<string, int> Variables { get; }
-
-        /// <summary>
-        /// Collection of function declared inside the scope.
-        /// Does not include function declared in outer scope.
-        /// </summary>
-        IReadOnlyDictionary<string, int> Functions { get; }
     }
 }

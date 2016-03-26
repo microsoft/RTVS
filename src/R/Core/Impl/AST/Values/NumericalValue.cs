@@ -21,9 +21,9 @@ namespace Microsoft.R.Core.AST.Values {
                          currentToken.TokenType == RTokenType.NaN);
 
             if (currentToken.TokenType == RTokenType.Infinity) {
-                NodeValue = new RNumber(Double.PositiveInfinity);
-            } else if (currentToken.TokenType == RTokenType.NaN) {
-                NodeValue = new RNumber(Double.NaN);
+                Value = new RNumber(Double.PositiveInfinity);
+             } else if (currentToken.TokenType == RTokenType.NaN) {
+                Value = new RNumber(Double.NaN);
             } else {
                 // If parsing fails we still need to create node
                 // since we need a range to squiggle
@@ -32,7 +32,7 @@ namespace Microsoft.R.Core.AST.Values {
                     // Something unparsable
                     context.AddError(new ParseError(ParseErrorType.NumberExpected, ErrorLocation.Token, currentToken));
                 }
-                NodeValue = new RNumber(result);
+                Value = new RNumber(result);
             }
             return base.Parse(context, parent);
         }

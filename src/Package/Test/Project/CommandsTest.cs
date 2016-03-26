@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
+using Microsoft.VisualStudio.R.Package.Test.Utility;
 using NSubstitute;
 using Xunit;
 
@@ -50,6 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 var contents = Clipboard.GetText();
                 contents.Should().Be("\"" + filePath + "\"");
             });
+
+            VsRHostScript.DoIdle(500);
         }
 
         [Test]

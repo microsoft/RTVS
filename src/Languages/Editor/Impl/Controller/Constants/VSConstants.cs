@@ -4379,6 +4379,29 @@ namespace Microsoft.Languages.Editor.Controller.Constants {
             CommandWindowHistoryDown = 0x310D,
         }
 
+
+        /// <summary>
+        /// Set of the standard, shared commands in CMDSETID.StandardCommandSet12_guid
+        /// </summary>
+        [Guid("2A8866DC-7BDE-4dc8-A360-A60679534384")]
+        public enum VSStd12CmdID {
+            ShowUserNotificationsToolWindow = 1,
+            OpenProjectFromScc = 2,
+            ShareProject = 3,
+            PeekDefinition = 4,
+            AccountSettings = 5,
+            PeekNavigateForward = 6,
+            PeekNavigateBackward = 7,
+            RetargetProject = 8,
+            RetargetProjectInstallComponent = 9,
+            AddReferenceProjectOnly = 10,
+            AddWebReferenceProjectOnly = 11,
+            AddServiceReferenceProjectOnly = 12,
+            AddReferenceNonProjectOnly = 13,
+            AddWebReferenceNonProjectOnly = 14,
+            AddServiceReferenceNonProjectOnly = 15,
+        }
+
         [Guid("4C7763BF-5FAF-4264-A366-B7E1F27BA958")]
         public enum VSStd14CmdID {
             //

@@ -10,17 +10,9 @@ namespace Microsoft.R.Core.AST {
     /// Base class for complex nodes representing R-values such as
     /// function calls, expressions and similar constructs.
     /// </summary>
-    public abstract class RValueNode<T> : AstNode, IRValueNode where T : RObject {
-        protected T NodeValue { get; set; }
-
+    public abstract class RValueNode : AstNode, IRValueNode {
         #region IRValueNode
-        public virtual RObject GetValue() {
-            if (NodeValue == null) {
-                NodeValue = (T)Root.CodeEvaluator.Evaluate(this);
-            }
-
-            return NodeValue;
-        }
+        public RObject Value { get; set; }
         #endregion
     }
 }

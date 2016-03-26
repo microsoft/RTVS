@@ -70,18 +70,20 @@ namespace Microsoft.R.Core.AST {
         /// Locates deepest node of a particular type 
         /// </summary>
         public static T GetNodeOfTypeFromPosition<T>(this AstRoot ast, int position, bool includeEnd = false) where T : class {
-            return GetSpecificNodeFromPosition(ast, position, (IAstNode n) => { return n is T; }, includeEnd) as T;
+            return GetSpecificNodeFromPosition<T>(ast, position, (IAstNode n) => { return n is T; }, includeEnd) as T;
         }
 
         /// <summary>
         /// Locates deepest node that matches partucular criteria 
         /// and contains given position in the text buffer
         /// </summary>
-        public static IAstNode GetSpecificNodeFromPosition(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false) {
+        public static T GetSpecificNodeFromPosition<T>(this AstRoot ast, int position, Func<IAstNode, bool> match, bool includeEnd = false) where T : class {
             IAstNode deepestNode = null;
             FindSpecificNode(ast, position, match, ref deepestNode, includeEnd);
-
-            return deepestNode;
+            if(deepestNode == null && ast.Children.Count > 0) {
+                deepestNode = ast.Children[0]; // Global scope if nothing was found
+            }
+            return deepestNode as T;
         }
 
         private static void FindSpecificNode(IAstNode node, int position, Func<IAstNode, bool> match, ref IAstNode deepestNode, bool includeEnd = false) {
