@@ -45,5 +45,44 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "0xAi");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseHexComplexNumbers02() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [0x8+0x10000i]
+        Expression  [0x8+0x10000i]
+            ComplexValue  [0x8+0x10000i [0...12)]
+";
+            ParserTest.VerifyParse(expected, "0x8+0x10000i");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseHexComplexNumbers03() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [0x8L + 0x10000i]
+        Expression  [0x8L + 0x10000i]
+            TokenOperator  [+ [5...6)]
+                NumericalValue  [0x8L [0...4)]
+                TokenNode  [+ [5...6)]
+                ComplexValue  [0x10000i [7...15)]
+";
+            ParserTest.VerifyParse(expected, "0x8L + 0x10000i");
+        }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseHexComplexNumbers04() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [1.1L+0xAi]
+        Expression  [1.1L+0xAi]
+            ComplexValue  [1.1L+0xAi [0...9)]
+";
+            ParserTest.VerifyParse(expected, "1.1L+0xAi");
+        }
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registrat
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
@@ -68,22 +69,22 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
-    [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0, 
+    [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis",      @"Snippets\analysis")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "datasets",      @"Snippets\datasets")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "analysis", @"Snippets\analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "datasets", @"Snippets\datasets")]
     [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "distributions", @"Snippets\distributions")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "flow",          @"Snippets\flow")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics",      @"Snippets\graphics")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators",     @"Snippets\operators")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc",         @"Snippets\rodbc")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis",          @"Snippets\mrs-analysis")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking",          @"Snippets\mrs-chunking")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext",    @"Snippets\mrs-computeContext")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data",              @"Snippets\mrs-data")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed",       @"Snippets\mrs-distributed")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics",          @"Snippets\mrs-graphics")]
-    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms",        @"Snippets\mrs-transforms")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "flow", @"Snippets\flow")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "graphics", @"Snippets\graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "operators", @"Snippets\operators")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "rodbc", @"Snippets\rodbc")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-analysis", @"Snippets\mrs-analysis")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-chunking", @"Snippets\mrs-chunking")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-computeContext", @"Snippets\mrs-computeContext")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-data", @"Snippets\mrs-data")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-distributed", @"Snippets\mrs-distributed")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-graphics", @"Snippets\mrs-graphics")]
+    [ProvideCodeExpansionPath(RContentTypeDefinition.LanguageName, "mrs-transforms", @"Snippets\mrs-transforms")]
     #region RProj editor factory
     // Provide editor factory that instead of opening .rproj file in the editor
     // locates matching .rxproj file, if any, and opens the project instead.
@@ -131,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
 
-			System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
+            System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
             IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
@@ -145,6 +146,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             LogCleanup.Cancel();
             ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
+            CsvAppFileIO.Close();
 
             RtvsTelemetry.Current.Dispose();
 
