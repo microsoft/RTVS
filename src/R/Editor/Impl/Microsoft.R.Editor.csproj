@@ -142,6 +142,9 @@
     <Compile Include="Navigation\Peek\PeekableItemSource.cs" />
     <Compile Include="Navigation\Peek\PeekResultSource.cs" />
     <Compile Include="Navigation\Peek\PeekableItemSourceProvider.cs" />
+    <Compile Include="Navigation\Text\RTextSelector.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigator.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigatorProvider.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
     <Compile Include="Outline\ROutliningTagger.cs" />
