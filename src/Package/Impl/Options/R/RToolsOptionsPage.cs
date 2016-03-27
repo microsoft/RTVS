@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_CranMirror")]
         [LocDescription("Settings_CranMirror_Description")]
         [TypeConverter(typeof(CranMirrorTypeConverter))]
-        [DefaultValue("0-Cloud [https]")]
+        [DefaultValue(null)]
         public string CranMirror {
             get { return RToolsSettings.Current.CranMirror; }
             set { RToolsSettings.Current.CranMirror = value; }

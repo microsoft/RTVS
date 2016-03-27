@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using static System.FormattableString;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -106,14 +107,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
-            var script =
-@"    local({
-        r <- getOption('repos')
-        r['CRAN'] <- '" + mirrorUrl + @"'
-        options(repos = r)})";
-
-            return evaluation.EvaluateAsync(script);
+        public static async Task SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
+            await evaluation.EvaluateAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"));
         }
 
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
