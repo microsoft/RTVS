@@ -10,13 +10,19 @@ set_mirror <- function(url) {
 
   if (is.null(url)) {
     if (!is.null(original_mirror$url)) {
-      repos['CRAN'] <- original_mirror$url
+      repos[['CRAN']] <- original_mirror$url
+	}
+
+	# If the only mirror on the list is @CRAN@, it will trigger the mirror selector UI every time.
+	# To avoid that, override it to point to the automatic mirror redirection service that will pick the right one by itself. 
+    if (identical(repos[['CRAN']], '@CRAN@')) {
+	  repos[['CRAN']] <- 'https://cloud.r-project.org/'
 	}
   } else {
 	if (is.null(original_mirror$url)) {
-       original_mirror$url <- repos['CRAN']
+       original_mirror$url <- repos[['CRAN']]
 	}
-    repos['CRAN'] <- url
+    repos[['CRAN']] <- url
   }
 
   options(repos = repos)
