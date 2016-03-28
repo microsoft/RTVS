@@ -294,7 +294,11 @@ aaa456 <- function() { }
 aa
 }";
             GetCompletions(content, content.IndexOf('#') + 4, completionSets);
+            completionSets.Should().ContainSingle();
+            completionSets[0].Completions.Should().BeEmpty();
 
+            completionSets.Clear();
+            GetCompletions(content, content.IndexOf('#') + 5, completionSets);
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
 
