@@ -173,6 +173,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Documentation\RoxygenTest.cs" />
+    <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
     <Compile Include="Navigation\GotoDefinitionTest.cs" />
     <Compile Include="Navigation\RPeekableItemSourceTest.cs" />

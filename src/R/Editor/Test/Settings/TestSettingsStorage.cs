@@ -7,11 +7,9 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Test.Settings
-{
+namespace Microsoft.R.Editor.Test.Settings {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IWritableSettingsStorage))]
     [ContentType(RContentTypeDefinition.ContentType)]

@@ -7,13 +7,11 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Xunit;
 
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]

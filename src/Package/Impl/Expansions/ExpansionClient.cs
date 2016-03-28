@@ -3,9 +3,7 @@
 
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Editor.ContentType;
-using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -140,7 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                 _earlyEndExpansionHappened = false;
                 Span span;
-                _shortcut = TextView.GetItemBeforeCaret((x) => !char.IsWhiteSpace(x), out span);
+                _shortcut = TextView.GetItemBeforeCaret(out span);
 
                 VsExpansion? exp = _cache.GetExpansion(_shortcut);
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);

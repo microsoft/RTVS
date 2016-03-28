@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;

@@ -4,13 +4,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
-using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Formatting.Data;
 using Microsoft.R.Editor.Test.Mocks;

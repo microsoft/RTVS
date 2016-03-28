@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.VisualStudio.Utilities;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Document.R {
     [Export(typeof(IVsEditorDocumentFactory))]

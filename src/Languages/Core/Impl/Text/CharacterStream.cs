@@ -207,15 +207,15 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>
-        public bool IsAnsiLetter() {
-            return IsAnsiLetter(_currentChar);
+        public bool IsLetter() {
+            return IsLetter(_currentChar);
         }
 
         /// <summary>
         /// Determines if current character is an ANSI letter
         /// </summary>
-        public static bool IsAnsiLetter(char character) {
-            return (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
+        public static bool IsLetter(char character) {
+            return char.IsLetter(character);
         }
 
         /// <summary>
