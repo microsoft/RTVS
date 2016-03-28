@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

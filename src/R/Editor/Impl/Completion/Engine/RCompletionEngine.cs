@@ -45,11 +45,13 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
-            // Now check if position is inside a string and if so, suppress completion list
+            // Now check if position is inside a string, number or identifier 
+            // and if so, suppress the completion list
             var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
             if (tokenNode != null && (tokenNode.Token.TokenType == RTokenType.String ||
                                       tokenNode.Token.TokenType == RTokenType.Number ||
-                                      tokenNode.Token.TokenType == RTokenType.Complex)) {
+                                      tokenNode.Token.TokenType == RTokenType.Complex ||
+                                      tokenNode.Token.TokenType == RTokenType.Identifier)) {
                 // No completion in strings or numbers
                 return providers;
             }

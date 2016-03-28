@@ -138,7 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                 _earlyEndExpansionHappened = false;
                 Span span;
-                _shortcut = TextView.GetItemBeforeCaret(out span);
+                _shortcut = TextView.GetItemBeforeCaret(out span, x => true);
 
                 VsExpansion? exp = _cache.GetExpansion(_shortcut);
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);

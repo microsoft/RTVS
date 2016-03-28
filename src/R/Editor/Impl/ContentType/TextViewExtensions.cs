@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -89,14 +88,13 @@ namespace Microsoft.R.Editor {
         /// Extracts identifier or a keyword before caret. Typically used when inserting
         /// expansions (aka code snippets) at the caret location.
         /// </summary>
-        public static string GetItemBeforeCaret(this ITextView textView, out Span span) {
+        public static string GetItemBeforeCaret(this ITextView textView, out Span span, Func<RTokenType, bool> tokenTypeCheck = null) {
             if (!textView.Caret.InVirtualSpace) {
                 SnapshotPoint position = textView.Caret.Position.BufferPosition;
                 ITextSnapshotLine line = position.GetContainingLine();
+                tokenTypeCheck = tokenTypeCheck ?? new Func<RTokenType, bool>((x) => x == RTokenType.Identifier);
                 if (position.Position > line.Start) {
-                    return GetItemAtPosition(line, position.Position - 1,
-                        (x) => x == RTokenType.Identifier || x == RTokenType.Keyword,
-                        out span);
+                    return GetItemAtPosition(line, position.Position - 1, tokenTypeCheck, out span);
                 }
             }
             span = Span.FromBounds(0, 0);

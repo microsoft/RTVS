@@ -1,16 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Linq;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
-using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Editor.Navigation.Text {

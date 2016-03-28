@@ -92,6 +92,51 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
+        public void InsideString01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("\"i \"", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void InsideString02() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("'i '", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void InsideIdentifier01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("iii ", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void InsideIdentifier02() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("`i `", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should().BeEmpty();
+        }
+
+        [Test]
+        public void InNumber() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("2. ", 2, completionSets);
+
+            completionSets.Should().ContainSingle()
+                .Which.Completions.Should().BeEmpty();
+        }
+
+        [Test]
         public void FunctionDefinition01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("x <- function()", 14, completionSets);
