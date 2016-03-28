@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -26,6 +27,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using IServiceProvider = System.IServiceProvider;
 using Task = System.Threading.Tasks.Task;
+using TaskExtensions = Microsoft.Common.Core.TaskExtensions;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -43,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public VsAppShell() {
             ThreadHelper.ThrowIfNotOnUIThread("VsEditorShell constructor");
             MainThread = Thread.CurrentThread;
+            MainThreadDispatcher = Dispatcher.FromThread(MainThread);
 
             IComponentModel componentModel = RPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
             CompositionService = componentModel.DefaultCompositionService;
@@ -125,11 +128,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="action">Action to execute</param>
         public void DispatchOnUIThread(Action action) {
             if (MainThread != null) {
-                var dispatcher = Dispatcher.FromThread(MainThread);
-                Debug.Assert(dispatcher != null);
+                Debug.Assert(MainThreadDispatcher != null);
 
-                if (dispatcher != null && !dispatcher.HasShutdownStarted) {
-                    dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
+                if (MainThreadDispatcher != null && !MainThreadDispatcher.HasShutdownStarted) {
+                    MainThreadDispatcher.BeginInvoke(action, DispatcherPriority.Normal);
                 }
             } else {
                 Debug.Assert(false);
@@ -137,16 +139,21 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-            action();
+        public Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
+            return MainThreadDispatcher.InvokeAsync(action, DispatcherPriority.Normal, cancellationToken).Task;
         }
+
+        public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = new CancellationToken()) {
+            return MainThreadDispatcher.InvokeAsync(callback, DispatcherPriority.Normal, cancellationToken).Task;
+        }
+
+        private Dispatcher MainThreadDispatcher { get; }
 
         /// <summary>
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        public Thread MainThread { get; set; }
+        public Thread MainThread { get; }
 
         /// <summary>
         /// Fires when host application enters idle state.

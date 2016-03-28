@@ -3,10 +3,19 @@
 
 using System;
 using System.Collections.ObjectModel;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
-namespace Microsoft.R.Components.PackageManager.Implementation {
+namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageManagerViewModel : IRPackageManagerViewModel {
+        private readonly IRPackageManager _packageManager;
+        private readonly ICoreShell _coreShell;
+
+        public RPackageManagerViewModel(IRPackageManager packageManager, ICoreShell coreShell) {
+            _packageManager = packageManager;
+            _coreShell = coreShell;
+        }
+
         public ObservableCollection<object> Items { get; }
         public IRPackageViewModel SelectedPackage { get; }
 
@@ -56,6 +65,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         private void LoadAvailablePackages() {
+            _packageManager.GetAvailablePackagesAsync();
         }
 
         private void LoadInstalledPackages() {

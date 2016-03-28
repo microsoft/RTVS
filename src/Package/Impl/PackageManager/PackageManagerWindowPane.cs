@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -14,18 +15,20 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Guid(WindowGuidString)]
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
         private readonly IRPackageManager _packageManager;
+        private readonly ICoreShell _coreShell;
         public const string WindowGuidString = "363F84AD-3397-4FDE-97EA-1ABD73C64BB3";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, ICoreShell coreShell) {
             _packageManager = packageManager;
+            _coreShell = coreShell;
             Caption = Resources.PackageManagerWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(_packageManager, this);
+            Component = new RPackageManagerVisualComponent(_packageManager, this, _coreShell);
             // TODO: Implement RPackageManagerVisualComponent.Controller
             //_commandTarget = new CommandTargetToOleShim(null, Component.Controller);
 

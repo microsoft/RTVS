@@ -62,11 +62,15 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -123,7 +127,14 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
+      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="PackageManager\Model\RPackage.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
@@ -208,6 +219,9 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.resx">
+      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
