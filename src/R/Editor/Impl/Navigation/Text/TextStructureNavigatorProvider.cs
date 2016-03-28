@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.Navigation.Text {
     [Export(typeof(ITextStructureNavigatorProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
+    [ContentType("Interactive Content")]
     internal sealed class TextStructureNavigatorProvider : ITextStructureNavigatorProvider {
         [Import]
         private ITextStructureNavigatorSelectorService NavigatorSelectorService { get; set; }
