@@ -151,6 +151,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Use .Rprofile).
+        /// </summary>
+        public static string CranMirror_UseRProfile {
+            get {
+                return ResourceManager.GetString("CranMirror_UseRProfile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to download CRAN mirror list. The request has been canceled..
         /// </summary>
         public static string CranMirrorListRequestCanceled {
