@@ -279,7 +279,6 @@ namespace Microsoft.R.Editor.Tree {
         /// <param name="range">Range to invalidate elements in</param>
         internal bool InvalidateInRange(IAstNode node, ITextRange range, out bool nodesChanged) {
             var removedElements = new List<IAstNode>();
-            bool fullParseRequired = false;
             int firstToRemove = -1;
             int lastToRemove = -1;
 
@@ -296,19 +295,27 @@ namespace Microsoft.R.Editor.Tree {
 
                 if (!removeChild && TextRange.Intersect(range, child)) {
                     bool childElementsChanged;
-
                     if (child is TokenNode) {
                         childElementsChanged = true;
-                        fullParseRequired = true;
-                        nodesChanged = true;
                     } else {
-                        fullParseRequired |= InvalidateInRange(child, range, out childElementsChanged);
-                        if (childElementsChanged) {
-                            nodesChanged = true;
-                        }
+                        InvalidateInRange(child, range, out childElementsChanged);
                     }
 
-                    removeChild = true;
+                    nodesChanged |= childElementsChanged;
+
+                    // Check if we really to remove this node. Damaged children were already 
+                    // removed and if node itself is not damaged, keep it.
+                    if (TextRange.Contains(child, range)) {
+                        // Fully contained like when small change inside { } scope.
+                        IAstNode startNode, endNode;
+                        PositionType startPositionType, endPostionType;
+                        var n = child.GetElementsEnclosingRange(range.Start, range.Length, out startNode, out startPositionType, out endNode, out endPostionType);
+                        if (!TextRange.Contains(n, range)) {
+                            removeChild = true;
+                        }
+                    } else {
+                        removeChild = true;
+                    }
                 }
 
                 if (removeChild) {
@@ -335,7 +342,7 @@ namespace Microsoft.R.Editor.Tree {
                 FireOnNodesRemoved(removedElements);
             }
 
-            return fullParseRequired;
+            return nodesChanged;
         }
 
         /// <summary>

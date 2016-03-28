@@ -318,13 +318,11 @@ namespace Microsoft.R.Editor.Tree {
                 bool deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
 
                 // In case of delete or replace we need to invalidate elements that were 
-                // damaged by the delete operation. We need to remove elements and their keys 
-                // so they won't be found by validator and incremental change analysis 
-                // will not be looking at zombies.
-
+                // damaged by the delete operation. We need to remove elements so they 
+                // won't be found by validator and it won't be looking at zombies.
                 if (deleteElements) {
-                    _pendingChanges.FullParseRequired =
-                        _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                    _pendingChanges.FullParseRequired = true;
+                    _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
                 }
             }
 
