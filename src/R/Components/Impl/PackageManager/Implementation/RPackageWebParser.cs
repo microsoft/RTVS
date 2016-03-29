@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Html.Core.Tree;
@@ -46,30 +48,40 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return pkg;
         }
 
-        /// <summary>
-        /// The names of the fields as they appear in the html page.
-        /// </summary>
-        private static class Fields {
-            public const string Depends = "Depends";
-            public const string Imports = "Imports";
-            public const string Suggests = "Suggests";
-            public const string License = "License";
-            public const string Version = "Version";
-            public const string NeedsCompilation = "NeedsCompilation";
-            public const string Author = "Author";
-            public const string URL = "URL";
-            public const string LinkingTo = "LinkingTo";
-            public const string Enhances = "Enhances";
-            public const string Maintainer = "Maintainer";
-            public const string BugReports = "BugReports";
-            public const string Published = "Published";
-        }
-
         private class IndexVisitor : IHtmlTreeVisitor {
             private RPackage _pkg;
 
             public IndexVisitor(RPackage pkg) {
                 _pkg = pkg;
+            }
+
+            private static Dictionary<string, PropertyInfo> _htmlFieldNameToPropertyMap;
+
+            static IndexVisitor() {
+                // Map the name of the fields as they appear in the html
+                // with the property on RPackage where they are stored.
+                // While the html field names are currently conveniently identical
+                // to the property names, I'm not using nameof() for them to avoid
+                // breaking the parsing code if the properties are ever renamed.
+                _htmlFieldNameToPropertyMap = new Dictionary<string, PropertyInfo>() {
+                    { "Author", GetProperty(nameof(RPackage.Author)) },
+                    { "BugReports", GetProperty(nameof(RPackage.BugReports)) },
+                    { "Depends", GetProperty(nameof(RPackage.Depends)) },
+                    { "Enhances", GetProperty(nameof(RPackage.Enhances)) },
+                    { "Imports", GetProperty(nameof(RPackage.Imports)) },
+                    { "License", GetProperty(nameof(RPackage.License)) },
+                    { "LinkingTo", GetProperty(nameof(RPackage.LinkingTo)) },
+                    { "Maintainer", GetProperty(nameof(RPackage.Maintainer)) },
+                    { "NeedsCompilation", GetProperty(nameof(RPackage.NeedsCompilation)) },
+                    { "Published", GetProperty(nameof(RPackage.Published)) },
+                    { "Suggests", GetProperty(nameof(RPackage.Suggests)) },
+                    { "URL", GetProperty(nameof(RPackage.URL)) },
+                    { "Version", GetProperty(nameof(RPackage.Version)) },
+                };
+            }
+
+            private static PropertyInfo GetProperty(string name) {
+                return typeof(RPackage).GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
             }
 
             public bool Visit(ElementNode element, object parameter) {
@@ -119,76 +131,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 string fieldName = GetElementText(tdNode1).Trim(':');
                 string fieldValue = GetElementText(tdNode2);
 
-                switch (fieldName) {
-                    case Fields.Author:
-                        if (string.IsNullOrEmpty(_pkg.Author)) {
-                            _pkg.Author = fieldValue;
-                        }
-                        break;
-                    case Fields.BugReports:
-                        if (string.IsNullOrEmpty(_pkg.BugReports)) {
-                            _pkg.BugReports = fieldValue;
-                        }
-                        break;
-                    case Fields.Depends:
-                        if (string.IsNullOrEmpty(_pkg.Depends)) {
-                            _pkg.Depends = fieldValue;
-                        }
-                        break;
-                    case Fields.Enhances:
-                        if (string.IsNullOrEmpty(_pkg.Enhances)) {
-                            _pkg.Enhances = fieldValue;
-                        }
-                        break;
-                    case Fields.Imports:
-                        if (string.IsNullOrEmpty(_pkg.Imports)) {
-                            _pkg.Imports = fieldValue;
-                        }
-                        break;
-                    case Fields.License:
-                        if (string.IsNullOrEmpty(_pkg.License)) {
-                            _pkg.License = fieldValue;
-                        }
-                        break;
-                    case Fields.LinkingTo:
-                        if (string.IsNullOrEmpty(_pkg.LinkingTo)) {
-                            _pkg.LinkingTo = fieldValue;
-                        }
-                        break;
-                    case Fields.Maintainer:
-                        if (string.IsNullOrEmpty(_pkg.Maintainer)) {
-                            _pkg.Maintainer = fieldValue;
-                        }
-                        break;
-                    case Fields.NeedsCompilation:
-                        if (string.IsNullOrEmpty(_pkg.NeedsCompilation)) {
-                            _pkg.NeedsCompilation = fieldValue;
-                        }
-                        break;
-                    case Fields.Published:
-                        if (string.IsNullOrEmpty(_pkg.Published)) {
-                            _pkg.Published = fieldValue;
-                        }
-                        break;
-                    case Fields.Suggests:
-                        if (string.IsNullOrEmpty(_pkg.Suggests)) {
-                            _pkg.Suggests = fieldValue;
-                        }
-                        break;
-                    case Fields.URL:
-                        if (string.IsNullOrEmpty(_pkg.URL)) {
-                            _pkg.URL = fieldValue;
-                        }
-                        break;
-                    case Fields.Version:
-                        if (string.IsNullOrEmpty(_pkg.Version)) {
-                            _pkg.Version = fieldValue;
-                        }
-                        break;
-                    default:
-                        // There are plenty of other fields available in the html
-                        // we just don't care about them all.
-                        break;
+                PropertyInfo prop;
+                if (_htmlFieldNameToPropertyMap.TryGetValue(fieldName, out prop)) {
+                    var existingVal = (string)prop.GetValue(_pkg);
+                    if (string.IsNullOrEmpty(existingVal)) {
+                        prop.SetValue(_pkg, fieldValue);
+                    }
                 }
             }
 
