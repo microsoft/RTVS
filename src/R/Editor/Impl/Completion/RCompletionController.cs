@@ -3,29 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
+using Microsoft.R.Core.Parser;
+using Microsoft.R.Core.Tokens;
+using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
-    using System.Threading.Tasks;
-    using Common.Core;
-    using Core.AST.Definitions;
-    using Core.Parser;
-    using Core.Tokens;
-    using Engine;
-    using Host.Client;
-    using Languages.Core.Text;
-    using Languages.Editor.Shell;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -215,9 +213,15 @@ namespace Microsoft.R.Editor.Completion {
                         }
                     }
                 }
+            } else if (typedCharacter == '#') {
+                if (TryInsertRoxygenBlock()) {
+                    return true;
+                }
             }
+
             return base.OnPreTypeChar(typedCharacter);
         }
+
 
         /// <summary>
         /// Should this key press trigger a completion session?
@@ -362,7 +366,7 @@ namespace Microsoft.R.Editor.Completion {
         }
 
         protected override void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
-            // Aut-insert of braces is disabled until we have reliable method
+            // Auto-insert of braces is disabled until we have reliable method
             // of determination if given token is a function or a variable
             // using both AST and R engine.
 
@@ -416,17 +420,30 @@ namespace Microsoft.R.Editor.Completion {
             return false;
         }
 
-        private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
-            bool function = await IsFunction(name);
-            if (function) {
-                EditorShell.DispatchOnUIThread(() => {
-                    if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
-                        TextView.TextBuffer.Insert(position.Position, "()");
-                        TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
-                        EditorShell.DispatchOnUIThread(() => TriggerSignatureHelp());
-                    }
-                });
+        private bool TryInsertRoxygenBlock() {
+            SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
+            if (point.HasValue) {
+                var line = _textBuffer.CurrentSnapshot.GetLineFromPosition(point.Value);
+                if (point.Value == line.End && line.GetText().EqualsOrdinal("##")) {
+                    var document = REditorDocument.FromTextBuffer(_textBuffer);
+                    document.EditorTree.EnsureTreeReady();
+                    return RoxygenBlock.TryInsertBlock(_textBuffer, document.EditorTree.AstRoot, point.Value);
+                }
             }
+            return false;
         }
+
+        //private async Task InsertFunctionBraces(SnapshotPoint position, string name) {
+        //    bool function = await IsFunction(name);
+        //    if (function) {
+        //        EditorShell.DispatchOnUIThread(() => {
+        //            if (TextView.TextBuffer.CurrentSnapshot.Version.VersionNumber == position.Snapshot.Version.VersionNumber) {
+        //                TextView.TextBuffer.Insert(position.Position, "()");
+        //                TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, position.Position + 1));
+        //                EditorShell.DispatchOnUIThread(() => TriggerSignatureHelp());
+        //            }
+        //        });
+        //    }
+        //}
     }
 }

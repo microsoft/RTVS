@@ -1,0 +1,20 @@
+Package: NotAvailable1
+Version: 1.0.0
+Depends: R (>= 2.15.0), xtable, pbapply
+Suggests: randomForest, e1071
+License: GPL (>= 2)
+NeedsCompilation: no
+
+Package: NotAvailable2
+Version: 0.3
+Depends: R (>= 3.2.0)
+Imports: httr, XML, curl, RecordLinkage, readr
+Suggests: testthat, knitr (>= 1.11)
+License: MIT + file LICENSE
+NeedsCompilation: no
+
+Package: rtvslib1
+Version: 0.1.0
+Depends: R (>= 3.2.0)
+License: MIT
+NeedsCompilation: no

@@ -11,7 +11,7 @@ using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Operators {
     [DebuggerDisplay("[{OperatorType} [{Start}...{End})]")]
-    public abstract class Operator : RValueNode<RObject>, IOperator {
+    public abstract class Operator : RValueNode, IOperator {
         #region IOperator
         public IRValueNode LeftOperand { get; set; }
 

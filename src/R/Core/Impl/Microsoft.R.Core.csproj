@@ -51,6 +51,10 @@
     <Compile Include="AST\Expressions\Definitions\IEnumerableExpression.cs" />
     <Compile Include="AST\Expressions\Definitions\IExpression.cs" />
     <Compile Include="AST\Expressions\NullExpression.cs" />
+    <Compile Include="AST\Extensions\AstRootExtensions.cs" />
+    <Compile Include="AST\Extensions\ScopeExtensions.cs" />
+    <Compile Include="AST\Extensions\AstNodeExtensions.cs" />
+    <Compile Include="AST\Extensions\StatementExtensions.cs" />
     <Compile Include="AST\Functions\Definitions\IFunctionDefinition.cs" />
     <Compile Include="AST\Functions\Definitions\IFunction.cs" />
     <Compile Include="AST\Functions\FunctionDefinition.cs" />
@@ -75,11 +79,11 @@
     <Compile Include="AST\Statements\EmptyStatement.cs" />
     <Compile Include="AST\Statements\Functions\FunctionStatement.cs" />
     <Compile Include="AST\Statements\KeywordExpression.cs" />
-    <Compile Include="AST\Statements\KeywordFunctionStatement.cs" />
     <Compile Include="AST\Utility\AstWriter.cs" />
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
     <Compile Include="Tokens\Number.cs" />
+    <Compile Include="AST\Variables\IVariable.cs" />
     <Compile Include="AST\Variables\Variable.cs" />
     <Compile Include="DataTips\RDataTip.cs" />
     <Compile Include="Evaluation\Definitions\ICodeEvaluator.cs" />

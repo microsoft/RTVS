@@ -5,16 +5,26 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Workspace;
+using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Test.Mocks
-{
+namespace Microsoft.R.Editor.Test.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class EditorDocumentMock : IREditorDocument
     {
+        public EditorDocumentMock(string content, string filePath = null) {
+            var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
+            ServiceManager.AddService<IREditorDocument>(this, tb);
+            if(!string.IsNullOrEmpty(filePath)) {
+                tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
+            }
+        }
+
         public EditorDocumentMock(IEditorTree tree)
         {
             EditorTree = tree;

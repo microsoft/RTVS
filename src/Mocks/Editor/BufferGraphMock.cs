@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.VisualStudio.Editor.Mocks {
+    [ExcludeFromCodeCoverage]
     public sealed class BufferGraphMock : IBufferGraph {
         public BufferGraphMock(ITextBuffer textBuffer) {
             TopBuffer = textBuffer;

@@ -15,7 +15,7 @@ namespace Microsoft.R.Core.AST.Expressions {
     /// nested extressions in its content.
     /// </summary>
     [DebuggerDisplay("Expression [{Start}...{End})")]
-    public sealed partial class Expression : RValueNode<RObject>, IExpression {
+    public sealed partial class Expression : RValueNode, IExpression {
         private string _terminatingKeyword;
 
         #region IExpression
@@ -43,14 +43,6 @@ namespace Microsoft.R.Core.AST.Expressions {
             }
 
             return false;
-        }
-
-        public override RObject GetValue() {
-            if (Content != null) {
-                return Content.GetValue();
-            }
-
-            return base.GetValue();
         }
 
         public bool IsInGroup { get; private set; }

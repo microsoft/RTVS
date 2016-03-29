@@ -1,0 +1,10 @@
+Package: rtvslib1
+Type: Package
+Title: The title for rtvslib1
+Version: 0.1.0
+Author: RTVS Team
+Maintainer: RTVS Team <rtvsuserfeedback@microsoft.com>
+Description: This is a library that is used only for testing package installation.  It doesn't do anything.
+License: MIT
+LazyData: TRUE
+Depends: R (>= 3.2.0)

@@ -24,6 +24,7 @@ namespace Microsoft.R.Editor.Signatures {
         public SignatureHelpSource(ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
+
         }
 
         #region ISignatureHelpSource
@@ -54,9 +55,16 @@ namespace Microsoft.R.Editor.Signatures {
                 int end = Math.Min(parametersInfo.SignatureEnd, snapshot.Length);
 
                 ITrackingSpan applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
+                IFunctionInfo functionInfo = null;
 
-                // Get collection of function signatures from documentation (parsed RD file)
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                // First try user-defined function
+                functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
+                if (functionInfo == null) {
+                    // Then try package functions
+                    // Get collection of function signatures from documentation (parsed RD file)
+                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                }
+
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo signatureInfo in functionInfo.Signatures) {
                         ISignature signature = CreateSignature(session, functionInfo, signatureInfo, applicableToSpan, ast, position);
@@ -106,7 +114,7 @@ namespace Microsoft.R.Editor.Signatures {
             sig.Content = signatureString;
             sig.ApplicableToSpan = span;
 
-            sig.Documentation = functionInfo.Description.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
+            sig.Documentation = functionInfo.Description?.Wrap(Math.Min(SignatureInfo.MaxSignatureLength, sig.Content.Length));
 
             Debug.Assert(locusPoints.Count == signatureInfo.Arguments.Count + 1);
             for (int i = 0; i < signatureInfo.Arguments.Count; i++) {

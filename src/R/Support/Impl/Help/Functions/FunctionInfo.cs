@@ -10,17 +10,17 @@ namespace Microsoft.R.Support.Help.Functions {
         /// <summary>
         /// Other function name variants
         /// </summary>
-        public IReadOnlyList<string> Aliases { get; internal set; }
+        public IReadOnlyList<string> Aliases { get; set; }
 
         /// <summary>
         /// Function signatures
         /// </summary>
-        public IReadOnlyList<ISignatureInfo> Signatures { get; internal set; }
+        public IReadOnlyList<ISignatureInfo> Signatures { get; set; }
 
         /// <summary>
         /// Return value description
         /// </summary>
-        public string ReturnValue { get; internal set; }
+        public string ReturnValue { get; set; }
 
         /// <summary>
         /// Indicates that function is internal (has 'internal' 

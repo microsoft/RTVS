@@ -8,7 +8,6 @@ using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Operators;

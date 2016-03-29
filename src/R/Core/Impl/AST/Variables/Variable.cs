@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
@@ -13,13 +13,15 @@ namespace Microsoft.R.Core.AST.Variables {
     /// Represents R variable.
     /// </summary>
     [DebuggerDisplay("[{Name} : {Start}...{End}), Length = {Length}")]
-    public sealed class Variable : TokenNode, IRValueNode {
+    public sealed class Variable : TokenNode, IVariable {
+        #region IVariable
         public string Name {
-            get {
-                return this.Root != null ? this.Root.TextProvider.GetText(this) : "<not_ready>";
-            }
+            get { return Root != null ? Root.TextProvider.GetText(NameRange) : "<not_ready>"; }
         }
-
+        public ITextRange NameRange => this;
+        public TokenNode Identifier => this;
+        public RObject Value { get; set; }
+        #endregion
 
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
@@ -31,10 +33,6 @@ namespace Microsoft.R.Core.AST.Variables {
             context.Tokens.MoveToNextToken();
 
             return true;
-        }
-
-        public RObject GetValue() {
-            throw new NotImplementedException();
         }
 
         public override string ToString() {

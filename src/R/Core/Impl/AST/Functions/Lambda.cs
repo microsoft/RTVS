@@ -12,11 +12,7 @@ namespace Microsoft.R.Core.AST.Functions {
     /// </summary>
     public sealed class Lambda : Scope, IRValueNode {
         #region IRValueNode
-        public RObject GetValue() {
-            // Evaluation should return result
-            // of the last statement
-            return new RFunction(this);
-        }
+        public RObject Value { get; set; }
         #endregion
     }
 }

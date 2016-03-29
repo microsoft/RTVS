@@ -646,4 +646,7 @@ Additional information:
   <data name="Error_CannotOpenCsv" xml:space="preserve">
     <value>Unable to open CSV file. Exception: {0}.</value>
   </data>
+  <data name="CranMirror_UseRProfile" xml:space="preserve">
+    <value>(Use .Rprofile)</value>
+  </data>
 </root>

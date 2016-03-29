@@ -19,8 +19,6 @@ namespace Microsoft.R.Core.AST.Scopes {
     /// </summary>
     [DebuggerDisplay("Scope, Children: {Children.Count} [{Start}...{End})")]
     public class Scope : AstNode, IScope {
-        private Dictionary<string, int> variables = new Dictionary<string, int>();
-        private Dictionary<string, int> functions = new Dictionary<string, int>();
         private TextRangeCollection<IStatement> statements = new TextRangeCollection<IStatement>();
 
         #region IScope
@@ -31,27 +29,7 @@ namespace Microsoft.R.Core.AST.Scopes {
 
         public TokenNode OpenCurlyBrace { get; private set; }
 
-        public IReadOnlyTextRangeCollection<IStatement> Statements {
-            get { return this.statements; }
-        }
-
         public TokenNode CloseCurlyBrace { get; private set; }
-
-        /// <summary>
-        /// Collection of variables declared inside the scope.
-        /// Does not include variables declared in outer scope.
-        /// </summary>
-        public IReadOnlyDictionary<string, int> Variables {
-            get { return this.variables; }
-        }
-
-        /// <summary>
-        /// Collection of function declared inside the scope.
-        /// Does not include function declared in outer scope.
-        /// </summary>
-        public IReadOnlyDictionary<string, int> Functions {
-            get { return this.functions; }
-        }
         #endregion
 
         #region ITextRange

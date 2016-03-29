@@ -14,8 +14,6 @@ namespace Microsoft.R.Core.AST.Operands {
     /// other expressions such as 'func(if (a > b) x else y, c, d = 0)'
     /// </summary>
     public sealed class InlineIf : If, IRValueNode {
-        public RObject GetValue() {
-            throw new NotImplementedException();
-        }
+        public RObject Value { get; set; }
     }
 }
