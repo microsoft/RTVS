@@ -34,14 +34,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 throw new ArgumentNullException(nameof(debugSessionProvider));
             }
 
-            Enabled = false;
-
             RSession = sessionProvider.GetInteractiveWindowRSession();
             if (RSession == null) {
                 throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(IVariableDataProvider)}"));
             }
             RSession.Mutated += RSession_Mutated;
-            RSession.Disconnected += RSession_Disconnected;
 
             IdleTimeAction.Create(() => {
                 PublishAllAsync().SilenceException<Exception>().DoNotWait();
@@ -56,27 +53,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public IRSession RSession { get; }
 
-        public bool Enabled { get; private set; }
-
         public void Dispose() {
             RSession.Mutated -= RSession_Mutated;
-            RSession.Disconnected -= RSession_Disconnected;
         }
         #endregion
         #region RSession related event handler
 
         private void RSession_Mutated(object sender, EventArgs e) {
-            Enabled = true;
             PublishAllAsync().SilenceException<Exception>().DoNotWait();
-        }
-
-        private void RSession_Disconnected(object sender, EventArgs e) {
-            Enabled = false;
         }
 
         #endregion
         private async Task InitializeData() {
-            Enabled = true;
             await PublishAllAsync();
         }
 
@@ -122,14 +110,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                 }
             }
-        }
-
-        public EvaluationWrapper Evaluate(string expression) {
-            if (!Enabled) {
-                throw new InvalidOperationException("R session is not ready to evaluate");
-            }
-
-            throw new NotImplementedException();
         }
 
         private async Task PublishAllAsync() {

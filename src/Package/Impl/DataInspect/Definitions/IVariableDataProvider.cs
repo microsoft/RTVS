@@ -23,17 +23,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Definitions {
         /// </summary>
         /// <param name="subscription">the subscription to quit</param>
         void Unsubscribe(VariableSubscription subscription);
-
-        /// <summary>
-        /// indicates that Variable can be provided through R session
-        /// </summary>
-        bool Enabled { get; }
-
-        /// <summary>
-        /// Returns evaluation result
-        /// </summary>
-        /// <param name="expression">expression to run</param>
-        /// <returns></returns>
-        EvaluationWrapper Evaluate(string expression);
     }
 }

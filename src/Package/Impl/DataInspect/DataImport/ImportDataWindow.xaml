@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect.DataImport"
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+        xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="ImportDataWindow" Height="500" Width="700">
+        Title="{x:Static pkg:Resources.ImportData_Title}" Height="500" Width="700">
     <ui:DialogWindow.Resources>
         <DataTemplate x:Key="RStringTemplate">
             <TextBlock Text="{Binding Name}" />
