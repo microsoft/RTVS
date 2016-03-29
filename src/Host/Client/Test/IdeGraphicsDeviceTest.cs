@@ -480,8 +480,8 @@ rtvs:::graphics.ide.previousplot()
         }
 
         private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
-            string[] lines = File.ReadAllLines(historyInfoFilePath);
-            lines.Should().Equal($"[{expectedActive}", $", {expectedCount}", "]");
+            string json = File.ReadAllText(historyInfoFilePath).Trim();
+            json.Should().Be($"[{expectedActive},{expectedCount}]");
         }
 
         private async Task<string[]> GraphicsTestAgainstExpectedFilesAsync(string[] inputs) {

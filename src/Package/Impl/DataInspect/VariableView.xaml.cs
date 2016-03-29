@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int selectedIndex = 0;
 
             var currentItem = EnvironmentComboBox.SelectedItem as REnvironment;
-            if (currentItem != null && !e.Environments[0].FrameIndex.HasValue) {
+            if (currentItem != null && e.Environments.Count > 0 && !e.Environments[0].FrameIndex.HasValue) {
                 for (int i = 1; i < e.Environments.Count; i++) {
                     if (e.Environments[i].Name == currentItem.Name) {
                         selectedIndex = i;

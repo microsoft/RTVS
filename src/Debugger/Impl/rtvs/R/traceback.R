@@ -26,5 +26,5 @@ describe_traceback <- function() {
     frames[[i]] <- frame;
   }
 
-  toJSON(frames)
+  frames
 }

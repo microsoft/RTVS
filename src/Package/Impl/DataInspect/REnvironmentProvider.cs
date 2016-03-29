@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             REvaluationResult result;
             using (var evaluation = await _rSession.BeginEvaluationAsync(false)) {
-                result = await evaluation.EvaluateAsync("rtvs:::toJSON(rtvs:::getEnvironments(sys.frame(sys.nframe())))", REvaluationKind.Json);
+                result = await evaluation.EvaluateAsync("rtvs:::getEnvironments(sys.frame(sys.nframe()))", REvaluationKind.Json);
             }
 
             Debug.Assert(result.JsonResult != null);

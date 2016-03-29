@@ -11,6 +11,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
+using Newtonsoft.Json;
 using Xunit;
 using static System.FormattableString;
 
@@ -41,12 +42,14 @@ namespace Microsoft.R.Debugger.Test {
 
         [CompositeTest]
         [Category.R.Debugger]
-        [InlineData(@"'‘’“”'", @"""\u2018\u2019\u201c\u201d""")]
+        [InlineData(@"'‘’“”'", @"""‘’“”""")]
         public async Task Serialize(string expr, string json) {
             using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(Invariant($"rtvs:::toJSON({expr})"));
+                var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
-                res.StringResult.Should().Be(json);
+                res.JsonResult.Should().NotBeNull();
+                var actualJson = JsonConvert.SerializeObject(res.JsonResult);
+                actualJson.Should().Be(json);
             }
         }
     }
