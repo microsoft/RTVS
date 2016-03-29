@@ -214,6 +214,8 @@
     <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
+    <Compile Include="Repl\Commands\ClearReplCommand.cs" />
+    <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />

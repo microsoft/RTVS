@@ -380,6 +380,18 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0110" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ClearWindowContent"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Clear Interactive Window</ButtonText>
+          <MenuText>Clear Interactive &amp;Window</MenuText>
+          <CommandName>ClearInteractiveWindow</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
@@ -1430,6 +1442,10 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdResetRepl" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuResetGroup"/>
     </CommandPlacement>
@@ -1530,6 +1546,8 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidREditor" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidREditor" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidVSStd97" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
@@ -1621,6 +1639,7 @@
       <IDSymbol name="icmdStepOut" value="514" />
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
+      <IDSymbol name="icmdClearRepl" value="517" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -1762,7 +1781,7 @@
     <!-- Core editor guids -->
     <GuidSymbol name ="guidSourceCodeTextWithEncodingEditor" value="{C7747503-0E24-4FBE-BE4B-94180C3947D7}" />
     <GuidSymbol name ="guidTextEditor" value="{8B382828-6202-11D1-8870-0000F87579D2}" />
-    
+
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
     </GuidSymbol>
@@ -1773,8 +1792,12 @@
 
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
+      <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
       <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
+      <IDSymbol name="cmdidAbortExecution" value="0x0104"/>
+      <IDSymbol name="cmdidReset" value="0x0105"/>
+      <IDSymbol name="cmdidClearScreen" value="0x0108"/>
     </GuidSymbol>
 
     <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">

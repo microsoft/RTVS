@@ -23,6 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             var editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
 
+            ReplShortcutSetting.Initialize();
+
             return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
                 new WorkingDirectoryCommand(interactiveWorkflow),
@@ -31,6 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new FormatSelectionCommand(textView, textBuffer),
                 new FormatOnPasteCommand(textView, textBuffer),
                 new SendToReplCommand(textView, interactiveWorkflow),
+                new ClearReplCommand(textView, interactiveWorkflow),
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
