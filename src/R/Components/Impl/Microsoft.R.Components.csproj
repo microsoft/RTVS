@@ -26,7 +26,12 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <WebEditorFolderPath>$(DevEnvDir)Extensions\Microsoft\Web Tools\Editors</WebEditorFolderPath>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="$(WebEditorFolderPath)\Microsoft.Html.Core.dll" />
+    <Reference Include="$(WebEditorFolderPath)\Microsoft.Web.Core.dll" />
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -123,7 +128,9 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\Implementation\RPackageWebParser.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
+    <Compile Include="PackageManager\RPackageInfoRetrievalException.cs" />
     <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />

@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 namespace Microsoft.R.Components.PackageManager.Model {
     public class RPackage : ICloneable {
         public string Package { get; set; }
+        public string Repository { get; set; }
+        public string Description { get; set; }
         public string Depends { get; set; }
         public string Imports { get; set; }
         public string Suggests { get; set; }
@@ -28,6 +30,9 @@ namespace Microsoft.R.Components.PackageManager.Model {
         public string OperatingSystemType { get; set; }
         public string MD5sum { get; set; }
         public string Built { get; set; }
+        public string Maintainer { get; set; }
+        public string BugReports { get; set; }
+        public string Published { get; set; }
 
         public RPackage Clone() {
             return (RPackage)(this as ICloneable).Clone();

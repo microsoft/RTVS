@@ -42,6 +42,24 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return await GetPackages(async (eval) => await eval.AvailablePackages());
         }
 
+        public async Task GetAdditionalPackageInfoAsync(RPackage pkg) {
+            var uri = GetPackageWebIndexUri(pkg);
+            await RPackageWebParser.RetrievePackageInfo(uri, pkg);
+        }
+
+        private static Uri GetPackageWebIndexUri(RPackage pkg) {
+            // For example, if 'Repository' is:
+            // "https://cloud.r-project.org/src/contrib"
+            // Then the URI to the index page is:
+            // "https://cloud.r-project.org/web/packages/<packagename>/index.html"
+            var contribUrl = pkg.Repository;
+            if (!contribUrl.EndsWith("/")) {
+                contribUrl += "/";
+            }
+
+            return new Uri(new Uri(contribUrl), string.Format("../../web/packages/{0}/index.html", pkg.Package));
+        }
+
         private async Task<IReadOnlyList<RPackage>> GetPackages(Func<IRSessionEvaluation, Task<REvaluationResult>> fetchFunc) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 return new List<RPackage>().AsReadOnly();
