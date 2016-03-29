@@ -649,4 +649,7 @@ Additional information:
   <data name="CranMirror_UseRProfile" xml:space="preserve">
     <value>(Use .Rprofile)</value>
   </data>
+  <data name="SurrondWithSnippet" xml:space="preserve">
+    <value>Surround With</value>
+  </data>
 </root>

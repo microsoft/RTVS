@@ -1418,6 +1418,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Surround With.
+        /// </summary>
+        public static string SurrondWithSnippet {
+            get {
+                return ResourceManager.GetString("SurrondWithSnippet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Once a day.
         /// </summary>
         public static string SurveyNewsPolicyCheckOnceDay {

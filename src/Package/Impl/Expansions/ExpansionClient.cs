@@ -17,7 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// Text view client that manages insertion of snippets
     /// </summary>
     public sealed class ExpansionClient : IVsExpansionClient {
-        public static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundWith" };
+        public static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
+        public static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
 
         private IVsExpansionManager _expansionManager;
         private IVsExpansionSession _expansionSession;
@@ -92,6 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (invokationCommand == (uint)VSConstants.VSStd2KCmdID.INSERTSNIPPET) {
                     snippetTypes = AllStandardSnippetTypes;
                     promptText = Resources.InsertSnippet;
+                } else if (invokationCommand == (uint)VSConstants.VSStd2KCmdID.SURROUNDWITH) {
+                    snippetTypes = SurroundWithSnippetTypes;
+                    promptText = Resources.SurrondWithSnippet;
                 }
 
                 return _expansionManager.InvokeInsertionUI(
