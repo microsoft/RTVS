@@ -38,9 +38,8 @@ namespace Microsoft.R.Editor.Test.Mocks
             return AstRoot;
         }
 
-        public int Invalidate()
+        public void Invalidate()
         {
-            return 1;
         }
 
         public void EnsureTreeReady()

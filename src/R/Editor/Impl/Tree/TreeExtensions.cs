@@ -7,7 +7,7 @@ using Microsoft.R.Editor.Tree.Definitions;
 namespace Microsoft.R.Editor.Tree {
     public static class TreeExtensions {
         public static AstRoot GetCurrentRootOrPreviousIfNotReady(this IEditorTree tree) {
-            return (!tree.IsReady && tree.PreviousAstRoot != null) ? tree.PreviousAstRoot : tree.AstRoot;
+            return tree.AstRoot;
         }
     }
 }

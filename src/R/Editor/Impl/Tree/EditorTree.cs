@@ -50,13 +50,6 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         /// <summary>
-        /// Previous AST. May be used in cases when parsing is not acceptable
-        /// due to performance hit and full tree fidelity is not required
-        /// such as in determining smart indent on Enter. 
-        /// </summary>
-        public AstRoot PreviousAstRoot { get; private set; }
-
-        /// <summary>
         /// Returns true if tree matches current document snapshot
         /// </summary>
         public bool IsReady {
@@ -327,24 +320,21 @@ namespace Microsoft.R.Editor.Tree {
         /// Removes all elements from the tree
         /// </summary>
         /// <returns>Number of removed elements</returns>
-        public int Invalidate() {
+        public void Invalidate() {
             // make sure not to use RootNode property since
             // calling get; causes parse
             List<IAstNode> removedNodes = new List<IAstNode>();
-            foreach (var child in _astRoot.Children) {
-                removedNodes.Add(child);
-            }
-
             if (_astRoot.Children.Count > 0) {
-                PreviousAstRoot = _astRoot;
+                var gs = _astRoot.Children[0] as GlobalScope;
+                foreach (var child in gs.Children) {
+                    removedNodes.Add(child);
+                }
+                gs.RemoveChildren(0, gs.Children.Count);
             }
-            _astRoot = new AstRoot(_astRoot.TextProvider);
 
             if (removedNodes.Count > 0) {
                 FireOnNodesRemoved(removedNodes);
             }
-
-            return removedNodes.Count;
         }
 
         #region Tree Access

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.AST.Scopes {
@@ -28,6 +29,18 @@ namespace Microsoft.R.Core.AST.Scopes {
 
         public override bool Contains(int position) {
             return position >= Start && position <= End;
+        }
+        #endregion
+
+        #region IAstNode
+        public override IAstNode NodeFromPosition(int position) {
+            var node = base.NodeFromPosition(position);
+            return node ?? this;
+        }
+
+        public override IAstNode NodeFromRange(ITextRange range, bool inclusiveEnd = false) {
+            var node = base.NodeFromRange(range, inclusiveEnd);
+            return node ?? this;
         }
         #endregion
     }
