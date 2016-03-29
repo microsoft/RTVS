@@ -21,12 +21,12 @@ grid.data <- function(x, rows, cols) {
 
   # get values for column/row names and data
   onedim <- ((length(rows) == 1) || (length(cols) == 1));
-  if (onedim) {
-    data <- grid.format(x[rows, cols]);
-    rn <- row.names(x)[rows];
-    cn <- colnames(x)[cols];
-  } else if (is.matrix(x)) {
-    data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
+  if (onedim || is.matrix(x)) {
+    if (onedim) {
+      data <- grid.format(x[rows, cols]);
+    } else {
+      data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
+    }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
   } else {
