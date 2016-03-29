@@ -40,12 +40,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                     arguments = string.Format(CultureInfo.InvariantCulture, "-import:\"{0}\"", settingsFilePath2);
                     shell.PostExecCommand(ref group, (uint)VSConstants.VSStd2KCmdID.ManageUserSettings, 0, ref arguments);
                 }
-
-                // Restore Ctrl+Enter if necessary
-                IdleTimeAction.Create(() => {
-                    ReplShortcutSetting.Close();
-                    ReplShortcutSetting.Initialize();
-                }, 100, typeof(ImportRSettingsCommand));
             }
         }
     }

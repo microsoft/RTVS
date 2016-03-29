@@ -367,7 +367,19 @@
 
     <Buttons>
       <!-- Top level menu items -->
-      <!-- Workspace flyout -->
+      <!-- Session flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Execute"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Execute In Interactive</ButtonText>
+          <MenuText>E&amp;xecute In Interactive</MenuText>
+          <CommandName>ExecuteInInteractive</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
@@ -1280,7 +1292,7 @@
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -1304,7 +1316,7 @@
     <!-- End R code editor context menu -->
 
     <!-- RMD context menu -->
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
     <!-- End RMD context menu -->
@@ -1414,7 +1426,7 @@
     </CommandPlacement>
     <!-- End Plot Window toolbar -->
 
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x0400">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
@@ -1517,7 +1529,8 @@
   <KeyBindings>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
-    <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidREditor" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
@@ -1533,12 +1546,8 @@
     <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
     <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
     <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
-    <!-- ECMD_OPENLINEABOVE is usually bound to Ctrl+Enter which R users want for 'Send to REPL -->
-    <UsedCommand guid="guidVSStd2K" id="ECMD_OPENLINEABOVE"/>
     <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionInterrupt" />
     <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionRestart" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteLineInInteractive"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
   </UsedCommands>
@@ -1596,6 +1605,7 @@
       <IDSymbol name="icmdSurveyNews" value="407"/>
 
       <!-- REPL-->
+      <IDSymbol name="icmdSendToRepl" value="501" />
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
@@ -1746,12 +1756,13 @@
     </GuidSymbol>
 
     <!-- R Editor Factory Guid -->
-    <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
+    <GuidSymbol name="guidREditor" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
     <!-- Markdown Editor Factory Guid -->
-    <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
-
-    <GuidSymbol name="CMDUIGUID_HELP_WINDOW" value="{9E909526-A616-43B2-A82B-FD639DCD40CB}" />
-
+    <GuidSymbol name="guidMdEditor" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+    <!-- Core editor guids -->
+    <GuidSymbol name ="guidSourceCodeTextWithEncodingEditor" value="{C7747503-0E24-4FBE-BE4B-94180C3947D7}" />
+    <GuidSymbol name ="guidTextEditor" value="{8B382828-6202-11D1-8870-0000F87579D2}" />
+    
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
     </GuidSymbol>

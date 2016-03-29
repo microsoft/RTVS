@@ -118,7 +118,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
@@ -140,7 +139,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             LogCleanup.Cancel();
-            ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
             CsvAppFileIO.Close();
 

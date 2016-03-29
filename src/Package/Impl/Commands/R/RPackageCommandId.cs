@@ -18,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSurveyNews = 407;
 
         // REPL
+        public const int icmdSendToRepl = 501;
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSelectWorkingDirectory = 504;

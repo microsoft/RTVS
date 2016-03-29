@@ -314,7 +314,6 @@
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
-    <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
