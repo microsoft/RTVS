@@ -18,6 +18,8 @@ using static System.FormattableString;
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
     public class JsonTest : IAsyncLifetime {
+        private const string SameAsInput = "<INPUT>";
+
         private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRSession _session;
@@ -42,8 +44,41 @@ namespace Microsoft.R.Debugger.Test {
 
         [CompositeTest]
         [Category.R.Debugger]
-        [InlineData(@"'‘’“”'", @"""‘’“”""")]
+        [InlineData("NULL", "null")]
+        [InlineData("NA", "null")]
+        [InlineData("NA_integer_", "null")]
+        [InlineData("NA_real_", "null")]
+        [InlineData("NA_character_", "null")]
+        [InlineData("TRUE[FALSE]", "null")]
+        [InlineData("0[FALSE]", "null")]
+        [InlineData("0L[FALSE]", "null")]
+        [InlineData("''[FALSE]", "null")]
+        [InlineData("TRUE", "true")]
+        [InlineData("FALSE", "false")]
+        [InlineData("0", "0")]
+        [InlineData("0L", "0")]
+        [InlineData(@"""text""", SameAsInput)]
+        [InlineData(@"""\r\n\t\f\""""", SameAsInput)]
+        [InlineData(@"""\a\v""", @"""\u0007\u000b""")]
+        [InlineData(@"""Ûñïçôδè ƭèжƭ: русский ελληνικά ქართული հայերեն हिन्दी ግዕዝ ᓀᐦᐃᔭᐍᐏᐣ 汉语/漢語 日本語 한국어/조선말 العَرَبِية‎ עברית""", SameAsInput)]
+        [InlineData(@"""‘’“”""", SameAsInput)]
+        [InlineData("list()", "[]")]
+        [InlineData("list(0, 's', NULL)", @"[0,""s"",null]")]
+        [InlineData("list(NA, 1, NA, 2, NA)", "[1,2]")]
+        [InlineData("structure(list(), names = ''[FALSE])", "{}")]
+        [InlineData("list(n = 0, s = 's', u = NULL)", @"{""n"":0,""s"":""s"",""u"":null}")]
+        [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
+        [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
+        [InlineData("as.environment(list())", "{}")]
+        [InlineData("as.environment(list(n = 0, s = 's', u = NULL))", @"{""n"":0,""s"":""s"",""u"":null}")]
+        [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
+        [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
+        [InlineData("list(as.environment(list(l = list())))", @"[{""l"":[]}]")]
         public async Task Serialize(string expr, string json) {
+            if (json == SameAsInput) {
+                json = expr;
+            }
+
             using (var eval = await _session.BeginEvaluationAsync()) {
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
