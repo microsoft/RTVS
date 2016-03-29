@@ -3,31 +3,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudioTools;
-using Microsoft.VisualStudio.R.Package.Repl;
-using static System.FormattableString;
-using Microsoft.Common.Core;
-using System.IO;
-using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
-using System.Collections.ObjectModel;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// <summary>
@@ -43,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         public ImportDataWindow() {
             InitializeComponent();
 
-            Title = "Import Dataset";
+            Title = Package.Resources.ImportData_Title;
 
             RowNamesComboBox.ItemsSource = RowNames;
             RowNamesComboBox.SelectedIndex = 0;
@@ -71,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             return rSession;
         }
 
-        private string BuildCommandLine(bool preview = false) {
+        private string BuildCommandLine(bool preview) {
             if (string.IsNullOrEmpty(FilePathBox.Text)) {
                 return null;
             }
@@ -90,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             var encodingModel = (ComboBoxItemModel)EncodingComboBox.SelectedItem;
             if (encodingModel != null && model.Value != null) {
-                parameter.AppendFormat(", encoding={0}", model.Value.ToRStringLiteral());
+                parameter.AppendFormat(" ,encoding={0}", model.Value.ToRStringLiteral());
             }
 
             parameter.Append(" ,sep=");
@@ -131,6 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             FilePathBox.Text = Dialogs.BrowseForFileOpen(dialogOwner, "CSV file|*.csv");
             if (!string.IsNullOrEmpty(FilePathBox.Text)) {
                 FilePathBox.CaretIndex = FilePathBox.Text.Length;
+                FilePathBox.ScrollToEnd();
 
                 var variableName = System.IO.Path.GetFileNameWithoutExtension(FilePathBox.Text);
                 VariableNameBox.Text = variableName;
@@ -146,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             RunButton.IsEnabled = false;
             CancelButton.IsEnabled = false;
 
-            var expression = BuildCommandLine();
+            var expression = BuildCommandLine(false);
             if (expression != null) {
                 RunAsync(expression).DoNotWait();
             }
@@ -162,7 +156,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 try {
                     var grid = await GridDataSource.GetGridDataAsync(expression, null);
 
-                    VsAppShell.Current.DispatchOnUIThread(() => PopulateDataFramePreview(grid));
+                    VsAppShell.Current.DispatchOnUIThread(() => {
+                        PopulateDataFramePreview(grid);
+                        OnSuccess(true);
+                    });
                 } catch (Exception ex) {
                     VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
                 }
@@ -180,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
                         VsAppShell.Current.DispatchOnUIThread(() => OnError(result.ToString()));
                     } else {
-                        VsAppShell.Current.DispatchOnUIThread(() => OnSuccess());
+                        VsAppShell.Current.DispatchOnUIThread(() => OnSuccess(false));
                     }
                 }
             } catch (Exception ex) {
@@ -210,12 +207,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private void OnSuccess() {
-            base.Close();
+        private void OnSuccess(bool preview) {
+            if (preview) {
+                ErrorBlock.Visibility = Visibility.Collapsed;
+                DataFramePreview.Visibility = Visibility.Visible;
+            } else {
+                base.Close();
+            }
         }
 
         private void OnError(string errorText) {
-            // TODO: implement this
+            ErrorText.Text = errorText;
+            ErrorBlock.Visibility = Visibility.Visible;
+            DataFramePreview.Visibility = Visibility.Collapsed;
         }
 
         private void PopulateEncoding(JArray jarray) {

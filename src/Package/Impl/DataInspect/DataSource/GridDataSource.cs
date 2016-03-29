@@ -29,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
                 if (result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed:{result}");
+                    throw new InvalidOperationException($"Grid data evaluation failed{Environment.NewLine} {result}");
                 }
             }
 
