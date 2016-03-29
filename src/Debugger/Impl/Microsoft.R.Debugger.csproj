@@ -65,10 +65,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="rtvs\R\json.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
     <EmbeddedResource Include="rtvs\R\eval.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>True</IncludeInVSIX>

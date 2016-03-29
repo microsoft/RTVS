@@ -46,9 +46,11 @@ namespace Microsoft.R.Debugger {
             Call = jFrame.Value<string>("call");
             IsGlobal = jFrame.Value<bool?>("is_global") ?? false;
 
-            var match = _doTraceRegex.Match(Call);
-            if (match.Success) {
-                FrameKind = DebugStackFrameKind.DoTrace;
+            if (Call != null) {
+                var match = _doTraceRegex.Match(Call);
+                if (match.Success) {
+                    FrameKind = DebugStackFrameKind.DoTrace;
+                }
             }
 
             if (fallbackFrame != null) {

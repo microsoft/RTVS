@@ -73,17 +73,17 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())";
+            var script = @"rtvs:::graphics.ide.historyinfo()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> InstalledPackages(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::packages.installed())";
+            var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> AvailablePackages(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::packages.available())";
+            var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
@@ -115,7 +115,7 @@ grDevices::deviceIsInteractive('ide')
             var script =
 @"options(help_type = 'html')
   options(browser = function(url) { 
-      .Call('Microsoft.R.Host::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
+      rtvs:::send_message('Browser', url) 
   })";
             return evaluation.EvaluateAsync(script);
         }
@@ -124,7 +124,7 @@ grDevices::deviceIsInteractive('ide')
             var script =
 @"utils::assignInNamespace('setwd', function(dir) {
     old <- .Internal(setwd(dir))
-    .Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir))
+    rtvs:::send_message('setwd', dir)
     invisible(old)
   }, 'base')";
             return evaluation.EvaluateAsync(script);

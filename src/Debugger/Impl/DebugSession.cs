@@ -197,7 +197,7 @@ namespace Microsoft.R.Debugger {
             await InitializeAsync(cancellationToken);
 
             env = env ?? stackFrame?.SysFrame ?? "NULL";
-            var code = Invariant($"rtvs:::toJSON(rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength}))");
+            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength})");
             var jEvalResult = await InvokeDebugHelperAsync<JObject>(code, cancellationToken);
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
         }
