@@ -256,13 +256,9 @@ namespace Microsoft.R.Editor.Tree {
                     textChange.NewRange = TextRange.FromBounds(0, context.NewText.Length);
 
                     // Remove damaged elements if any and reflect text change.
-                    // Although we are invalidating the AST next, old copy will
-                    // be kept for operations that may need it such as smart indent.
+                    // the tree remains usable outside of the damaged scope.
                     bool elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                     _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
-                    // Invalidate will store existing AST as previous snapshot
-                    // and create temporary empty AST until the next async parse.
-                    _editorTree.Invalidate();
                 } else {
                     textChange.OldRange = context.OldRange;
                     textChange.NewRange = context.NewRange;
