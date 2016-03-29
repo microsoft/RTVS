@@ -15,5 +15,7 @@ namespace Microsoft.R.Components.PackageManager {
         Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync();
 
         Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
+
+        Task GetAdditionalPackageInfoAsync(RPackage pkg);
     }
 }
