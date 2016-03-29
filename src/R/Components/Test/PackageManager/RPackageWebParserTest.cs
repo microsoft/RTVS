@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.PackageManager.Model;
@@ -70,6 +71,15 @@ namespace Microsoft.R.Components.Test.PackageManager {
             };
 
             actual.ShouldBeEquivalentTo(expected);
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public void GetPackageInfoNotExist() {
+            var path = _testFiles.GetDestinationPath(Path.Combine("Parser", "notexist.html"));
+
+            Func<Task> f = async () => await RPackageWebParser.RetrievePackageInfo(new Uri(path, UriKind.Absolute));
+            f.ShouldThrow<RPackageInfoRetrievalException>();
         }
     }
 }
