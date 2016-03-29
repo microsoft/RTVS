@@ -35,15 +35,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             var pkg = result ?? new RPackage();
-            try {
-                var tree = new HtmlTree(new Microsoft.Web.Core.Text.TextStream(content));
-                tree.Build();
 
-                var search = new IndexVisitor(pkg);
-                tree.Accept(search, null);
-            } catch (Exception ex) when(!ex.IsCriticalException()) {
-                throw new RPackageInfoRetrievalException(string.Format("Error parsing index page from {0}", packageUri), ex);
-            }
+            var tree = new HtmlTree(new Microsoft.Web.Core.Text.TextStream(content));
+            tree.Build();
+
+            var search = new IndexVisitor(pkg);
+            tree.Accept(search, null);
 
             return pkg;
         }
