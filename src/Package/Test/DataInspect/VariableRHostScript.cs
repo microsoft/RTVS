@@ -19,22 +19,15 @@ using Microsoft.VisualStudio.R.Package.Test.Utility;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     public class VariableRHostScript : RHostScript {
-        private VariableProvider _variableProvider;
         private EvaluationWrapper _globalEnv;
-        private ManualResetEventSlim _mre = new ManualResetEventSlim(false);
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
+
+        private IDebugSessionProvider _debugSessionProvider;
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
-            _variableProvider = new VariableProvider(base.SessionProvider, VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>());
 
-            VsRHostScript.DoIdle(100);
-        }
-
-        public IVariableDataProvider VariableProvider {
-            get {
-                return _variableProvider;
-            }
+            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
         }
 
         public EvaluationWrapper GlobalEnvrionment {
@@ -43,35 +36,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
-        private void OnGlobalEnvironmentEvaluated(DebugEvaluationResult result) {
-            _globalEnv = new EvaluationWrapper(result);
-            _mre.Set();
-        }
-
-        public async Task EvaluateAsync(string rScript) {
-            VariableSubscription subscription = null;
-
+        public async Task<DebugEvaluationResult> EvaluateAsync(string rScript) {
             // One eval at a time
             await _sem.WaitAsync();
             try {
-                _mre.Reset();
+                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(Session);
 
-                _globalEnv = null;
-                subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
+                var frames = await debugSession.GetStackFramesAsync();
+                var frame = frames.FirstOrDefault(f => f.Index == 0);
 
-                using (var evaluation = await base.Session.BeginEvaluationAsync()) {
-                    await evaluation.EvaluateAsync(rScript);
-                }
+                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
+                    | DebugEvaluationResultFields.Expression
+                    | DebugEvaluationResultFields.TypeName
+                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                    | DebugEvaluationResultFields.Dim
+                    | DebugEvaluationResultFields.Length;
+                var result = await frame.EvaluateAsync(rScript, fields);
 
-                if (System.Diagnostics.Debugger.IsAttached) {
-                    _mre.Wait();
-                } else {
-                    if (!_mre.Wait(TimeSpan.FromSeconds(10))) {
-                        throw new TimeoutException("Evaluate time out");
-                    }
-                }
+                var globalResult = await frame.EvaluateAsync("base::environment()", fields);
+                _globalEnv = new EvaluationWrapper(globalResult);
+
+                return result;
             } finally {
-                _variableProvider.Unsubscribe(subscription);
                 _sem.Release();
             }
         }
@@ -107,15 +93,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             v.Class.ShouldBeEquivalentTo(expectation.Class);
             v.TypeName.ShouldBeEquivalentTo(expectation.TypeName);
             v.HasChildren.ShouldBeEquivalentTo(expectation.HasChildren);
-        }
-
-        protected override void Dispose(bool disposing) {
-            VsRHostScript.DoIdle(2000);
-
-            base.Dispose(disposing);
-            if (disposing) {
-                _variableProvider.Dispose();
-            }
         }
      }
 }
