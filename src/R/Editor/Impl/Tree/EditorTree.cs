@@ -11,6 +11,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -26,7 +28,7 @@ namespace Microsoft.R.Editor.Tree {
     /// validation (syntx check) thread.
     /// </summary>
     public partial class EditorTree : IEditorTree, IDisposable {
-        
+
         #region IEditorTree
         /// <summary>
         /// Visual Studio core editor text buffer
@@ -118,7 +120,7 @@ namespace Microsoft.R.Editor.Tree {
                 action(p);
             } else {
                 _actionsToInvokeOnReady[type] = new TreeReadyAction() { Action = action, Parameter = p };
-                if(processNow) {
+                if (processNow) {
                     TreeUpdateTask.ProcessPendingTextBufferChanges(async: true);
                 }
             }
@@ -268,81 +270,57 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         /// <summary>
-        /// Removes nodes from the tree collection if node range is 
-        /// // partially or entirely within the deleted region.
-        /// This is needed since parsing is asynchronous and without
-        /// removing damaged nodes so intellisense will still be able
-        /// to find them in the tree which actually they are gone.
-        /// Returns true if full parse required.
+        /// Removes nodes from the tree collection if node range is partially or entirely 
+        /// within the deleted region. This is needed since parsing is asynchronous and 
+        /// without node removal intellisense and syntax checker may end up processing
+        /// nodes that are out of date. Where possible stops at the nearest scope level
+        /// so scope nodes may still be used in smart indenter.
         /// </summary>
-        /// <param name="node">Node to start from</param>
         /// <param name="range">Range to invalidate elements in</param>
-        internal bool InvalidateInRange(IAstNode node, ITextRange range, out bool nodesChanged) {
+        internal bool InvalidateInRange(ITextRange range) {
             var removedElements = new List<IAstNode>();
             int firstToRemove = -1;
             int lastToRemove = -1;
 
-            nodesChanged = false;
-
-            for (int i = 0; i < node.Children.Count; i++) {
-                var child = node.Children[i];
-                bool removeChild = false;
-
-                if (range.Start == child.Start && range.Length == 0) {
-                    // Change is right before the node
+            var node = AstRoot.NodeFromRange(range);
+            var scope = node as IScope;
+            while (scope == null || scope.OpenCurlyBrace == null || scope.CloseCurlyBrace == null) {
+                scope = node.GetEnclosingScope();
+                if(scope is GlobalScope) {
                     break;
                 }
+                node = scope;
+            }
 
-                if (!removeChild && TextRange.Intersect(range, child)) {
-                    bool childElementsChanged;
-                    if (child is TokenNode) {
-                        childElementsChanged = true;
-                    } else {
-                        InvalidateInRange(child, range, out childElementsChanged);
-                    }
-
-                    nodesChanged |= childElementsChanged;
-
-                    // Check if we really to remove this node. Damaged children were already 
-                    // removed and if node itself is not damaged, keep it.
-                    if (TextRange.Contains(child, range)) {
-                        // Fully contained like when small change inside { } scope.
-                        IAstNode startNode, endNode;
-                        PositionType startPositionType, endPostionType;
-                        var n = child.GetElementsEnclosingRange(range.Start, range.Length, out startNode, out startPositionType, out endNode, out endPostionType);
-                        if (!TextRange.Contains(n, range)) {
-                            removeChild = true;
-                        }
-                    } else {
-                        removeChild = true;
-                    }
-                }
-
-                if (removeChild) {
-                    if (firstToRemove < 0)
+            for (int i = 0; i < scope.Children.Count; i++) {
+                var child = scope.Children[i];
+                if (TextRange.Intersect(range, child)) {
+                    if (firstToRemove < 0) {
                         firstToRemove = i;
-
-                    lastToRemove = i;
+                    } else {
+                        lastToRemove = i;
+                    }
                 }
             }
 
             if (firstToRemove >= 0) {
+                if(lastToRemove < 0) {
+                    lastToRemove = firstToRemove;
+                }
                 for (int i = firstToRemove; i <= lastToRemove; i++) {
-                    IAstNode child = node.Children[i];
+                    IAstNode child = scope.Children[i];
                     removedElements.Add(child);
-
                     _astRoot.Errors.RemoveInRange(child);
                 }
-
-                node.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
+                scope.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
             }
 
             if (removedElements.Count > 0) {
-                nodesChanged = true;
                 FireOnNodesRemoved(removedElements);
+                return true;
             }
 
-            return nodesChanged;
+            return false;
         }
 
         /// <summary>

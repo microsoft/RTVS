@@ -55,7 +55,7 @@ namespace Microsoft.R.Core.AST.Statements {
                     // will be simply ignored. IDE may choose to show a warning.
                     if (currentToken.SubType == RTokenSubType.BuiltinFunction && tokens.NextToken.TokenType != RTokenType.OpenBrace) {
                         // 'return <- x + y' is allowed
-                        statement = new ExpressionStatement(terminatingKeyword);
+                        statement = new IfStatement(terminatingKeyword);
                     } else {
                         statement = KeywordStatement.CreateStatement(context, parent);
                     }
@@ -68,7 +68,7 @@ namespace Microsoft.R.Core.AST.Statements {
                 default:
                     // Possible L-value in a left-hand assignment, 
                     // a function call or R-value in a right hand assignment.
-                    statement = new ExpressionStatement(terminatingKeyword);
+                    statement = new IfStatement(terminatingKeyword);
                     break;
             }
 

@@ -258,8 +258,7 @@ namespace Microsoft.R.Editor.Tree {
                     // Remove damaged elements if any and reflect text change.
                     // Although we are invalidating the AST next, old copy will
                     // be kept for operations that may need it such as smart indent.
-                    bool elementsChanged;
-                    _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                    bool elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                     _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
                     // Invalidate will store existing AST as previous snapshot
                     // and create temporary empty AST until the next async parse.
@@ -322,12 +321,11 @@ namespace Microsoft.R.Editor.Tree {
                 // won't be found by validator and it won't be looking at zombies.
                 if (deleteElements) {
                     _pendingChanges.FullParseRequired = true;
-                    _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                    elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                 }
             }
 
             _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
-
             return elementsChanged;
         }
 

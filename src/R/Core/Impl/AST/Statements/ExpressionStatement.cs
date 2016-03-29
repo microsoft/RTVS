@@ -15,14 +15,14 @@ namespace Microsoft.R.Core.AST.Statements {
     /// or operator definition.
     /// </summary>
     [DebuggerDisplay("[ExpressionStatement, Children:{Children.Count}]")]
-    public sealed class ExpressionStatement : Statement, IExpressionStatement {
+    public sealed class IfStatement : Statement, IExpressionStatement {
         private string _terminatingKeyword;
 
         public IExpression Expression { get; private set; }
 
-        public ExpressionStatement() { }
+        public IfStatement() { }
 
-        public ExpressionStatement(string terminatingKeyword) {
+        public IfStatement(string terminatingKeyword) {
             _terminatingKeyword = terminatingKeyword;
         }
 
