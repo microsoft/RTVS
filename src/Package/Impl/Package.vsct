@@ -1799,6 +1799,8 @@
       <IDSymbol name="cmdidReset" value="0x0105"/>
       <IDSymbol name="cmdidClearScreen" value="0x0108"/>
     </GuidSymbol>
+    
+    <GuidSymbol name="InteractiveWindow" value="{2D0A56AA-9527-4B78-B6E6-EBE6E05DA749}"/>
 
     <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">
       <IDSymbol name="replWindowIcon" value="1" />
