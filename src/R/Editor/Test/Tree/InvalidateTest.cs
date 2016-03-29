@@ -30,6 +30,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) x <- a + b ", 9, 8)]
         [InlineData("if(true) { }", 9, 1)]
         [InlineData("if(true) { }", 11, 1)]
+        [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 3)]
         public void InvalidateAllInRange(string content, int start, int length) {
             EditorTree tree = EditorTreeTest.MakeTree(content);
 
@@ -41,11 +42,14 @@ namespace Microsoft.R.Editor.Test.Tree {
             tree.AstRoot.Children[0].Children.Should().BeEmpty();
         }
 
-        [Test]
-        public void InvalidatePartsInRange01() {
-            EditorTree tree = EditorTreeTest.MakeTree("if(true) { x <- a + b }");
+        [CompositeTest]
+        [InlineData("if(true) { x <- a + b }", 11, 10)]
+        [InlineData("if(true) { while(TRUE) { x <- a + b} }", 23, 1)]
+        [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 1)]
+        public void InvalidatePartsInRange01(string content, int start, int length) {
+            EditorTree tree = EditorTreeTest.MakeTree(content);
 
-            bool nodesChanged = tree.InvalidateInRange(new TextRange(11, 10));
+            bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
             nodesChanged.Should().BeTrue();
 
             tree.AstRoot.Children.Should().ContainSingle();
