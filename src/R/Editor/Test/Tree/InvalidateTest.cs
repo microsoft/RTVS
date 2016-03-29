@@ -11,6 +11,7 @@ using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
@@ -24,11 +25,15 @@ namespace Microsoft.R.Editor.Test.Tree {
             tree.AstRoot.Children[0].Children.Should().BeEmpty();
         }
 
-        [Test]
-        public void InvalidateInRangeTest01() {
-            EditorTree tree = EditorTreeTest.MakeTree("if(true) x <- a + b");
+        [CompositeTest]
+        [InlineData("if(true) x <- a + b", 4, 1)]
+        [InlineData("if(true) x <- a + b ", 9, 8)]
+        [InlineData("if(true) { }", 9, 1)]
+        [InlineData("if(true) { }", 11, 1)]
+        public void InvalidateAllInRange(string content, int start, int length) {
+            EditorTree tree = EditorTreeTest.MakeTree(content);
 
-            bool nodesChanged = tree.InvalidateInRange(new TextRange(4, 1));
+            bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
             nodesChanged.Should().BeTrue();
 
             tree.AstRoot.Children.Should().ContainSingle();
@@ -37,7 +42,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         }
 
         [Test]
-        public void InvalidateInRangeTest02() {
+        public void InvalidatePartsInRange01() {
             EditorTree tree = EditorTreeTest.MakeTree("if(true) { x <- a + b }");
 
             bool nodesChanged = tree.InvalidateInRange(new TextRange(11, 10));
@@ -55,18 +60,6 @@ namespace Microsoft.R.Editor.Test.Tree {
             ifStatement.Scope.Children.Count.Should().Be(2);
             ifStatement.Scope.OpenCurlyBrace.Should().NotBeNull();
             ifStatement.Scope.CloseCurlyBrace.Should().NotBeNull();
-        }
-
-        [Test]
-        public void InvalidateInRangeTest03() {
-            EditorTree tree = EditorTreeTest.MakeTree("if(true) x <- a + b ");
-
-            bool nodesChanged = tree.InvalidateInRange(new TextRange(9, 8));
-            nodesChanged.Should().BeTrue();
-
-            tree.AstRoot.Children.Should().ContainSingle();
-            tree.AstRoot.Children[0].Should().BeOfType<GlobalScope>();
-            tree.AstRoot.Children[0].Children.Should().BeEmpty();
         }
     }
 }

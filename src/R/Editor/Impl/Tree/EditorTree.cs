@@ -277,7 +277,8 @@ namespace Microsoft.R.Editor.Tree {
 
             var node = AstRoot.NodeFromRange(range);
             var scope = node as IScope;
-            while (scope == null || scope.OpenCurlyBrace == null || scope.CloseCurlyBrace == null) {
+            while (scope == null || scope.OpenCurlyBrace == null || scope.CloseCurlyBrace == null ||
+                    TextRange.Intersect(range, scope.OpenCurlyBrace) || TextRange.Intersect(range, scope.CloseCurlyBrace)) {
                 scope = node.GetEnclosingScope();
                 if(scope is GlobalScope) {
                     break;
