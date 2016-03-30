@@ -98,9 +98,9 @@
 
                 <!-- Settings button -->
                 <Button Grid.Column="8" x:Name="ButtonSettings" VerticalAlignment="Center" Padding="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Click="ButtonSettings_Click">
-                    <Border Width="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
-                            Height="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
-                            Child="{StaticResource IconSettings}"/>
+                    <Rectangle Width="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
+                               Height="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
+                               Fill="{StaticResource IconSettings}" />
                 </Button>
             </Grid>
         </Grid>
@@ -134,7 +134,8 @@
                               Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
 
                 <!-- right side -->
-                <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" />
+                <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" 
+                                     Visibility="{Binding Converter={x:Static rwpf:Converters.NullIsCollapsed}}"/>
             </Grid>
         </Border>
     </DockPanel>

@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using Microsoft.Common.Wpf;
@@ -19,5 +20,9 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullIsVisible { get; } = LambdaConverter.Create<object>(x => x != null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullOrEmptyIsCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Collapsed : Visibility.Visible);
+
+        public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());
+        public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Hidden);
+        public static IMultiValueConverter AnyIsNotCollapsed { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Collapsed);
     }
 }

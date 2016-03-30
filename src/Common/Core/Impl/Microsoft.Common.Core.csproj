@@ -89,6 +89,7 @@
     <Compile Include="Telemetry\PropertyNames.cs" />
     <Compile Include="Telemetry\TelemetryArea.cs" />
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
+    <Compile Include="Threading\BinaryAsyncLock.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

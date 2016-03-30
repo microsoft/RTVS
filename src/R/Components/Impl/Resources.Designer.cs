@@ -124,6 +124,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -435,6 +444,15 @@ namespace Microsoft.R.Components {
         public static string PackageManager_UpdateButtonToolTip {
             get {
                 return ResourceManager.GetString("PackageManager_UpdateButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready.
+        /// </summary>
+        public static string Ready {
+            get {
+                return ResourceManager.GetString("Ready", resourceCulture);
             }
         }
         

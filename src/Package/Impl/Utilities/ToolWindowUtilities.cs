@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             ErrorHandler.ThrowOnFailure(
                 vsUiShell.CreateToolWindow(
-                    (uint)(__VSCREATETOOLWIN.CTW_fInitNew | __VSCREATETOOLWIN.CTW_fToolbarHost),
+                    (uint)(__VSCREATETOOLWIN.CTW_fInitNew | __VSCREATETOOLWIN.CTW_fToolbarHost | __VSCREATETOOLWIN.CTW_fForceCreate),
                     (uint)instanceId,
                     toolWindow,
                     ref clsId,

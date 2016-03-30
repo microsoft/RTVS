@@ -47,109 +47,85 @@
             </Style>
 
             <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
-                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" Padding="0,8,0,0" x:Name="Container">
-                    <Grid Margin="16,0,7,0">
+                <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" x:Name="Container">
+                    <Grid Margin="16,8,7,8" MinHeight="32">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
                         <!-- check box -->
-                        <CheckBox Grid.Column="0" Margin="0,12,8,0" VerticalAlignment="top" IsChecked="{Binding Path=IsSelected}"
+                        <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsSelected}"
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
 
-                        <!-- Icon -->
-                        <Grid Grid.Column="1" VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Image Grid.Row="0" Style="{StaticResource PackageIconImageStyle}" VerticalAlignment="Top" Margin="0,0,16,0" />
-                            <Border Grid.Row="0" Margin="18,20,0,0" Width="16" Height="16" VerticalAlignment="Top" Child="{StaticResource IconInstalledIndicator}"
-                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
-                                    ToolTip="{x:Static components:Resources.PackageManager_PackageInstalledToolTip}" />
-                            <Border Grid.Row="0" Margin="18,20,0,0" Width="16" Height="16" VerticalAlignment="Top" Child="{StaticResource IconUpdateAvailableIndicator}"
-                                    Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
-                                    ToolTip="{x:Static components:Resources.PackageManager_UpdateAvailableToolTip}" />
-                        </Grid>
-
                         <!-- title & summary-->
-                        <Grid Grid.Column="2" VerticalAlignment="Top" MinHeight="48">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="4" />
-                                <RowDefinition Height="36" MaxHeight="36" />
-                            </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Top" Text="{Binding Path=Name}"
-                                       FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" />
-
-                            <TextBlock Grid.Row="2" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
-                                       Text="{Binding Path=Title, Converter={cwpf:Lambda '(string s) => string.IsNullOrEmpty(s) ? Microsoft.R.Components.Resources.PackageManager_NotAvailableInSource : s'}}"
-                                       FontStyle="{Binding Path=Title, Converter={cwpf:Lambda '(string s) => string.IsNullOrEmpty(s) ? System.Windows.FontStyles.Italic : System.Windows.FontStyles.Normal'}}" />
-
-                            <Grid.ToolTip>
-                                <TextBlock Style="{StaticResource TooltipStyle}">
-                                <Run Text="{Binding Path=Name}" FontWeight="Bold" />
-                                <LineBreak />
-                                <Run Text="{Binding Path=Title}" />
+                        <TextBlock Grid.Column="1" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
+                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}">
+                            <TextBlock.ToolTip>
+                                <TextBlock Style="{StaticResource TooltipStyle}" Visibility="{Binding Path=Title, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                                    <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
+                                    <LineBreak />
+                                    <Run Text="{Binding Path=Title, Mode=OneWay}" />
                                 </TextBlock>
-                            </Grid.ToolTip>
-                        </Grid>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
 
-                        <Grid Grid.Column="3" VerticalAlignment="Top" Margin="10,0,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
+                        <Grid Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
                             <!-- row 0: -->
-                            <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Right">
+                            <Grid Grid.Column="0" HorizontalAlignment="Right" Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto" />
                                     <ColumnDefinition Width="auto" />
                                 </Grid.ColumnDefinitions>
 
                                 <!-- installed indicator -->
-                                <Border x:Name="_installedIndicator" Grid.Column="0" Width="12" Height="12" Visibility="Visible" VerticalAlignment="Center" Child="{StaticResource IconGrayInstalledIndicator}" />
+                                <Rectangle x:Name="_installedIndicator" Grid.Column="0" Width="12" Height="12" VerticalAlignment="Center"
+                                           Fill="{StaticResource IconGrayInstalledIndicator}" />
 
                                 <!-- installed version -->
-                                <TextBlock x:Name="TextInstalledVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center" Visibility="Hidden"
+                                <TextBlock x:Name="TextInstalledVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center"
                                            Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}"
                                            ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
                             </Grid>
 
                             <!-- version to install. It occupies the same position as the installed version -->
-                            <TextBlock x:Name="_versionToInstall" Grid.Row="0" Grid.Column="0" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right" Visibility="Hidden"
+                            <TextBlock x:Name="_versionToInstall" Grid.Column="0" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
                                        Text="{Binding Path=LatestVersion, StringFormat={}v{0}}"
+                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
                                        ToolTip="{Binding Path=LatestVersion, StringFormat={x:Static components:Resources.PackageManager_LatestVersionToolTip}}">
                             </TextBlock>
 
                             <!-- uninstall button -->
-                            <Button x:Name="ButtonUninstall" Style="{StaticResource ButtonStyle}" Grid.Row="0" Grid.Column="1" Visibility="Hidden"
-                                    Click="ButtonUninstall_Click" ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
-                                <Border Child="{StaticResource IconUninstall}" Width="16" Height="16" />
+                            <Button x:Name="ButtonUninstall" Style="{StaticResource ButtonStyle}" Grid.Column="1" Click="ButtonUninstall_Click"
+                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                    ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
+                                <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                             </Button>
 
                             <!-- install button. It occupies the same position of the install button -->
-                            <Button x:Name="ButtonInstall" Grid.Row="0" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" Visibility="Hidden">
+                            <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" 
+                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
                                 <Button.ToolTip>
                                     <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
                                         <Binding Path="Name" />
                                         <Binding Path="LatestVersion" />
                                     </MultiBinding>
                                 </Button.ToolTip>
-                                <Border Child="{StaticResource IconInstall}" Width="16" Height="16" />
+                                <Rectangle Fill="{StaticResource IconInstall}" Width="16" Height="16" />
                             </Button>
 
                             <!-- row 1: latest version and the update button-->
                             <!-- version to update to -->
-                            <TextBlock x:Name="TextVersionToUpdateTo" Grid.Row="1" Grid.Column="0" Margin="2,5,4,0" VerticalAlignment="Center" TextAlignment="Right" Visibility="Hidden"
+                            <TextBlock x:Name="TextVersionToUpdateTo" Grid.Column="2" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
+                                       Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                        Text="{Binding Path=LatestVersion, StringFormat={}v{0}}">
                                 <TextBlock.ToolTip>
                                     <Binding Path="LatestVersion" StringFormat="{x:Static components:Resources.PackageManager_LatestVersionToolTip}" />
@@ -157,84 +133,19 @@
                             </TextBlock>
 
                             <!-- update button -->
-                            <Button x:Name="ButtonUpdate" Grid.Row="1" Grid.Column="1" Style="{StaticResource ButtonStyle}" Margin="0,5,0,0" Click="ButtonUpdate_Click" Visibility="Hidden">
+                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Margin="0,5,0,0" Click="ButtonUpdate_Click"
+                                    Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
                                     <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
                                         <Binding Path="Name" />
                                         <Binding Path="LatestVersion" />
                                     </MultiBinding>
                                 </Button.ToolTip>
-                                <Border Child="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
+                                <Rectangle Fill="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
                             </Button>
                         </Grid>
                     </Grid>
                 </Border>
-
-                <!-- triggers -->
-                <DataTemplate.Triggers>
-                    <!-- The install button is visible when
-                        * Status is NotInstalled;
-                        * mouse hovers over the control;
-                    -->
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding Path=IsMouseOver, ElementName=Container}" Value="True" />
-                            <Condition Binding="{Binding Path=IsInstalled}" Value="False" />
-                        </MultiDataTrigger.Conditions>
-                        <Setter TargetName="ButtonInstall" Property="Visibility" Value="Visible" />
-                    </MultiDataTrigger>
-
-                    <!-- installed version is visible when installedVersion is not null -->
-                    <DataTrigger Binding="{Binding InstalledVersion, Converter={x:Static wpf:Converters.NullIsTrue}}" Value="False">
-                        <Setter TargetName="TextInstalledVersion" Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-
-                    <!-- version to install is visible when status is NotInstalled
-                    -->
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding Path=IsInstalled}" Value="False" />
-                            <Condition Binding="{Binding Path=LatestVersion, Converter={x:Static wpf:Converters.NullIsTrue}}" Value="False" />
-                        </MultiDataTrigger.Conditions>
-                        <Setter TargetName="_versionToInstall" Property="Visibility" Value="Visible" />
-                    </MultiDataTrigger>
-
-                    <!-- version to update to is visible when UpdateAvailable is true -->
-                    <DataTrigger Binding="{Binding Path=IsUpdateAvailable}" Value="True">
-                        <Setter TargetName="TextVersionToUpdateTo" Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-
-                    <!-- The uninstall button is visible when
-                        * Status is Installed;
-                        * mouse hovers over the control;
-                    -->
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding Path=IsMouseOver, ElementName=Container}" Value="True" />
-                            <Condition Binding="{Binding Path=IsInstalled}" Value="True" />
-                        </MultiDataTrigger.Conditions>
-                        <Setter TargetName="ButtonUninstall" Property="Visibility" Value="Visible" />
-                    </MultiDataTrigger>
-
-                    <!-- The update button is visible when
-                        * Status is UpdateAvailable;
-                        * mouse hovers over the control;
-                    -->
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding Path=IsMouseOver, ElementName=Container}" Value="True" />
-                            <Condition Binding="{Binding Path=IsUpdateAvailable}" Value="True" />
-                        </MultiDataTrigger.Conditions>
-                        <Setter TargetName="ButtonUpdate" Property="Visibility" Value="Visible" />
-                    </MultiDataTrigger>
-
-                    <!-- The installed version indicator becomes invisible when
-                        * InstalledVersion is null;
-                    -->
-                    <DataTrigger Binding="{Binding Path=InstalledVersion}" Value="{x:Null}">
-                        <Setter TargetName="_installedIndicator" Property="Visibility" Value="Collapsed" />
-                    </DataTrigger>
-                </DataTemplate.Triggers>
             </DataTemplate>
 
             <!-- Template used by ListBoxItem that represents a package. -->
@@ -274,13 +185,6 @@
                 </ControlTemplate.Triggers>
             </ControlTemplate>
 
-            <!-- Template used by the LoadingIndicator. We use it to disable the background change when mouse hovers over it. -->
-            <ControlTemplate x:Key="LoadingIndicatorListBoxItemTemplate" TargetType="{x:Type ListBoxItem}">
-                <Border x:Name="Bd" BorderThickness="0" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Padding="0" SnapsToDevicePixels="true">
-                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                </Border>
-            </ControlTemplate>
-
             <Style x:Key="FocusVisual">
                 <Setter Property="Control.Template">
                     <Setter.Value>
@@ -301,52 +205,10 @@
                 <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
             </Style>
 
-            <!-- the style of the ListBoxItem when the item is the loading status indicator. -->
-            <Style x:Key="LoadingStatusIndicatorStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
-                <Setter Property="Template" Value="{StaticResource LoadingIndicatorListBoxItemTemplate}" />
-                <Setter Property="Focusable" Value="False" />
-            </Style>
-
             <!-- the style of the ListBoxItem when the item is a package. -->
             <Style x:Key="PackageItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
                 <Setter Property="Template" Value="{StaticResource ListBoxItemTemplate}" />
             </Style>
-
-            <Style TargetType="FrameworkElement" x:Key="FadeAnimationStyle">
-                <Setter Property="Visibility" Value="Hidden"/>
-                <Style.Triggers>
-                    <Trigger Property="Visibility" Value="Visible">
-                        <Trigger.EnterActions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.7"/>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </Trigger.EnterActions>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-        
-            <!--
-                This scrollviewer template has one change from the default - a -22 margin on the verical srollbar.
-                This enables the loadingStatusBar to appear to be in the listbox.
-            -->
-            <ControlTemplate x:Key="ScrollViewerWithScrollBarExtraLargeOnTop" TargetType="{x:Type ScrollViewer}">
-                <Grid x:Name="Grid" Background="{TemplateBinding Background}" >
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Rectangle x:Name="Corner" Grid.Column="1" Fill="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Grid.Row="1"/>
-                    <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}" CanHorizontallyScroll="False" CanVerticallyScroll="False" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" Grid.Column="0" Margin="{TemplateBinding Padding}" Grid.Row="0"/>
-                    <ScrollBar x:Name="PART_VerticalScrollBar" AutomationProperties.AutomationId="VerticalScrollBar" Cursor="Arrow" Grid.Column="1" Maximum="{TemplateBinding ScrollableHeight}" Margin="0,-22,0,0" Minimum="0" Grid.Row="0" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{Binding VerticalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportHeight}"/>
-                    <ScrollBar x:Name="PART_HorizontalScrollBar" AutomationProperties.AutomationId="HorizontalScrollBar" Cursor="Arrow" Grid.Column="0" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Orientation="Horizontal" Grid.Row="1" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" ViewportSize="{TemplateBinding ViewportWidth}"/>
-                </Grid>
-            </ControlTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
     <DockPanel LastChildFill="True">
@@ -366,24 +228,51 @@
                         Click="ButtonUpdate_Click" Content="{x:Static components:Resources.Update}" />
             </Grid>
         </Border>
-        <Grid DockPanel.Dock="Top" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Height="22">
-            <view:LoadingStatusBar x:Name="LoadingStatusBar" Style="{StaticResource FadeAnimationStyle}" />
+        <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}">
+            <!--<view:LoadingStatusBar x:Name="LoadingStatusBar" Style="{StaticResource LoadingStatusBarStyle}" Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
+                <view:LoadingStatusBar.Visibility>
+                    <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
+                        <Binding Path="IsLoading" />
+                    </MultiBinding>
+                </view:LoadingStatusBar.Visibility>
+            </view:LoadingStatusBar>-->
+            <Grid Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
+                <!--
+                <TextBlock FontStyle="Italic" HorizontalAlignment="Center" Text="{x:Static components:Resources.Text_NoPackagesFound}" Visibility="Collapsed" />
+                -->
+                <TextBlock HorizontalAlignment="Center" Text="{x:Static components:Resources.Ready}" Visibility="Collapsed" />
+                <Grid HorizontalAlignment="Center" Height="22" Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </Grid>
+                <Grid.Visibility>
+                    <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
+                        <Binding Path="IsLoading" />
+                    </MultiBinding>
+                </Grid.Visibility>
+            </Grid>
+            <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
+                     VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
+                     PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" Loaded="List_Loaded" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
+                     Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
+                     ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource PackageInfoTemplate}">
+                <!-- set the template to disable the background change when the IsEnabled is false. -->
+                <ListBox.Template>
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
+                            <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </ScrollViewer>
+                        </Border>
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
         </Grid>
-        <ListBox x:Name="List" DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
-                 VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
-                 PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" Loaded="List_Loaded" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
-                 ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource PackageInfoTemplate}">
-            <!-- set the template to disable the background change when the IsEnabled is false. -->
-            <ListBox.Template>
-                <ControlTemplate TargetType="{x:Type ListBox}">
-                    <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="1" SnapsToDevicePixels="true">
-                        <ScrollViewer Template="{StaticResource ScrollViewerWithScrollBarExtraLargeOnTop}" Focusable="false" Padding="{TemplateBinding Padding}">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
-                        </ScrollViewer>
-                    </Border>
-                </ControlTemplate>
-            </ListBox.Template>
-        </ListBox>
+
     </DockPanel>
 </UserControl>

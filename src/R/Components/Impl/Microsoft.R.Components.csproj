@@ -128,6 +128,7 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.cs">
       <SubType>UserControl</SubType>

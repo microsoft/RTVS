@@ -5,8 +5,9 @@ using System.Collections.ObjectModel;
 
 namespace Microsoft.R.Components.PackageManager.ViewModel {
     public interface IRPackageManagerViewModel {
-        ObservableCollection<object> Items { get; } 
+        ReadOnlyObservableCollection<object> Items { get; } 
         IRPackageViewModel SelectedPackage { get; }
+        bool IsLoading { get; }
 
         void SwitchToAvailablePackages();
         void SwitchToInstalledPackages();
