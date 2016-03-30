@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             await TaskUtilities.SwitchToBackgroundThread();
 
             REvaluationResult result;
-            using (var evaluation = await _rSession.BeginEvaluationAsync(false)) {
+            using (var evaluation = await _rSession.BeginEvaluationAsync()) {
                 result = await evaluation.EvaluateAsync("rtvs:::getEnvironments(sys.frame(sys.nframe()))", REvaluationKind.Json);
             }
 

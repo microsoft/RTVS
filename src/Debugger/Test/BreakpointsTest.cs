@@ -340,7 +340,7 @@ namespace Microsoft.R.Debugger.Test {
                 await Task.Delay(100);
 
                 await bp.DeleteAsync();
-                await _session.EvaluateAsync("b <- TRUE", true);
+                await _session.EvaluateAsync("b <- TRUE", REvaluationKind.Mutating);
 
                 await debugSession.NextPromptShouldBeBrowseAsync();
                 (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {

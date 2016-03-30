@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
+                    using (var evaluation = await session.BeginEvaluationAsync()) {
                         return await evaluation.GetWorkingDirectory();
                     }
                 } catch (OperationCanceledException) { }
@@ -42,7 +42,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    using (var evaluation = await session.BeginEvaluationAsync(false)) {
+                    using (var evaluation = await session.BeginEvaluationAsync()) {
                         return await evaluation.GetRUserDirectory();
                     }
                 } catch (OperationCanceledException) { }

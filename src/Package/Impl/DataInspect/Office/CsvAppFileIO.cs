@@ -13,6 +13,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;
@@ -54,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             try {
                 await SetStatusTextAsync(Resources.Status_WritingCSV);
                 using (var e = await session.BeginEvaluationAsync()) {
-                    await e.EvaluateAsync(Invariant($"write.csv({result.Expression}, file='{rfile}')") + Environment.NewLine);
+                    await e.EvaluateAsync($"write.csv({result.Expression}, file='{rfile}')", REvaluationKind.Normal);
                 }
 
                 if (File.Exists(file)) {

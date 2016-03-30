@@ -59,8 +59,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 _globalEnv = null;
                 subscription = _variableProvider.Subscribe(0, "base::environment()", OnGlobalEnvironmentEvaluated);
 
-                using (var evaluation = await base.Session.BeginEvaluationAsync()) {
-                    await evaluation.EvaluateAsync(rScript);
+                using (var evaluation = await Session.BeginEvaluationAsync()) {
+                    await evaluation.EvaluateAsync(rScript, REvaluationKind.Mutating);
                 }
 
                 if (System.Diagnostics.Debugger.IsAttached) {
