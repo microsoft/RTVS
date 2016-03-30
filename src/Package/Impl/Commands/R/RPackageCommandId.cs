@@ -65,6 +65,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowHistoryWindow = 904;
         public const int icmdShowPackagesWindow = 905;
         public const int icmdShowHelpWindow = 906;
+        public const int icmdShowEditorWindow = 907;
+        public const int icmdShowSolutionExplorer = 908;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;

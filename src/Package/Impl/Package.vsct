@@ -734,6 +734,17 @@
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdShowEditorWindow" priority="0x00F0" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Editor"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Source Editor</ButtonText>
+          <MenuText>&amp;Source Editor</MenuText>
+          <CommandName>RSourceEditor</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100" type="Button">
         <Icon guid="replWindowIconGuid" id="replWindowIcon"/>
         <Strings>
@@ -1543,18 +1554,23 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidREditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidREditor" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidVSStd97" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="Global" key1="1" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="Global" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="Global" key1="3" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="Global" key1="4" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="Global" key1="5" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="Global" key1="6" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="Global" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="Global" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
   </KeyBindings>
-
+  
   <UsedCommands>
     <UsedCommand guid="guidVSStd97" id="cmdidCut" />
     <UsedCommand guid="guidVSStd97" id="cmdidCopy" />
@@ -1691,6 +1707,8 @@
       <IDSymbol name="icmdShowHistoryWindow" value="904" />
       <IDSymbol name="icmdShowPackagesWindow" value="905" />
       <IDSymbol name="icmdShowHelpWindow" value="906" />
+      <IDSymbol name="icmdShowEditorWindow" value="907" />
+      <IDSymbol name="icmdShowSolutionExplorer" value="908" />
 
       <!-- Help -->
       <IDSymbol name="icmdHelpPrevious" value="1100" />
@@ -1802,6 +1820,8 @@
     </GuidSymbol>
     
     <GuidSymbol name="InteractiveWindow" value="{2D0A56AA-9527-4B78-B6E6-EBE6E05DA749}"/>
+    <GuidSymbol name="SolutionExplorer" value="{3AE79031-E1BC-11D0-8F78-00A0C9110057}"/>
+    <GuidSymbol name="Global" value="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"/>
 
     <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">
       <IDSymbol name="replWindowIcon" value="1" />
