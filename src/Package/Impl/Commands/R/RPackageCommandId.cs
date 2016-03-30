@@ -6,6 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int plotWindowToolBarId = 0x2000;
         public const int helpWindowToolBarId = 0x2010;
         public const int historyWindowToolBarId = 0x2020;
+        public const int variableWindowToolBarId = 0x2030;
 
         // General
         public const int icmdGoToFormattingOptions = 400;

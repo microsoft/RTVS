@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (!object.Equals(EnvironmentComboBox.ItemsSource, _defaultEnvironments) && e.AddedItems.Count > 0) {
+            if ((EnvironmentComboBox.ItemsSource != _defaultEnvironments) && (e.AddedItems.Count > 0)) {
                 var env = e.AddedItems[0] as REnvironment;
                 if (env != null) {
                     SetRootModelAsync(env).DoNotWait();

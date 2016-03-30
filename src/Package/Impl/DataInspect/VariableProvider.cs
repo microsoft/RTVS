@@ -34,7 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 throw new ArgumentNullException(nameof(debugSessionProvider));
             }
 
-
             RSession = sessionProvider.GetInteractiveWindowRSession();
             if (RSession == null) {
                 throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(IVariableDataProvider)}"));
@@ -58,7 +57,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RSession.Mutated -= RSession_Mutated;
         }
         #endregion
-
         #region RSession related event handler
 
         private void RSession_Mutated(object sender, EventArgs e) {
@@ -122,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (_debugSession == null) {
                 _debugSession = await debugSessionProvider.GetDebugSessionAsync(RSession);
                 if (_debugSession == null) {
-                    Debug.Fail("");
+                    Debug.Fail("Can't acquire debug session");
                     return;
                 }
             }

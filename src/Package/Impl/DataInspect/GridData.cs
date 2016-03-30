@@ -21,6 +21,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RowNames = rowNames;
             ColumnNames = columnNames;
             Values = values;
+
+            if (rowNames != null && columnNames != null) {
+                Range = new GridRange(new Range(0, rowNames.Count), new Range(0, columnNames.Count));
+            }
         }
 
         public HeaderNames ValidHeaderNames { get; set; }

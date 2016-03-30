@@ -649,4 +649,7 @@ Additional information:
   <data name="CranMirror_UseRProfile" xml:space="preserve">
     <value>(Use .Rprofile)</value>
   </data>
+  <data name="ImportData_Title" xml:space="preserve">
+    <value>Import Dataset</value>
+  </data>
 </root>
