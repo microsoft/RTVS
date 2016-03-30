@@ -1645,18 +1645,22 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="guidRToolsCmdSet" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="REditor" key1="VK_F12" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="InteractiveWindow" key1="VK_F12" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="SolutionExplorer" key1="VK_F12" mod1="CONTROL ALT"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="guidRToolsCmdSet" key1="VK_F11" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="REditor" key1="VK_F11" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="InteractiveWindow" key1="VK_F11" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="SolutionExplorer" key1="VK_F11" mod1="CONTROL ALT"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="guidRToolsCmdSet" key1="VK_F10" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="REditor" key1="VK_F10" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="InteractiveWindow" key1="VK_F10" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="SolutionExplorer" key1="VK_F10" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidRToolsCmdSet" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="REditor" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="InteractiveWindow" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="SolutionExplorer" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
