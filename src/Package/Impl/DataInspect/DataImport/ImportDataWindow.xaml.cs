@@ -90,8 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             parameter.AppendFormat(" ,comment.char={0}", ComboBoxSelectedRStringLiteral(CommentComboBox));
 
             if (!string.IsNullOrEmpty(NAStringTextBox.Text)) {
-                parameter.Append(" ,na.strings=");
-                AppendString(parameter, NAStringTextBox.Text.ToRStringLiteral());
+                parameter.AppendFormat(" ,na.strings={0}", NAStringTextBox.Text.ToRStringLiteral());
             }
 
             if (preview) {
@@ -112,11 +111,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            IntPtr dialogOwner;
-            uiShell.GetDialogOwnerHwnd(out dialogOwner);
-
-            FilePathBox.Text = VsAppShell.Current.BrowseForFileOpen(dialogOwner, "CSV file|*.csv");
+            FilePathBox.Text = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
             if (!string.IsNullOrEmpty(FilePathBox.Text)) {
                 FilePathBox.CaretIndex = FilePathBox.Text.Length;
                 FilePathBox.ScrollToEnd();
@@ -151,33 +146,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 try {
                     var grid = await GridDataSource.GetGridDataAsync(expression, null);
 
-                    VsAppShell.Current.DispatchOnUIThread(() => {
-                        PopulateDataFramePreview(grid);
-                        OnSuccess(true);
-                    });
+                    PopulateDataFramePreview(grid);
+                    OnSuccess(true);
                 } catch (Exception ex) {
-                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
+                    OnError(ex.Message);
                 }
             }
         }
 
         private async Task RunAsync(string expression) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
             try {
-                IRSession rSession = GetRSession();
-
-                REvaluationResult result;
-                using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                    result = await evaluator.EvaluateAsync(expression);
-                }
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                    VsAppShell.Current.DispatchOnUIThread(() => OnError(result.ToString()));
+                REvaluationResult result = await EvaluateAsyncAsync(expression);
+                if (result.ParseStatus == RParseStatus.OK && result.Error == null) {
+                    OnSuccess(false);
                 } else {
-                    VsAppShell.Current.DispatchOnUIThread(() => OnSuccess(false));
+                    OnError(result.ToString());
                 }
             } catch (Exception ex) {
-                VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
+                OnError(ex.Message);
             }
         }
 
@@ -185,15 +171,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             try {
                 REvaluationResult result = await CallIconvListAsync();
 
-                Debug.Assert(!TaskUtilities.IsOnBackgroundThread());
-
-                if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                    OnError(result.ToString());
-                } else {
+                if (result.ParseStatus == RParseStatus.OK && result.Error == null) {
                     var jarray = result.JsonResult as JArray;
                     if (jarray != null) {
                         PopulateEncoding(jarray);
                     }
+                } else {
+                    OnError(result.ToString());
                 }
             } catch (Exception ex) {
                 OnError(ex.Message);
@@ -222,6 +206,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             REvaluationResult result;
             using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
                 result = await evaluator.EvaluateAsync("rtvs:::toJSON(as.list(iconvlist()))", REvaluationKind.Json);
+            }
+
+            return result;
+        }
+
+        private async Task<REvaluationResult> EvaluateAsyncAsync(string expression) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            IRSession rSession = GetRSession();
+            REvaluationResult result;
+            using (var evaluator = await rSession.BeginEvaluationAsync()) {
+                result = await evaluator.EvaluateAsync(expression);
             }
 
             return result;
