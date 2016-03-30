@@ -106,8 +106,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 if (document == null) {
                     return 0;
                 }
-                var et = document.EditorTree;
-                ast = et.GetCurrentRootOrPreviousIfNotReady();
+                ast = document.EditorTree.AstRoot;
             }
 
             // The challenge here is to find scope to base the indent on.

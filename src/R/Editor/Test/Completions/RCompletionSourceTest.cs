@@ -13,6 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
@@ -73,67 +74,28 @@ namespace Microsoft.R.Editor.Test.Completions {
                 .Which.Description.Should().Be("Approximate String Distances");
         }
 
-        [Test]
-        public void Comments01() {
+        [CompositeTest]
+        [InlineData("#No", 3)]
+        [InlineData("\"i \"", 2)]
+        [InlineData("'i '", 2)]
+        [InlineData("iii ", 2)]
+        [InlineData("`i `", 2)]
+        [InlineData("2. ", 2)]
+        public void SuppressedCompletion(string content, int position) {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("#No", 3, completionSets);
+            GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().BeEmpty();
         }
 
         [Test]
-        public void Comments02() {
+        public void BeforeComment() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().NotBeEmpty();
-        }
-
-        [Test]
-        public void InsideString01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("\"i \"", 2, completionSets);
-
-            completionSets.Should().ContainSingle()
-                .Which.Completions.Should().BeEmpty();
-        }
-
-        [Test]
-        public void InsideString02() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("'i '", 2, completionSets);
-
-            completionSets.Should().ContainSingle()
-                .Which.Completions.Should().BeEmpty();
-        }
-
-        [Test]
-        public void InsideIdentifier01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("iii ", 2, completionSets);
-
-            completionSets.Should().ContainSingle()
-                .Which.Completions.Should().BeEmpty();
-        }
-
-        [Test]
-        public void InsideIdentifier02() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("`i `", 2, completionSets);
-
-            completionSets.Should().ContainSingle()
-                .Which.Completions.Should().BeEmpty();
-        }
-
-        [Test]
-        public void InNumber() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("2. ", 2, completionSets);
-
-            completionSets.Should().ContainSingle()
-                .Which.Completions.Should().BeEmpty();
         }
 
         [Test]
