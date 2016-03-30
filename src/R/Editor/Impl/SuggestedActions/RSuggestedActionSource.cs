@@ -19,7 +19,6 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SuggestedActions {
     internal sealed class RSuggestedActionSource : ISuggestedActionsSource {
-        private static readonly Guid _treeUser = new Guid("{62D552E2-5895-4388-ACD7-E76764E0A27A}");
         private IEnumerable<IRSuggestedActionProvider> _suggestedActionProviders;
         private ITextBuffer _textBuffer;
         private ITextView _textView;
@@ -45,13 +44,14 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
-            int caretPosition = e.NewPosition.BufferPosition;
-            SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
-            if (bufferPoint.HasValue && _document != null && _document.EditorTree != null) {
-                var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(e.NewPosition.BufferPosition);
-                if (node != _lastNode) {
-                    _lastNode = node;
-                    SuggestedActionsChanged?.Invoke(this, new EventArgs());
+            if (_document != null && _document.EditorTree != null) {
+                SnapshotPoint? bufferPoint = REditorDocument.MapCaretPositionFromView(_textView);
+                if (bufferPoint.HasValue) {
+                    var node = _document.EditorTree.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(bufferPoint.Value);
+                    if (node != _lastNode) {
+                        _lastNode = node;
+                        SuggestedActionsChanged?.Invoke(this, new EventArgs());
+                    }
                 }
             }
         }
