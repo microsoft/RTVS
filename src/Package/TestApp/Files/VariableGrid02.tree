@@ -22,7 +22,6 @@
     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
     <VisualTreeProperty Name="Name" Value="" />
-    <VisualTreeProperty Name="Text" Value="" />
   </Properties>
   <Children>
     <VisualTreeObject>
@@ -46,7 +45,6 @@
         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
         <VisualTreeProperty Name="Name" Value="" />
-        <VisualTreeProperty Name="Text" Value="" />
       </Properties>
       <Children>
         <VisualTreeObject>
@@ -71,7 +69,6 @@
             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
             <VisualTreeProperty Name="Name" Value="" />
-            <VisualTreeProperty Name="Text" Value="" />
           </Properties>
           <Children>
             <VisualTreeObject>
@@ -94,7 +91,6 @@
                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                 <VisualTreeProperty Name="Name" Value="" />
-                <VisualTreeProperty Name="Text" Value="" />
               </Properties>
               <Children>
                 <VisualTreeObject>
@@ -119,7 +115,6 @@
                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                     <VisualTreeProperty Name="Name" Value="" />
-                    <VisualTreeProperty Name="Text" Value="" />
                   </Properties>
                   <Children />
                 </VisualTreeObject>
@@ -146,7 +141,6 @@
                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                     <VisualTreeProperty Name="Name" Value="" />
-                    <VisualTreeProperty Name="Text" Value="" />
                   </Properties>
                   <Children>
                     <VisualTreeObject>
@@ -170,7 +164,6 @@
                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                         <VisualTreeProperty Name="Name" Value="" />
-                        <VisualTreeProperty Name="Text" Value="" />
                       </Properties>
                       <Children>
                         <VisualTreeObject>
@@ -195,7 +188,6 @@
                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                             <VisualTreeProperty Name="Name" Value="" />
-                            <VisualTreeProperty Name="Text" Value="" />
                           </Properties>
                           <Children>
                             <VisualTreeObject>
@@ -218,7 +210,6 @@
                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                 <VisualTreeProperty Name="Name" Value="" />
-                                <VisualTreeProperty Name="Text" Value="" />
                               </Properties>
                               <Children>
                                 <VisualTreeObject>
@@ -242,7 +233,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -265,7 +255,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -291,7 +280,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -306,7 +294,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -322,7 +309,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -338,7 +324,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -354,7 +339,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -370,7 +354,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -386,7 +369,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -412,7 +394,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children />
                                 </VisualTreeObject>
@@ -436,7 +417,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -451,7 +431,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -467,7 +446,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -483,7 +461,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -509,7 +486,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -524,7 +500,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -540,7 +515,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -556,7 +530,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -572,7 +545,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -588,7 +560,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -604,7 +575,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -620,7 +590,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -636,7 +605,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -652,7 +620,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -668,7 +635,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -684,7 +650,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children />
                                     </VisualTreeObject>
@@ -711,7 +676,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -734,7 +698,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children>
                                         <VisualTreeObject>
@@ -758,7 +721,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children />
                                         </VisualTreeObject>
@@ -785,7 +747,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -809,7 +770,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -834,7 +794,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children>
                                                     <VisualTreeObject>
@@ -858,7 +817,6 @@
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                         <VisualTreeProperty Name="Name" Value="" />
-                                                        <VisualTreeProperty Name="Text" Value="" />
                                                       </Properties>
                                                       <Children />
                                                     </VisualTreeObject>
@@ -888,7 +846,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -914,7 +871,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -937,7 +893,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -966,7 +921,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -989,7 +943,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -1016,7 +969,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1039,7 +991,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -1070,7 +1021,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -1094,7 +1044,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1119,7 +1068,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children>
                                                     <VisualTreeObject>
@@ -1143,7 +1091,6 @@
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                         <VisualTreeProperty Name="Name" Value="" />
-                                                        <VisualTreeProperty Name="Text" Value="" />
                                                       </Properties>
                                                       <Children />
                                                     </VisualTreeObject>
@@ -1177,7 +1124,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children />
                                 </VisualTreeObject>
@@ -1202,7 +1148,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children>
                                     <VisualTreeObject>
@@ -1225,7 +1170,6 @@
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                         <VisualTreeProperty Name="Name" Value="" />
-                                        <VisualTreeProperty Name="Text" Value="" />
                                       </Properties>
                                       <Children>
                                         <VisualTreeObject>
@@ -1249,7 +1193,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children />
                                         </VisualTreeObject>
@@ -1276,7 +1219,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -1300,7 +1242,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1325,7 +1266,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children>
                                                     <VisualTreeObject>
@@ -1349,7 +1289,6 @@
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                         <VisualTreeProperty Name="Name" Value="" />
-                                                        <VisualTreeProperty Name="Text" Value="" />
                                                       </Properties>
                                                       <Children />
                                                     </VisualTreeObject>
@@ -1379,7 +1318,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -1405,7 +1343,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1428,7 +1365,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -1457,7 +1393,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1480,7 +1415,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -1507,7 +1441,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1530,7 +1463,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children />
                                                 </VisualTreeObject>
@@ -1561,7 +1493,6 @@
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                             <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                             <VisualTreeProperty Name="Name" Value="" />
-                                            <VisualTreeProperty Name="Text" Value="" />
                                           </Properties>
                                           <Children>
                                             <VisualTreeObject>
@@ -1585,7 +1516,6 @@
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                 <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                 <VisualTreeProperty Name="Name" Value="" />
-                                                <VisualTreeProperty Name="Text" Value="" />
                                               </Properties>
                                               <Children>
                                                 <VisualTreeObject>
@@ -1610,7 +1540,6 @@
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                     <VisualTreeProperty Name="Name" Value="" />
-                                                    <VisualTreeProperty Name="Text" Value="" />
                                                   </Properties>
                                                   <Children>
                                                     <VisualTreeObject>
@@ -1634,7 +1563,6 @@
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                                         <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                                         <VisualTreeProperty Name="Name" Value="" />
-                                                        <VisualTreeProperty Name="Text" Value="" />
                                                       </Properties>
                                                       <Children />
                                                     </VisualTreeObject>
@@ -1668,7 +1596,6 @@
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
                                     <VisualTreeProperty Name="Name" Value="" />
-                                    <VisualTreeProperty Name="Text" Value="" />
                                   </Properties>
                                   <Children />
                                 </VisualTreeObject>
