@@ -22,6 +22,7 @@ using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -70,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(),
+                new ImportDataSetTextFileCommand(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession),
                 new ImportDataSetUrlCommand(),
 
                 new InstallPackagesCommand(),
