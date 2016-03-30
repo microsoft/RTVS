@@ -204,8 +204,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             IRSession rSession = GetRSession();
             REvaluationResult result;
-            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
-                result = await evaluator.EvaluateAsync("rtvs:::toJSON(as.list(iconvlist()))", REvaluationKind.Json);
+            using (var evaluator = await rSession.BeginEvaluationAsync()) {
+                result = await evaluator.EvaluateAsync("as.list(iconvlist())", REvaluationKind.Json);
             }
 
             return result;
@@ -217,7 +217,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             IRSession rSession = GetRSession();
             REvaluationResult result;
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                result = await evaluator.EvaluateAsync(expression);
+                result = await evaluator.EvaluateAsync(expression, REvaluationKind.Mutating);
             }
 
             return result;
