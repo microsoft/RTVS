@@ -26,11 +26,10 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(new REvaluationResult());
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
-            _eval = new RSessionEvaluationMock(isMutating);
-
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+            _eval = new RSessionEvaluationMock();
             BeforeRequest?.Invoke(this, new RRequestEventArgs(_eval.Contexts, Prompt, 4096, true));
-            if (isMutating) {
+            if (_eval.IsMutating) {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
             return Task.FromResult(_eval);

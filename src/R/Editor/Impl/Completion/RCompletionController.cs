@@ -408,7 +408,7 @@ namespace Microsoft.R.Editor.Completion {
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
-                using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
+                using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
                     REvaluationResult result = await eval.EvaluateAsync(expression, REvaluationKind.Normal);
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&

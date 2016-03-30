@@ -114,12 +114,12 @@ namespace Microsoft.R.Host.Client.Session {
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
         }
 
-        public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             if (!_isHostRunning) {
                 return CanceledBeginEvaluationTask;
             }
 
-            var source = new RSessionEvaluationSource(isMutating, cancellationToken);
+            var source = new RSessionEvaluationSource(cancellationToken);
             _pendingEvaluationSources.Post(source);
 
             return _isHostRunning ? source.Task : CanceledBeginEvaluationTask;
@@ -242,7 +242,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
-            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(true, CancellationToken.None);
+            var afterHostStartedEvaluationSource = new RSessionEvaluationSource(CancellationToken.None);
             _pendingEvaluationSources.Post(afterHostStartedEvaluationSource);
             AfterHostStarted(afterHostStartedEvaluationSource, startupInfo).DoNotWait();
         }
@@ -403,8 +403,7 @@ namespace Microsoft.R.Host.Client.Session {
                     }
 
                     var evaluationSource = await _pendingEvaluationSources.ReceiveAsync(ct);
-                    mutated |= evaluationSource.IsMutating;
-                    await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
+                    mutated |= await evaluationSource.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                 } catch (OperationCanceledException) {
                     return;
                 }
@@ -417,8 +416,7 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 RSessionEvaluationSource source;
                 while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                    mutated |= source.IsMutating;
-                    await source.BeginEvaluationAsync(contexts, _host, ct);
+                    mutated |= await source.BeginEvaluationAsync(contexts, _host, ct);
                 }
             } catch (OperationCanceledException) {
                 // Host is being shut down, so there's no point in raising the event anymore.

@@ -13,16 +13,15 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             }
         }
 
-        public bool IsMutating { get; }
-
-        public RSessionEvaluationMock(bool isMutating) {
-            IsMutating = isMutating;
-        }
+        public bool IsMutating { get; private set; }
 
         public void Dispose() {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
+            if (kind.HasFlag(REvaluationKind.Mutating)) {
+                IsMutating = true;
+            }
             return Task.FromResult(new REvaluationResult());
         }
     }

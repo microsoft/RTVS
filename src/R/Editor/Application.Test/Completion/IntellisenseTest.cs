@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     rSession.Should().NotBeNull();
 
                     using (var eval = rSession.BeginEvaluationAsync().Result) {
-                        result = eval.EvaluateAsync("library('tools')", REvaluationKind.Normal).Result;
+                        result = eval.EvaluateAsync("library('tools')", REvaluationKind.Mutating).Result;
                     }
 
                     script.DoIdle(1000);

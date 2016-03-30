@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             string columns = gridRange?.Columns.ToRString();
 
             REvaluationResult? result = null;
-            using (var evaluator = await rSession.BeginEvaluationAsync(false)) {
+            using (var evaluator = await rSession.BeginEvaluationAsync()) {
                 result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
                 if (result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {

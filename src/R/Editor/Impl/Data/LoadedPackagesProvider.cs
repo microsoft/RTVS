@@ -22,7 +22,7 @@ namespace Microsoft.R.Editor.Data {
         }
 
         private async Task UpdateListOfLoadedPackagesAsync() {
-            using (var e = await Session.BeginEvaluationAsync(isMutating: false)) {
+            using (var e = await Session.BeginEvaluationAsync()) {
                 REvaluationResult result = await e.EvaluateAsync("paste0(.packages(), collapse = ' ')", REvaluationKind.Normal);
                 if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
                     ParseSearchResponse(result.StringResult);
