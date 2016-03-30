@@ -19,7 +19,9 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task<bool> BeginEvaluationAsync(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
             var evaluation = new RSessionEvaluation(contexts, evaluator, ct);
-            await (_tcs.TrySetResult(evaluation) ? evaluation.Task : System.Threading.Tasks.Task.CompletedTask);
+            if (_tcs.TrySetResult(evaluation)) {
+                await evaluation.Task;
+            }
             return evaluation.IsMutating;
         }
 

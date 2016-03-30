@@ -9,7 +9,7 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
         public static Task OptionsSetWidth(this IRExpressionEvaluator evaluation, int width) {
-            return evaluation.EvaluateAsync($"options(width=as.integer({width}))\n", REvaluationKind.Normal);
+            return evaluation.EvaluateAsync($"options(width=as.integer({width}))\n", REvaluationKind.Mutating);
         }
 
         public static async Task<string> GetRUserDirectory(this IRExpressionEvaluator evaluation) {
@@ -89,7 +89,7 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task<REvaluationResult> InstallPackage(this IRExpressionEvaluator evaluation, string packageName) {
             var script = string.Format("install.packages(\"{0}\")", packageName);
-            return evaluation.EvaluateAsync(script, REvaluationKind.Json);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
