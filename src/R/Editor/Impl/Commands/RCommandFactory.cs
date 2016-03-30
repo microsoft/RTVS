@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Comments;
+using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Selection;
@@ -30,7 +31,8 @@ namespace Microsoft.R.Editor.Commands {
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
                 new GoToDefinitionCommand(textView, textBuffer),
-                new PeekDefinitionCommand(textView, textBuffer)
+                new PeekDefinitionCommand(textView, textBuffer),
+                new InsertRoxygenBlockCommand(textView, textBuffer)
             };
         }
     }

@@ -3,12 +3,15 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
+using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Guid("3F6855E6-E2DB-46F2-9820-EDC794FE8AFE")]
-    public class VariableGridWindowPane : ToolWindowPane {
+    internal sealed class VariableGridWindowPane : RToolWindowPane {
         private VariableGridHost _gridHost;
 
         public VariableGridWindowPane() {
@@ -16,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Content = _gridHost = new VariableGridHost();
 
             BitmapImageMoniker = KnownMonikers.VariableProperty;
+            VsAppShell.Current.DispatchOnUIThread(() => ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, RGuidList.RCmdSetGuid));
         }
 
         internal void SetEvaluation(EvaluationWrapper evaluation) {

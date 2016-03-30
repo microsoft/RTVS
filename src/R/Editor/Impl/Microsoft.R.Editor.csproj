@@ -119,6 +119,7 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
+    <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />
     <Compile Include="Documentation\RoxygenBlock.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\DocumentFactory.cs" />

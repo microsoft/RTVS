@@ -6,7 +6,6 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.History.Implementation;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.PlatformUI;

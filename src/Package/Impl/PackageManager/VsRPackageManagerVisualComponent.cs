@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.View;
+using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]

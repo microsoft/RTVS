@@ -4,11 +4,11 @@
 using System.Runtime.InteropServices;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Guid("99d2ea62-72f2-33be-afc8-b8ce6e43b5d0")]
-    public class VariableWindowPane : ToolWindowPane {
+    internal sealed class VariableWindowPane : RToolWindowPane {
         public VariableWindowPane() {
             Caption = Resources.VariableWindowCaption;
             Content = new VariableView(RToolsSettings.Current);

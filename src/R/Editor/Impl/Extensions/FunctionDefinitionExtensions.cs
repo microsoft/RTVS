@@ -56,7 +56,7 @@ namespace Microsoft.R.Editor {
             // First determine if position is right before the function declaration
             var snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
-            var line = FindFirstNonEmptyLine(snapshot, currentLine.LineNumber + 1);
+            var line = FindFirstNonEmptyLine(snapshot, currentLine.LineNumber);
             if (line != null) {
                 var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(line.Start + line.Length / 2);
                 if (exp != null) {

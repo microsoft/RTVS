@@ -87,6 +87,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new ShowHistoryWindowCommand(),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
+                new GotoSolutionExplorerCommand(),
 
                 // Plot commands
                 new ExportPlotAsImageCommand(plotHistory),
