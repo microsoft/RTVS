@@ -87,5 +87,26 @@ namespace Microsoft.R.Debugger.Test {
                 actualJson.Should().Be(json);
             }
         }
+
+        [CompositeTest]
+        [Category.R.Debugger]
+        [InlineData("NaN")]
+        [InlineData("+Inf")]
+        [InlineData("-Inf")]
+        [InlineData("1i")]
+        [InlineData("pairlist()")]
+        [InlineData("function() {}")]
+        [InlineData("quote(symbol)")]
+        [InlineData("quote(1 + 2)")]
+        [InlineData("c(1, 2)")]
+        [InlineData("structure(list(1, 2), names = c('x', NA))")]
+        [InlineData("list(x = 1, x = 2)")]
+        [InlineData("as.environment(list(x = 1, x = 2))")]
+        public async Task SerializeError(string expr) {
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                var res = await eval.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
+                res.Error.Should().NotBeNullOrEmpty();
+            }
+        }
     }
 }
