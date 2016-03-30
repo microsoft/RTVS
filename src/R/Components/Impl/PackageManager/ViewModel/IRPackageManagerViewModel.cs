@@ -13,5 +13,6 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         void SwitchToInstalledPackages();
         void SwitchToLoadedPackages();
         void ReloadItems();
+        void SelectPackage(IRPackageViewModel package);
     }
 }

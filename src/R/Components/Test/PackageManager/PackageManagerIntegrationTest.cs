@@ -77,9 +77,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task AdditionalFieldsCranRepo() {
             var all = await _workflow.Packages.GetAvailablePackagesAsync();
-            var actual = all.SingleOrDefault(pkg => pkg.Package == "ggplot2");
+            var repository = all.FirstOrDefault(pkg => pkg.Package == "ggplot2")?.Repository;
 
-            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+            var actual = await _workflow.Packages.GetAdditionalPackageInfoAsync("ggplot2", repository);
 
             // This additional data is retrieved from a live web site.  When that data changes in the future,
             // this test may start failing.  Update the assertions below as needed, or relax them.
@@ -110,11 +110,11 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var all = await _workflow.Packages.GetAvailablePackagesAsync();
             var actual = all.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
 
-            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+            await _workflow.Packages.AddAdditionalPackageInfoAsync(actual);
 
             var expected = TestPackages.RtvsLib1Additional.Clone();
             expected.Built = null;
-            expected.Repository = string.Format("file:///{0}/src/contrib", _repo1Path.ToRPath());
+            expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
 
             actual.ShouldBeEquivalentTo(expected);
         }
@@ -177,17 +177,17 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
-            var code = string.Format("options(repos=list(LOCAL=\"file:///{0}\"))", localRepoPath.ToRPath());
+            var code = $"options(repos=list(LOCAL=\"file:///{localRepoPath.ToRPath()}\"))";
             var evalResult = await eval.EvaluateAsync(code);
         }
 
         private async Task SetLocalLibAsync(IRSessionEvaluation eval, string libPath) {
-            var code = string.Format(".libPaths(\"{0}\")", libPath.ToRPath());
+            var code = $".libPaths(\"{libPath.ToRPath()}\")";
             var evalResult = await eval.EvaluateAsync(code);
         }
 
         private async Task InstallPackageAsync(IRSessionEvaluation eval, string packageName, string libPath) {
-            var code = string.Format("install.packages(\"{0}\", verbose=FALSE, quiet=TRUE)", packageName);
+            var code = $"install.packages(\"{packageName}\", verbose=FALSE, quiet=TRUE)";
             var evalResult = await eval.EvaluateAsync(code);
             WaitForPackageInstalled(libPath, packageName);
         }

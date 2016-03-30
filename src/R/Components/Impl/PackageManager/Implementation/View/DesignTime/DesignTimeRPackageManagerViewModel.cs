@@ -30,5 +30,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public void ReloadItems() {
             
         }
+
+        public void SelectPackage(IRPackageViewModel package) {
+            
+        }
     }
 }

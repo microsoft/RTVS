@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
-             xmlns:packageManager="clr-namespace:Microsoft.R.Components.PackageManager"
              xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
@@ -133,7 +132,7 @@
                             </TextBlock>
 
                             <!-- update button -->
-                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Margin="0,5,0,0" Click="ButtonUpdate_Click"
+                            <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Click="ButtonUpdate_Click"
                                     Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
                                     <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
@@ -229,17 +228,7 @@
             </Grid>
         </Border>
         <Grid DockPanel.Dock="Bottom" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}">
-            <!--<view:LoadingStatusBar x:Name="LoadingStatusBar" Style="{StaticResource LoadingStatusBarStyle}" Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
-                <view:LoadingStatusBar.Visibility>
-                    <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">
-                        <Binding Path="IsLoading" />
-                    </MultiBinding>
-                </view:LoadingStatusBar.Visibility>
-            </view:LoadingStatusBar>-->
             <Grid Height="22" VerticalAlignment="Top" Panel.ZIndex="1">
-                <!--
-                <TextBlock FontStyle="Italic" HorizontalAlignment="Center" Text="{x:Static components:Resources.Text_NoPackagesFound}" Visibility="Collapsed" />
-                -->
                 <TextBlock HorizontalAlignment="Center" Text="{x:Static components:Resources.Ready}" Visibility="Collapsed" />
                 <Grid HorizontalAlignment="Center" Height="22" Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                     <Grid.ColumnDefinitions>
@@ -258,7 +247,7 @@
             <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
                      VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
-                     PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" Loaded="List_Loaded" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
+                     PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
                      Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
                      ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource PackageInfoTemplate}">
                 <!-- set the template to disable the background change when the IsEnabled is false. -->

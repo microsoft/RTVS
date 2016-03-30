@@ -103,7 +103,7 @@
 
     <DrawingBrush x:Key="IconUpdateAvailableIndicator">
         <DrawingBrush.RelativeTransform>
-            <RotateTransform Angle="-90" />
+            <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5" />
         </DrawingBrush.RelativeTransform>
         <DrawingBrush.Drawing>
             <DrawingGroup>

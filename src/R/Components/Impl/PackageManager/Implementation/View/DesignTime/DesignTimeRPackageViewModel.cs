@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
@@ -26,6 +27,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             IsInstalled = true;
             IsUpdateAvailable = true;
             IsSelected = true;
+            HasDetails = true;
         }
 
         public DesignTimeRPackageViewModel(string name
@@ -62,9 +64,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public string Depends { get; }
         public string Imports { get; }
         public string Suggests { get; }
-        public bool IsInstalled { get; }
+        public bool IsInstalled { get; set; }
 
         public bool IsUpdateAvailable { get; }
+        public bool HasDetails { get; }
         public bool IsSelected { get; set; }
+        public void AddDetails(RPackage package, bool isInstalled) {}
     }
 }

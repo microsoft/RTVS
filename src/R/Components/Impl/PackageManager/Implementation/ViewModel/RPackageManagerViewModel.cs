@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
@@ -32,7 +33,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public ReadOnlyObservableCollection<object> Items { get; }
-        public IRPackageViewModel SelectedPackage { get; }
+
+        public IRPackageViewModel SelectedPackage {
+            get { return _selectedPackage; }
+            private set { SetProperty(ref _selectedPackage, value); }
+        }
 
         public bool IsLoading {
             get { return _isLoading; }
@@ -41,6 +46,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private SelectedTab _selectedTab;
         private bool _isLoading;
+        private IRPackageViewModel _selectedPackage;
 
         public void SwitchToAvailablePackages() {
             _coreShell.AssertIsOnMainThread();
@@ -89,7 +95,34 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
+        public void SelectPackage(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+            if (package == _selectedPackage) {
+                return;
+            }
+
+            SelectedPackage = package;
+            if (package == null) {
+                return;
+            }
+
+            if (!package.HasDetails) {
+                DispatchOnMainThreadAsync(() => AddPackageDetailsAsync(package));
+            }
+        }
+
+        private async Task AddPackageDetailsAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+            var details = await GetAdditionalPackageInfoAsync(package);
+            package.AddDetails(details, false);
+        }
+
+        private async Task<RPackage> GetAdditionalPackageInfoAsync(IRPackageViewModel package) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            return await _packageManager.GetAdditionalPackageInfoAsync(package.Name, package.Repository);
+        }
+
         private async Task SwitchToAvailablePackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             await EnsureInstalledAndAvailablePackagesLoadedAsync();
@@ -133,13 +166,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             foreach (var installedPackage in installedPackages) {
                 RPackageViewModel vmPackage;
                 if (vmAvailablePackages.TryGetValue(installedPackage.Package, out vmPackage)) {
-                    vmPackage.AddDataFromInstalledPackage(installedPackage);
+                    vmPackage.AddDetails(installedPackage, true);
+                    vmInstalledPackages.Add(vmPackage);
                 } else {
                     vmInstalledPackages.Add(RPackageViewModel.CreateInstalled(installedPackage));
                 }
             }
 
-            _installedPackages = vmInstalledPackages;
+            _installedPackages = vmInstalledPackages.OrderBy(p => p.Name).ToList();
             _availablePackages = vmAvailablePackages.Values.ToList<IRPackageViewModel>();
         }
 

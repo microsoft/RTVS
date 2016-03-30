@@ -133,6 +133,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Loading details....
+        /// </summary>
+        public static string LoadingDetails {
+            get {
+                return ResourceManager.GetString("LoadingDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {

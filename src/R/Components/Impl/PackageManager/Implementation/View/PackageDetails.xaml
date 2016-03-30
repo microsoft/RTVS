@@ -55,28 +55,34 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- row 0 -->
-                <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" Text="{x:Static local:Resources.Package_InstalledVersion}"
+                <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,4,0,0" FontWeight="Bold" Text="{x:Static local:Resources.Package_InstalledVersion}"
                            Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
-                <TextBlock Grid.Row="0" Grid.Column="2" MinHeight="22" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Path=InstalledVersion}"
+                <TextBlock Grid.Row="0" Grid.Column="2" Margin="4,4,0,0" Text="{Binding Path=InstalledVersion}"
                            Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
                 <Button Grid.Row="0" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonUninstall_Click"
-                        Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}"
+                        Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                         Content="{x:Static local:Resources.Uninstall}" />
 
                 <!-- Row 2 -->
-                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" VerticalAlignment="Center" Text="{x:Static local:Resources.Package_LatestVersion}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,4,0,0" Text="{x:Static local:Resources.Package_LatestVersion}" />
 
-                <TextBlock Grid.Row="2" Grid.Column="2" MinHeight="22" VerticalAlignment="Center" Margin="4,0,0,0" Text="{Binding Path=LatestVersion}"
+                <TextBlock Grid.Row="2" Grid.Column="2" Margin="4,4,0,0" Text="{Binding Path=LatestVersion}"
                            Visibility="{Binding Path=LatestVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
                 
                 <!-- install button and update button. They are in fact the same button. Which one is displayed depends on whether InstalledVersion is null. -->
                 <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Install}"
-                        Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsVisible}}" />
+                        Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}" />
 
-                <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}"
-                        Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" />
+                <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}">
+                    <Button.Visibility>
+                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}">
+                            <Binding Path="IsUpdateAvailable" />
+                            <Binding Path="IsInstalled" />
+                        </MultiBinding>
+                    </Button.Visibility>
+                </Button>
             </Grid>
 
             <!-- options -->
@@ -85,8 +91,18 @@
                 <wpf:OptionsControl x:Name="_optionsControl" Margin="0,12,0,16" DataContext="{Binding}" />
             </Border>
             -->
+            
+            <Grid HorizontalAlignment="Center" Height="22" Grid.Row="4" Margin="0,12,0,0"
+                  Visibility="{Binding Path=HasDetails, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{x:Static local:Resources.LoadingDetails}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Grid>
 
-            <Grid Grid.Row="4" Margin="0,12,0,0">
+            <Grid Grid.Row="4" Margin="0,12,0,0" Visibility="{Binding Path=HasDetails, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -115,12 +131,6 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-
-                    <!-- version -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,8,0,0" FontWeight="Bold" Text="{x:Static local:Resources.Package_InstalledVersion}"
-                               Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="0" Grid.Column="1" Margin="8,8,0,0" TextWrapping="Wrap" Text="{Binding Path=InstalledVersion}"
-                               Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
                     <!-- Author(s) -->
                     <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" FontWeight="Bold" Text="{x:Static local:Resources.Package_Authors}"
