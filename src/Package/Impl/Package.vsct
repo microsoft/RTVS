@@ -189,10 +189,10 @@
       <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0810">
+      <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0850">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0820">
+      <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0880">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
@@ -1358,7 +1358,7 @@
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0700">
+    <CommandPlacement guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0810">
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 

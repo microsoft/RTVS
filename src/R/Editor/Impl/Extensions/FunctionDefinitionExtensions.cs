@@ -53,27 +53,8 @@ namespace Microsoft.R.Editor {
 
         public static IFunctionDefinition FindFunctionDefinition(ITextBuffer textBuffer, AstRoot ast, int position, out Variable v) {
             v = null;
-            // First determine if position is right before the function declaration
-            var snapshot = textBuffer.CurrentSnapshot;
-            ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
-            var line = FindFirstNonEmptyLine(snapshot, currentLine.LineNumber);
-            if (line != null) {
-                var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(line.Start + line.Length / 2);
-                if (exp != null) {
-                    return exp.GetVariableOrFunctionDefinition(out v);
-                }
-            }
-            return null;
-        }
-
-        private static ITextSnapshotLine FindFirstNonEmptyLine(ITextSnapshot snapshot, int lineNumber) {
-            for (int i = lineNumber; i < snapshot.LineCount; i++) {
-                var line = snapshot.GetLineFromLineNumber(i);
-                if (!string.IsNullOrWhiteSpace(line.GetText())) {
-                    return line;
-                }
-            }
-            return null;
+            var exp = ast.GetNodeOfTypeFromPosition<IExpressionStatement>(position);
+            return exp?.GetVariableOrFunctionDefinition(out v);
         }
     }
 }

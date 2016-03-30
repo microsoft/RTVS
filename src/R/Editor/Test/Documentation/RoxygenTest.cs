@@ -24,11 +24,11 @@ namespace Microsoft.R.Editor.Test.Formatting {
             tb = new TextBufferMock("x <- 1\r\ny <- 2", RContentTypeDefinition.ContentType);
             ast = RParser.Parse(tb.CurrentSnapshot.GetText());
             RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeFalse();
-            RoxygenBlock.TryInsertBlock(tb, ast, 7).Should().BeFalse();
+            RoxygenBlock.TryInsertBlock(tb, ast, 8).Should().BeFalse();
 
             tb = new TextBufferMock("##\r\nx <- function(a) { }", RContentTypeDefinition.ContentType);
             ast = RParser.Parse(tb.CurrentSnapshot.GetText());
-            RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeTrue();
+            RoxygenBlock.TryInsertBlock(tb, ast, 4).Should().BeTrue();
             string actual = tb.CurrentSnapshot.GetText();
             actual.Should().Be(
 @"#' Title
@@ -50,7 +50,7 @@ x <- function(a) { }");
         public void InsertRoxygen02() {
             var tb = new TextBufferMock("##\r\nx <- function() { }", RContentTypeDefinition.ContentType);
             var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
-            RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeTrue();
+            RoxygenBlock.TryInsertBlock(tb, ast, 4).Should().BeTrue();
             string actual = tb.CurrentSnapshot.GetText();
             actual.Should().Be(
 @"#' Title
@@ -66,7 +66,7 @@ x <- function() { }");
         public void InsertRoxygen03() {
             var tb = new TextBufferMock("##\r\nx <-\r\n function(a=1, b, c=FALSE) { }", RContentTypeDefinition.ContentType);
             var ast = RParser.Parse(tb.CurrentSnapshot.GetText());
-            RoxygenBlock.TryInsertBlock(tb, ast, 0).Should().BeTrue();
+            RoxygenBlock.TryInsertBlock(tb, ast, 4).Should().BeTrue();
             string actual = tb.CurrentSnapshot.GetText();
             actual.Should().Be(
 @"#' Title

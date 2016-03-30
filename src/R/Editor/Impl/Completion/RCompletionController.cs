@@ -423,11 +423,14 @@ namespace Microsoft.R.Editor.Completion {
         private bool TryInsertRoxygenBlock() {
             SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
             if (point.HasValue) {
-                var line = _textBuffer.CurrentSnapshot.GetLineFromPosition(point.Value);
-                if (point.Value == line.End && line.GetText().EqualsOrdinal("##")) {
+                var snapshot = _textBuffer.CurrentSnapshot;
+                var line = snapshot.GetLineFromPosition(point.Value);
+
+                if (line.LineNumber < snapshot.LineCount - 1 && point.Value == line.End && line.GetText().EqualsOrdinal("##")) {
+                    var nextLine = snapshot.GetLineFromLineNumber(line.LineNumber + 1);
                     var document = REditorDocument.FromTextBuffer(_textBuffer);
                     document.EditorTree.EnsureTreeReady();
-                    return RoxygenBlock.TryInsertBlock(_textBuffer, document.EditorTree.AstRoot, point.Value);
+                    return RoxygenBlock.TryInsertBlock(_textBuffer, document.EditorTree.AstRoot, nextLine.Start);
                 }
             }
             return false;
