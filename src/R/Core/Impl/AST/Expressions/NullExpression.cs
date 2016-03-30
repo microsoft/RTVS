@@ -14,7 +14,7 @@ namespace Microsoft.R.Core.AST.Expressions {
     /// value in a function call: 'func(a=).
     /// </summary>
     [DebuggerDisplay("NullExpression [{Start}...{End})")]
-    public sealed class NullExpression : RValueNode<RObject>, IExpression {
+    public sealed class NullExpression : RValueNode, IExpression {
         #region IExpression
         public TokenNode OpenBrace { get; private set; }
         public IRValueNode Content { get; private set; }
@@ -22,7 +22,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         #endregion
 
         public NullExpression() {
-            NodeValue = RNull.Null;
+            Value = RNull.Null;
         }
 
         public override bool Parse(ParseContext context, IAstNode parent) {

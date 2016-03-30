@@ -11,7 +11,7 @@ namespace Microsoft.R.Core.AST.Values {
     /// </summary>
     public sealed class NullValue : RValueTokenNode<RNull>, ILiteralNode {
         public override bool Parse(ParseContext context, IAstNode parent) {
-            NodeValue = new RNull();
+            Value = new RNull();
             return base.Parse(context, parent);
         }
     }

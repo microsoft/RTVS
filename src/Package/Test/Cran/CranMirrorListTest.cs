@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
                 eventCount++;
                 CranMirrorList.MirrorNames.Should().NotBeEmpty();
                 CranMirrorList.MirrorUrls.Should().NotBeEmpty();
-                CranMirrorList.UrlFromName("0 - Cloud[https]").Should().Be("https://cran.rstudio.com");
+                CranMirrorList.UrlFromName(null).Should().Be(null);
                 evt.Set();
             };
 

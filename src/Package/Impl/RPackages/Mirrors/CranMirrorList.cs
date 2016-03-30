@@ -40,12 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
 
         /// <summary>
         /// Given CRAN mirror name returns its URL.
-        /// If no mirror found, returns default URL
-        /// of RStudio CRAN redirector.
         /// </summary>
         public static string UrlFromName(string name) {
-            CranMirrorEntry e = _mirrors.FirstOrDefault((x) => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            return e != null ? e.Url : "https://cran.rstudio.com";
+            return _mirrors.FirstOrDefault((x) => x.Name.EqualsIgnoreCase(name))?.Url;
         }
 
         /// <summary>

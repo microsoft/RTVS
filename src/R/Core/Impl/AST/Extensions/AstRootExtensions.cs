@@ -1,0 +1,43 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.R.Core.AST.DataTypes;
+using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Scopes.Definitions;
+
+namespace Microsoft.R.Core.AST {
+    public static class AstRootExtensions {
+
+        /// <summary>
+        /// Enumerates function definitions applicable to the current scope.
+        /// Returns definitions that appear in the file up to the specified
+        /// position.
+        /// </summary>
+        public static IEnumerable<RFunction> GetFunctionsFromPosition(this AstRoot ast, int position) {
+            var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+            var variables = scope.GetApplicableVariables(position);
+            return variables.Where(x => x.Value is RFunction).Select(x => x.Value as RFunction);
+        }
+
+        /// <summary>
+        /// Locates function or variable definition given the item name and 
+        /// the position of the name in the text buffer.
+        /// </summary>
+        /// <returns>AST node that defines the specified item</returns>
+        public static IAstNode FindItemDefinition(this AstRoot ast, int position, string itemName) {
+            var scope = ast.GetNodeOfTypeFromPosition<IScope>(position);
+            var func = scope.FindFunctionDefinitionByName(itemName, position);
+            if (func != null) {
+                return func;
+            } else {
+                var v = scope.FindVariableDefinitionByName(itemName, position);
+                if (v != null) {
+                    return v;
+                }
+            }
+            return null;
+        }
+    }
+}

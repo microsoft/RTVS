@@ -18,7 +18,6 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    [Collection(CollectionNames.NonParallel)]
     public class OutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
 

@@ -114,6 +114,7 @@
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
+    <Compile Include="PackageManager\RPackageWebParserTest.cs" />
     <Compile Include="PackageManager\PackageManagerIntegrationTest.cs" />
     <Compile Include="PackageManager\TestPackages.cs" />
     <Compile Include="PackageManager\TestRepositories.cs" />
@@ -186,6 +187,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Packages\readme.txt" />
+    <Content Include="Files\Parser\ddpcr.html" />
+    <Content Include="Files\Parser\dplyr.html" />
+    <Content Include="Files\Repos\Repo1\web\packages\rtvslib1\index.html" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />

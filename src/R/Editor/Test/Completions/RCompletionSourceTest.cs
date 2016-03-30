@@ -9,7 +9,6 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -20,7 +19,7 @@ namespace Microsoft.R.Editor.Test.Completions {
     [Category.R.Completion]
     public class RCompletionSourceTest {
         [Test]
-        public void RCompletionSource_BaseFunctionsTest01() {
+        public void BaseFunctions01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("", 0, completionSets);
 
@@ -30,12 +29,11 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_BaseFunctionsTest02() {
+        public void BaseFunctions02() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
             completionSets.Should().ContainSingle();
-
             completionSets[0].Filter();
 
             completionSets[0].Completions[0].DisplayText.Should().Be("factanal");
@@ -43,19 +41,18 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_KeywordsTest01() {
+        public void Keywords01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
             completionSets.Should().ContainSingle();
-
             completionSets[0].Filter();
 
             completionSets[0].Completions.Should().Contain(c => c.DisplayText == "for");
         }
 
         [Test]
-        public void RCompletionSource_PackagesTest01() {
+        public void Packages01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("library(", 8, completionSets);
 
@@ -66,7 +63,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_SpecificPackageTest01() {
+        public void SpecificPackage01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("utils::", 7, completionSets);
 
@@ -77,7 +74,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_CommentsTest01() {
+        public void Comments01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 3, completionSets);
 
@@ -86,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_CommentsTest02() {
+        public void Comments02() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
@@ -95,7 +92,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_FunctionDefinitionTest01() {
+        public void FunctionDefinition01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("x <- function()", 14, completionSets);
 
@@ -104,7 +101,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_FunctionDefinitionTest02() {
+        public void FunctionDefinition02() {
             for (int i = 14; i <= 18; i++) {
                 List<CompletionSet> completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b)", i, completionSets);
@@ -115,7 +112,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_FunctionDefinitionTest03() {
+        public void FunctionDefinition03() {
             for (int i = 14; i <= 19; i++) {
                 List<CompletionSet> completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b = x+y)", i, completionSets);
@@ -134,32 +131,210 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [Test]
-        public void RCompletionSource_CaseSentivityTest() {
+        public void CaseSentivity() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("x <- T", 6, completionSets);
 
             completionSets.Should().ContainSingle();
-
             completionSets[0].Filter();
 
             completionSets[0].Completions.Should().NotBeEmpty()
                 .And.OnlyContain(c => c.DisplayText[0] == 'T');
         }
 
-        private void GetCompletions(string content, int position, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+        [Test]
+        public void UserVariables01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+aaa123 <- 1
+
+bbb123 <- 1
+
+";
+            GetCompletions(content, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 2, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 4, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+        }
+
+        [Test]
+        public void UserVariables02() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+{
+
+    aaa123 <- 1
+
+    bbb123 <- 1
+
+}
+";
+            GetCompletions(content, 2, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.NotContain(c => c.DisplayText == "aaa123")
+                .And.NotContain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 4, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.NotContain(c => c.DisplayText == "bbb123");
+
+            completionSets.Clear();
+            GetCompletions(content, 6, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaa123")
+                .And.Contain(c => c.DisplayText == "bbb123");
+        }
+
+        [Test]
+        public void UserFunctions01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            GetCompletions("aaaa <- function(a,b,c)\r\na", 25, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "aaaa");
+        }
+
+        [Test]
+        public void UserFunctions02() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+aaa123 <- function(a,b,c) { }
+while(TRUE) {
+aaa456 <- function() { }
+#
+aa
+}";
+            GetCompletions(content, content.IndexOf('#') + 4, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            var completions = completionSets[0].Completions;
+            completions.Should().NotBeEmpty();
+            completions.Should().Contain(c => c.DisplayText == "aaa123");
+            completions.Should().Contain(c => c.DisplayText == "aaa456");
+        }
+
+        [Test]
+        public void UserFunctions03() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content =
+@"
+aaa123 <- function(a,b,c) { }
+while(TRUE) {
+
+aa
+aaa456 <- function() { }
+
+aa
+}
+aaa789 <- function(a,b,c) { }
+";
+            GetCompletions(content, 4, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            var completions = completionSets[0].Completions;
+            completions.Should().NotBeEmpty();
+            completions.Should().Contain(c => c.DisplayText == "aaa123");
+            completions.Should().NotContain(c => c.DisplayText == "aaa456");
+            completions.Should().Contain(c => c.DisplayText == "aaa789");
+
+            completionSets.Clear();
+            GetCompletions(content, 7, 0, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completions = completionSets[0].Completions;
+            completions.Should().NotBeEmpty();
+            completions.Should().Contain(c => c.DisplayText == "aaa123");
+            completions.Should().Contain(c => c.DisplayText == "aaa456");
+            completions.Should().Contain(c => c.DisplayText == "aaa789");
+        }
+
+        [Test]
+        public void UserFunctionArguments01() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            string content =
+@"
+aaa <- function(a, b, c) { }
+aaa(a
+";
+            GetCompletions(content, 2, 5, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "a =");
+        }
+
+        private void GetCompletions(string content, int lineNumber, int column, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
+            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            GetCompletions(content, line.Start + column, completionSets, selectedRange);
+        }
+
+        private void GetCompletions(string content, int caretPosition, IList<CompletionSet> completionSets, ITextRange selectedRange = null) {
             AstRoot ast = RParser.Parse(content);
 
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            TextViewMock textView = new TextViewMock(textBuffer, position);
+            TextViewMock textView = new TextViewMock(textBuffer, caretPosition);
 
             if (selectedRange != null) {
                 textView.Selection.Select(new SnapshotSpan(textBuffer.CurrentSnapshot, selectedRange.Start, selectedRange.Length), false);
             }
 
-            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, position);
+            CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
             RCompletionSource completionSource = new RCompletionSource(textBuffer);
 
-            completionSource.PopulateCompletionList(position, completionSession, completionSets, ast);
+            completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }
     }
 }

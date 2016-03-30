@@ -27,7 +27,7 @@ namespace Microsoft.R.Core.AST.Values {
             }
 
             if (result.HasValue) {
-                NodeValue = new RLogical(result.Value);
+                Value = new RLogical(result.Value);
                 return base.Parse(context, parent);
             }
 

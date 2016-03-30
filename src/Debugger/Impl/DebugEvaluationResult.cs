@@ -237,6 +237,9 @@ namespace Microsoft.R.Debugger {
         }
 
         public DebugValueEvaluationResultRepresentation GetRepresentation(DebugValueRepresentationKind kind = DebugValueRepresentationKind.Normal) {
+            if (_reprObj == null) {
+                throw new InvalidOperationException("Evaluation result does not have an associated representation.");
+            }
             return new DebugValueEvaluationResultRepresentation(_reprObj, kind);
         }
 
@@ -255,9 +258,7 @@ namespace Microsoft.R.Debugger {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
             }
 
-            var call = Invariant($@"rtvs:::toJSON(rtvs:::describe_children(
-                {Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, 
-                {fields.ToRVector()}, {maxLength}, {reprMaxLength}))");
+            var call = Invariant($@"rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.SysFrame}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
             var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),

@@ -1293,6 +1293,10 @@
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_NAVIGATETOLOCATION" priority="0x0600">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+    </CommandPlacement>
+
     <!-- Formatting group -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_FORMATSELECTION" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextFormat"/>
@@ -1691,6 +1695,7 @@
       <IDSymbol name="projectNodeContextMenuGroup" value="0x2026"/>
       <IDSymbol name="projectAddItemContextMenuGroup" value="0x2027"/>
       <IDSymbol name="projectCmdPromptContextMenuGroup" value="0x2028"/>
+      <IDSymbol name="editorNavContextMenuGroup" value="0x2029"/>
 
       <!-- Debugger -->
       <IDSymbol name="icmdShowDotPrefixedVariables" value="1300" />

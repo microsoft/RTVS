@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using static System.FormattableString;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -72,17 +73,17 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())";
+            var script = @"rtvs:::graphics.ide.historyinfo()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> InstalledPackages(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::packages.installed())";
+            var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> AvailablePackages(this IRSessionEvaluation evaluation) {
-            var script = @"rtvs:::toJSON(rtvs:::packages.available())";
+            var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
@@ -106,21 +107,15 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script);
         }
 
-        public static Task<REvaluationResult> SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
-            var script =
-@"    local({
-        r <- getOption('repos')
-        r['CRAN'] <- '" + mirrorUrl + @"'
-        options(repos = r)})";
-
-            return evaluation.EvaluateAsync(script);
+        public static async Task SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
+            await evaluation.EvaluateAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"));
         }
 
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
             var script =
 @"options(help_type = 'html')
   options(browser = function(url) { 
-      .Call('Microsoft.R.Host::Call.send_message', 'Browser', rtvs:::toJSON(url)) 
+      rtvs:::send_message('Browser', url) 
   })";
             return evaluation.EvaluateAsync(script);
         }
@@ -129,7 +124,7 @@ grDevices::deviceIsInteractive('ide')
             var script =
 @"utils::assignInNamespace('setwd', function(dir) {
     old <- .Internal(setwd(dir))
-    .Call('Microsoft.R.Host::Call.send_message', '~/', rtvs:::toJSON(dir))
+    rtvs:::send_message('setwd', dir)
     invisible(old)
   }, 'base')";
             return evaluation.EvaluateAsync(script);

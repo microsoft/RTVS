@@ -21,11 +21,16 @@ namespace Microsoft.R.Support.Help.Functions {
         public bool IsEllipsis { get; internal set; }
 
         public ArgumentInfo(string name) :
-            base(name, NamedItemType.Parameter) {
+            this(name, string.Empty) {
         }
 
         public ArgumentInfo(string name, string description) :
+            this(name, description, null) {
+        }
+
+        public ArgumentInfo(string name, string description, string defaultValue) :
             base(name, description, NamedItemType.Parameter) {
+            DefaultValue = defaultValue;
         }
     }
 }

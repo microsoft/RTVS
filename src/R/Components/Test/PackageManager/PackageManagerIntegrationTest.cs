@@ -70,9 +70,56 @@ namespace Microsoft.R.Components.Test.PackageManager {
             rtvslib1Expected.Title = null;
             rtvslib1Expected.Built = null;
             rtvslib1Expected.Author = null;
+            rtvslib1Expected.Repository = string.Format("file:///{0}/src/contrib", _repo1Path.ToRPath());
 
             var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
             rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task AdditionalFieldsCranRepo() {
+            var all = await _workflow.Packages.GetAvailablePackagesAsync();
+            var actual = all.SingleOrDefault(pkg => pkg.Package == "ggplot2");
+
+            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+
+            // This additional data is retrieved from a live web site.  When that data changes in the future,
+            // this test may start failing.  Update the assertions below as needed, or relax them.
+            actual.Package.Should().Be("ggplot2");
+            actual.Title.Should().Be("An Implementation of the Grammar of Graphics");
+            actual.Description.Should().StartWith("An implementation of the grammar of graphics in R. It combines");
+            actual.Published.Should().NotBeEmpty();
+            actual.Depends.Should().NotBeEmpty();
+            actual.Suggests.Should().NotBeEmpty();
+            actual.Imports.Should().NotBeEmpty();
+            actual.Enhances.Should().NotBeEmpty();
+            actual.Author.Should().NotBeEmpty();
+            actual.Maintainer.Should().NotBeEmpty();
+            actual.Version.Should().NotBeEmpty();
+            actual.URL.Should().Be("http://ggplot2.org, https://github.com/hadley/ggplot2");
+            actual.BugReports.Should().Be("https://github.com/hadley/ggplot2/issues");
+            actual.License.Should().Be("GPL-2");
+            actual.NeedsCompilation.Should().Be("no");
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task AdditionalFieldsLocalRepo() {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalRepoAsync(eval, _repo1Path);
+            }
+
+            var all = await _workflow.Packages.GetAvailablePackagesAsync();
+            var actual = all.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
+
+            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+
+            var expected = TestPackages.RtvsLib1Additional.Clone();
+            expected.Built = null;
+            expected.Repository = string.Format("file:///{0}/src/contrib", _repo1Path.ToRPath());
+
+            actual.ShouldBeEquivalentTo(expected);
         }
 
         [Test]

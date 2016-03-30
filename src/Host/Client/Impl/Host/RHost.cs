@@ -382,7 +382,7 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Busy(false, ct);
                                 break;
 
-                            case "~/":
+                            case "setwd":
                                 _callbacks.DirectoryChanged();
                                 break;
 
