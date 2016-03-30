@@ -3,10 +3,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
-using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -19,7 +16,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Content = _gridHost = new VariableGridHost();
 
             BitmapImageMoniker = KnownMonikers.VariableProperty;
-            VsAppShell.Current.DispatchOnUIThread(() => ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, RGuidList.RCmdSetGuid));
         }
 
         internal void SetEvaluation(EvaluationWrapper evaluation) {
