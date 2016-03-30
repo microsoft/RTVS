@@ -176,6 +176,7 @@
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSource.cs" />
+    <Compile Include="Snippets\ISnippetInfo.cs" />
     <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
