@@ -1547,11 +1547,12 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidREditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidREditor" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidVSStd97" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidVSStd97" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
   </KeyBindings>
 
   <UsedCommands>
