@@ -19,6 +19,13 @@ grid.data <- function(x, rows, cols) {
     stop('grid.data requires two dimensional object');
   }
 
+  if (missing(rows)) {
+    rows <- 1:d[[1]];
+  }
+  if (missing(cols)) {
+    cols <- 1:d[[2]];
+  }
+
   # get values for column/row names and data
   onedim <- ((length(rows) == 1) || (length(cols) == 1));
   if (onedim || is.matrix(x)) {

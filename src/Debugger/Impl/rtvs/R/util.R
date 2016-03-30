@@ -9,6 +9,14 @@ external_embedded <- function(name, ...) {
   .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
+send_message <- function(name, ...) {
+	call_embedded('send_message', name, list(...))
+}
+
+send_message_and_get_response <- function(name, ...) {
+	call_embedded('send_message_and_get_response', name, list(...))
+}
+
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
   call_embedded('memory_connection', max_length, expected_length, overflow_suffix, eof_marker)
 }
@@ -39,6 +47,10 @@ set_rdebug <- function(obj, debug) {
 
 browser_set_debug <- function(n = 1, skip_toplevel = 0) {
   call_embedded("browser_set_debug", n, skip_toplevel)
+}
+
+toJSON <- function(obj) {
+  call_embedded("toJSON", obj)
 }
 
 NA_if_error <- function(expr) {

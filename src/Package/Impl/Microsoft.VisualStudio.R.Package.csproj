@@ -56,6 +56,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\DataImport\ImportDataWindow.xaml.cs">
+      <DependentUpon>ImportDataWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DataInspect\DataSource\DelegateList.cs" />
     <Compile Include="DataInspect\DataSource\Grid.cs" />
     <Compile Include="DataInspect\DataSource\GridDataSource.cs" />
@@ -66,7 +69,6 @@
     <Compile Include="DataInspect\DebugGridViewProvider.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
-    <Compile Include="DataInspect\Definitions\IVariableDataProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\Office\CsvAppFileIO.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
@@ -77,8 +79,6 @@
     <Compile Include="DataInspect\GridParser.cs" />
     <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
-    <Compile Include="DataInspect\VariableSubscription.cs" />
-    <Compile Include="DataInspect\VariableSubscriptionToken.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
@@ -249,7 +249,6 @@
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
     <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="DataInspect\VariableNode.cs" />
-    <Compile Include="DataInspect\VariableProvider.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>
     </Compile>
@@ -1268,6 +1267,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="DataInspect\DataImport\ImportDataWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="DataInspect\VariableGridHost.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
@@ -41,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(100);
                     Task.Run(async () => {
                         using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)");
+                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.Mutating);
                         }
                     }).Wait();
 

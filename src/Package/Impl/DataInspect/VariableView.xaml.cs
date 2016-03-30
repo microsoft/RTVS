@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             int selectedIndex = 0;
 
             var currentItem = EnvironmentComboBox.SelectedItem as REnvironment;
-            if (currentItem != null && !e.Environments[0].FrameIndex.HasValue) {
+            if (currentItem != null && e.Environments.Count > 0 && !e.Environments[0].FrameIndex.HasValue) {
                 for (int i = 1; i < e.Environments.Count; i++) {
                     if (e.Environments[i].Name == currentItem.Name) {
                         selectedIndex = i;
@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void EnvironmentComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (!object.Equals(EnvironmentComboBox.ItemsSource, _defaultEnvironments) && e.AddedItems.Count > 0) {
+            if ((EnvironmentComboBox.ItemsSource != _defaultEnvironments) && (e.AddedItems.Count > 0)) {
                 var env = e.AddedItems[0] as REnvironment;
                 if (env != null) {
                     SetRootModelAsync(env).DoNotWait();

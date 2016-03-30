@@ -2484,9 +2484,9 @@
                                                                                                 <VisualTreeProperty Name="VerticalAlignment" Value="Stretch" />
                                                                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
-                                                                                                <VisualTreeProperty Name="Visibility" Value="Collapsed" />
+                                                                                                <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                                 <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                                                                <VisualTreeProperty Name="IsVisible" Value="False" />
+                                                                                                <VisualTreeProperty Name="IsVisible" Value="True" />
                                                                                                 <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                 <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
@@ -2510,7 +2510,7 @@
                                                                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                                     <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                                                                    <VisualTreeProperty Name="IsVisible" Value="False" />
+                                                                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
                                                                                                     <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                     <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
@@ -2533,7 +2533,7 @@
                                                                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                                         <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                                                                        <VisualTreeProperty Name="IsVisible" Value="False" />
+                                                                                                        <VisualTreeProperty Name="IsVisible" Value="True" />
                                                                                                         <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                         <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />

@@ -430,6 +430,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import Dataset.
+        /// </summary>
+        public static string ImportData_Title {
+            get {
+                return ResourceManager.GetString("ImportData_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {

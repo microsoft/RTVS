@@ -1,13 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
+using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -15,72 +19,72 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     public partial class VariableGridHost : UserControl {
         private EvaluationWrapper _evaluation;
-        private VariableSubscription _subscription;
-        private IVariableDataProvider _variableProvider;
+        private IRSession _rSession;
 
         public VariableGridHost() {
             InitializeComponent();
 
-            _variableProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IVariableDataProvider>();
+            _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            _rSession.Mutated += RSession_Mutated;
         }
-        
-        internal void SetEvaluation(EvaluationWrapper evaluation) {
-            ClearError();
 
-            VariableGrid.Initialize(new GridDataProvider(evaluation));
-
-            _evaluation = evaluation;
-
-            if (_subscription != null) {
-                _variableProvider.Unsubscribe(_subscription);
-                _subscription = null;
+        private void RSession_Mutated(object sender, System.EventArgs e) {
+            if (_evaluation != null) {
+                EvaluateAsync().DoNotWait();
             }
-
-            _subscription = _variableProvider.Subscribe(
-                evaluation.FrameIndex,
-                evaluation.Expression,
-                SubscribeAction);
         }
 
-        private void SubscribeAction(DebugEvaluationResult evaluation) {
-            VsAppShell.Current.DispatchOnUIThread(
-                () => {
-                    if (evaluation is DebugErrorEvaluationResult) {
-                        // evaluation error, this could happen if R object is removed
-                        var error = (DebugErrorEvaluationResult)evaluation;
-                        SetError(error.ErrorText);
-                        return;
-                    }
+        private async Task EvaluateAsync() {
+            try {
+                await TaskUtilities.SwitchToBackgroundThread();
+                var debugSession = await VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>().GetDebugSessionAsync(_rSession);
 
-                    var wrapper = new EvaluationWrapper(evaluation);
+                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
+                        | DebugEvaluationResultFields.Expression
+                        | DebugEvaluationResultFields.TypeName
+                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                        | DebugEvaluationResultFields.Dim
+                        | DebugEvaluationResultFields.Length;
 
-                    if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
-                        // the variable should have been removed
-                        SetError(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                Package.Resources.VariableGrid_Missing,
-                                evaluation.Expression));
-                    } else if (wrapper.Dimensions.Count != 2) {
-                        // the same evaluation changed to non-matrix
-                        SetError(
-                            string.Format(
-                                CultureInfo.InvariantCulture,
-                                Package.Resources.VariableGrid_NotTwoDimension,
-                                evaluation.Expression));
-                    } else if (wrapper.Dimensions[0] != _evaluation.Dimensions[0]
-                        || wrapper.Dimensions[1] != _evaluation.Dimensions[1]) {
-                        ClearError();
+                var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
 
-                        // matrix size changed. Reset the evaluation
-                        SetEvaluation(wrapper);
-                    } else {
-                        ClearError();
-                        
-                        // size stays same. Refresh
-                        VariableGrid.Refresh();
-                    }
-                });
+                var wrapper = new EvaluationWrapper(result);
+
+                VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
+            } catch (Exception ex) {
+                VsAppShell.Current.DispatchOnUIThread(() => SetError(ex.Message));
+            }
+        }
+
+        internal void SetEvaluation(EvaluationWrapper wrapper) {
+            if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
+                // the variable should have been removed
+                SetError(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Package.Resources.VariableGrid_Missing,
+                        wrapper.Expression));
+            } else if (wrapper.Dimensions.Count != 2) {
+                // the same evaluation changed to non-matrix
+                SetError(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        Package.Resources.VariableGrid_NotTwoDimension,
+                        wrapper.Expression));
+            } else if (_evaluation == null
+                || (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1])) {
+                // matrix size changed. Reset the evaluation
+                ClearError();
+
+                VariableGrid.Initialize(new GridDataProvider(wrapper));
+
+                _evaluation = wrapper;
+            } else {
+                ClearError();
+
+                // size stays same. Refresh
+                VariableGrid.Refresh();
+            }
         }
 
         private void SetError(string text) {
