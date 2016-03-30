@@ -54,9 +54,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(1000);
 
                     actual = VisualTreeObject.Create(script.Control);
+                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
                 }
             }
-            ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
         }
     }
 }

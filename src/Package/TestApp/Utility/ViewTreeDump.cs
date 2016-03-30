@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
     internal class ViewTreeDump {
         // change to true in debugger if you want all baseline tree files regenerated
-        private static bool _regenerateBaselineFiles = false;
+        private static bool _regenerateBaselineFiles = true;
 
         public static void CompareVisualTrees(DeployFilesFixture fixture, VisualTreeObject actual, string fileName) {
             CompareVisualTreesImplementation(fixture, actual, fileName);

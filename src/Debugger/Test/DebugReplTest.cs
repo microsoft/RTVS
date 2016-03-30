@@ -58,7 +58,7 @@ namespace Microsoft.R.Debugger.Test {
 
                     REvaluationResult x;
                     using (var eval = await _session.BeginEvaluationAsync()) {
-                        x = await eval.EvaluateAsync("x");
+                        x = await eval.EvaluateAsync("x", REvaluationKind.Normal);
                     }
 
                     x.StringResult.Should().Be("new");

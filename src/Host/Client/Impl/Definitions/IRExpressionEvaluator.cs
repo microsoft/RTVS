@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     [Flags]
@@ -18,10 +19,17 @@ namespace Microsoft.R.Host.Client {
         EmptyEnv = 1 << 4,
         Cancelable = 1 << 5,
         NewEnv = 1 << 6,
+        Mutating = 1 << 7,
     }
 
     public interface IRExpressionEvaluator {
-        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct);
+        Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken));
+    }
+
+    public static class RExpressionEvaluatorExtensions {
+        public static Task<REvaluationResult> EvaluateAsync(this IRExpressionEvaluator evaluator, FormattableString expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
+            return evaluator.EvaluateAsync(Invariant(expression), kind, cancellationToken);
+        }
     }
 
     public enum RParseStatus {

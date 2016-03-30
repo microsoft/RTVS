@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluation : IRSessionEvaluation {
+        private readonly RSessionEvaluationSource _source;
         private readonly IRExpressionEvaluator _evaluator;
         private readonly TaskCompletionSource<object> _tcs;
         private readonly CancellationToken _ct;
 
         public IReadOnlyList<IRContext> Contexts { get; }
+        public bool IsMutating { get; private set; }
         public Task Task => _tcs.Task;
 
         public RSessionEvaluation(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
@@ -26,8 +28,14 @@ namespace Microsoft.R.Host.Client.Session {
             _tcs.TrySetResult(null);
         }
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind) {
-            return _evaluator.EvaluateAsync(expression, kind, _ct);
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
+            if (kind.HasFlag(REvaluationKind.Mutating)) {
+                IsMutating = true;
+            }
+
+            ct.Register(() => _tcs.TrySetCanceled());
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(_ct, ct);
+            return _evaluator.EvaluateAsync(expression, kind, cts.Token);
         }
     }
 }

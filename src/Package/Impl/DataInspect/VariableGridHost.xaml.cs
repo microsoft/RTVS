@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -19,45 +19,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// </summary>
     public partial class VariableGridHost : UserControl {
         private EvaluationWrapper _evaluation;
-        private VariableSubscription _subscription;
         private IRSession _rSession;
 
         public VariableGridHost() {
             InitializeComponent();
 
-            _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
+            _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
         }
 
         private void RSession_Mutated(object sender, System.EventArgs e) {
-            EvaluateAsync().DoNotWait();
+            if (_evaluation != null) {
+                EvaluateAsync().DoNotWait();
+            }
         }
 
         private async Task EvaluateAsync() {
             try {
-                DebugEvaluationResult result = await Evaluate1Async();
+                await TaskUtilities.SwitchToBackgroundThread();
+                var debugSession = await VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>().GetDebugSessionAsync(_rSession);
+
+                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
+                        | DebugEvaluationResultFields.Expression
+                        | DebugEvaluationResultFields.TypeName
+                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                        | DebugEvaluationResultFields.Dim
+                        | DebugEvaluationResultFields.Length;
+
+                var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
 
                 var wrapper = new EvaluationWrapper(result);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
-                SetError(ex.Message);
+                VsAppShell.Current.DispatchOnUIThread(() => SetError(ex.Message));
             }
-        }
-
-        private async Task<DebugEvaluationResult> Evaluate1Async() {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            var debugSession = await VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>().GetDebugSessionAsync(_rSession);
-
-            const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                    | DebugEvaluationResultFields.Expression
-                    | DebugEvaluationResultFields.TypeName
-                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
-                    | DebugEvaluationResultFields.Dim
-                    | DebugEvaluationResultFields.Length;
-
-            return await debugSession.EvaluateAsync(_evaluation.Expression, fields);
         }
 
         internal void SetEvaluation(EvaluationWrapper wrapper) {
