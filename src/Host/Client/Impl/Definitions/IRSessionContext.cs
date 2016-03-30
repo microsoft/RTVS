@@ -3,13 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
-    public interface IRSessionInteraction : IRSessionContext, IDisposable {
-        string Prompt { get; }
-        int MaxLength { get; }
-
-        Task RespondAsync(string messageText);
+    public interface IRSessionContext {
+        IReadOnlyList<IRContext> Contexts { get; }
     }
 }

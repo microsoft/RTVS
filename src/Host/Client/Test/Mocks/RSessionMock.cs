@@ -19,15 +19,15 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
-            if (isMutating) {
+        public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            if (kind.HasFlag(REvaluationKind.Mutating)) {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
             return Task.FromResult(new REvaluationResult());
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken)) {
-            _eval = new RSessionEvaluationMock();
+            _eval = new RSessionEvaluationMock(isMutating);
 
             BeforeRequest?.Invoke(this, new RRequestEventArgs(_eval.Contexts, Prompt, 4096, true));
             if (isMutating) {

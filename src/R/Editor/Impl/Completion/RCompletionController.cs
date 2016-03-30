@@ -409,7 +409,7 @@ namespace Microsoft.R.Editor.Completion {
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await eval.EvaluateAsync(expression);
+                    REvaluationResult result = await eval.EvaluateAsync(expression, REvaluationKind.Normal);
                     if (result.ParseStatus == RParseStatus.OK &&
                         !string.IsNullOrEmpty(result.StringResult) &&
                          (result.StringResult == "T" || result.StringResult == "TRUE")) {

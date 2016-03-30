@@ -125,14 +125,14 @@ namespace Microsoft.R.Host.Client.Session {
             return _isHostRunning ? source.Task : CanceledBeginEvaluationTask;
         }
 
-        public async Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
+        public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledEvaluateTask;
             }
 
             try {
                 var result = await _host.EvaluateAsync(expression, kind, ct);
-                if (isMutating) {
+                if (kind.HasFlag(REvaluationKind.Mutating)) {
                     OnMutated();
                 }
                 return result;
@@ -272,7 +272,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
             var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
-            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
+            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"), REvaluationKind.Normal);
 
             if (res.ParseStatus != RParseStatus.OK) {
                 throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);

@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger {
                         await bp.ReapplyBreakpointAsync(cancellationToken);
                     }
 
-                    await eval.EvaluateAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
+                    await eval.EvaluateAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
                 }
 
                 // Attach might happen when session is already at the Browse prompt, in which case we have
@@ -207,7 +207,7 @@ namespace Microsoft.R.Debugger {
 
             // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
             // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
-            RSession.EvaluateAsync("browser()", false, REvaluationKind.Reentrant, ct)
+            RSession.EvaluateAsync("browser()", REvaluationKind.Reentrant, ct)
                 .SilenceException<MessageTransportException>().DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.
@@ -236,7 +236,7 @@ namespace Microsoft.R.Debugger {
                     // EvaluateAsync will push a new toplevel context on the context stack before
                     // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
                     // before locating the target context for step-out.
-                    var res = await eval.EvaluateAsync("rtvs:::browser_set_debug(1, 1)");
+                    var res = await eval.EvaluateAsync("rtvs:::browser_set_debug(1, 1)", REvaluationKind.Mutating);
                     Trace.Assert(res.ParseStatus == RParseStatus.OK);
 
                     if (res.ParseStatus != RParseStatus.OK || res.Error != null) {
@@ -304,7 +304,7 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             using (var eval = await RSession.BeginEvaluationAsync(true, ct)) {
-                await eval.EvaluateAsync(Invariant($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})"));
+                await eval.EvaluateAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
             }
         }
 

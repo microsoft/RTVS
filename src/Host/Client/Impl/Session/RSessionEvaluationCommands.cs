@@ -8,43 +8,43 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
-        public static Task OptionsSetWidth(this IRSessionEvaluation evaluation, int width) {
-            return evaluation.EvaluateNonReentrantAsync($"options(width=as.integer({width}))\n");
+        public static Task OptionsSetWidth(this IRExpressionEvaluator evaluation, int width) {
+            return evaluation.EvaluateAsync($"options(width=as.integer({width}))\n", REvaluationKind.Normal);
         }
 
-        public static async Task<string> GetRUserDirectory(this IRSessionEvaluation evaluation) {
-            var result = await evaluation.EvaluateAsync("Sys.getenv('R_USER')");
+        public static async Task<string> GetRUserDirectory(this IRExpressionEvaluator evaluation) {
+            var result = await evaluation.EvaluateAsync("Sys.getenv('R_USER')", REvaluationKind.Normal);
             return result.StringResult.Replace('/', '\\');
         }
 
-        public static async Task<string> GetWorkingDirectory(this IRSessionEvaluation evaluation) {
-            var result = await evaluation.EvaluateAsync("getwd()");
+        public static async Task<string> GetWorkingDirectory(this IRExpressionEvaluator evaluation) {
+            var result = await evaluation.EvaluateAsync("getwd()", REvaluationKind.Normal);
             return result.StringResult.Replace('/', '\\');
         }
 
-        public static Task SetWorkingDirectory(this IRSessionEvaluation evaluation, string path) {
-            return evaluation.EvaluateNonReentrantAsync($"setwd('{path.Replace('\\', '/')}')\n");
+        public static Task SetWorkingDirectory(this IRExpressionEvaluator evaluation, string path) {
+            return evaluation.EvaluateAsync($"setwd('{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
         }
 
-        public static Task SetDefaultWorkingDirectory(this IRSessionEvaluation evaluation) {
-            return evaluation.EvaluateNonReentrantAsync($"setwd('~')\n");
+        public static Task SetDefaultWorkingDirectory(this IRExpressionEvaluator evaluation) {
+            return evaluation.EvaluateAsync($"setwd('~')\n", REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> LoadWorkspace(this IRSessionEvaluation evaluation, string path) {
-            return evaluation.EvaluateNonReentrantAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n");
+        public static Task<REvaluationResult> LoadWorkspace(this IRExpressionEvaluator evaluation, string path) {
+            return evaluation.EvaluateAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n", REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SaveWorkspace(this IRSessionEvaluation evaluation, string path) {
-            return evaluation.EvaluateNonReentrantAsync($"save.image(file='{path.Replace('\\', '/')}')\n");
+        public static Task<REvaluationResult> SaveWorkspace(this IRExpressionEvaluator evaluation, string path) {
+            return evaluation.EvaluateAsync($"save.image(file='{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> SetVsGraphicsDevice(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> SetVsGraphicsDevice(this IRExpressionEvaluator evaluation) {
             var script = @"
 attach(as.environment(list(ide = function() { rtvs:::graphics.ide.new() })), name='rtvs::graphics::ide')
 options(device='ide')
 grDevices::deviceIsInteractive('ide')
 ";
-            return evaluation.EvaluateAsync(script);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
         public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height) {
@@ -72,66 +72,62 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.RespondAsync(script);
         }
 
-        public static Task<REvaluationResult> PlotHistoryInfo(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> PlotHistoryInfo(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::graphics.ide.historyinfo()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> InstalledPackages(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> InstalledPackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> AvailablePackages(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> AvailablePackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> InstallPackage(this IRSessionEvaluation evaluation, string packageName) {
+        public static Task<REvaluationResult> InstallPackage(this IRExpressionEvaluator evaluation, string packageName) {
             var script = string.Format("install.packages(\"{0}\")", packageName);
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> ExportToBitmap(this IRSessionEvaluation evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
+        public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
             string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
-            return evaluation.EvaluateAsync(script);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToMetafile(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches) {
+        public static Task<REvaluationResult> ExportToMetafile(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
             string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
-            return evaluation.EvaluateAsync(script);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToPdf(this IRSessionEvaluation evaluation, string outputFilePath, double widthInInches, double heightInInches) {
+        public static Task<REvaluationResult> ExportToPdf(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
             string script = string.Format("rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
-            return evaluation.EvaluateAsync(script);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
-        public static async Task SetVsCranSelection(this IRSessionEvaluation evaluation, string mirrorUrl) {
-            await evaluation.EvaluateAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"));
+        public static async Task SetVsCranSelection(this IRExpressionEvaluator evaluation, string mirrorUrl) {
+            await evaluation.EvaluateAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"), REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SetVsHelpRedirection(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> SetVsHelpRedirection(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
   options(browser = function(url) { 
       rtvs:::send_message('Browser', url) 
   })";
-            return evaluation.EvaluateAsync(script);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRSessionEvaluation evaluation) {
+        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRExpressionEvaluator evaluation) {
             var script =
 @"utils::assignInNamespace('setwd', function(dir) {
     old <- .Internal(setwd(dir))
     rtvs:::send_message('setwd', dir)
     invisible(old)
   }, 'base')";
-            return evaluation.EvaluateAsync(script);
-        }
-
-        private static Task<REvaluationResult> EvaluateNonReentrantAsync(this IRSessionEvaluation evaluation, FormattableString commandText) {
-            return evaluation.EvaluateAsync(FormattableString.Invariant(commandText));
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
     }
 }

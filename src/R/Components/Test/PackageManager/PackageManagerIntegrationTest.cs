@@ -181,17 +181,17 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
             var code = string.Format("options(repos=list(LOCAL=\"file:///{0}\"))", localRepoPath.ToRPath());
-            var evalResult = await eval.EvaluateAsync(code);
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Mutating);
         }
 
         private async Task SetLocalLibAsync(IRSessionEvaluation eval, string libPath) {
             var code = string.Format(".libPaths(\"{0}\")", libPath.ToRPath());
-            var evalResult = await eval.EvaluateAsync(code);
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
         }
 
         private async Task InstallPackageAsync(IRSessionEvaluation eval, string packageName, string libPath) {
             var code = string.Format("install.packages(\"{0}\", verbose=FALSE, quiet=TRUE)", packageName);
-            var evalResult = await eval.EvaluateAsync(code);
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
             WaitForPackageInstalled(libPath, packageName);
         }
 

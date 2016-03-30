@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
-    public interface IRSession : IDisposable {
+    public interface IRSession : IRExpressionEvaluator, IDisposable {
         event EventHandler<RRequestEventArgs> BeforeRequest;
         event EventHandler<RRequestEventArgs> AfterRequest;
         event EventHandler<EventArgs> Mutated;
@@ -23,7 +23,6 @@ namespace Microsoft.R.Host.Client {
 
         Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default(CancellationToken));
         Task<IRSessionEvaluation> BeginEvaluationAsync(bool isMutating = true, CancellationToken cancellationToken = default(CancellationToken));
-        Task<REvaluationResult> EvaluateAsync(string expression, bool isMutating, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken));
         Task CancelAllAsync();
         Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000);
         Task StopHostAsync();
