@@ -1576,33 +1576,33 @@
     </CommandPlacement>
 
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>	  
 
