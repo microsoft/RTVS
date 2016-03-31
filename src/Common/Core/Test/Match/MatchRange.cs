@@ -6,15 +6,15 @@ using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Test.Match {
     public class MatchRange<T> : IEquatable<T> where T : IComparable<T> {
-        private readonly T _from, _to;
+        private readonly IComparable<T> _from, _to;
 
-        public MatchRange(T from, T to) {
+        public MatchRange(IComparable<T> from, IComparable<T> to) {
             _from = from;
             _to = to;
         }
 
         public bool Equals(T other) =>
-            other == null ? false : other.CompareTo(_from) >= 0 && other.CompareTo(_to) <= 0;
+            _from.CompareTo(other) <= 0 && _to.CompareTo(other) >= 0;
 
         public override bool Equals(object other) =>
             other is T ? Equals((T)other) : false;

@@ -35,9 +35,17 @@ namespace Microsoft.Common.Core.Test.Match {
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember>> memberSelector, IEquatable<TMember> value) =>
             new MatchMembers<T>(this, memberSelector, value);
 
+        public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember>> memberSelector, IComparable<TMember> from, IComparable<TMember> to)
+            where TMember : IComparable<TMember> =>
+            new MatchMembers<T>(this, memberSelector, new MatchRange<TMember>(from, to));
+
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember?>> memberSelector, IEquatable<TMember> value)
             where TMember : struct =>
             new MatchMembers<T>(this, memberSelector, value);
+
+        public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember?>> memberSelector, IComparable<TMember> from, IComparable<TMember> to)
+            where TMember : struct, IComparable<TMember> =>
+            new MatchMembers<T>(this, memberSelector, new MatchRange<TMember>(from, to));
 
         public bool Equals(T other) {
             if (other == null) {
