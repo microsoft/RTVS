@@ -81,7 +81,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public void UnloadPackage(string name) {
-            string script = string.Format("detach(\"package:{0}\", unload=TRUE)", name);
+            string script = string.Format("unloadNamespace(\"{0}\")", name);
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
         }
