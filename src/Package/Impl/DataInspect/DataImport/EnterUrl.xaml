@@ -7,14 +7,9 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" Height="Auto"  Width="700">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
+        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="Height" Width="700">
+    <StackPanel>
+        <Grid Margin="6,3,3,3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -22,15 +17,13 @@
             <TextBlock Grid.Column="0" Margin="3" Text="URL :"/>
             <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox"/>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
-            <Border CornerRadius="3">
-                <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>
-            </Border>
-            <Border CornerRadius="3">
-                <Button x:Name="OkButton" Content="OK" Padding="6" Margin="6" Click="OkButton_Click"/>
-            </Border>
-        </StackPanel>
-        <ProgressBar Grid.Row="2"
+
+        <ProgressBar Margin="6"
                      x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
-    </Grid>
+
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
+            <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>
+            <Button x:Name="OkButton" Content="OK" Padding="6" Margin="6" Click="OkButton_Click"/>
+        </StackPanel>
+    </StackPanel>
 </ui:DialogWindow>

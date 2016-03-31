@@ -2,47 +2,32 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-using Newtonsoft.Json.Linq;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// <summary>
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
     public partial class EnterUrl : DialogWindow {
-        private string _temporaryFile;
-
         public EnterUrl() {
             InitializeComponent();
         }
 
         public string DownloadFilePath { get; private set; }
 
-        protected override void OnClosed(EventArgs e) {
-            base.OnClosed(e);
+        public string Name { get; private set; }
 
-            if (!string.IsNullOrEmpty(_temporaryFile)) {
+        public void DeleteTemporaryFile() {
+            if (!string.IsNullOrEmpty(DownloadFilePath)) {
                 try {
-                    if (File.Exists(_temporaryFile)) {
-                        File.Delete(_temporaryFile);
+                    if (File.Exists(DownloadFilePath)) {
+                        File.Delete(DownloadFilePath);
+                        DownloadFilePath = null;
                     }
                 } catch {
                 }
@@ -62,14 +47,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private async Task RunAsync() {
             try {
-                _temporaryFile = Path.GetTempFileName();
+                var temporaryFile = Path.GetTempFileName();
+                Uri uri = new Uri(UrlTextBox.Text);
                 using (var client = new WebClient()) {
                     client.DownloadProgressChanged += DownloadProgressChanged;
 
-                    await client.DownloadFileTaskAsync(UrlTextBox.Text, _temporaryFile);
+                    await client.DownloadFileTaskAsync(uri, temporaryFile);
                 }
 
-                DownloadFilePath = _temporaryFile;
+                DownloadFilePath = temporaryFile;
+                Name = Path.GetFileNameWithoutExtension(uri.Segments[uri.Segments.Length - 1]);
                 OnSuccess(false);
             } catch (Exception ex) {
                 OnError(ex.Message);

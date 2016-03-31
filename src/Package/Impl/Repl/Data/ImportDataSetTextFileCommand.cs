@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
 
             string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
             if (!string.IsNullOrEmpty(filePath)) {
-                var dlg = new ImportDataWindow(filePath);
+                var dlg = new ImportDataWindow(filePath, null);
                 dlg.ShowModal();
             }
         }

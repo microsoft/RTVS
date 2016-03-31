@@ -54,8 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             SetEncodingComboBoxAsync().DoNotWait();
         }
 
-        public ImportDataWindow(string filePath) : this() {
-            SetFilePathAsync(filePath).DoNotWait();
+        public ImportDataWindow(string filePath, string name) : this() {
+            SetFilePathAsync(filePath, name).DoNotWait();
         }
 
         private IRSession GetRSession() {
@@ -121,13 +121,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private async Task SetFilePathAsync(string filePath) {
+        private async Task SetFilePathAsync(string filePath, string name = null) {
             FilePathBox.Text = filePath;
-
             FilePathBox.CaretIndex = FilePathBox.Text.Length;
             FilePathBox.ScrollToEnd();
 
-            var variableName = Path.GetFileNameWithoutExtension(FilePathBox.Text);
+            var variableName = name == null ? Path.GetFileNameWithoutExtension(filePath) : name;
             VariableNameBox.Text = variableName;
 
             string text = ReadFile(FilePathBox.Text);
