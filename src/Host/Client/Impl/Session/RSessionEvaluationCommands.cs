@@ -87,9 +87,14 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> InstallPackage(this IRExpressionEvaluator evaluation, string packageName) {
-            var script = string.Format("install.packages(\"{0}\")", packageName);
-            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+        public static Task<REvaluationResult> LoadedPackages(this IRExpressionEvaluator evaluation) {
+            var script = @"rtvs:::packages.loaded()";
+            return evaluation.EvaluateAsync(script, REvaluationKind.Json);
+        }
+
+        public static Task<REvaluationResult> LibraryPaths(this IRExpressionEvaluator evaluation) {
+            var script = @"rtvs:::packages.libpaths()";
+            return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
         public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {

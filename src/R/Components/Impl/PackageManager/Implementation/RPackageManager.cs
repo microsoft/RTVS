@@ -47,6 +47,87 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             await RPackageWebParser.RetrievePackageInfo(uri, pkg);
         }
 
+        public void InstallPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("install.packages(\"{0}\")", name);
+            } else {
+                script = string.Format("install.packages(\"{0}\", lib=\"{1}\")", name, libraryPath.ToRPath());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void UninstallPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("remove.packages(\"{0}\")", name);
+            } else {
+                script = string.Format("remove.packages(\"{0}\", lib=\"{1}\")", name, libraryPath.ToRPath());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void LoadPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("library(\"{0}\")", name);
+            } else {
+                script = string.Format("library(\"{0}\", lib.loc=\"{1}\")", name, libraryPath.ToRPath());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void UnloadPackage(string name) {
+            string script = string.Format("detach(\"package:{0}\", unload=TRUE)", name);
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public async Task<string[]> GetLoadedPackagesAsync() {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                return new string[0];
+            }
+
+            try {
+                using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                    var result = await eval.LoadedPackages();
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        throw new InvalidOperationException(result.ToString());
+                    }
+
+                    return ((JArray)result.JsonResult)
+                        .Select(p => (string)((JValue)p).Value)
+                        .ToArray();
+                }
+            } catch (OperationCanceledException) {
+                return new string[0];
+            }
+        }
+
+        public async Task<string[]> GetLibraryPathsAsync() {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                return new string[0];
+            }
+
+            try {
+                using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                    var result = await eval.LibraryPaths();
+                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
+                        throw new InvalidOperationException(result.ToString());
+                    }
+
+                    return ((JArray)result.JsonResult)
+                        .Select(p => (string)((JValue)p).Value)
+                        .ToArray();
+                }
+            } catch (OperationCanceledException) {
+                return new string[0];
+            }
+        }
+
         private static Uri GetPackageWebIndexUri(RPackage pkg) {
             // For example, if 'Repository' is:
             // "https://cloud.r-project.org/src/contrib"
