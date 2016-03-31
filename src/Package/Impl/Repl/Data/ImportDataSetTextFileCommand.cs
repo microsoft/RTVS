@@ -5,6 +5,7 @@ using System;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataImport;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Data {
@@ -27,8 +28,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
         protected override void Handle() {
             base.Handle();
 
-            var dlg = new ImportDataWindow();
-            dlg.ShowModal();
+            string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
+            if (!string.IsNullOrEmpty(filePath)) {
+                var dlg = new ImportDataWindow(filePath);
+                dlg.ShowModal();
+            }
         }
 
         private IRSession RSession { get; }

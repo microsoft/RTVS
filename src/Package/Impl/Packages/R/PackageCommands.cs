@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ResetReplCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession),
-                new ImportDataSetUrlCommand(),
+                new ImportDataSetUrlCommand(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),

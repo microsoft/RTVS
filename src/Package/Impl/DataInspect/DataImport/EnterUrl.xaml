@@ -1,0 +1,36 @@
+﻿<ui:DialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.EnterUrl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect.DataImport"
+        xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+        xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
+        mc:Ignorable="d"
+        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" Height="Auto"  Width="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Margin="3" Text="URL :"/>
+            <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox"/>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
+            <Border CornerRadius="3">
+                <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>
+            </Border>
+            <Border CornerRadius="3">
+                <Button x:Name="OkButton" Content="OK" Padding="6" Margin="6" Click="OkButton_Click"/>
+            </Border>
+        </StackPanel>
+        <ProgressBar Grid.Row="2"
+                     x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
+    </Grid>
+</ui:DialogWindow>

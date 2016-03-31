@@ -430,6 +430,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Import from Web URL.
+        /// </summary>
+        public static string ImportData_EnterUrlTitle {
+            get {
+                return ResourceManager.GetString("ImportData_EnterUrlTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Dataset.
         /// </summary>
         public static string ImportData_Title {

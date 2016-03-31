@@ -130,7 +130,7 @@
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
             <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>
-            <Button x:Name="RunButton" Content="Run" Padding="6" Margin="6" Click="RunButton_Click"/>
+            <Button x:Name="RunButton" Content="OK" Padding="6" Margin="6" Click="RunButton_Click"/>
         </StackPanel>
     </Grid>
 </ui:DialogWindow>
