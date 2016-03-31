@@ -202,10 +202,10 @@
       <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0810">
+      <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0850">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
-      <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0820">
+      <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0880">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <!-- End R code editor context menu groups -->
@@ -234,6 +234,9 @@
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="windowsSubMenuGroup" priority="0x0000">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="windowsSubMenuGroup2" priority="0x0010">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenu"/>
       </Group>
 
@@ -321,6 +324,8 @@
         <Parent guid="guidRToolsCmdSet" id="rDocsSubMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0000" />
+      
       <!-- Plot toolbar -->
       <Group guid="guidRToolsCmdSet" id="plotToolbarNavGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
@@ -387,7 +392,31 @@
 
     <Buttons>
       <!-- Top level menu items -->
-      <!-- Workspace flyout -->
+      <!-- Session flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Execute"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Execute In Interactive</ButtonText>
+          <MenuText>E&amp;xecute In Interactive</MenuText>
+          <CommandName>ExecuteInInteractive</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0110" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ClearWindowContent"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Clear Interactive Window</ButtonText>
+          <MenuText>Clear Interactive &amp;Window</MenuText>
+          <CommandName>ClearInteractiveWindow</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdLoadWorkspace" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="sessionSubMenuFileGroup"/>
         <Icon guid="ImageCatalogGuid" id="OpenVirtualMachine"/>
@@ -730,6 +759,17 @@
       <!-- End of Publish flyout -->
 
       <!-- Windows flyout -->
+      <Button guid="guidRToolsCmdSet" id="icmdShowEditorWindow" priority="0x00F0" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Editor"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Source Editor</ButtonText>
+          <MenuText>&amp;Source Editor</MenuText>
+          <CommandName>RSourceEditor</CommandName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100" type="Button">
         <Icon guid="replWindowIconGuid" id="replWindowIcon"/>
         <Strings>
@@ -739,7 +779,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" priority="0x0200" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" priority="0x0700" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="VariableProperty"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -750,7 +790,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0300" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="LineChart"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
@@ -760,7 +801,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" priority="0x0400" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" priority="0x0300" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="ShowFullHistory"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -771,7 +812,18 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0500" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" priority="0x0400" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="Solution"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Files</ButtonText>
+          <MenuText>&amp;Files</MenuText>
+          <CommandName>Show Files Window</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0600" type="Button">
         <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -782,7 +834,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdShowHelpWindow" priority="0x0600" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdShowHelpWindow" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="StatusHelp"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1079,6 +1131,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rEditorDocumentationGroup"/>
+        <Icon guid="ImageCatalogGuid" id="AddComment"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Insert Roxygen Block</ButtonText>
+          <MenuText>Insert Ro&amp;xygen Block</MenuText>
+          <CommandName>Insert Roxygen Block</CommandName>
+        </Strings>
+      </Button>
+
       <!-- R debugger context menu -->
       <Button guid="guidRToolsCmdSet" id="icmdShowDotPrefixedVariables" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="groupRContextDebugger"/>
@@ -1300,7 +1365,7 @@
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -1310,6 +1375,10 @@
 
     <!-- Snippets group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS" priority="0x0500">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0810">
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
@@ -1324,7 +1393,7 @@
     <!-- End R code editor context menu -->
 
     <!-- RMD context menu -->
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
     <!-- End RMD context menu -->
@@ -1354,11 +1423,6 @@
       <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
     </CommandPlacement>
 
-    <!-- Show plot window -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowPlotWindow" priority="0x0500">
-      <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
-    </CommandPlacement>
-
     <!-- Show R Interactive -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0500">
       <Parent guid="guidSHLMainMenu" id="IDG_VS_WNDO_OTRWNDWS1"/>
@@ -1366,6 +1430,10 @@
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdShowReplWindow" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidVSStd11" id="cmdidCloseAllButThis" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup2"/>
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
@@ -1434,7 +1502,11 @@
     </CommandPlacement>
     <!-- End Plot Window toolbar -->
 
-    <CommandPlacement guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" priority="0x0400">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x0400">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdClearRepl" priority="0x0410">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuEditorGroup"/>
     </CommandPlacement>
 
@@ -1504,33 +1576,33 @@
     </CommandPlacement>
 
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>
 
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_FOLDERNODE"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup">
+    <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
     </CommandPlacement>	  
 
@@ -1541,12 +1613,84 @@
   </CommandPlacements>
 
   <KeyBindings>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="S" mod2="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="R" mod1="CONTROL" key2="C" mod2="CONTROL"/>
-    <KeyBinding guid="guidVSStd11" id="cmdidExecuteLineInInteractive" editor="CMDUIGUID_R_EDITOR" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidVSStd97" key1="V" mod1="ALT SHIFT"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidVSStd97" key1="H" mod1="ALT SHIFT"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidVSStd97" key1="P" mod1="ALT SHIFT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidRToolsCmdSet" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="REditor" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="Global" key1="VK_RETURN" mod1="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="REditor" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="SolutionExplorer" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="Global" key1="L" mod1="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="guidRToolsCmdSet" key1="1" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="REditor" key1="1" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="InteractiveWindow" key1="1" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="SolutionExplorer" key1="1" mod1="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidRToolsCmdSet" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="REditor" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="InteractiveWindow" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="SolutionExplorer" key1="2" mod1="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="guidRToolsCmdSet" key1="3" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="REditor" key1="3" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="InteractiveWindow" key1="3" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="SolutionExplorer" key1="3" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="guidRToolsCmdSet" key1="4" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="REditor" key1="4" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="InteractiveWindow" key1="4" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHistoryWindow" editor="SolutionExplorer" key1="4" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="guidRToolsCmdSet" key1="5" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="REditor" key1="5" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="InteractiveWindow" key1="5" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowSolutionExplorer" editor="SolutionExplorer" key1="5" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="guidRToolsCmdSet" key1="6" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="REditor" key1="6" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="InteractiveWindow" key1="6" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="SolutionExplorer" key1="6" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="REditor" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="SolutionExplorer" key1="L" mod1="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="guidRToolsCmdSet" key1="VK_F12" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="REditor" key1="VK_F12" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="InteractiveWindow" key1="VK_F12" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdNextPlot" editor="SolutionExplorer" key1="VK_F12" mod1="CONTROL ALT"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="guidRToolsCmdSet" key1="VK_F11" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="REditor" key1="VK_F11" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="InteractiveWindow" key1="VK_F11" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdPrevPlot" editor="SolutionExplorer" key1="VK_F11" mod1="CONTROL ALT"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="guidRToolsCmdSet" key1="VK_F10" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="REditor" key1="VK_F10" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="InteractiveWindow" key1="VK_F10" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdResetRepl" editor="SolutionExplorer" key1="VK_F10" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="guidRToolsCmdSet" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="REditor" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="InteractiveWindow" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="SolutionExplorer" key1="S" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
+    
   </KeyBindings>
 
   <UsedCommands>
@@ -1559,12 +1703,8 @@
     <UsedCommand guid="guidVSStd2K" id="ECMD_HELP" />
     <UsedCommand guid="guidVSStd2K" id="ECMD_HELPKEYWORD" />
     <UsedCommand guid="guidVSStd97" id="cmdidF1Help" />
-    <!-- ECMD_OPENLINEABOVE is usually bound to Ctrl+Enter which R users want for 'Send to REPL -->
-    <UsedCommand guid="guidVSStd2K" id="ECMD_OPENLINEABOVE"/>
     <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionInterrupt" />
     <UsedCommand guid="guidVSStd11" id="cmdidInteractiveSessionRestart" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteSelectionInInteractive" />
-    <UsedCommand guid="guidVSStd11" id="cmdidExecuteLineInInteractive"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomIn"  />
     <UsedCommand guid="guidVSStd97" id="cmdidVsShellZoomOut"  />
   </UsedCommands>
@@ -1622,6 +1762,7 @@
       <IDSymbol name="icmdSurveyNews" value="407"/>
 
       <!-- REPL-->
+      <IDSymbol name="icmdSendToRepl" value="501" />
       <IDSymbol name="icmdLoadWorkspace" value="502" />
       <IDSymbol name="icmdSaveWorkspace" value="503" />
       <IDSymbol name="icmdSelectWorkingDirectory" value="504" />
@@ -1637,6 +1778,7 @@
       <IDSymbol name="icmdStepOut" value="514" />
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
+      <IDSymbol name="icmdClearRepl" value="517" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -1687,6 +1829,8 @@
       <IDSymbol name="icmdShowHistoryWindow" value="904" />
       <IDSymbol name="icmdShowPackagesWindow" value="905" />
       <IDSymbol name="icmdShowHelpWindow" value="906" />
+      <IDSymbol name="icmdShowEditorWindow" value="907" />
+      <IDSymbol name="icmdShowSolutionExplorer" value="908" />
 
       <!-- Help -->
       <IDSymbol name="icmdHelpPrevious" value="1100" />
@@ -1750,6 +1894,9 @@
       <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
 
+      <!-- Editor specific -->
+      <IDSymbol name="icmdInsertRoxygenBlock" value="9001" />
+
       <!-- Submenus-->
       <IDSymbol name="mainMenuGroup" value="0x100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
@@ -1762,6 +1909,7 @@
       <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
       <IDSymbol name="docsGroup" value="0x2302"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
+      <IDSymbol name="windowsSubMenuGroup2" value="0x2311"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
       <IDSymbol name="publishSubMenuGroup" value="0x2350"/>
@@ -1773,14 +1921,17 @@
       <IDSymbol name="rtvsDocsSubMenuGroup" value="0x2392"/>
       <IDSymbol name="rDocsSubMenu" value="0x2393"/>
       <IDSymbol name="rDocsSubMenuGroup" value="0x2394"/>
+      <IDSymbol name="rEditorDocumentationGroup" value="0x2395"/>
     </GuidSymbol>
 
-    <!-- R Editor Factory Guid -->
-    <GuidSymbol name="CMDUIGUID_R_EDITOR" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
-    <!-- Markdown Editor Factory Guid -->
-    <GuidSymbol name="CMDUIGUID_MD_EDITOR" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
+    <!-- Context Guids -->
+    <GuidSymbol name="REditor" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
+    <GuidSymbol name="InteractiveWindow" value="{2D0A56AA-9527-4B78-B6E6-EBE6E05DA749}"/>
+    <GuidSymbol name="SolutionExplorer" value="{3AE79031-E1BC-11D0-8F78-00A0C9110057}"/>
+    <GuidSymbol name="Global" value="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"/>
 
-    <GuidSymbol name="CMDUIGUID_HELP_WINDOW" value="{9E909526-A616-43B2-A82B-FD639DCD40CB}" />
+    <!-- Markdown Editor Factory Guid -->
+    <GuidSymbol name="guidMdEditor" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />
@@ -1792,8 +1943,12 @@
 
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
+      <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
       <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
+      <IDSymbol name="cmdidAbortExecution" value="0x0104"/>
+      <IDSymbol name="cmdidReset" value="0x0105"/>
+      <IDSymbol name="cmdidClearScreen" value="0x0108"/>
     </GuidSymbol>
 
     <GuidSymbol name="replWindowIconGuid" value="{440CC57F-1433-43FB-892E-ECE1A72201FD}">

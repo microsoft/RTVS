@@ -12,13 +12,13 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
-    internal class PlotWindowPane : ToolWindowPane, IVsWindowFrameNotify3 {
+    internal class PlotWindowPane : RToolWindowPane, IVsWindowFrameNotify3 {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
 
         // Anything below 200 pixels at fixed 96dpi is impractical, and prone to rendering errors

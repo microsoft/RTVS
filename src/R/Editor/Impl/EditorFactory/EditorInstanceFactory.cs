@@ -4,15 +4,12 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.EditorFactory
-{
+namespace Microsoft.R.Editor.EditorFactory {
     [Export(typeof(IEditorFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class EditorInstanceFactory : IEditorFactory

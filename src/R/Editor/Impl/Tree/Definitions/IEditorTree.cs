@@ -5,13 +5,11 @@ using System;
 using Microsoft.R.Core.AST;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Tree.Definitions
-{
+namespace Microsoft.R.Editor.Tree.Definitions {
     /// <summary>
     /// Editor document parse tree (object model)
     /// </summary>
-    public interface IEditorTree
-    {
+    public interface IEditorTree {
         /// <summary>
         /// Document text buffer
         /// </summary>
@@ -33,13 +31,6 @@ namespace Microsoft.R.Editor.Tree.Definitions
         /// buffer content
         /// </summary>
         AstRoot AstRoot { get; }
-
-        /// <summary>
-        /// Previous AST. May be used in cases when parsing is not acceptable
-        /// due to performance hit and full tree fidelity is not required
-        /// such as in determining smart indent on Enter. 
-        /// </summary>
-        AstRoot PreviousAstRoot { get; }
 
         /// <summary>
         /// Event fires when there are text changes pending in the change queue.
@@ -114,8 +105,7 @@ namespace Microsoft.R.Editor.Tree.Definitions
         /// text replace operations in order to simplify life
         /// of the background parser
         /// </summary>
-        /// <returns></returns>
-        int Invalidate();
+        void Invalidate();
 
         /// <summary>
         /// Ensures tree is up to date, matches current text buffer snapshot

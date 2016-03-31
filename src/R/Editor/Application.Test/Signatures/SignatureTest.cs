@@ -6,7 +6,6 @@ using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;

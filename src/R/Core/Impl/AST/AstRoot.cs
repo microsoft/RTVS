@@ -53,6 +53,14 @@ namespace Microsoft.R.Core.AST {
             return node ?? this;
         }
 
+        /// <summary>
+        /// Finds deepest element node that contains given position
+        /// </summary>
+        /// <param name="position">Position</param>
+        public override IAstNode NodeFromRange(ITextRange range, bool inclusiveEnd = false) {
+            IAstNode node = base.NodeFromRange(range, inclusiveEnd);
+            return node ?? this;
+        }
         #endregion
 
         #region ITextRange

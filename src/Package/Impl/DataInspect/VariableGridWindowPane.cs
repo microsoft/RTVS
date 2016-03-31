@@ -3,12 +3,12 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Guid("3F6855E6-E2DB-46F2-9820-EDC794FE8AFE")]
-    public class VariableGridWindowPane : ToolWindowPane {
+    internal sealed class VariableGridWindowPane : RToolWindowPane {
         private VariableGridHost _gridHost;
 
         public VariableGridWindowPane() {

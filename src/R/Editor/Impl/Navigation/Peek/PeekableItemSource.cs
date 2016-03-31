@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;

@@ -43,8 +43,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         public bool TryCreateContext(ITextView textView, SnapshotPoint openingPoint, char openingBrace, char closingBrace, out IBraceCompletionContext context) {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(openingPoint.Snapshot.TextBuffer);
             if (document != null) {
-                var et = document.EditorTree;
-                var ast = et.GetCurrentRootOrPreviousIfNotReady();
+                var ast = document.EditorTree.AstRoot;
 
                 // We don't want to complete inside strings
                 if (ast.IsPositionInsideString(openingPoint.Position)) {

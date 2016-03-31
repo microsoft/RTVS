@@ -13,6 +13,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
@@ -73,17 +74,23 @@ namespace Microsoft.R.Editor.Test.Completions {
                 .Which.Description.Should().Be("Approximate String Distances");
         }
 
-        [Test]
-        public void Comments01() {
+        [CompositeTest]
+        [InlineData("#No", 3)]
+        [InlineData("\"i \"", 2)]
+        [InlineData("'i '", 2)]
+        [InlineData("iii ", 2)]
+        [InlineData("`i `", 2)]
+        [InlineData("2. ", 2)]
+        public void SuppressedCompletion(string content, int position) {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("#No", 3, completionSets);
+            GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle()
                 .Which.Completions.Should().BeEmpty();
         }
 
         [Test]
-        public void Comments02() {
+        public void BeforeComment() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
@@ -249,7 +256,11 @@ aaa456 <- function() { }
 aa
 }";
             GetCompletions(content, content.IndexOf('#') + 4, completionSets);
+            completionSets.Should().ContainSingle();
+            completionSets[0].Completions.Should().BeEmpty();
 
+            completionSets.Clear();
+            GetCompletions(content, content.IndexOf('#') + 5, completionSets);
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
 

@@ -3,7 +3,6 @@
 
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;

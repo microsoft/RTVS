@@ -4,6 +4,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.View;
+using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

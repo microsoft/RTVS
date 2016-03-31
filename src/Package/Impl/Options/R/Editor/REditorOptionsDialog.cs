@@ -124,16 +124,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
         }
 
         [LocCategory("Settings_ReplCategory")]
-        [CustomLocDisplayName("Settings_SendToRepl")]
-        [LocDescription("Settings_SendToRepl_Description")]
-        [TypeConverter(typeof(ReplShortcutTypeConverter))]
-        [DefaultValue(true)]
-        public bool SendToReplOnCtrlEnter {
-            get { return REditorSettings.SendToReplOnCtrlEnter; }
-            set { REditorSettings.SendToReplOnCtrlEnter = value; }
-        }
-
-        [LocCategory("Settings_ReplCategory")]
         [CustomLocDisplayName("Settings_ReplSyntaxCheck")]
         [LocDescription("Settings_ReplSyntaxCheck_Description")]
         [TypeConverter(typeof(OnOffTypeConverter))]

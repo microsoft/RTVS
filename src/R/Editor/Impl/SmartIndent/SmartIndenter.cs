@@ -106,8 +106,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 if (document == null) {
                     return 0;
                 }
-                var et = document.EditorTree;
-                ast = et.GetCurrentRootOrPreviousIfNotReady();
+                ast = document.EditorTree.AstRoot;
             }
 
             // The challenge here is to find scope to base the indent on.
@@ -135,10 +134,12 @@ namespace Microsoft.R.Editor.SmartIndent {
             if (prevLine.Length > 0) {
                 var fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
                 if (fc != null && fc.Arguments != null && fc.OpenBrace != null) {
-                    // We only want to indent here if position is in arguments
-                    // and not in the function scope.
-                    if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                        return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                    if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
+                        // We only want to indent here if position is in arguments
+                        // and not in the function scope.
+                        if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
+                            return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                        }
                     }
                 }
             }
@@ -159,6 +160,12 @@ namespace Microsoft.R.Editor.SmartIndent {
                     // Try end of the line instead
                     var lastNonWsOnPreviousLine = Math.Max(0, prevLineText.TrimEnd().Length - 1);
                     scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(lastNonWsOnPreviousLine);
+                    // Verify that line we are asked to provide the smart indent for is actually inside 
+                    // this scope since we could technically find end of x <- function(a) {}
+                    // when we went up one line.
+                    if(scopeStatement1?.Scope?.CloseCurlyBrace != null && !scopeStatement1.Contains(line.Start)) {
+                        scopeStatement1 = null; // line is outside of this scope.
+                    }
                 }
             }
 

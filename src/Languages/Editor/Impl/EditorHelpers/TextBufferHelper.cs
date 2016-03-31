@@ -198,5 +198,61 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
 
             return true;
         }
+
+        /// <summary>
+        /// Given top-level text buffer (i.e. view buffer) maps location down
+        /// the buffer graph to the project buffer of the specified content type, if any.
+        /// </summary>
+        public static SnapshotPoint? MapDown(this ITextBuffer viewBuffer, SnapshotPoint viewPoint, string contentTypeName) {
+            if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
+                return viewPoint;
+            } else {
+                var pb = viewBuffer as IProjectionBuffer;
+                var targetBuffer = pb?.SourceBuffers.FirstOrDefault(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName));
+                if (targetBuffer != null) {
+                    var bg = viewBuffer.GetBufferGraph();
+                    return bg?.MapDownToBuffer(viewPoint, PointTrackingMode.Positive, targetBuffer, PositionAffinity.Successor);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Given top-level text buffer (i.e. view buffer) and location in the projected
+        /// buffer maps location up the buffer graph from the buffer of the specified
+        /// content type to the view buffer.
+        /// </summary>
+        public static SnapshotPoint? MapUp(this ITextBuffer viewBuffer, SnapshotPoint sourcePoint, string contentTypeName) {
+            if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
+                return sourcePoint;
+            } else {
+                var bg = viewBuffer.GetBufferGraph();
+                return bg?.MapUpToBuffer(sourcePoint, PointTrackingMode.Positive, PositionAffinity.Successor, viewBuffer);
+            }
+        }
+
+        /// <summary>
+        /// Given top-level text buffer (i.e. view buffer) and location in the projected
+        /// buffer maps location up the buffer graph from the buffer of the specified
+        /// content type to the view buffer.
+        /// </summary>
+        public static SnapshotSpan? MapUp(this ITextBuffer viewBuffer, Span sourceSpan, string contentTypeName) {
+            if (viewBuffer.ContentType.TypeName.EqualsOrdinal(contentTypeName)) {
+                return new SnapshotSpan(viewBuffer.CurrentSnapshot, sourceSpan);
+            } else {
+                var bg = viewBuffer.GetBufferGraph();
+                var sourceBuffer = (viewBuffer as IProjectionBuffer)?.SourceBuffers.FirstOrDefault(x => x.ContentType.TypeName.EqualsOrdinal(contentTypeName));
+                var spans = bg?.MapUpToBuffer(new SnapshotSpan(sourceBuffer.CurrentSnapshot, sourceSpan), SpanTrackingMode.EdgePositive, viewBuffer);
+                return spans?.FirstOrDefault();
+            }
+        }
+
+        /// <summary>
+        /// Given view buffer (top-level buffer in the projection tree) returns buffer graph.
+        /// </summary>
+        public static IBufferGraph GetBufferGraph(this ITextBuffer viewBuffer) {
+            var pb = viewBuffer as IProjectionBuffer;
+            return pb?.Properties.PropertyList.FirstOrDefault(x => x.Value is IBufferGraph).Value as IBufferGraph;
+        }
     }
 }

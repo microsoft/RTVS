@@ -426,8 +426,8 @@ namespace Microsoft.R.Support.RD.Tokens {
         internal void SkipKeyword() {
             Tokenizer.SkipIdentifier(
                 _cs,
-                (CharacterStream cs) => { return _cs.IsAnsiLetter(); },
-                (CharacterStream cs) => { return (_cs.IsAnsiLetter() || _cs.IsDecimal()); });
+                (CharacterStream cs) => { return _cs.IsLetter(); },
+                (CharacterStream cs) => { return (_cs.IsLetter() || _cs.IsDecimal()); });
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace Microsoft.R.Support.RD.Tokens {
         }
 
         private bool IsIdentifierCharacter() {
-            return (_cs.IsAnsiLetter() || _cs.IsDecimal());
+            return (_cs.IsLetter() || _cs.IsDecimal());
         }
     }
 }

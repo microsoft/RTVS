@@ -6,7 +6,9 @@ using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -16,11 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
 
         public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
-            base(textView, new[] {
-                new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteLineInInteractive),
-                new CommandId(VSConstants.VsStd11, (int)VSConstants.VSStd11CmdID.ExecuteSelectionInInteractive)
-            }, false) {
-
+            base(textView, new CommandId(RGuidList.RCmdSetGuid, (int)RPackageCommandId.icmdSendToRepl), false) { 
             _interactiveWorkflow = interactiveWorkflow;
         }
 

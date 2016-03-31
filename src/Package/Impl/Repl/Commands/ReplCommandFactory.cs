@@ -10,6 +10,7 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
@@ -23,6 +24,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             var editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
 
+            GlobalShortcutSettings.SetBindings();
+
             return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
                 new WorkingDirectoryCommand(interactiveWorkflow),
@@ -31,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new FormatSelectionCommand(textView, textBuffer),
                 new FormatOnPasteCommand(textView, textBuffer),
                 new SendToReplCommand(textView, interactiveWorkflow),
+                new ClearReplCommand(textView, interactiveWorkflow),
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),

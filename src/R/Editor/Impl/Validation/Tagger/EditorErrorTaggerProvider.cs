@@ -4,16 +4,13 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
-using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Validation.Tagger
-{
+namespace Microsoft.R.Editor.Validation.Tagger {
     [Export(typeof(ITaggerProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [TagType(typeof(ErrorTag))]

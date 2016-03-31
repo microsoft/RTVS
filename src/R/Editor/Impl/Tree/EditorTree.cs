@@ -11,6 +11,8 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -26,7 +28,7 @@ namespace Microsoft.R.Editor.Tree {
     /// validation (syntx check) thread.
     /// </summary>
     public partial class EditorTree : IEditorTree, IDisposable {
-        
+
         #region IEditorTree
         /// <summary>
         /// Visual Studio core editor text buffer
@@ -46,13 +48,6 @@ namespace Microsoft.R.Editor.Tree {
                 return _astRoot;
             }
         }
-
-        /// <summary>
-        /// Previous AST. May be used in cases when parsing is not acceptable
-        /// due to performance hit and full tree fidelity is not required
-        /// such as in determining smart indent on Enter. 
-        /// </summary>
-        public AstRoot PreviousAstRoot { get; private set; }
 
         /// <summary>
         /// Returns true if tree matches current document snapshot
@@ -118,7 +113,7 @@ namespace Microsoft.R.Editor.Tree {
                 action(p);
             } else {
                 _actionsToInvokeOnReady[type] = new TreeReadyAction() { Action = action, Parameter = p };
-                if(processNow) {
+                if (processNow) {
                     TreeUpdateTask.ProcessPendingTextBufferChanges(async: true);
                 }
             }
@@ -268,98 +263,79 @@ namespace Microsoft.R.Editor.Tree {
         }
 
         /// <summary>
-        /// Removes nodes from the tree collection if node range is 
-        /// // partially or entirely within the deleted region.
-        /// This is needed since parsing is asynchronous and without
-        /// removing damaged nodes so intellisense will still be able
-        /// to find them in the tree which actually they are gone.
-        /// Returns true if full parse required.
+        /// Removes nodes from the tree collection if node range is partially or entirely 
+        /// within the deleted region. This is needed since parsing is asynchronous and 
+        /// without node removal intellisense and syntax checker may end up processing
+        /// nodes that are out of date. Where possible stops at the nearest scope level
+        /// so scope nodes may still be used in smart indenter.
         /// </summary>
-        /// <param name="node">Node to start from</param>
         /// <param name="range">Range to invalidate elements in</param>
-        internal bool InvalidateInRange(IAstNode node, ITextRange range, out bool nodesChanged) {
+        internal bool InvalidateInRange(ITextRange range) {
             var removedElements = new List<IAstNode>();
-            bool fullParseRequired = false;
             int firstToRemove = -1;
             int lastToRemove = -1;
 
-            nodesChanged = false;
-
-            for (int i = 0; i < node.Children.Count; i++) {
-                var child = node.Children[i];
-                bool removeChild = false;
-
-                if (range.Start == child.Start && range.Length == 0) {
-                    // Change is right before the node
+            var node = AstRoot.NodeFromRange(range);
+            var scope = node as IScope;
+            while (scope == null || scope.OpenCurlyBrace == null || scope.CloseCurlyBrace == null ||
+                    TextRange.Intersect(range, scope.OpenCurlyBrace) || TextRange.Intersect(range, scope.CloseCurlyBrace)) {
+                scope = node.GetEnclosingScope();
+                if(scope is GlobalScope) {
                     break;
                 }
+                node = scope;
+            }
 
-                if (!removeChild && TextRange.Intersect(range, child)) {
-                    bool childElementsChanged;
-
-                    if (child is TokenNode) {
-                        childElementsChanged = true;
-                        fullParseRequired = true;
-                        nodesChanged = true;
-                    } else {
-                        fullParseRequired |= InvalidateInRange(child, range, out childElementsChanged);
-                        if (childElementsChanged) {
-                            nodesChanged = true;
-                        }
-                    }
-
-                    removeChild = true;
-                }
-
-                if (removeChild) {
-                    if (firstToRemove < 0)
+            for (int i = 0; i < scope.Children.Count; i++) {
+                var child = scope.Children[i];
+                if (TextRange.Intersect(range, child)) {
+                    if (firstToRemove < 0) {
                         firstToRemove = i;
-
-                    lastToRemove = i;
+                    } else {
+                        lastToRemove = i;
+                    }
                 }
             }
 
             if (firstToRemove >= 0) {
+                if(lastToRemove < 0) {
+                    lastToRemove = firstToRemove;
+                }
                 for (int i = firstToRemove; i <= lastToRemove; i++) {
-                    IAstNode child = node.Children[i];
+                    IAstNode child = scope.Children[i];
                     removedElements.Add(child);
-
                     _astRoot.Errors.RemoveInRange(child);
                 }
-
-                node.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
+                scope.RemoveChildren(firstToRemove, lastToRemove - firstToRemove + 1);
             }
 
             if (removedElements.Count > 0) {
-                nodesChanged = true;
                 FireOnNodesRemoved(removedElements);
+                return true;
             }
 
-            return fullParseRequired;
+            return false;
         }
 
         /// <summary>
         /// Removes all elements from the tree
         /// </summary>
         /// <returns>Number of removed elements</returns>
-        public int Invalidate() {
+        public void Invalidate() {
             // make sure not to use RootNode property since
             // calling get; causes parse
             List<IAstNode> removedNodes = new List<IAstNode>();
-            foreach (var child in _astRoot.Children) {
-                removedNodes.Add(child);
-            }
-
             if (_astRoot.Children.Count > 0) {
-                PreviousAstRoot = _astRoot;
+                var gs = _astRoot.Children[0] as GlobalScope;
+                foreach (var child in gs.Children) {
+                    removedNodes.Add(child);
+                }
+                gs.RemoveChildren(0, gs.Children.Count);
             }
-            _astRoot = new AstRoot(_astRoot.TextProvider);
 
             if (removedNodes.Count > 0) {
                 FireOnNodesRemoved(removedNodes);
             }
-
-            return removedNodes.Count;
         }
 
         #region Tree Access

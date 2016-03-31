@@ -256,14 +256,9 @@ namespace Microsoft.R.Editor.Tree {
                     textChange.NewRange = TextRange.FromBounds(0, context.NewText.Length);
 
                     // Remove damaged elements if any and reflect text change.
-                    // Although we are invalidating the AST next, old copy will
-                    // be kept for operations that may need it such as smart indent.
-                    bool elementsChanged;
-                    _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                    // the tree remains usable outside of the damaged scope.
+                    bool elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                     _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
-                    // Invalidate will store existing AST as previous snapshot
-                    // and create temporary empty AST until the next async parse.
-                    _editorTree.Invalidate();
                 } else {
                     textChange.OldRange = context.OldRange;
                     textChange.NewRange = context.NewRange;
@@ -318,18 +313,15 @@ namespace Microsoft.R.Editor.Tree {
                 bool deleteElements = (context.OldLength > 0) || (positionType != PositionType.Token);
 
                 // In case of delete or replace we need to invalidate elements that were 
-                // damaged by the delete operation. We need to remove elements and their keys 
-                // so they won't be found by validator and incremental change analysis 
-                // will not be looking at zombies.
-
+                // damaged by the delete operation. We need to remove elements so they 
+                // won't be found by validator and it won't be looking at zombies.
                 if (deleteElements) {
-                    _pendingChanges.FullParseRequired =
-                        _editorTree.InvalidateInRange(_editorTree.AstRoot, context.OldRange, out elementsChanged);
+                    _pendingChanges.FullParseRequired = true;
+                    elementsChanged = _editorTree.InvalidateInRange(context.OldRange);
                 }
             }
 
             _editorTree.NotifyTextChange(context.NewStart, context.OldLength, context.NewLength);
-
             return elementsChanged;
         }
 
