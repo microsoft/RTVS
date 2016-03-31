@@ -11,7 +11,7 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Selection {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class DocumentatonTest {
+    public class DocumentationTest {
         [Test]
         [Category.Interactive]
         public void InsertRoxygenBlock() {

@@ -168,6 +168,8 @@ namespace Microsoft.R.Editor {
             if (token.TokenType == RTokenType.Operator) {
                 if (token.Length == 1) {
                     return lineText[token.Start] == '$' || lineText[token.Start] == '@';
+                } else if (token.Length == 2) {
+                    return lineText[token.Start] == ':' && lineText[token.Start + 1] == ':';
                 }
             }
             return false;

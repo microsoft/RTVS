@@ -46,6 +46,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("`a bc` `d ef `$", 15, "`d ef `$")]
         [InlineData("x$+y$", 5, "y$")]
         [InlineData("x$+`y y`$", 9, "`y y`$")]
+        [InlineData("a::b$`z`", 8, "a::b$`z`")]
         public void GetVariableBeforeCaret(string content, int caretPosition, string expected) {
             var textView = MakeTextView(content, caretPosition);
             string actual = textView.GetVariableNameBeforeCaret();
