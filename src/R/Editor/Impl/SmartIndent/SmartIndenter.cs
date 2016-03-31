@@ -100,8 +100,9 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// </summary>
         /// <param name="line">Line to find the indent for</param>
         /// <param name="ast">Optional AST</param>
+        /// <param name="originalIndentSizeInSpaces">Original user indentation in spaces</param>
         /// <returns>Level of indent in spaces</returns>
-        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null) {
+        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, int originalIndentSizeInSpaces = -1) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
 
@@ -170,8 +171,15 @@ namespace Microsoft.R.Editor.SmartIndent {
                                 return GetBlockIndent(line);
                             } else {
                                 // Second line. Need to figure out if we should align arguments
-                                // by the first one or respect current user indentation.
-                                return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                                // by the first one or respect current user indentation. In the smart
+                                // idndet case (i.e. when user hits Enter and the line is empty) we align
+                                // arguments by the first argument. In the auto-format case we keep existing
+                                // indentation as set by the user.
+                                if (originalIndentSizeInSpaces < 0 || string.IsNullOrWhiteSpace(line.GetText())) {
+                                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                                } else {
+                                    return originalIndentSizeInSpaces;
+                                }
                             }
                         }
                     }

@@ -353,5 +353,36 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 actual.Should().Be(expected);
             }
         }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition03() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text1 = "x <-function(x, y,{ENTER}";
+                string text2 = "a,b,";
+                string text3 = "c, d)";
+
+                script.Type(text1);
+                script.DoIdle(300);
+
+                script.Backspace();
+                script.Backspace();
+                script.Backspace();
+                script.Backspace();
+
+                script.DoIdle(300);
+                script.Type(text2);
+                script.Enter();
+
+                script.Type(text3);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"         a, b,\r\n" +
+"         c, d)";
+                actual.Should().Be(expected);
+            }
+        }
     }
 }
