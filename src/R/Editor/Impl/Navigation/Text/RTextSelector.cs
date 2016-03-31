@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Navigation.Text {
         }
 
         private static bool IsSeparator(char ch) {
-            return char.IsWhiteSpace(ch) || ch == '\'' || ch == '\"' || ch == '\\';
+            return !char.IsLetterOrDigit(ch);
         }
     }
 }
