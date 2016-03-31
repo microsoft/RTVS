@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
             dlg.ShowModal();
 
             if (!string.IsNullOrEmpty(dlg.DownloadFilePath)) {
-                var importDlg = new ImportDataWindow(dlg.DownloadFilePath, dlg.Name);
+                var importDlg = new ImportDataWindow(dlg.DownloadFilePath, dlg.VariableName);
                 importDlg.ShowModal();
             }
 

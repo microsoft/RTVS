@@ -74,8 +74,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession),
-                new ImportDataSetUrlCommand(VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession),
+                new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),
+                new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),

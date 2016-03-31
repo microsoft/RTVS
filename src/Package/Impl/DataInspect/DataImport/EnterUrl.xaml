@@ -7,7 +7,8 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="Height" Width="700">
+        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="Height" Width="700"
+        FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
     <StackPanel>
         <Grid Margin="6,3,3,3">
             <Grid.ColumnDefinitions>
@@ -20,6 +21,9 @@
 
         <ProgressBar Margin="6"
                      x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
+
+        <TextBlock Margin="3"
+                   x:Name="ErrorTextBlock" Visibility="Collapsed" />
 
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
             <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>

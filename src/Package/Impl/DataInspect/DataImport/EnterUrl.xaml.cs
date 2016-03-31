@@ -20,15 +20,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         public string DownloadFilePath { get; private set; }
 
-        public string Name { get; private set; }
+        public string VariableName { get; private set; }
 
         public void DeleteTemporaryFile() {
             if (!string.IsNullOrEmpty(DownloadFilePath)) {
                 try {
-                    if (File.Exists(DownloadFilePath)) {
-                        File.Delete(DownloadFilePath);
-                        DownloadFilePath = null;
-                    }
+                    File.Delete(DownloadFilePath);
+                    DownloadFilePath = null;
                 } catch {
                 }
             }
@@ -37,7 +35,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         private void OkButton_Click(object sender, RoutedEventArgs e) {
             OkButton.IsEnabled = false;
             CancelButton.IsEnabled = false;
+            DownloadProgressBar.Value = 0;
             DownloadProgressBar.Visibility = Visibility.Visible;
+            ErrorTextBlock.Visibility = Visibility.Collapsed;
+            ErrorTextBlock.Text = null;
             RunAsync().DoNotWait();
         }
 
@@ -56,8 +57,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 }
 
                 DownloadFilePath = temporaryFile;
-                Name = Path.GetFileNameWithoutExtension(uri.Segments[uri.Segments.Length - 1]);
-                OnSuccess(false);
+                VariableName = Path.GetFileNameWithoutExtension(uri.Segments[uri.Segments.Length - 1]);
+                OnSuccess();
             } catch (Exception ex) {
                 OnError(ex.Message);
             }
@@ -67,16 +68,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             DownloadProgressBar.Value = e.ProgressPercentage;
         }
 
-        private void OnSuccess(bool preview) {
-            if (preview) {
-            } else {
-                base.Close();
-            }
+        private void OnSuccess() {
+            base.Close();
         }
 
         private void OnError(string errorText) {
             OkButton.IsEnabled = true;
             CancelButton.IsEnabled = true;
+            DownloadProgressBar.Visibility = Visibility.Collapsed;
+            ErrorTextBlock.Text = errorText;
+            ErrorTextBlock.Visibility = Visibility.Visible;
         }
     }
 }
