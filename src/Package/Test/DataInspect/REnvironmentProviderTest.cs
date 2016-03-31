@@ -72,6 +72,31 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             });
         }
 
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task GetREnvironmentFunction3Test() {
+            await RunEnvironmentTestAsync("bar<-function(x){foo<-function(y){browser();x+y;};return(foo);};foo<-bar(1);print(foo(2));", (environments) => {
+                environments.Count.Should().BeGreaterOrEqualTo(3);
+                environments[0].Name.Should().Be("foo");
+                environments[0].FrameIndex.HasValue.Should().BeTrue();
+                environments[0].FrameIndex.Should().Be(2);
+                environments[1].Name.Should().Be(".GlobalEnv");
+                environments[environments.Count - 1].Name.Should().Be("package:base");
+            });
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task GetREnvironmentFunction4Test() {
+            await RunEnvironmentTestAsync("x<-new.env();attach(x);", (environments) => {
+                environments.Count.Should().BeGreaterOrEqualTo(3);
+                environments[0].Name.Should().Be(".GlobalEnv");
+                environments[1].Name.Should().Be("x");
+                environments[0].FrameIndex.HasValue.Should().BeFalse();
+                environments[environments.Count - 1].Name.Should().Be("package:base");
+            });
+        }
+
         private  async Task RunEnvironmentTestAsync(string expression, Action<IReadOnlyList<REnvironment>> assert) {
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var environmentChanged = new CountdownEvent(3);

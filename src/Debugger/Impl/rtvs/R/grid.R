@@ -122,7 +122,8 @@ getEnvironments <- function(env) {
 
   while (!identical(curEnv, emptyenv())) {
     repr <- getEnvRepr(curEnv, higherThanGlobal);
-    if (repr$name != "Autoloads"
+    if (nchar(repr$name) > 0
+      && repr$name != "Autoloads"
       && repr$name != "rtvs::graphics::ide") {
       envs[[length(envs) + 1]] <- repr;
     }
