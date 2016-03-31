@@ -19,11 +19,7 @@ packages.available <- function() {
 }
 
 packages.loaded <- function() {
-    prefix <- "package:"
-    prefix.length <- base::nchar(prefix)
-    loaded <- base::search()
-    pkgs <- base::substring(loaded[base::substring(loaded, 1, prefix.length) == prefix], prefix.length + 1)
-    base::as.list(pkgs)
+    base::as.list(base::.packages())
 }
 
 packages.libpaths <- function() {
