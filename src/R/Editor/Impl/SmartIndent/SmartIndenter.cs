@@ -92,6 +92,15 @@ namespace Microsoft.R.Editor.SmartIndent {
             return 0;
         }
 
+        /// <summary>
+        /// Determines level of indentation in the line from AST and surrounding context.
+        /// Called when user hits ENTER and editor needs to know level of indentation in
+        /// the new line as well as when code is being auto-formatted and range formatter
+        /// needs to know how to indent freshly formatted lines of code.
+        /// </summary>
+        /// <param name="line">Line to find the indent for</param>
+        /// <param name="ast">Optional AST</param>
+        /// <returns>Level of indent in spaces</returns>
         public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
@@ -138,9 +147,8 @@ namespace Microsoft.R.Editor.SmartIndent {
                         // We only want to indent here if position is in arguments
                         // and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            // Check if previous line first non-whitespace is in the function arguments. 
-                            // If so, use block indent so caret will be where previous set of arguments begins.
-                            // Examples:
+                            // Behavior depends on which line are we at. The challenge is in the second line \
+                            // of the function arguments. Examples:
                             //
                             //  x <- function(a, b, c<ENTER>
                             //                |
@@ -148,17 +156,22 @@ namespace Microsoft.R.Editor.SmartIndent {
                             //           c, d<ENTER>
                             //           |
                             //
-                            if (line.Length > 0) {
-                                // Autoformat case. Pure smart indent has length of 0 since it is a new line.
-                                // In autoformat we respect user indentation.
-                                return line.Length - line.GetText().TrimStart().Length;
+                            // Indentation depends if this is new empty line, then default is to align with the
+                            // first arguments. However, if user decided not to align arguments this way, then
+                            // thirs line of arguments aligns with the second line. Difficulties come during
+                            // formatting: we don't know what was the original indent when automatic formatter
+                            // is asking about indent of the second line of function arguments.
+
+                            var fcPrevLine = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.Start);
+                            if (fcPrevLine == fc && fc.OpenBrace.End < prevLine.Start) {
+                                // Previous line stat belongs to the same function and list of arguments.
+                                // this means we are at the third line of arguments. Make indent based
+                                // on the previous line then.
+                                return GetBlockIndent(line);
                             } else {
-                                var fcPrevLine = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.Start);
-                                if (fcPrevLine == fc && fc.OpenBrace.End < prevLine.Start) {
-                                    return GetBlockIndent(line);
-                                } else {
-                                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
-                                }
+                                // Second line. Need to figure out if we should align arguments
+                                // by the first one or respect current user indentation.
+                                return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
                             }
                         }
                     }
@@ -168,7 +181,7 @@ namespace Microsoft.R.Editor.SmartIndent {
             // Candidate position #1 is first non-whitespace character
             // in the the previous line
             int startOfNoWsOnPreviousLine = prevLine.Start + (prevLineText.Length - prevLineText.TrimStart().Length) + 1;
-            
+
             // Try current new line so in case of 'if () { } else { | }' we find
             // the 'else' which defines the scope and not the parent 'if'.
             var scopeStatement1 = ast.GetNodeOfTypeFromPosition<IAstNodeWithScope>(line.Start);
@@ -184,7 +197,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                     // Verify that line we are asked to provide the smart indent for is actually inside 
                     // this scope since we could technically find end of x <- function(a) {}
                     // when we went up one line.
-                    if(scopeStatement1?.Scope?.CloseCurlyBrace != null && !scopeStatement1.Contains(line.Start)) {
+                    if (scopeStatement1?.Scope?.CloseCurlyBrace != null && !scopeStatement1.Contains(line.Start)) {
                         scopeStatement1 = null; // line is outside of this scope.
                     }
                 }
@@ -214,9 +227,9 @@ namespace Microsoft.R.Editor.SmartIndent {
             //      |
             // }
             // the indent in scope is defined by the function and not by the opening {
-            if(scope != null) {
+            if (scope != null) {
                 var parentStarement = scope.Parent as IAstNodeWithScope;
-                if(parentStarement != null && parentStarement.Scope == scope) {
+                if (parentStarement != null && parentStarement.Scope == scope) {
                     scopeStatement = parentStarement;
                     scope = null;
                 }
