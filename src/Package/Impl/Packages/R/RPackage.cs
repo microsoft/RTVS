@@ -49,6 +49,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
+    [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 20116)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
@@ -64,7 +65,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
-    [ProvideKeyBindingTable(RGuidList.RCmdSetGuidString, 20116)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
@@ -150,7 +150,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p.SaveSettings();
             }
 
-            GlobalShortcutSettings.RestoreBindings();
             base.Dispose(disposing);
         }
 

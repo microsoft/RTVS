@@ -23,15 +23,15 @@ namespace Microsoft.R.Editor.Commands {
         }
 
         #region ICommand
-        public override void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
+
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (group == VSConstants.VSStd2K) {
                 char typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsAutoformatTriggerCharacter(typedChar)) {
                     AutoFormat.HandleAutoformat(TextView, typedChar);
                 }
-
-                base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
             }
+            return base.Invoke(group, id, inputArg, ref outputArg);
         }
         #endregion
 

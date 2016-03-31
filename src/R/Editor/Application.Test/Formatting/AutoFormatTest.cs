@@ -111,7 +111,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("{ENTER}");
                 script.Type("}}");
 
-                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
+                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -141,7 +141,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-                script.Type("x <-function(a,{ENTER}{TAB}b){ENTER}{");
+                script.Type("x <-function(a,{ENTER}b){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
@@ -379,8 +379,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
                 string expected =
 "x <- function(x, y,\r\n" +
-"         a, b,\r\n" +
-"         c, d)";
+"          a, b,\r\n" +
+"          c, d)";
                 actual.Should().Be(expected);
             }
         }

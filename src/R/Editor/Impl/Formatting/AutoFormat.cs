@@ -18,11 +18,9 @@ namespace Microsoft.R.Editor.Formatting {
         public static bool IsAutoformatTriggerCharacter(char ch) {
             return ch == '\n' || ch == '\r' || ch == ';' || ch == '}';
         }
-        public static bool IgnoreOnce { get; set; }
 
         public static void HandleAutoformat(ITextView textView, char typedChar) {
-            if (!REditorSettings.AutoFormat || IgnoreOnce) {
-                IgnoreOnce = false;
+            if (!REditorSettings.AutoFormat) {
                 return;
             }
 
@@ -47,12 +45,12 @@ namespace Microsoft.R.Editor.Formatting {
                 // autoformatting in this specific case. User can always format either the document
                 // or select the block and reformat it.
                 if (!IsBetweenCurlyAndElse(subjectBuffer, rPoint.Value.Position)) {
-                    var scopeStatement = GetFormatScope(textView, subjectBuffer, ast, -1);
+                    var scopeStatement = GetFormatScope(textView, subjectBuffer, ast);
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, scopeStatement);
                     } else {
-                        FormatOperations.FormatLine(textView, subjectBuffer, -1);
+                        FormatOperations.FormatLine(textView, subjectBuffer);
                     }
                 }
             } else if (typedChar == ';') {
@@ -62,7 +60,7 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatLine(textView, subjectBuffer, 0);
+                    FormatOperations.FormatLine(textView, subjectBuffer);
                 }
             } else if (typedChar == '}') {
                 FormatOperations.FormatCurrentStatement(textView, subjectBuffer);
@@ -101,12 +99,12 @@ namespace Microsoft.R.Editor.Formatting {
             );
         }
 
-        private static IKeywordScopeStatement GetFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast, int lineOffset) {
+        private static IKeywordScopeStatement GetFormatScope(ITextView textView, ITextBuffer textBuffer, AstRoot ast) {
             SnapshotPoint? caret = REditorDocument.MapCaretPositionFromView(textView);
             if (caret.HasValue) {
                 try {
                     int lineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(caret.Value.Position);
-                    ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(Math.Max(lineNumber - 1, 0));
+                    ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
                     string lineText = line.GetText();
                     if (lineText.TrimEnd().EndsWith("}", StringComparison.Ordinal)) {
                         IKeywordScopeStatement scopeStatement = ast.GetNodeOfTypeFromPosition<IKeywordScopeStatement>(caret.Value);
