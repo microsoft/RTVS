@@ -281,16 +281,13 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 }
 
                 string[] results = await _workflow.Packages.GetLoadedPackagesAsync();
-                results.Should().NotContain("rtvslib1");
-                results.Should().NotContain(".GlobalEnv");
-                results.Should().NotContain("Autoloads");
-                results.Should().Contain("stats");
-                results.Should().Contain("graphics");
-                results.Should().Contain("grDevices");
-                results.Should().Contain("utils");
-                results.Should().Contain("datasets");
-                results.Should().Contain("methods");
-                results.Should().Contain("base");
+                results.Should().NotContain(new string[] {
+                    "rtvslib1", ".GlobalEnv", "Autoloads",
+                });
+                results.Should().Contain(new string[] {
+                    "stats", "graphics", "grDevices", "grDevices",
+                    "utils", "datasets", "methods", "base",
+                });
             }
         }
 
