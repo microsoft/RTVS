@@ -81,6 +81,8 @@ UpgradeLog*.htm
 *.ldf
 src/R.opensdf
 src/R.sdf
+src/R.VC.VC.opendb
+src/R.VC.db
 
 # R files
 .Rproj.user
