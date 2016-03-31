@@ -32,8 +32,7 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             var document = REditorDocument.FromTextBuffer(textView.TextBuffer);
-            var et = document.EditorTree;
-            var ast = et.GetCurrentRootOrPreviousIfNotReady();
+            var ast = document.EditorTree.AstRoot;
 
             // We don't want to auto-format inside strings
             if (ast.IsPositionInsideString(rPoint.Value.Position)) {

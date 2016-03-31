@@ -7,11 +7,10 @@ using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package {
-    internal abstract class ToolWindowPaneFactory<T> where T : ToolWindowPane, IVisualComponentContainer<IVisualComponent> {
+namespace Microsoft.VisualStudio.R.Package.Windows {
+    internal abstract class ToolWindowPaneFactory<T> where T : RToolWindowPane, IVisualComponentContainer<IVisualComponent> {
         private readonly Dictionary<int, ToolWindowPaneHolder> _toolWindowPanes = new Dictionary<int, ToolWindowPaneHolder>();
 
         protected T GetOrCreate(int instanceId, Func<int, T> factory) {

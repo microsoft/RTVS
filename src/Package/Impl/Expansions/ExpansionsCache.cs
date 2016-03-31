@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -20,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         public static IExpansionsCache Current {
             get {
-                if(_instance == null) {
+                if (_instance == null) {
                     Load();
                 }
                 return _instance;
@@ -115,8 +116,24 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return _expansions.ContainsKey(name);
         }
 
-        public IEnumerable<string> SnippetNames => _expansions.Keys;
+        public IEnumerable<ISnippetInfo> Snippets {
+            get {
+                foreach (var e in _expansions) {
+                    yield return new SnippetInfo(e.Key, e.Value.description);
+                }
+            }
+        }
         #endregion
+
+        class SnippetInfo : ISnippetInfo {
+            public string Description { get; }
+            public string Name { get; }
+
+            public SnippetInfo(string name, string description) {
+                Name = name;
+                Description = description;
+            }
+        }
     }
 }
 

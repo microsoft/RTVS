@@ -3,6 +3,7 @@
 
 using System;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Variables;
@@ -19,22 +20,42 @@ namespace Microsoft.R.Editor.Completion.Documentation {
         public static bool TryInsertBlock(ITextBuffer textBuffer, AstRoot ast, int position) {
             // First determine if position is right before the function declaration
             var snapshot = textBuffer.CurrentSnapshot;
-            ITextSnapshotLine currentLine = textBuffer.CurrentSnapshot.GetLineFromPosition(position);
+            ITextSnapshotLine line = null;
+            var lineNumber = snapshot.GetLineNumberFromPosition(position);
+            for (int i = lineNumber; i < snapshot.LineCount; i++) {
+                line = snapshot.GetLineFromLineNumber(i);
+                if (line.Length > 0) {
+                    break;
+                }
+            }
+
+            if (line == null || line.Length == 0) {
+                return false;
+            }
 
             Variable v;
-            IFunctionDefinition fd = FunctionDefinitionExtensions.FindFunctionDefinition(textBuffer, ast, position, out v);
+            int offset = line.Length - line.GetText().TrimStart().Length + 1;
+            if (line.Start + offset >= snapshot.Length) {
+                return false;
+            }
+
+            IFunctionDefinition fd = FunctionDefinitionExtensions.FindFunctionDefinition(textBuffer, ast, line.Start + offset, out v);
             if (fd != null && v != null && !string.IsNullOrEmpty(v.Name)) {
 
                 int definitionStart = Math.Min(v.Start, fd.Start);
-                int blockPosition = GetRoxygenBlockPosition(snapshot, currentLine.LineNumber, definitionStart);
-                if (blockPosition < 0) {
-                    string lineBreak = currentLine.GetLineBreakText();
+                Span? insertionSpan = GetRoxygenBlockPosition(snapshot, definitionStart);
+                if (insertionSpan.HasValue) {
+                    string lineBreak = snapshot.GetLineFromPosition(position).GetLineBreakText();
                     if (string.IsNullOrEmpty(lineBreak)) {
                         lineBreak = "\n";
                     }
                     string block = GenerateRoxygenBlock(v.Name, fd, lineBreak);
                     if (block.Length > 0) {
-                        textBuffer.Replace(new Span(currentLine.Start, currentLine.Length), block);
+                        if (insertionSpan.Value.Length == 0) {
+                            textBuffer.Insert(insertionSpan.Value.Start, block + lineBreak);
+                        } else {
+                            textBuffer.Replace(insertionSpan.Value, block);
+                        }
                         return true;
                     }
                 }
@@ -42,26 +63,21 @@ namespace Microsoft.R.Editor.Completion.Documentation {
             return false;
         }
 
-        private static int GetRoxygenBlockPosition(ITextSnapshot snapshot, int currentlineNumber, int definitionStart) {
+        private static Span? GetRoxygenBlockPosition(ITextSnapshot snapshot, int definitionStart) {
             var line = snapshot.GetLineFromPosition(definitionStart);
             for (int i = line.LineNumber - 1; i >= 0; i--) {
-                if (currentlineNumber >= 0 && i == currentlineNumber) {
-                    // Skip line where user just typed ###
-                    continue;
-                }
-                line = snapshot.GetLineFromLineNumber(i);
-                if (line.Length > 0) {
-                    var lineText = line.GetText().TrimStart();
-                    if (lineText.Length > 0) {
-                        if (lineText.StartsWith("#'", StringComparison.Ordinal)) {
-                            return line.Start + 1;
-                        } else {
-                            break;
-                        }
+                var currentLine = snapshot.GetLineFromLineNumber(i);
+                string lineText = currentLine.GetText().TrimStart();
+                if (lineText.Length > 0) {
+                    if (lineText.EqualsOrdinal("##")) {
+                        return new Span(currentLine.Start, currentLine.Length);
+                    } else if (lineText.EqualsOrdinal("#'")) {
+                        return null;
                     }
+                    break;
                 }
             }
-            return -1;
+            return new Span(line.Start, 0);
         }
 
         private static string GenerateRoxygenBlock(string functionName, IFunctionDefinition fd, string lineBreak) {

@@ -235,7 +235,7 @@ namespace Microsoft.R.Core.Tokens {
             // Letter may be starting keyword, function or a variable name. 
             // At this point we should be either right after whitespace or 
             // at the beginning of the file.
-            if (_cs.IsAnsiLetter() || _cs.CurrentChar == '.' || _cs.CurrentChar == '`') {
+            if (_cs.IsLetter() || _cs.CurrentChar == '.' || _cs.CurrentChar == '`') {
                 // If this is not a keyword or a function name candidate
                 HandleKeywordOrIdentifier();
                 return;
@@ -410,7 +410,7 @@ namespace Microsoft.R.Core.Tokens {
             } else {
                 Tokenizer.SkipIdentifier(
                     _cs,
-                    (CharacterStream cs) => { return (_cs.IsAnsiLetter() || _cs.CurrentChar == '.'); },
+                    (CharacterStream cs) => { return (_cs.IsLetter() || _cs.CurrentChar == '.'); },
                     (CharacterStream cs) => { return IsIdentifierCharacter(cs); });
             }
         }
@@ -429,7 +429,7 @@ namespace Microsoft.R.Core.Tokens {
         }
 
         public static bool IsIdentifierCharacter(char ch) {
-            return (CharacterStream.IsAnsiLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
+            return (CharacterStream.IsLetter(ch) || CharacterStream.IsDecimal(ch) || ch == '.' || ch == '_');
         }
 
         private static bool IsOpenBraceFollow(CharacterStream cs, int position) {

@@ -141,5 +141,27 @@ namespace Microsoft.R.Core.Test.Parser {
 ";
             ParserTest.VerifyParse(expected, "while(x\n || \ny)");
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParseMultilineExpressionsTest08() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [x <-\nfunction() { }]
+        Expression  [x <-\nfunction() { }]
+            TokenOperator  [<- [2...4)]
+                Variable  [x]
+                TokenNode  [<- [2...4)]
+                FunctionDefinition  [5...19)
+                    TokenNode  [function [5...13)]
+                    TokenNode  [( [13...14)]
+                    TokenNode  [) [14...15)]
+                    Scope  []
+                        TokenNode  [{ [16...17)]
+                        TokenNode  [} [18...19)]
+";
+            ParserTest.VerifyParse(expected, "x <-\nfunction() { }");
+        }
+
     }
 }

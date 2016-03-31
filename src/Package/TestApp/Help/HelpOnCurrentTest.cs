@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Text;
 using Xunit;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
+using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     [ExcludeFromCodeCoverage]
@@ -25,14 +26,14 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var historyProvider = RHistoryProviderStubFactory.CreateDefault();
-            using (var hostScript = new RHostScript(sessionProvider, clientApp)) {
+            using (var hostScript = new VsRHostScript(clientApp)) {
                 using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
                     DoIdle(100);
 
                     var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
                     var activeReplTrackerMock = new ActiveRInteractiveWindowTrackerMock();
+                    var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                     var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, activeTextViewTracker: activeViewTrackerMock);
                     var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 

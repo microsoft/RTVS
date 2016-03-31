@@ -4,14 +4,12 @@
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Outline
-{
+namespace Microsoft.R.Editor.Outline {
     /// <summary>
     /// Provider or tagger (code outliner in this context)
     /// for the core VS text editor.

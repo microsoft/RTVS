@@ -96,6 +96,26 @@ RightOperandExpected Token [12...13)
 
         [Test]
         [Category.R.Parser]
+        public void ParseWhileTest3() {
+            string expected =
+@"GlobalScope  [Global]
+    KeywordExpressionScopeStatement  []
+        TokenNode  [while [0...5)]
+        TokenNode  [( [5...6)]
+        Expression  [TRUE]
+            LogicalValue  [TRUE [6...10)]
+        TokenNode  [) [10...11)]
+        Scope  []
+            TokenNode  [{ [12...13)]
+            TokenNode  [} [19...20)]
+
+RightOperandExpected Token [19...20)
+";
+            ParserTest.VerifyParse(expected, "while(TRUE) { a <- }");
+        }
+
+        [Test]
+        [Category.R.Parser]
         public void ParseForTest1() {
             string expected =
 @"GlobalScope  [Global]

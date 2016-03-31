@@ -163,7 +163,7 @@
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="Packages\R\RProjLanguageService.cs" />
     <Compile Include="Packages\R\RProjEditorFactory.cs" />
-    <Compile Include="Packages\ToolWindowPaneFactory.cs" />
+    <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Imaging\ImagesProvider.cs" />
     <Compile Include="Interop\MailUtility.cs" />
@@ -217,6 +217,8 @@
     <Compile Include="Repl\Commands\ExecuteCurrentCodeCommand.cs" />
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
+    <Compile Include="Repl\Commands\ClearReplCommand.cs" />
+    <Compile Include="Packages\R\GlobalShortcutSettings.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RexecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
@@ -316,7 +318,6 @@
     <Compile Include="Repl\Commands\ReplCommandFactory.cs" />
     <Compile Include="Repl\Commands\ReplCommandTargetProvider.cs" />
     <Compile Include="Repl\Commands\ReplCommandController.cs" />
-    <Compile Include="Repl\Commands\ReplShortcutSetting.cs" />
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
@@ -392,6 +393,9 @@
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
     <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
+    <Compile Include="Windows\GotoSolutionExplorerCommand.cs" />
+    <Compile Include="Windows\GotoEditorWindowCommand.cs" />
+    <Compile Include="Windows\RToolWindowPane.cs" />
     <Compile Include="Wpf\Commands.cs" />
     <Compile Include="Wpf\ConfigurationControl.cs" />
     <Compile Include="Wpf\Controls.cs" />

@@ -272,7 +272,6 @@
     <Compile Include="Mocks\VsRegisterProjectGeneratorsMock.cs" />
     <Compile Include="Package\RPackageTest.cs" />
     <Compile Include="Repl\ExportsTest.cs" />
-    <Compile Include="Repl\ReplWindowProviderTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClientTest.cs" />

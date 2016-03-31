@@ -12,10 +12,26 @@ namespace Microsoft.Languages.Editor.Application.Snippets {
     /// </summary>
     public sealed class SnippetInformationSource : ISnippetInformationSource {
         private string[] _testSnippetNames = new string[] { "if", "for", "while" };
-        public IEnumerable<string> SnippetNames => _testSnippetNames;
+        public IEnumerable<ISnippetInfo> Snippets {
+            get {
+                foreach (var n in _testSnippetNames) {
+                    yield return new SnippetInfo(n, string.Empty);
+                }
+            }
+        }
 
         public bool IsSnippet(string name) {
             return _testSnippetNames.Contains(name);
+        }
+
+        class SnippetInfo : ISnippetInfo {
+            public string Description { get; }
+            public string Name { get; }
+
+            public SnippetInfo(string name, string description) {
+                Name = name;
+                Description = description;
+            }
         }
     }
 }

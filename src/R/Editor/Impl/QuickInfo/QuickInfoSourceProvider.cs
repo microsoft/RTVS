@@ -3,13 +3,11 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.QuickInfo
-{
+namespace Microsoft.R.Editor.QuickInfo {
     [Export(typeof(IQuickInfoSourceProvider))]
     [Name("R QuickInfo Source")]
     [Order(Before = "Default Quick Info Presenter")]

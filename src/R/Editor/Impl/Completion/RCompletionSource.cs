@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Utility;
@@ -18,7 +17,6 @@ using Microsoft.VisualStudio.Text;
 namespace Microsoft.R.Editor.Completion {
     using Core.Tokens;
     using Languages.Editor.Services;
-    using Completion = VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
     /// Provides actual content for the intellisense dropdown

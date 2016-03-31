@@ -119,6 +119,7 @@
     <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
+    <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />
     <Compile Include="Documentation\RoxygenBlock.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
     <Compile Include="Document\DocumentFactory.cs" />
@@ -142,6 +143,9 @@
     <Compile Include="Navigation\Peek\PeekableItemSource.cs" />
     <Compile Include="Navigation\Peek\PeekResultSource.cs" />
     <Compile Include="Navigation\Peek\PeekableItemSourceProvider.cs" />
+    <Compile Include="Navigation\Text\RTextSelector.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigator.cs" />
+    <Compile Include="Navigation\Text\TextStructureNavigatorProvider.cs" />
     <Compile Include="Outline\ROutlineTaggerProvider.cs" />
     <Compile Include="Outline\ROutliningRegionTag.cs" />
     <Compile Include="Outline\ROutliningTagger.cs" />
@@ -173,6 +177,7 @@
     <Compile Include="SmartIndent\SmartIndentProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSourceProvider.cs" />
     <Compile Include="Snippets\ISnippetInformationSource.cs" />
+    <Compile Include="Snippets\ISnippetInfo.cs" />
     <Compile Include="SuggestedActions\Actions\InstallPackageSuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LibrarySuggestedAction.cs" />
     <Compile Include="SuggestedActions\Actions\LoadLibrarySuggestedAction.cs" />
@@ -196,7 +201,6 @@
     <Compile Include="Tree\TreeChangeEventRecord.cs" />
     <Compile Include="Tree\TreeEventArgs.cs" />
     <Compile Include="Tree\EditorTreeEvents.cs" />
-    <Compile Include="Tree\TreeExtensions.cs" />
     <Compile Include="Tree\TreeLock.cs" />
     <Compile Include="Tree\TreeUpdateTask.cs" />
     <Compile Include="Tree\TreeUpdateType.cs" />

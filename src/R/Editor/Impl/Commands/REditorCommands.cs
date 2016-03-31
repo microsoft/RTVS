@@ -7,6 +7,8 @@ namespace Microsoft.R.Editor.Commands
 {
     public static class REditorCommands
     {
-        public static readonly Guid REditorCmdSetGuid = new Guid("3E5E4D2A-434C-433E-AF82-F5B2E183B29E");
+        public static readonly Guid REditorCmdSetGuid = new Guid("AD87578C-B324-44DC-A12A-B01A6ED5C6E3");
+
+        public const int icmdInsertRoxygenBlock = 9001;
     }
 }

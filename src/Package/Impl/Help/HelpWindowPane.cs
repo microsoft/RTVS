@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuid)]
@@ -15,24 +16,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         internal const string WindowGuid = "9E909526-A616-43B2-A82B-FD639DCD40CB";
 
         public HelpWindowPane() {
-
             Caption = Resources.HelpWindowCaption;
             BitmapImageMoniker = KnownMonikers.StatusHelp;
-
-            Component = new HelpWindowVisualComponent {
-                Container = this
-            };
+            Component = new HelpWindowVisualComponent { Container = this };
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.helpWindowToolBarId);
             ToolBarCommandTarget = new CommandTargetToOleShim(null, Component.Controller);
-        }
-
-        protected override void Dispose(bool disposing) {
-            if (disposing && Component != null) {
-                Component.Dispose();
-                Component = null;
-            }
-            base.Dispose(disposing);
         }
     }
 }

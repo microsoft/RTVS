@@ -89,7 +89,7 @@ namespace Microsoft.R.Core.AST.Scopes {
                             }
                         }
 
-                        if (statement == null) {
+                        if (statement == null && context.Tokens.CurrentToken.TokenType != RTokenType.CloseCurlyBrace) {
                             if (!context.TextProvider.IsNewLineBeforePosition(context.Tokens.CurrentToken.Start)) {
                                 // try recovering at the next line or past nearest 
                                 // semicolon or closing curly brace

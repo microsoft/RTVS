@@ -3,16 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.ContentType {
+namespace Microsoft.R.Editor {
     public static class TextViewExtensions {
 
         public static SnapshotPoint? MapDownToR(this ITextView textView, int position) {
@@ -74,63 +70,109 @@ namespace Microsoft.R.Editor.ContentType {
             return new NormalizedSnapshotSpanCollection(spans);
         }
 
-        public static string GetItemUnderCaret(this ITextView textView, Func<char, bool> charSelector, out Span span) {
-            if (!textView.Caret.InVirtualSpace) {
-                SnapshotPoint position = textView.Caret.Position.BufferPosition;
-                ITextSnapshotLine line = position.GetContainingLine();
-                return GetItem(line, position.Position, charSelector, out span);
-            }
-            span = Span.FromBounds(0, 0);
-            return string.Empty;
-        }
-
-        public static string GetItemBeforeCaret(this ITextView textView, Func<char, bool> charSelector, out Span span) {
-            if (!textView.Caret.InVirtualSpace) {
-                SnapshotPoint position = textView.Caret.Position.BufferPosition;
-                ITextSnapshotLine line = position.GetContainingLine();
-                if (position.Position > line.Start) {
-                    return GetItem(line, position.Position - 1, charSelector, out span);
-                }
-            }
-            span = Span.FromBounds(0, 0);
-            return string.Empty;
-        }
-
+        /// <summary>
+        /// Extracts identifier sequence at the caret location.
+        /// Fetches parts of 'abc$def' rather than tne entire expression.
+        /// </summary>
         public static string GetIdentifierUnderCaret(this ITextView textView, out Span span) {
-            return GetItemUnderCaret(textView, RTokenizer.IsIdentifierCharacter, out span);
+            if (!textView.Caret.InVirtualSpace) {
+                SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                ITextSnapshotLine line = position.GetContainingLine();
+                return GetItemAtPosition(line, position.Position, (x) => x == RTokenType.Identifier, out span);
+            }
+            span = Span.FromBounds(0, 0);
+            return string.Empty;
         }
 
-        public static string GetIdentifierBeforeCaret(this ITextView textView, out Span span) {
-            return GetItemBeforeCaret(textView, RTokenizer.IsIdentifierCharacter, out span);
+        /// <summary>
+        /// Extracts identifier or a keyword before caret. Typically used when inserting
+        /// expansions (aka code snippets) at the caret location.
+        /// </summary>
+        public static string GetItemBeforeCaret(this ITextView textView, out Span span, Func<RTokenType, bool> tokenTypeCheck = null) {
+            if (!textView.Caret.InVirtualSpace) {
+                SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                ITextSnapshotLine line = position.GetContainingLine();
+                tokenTypeCheck = tokenTypeCheck ?? new Func<RTokenType, bool>((x) => x == RTokenType.Identifier);
+                if (position.Position > line.Start) {
+                    return GetItemAtPosition(line, position.Position - 1, tokenTypeCheck, out span);
+                }
+            }
+            span = Span.FromBounds(0, 0);
+            return string.Empty;
         }
 
-        private static string GetItem(ITextSnapshotLine line, int position, Func<char, bool> charSelector, out Span span) {
+        public static string GetItemAtPosition(ITextSnapshotLine line, int position, Func<RTokenType, bool> tokenTypeCheck, out Span span) {
             string lineText = line.GetText();
-            int linePosition = position - line.Start;
-            int start = 0;
-            int end = lineText.Length;
-            for (int i = linePosition - 1; i >= 0; i--) {
-                char ch = lineText[i];
-                if (!charSelector(ch)) {
-                    start = i + 1;
-                    break;
-                }
-            }
-            for (int i = linePosition; i < lineText.Length; i++) {
-                char ch = lineText[i];
-                if (!charSelector(ch)) {
-                    end = i;
-                    break;
-                }
-            }
-
-            if (end > start) {
-                span = Span.FromBounds(start + line.Start, end + line.Start);
-                return lineText.Substring(start, end - start);
+            var tokenizer = new RTokenizer();
+            var tokens = tokenizer.Tokenize(lineText);
+            var tokenIndex = tokens.GetItemContaining(position - line.Start);
+            if (tokenIndex >= 0 && tokenTypeCheck(tokens[tokenIndex].TokenType)) {
+                span = new Span(tokens[tokenIndex].Start + line.Start, tokens[tokenIndex].Length);
+                return lineText.Substring(tokens[tokenIndex].Start, tokens[tokenIndex].Length);
             }
 
             span = Span.FromBounds(0, 0);
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Extracts complete variable name under the caret. In '`abc`$`def` returns 
+        /// the complete expression rather than its parts. Typically used to get data 
+        /// for completion of variable members as in when user typed 'abc$def$'
+        /// Since method does not perform semantic analysis, it does not guaratee 
+        /// syntactically correct expression, it may return 'a$$b'.
+        /// </summary>
+        public static string GetVariableNameBeforeCaret(this ITextView textView) {
+            if (textView.Caret.InVirtualSpace) {
+                return string.Empty;
+            }
+            var position = textView.Caret.Position.BufferPosition;
+            var line = position.GetContainingLine();
+
+            // For performance reasons we won't be using AST here
+            // since during completion it is most probably damaged.
+            string lineText = line.GetText();
+            var tokenizer = new RTokenizer();
+            var tokens = tokenizer.Tokenize(lineText);
+
+            var tokenPosition = position - line.Start;
+            var index = tokens.GetFirstItemBeforePosition(tokenPosition);
+            // Preceding token must be right next to caret position
+            if (index < 0 || tokens[index].End < tokenPosition || !IsVariableNameToken(lineText, tokens[index])) {
+                return string.Empty;
+            }
+
+            if (index == 0) {
+                return IsVariableNameToken(lineText, tokens[0]) ? lineText.Substring(tokens[0].Start, tokens[0].Length) : string.Empty;
+            }
+
+            // Walk back through tokens allowing identifier and specific
+            // operator tokens. No whitespace is permitted between tokens.
+            // We have at least 2 tokens here.
+            int i = index;
+            for (; i > 0; i--) {
+                var precedingToken = tokens[i - 1];
+                var currentToken = tokens[i];
+                if (precedingToken.End < currentToken.Start || !IsVariableNameToken(lineText, precedingToken)) {
+                    break;
+                }
+            }
+
+            return lineText.Substring(tokens[i].Start, tokens[index].End - tokens[i].Start);
+        }
+
+        private static bool IsVariableNameToken(string lineText, RToken token) {
+            if (token.TokenType == RTokenType.Identifier) {
+                return true;
+            }
+            if (token.TokenType == RTokenType.Operator) {
+                if (token.Length == 1) {
+                    return lineText[token.Start] == '$' || lineText[token.Start] == '@';
+                } else if (token.Length == 2) {
+                    return lineText[token.Start] == ':' && lineText[token.Start + 1] == ':';
+                }
+            }
+            return false;
         }
     }
 }

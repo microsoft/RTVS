@@ -8,7 +8,6 @@ using Microsoft.Languages.Editor.Settings;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Formatting;
-using Microsoft.R.Editor.ContentType;
 
 namespace Microsoft.R.Editor.Settings {
     public static class REditorSettings {

@@ -4,10 +4,10 @@
 using System.ComponentModel.Design;
 using System.Windows;
 using Microsoft.R.Components.View;
-using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
-    public abstract class VisualComponentToolWindow<T> : ToolWindowPane, IVisualComponentContainer<T> where T : IVisualComponent {
+    internal abstract class VisualComponentToolWindow<T> : RToolWindowPane, IVisualComponentContainer<T> where T : IVisualComponent {
         private readonly VisualComponentToolWindowAdapter<T> _adapter;
 
         public T Component {
@@ -34,6 +34,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         public void UpdateCommandStatus(bool immediate) {
             _adapter?.UpdateCommandStatus(immediate);
+        }
+
+        protected override void Dispose(bool disposing) {
+            if (disposing && Component != null) {
+                Component.Dispose();
+                Component = default(T);
+            }
+            base.Dispose(disposing);
         }
     }
 }

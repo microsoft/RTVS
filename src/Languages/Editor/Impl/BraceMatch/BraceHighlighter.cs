@@ -13,8 +13,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.Languages.Editor.BraceMatch {
-    class BraceHighlighter : ITagger<TextMarkerTag>, IDisposable
-    {
+    class BraceHighlighter : ITagger<TextMarkerTag>, IDisposable {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private ITextBuffer _textBuffer;
@@ -23,15 +22,13 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         private bool _highlighted = false;
         private IBraceMatcher _braceMatcher;
 
-        public BraceHighlighter(ITextView view, ITextBuffer textBuffer)
-        {
+        public BraceHighlighter(ITextView view, ITextBuffer textBuffer) {
             _textBuffer = textBuffer;
             _textView = view;
 
             var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(EditorShell.Current.CompositionService);
             var braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
-            if (braceMatcherProvider != null)
-            {
+            if (braceMatcherProvider != null) {
                 _braceMatcher = braceMatcherProvider.CreateBraceMatcher(view, textBuffer);
 
                 view.LayoutChanged += OnViewLayoutChanged;
@@ -41,44 +38,35 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             }
         }
 
-        void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e)
-        {
-            if (CanHighlight(_textView) || _highlighted)
-            {
+        void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
+            if (CanHighlight(_textView) || _highlighted) {
                 IdleTimeAction.Create(() => UpdateAtCaretPosition(), 150, this);
             }
         }
 
-        void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
-        {
-            if (e.NewSnapshot != e.OldSnapshot) // make sure that there has really been a change
-            {
-                if (CanHighlight(_textView) || _highlighted)
-                {
+        void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
+            if (e.NewSnapshot != e.OldSnapshot) {
+                if (CanHighlight(_textView) || _highlighted) {
                     IdleTimeAction.Create(() => UpdateAtCaretPosition(), 150, this);
                 }
             }
         }
 
-        void UpdateAtCaretPosition()
-        {
+        void UpdateAtCaretPosition() {
             // Check for disposal, this can be disposed while waiting for idle
-            if (_textView != null && _braceMatcher != null)
-            {
+            if (_textView != null && _braceMatcher != null && !_textView.Caret.InVirtualSpace) {
                 var caretPosition = _textView.Caret.Position;
                 _currentChar = caretPosition.Point.GetPoint(_textBuffer, caretPosition.Affinity);
 
                 // We need to clear current highlight if caret went to another buffer
-
                 _highlighted = false;
-                if (TagsChanged != null)
-                    TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_textBuffer.CurrentSnapshot, 0,
-                        _textBuffer.CurrentSnapshot.Length)));
+                TagsChanged?.Invoke(this,
+                    new SnapshotSpanEventArgs(
+                        new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
             }
         }
 
-        public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans)
-        {
+        public IEnumerable<ITagSpan<TextMarkerTag>> GetTags(NormalizedSnapshotSpanCollection spans) {
             if (spans.Count == 0 || _braceMatcher == null || _textBuffer == null)
                 yield break;
 
@@ -88,18 +76,19 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             SnapshotPoint position = _currentChar.Value;
             ITextSnapshot snapshot = position.Snapshot;
 
-            if (spans[0].Snapshot.TextBuffer != snapshot.TextBuffer)
-            {
+            if (spans[0].Snapshot.TextBuffer != snapshot.TextBuffer) {
                 // This happens with diff views. The position could be mapped, but is it worth it?
                 yield break;
             }
 
-            if (spans[0].Snapshot != snapshot)
+            if (spans[0].Snapshot != snapshot) {
                 position = position.TranslateTo(spans[0].Snapshot, PointTrackingMode.Positive);
+            }
 
             int start, end;
-            if (!_braceMatcher.GetBracesFromPosition(snapshot, position, false, out start, out end))
+            if (!_braceMatcher.GetBracesFromPosition(snapshot, position, false, out start, out end)) {
                 yield break;
+            }
 
             yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(snapshot, start, 1), new BraceHighlightTag());
             yield return new TagSpan<TextMarkerTag>(new SnapshotSpan(snapshot, end, 1), new BraceHighlightTag());
@@ -107,38 +96,32 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             _highlighted = true;
         }
 
-        private static bool CanHighlight(ITextView textView)
-        {
+        private static bool CanHighlight(ITextView textView) {
             // The view can be null when this function is called during an event chain
             // that disposes this object. Detect disposal:
-            if (textView != null)
-            {
+            if (textView != null && !textView.Caret.InVirtualSpace) {
                 var caretPosition = textView.Caret.Position.BufferPosition;
-                var snapshot = textView.TextBuffer.CurrentSnapshot;
-
-                return IsHighlightablePosition(snapshot, caretPosition);
+                var snapshot = caretPosition.Snapshot;
+                return IsHighlightablePosition(snapshot, caretPosition.Position);
             }
 
             return false;
         }
 
-        private static bool IsHighlightablePosition(ITextSnapshot snapshot, int caretPosition)
-        {
+        private static bool IsHighlightablePosition(ITextSnapshot snapshot, int caretPosition) {
             bool highlitable = false;
 
-            if (caretPosition < snapshot.Length)
+            if (caretPosition < snapshot.Length) {
                 highlitable = IsHighlightableCharacter(snapshot[caretPosition]);
-
-            if (!highlitable && caretPosition > 0)
+            }
+            if (!highlitable && caretPosition > 0) {
                 highlitable = IsHighlightableCharacter(snapshot[caretPosition - 1]);
-
+            }
             return highlitable;
         }
 
-        private static bool IsHighlightableCharacter(char ch)
-        {
-            switch (ch)
-            {
+        private static bool IsHighlightableCharacter(char ch) {
+            switch (ch) {
                 case '{':
                 case '}':
                 case '[':
@@ -151,18 +134,14 @@ namespace Microsoft.Languages.Editor.BraceMatch {
             return false;
         }
 
-        void IDisposable.Dispose()
-        {
-            if (_textView != null)
-            {
+        void IDisposable.Dispose() {
+            if (_textView != null) {
                 _textView.LayoutChanged -= OnViewLayoutChanged;
                 _textView.Caret.PositionChanged -= OnCaretPositionChanged;
 
                 ServiceManager.RemoveService<BraceHighlighter>(_textView);
-
                 _textView = null;
             }
-
             _textBuffer = null;
         }
     }
