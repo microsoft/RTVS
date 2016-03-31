@@ -113,6 +113,12 @@ namespace Microsoft.R.Debugger {
 
             return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength, cancellationToken);
         }
+
+        public override bool Equals(object obj) =>
+            base.Equals(obj) || (obj as IEquatable<DebugEvaluationResult>)?.Equals(this) == true;
+
+        public override int GetHashCode() =>
+            base.GetHashCode();
     }
 
     public class DebugErrorEvaluationResult : DebugEvaluationResult {
