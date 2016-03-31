@@ -93,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
-        private static uint _cmdContextCookie;
+        private uint _cmdContextCookie;
 
         private System.Threading.Tasks.Task _indexBuildingTask;
 
@@ -150,6 +150,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p.SaveSettings();
             }
 
+            GlobalShortcutSettings.RestoreBindings();
             base.Dispose(disposing);
         }
 
@@ -211,7 +212,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             return false;
         }
 
-        private static void RegisterRCommandContext() {
+        private void RegisterRCommandContext() {
             var selMon = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
             selMon.GetCmdUIContextCookie(RGuidList.RCmdSetGuid, out _cmdContextCookie);
         }
