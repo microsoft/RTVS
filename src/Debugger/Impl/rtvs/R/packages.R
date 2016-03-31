@@ -2,26 +2,26 @@
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
 matrix.as.lists <- function(matrix.data) {
-    res <- base::list()
-    dn <- base::dimnames(matrix.data)
+    res <- list()
+    dn <- dimnames(matrix.data)
     for (r in dn[[1]]) {
-        res[[r]] <- base::as.list(matrix.data[r,])
+        res[[r]] <- as.list(matrix.data[r,])
     }
     res
 }
 
 packages.installed <- function() {
-    matrix.as.lists(utils::installed.packages(fields = c('Title', 'Author')))
+    matrix.as.lists(installed.packages(fields = c('Title', 'Author')))
 }
 
 packages.available <- function() {
-    matrix.as.lists(utils::available.packages())
+    matrix.as.lists(available.packages())
 }
 
 packages.loaded <- function() {
-    base::as.list(base::.packages())
+    as.list(.packages())
 }
 
 packages.libpaths <- function() {
-    base::as.list(base::.libPaths())
+    as.list(.libPaths())
 }
