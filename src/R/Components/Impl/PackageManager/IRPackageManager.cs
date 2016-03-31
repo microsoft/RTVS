@@ -17,6 +17,11 @@ namespace Microsoft.R.Components.PackageManager {
         /// this session ie. in .libPaths().
         /// </summary>
         /// <returns>List of packages.</returns>
+        /// <exception cref="RPackageManagerException">
+        /// The package list couldn't be retrieved from the session.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// </exception>
         Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync();
 
         /// <summary>
@@ -28,6 +33,11 @@ namespace Microsoft.R.Components.PackageManager {
         /// you need to call <see cref="GetAdditionalPackageInfoAsync(RPackage)"/>
         /// for each package to get fill in the missing fields.
         /// </returns>
+        /// <exception cref="RPackageManagerException">
+        /// The package list couldn't be retrieved from the session.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// </exception>
         Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
 
         /// <summary>
@@ -39,7 +49,7 @@ namespace Microsoft.R.Components.PackageManager {
         /// calling this method. Any fields that are already filled in will not
         /// be overwritten.
         /// </param>
-        /// <exception cref="Microsoft.R.Components.Test.PackageManager.RPackageInfoRetrievalException">
+        /// <exception cref="RPackageManagerException">
         /// The web page for the package couldn't be downloaded.
         /// </exception>
         Task GetAdditionalPackageInfoAsync(RPackage pkg);
@@ -84,12 +94,22 @@ namespace Microsoft.R.Components.PackageManager {
         /// Package names that are currently loaded.
         /// </summary>
         /// <returns>Array of package names.</returns>
+        /// <exception cref="RPackageManagerException">
+        /// The package list couldn't be retrieved from the session.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// </exception>
         Task<string[]> GetLoadedPackagesAsync();
 
         /// <summary>
         /// Paths of library folders, as returned .libPaths().
         /// </summary>
         /// <returns>Array of paths, in R format (ie. c:/libs/lib1).</returns>
+        /// <exception cref="RPackageManagerException">
+        /// The library list couldn't be retrieved from the session.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">
+        /// </exception>
         Task<string[]> GetLibraryPathsAsync();
     }
 }
