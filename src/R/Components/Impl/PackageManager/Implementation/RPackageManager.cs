@@ -50,9 +50,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public void InstallPackage(string name, string libraryPath) {
             string script;
             if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("install.packages(\"{0}\")", name);
+                script = string.Format("install.packages({0})", name.ToRStringLiteral());
             } else {
-                script = string.Format("install.packages(\"{0}\", lib=\"{1}\")", name, libraryPath.ToRPath());
+                script = string.Format("install.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
             }
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
@@ -61,9 +61,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public void UninstallPackage(string name, string libraryPath) {
             string script;
             if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("remove.packages(\"{0}\")", name);
+                script = string.Format("remove.packages({0})", name.ToRStringLiteral());
             } else {
-                script = string.Format("remove.packages(\"{0}\", lib=\"{1}\")", name, libraryPath.ToRPath());
+                script = string.Format("remove.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
             }
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
@@ -72,16 +72,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public void LoadPackage(string name, string libraryPath) {
             string script;
             if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("library(\"{0}\")", name);
+                script = string.Format("library({0})", name.ToRStringLiteral());
             } else {
-                script = string.Format("library(\"{0}\", lib.loc=\"{1}\")", name, libraryPath.ToRPath());
+                script = string.Format("library({0}, lib.loc={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
             }
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
         }
 
         public void UnloadPackage(string name) {
-            string script = string.Format("unloadNamespace(\"{0}\")", name);
+            string script = string.Format("unloadNamespace({0})", name.ToRStringLiteral());
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
         }
