@@ -138,7 +138,28 @@ namespace Microsoft.R.Editor.SmartIndent {
                         // We only want to indent here if position is in arguments
                         // and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                            // Check if previous line first non-whitespace is in the function arguments. 
+                            // If so, use block indent so caret will be where previous set of arguments begins.
+                            // Examples:
+                            //
+                            //  x <- function(a, b, c<ENTER>
+                            //                |
+                            //  x <- function(a, b,
+                            //           c, d<ENTER>
+                            //           |
+                            //
+                            if (line.Length > 0) {
+                                // Autoformat case. Pure smart indent has length of 0 since it is a new line.
+                                // In autoformat we respect user indentation.
+                                return line.Length - line.GetText().TrimStart().Length;
+                            } else {
+                                var fcPrevLine = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.Start);
+                                if (fcPrevLine == fc && fc.OpenBrace.End < prevLine.Start) {
+                                    return GetBlockIndent(line);
+                                } else {
+                                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                                }
+                            }
                         }
                     }
                 }
