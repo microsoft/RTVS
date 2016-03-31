@@ -125,9 +125,19 @@ namespace Microsoft.R.Editor.Data {
         protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
-                result.Add(new RSessionDataObject(children[i], DefaultMaxGrandChildren));
+                result.Add(new RSessionDataObject(children[i], GetMaxChindrenCount(children[i])));
             }
             return result;
+        }
+
+        protected int? GetMaxChindrenCount(DebugEvaluationResult parent) {
+            var value = parent as DebugValueEvaluationResult;
+            if (value != null) {
+                if (value.Classes.Contains("data.frame")) {
+                    return null;
+                }
+            }
+            return DefaultMaxGrandChildren;
         }
 
         private static string DataFramePrefix = "'data.frame':([^:]+):";
