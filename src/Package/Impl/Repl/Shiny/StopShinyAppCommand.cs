@@ -17,13 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Shiny {
 
         protected override void SetStatus() {
             Visible = true;
-            Enabled = _interactiveWorkflow.RSession.IsHostRunning && RunShinyAppCommand.RunningTask != null;
+            Enabled = _interactiveWorkflow.Operations.IsShinyAppRunning;
         }
 
         protected override void Handle() {
-            if (RunShinyAppCommand.RunningTask != null) {
-                _interactiveWorkflow.RSession.CancelAllAsync().DoNotWait();
-            }
+            _interactiveWorkflow.RSession.CancelAllAsync().DoNotWait();
         }
     }
 }

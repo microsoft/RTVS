@@ -35,5 +35,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         void SourceFiles(IEnumerable<string> files);
 
         void SourceFile(string file);
+
+        /// <summary>
+        /// Attempts to launch Shiby app. Invokes 'library(shiny)'
+        /// followed by 'RunApp()'.
+        /// </summary>
+        void TryRunShinyApp();
+        bool IsShinyAppRunning { get; }
     }
 }
