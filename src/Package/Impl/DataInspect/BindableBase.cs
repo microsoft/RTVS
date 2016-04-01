@@ -4,8 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Microsoft.Common.Core;
-using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -34,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (EqualityComparer<T>.Default.Equals(storage, value)) return false;
 
             storage = value;
-            this.OnPropertyChanged(propertyName);
+            OnPropertyChanged(propertyName);
 
             return true;
         }
@@ -46,10 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// value is optional and can be provided automatically when invoked from compilers
         /// that support <see cref="CallerMemberNameAttribute"/>.</param>
         protected void OnPropertyChanged(string propertyName) {
-            var eventHandler = this.PropertyChanged;
-            if (eventHandler != null) {
-                eventHandler(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

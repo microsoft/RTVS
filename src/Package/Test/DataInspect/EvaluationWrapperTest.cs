@@ -427,6 +427,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
+        public async Task DataFrameManyColumnTest() {
+            var script = "df.manycolumn<-data.frame(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30);";
+            var expectation = new VariableExpectation() { Name = "df.manycolumn", Value = "1 obs. of  30 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                var children = await evaluation.GetChildrenAsync();
+                children.Count.Should().BeGreaterOrEqualTo(30);
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
         public async Task PromiseTest() {
             var script = "e <- (function(x, y, z) base::environment())(1,,3)";
             var expectation = new VariableExpectation() { Name = "e", Value = "<environment:", TypeName = "environment", Class = "environment", HasChildren = true, CanShowDetail = false };

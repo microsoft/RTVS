@@ -868,7 +868,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" priority="0x0600" type="Button">
-        <!--<Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>-->
+        <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="Package"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
@@ -1727,6 +1727,11 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="REditor" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="InteractiveWindow" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="SolutionExplorer" key1="6" mod1="CONTROL"/>
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="guidRToolsCmdSet" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="REditor" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="InteractiveWindow" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="SolutionExplorer" key1="7" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>

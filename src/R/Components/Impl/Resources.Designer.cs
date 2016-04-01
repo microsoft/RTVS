@@ -115,6 +115,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Install.
+        /// </summary>
+        public static string Install {
+            get {
+                return ResourceManager.GetString("Install", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading....
+        /// </summary>
+        public static string Loading {
+            get {
+                return ResourceManager.GetString("Loading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading details....
+        /// </summary>
+        public static string LoadingDetails {
+            get {
+                return ResourceManager.GetString("LoadingDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -138,6 +165,123 @@ namespace Microsoft.R.Components {
         public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Authors:.
+        /// </summary>
+        public static string Package_Authors {
+            get {
+                return ResourceManager.GetString("Package_Authors", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Built:.
+        /// </summary>
+        public static string Package_Built {
+            get {
+                return ResourceManager.GetString("Package_Built", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Depends:.
+        /// </summary>
+        public static string Package_Depends {
+            get {
+                return ResourceManager.GetString("Package_Depends", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Description:.
+        /// </summary>
+        public static string Package_Description {
+            get {
+                return ResourceManager.GetString("Package_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Imports:.
+        /// </summary>
+        public static string Package_Imports {
+            get {
+                return ResourceManager.GetString("Package_Imports", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Installed version:.
+        /// </summary>
+        public static string Package_InstalledVersion {
+            get {
+                return ResourceManager.GetString("Package_InstalledVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Latest version:.
+        /// </summary>
+        public static string Package_LatestVersion {
+            get {
+                return ResourceManager.GetString("Package_LatestVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Library:.
+        /// </summary>
+        public static string Package_LibraryPath {
+            get {
+                return ResourceManager.GetString("Package_LibraryPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to License:.
+        /// </summary>
+        public static string Package_License {
+            get {
+                return ResourceManager.GetString("Package_License", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repository:.
+        /// </summary>
+        public static string Package_Repository {
+            get {
+                return ResourceManager.GetString("Package_Repository", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suggests:.
+        /// </summary>
+        public static string Package_Suggests {
+            get {
+                return ResourceManager.GetString("Package_Suggests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Title:.
+        /// </summary>
+        public static string Package_Title {
+            get {
+                return ResourceManager.GetString("Package_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Urls:.
+        /// </summary>
+        public static string Package_Urls {
+            get {
+                return ResourceManager.GetString("Package_Urls", resourceCulture);
             }
         }
         
@@ -214,7 +358,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Each package is licensed to you by its owner. RTVS is not responsible for, nor does it grant any licenses to, third-party packages..
+        ///   Looks up a localized string similar to Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages..
         /// </summary>
         public static string PackageManager_LegalDisclaimer {
             get {
@@ -345,6 +489,24 @@ namespace Microsoft.R.Components {
         public static string PackageManager_UpdateButtonToolTip {
             get {
                 return ResourceManager.GetString("PackageManager_UpdateButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ready.
+        /// </summary>
+        public static string Ready {
+            get {
+                return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Uninstall.
+        /// </summary>
+        public static string Uninstall {
+            get {
+                return ResourceManager.GetString("Uninstall", resourceCulture);
             }
         }
         

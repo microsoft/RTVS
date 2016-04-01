@@ -41,7 +41,7 @@ namespace Microsoft.R.Components.PackageManager {
         Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
 
         /// <summary>
-        /// Get additional data for a package from its repository web site.
+        /// Add additional data to the package from its repository web site.
         /// </summary>
         /// <param name="pkg">
         /// Package to populate with data. The <see cref="RPackage.Repository"/>
@@ -52,7 +52,17 @@ namespace Microsoft.R.Components.PackageManager {
         /// <exception cref="RPackageManagerException">
         /// The web page for the package couldn't be downloaded.
         /// </exception>
-        Task GetAdditionalPackageInfoAsync(RPackage pkg);
+        Task AddAdditionalPackageInfoAsync(RPackage pkg);
+
+        /// <summary>
+        /// Get additional data for a package from its repository web site.
+        /// </summary>
+        /// <param name="packageName">Package name</param>
+        /// <param name="repository">Repository from which additional data will be retrieved</param>
+        /// <exception cref="RPackageManagerException">
+        /// The web page for the package couldn't be downloaded.
+        /// </exception>
+        Task<RPackage> GetAdditionalPackageInfoAsync(string packageName, string repository);
 
         /// <summary>
         /// Install a package by sending install.packages() to the REPL.

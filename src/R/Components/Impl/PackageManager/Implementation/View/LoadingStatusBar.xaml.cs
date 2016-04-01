@@ -13,11 +13,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         public LoadingStatusBar() {
             InitializeComponent();
         }
-
-        private void ButtonShowMoreResults_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
-        }
-
+        
         private void ButtonShowErrors_Click(object sender, RoutedEventArgs e) {
             throw new NotImplementedException();
         }

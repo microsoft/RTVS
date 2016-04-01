@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
+             xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              mc:Ignorable="d" 
              d:DesignHeight="32"
              d:DesignWidth="32"
@@ -40,7 +41,9 @@
 
     <Grid x:Name="Root" SnapsToDevicePixels="True">
         <Grid.RenderTransform>
-            <ScaleTransform ScaleX="{Binding Path=ScaleX, ElementName=Self}" ScaleY="{Binding Path=ScaleY, ElementName=Self}" />
+            <ScaleTransform 
+                ScaleX="{Binding Path=ActualWidth, ElementName=Self, Converter={wpf:Lambda '(double x) => x / 120'}}"
+                ScaleY="{Binding Path=ActualHeight, ElementName=Self, Converter={wpf:Lambda '(double x) => x / 120'}}" />
         </Grid.RenderTransform>
         <ItemsControl ItemsSource="{Binding Source={StaticResource EllipseData}}">
             <ItemsControl.ItemsPanel>

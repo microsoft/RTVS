@@ -39,7 +39,7 @@
           <Shortcut Command="RTools.History" Scope="Global">Ctrl+4</Shortcut>
           <Shortcut Command="View.SolutionExplorer" Scope="Global">Ctrl+5</Shortcut>
           <Shortcut Command="RTools.Plots" Scope="Global">Ctrl+6</Shortcut>
-          <!--<Shortcut Command="RTools.Packages" Scope="Global">Ctrl+7</Shortcut>-->
+          <Shortcut Command="RTools.Packages" Scope="Global">Ctrl+7</Shortcut>
           <Shortcut Command="RTools.VariableExplorer" Scope="Global">Ctrl+8</Shortcut>
           <Shortcut Command="InteractiveConsole.ClearScreen" Scope="Global">Ctrl+L</Shortcut>
           <Shortcut Command="InteractiveConsole.Reset" Scope="Global">Ctrl+Shift+F10</Shortcut>

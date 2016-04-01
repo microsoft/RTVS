@@ -21,8 +21,10 @@ using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
+using Microsoft.VisualStudio.R.Package.Options.PackageManager;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
+using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -31,6 +33,7 @@ using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -54,10 +57,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
+    //[ProvideOptionPage(typeof(PackageSourceOptionsPage), "R Tools", "Package Sources", 20116, 20135, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(PackageManagerWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString, DebuggerGuids.CustomViewerString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
@@ -107,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
+            VsWpfOverrides.Apply();
             CranMirrorList.Download();
             VerifyWebToolsInstalled();
 
@@ -129,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
-            IdleTimeAction.Create(() => ExpansionsCache.Load(), 200, typeof(ExpansionsCache));
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {

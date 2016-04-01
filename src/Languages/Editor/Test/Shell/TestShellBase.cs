@@ -39,6 +39,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             await UIThreadHelper.Instance.InvokeAsync(action);
         }
 
+        public async Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> action, CancellationToken cancellationToken = new CancellationToken()) {
+            return await UIThreadHelper.Instance.InvokeAsync(action);
+        }
+
         public void DoEvents() {
             var disp = GetDispatcher();
             if (disp != null) {
