@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 result = new List<IRSessionDataObject>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: GetMaxChindrenCount(children[i])));
+                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter
