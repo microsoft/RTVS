@@ -68,6 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
         }
 
         protected override void OnTextViewCreated(ITextView textView) {
+            // Ensure editor inherits core editor key bindings
             BaseEditorFactory.InitKeyBindings(textView);
             base.OnTextViewCreated(textView);
         }

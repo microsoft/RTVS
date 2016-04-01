@@ -109,9 +109,10 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("{ENTER}if(x>1) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}");
+                script.DoIdle(300);
                 script.Type("}}");
 
-                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }}";
+                string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -160,7 +161,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.MoveDown();
                 script.Enter();
 
-                string expected = "while (true) {\r\n\r\n}";
+                string expected = "while (true)\r\n{\r\n\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);

@@ -72,6 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
         }
 
         protected override void OnTextViewCreated(ITextView textView) {
+            // Ensure editor inherits core editor key bindings
             BaseEditorFactory.InitKeyBindings(textView);
             base.OnTextViewCreated(textView);
         }

@@ -23,8 +23,8 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>
-        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer) {
-            SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
+        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer, int caretOffset = 0) {
+            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
             }
@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Formatting {
             if (document != null) {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
-                IAstNode node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Value - 1)) as IAstNode;
+                IAstNode node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Value + caretOffset)) as IAstNode;
                 FormatNode(textView, textBuffer, node);
             }
         }
@@ -48,7 +48,7 @@ namespace Microsoft.R.Editor.Formatting {
 
         public static void FormatCurrentScope(ITextView textView, ITextBuffer textBuffer, bool indentCaret) {
             // Figure out caret position in the document text buffer
-            SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
+            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
             }
@@ -68,7 +68,7 @@ namespace Microsoft.R.Editor.Formatting {
                     bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
-                        caretPoint = MapCaretToBuffer(textView, textBuffer);
+                        caretPoint = REditorDocument.MapCaretPositionFromView(textView);
                         if (caretPoint.HasValue) {
                             document.EditorTree.EnsureTreeReady();
                             ast = document.EditorTree.AstRoot;
@@ -84,10 +84,10 @@ namespace Microsoft.R.Editor.Formatting {
         }
 
         /// <summary>
-        /// Formats line relatively to the line that the caret is currently at
+        /// Formats line the caret is currently at
         /// </summary>
-        public static void FormatLine(ITextView textView, ITextBuffer textBuffer) {
-            SnapshotPoint? caretPoint = MapCaretToBuffer(textView, textBuffer);
+        public static void FormatCurrentLine(ITextView textView, ITextBuffer textBuffer) {
+            SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
             }
@@ -118,18 +118,6 @@ namespace Microsoft.R.Editor.Formatting {
                 return parentStatement;
             }
             return scope;
-        }
-
-        public static int GetBaseIndentFromNode(ITextBuffer textBuffer, AstRoot ast, int position) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            IAstNode node = GetIndentDefiningNode(ast, position);
-            ITextSnapshotLine baseLine = snapshot.GetLineFromPosition(node.Start);
-            return SmartIndenter.GetSmartIndent(baseLine, ast);
-        }
-
-        private static SnapshotPoint? MapCaretToBuffer(ITextView textView, ITextBuffer textBuffer) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-            return textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
         }
 
         private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {

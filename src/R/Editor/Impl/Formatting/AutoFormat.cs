@@ -4,19 +4,21 @@
 using System;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class AutoFormat {
-        public static bool IsAutoformatTriggerCharacter(char ch) {
-            return ch == '\n' || ch == '\r' || ch == ';' || ch == '}';
+        public static bool IsPreProcessAutoformatTriggerCharacter(char ch) {
+            return ch == '\n' || ch == '\r' || ch == ';';
+        }
+
+        public static bool IsPostProcessAutoformatTriggerCharacter(char ch) {
+            return ch == '}';
         }
 
         public static void HandleAutoformat(ITextView textView, char typedChar) {
@@ -50,7 +52,7 @@ namespace Microsoft.R.Editor.Formatting {
                     if (scopeStatement != null && scopeStatement.Length < 200) {
                         FormatOperations.FormatNode(textView, subjectBuffer, scopeStatement);
                     } else {
-                        FormatOperations.FormatLine(textView, subjectBuffer);
+                        FormatOperations.FormatCurrentLine(textView, subjectBuffer);
                     }
                 }
             } else if (typedChar == ';') {
@@ -60,10 +62,10 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatLine(textView, subjectBuffer);
+                    FormatOperations.FormatCurrentLine(textView, subjectBuffer);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer);
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, -1);
             }
         }
 
