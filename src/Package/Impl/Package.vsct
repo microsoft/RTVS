@@ -1617,13 +1617,12 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="REditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="Global" key1="VK_RETURN" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="REditor" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidMdEditor" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="SolutionExplorer" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="Global" key1="L" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="guidRToolsCmdSet" key1="1" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowEditorWindow" editor="REditor" key1="1" mod1="CONTROL" />
@@ -1659,11 +1658,6 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
-
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="REditor" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidInteractiveWindowCmdSet" id="cmdidClearScreen" editor="SolutionExplorer" key1="L" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>

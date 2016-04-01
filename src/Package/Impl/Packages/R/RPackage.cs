@@ -49,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
-    [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 20116)]
+    [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
@@ -93,7 +93,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
-        private uint _cmdContextCookie;
 
         private System.Threading.Tasks.Task _indexBuildingTask;
 
@@ -121,7 +120,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
-            RegisterRCommandContext();
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
@@ -209,11 +207,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return value is bool && (bool)value;
             }
             return false;
-        }
-
-        private void RegisterRCommandContext() {
-            var selMon = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
-            selMon.GetCmdUIContextCookie(RGuidList.RCmdSetGuid, out _cmdContextCookie);
         }
     }
 }
