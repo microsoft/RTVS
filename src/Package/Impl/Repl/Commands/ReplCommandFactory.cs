@@ -24,8 +24,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             var editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
 
-            GlobalShortcutSettings.SetBindings();
-
             return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
                 new WorkingDirectoryCommand(interactiveWorkflow),

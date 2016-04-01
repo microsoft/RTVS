@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -15,6 +14,8 @@ using IVsServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.VisualStudio.R.Package.Editors {
     using Shell;
+    using Text.Editor;
+    using Utilities;
     using Package = Microsoft.VisualStudio.Shell.Package;
 
     /// <summary>
@@ -138,8 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     textLines,
                     docDataExisting,
                     languageServiceId,
-                    out editorCaption,
-                    out commandUIGuid);
+                    out editorCaption);
             } finally {
                 if (docView == IntPtr.Zero) {
                     if (docDataExisting != docData && docData != IntPtr.Zero) {
@@ -200,11 +200,9 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             IVsTextLines textLines,
             IntPtr docDataExisting,
             Guid languageServiceId,
-            out string editorCaption,
-            out Guid cmdUI) {
+            out string editorCaption) {
             // Init out params
             editorCaption = string.Empty;
-            cmdUI = Guid.Empty;
 
             if (string.IsNullOrEmpty(physicalView)) {
                 // create code window as default physical view
@@ -215,8 +213,7 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
                     itemid,
                     docDataExisting,
                     languageServiceId,
-                    ref editorCaption,
-                    ref cmdUI);
+                    ref editorCaption);
             }
 
             // We couldn't create the view
@@ -234,14 +231,11 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             VSConstants.VSITEMID itemid,
             IntPtr docDataExisting,
             Guid languageServiceId,
-            ref string editorCaption,
-            ref Guid cmdUI) {
+            ref string editorCaption) {
             IVsCodeWindow window = _adaptersFactory.CreateVsCodeWindowAdapter(VsServiceProvider);
             ErrorHandler.ThrowOnFailure(window.SetBuffer(textLines));
             ErrorHandler.ThrowOnFailure(window.SetBaseEditorCaption(null));
             ErrorHandler.ThrowOnFailure(window.GetEditorCaption(READONLYSTATUS.ROSTATUS_Unknown, out editorCaption));
-
-            cmdUI = VSConstants.GUID_TextEditorFactory;
 
             CreateTextBufferInitializationTracker(textLines, documentName, hierarchy, itemid, docDataExisting, languageServiceId);
 
@@ -318,5 +312,30 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
 
         protected virtual void Dispose(bool disposing) { }
         #endregion
+
+        public static void InitKeyBindings(ITextView textView) {
+            var vsTextView = textView.GetViewAdapter<IVsTextView>();
+            var os = vsTextView as IObjectWithSite;
+
+            IntPtr unkSite = IntPtr.Zero;
+            IntPtr unkFrame = IntPtr.Zero;
+
+            try {
+                os.GetSite(typeof(OLE.Interop.IServiceProvider).GUID, out unkSite);
+                var sp = Marshal.GetObjectForIUnknown(unkSite) as OLE.Interop.IServiceProvider;
+
+                sp.QueryService(typeof(SVsWindowFrame).GUID, typeof(IVsWindowFrame).GUID, out unkFrame);
+                var frame = Marshal.GetObjectForIUnknown(unkFrame) as IVsWindowFrame;
+                frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, VSConstants.GUID_TextEditorFactory);
+            } finally {
+                if (unkSite != IntPtr.Zero) {
+                    Marshal.Release(unkSite);
+                }
+                if (unkFrame != IntPtr.Zero) {
+                    Marshal.Release(unkFrame);
+                }
+            }
+        }
+
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document.Markdown;
+using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
@@ -64,6 +65,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
             }
 
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
+        }
+
+        protected override void OnTextViewCreated(ITextView textView) {
+            // Ensure editor inherits core editor key bindings
+            BaseEditorFactory.InitKeyBindings(textView);
+            base.OnTextViewCreated(textView);
         }
 
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
