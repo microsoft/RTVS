@@ -6,20 +6,21 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
+#if DEBUG
     internal class DesignTimeRPackageViewModel : IRPackageViewModel {
         public DesignTimeRPackageViewModel() {
-            Name = "ggplot2";
-            Title = "An Implementation of the Grammar of Graphics";
-            Description = "An implementation of the grammar of graphics in R. It combines the advantages of both base and lattice graphics: conditioning and shared axes  are handled automatically, and you can still build up a plot step by step from multiple data sources. It also implements a sophisticated multidimensional conditioning system and a consistent interface to map data to aesthetic attributes. See http://ggplot2.org for more information, documentation and examples.";
+            Name = "rtvs";
+            Title = "An Implementation of the RTVS package";
+            Description = "";
             LatestVersion = "2.0.4";
             InstalledVersion = "2.0.0";
-            Depends = "R (>= 2.14)";
+            Depends = "R (>= 3.2.2)";
             Imports = "digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1), reshape2, scales(>= 0.3.0), stats";
-            Suggests = "ggplot2movies, hexbin, Hmisc, mapproj, maps, maptools, mgcv, multcomp, nlme, testthat, quantreg, knitr";
+            Suggests = "rtvs1, rtvs2, rtvs3";
             License = "GPL (>= 2)";
-            Urls = new [] { "http://ggplot2.org", "https://github.com/hadley/ggplot2" };
+            Urls = new [] { "https://github.com/Microsoft/RTVS", "https://microsoft.github.io/RTVS-docs/" };
             NeedsCompilation = false;
-            Authors = "Hadley Wickham [aut, cre], Winston Chang[aut], RStudio[cph]";
+            Authors = "Microsoft Corporation";
             LibraryPath = "~/LibPath"; 
             Repository = "CRAN";
             Built = "R 3.3.0; ; 2016-02-16 11:24:44 UTC; windows";
@@ -71,4 +72,5 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsSelected { get; set; }
         public void AddDetails(RPackage package, bool isInstalled) {}
     }
+#endif
 }

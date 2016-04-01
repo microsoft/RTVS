@@ -142,6 +142,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 InstalledVersion = package.Version;
                 IsInstalled = true;
             }
+            // TODO: Need proper version comparison
             IsUpdateAvailable = InstalledVersion != LatestVersion;
             HasDetails = true;
         }

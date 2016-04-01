@@ -74,6 +74,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock x:Name="LabelTitle" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,8,8,8" Text="Package Manager"
+                       Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}"
                        FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale155}}" />
 
             <Grid Grid.Row="2" Margin="24,0,24,17">
@@ -124,7 +125,7 @@
                     <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
                             Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackground}}">
                         <StackPanel Orientation="Vertical">
-                            <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Text="{x:Static components:Resources.PackageManager_LegalDisclaimer}" />
+                            <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" Text="{x:Static components:Resources.PackageManager_LegalDisclaimer}" />
                             <CheckBox x:Name="CheckBoxSuppressLegalDisclaimer" Margin="24,0,24,12" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" Content="{x:Static components:Resources.DoNotShowThisAgain}" Checked="CheckBoxSuppressLegalDisclaimer_Checked" />
                         </StackPanel>
                     </Border>

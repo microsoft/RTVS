@@ -109,7 +109,7 @@
                                 <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                             </Button>
 
-                            <!-- install button. It occupies the same position of the install button -->
+                            <!-- install button -->
                             <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" 
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
                                 <Button.ToolTip>
@@ -236,7 +236,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                    <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Column="1" Text="{x:Static components:Resources.Loading}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                               Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
                 </Grid>
                 <Grid.Visibility>
                     <MultiBinding Converter="{x:Static wpf:Converters.AnyIsNotCollapsed}">

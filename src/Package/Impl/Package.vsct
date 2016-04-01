@@ -1658,6 +1658,11 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="InteractiveWindow" key1="6" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPlotWindow" editor="SolutionExplorer" key1="6" mod1="CONTROL"/>
 
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="guidRToolsCmdSet" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="REditor" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="InteractiveWindow" key1="7" mod1="CONTROL"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowPackagesWindow" editor="SolutionExplorer" key1="7" mod1="CONTROL"/>
+
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="guidRToolsCmdSet" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>

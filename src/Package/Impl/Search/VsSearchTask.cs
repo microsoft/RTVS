@@ -45,19 +45,15 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         public void Start() {
-            if (!SetTaskStatus(Started)) {
-                return;
+            if (SetTaskStatus(Started)) {
+                _handler.Search(SearchQuery.SearchString, _cts.Token).ContinueWith(SearchCompleted);
             }
-
-            _handler.Search(SearchQuery.SearchString, _cts.Token).ContinueWith(SearchCompleted);
         }
 
         public void Stop() {
-            if (!SetTaskStatus(Stopped)) {
-                return;
+            if (SetTaskStatus(Stopped)) {
+                _cts.Cancel();
             }
-
-            _cts.Cancel();
         }
 
         private void SearchCompleted(Task<int> task) {

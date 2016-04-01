@@ -358,7 +358,7 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Each package is licensed to you by its owner. RTVS is not responsible for, nor does it grant any licenses to, third-party packages..
+        ///   Looks up a localized string similar to Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages..
         /// </summary>
         public static string PackageManager_LegalDisclaimer {
             get {

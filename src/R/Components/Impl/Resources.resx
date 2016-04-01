@@ -151,7 +151,7 @@
     <value>Do not show this again</value>
   </data>
   <data name="PackageManager_LegalDisclaimer" xml:space="preserve">
-    <value>Each package is licensed to you by its owner. RTVS is not responsible for, nor does it grant any licenses to, third-party packages.</value>
+    <value>Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages.</value>
   </data>
   <data name="PackageManager_PackageSources" xml:space="preserve">
     <value>Package sources:</value>

@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private readonly IRPackageManager _packageManager;
         private readonly ICoreShell _coreShell;
         private readonly BinaryAsyncLock _availableAndInstalledLock;
-        private readonly RangeObservableCollection<object> _items;
+        private readonly BatchObservableCollection<object> _items;
 
         private volatile IList<IRPackageViewModel> _availablePackages;
         private volatile IList<IRPackageViewModel> _installedPackages;
@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _packageManager = packageManager;
             _coreShell = coreShell;
             _availableAndInstalledLock = new BinaryAsyncLock();
-            _items = new RangeObservableCollection<object>();
+            _items = new BatchObservableCollection<object>();
             Items = new ReadOnlyObservableCollection<object>(_items);
         }
 
@@ -92,7 +92,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     //LoadInstalledPackages();
                     break;
                 case SelectedTab.LoadedPackages:
-                    LoadLoadedPackages();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -176,12 +175,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             _installedPackages = vmInstalledPackages.OrderBy(p => p.Name).ToList();
-            _availablePackages = vmAvailablePackages.Values.ToList<IRPackageViewModel>();
+            _availablePackages = vmAvailablePackages.Values.OrderBy(p => p.Name).ToList<IRPackageViewModel>();
         }
-
-        private void LoadLoadedPackages() {
-        }
-
+        
         private void DispatchOnMainThreadAsync(Func<Task> callback) {
             _coreShell.DispatchOnMainThreadAsync(callback)
                 .Unwrap()
@@ -222,7 +218,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     return filteredPackages.Count;
                 }
 
-                if (package.Name.StartsWith(searchString)) {
+                if (package.Name.StartsWithIgnoreCase(searchString)) {
                     filteredPackages.Add(package);
                 }
             }
