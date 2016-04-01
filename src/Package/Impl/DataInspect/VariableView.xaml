@@ -71,6 +71,10 @@
                 </Setter>
             </Style>
 
+            <Style x:Key="DataGridTextColumnElementStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment" Value="Center" />
+            </Style>
+
             <DataTemplate x:Key="NameCellTemplate">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -97,7 +101,7 @@
                     <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
                         <Button
-                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}" Margin="1"
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}">
                             <Button.Template>
                                 <ControlTemplate>
@@ -116,7 +120,7 @@
                             </Button.Template>
                         </Button>
                         <Button
-                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}" Margin="1"
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}">
                             <Button.Template>
                                 <ControlTemplate>
@@ -163,8 +167,10 @@
                                         Width="2*" 
                                         CanUserSort="True" SortMemberPath="DummyValue" />
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="*" CanUserSort="False" />
+                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False"
+                                    ElementStyle="{StaticResource DataGridTextColumnElementStyle}"/>
+                <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="*" CanUserSort="False"
+                                    ElementStyle="{StaticResource DataGridTextColumnElementStyle}"/>
             </DataGrid.Columns>
         </local:TreeGrid>
     </Grid>
