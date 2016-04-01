@@ -210,12 +210,6 @@
   <data name="Settings_ReplCategory" xml:space="preserve">
     <value>Interactive window</value>
   </data>
-  <data name="Settings_SendToRepl" xml:space="preserve">
-    <value>'Send to R Console' shortcut</value>
-  </data>
-  <data name="Settings_SendToRepl_Description" xml:space="preserve">
-    <value>Override editor 'insert empty line above' command and use Control+Enter for sending editor selection to R Console instead. Keyboard bindings can also be change in Tools &gt; Options &gt; Environment &gt; Keyboard.</value>
-  </data>
   <data name="Error_Microsoft_R_Host_Missing" xml:space="preserve">
     <value>Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser.</value>
   </data>
@@ -648,5 +642,14 @@ Additional information:
   </data>
   <data name="CranMirror_UseRProfile" xml:space="preserve">
     <value>(Use .Rprofile)</value>
+  </data>
+  <data name="SurrondWithSnippet" xml:space="preserve">
+    <value>Surround With</value>
+  </data>
+  <data name="ImportData_Title" xml:space="preserve">
+    <value>Import Dataset</value>
+  </data>
+  <data name="ImportData_EnterUrlTitle" xml:space="preserve">
+    <value>Import from Web URL</value>
   </data>
 </root>

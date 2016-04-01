@@ -160,6 +160,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Completion\ProvisionalTextTest.cs" />
+    <Compile Include="Documentation\SelectionTest.cs" />
     <Compile Include="EditorAppTestFilesFixture.cs" />
     <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />

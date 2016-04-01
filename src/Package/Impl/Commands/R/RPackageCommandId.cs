@@ -6,6 +6,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int plotWindowToolBarId = 0x2000;
         public const int helpWindowToolBarId = 0x2010;
         public const int historyWindowToolBarId = 0x2020;
+        public const int variableWindowToolBarId = 0x2030;
 
         // General
         public const int icmdGoToFormattingOptions = 400;
@@ -18,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdSurveyNews = 407;
 
         // REPL
+        public const int icmdSendToRepl = 501;
         public const int icmdLoadWorkspace = 502;
         public const int icmdSaveWorkspace = 503;
         public const int icmdSelectWorkingDirectory = 504;
@@ -33,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdStepOut = 514;
         public const int icmdStepOver = 515;
         public const int icmdAttachToRInteractive = 516;
+        public const int icmdClearRepl = 517;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
@@ -63,6 +66,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowHistoryWindow = 904;
         public const int icmdShowPackagesWindow = 905;
         public const int icmdShowHelpWindow = 906;
+        public const int icmdShowEditorWindow = 907;
+        public const int icmdShowSolutionExplorer = 908;
 
         // Publishing
         //public const int icmdPublishDialog = 1001;

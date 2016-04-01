@@ -1,22 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Editor.Mocks;
 
-namespace Microsoft.R.Editor.Test.Outline
-{
+namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     public class OutlineTest
     {

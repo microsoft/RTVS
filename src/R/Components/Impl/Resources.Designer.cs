@@ -295,6 +295,33 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: {0}.
+        /// </summary>
+        public static string PackageManager_EvalError {
+            get {
+                return ResourceManager.GetString("PackageManager_EvalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error parsing results returned by R host process..
+        /// </summary>
+        public static string PackageManager_EvalParseError {
+            get {
+                return ResourceManager.GetString("PackageManager_EvalParseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R host process is not available..
+        /// </summary>
+        public static string PackageManager_EvalSessionNotAvailable {
+            get {
+                return ResourceManager.GetString("PackageManager_EvalSessionNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Install {0} version {1}..
         /// </summary>
         public static string PackageManager_InstallButtonToolTip {
@@ -426,6 +453,15 @@ namespace Microsoft.R.Components {
         public static string PackageManager_Title {
             get {
                 return ResourceManager.GetString("PackageManager_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection to R host process failed..
+        /// </summary>
+        public static string PackageManager_TransportError {
+            get {
+                return ResourceManager.GetString("PackageManager_TransportError", resourceCulture);
             }
         }
         

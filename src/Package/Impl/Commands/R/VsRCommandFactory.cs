@@ -7,10 +7,7 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -41,6 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             return new ICommand[] {
                 new ShowContextMenuCommand(textView, RGuidList.RPackageGuid, RGuidList.RCmdSetGuid, (int) RContextMenuId.R),
                 new SendToReplCommand(textView, workflow),
+                new ClearReplCommand(textView, _workflowProvider.GetOrCreate()),
                 new GoToFormattingOptionsCommand(textView, textBuffer),
                 new WorkingDirectoryCommand(workflow)
             };

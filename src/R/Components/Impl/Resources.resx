@@ -258,4 +258,16 @@
   <data name="PackageManager_UpdateButtonToolTip" xml:space="preserve">
     <value>Update {0} to version {1}.</value>
   </data>
+  <data name="PackageManager_EvalError" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="PackageManager_EvalParseError" xml:space="preserve">
+    <value>Error parsing results returned by R host process.</value>
+  </data>
+  <data name="PackageManager_EvalSessionNotAvailable" xml:space="preserve">
+    <value>R host process is not available.</value>
+  </data>
+  <data name="PackageManager_TransportError" xml:space="preserve">
+    <value>Connection to R host process failed.</value>
+  </data>
 </root>

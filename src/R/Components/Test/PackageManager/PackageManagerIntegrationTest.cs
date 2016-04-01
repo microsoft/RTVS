@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,7 @@ using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -26,6 +28,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private readonly TestFilesFixture _testFiles;
         private readonly string _repo1Path;
         private readonly string _libPath;
+        private readonly string _lib2Path;
         private IRInteractiveWorkflow _workflow;
 
         public PackageManagerIntegrationTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
@@ -36,7 +39,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _workflowProvider.HostClientApp = new RHostClientTestApp();
             _repo1Path = _testFiles.GetDestinationPath(Path.Combine("Repos", TestRepositories.Repo1));
             _libPath = Path.Combine(_testFiles.GetDestinationPath("library"), _testMethod.Name);
+            _lib2Path = Path.Combine(_testFiles.GetDestinationPath("library2"), _testMethod.Name);
             Directory.CreateDirectory(_libPath);
+            Directory.CreateDirectory(_lib2Path);
         }
 
         [Test]
@@ -146,7 +151,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public async Task InstalledPackagesCustomLibPathNoPackages() {
             // Setup library path to point to the test folder, don't install anything in it
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibAsync(eval, _libPath);
+                await SetLocalLibsAsync(eval, _libPath);
             }
 
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
@@ -162,33 +167,197 @@ namespace Microsoft.R.Components.Test.PackageManager {
             // Setup library path to point to the test folder, install a package into it
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibAsync(eval, _libPath);
+                await SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
             }
 
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
+            ValidateRtvslib1Installed(result, _libPath);
+        }
 
+        [Test]
+        [Category.PackageManager]
+        public async Task InstalledPackagesMultiLibsSamePackage() {
+            // Install the same package in 2 different libraries
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalRepoAsync(eval, _repo1Path);
+                await SetLocalLibsAsync(eval, _libPath);
+                await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
+                await SetLocalLibsAsync(eval, _lib2Path);
+                await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _lib2Path);
+                await SetLocalLibsAsync(eval, _libPath, _lib2Path);
+            }
+
+            var result = await _workflow.Packages.GetInstalledPackagesAsync();
+            ValidateRtvslib1Installed(result, _libPath);
+
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalLibsAsync(eval, _lib2Path, _libPath);
+            }
+
+            result = await _workflow.Packages.GetInstalledPackagesAsync();
+            ValidateRtvslib1Installed(result, _lib2Path);
+        }
+
+        private void ValidateRtvslib1Installed(IReadOnlyList<RPackage> pkgs, string libPath) {
             var rtvslib1Expected = TestPackages.RtvsLib1.Clone();
-            rtvslib1Expected.LibPath = _libPath.ToRPath();
+            rtvslib1Expected.LibPath = libPath.ToRPath();
             rtvslib1Expected.NeedsCompilation = null;
 
-            var rtvslib1Actual = result.Should().ContainSingle(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package && pkg.LibPath == _libPath.ToRPath()).Which;
+            var rtvslib1Actual = pkgs.Should().ContainSingle(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package && pkg.LibPath == libPath.ToRPath()).Which;
             rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
         }
 
-        private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
-            var code = $"options(repos=list(LOCAL=\"file:///{localRepoPath.ToRPath()}\"))";
-            var evalResult = await eval.EvaluateAsync(code);
+        [Test]
+        [Category.PackageManager]
+        public async Task InstallAndUninstallPackageSpecifiedLib() {
+            var interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
+                _workflow.RSession.IsHostRunning.Should().BeTrue();
+
+                using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                    await SetLocalRepoAsync(eval, _repo1Path);
+                }
+
+                _workflow.Packages.InstallPackage(TestPackages.RtvsLib1Description.Package, _libPath);
+                WaitForReplDoneExecuting();
+                WaitForPackageInstalled(_libPath, TestPackages.RtvsLib1Description.Package);
+
+                using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                    await SetLocalLibsAsync(eval, _libPath);
+                }
+
+                var installed = await _workflow.Packages.GetInstalledPackagesAsync();
+                ValidateRtvslib1Installed(installed, _libPath);
+
+                _workflow.Packages.UninstallPackage(TestPackages.RtvsLib1Description.Package, _libPath);
+                WaitForReplDoneExecuting();
+
+                installed = await _workflow.Packages.GetInstalledPackagesAsync();
+                installed.Should().NotContain(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package && pkg.LibPath == _libPath.ToRPath());
+            }
         }
 
-        private async Task SetLocalLibAsync(IRSessionEvaluation eval, string libPath) {
-            var code = $".libPaths(\"{libPath.ToRPath()}\")";
-            var evalResult = await eval.EvaluateAsync(code);
+        [Test]
+        [Category.PackageManager]
+        public async Task InstallPackageDefaultLib() {
+            var interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
+                _workflow.RSession.IsHostRunning.Should().BeTrue();
+
+                using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                    await SetLocalRepoAsync(eval, _repo1Path);
+                    await SetLocalLibsAsync(eval, _libPath);
+                }
+
+                _workflow.Packages.InstallPackage(TestPackages.RtvsLib1Description.Package, null);
+                WaitForReplDoneExecuting();
+                WaitForPackageInstalled(_libPath, TestPackages.RtvsLib1Description.Package);
+
+                var installed = await _workflow.Packages.GetInstalledPackagesAsync();
+                ValidateRtvslib1Installed(installed, _libPath);
+            }
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task LoadAndUnloadPackage() {
+            var interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
+                _workflow.RSession.IsHostRunning.Should().BeTrue();
+
+                using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                    await SetLocalRepoAsync(eval, _repo1Path);
+                    await SetLocalLibsAsync(eval, _libPath);
+                    await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
+                }
+
+                await EvaluateCode("func1()", expectedError: "Error: could not find function \"func1\"");
+
+                _workflow.Packages.LoadPackage(TestPackages.RtvsLib1Description.Package, null);
+                WaitForReplDoneExecuting();
+
+                await EvaluateCode("func1()", expectedResult: "func1");
+
+                var loaded = await _workflow.Packages.GetLoadedPackagesAsync();
+                loaded.Should().Contain("rtvslib1");
+
+                _workflow.Packages.UnloadPackage(TestPackages.RtvsLib1Description.Package);
+                WaitForReplDoneExecuting();
+
+                await EvaluateCode("func1()", expectedError: "Error: could not find function \"func1\"");
+
+                loaded = await _workflow.Packages.GetLoadedPackagesAsync();
+                loaded.Should().NotContain("rtvslib1");
+            }
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task GetLoadedPackages() {
+            var interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(interactiveWindowComponentContainerFactory))) {
+                _workflow.ActiveWindow.Should().NotBeNull();
+                _workflow.RSession.IsHostRunning.Should().BeTrue();
+
+                using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                    await SetLocalRepoAsync(eval, _repo1Path);
+                    await SetLocalLibsAsync(eval, _libPath);
+                    await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
+                }
+
+                string[] results = await _workflow.Packages.GetLoadedPackagesAsync();
+                results.Should().NotContain(new string[] {
+                    "rtvslib1", ".GlobalEnv", "Autoloads",
+                });
+                results.Should().Contain(new string[] {
+                    "stats", "graphics", "grDevices", "grDevices",
+                    "utils", "datasets", "methods", "base",
+                });
+            }
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task LibraryPaths() {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalRepoAsync(eval, _repo1Path);
+                await SetLocalLibsAsync(eval, _libPath);
+            }
+
+            var result = await _workflow.Packages.GetLibraryPathsAsync();
+            result[0].Should().Be(_libPath.ToRPath());
+        }
+
+        private async Task EvaluateCode(string code, string expectedResult = null, string expectedError = null) {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                var evalResult = await eval.EvaluateAsync("func1();", REvaluationKind.Normal);
+                if (expectedResult != null) {
+                    evalResult.StringResult.Trim().Should().Be(expectedResult.Trim());
+                }
+                if (expectedError != null) {
+                    evalResult.Error.Trim().Should().Be(expectedError.Trim());
+                }
+            }
+        }
+
+        private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
+            var code = string.Format("options(repos=list(LOCAL=\"file:///{0}\"))", localRepoPath.ToRPath());
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Mutating);
+        }
+
+        private async Task SetLocalLibsAsync(IRSessionEvaluation eval, params string[] libPaths) {
+            var paths = string.Join(",", libPaths.Select(p => p.ToRPath().ToRStringLiteral()));
+            var code = string.Format(".libPaths(c({0}))", paths);
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
         }
 
         private async Task InstallPackageAsync(IRSessionEvaluation eval, string packageName, string libPath) {
-            var code = $"install.packages(\"{packageName}\", verbose=FALSE, quiet=TRUE)";
-            var evalResult = await eval.EvaluateAsync(code);
+            var code = string.Format("install.packages(\"{0}\", verbose=FALSE, quiet=TRUE)", packageName);
+            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
             WaitForPackageInstalled(libPath, packageName);
         }
 
@@ -201,6 +370,15 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 CranMirrorName = RToolsSettings.Current.CranMirror,
             }, 50000);
             return workflow;
+        }
+
+        private void WaitForReplDoneExecuting(int timeoutInSecs = 30) {
+            var startTime = DateTime.Now;
+            var timeout = TimeSpan.FromSeconds(timeoutInSecs);
+            while (_workflow.ActiveWindow.IsRunning && DateTime.Now < (startTime + timeout)) {
+                Thread.Sleep(100);
+            }
+            _workflow.ActiveWindow.IsRunning.Should().BeFalse();
         }
 
         private static void WaitForPackageInstalled(string libPath, string packageName) {

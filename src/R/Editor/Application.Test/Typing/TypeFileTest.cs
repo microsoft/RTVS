@@ -6,7 +6,6 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Support.RD.ContentTypes;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.ContentType;
+using Microsoft.R.Editor;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -78,8 +78,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         private async Task ShowHelpOnCurrentAsync(string prefix, string item) {
             try {
-                using (IRSessionEvaluation evaluation = await _workflow.RSession.BeginEvaluationAsync(isMutating: false)) {
-                    REvaluationResult result = await evaluation.EvaluateAsync(prefix + item + Environment.NewLine);
+                using (IRSessionEvaluation evaluation = await _workflow.RSession.BeginEvaluationAsync()) {
+                    REvaluationResult result = await evaluation.EvaluateAsync(prefix + item, REvaluationKind.Normal);
                     if (result.ParseStatus == RParseStatus.OK &&
                         string.IsNullOrEmpty(result.Error)) {
                         if (string.IsNullOrEmpty(result.StringResult) ||

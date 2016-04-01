@@ -6,12 +6,10 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Commands;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.Languages.Editor.Application.Packages
-{
+namespace Microsoft.Languages.Editor.Application.Packages {
     [ExcludeFromCodeCoverage]
     [Export(typeof(IWpfTextViewConnectionListener))]
     [ContentType(RContentTypeDefinition.ContentType)]

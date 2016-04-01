@@ -6,8 +6,7 @@ using System.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.ContentType;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.Editor;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.OptionsExtensionMethods;
 

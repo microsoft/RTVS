@@ -5,14 +5,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.QuickInfo
-{
+namespace Microsoft.R.Editor.QuickInfo {
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("R ToolTip QuickInfo Controller")]
     [ContentType(RContentTypeDefinition.ContentType)]

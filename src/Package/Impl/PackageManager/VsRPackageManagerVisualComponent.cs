@@ -6,10 +6,11 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
-    internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory {
+    internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory { 
         private readonly ISearchControlProvider _searchControlProvider;
 
         [ImportingConstructor]

@@ -159,7 +159,9 @@ OperatorExpected Token [2...3)
             string expected =
 @"GlobalScope  [Global]
 
-RightOperandExpected Token [33...34)";
+RightOperandExpected Token [33...34)
+UnexpectedToken Token [33...34)
+";
 
             ParserTest.VerifyParse(expected, content);
         }

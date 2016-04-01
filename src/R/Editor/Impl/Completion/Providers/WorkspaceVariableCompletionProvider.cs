@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
             Selector selector = Selector.Dollar;
 
-            string variableName = RCompletionContext.GetVariableName(context.Session.TextView, context.TextBuffer.CurrentSnapshot);
+            string variableName = context.Session.TextView.GetVariableNameBeforeCaret();
             if (variableName.IndexOfAny(new char[] { '$', '@' }) < 0) {
                 variableName = string.Empty;
                 selector = Selector.None;

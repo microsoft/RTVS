@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -79,7 +80,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var path = _testFiles.GetDestinationPath(Path.Combine("Parser", "notexist.html"));
 
             Func<Task> f = async () => await RPackageWebParser.RetrievePackageInfo(new Uri(path, UriKind.Absolute));
-            f.ShouldThrow<RPackageInfoRetrievalException>();
+            f.ShouldThrow<WebException>();
         }
     }
 }

@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 

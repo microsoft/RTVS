@@ -3,10 +3,10 @@
 
 using System;
 
-namespace Microsoft.R.Components.Test.PackageManager {
+namespace Microsoft.R.Components.PackageManager {
     [Serializable]
-    public sealed class RPackageInfoRetrievalException : Exception {
-        public RPackageInfoRetrievalException(string message, Exception innerException = null)
+    public sealed class RPackageManagerException : Exception {
+        public RPackageManagerException(string message, Exception innerException = null)
             : base(message, innerException) {
         }
     }

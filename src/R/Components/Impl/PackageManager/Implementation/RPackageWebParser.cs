@@ -10,7 +10,6 @@ using Microsoft.Common.Core;
 using Microsoft.Html.Core.Tree;
 using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.R.Components.PackageManager.Model;
-using Microsoft.R.Components.Test.PackageManager;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageWebParser {
@@ -20,18 +19,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         /// <param name="packageUri">Location of index.html page.</param>
         /// <param name="result">RPackage object to fill in. A new one is created if none is passed in.</param>
         /// <returns>RPackage object populated with the information found in the html page.</returns>
+        /// <exception cref="WebException">Page cannot be loaded.</exception>
         /// <remarks>
         /// If an existing RPackage object is passed in, the fields that are already filled in
         /// won't be overwritten by the ones extracted from the html page.
         /// </remarks>
         public static async Task<RPackage> RetrievePackageInfo(Uri packageUri, RPackage result = null) {
             string content;
-            try {
-                using (var webClient = new WebClient()) {
-                    content = await webClient.DownloadStringTaskAsync(packageUri);
-                }
-            } catch (WebException ex) {
-                throw new RPackageInfoRetrievalException(string.Format("Error reading index page from {0}", packageUri), ex);
+            using (var webClient = new WebClient()) {
+                content = await webClient.DownloadStringTaskAsync(packageUri);
             }
 
             var pkg = result ?? new RPackage();

@@ -8,7 +8,6 @@ using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Support.Test.Utility;

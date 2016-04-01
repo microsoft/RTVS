@@ -15,6 +15,6 @@ namespace Microsoft.R.Editor.Snippets {
         /// </summary>
         bool IsSnippet(string name);
 
-        IEnumerable<string> SnippetNames { get; }
+        IEnumerable<ISnippetInfo> Snippets { get; }
     }
 }

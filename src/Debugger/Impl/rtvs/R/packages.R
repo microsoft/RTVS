@@ -17,3 +17,11 @@ packages.installed <- function() {
 packages.available <- function() {
     matrix.as.lists(available.packages())
 }
+
+packages.loaded <- function() {
+    as.list(.packages())
+}
+
+packages.libpaths <- function() {
+    as.list(.libPaths())
+}

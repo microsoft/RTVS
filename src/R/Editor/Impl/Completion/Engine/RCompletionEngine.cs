@@ -45,12 +45,18 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
-            // Now check if position is inside a string and if so, suppress completion list
+            // Now check if position is inside a string or a number and if so, suppress the completion list
             var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
             if (tokenNode != null && (tokenNode.Token.TokenType == RTokenType.String ||
                                       tokenNode.Token.TokenType == RTokenType.Number ||
                                       tokenNode.Token.TokenType == RTokenType.Complex)) {
                 // No completion in strings or numbers
+                return providers;
+            }
+
+            // We do not want automatic completion inside identifiers such as in a middle
+            // of ab|c or in `abc|`. Manually invoked completion is fine.
+            if (tokenNode != null && tokenNode.Token.TokenType == RTokenType.Identifier && autoShownCompletion) {
                 return providers;
             }
 

@@ -23,6 +23,9 @@ using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Windows;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
@@ -36,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
             var replTracker = exportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
             var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
+            var contentTypeRegistryService = exportProvider.GetExportedValue<IContentTypeRegistryService>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -71,8 +75,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(),
-                new ImportDataSetUrlCommand(),
+                new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),
+                new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),
@@ -84,6 +88,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new ShowHistoryWindowCommand(),
+                new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
+                new GotoSolutionExplorerCommand(),
                 new ShowPackageManagerWindowCommand(),
 
                 // Plot commands

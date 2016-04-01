@@ -29,7 +29,6 @@ using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -70,6 +69,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
+    [ProvideKeyBindingTable(RGuidList.RCmdSetGuidString, 20116)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
@@ -98,6 +98,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
+        private uint _cmdContextCookie;
 
         private System.Threading.Tasks.Task _indexBuildingTask;
 
@@ -124,9 +125,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             base.Initialize();
 
-            ReplShortcutSetting.Initialize();
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
+            RegisterRCommandContext();
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
@@ -146,7 +147,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
 
             LogCleanup.Cancel();
-            ReplShortcutSetting.Close();
             ProjectIconProvider.Close();
             CsvAppFileIO.Close();
 
@@ -156,6 +156,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p.SaveSettings();
             }
 
+            GlobalShortcutSettings.RestoreBindings();
             base.Dispose(disposing);
         }
 
@@ -215,6 +216,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return value is bool && (bool)value;
             }
             return false;
+        }
+
+        private void RegisterRCommandContext() {
+            var selMon = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
+            selMon.GetCmdUIContextCookie(RGuidList.RCmdSetGuid, out _cmdContextCookie);
         }
     }
 }

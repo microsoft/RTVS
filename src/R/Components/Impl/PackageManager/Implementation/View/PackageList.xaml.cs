@@ -14,7 +14,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
-        private ScrollViewer _scrollViewer;
 
         public bool CheckBoxesEnabled {
             get { return _checkBoxesEnabled; }

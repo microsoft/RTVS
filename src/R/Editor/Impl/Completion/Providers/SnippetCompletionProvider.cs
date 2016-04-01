@@ -27,8 +27,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             if (!context.IsInNameSpace() && infoSource != null) {
                 ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
-                foreach (string name in infoSource.SnippetNames) {
-                    completions.Add(new RCompletion(name, name, string.Empty, snippetGlyph));
+                foreach (ISnippetInfo info in infoSource.Snippets) {
+                    completions.Add(new RCompletion(info.Name, info.Name, info.Description, snippetGlyph));
                 }
             }
             return completions;

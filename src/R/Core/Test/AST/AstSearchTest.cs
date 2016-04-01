@@ -18,7 +18,7 @@ namespace Microsoft.R.Core.Test.AST {
     public class AstSearchTest {
         [Test]
         [Category.R.Ast]
-        public void AstSearch_GetPackageNamesTest() {
+        public void GetPackageNamesTest() {
             AstRoot ast = RParser.Parse(new TextStream("library(a); library(b); while(T) { library(c) }"));
             string[] names = ast.GetFilePackageNames().ToArray();
 
@@ -27,7 +27,7 @@ namespace Microsoft.R.Core.Test.AST {
 
         [Test]
         [Category.R.Ast]
-        public void AstNode_GetPositionNodeTest() {
+        public void GetPositionNodeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a+b"));
 
             IAstNode scope;
@@ -42,7 +42,7 @@ namespace Microsoft.R.Core.Test.AST {
 
         [Test]
         [Category.R.Ast]
-        public void AstNode_GetElementsEnclosingRangeTest() {
+        public void GetElementsEnclosingRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode startNode, endNode;
@@ -61,7 +61,7 @@ namespace Microsoft.R.Core.Test.AST {
 
         [Test]
         [Category.R.Ast]
-        public void AstNode_NodeFromRangeTest() {
+        public void NodeFromRangeTest() {
             AstRoot ast = RParser.Parse(new TextStream(" x <- a123+b"));
 
             IAstNode node = ast.NodeFromRange(new TextRange(2, 5));

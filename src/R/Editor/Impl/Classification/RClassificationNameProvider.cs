@@ -7,12 +7,10 @@ using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Classification;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.ContentType;
 using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Editor.Classification
-{
+namespace Microsoft.R.Editor.Classification {
     [Export(typeof(IClassificationNameProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class RClassificationNameProvider: IClassificationNameProvider<RToken>, IClassificationNameProvider

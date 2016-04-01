@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 
 namespace Microsoft.R.Core.AST {
@@ -10,19 +11,20 @@ namespace Microsoft.R.Core.AST {
         /// Locates enclosing scope for a given node
         /// </summary>
         public static IScope GetEnclosingScope(this IAstNode node) {
-            var n = node.Parent;
-            if(n == null) {
-                var root = node as AstRoot;
-                if(root != null && root.Children.Count > 0) {
-                    return root.Children[0] as IScope; // Global scope
-                }
-                return null;
+            var gs = node as GlobalScope;
+            if (gs != null) {
+                return gs;
             }
 
+            var root = node as AstRoot;
+            if (root != null) {
+                return root.Children.Count > 0 ? root.Children[0] as IScope : null;
+            }
+
+            var n = node.Parent;
             while (!(n is IScope) && n != null) {
                 n = n.Parent;
             }
-
             return n as IScope;
         }
     }

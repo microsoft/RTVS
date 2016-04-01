@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal class ShowToolWindowCommand<T> : PackageCommand 
-        where T : ToolWindowPane {
+        where T : RToolWindowPane {
 
         public ShowToolWindowCommand(int id)
             : base(RGuidList.RCmdSetGuid, id) {}
