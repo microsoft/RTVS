@@ -8,10 +8,11 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
+namespace Microsoft.VisualStudio.R.Package.Repl.Shiny {
     internal sealed class RunShinyAppCommand : PackageCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private Task _runningTask;
+
+        public static Task RunningTask { get; private set; }
 
         public RunShinyAppCommand(IRInteractiveWorkflow interactiveWorkflow)
             : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdRunShinyApp) {
@@ -20,17 +21,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void SetStatus() {
             Visible = true;
-            Enabled = _interactiveWorkflow.RSession.IsHostRunning && _runningTask == null;
+            Enabled = _interactiveWorkflow.RSession.IsHostRunning && RunningTask == null;
         }
 
         protected override void Handle() {
-            _runningTask = Task.Run(async () => {
+            RunningTask = Task.Run(async () => {
                 try {
                     using (var e = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                         await e.RespondAsync("library(shiny)" + Environment.NewLine + "runApp()" + Environment.NewLine);
                     }
-                } catch(TaskCanceledException) { } catch (MessageTransportException) { }
-            }).ContinueWith((t) => _runningTask = null);
+                } catch (TaskCanceledException) { } catch (MessageTransportException) { }
+            }).ContinueWith((t) => RunningTask = null);
         }
     }
 }

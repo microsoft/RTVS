@@ -115,5 +115,6 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         // Shiny
         public const int icmdRunShinyApp = 1601;
+        public const int icmdStopShinyApp = 1602;
     }
 }

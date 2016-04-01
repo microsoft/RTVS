@@ -568,13 +568,22 @@
       <Button guid="guidRToolsCmdSet" id="icmdRunShinyApp" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="RunPerformance"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Run Shiny App</ButtonText>
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdStopShinyApp" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="CancelPerformanceReport"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Stop Shiny App</ButtonText>
+        </Strings>
+      </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
@@ -1410,6 +1419,9 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdRunShinyApp" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="rToolbarShinyGroup"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdStopShinyApp" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarShinyGroup"/>
+    </CommandPlacement>
     <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
     </CommandPlacement>
@@ -1952,6 +1964,7 @@
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>
+      <IDSymbol name="icmdStopShinyApp" value="1602"/>
 
       <!-- Editor specific -->
       <IDSymbol name="icmdInsertRoxygenBlock" value="9001" />
