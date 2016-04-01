@@ -7,7 +7,7 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="Height" Width="700"
+        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
         FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
     <StackPanel>
         <Grid Margin="6,3,3,3">
@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Margin="3" Text="URL :"/>
-            <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox"/>
+            <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox" Width="600"/>
         </Grid>
 
         <ProgressBar Margin="6"
@@ -25,9 +25,13 @@
         <TextBlock Margin="3"
                    x:Name="ErrorTextBlock" Visibility="Collapsed" />
 
-        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Margin="3">
-            <Button x:Name="CancelButton" Content="Cancel" Padding="6" Margin="6" Click="CancelButton_Click"/>
-            <Button x:Name="OkButton" Content="OK" Padding="6" Margin="6" Click="OkButton_Click"/>
-        </StackPanel>
+        <Grid HorizontalAlignment="Right" Margin="3" Grid.IsSharedSizeScope="true">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition SharedSizeGroup="ButtonGroup"/>
+                <ColumnDefinition SharedSizeGroup="ButtonGroup"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="OkButton" Grid.Column="0"  Content="{x:Static pkg:Resources.Ok}" Padding="6" Margin="6" Click="OkButton_Click"/>
+            <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click"/>
+        </Grid>
     </StackPanel>
 </ui:DialogWindow>

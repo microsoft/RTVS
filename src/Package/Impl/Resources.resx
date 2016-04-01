@@ -652,4 +652,10 @@ Additional information:
   <data name="ImportData_EnterUrlTitle" xml:space="preserve">
     <value>Import from Web URL</value>
   </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
 </root>
