@@ -130,7 +130,7 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
     <Compile Include="PackageManager\Implementation\RPackageWebParser.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
-    <Compile Include="PackageManager\RPackageInfoRetrievalException.cs" />
+    <Compile Include="PackageManager\RPackageManagerException.cs" />
     <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
