@@ -54,6 +54,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             SetEncodingComboBoxAsync().DoNotWait();
         }
 
+        public ImportDataWindow(string filePath, string name) : this() {
+            SetFilePathAsync(filePath, name).DoNotWait();
+        }
+
         private IRSession GetRSession() {
             IRSession rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
             if (rSession == null) {
@@ -111,19 +115,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
-            FilePathBox.Text = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
-            if (!string.IsNullOrEmpty(FilePathBox.Text)) {
-                FilePathBox.CaretIndex = FilePathBox.Text.Length;
-                FilePathBox.ScrollToEnd();
-
-                var variableName = Path.GetFileNameWithoutExtension(FilePathBox.Text);
-                VariableNameBox.Text = variableName;
-
-                string text = ReadFile(FilePathBox.Text);
-                InputFilePreview.Text = text;
-
-                PreviewAsync().DoNotWait();
+            string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
+            if (!string.IsNullOrEmpty(filePath)) {
+                SetFilePathAsync(filePath).DoNotWait();
             }
+        }
+
+        private async Task SetFilePathAsync(string filePath, string name = null) {
+            FilePathBox.Text = filePath;
+            FilePathBox.CaretIndex = FilePathBox.Text.Length;
+            FilePathBox.ScrollToEnd();
+
+            var variableName = name == null ? Path.GetFileNameWithoutExtension(filePath) : name;
+            VariableNameBox.Text = variableName;
+
+            string text = ReadFile(FilePathBox.Text);
+            InputFilePreview.Text = text;
+
+            await PreviewAsync();
         }
 
         private void RunButton_Click(object sender, RoutedEventArgs e) {

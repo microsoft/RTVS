@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
@@ -43,8 +44,89 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task GetAdditionalPackageInfoAsync(RPackage pkg) {
-            var uri = GetPackageWebIndexUri(pkg);
-            await RPackageWebParser.RetrievePackageInfo(uri, pkg);
+            try {
+                var uri = GetPackageWebIndexUri(pkg);
+                await RPackageWebParser.RetrievePackageInfo(uri, pkg);
+            } catch (WebException ex) {
+                throw new RPackageManagerException(ex.Message, ex);
+            }
+        }
+
+        public void InstallPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("install.packages({0})", name.ToRStringLiteral());
+            } else {
+                script = string.Format("install.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void UninstallPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("remove.packages({0})", name.ToRStringLiteral());
+            } else {
+                script = string.Format("remove.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void LoadPackage(string name, string libraryPath) {
+            string script;
+            if (string.IsNullOrEmpty(libraryPath)) {
+                script = string.Format("library({0})", name.ToRStringLiteral());
+            } else {
+                script = string.Format("library({0}, lib.loc={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+            }
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public void UnloadPackage(string name) {
+            string script = string.Format("unloadNamespace({0})", name.ToRStringLiteral());
+
+            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+        }
+
+        public async Task<string[]> GetLoadedPackagesAsync() {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
+
+            try {
+                using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                    var result = await eval.LoadedPackages();
+                    CheckEvaluationResult(result);
+
+                    return ((JArray)result.JsonResult)
+                        .Select(p => (string)((JValue)p).Value)
+                        .ToArray();
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
+        }
+
+        public async Task<string[]> GetLibraryPathsAsync() {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
+
+            try {
+                using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                    var result = await eval.LibraryPaths();
+                    CheckEvaluationResult(result);
+
+                    return ((JArray)result.JsonResult)
+                        .Select(p => (string)((JValue)p).Value)
+                        .ToArray();
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
         private static Uri GetPackageWebIndexUri(RPackage pkg) {
@@ -62,21 +144,30 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         private async Task<IReadOnlyList<RPackage>> GetPackages(Func<IRSessionEvaluation, Task<REvaluationResult>> fetchFunc) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
-                return new List<RPackage>().AsReadOnly();
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
             try {
                 using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
                     var result = await fetchFunc(eval);
-                    if (result.ParseStatus != RParseStatus.OK || result.Error != null) {
-                        throw new InvalidOperationException(result.ToString());
-                    }
+                    CheckEvaluationResult(result);
+
                     return ((JObject)result.JsonResult).Properties()
                         .Select(p => p.Value.ToObject<RPackage>())
                         .ToList().AsReadOnly();
                 }
-            } catch (OperationCanceledException) {
-                return new List<RPackage>().AsReadOnly();
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
+        }
+
+        private void CheckEvaluationResult(REvaluationResult result) {
+            if (result.ParseStatus != RParseStatus.OK) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalParseError, new InvalidOperationException(result.ToString()));
+            }
+
+            if (result.Error != null) {
+                throw new RPackageManagerException(string.Format(Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
             }
         }
 
