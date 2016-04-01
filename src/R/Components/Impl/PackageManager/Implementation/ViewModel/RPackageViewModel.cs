@@ -19,6 +19,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private ICollection<string> _urls;
         private string _libraryPath;
         private string _built;
+        private bool _isUpdateAvailable;
 
         public static RPackageViewModel CreateAvailable(RPackage package) {
             return new RPackageViewModel(package.Package) {
@@ -107,7 +108,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public string Imports { get; private set; }
         public string Suggests { get; private set; }
 
-        public bool IsUpdateAvailable { get; private set; }
+        public bool IsUpdateAvailable {
+            get { return _isUpdateAvailable; }
+            private set { SetProperty(ref _isUpdateAvailable, value); }
+        }
 
         public bool IsInstalled {
             get { return _isInstalled; }
@@ -141,9 +145,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (isInstalled) {
                 InstalledVersion = package.Version;
                 IsInstalled = true;
+                // TODO: Need proper version comparison
+                IsUpdateAvailable = InstalledVersion != LatestVersion;
             }
-            // TODO: Need proper version comparison
-            IsUpdateAvailable = InstalledVersion != LatestVersion;
+
             HasDetails = true;
         }
     }

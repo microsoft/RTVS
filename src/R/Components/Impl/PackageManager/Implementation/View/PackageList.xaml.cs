@@ -46,7 +46,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
-            throw new NotImplementedException();
+            
         }
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {

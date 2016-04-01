@@ -121,10 +121,9 @@
                                 <Rectangle Fill="{StaticResource IconInstall}" Width="16" Height="16" />
                             </Button>
 
-                            <!-- row 1: latest version and the update button-->
                             <!-- version to update to -->
                             <TextBlock x:Name="TextVersionToUpdateTo" Grid.Column="2" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
-                                       Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                       Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                        Text="{Binding Path=LatestVersion, StringFormat={}v{0}}">
                                 <TextBlock.ToolTip>
                                     <Binding Path="LatestVersion" StringFormat="{x:Static components:Resources.PackageManager_LatestVersionToolTip}" />
@@ -133,7 +132,7 @@
 
                             <!-- update button -->
                             <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Click="ButtonUpdate_Click"
-                                    Visibility="{Binding Path=IsUpdateAvailable, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
+                                    Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
                                     <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
                                         <Binding Path="Name" />

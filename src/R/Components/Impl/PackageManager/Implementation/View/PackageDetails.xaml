@@ -77,7 +77,7 @@
 
                 <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}">
                     <Button.Visibility>
-                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}">
+                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}" Mode="OneWay">
                             <Binding Path="IsUpdateAvailable" />
                             <Binding Path="IsInstalled" />
                         </MultiBinding>

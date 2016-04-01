@@ -8,6 +8,7 @@
       <File Source="$(var.BinDir)\Microsoft.Markdown.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Common.Core.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Wpf.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Actions.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Core.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Components.dll" />
@@ -35,6 +36,7 @@
         <File Source="$(var.BinDir)\Microsoft.R.Support.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Wpf.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Components.pdb" />
         <File Source="$(var.BinDir)\Microsoft.Languages.Editor.pdb" />
         <File Source="$(var.BinDir)\Microsoft.Languages.Core.pdb" />
