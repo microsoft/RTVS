@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Selection {
                 Span? spanToSelect = RTextStructure.GetWordSpan(snapshot, caretPosition);
                 if (spanToSelect.HasValue && spanToSelect.Value.Length > 0) {
                     TextView.Selection.Select(new SnapshotSpan(snapshot, spanToSelect.Value), isReversed: false);
-                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, spanToSelect.Value.Start));
+                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, spanToSelect.Value.End));
                     return CommandResult.Executed;
                 }
             }
