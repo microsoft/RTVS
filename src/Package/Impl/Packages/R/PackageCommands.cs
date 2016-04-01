@@ -70,8 +70,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
                 new SourceRScriptCommand(interactiveWorkflow, textViewTracker),
+                new RunShinyAppCommand(interactiveWorkflow),
 
-                new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
+            new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),

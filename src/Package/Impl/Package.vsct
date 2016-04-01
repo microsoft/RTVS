@@ -14,6 +14,17 @@
 
   <Commands package="RToolsPackage">
     <Menus>
+      <!-- Main RTVS toolbar -->
+      <Menu guid="guidRToolsCmdSet" id="rToolbar" type="Toolbar">
+        <CommandFlag>DefaultDocked</CommandFlag>
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <Strings>
+          <ButtonText>R Toolbar</ButtonText>
+          <CommandName>R Toolbar</CommandName>
+        </Strings>
+      </Menu>
+      <!-- End of toolbar -->
+
       <!-- R code editor context menu -->
       <Menu guid="guidRToolsCmdSet" id="rCodeEditorContextMenu" type="Context">
         <CommandFlag>DontCache</CommandFlag>
@@ -93,7 +104,7 @@
           <CommandName>Variable Explorer</CommandName>
         </Strings>
       </Menu>
-      
+
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
@@ -197,6 +208,19 @@
       must be a menu. 
     -->
     <Groups>
+      <Group guid="guidRToolsCmdSet" id="rToolbarReplGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="rToolbarShinyGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="rToolbarDataGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
+      </Group>
+
       <!-- R code editor context menu groups -->
       <!-- R Formatting -->
       <Group guid="guidRToolsCmdSet" id="groupRContextRepl" priority="0x0800">
@@ -325,7 +349,7 @@
       </Group>
 
       <Group guid="guidRToolsCmdSet" id="rEditorDocumentationGroup" priority="0x0000" />
-      
+
       <!-- Plot toolbar -->
       <Group guid="guidRToolsCmdSet" id="plotToolbarNavGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
@@ -540,6 +564,17 @@
           <ButtonText>Step Over</ButtonText>
         </Strings>
       </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdRunShinyApp" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="RunPerformance"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Run Shiny App</ButtonText>
+        </Strings>
+      </Button>
+
 
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
@@ -1359,6 +1394,30 @@
   </Commands>
 
   <CommandPlacements>
+    <!-- Toolbar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarDataGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarDataGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdRunShinyApp" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarShinyGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    </CommandPlacement>
+    <!-- End toolbar -->
+
     <!-- R code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
@@ -1604,7 +1663,7 @@
     </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_PROJNODE"/>
-    </CommandPlacement>	  
+    </CommandPlacement>
 
     <!-- Variable Explorer toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0100">
@@ -1687,7 +1746,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
-    
+
   </KeyBindings>
 
   <UsedCommands>
@@ -1891,11 +1950,19 @@
       <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
 
+      <!-- Shiny -->
+      <IDSymbol name="icmdRunShinyApp" value="1601"/>
+
       <!-- Editor specific -->
       <IDSymbol name="icmdInsertRoxygenBlock" value="9001" />
 
       <!-- Submenus-->
-      <IDSymbol name="mainMenuGroup" value="0x100"/>
+      <IDSymbol name="rToolbar" value="0x0010"/>
+      <IDSymbol name="rToolbarReplGroup" value="0x0020" />
+      <IDSymbol name="rToolbarDataGroup" value="0x0021" />
+      <IDSymbol name="rToolbarShinyGroup" value="0x0022" />
+      <IDSymbol name="rToolbarMarkdownGroup" value="0x0023" />
+      <IDSymbol name="mainMenuGroup" value="0x0100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>
       <IDSymbol name="packagesSubMenu" value="0x2120"/>

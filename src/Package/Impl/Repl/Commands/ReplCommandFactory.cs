@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
                 new PasteCurrentCodeCommand(textView, interactiveWorkflow),
-                new SelectWordCommand(textView, textBuffer)
+                new SelectWordCommand(textView, textBuffer),
             };
         }
     }
