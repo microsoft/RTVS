@@ -109,6 +109,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("{ENTER}if(x>1) {");
                 script.DoIdle(300);
                 script.Type("{ENTER}");
+                script.DoIdle(300);
                 script.Type("}}");
 
                 string expected = "while (true) {\r\n    if (x > 1) {\r\n    }\r\n}";
@@ -141,7 +142,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
-                script.Type("x <-function(a,{ENTER}{TAB}b){ENTER}{");
+                script.Type("x <-function(a,{ENTER}b){ENTER}{");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
@@ -160,7 +161,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.MoveDown();
                 script.Enter();
 
-                string expected = "while (true) {\r\n\r\n}";
+                string expected = "while (true)\r\n{\r\n\r\n}";
                 string actual = script.EditorText;
 
                 actual.Should().Be(expected);
@@ -350,6 +351,37 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 "              yname = NULL) {\r\n" +
 "    abind(a, )\r\n" +
 "}";
+                actual.Should().Be(expected);
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition03() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text1 = "x <-function(x, y,{ENTER}";
+                string text2 = "a,b,";
+                string text3 = "c, d)";
+
+                script.Type(text1);
+                script.DoIdle(300);
+
+                script.Backspace();
+                script.Backspace();
+                script.Backspace();
+                script.Backspace();
+
+                script.DoIdle(300);
+                script.Type(text2);
+                script.Enter();
+
+                script.Type(text3);
+
+                string actual = script.EditorText;
+                string expected =
+"x <- function(x, y,\r\n" +
+"          a, b,\r\n" +
+"          c, d)";
                 actual.Should().Be(expected);
             }
         }

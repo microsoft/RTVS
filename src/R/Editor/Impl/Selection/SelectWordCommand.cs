@@ -22,9 +22,11 @@ namespace Microsoft.R.Editor.Selection {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (!TextView.Caret.InVirtualSpace) {
                 int caretPosition = TextView.Caret.Position.BufferPosition.Position;
-                Span? spanToSelect = RTextStructure.GetWordSpan(TextView.TextBuffer.CurrentSnapshot, caretPosition);
+                var snapshot = TextView.TextBuffer.CurrentSnapshot;
+                Span? spanToSelect = RTextStructure.GetWordSpan(snapshot, caretPosition);
                 if (spanToSelect.HasValue && spanToSelect.Value.Length > 0) {
-                    TextView.Selection.Select(new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, spanToSelect.Value), isReversed: false);
+                    TextView.Selection.Select(new SnapshotSpan(snapshot, spanToSelect.Value), isReversed: false);
+                    TextView.Caret.MoveTo(new SnapshotPoint(snapshot, spanToSelect.Value.End));
                     return CommandResult.Executed;
                 }
             }

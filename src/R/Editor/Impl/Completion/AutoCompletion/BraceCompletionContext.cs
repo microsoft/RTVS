@@ -25,7 +25,6 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// <param name="session">Default brace completion session</param>
         public void Start(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
-                AutoFormat.IgnoreOnce = false;
                 EnsureTreeReady(session.SubjectBuffer);
                 FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer);
             }
@@ -50,7 +49,6 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         /// <param name="session">Default brace completion session</param>
         public void OnReturn(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
-                AutoFormat.IgnoreOnce = true;
                 EnsureTreeReady(session.SubjectBuffer);
                 FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: true);
             }

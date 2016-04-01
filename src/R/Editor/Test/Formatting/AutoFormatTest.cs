@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
@@ -19,35 +18,21 @@ using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class AutoFormatTest {
-        [Test]
-        public void TypeOneLineTest() {
-            ITextView textView = TestAutoFormat(0, "x<-1\n");
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-
-            actual.Should().Be("x <- 1\n");
-            textView.Caret.Position.BufferPosition.Position.Should().Be(7);
-        }
-
-        [Test]
-        public void FunctionDefinitionTest01() {
-            ITextView textView = TestAutoFormat(16, "\n", "x<-function(x,y,");
+        [CompositeTest]
+        [InlineData("x<-function(x,y,", 16, "x <- function(x, y,\n")]
+        [InlineData("'x<-1'", 5, "'x<-1\n'")]
+        [InlineData("x<-1", 4, "x <- 1\n")]
+        public void FormatTest(string content, int position, string expected) {
+            ITextView textView = TestAutoFormat(position, content);
 
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-
-            actual.Should().Be("x <- function(x, y,\n");
-        }
-
-        [Test]
-        public void NoFormatInStringTest01() {
-            ITextView textView = TestAutoFormat(5, "\n", "'x<-1'");
-
-            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
-            actual.Should().Be("'x<-1\n'");
+            actual.Should().Be(expected);
         }
 
         [Test]
@@ -64,7 +49,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             indent.Should().HaveValue().And.Be(2);
         }
 
-        private ITextView TestAutoFormat(int position, string textToType, string initialContent = "") {
+        private ITextView TestAutoFormat(int position, string initialContent = "") {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(initialContent, position, out ast);
 
@@ -74,14 +59,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
 
                 if (e.Changes[0].NewText.Length == 1) {
                     char ch = e.Changes[0].NewText[0];
-                    if (AutoFormat.IsAutoformatTriggerCharacter(ch)) {
-                        int offset = 0;
-                        if (e.Changes[0].NewText[0].IsLineBreak()) {
-                            position = e.Changes[0].OldPosition + 1;
-                            textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
-                            offset = -1;
-                        }
-                        FormatOperations.FormatLine(textView, textView.TextBuffer, offset);
+                    if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(ch)) {
+                        position = e.Changes[0].OldPosition + 1;
+                        FormatOperations.FormatCurrentLine(textView, textView.TextBuffer);
+                        textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                     }
                 } else {
                     ITextSnapshotLine line = e.After.GetLineFromPosition(position);
@@ -89,7 +70,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 }
             };
 
-            Typing.Type(textView.TextBuffer, position, textToType);
+            Typing.Type(textView.TextBuffer, position, "\n");
 
             return textView;
         }
