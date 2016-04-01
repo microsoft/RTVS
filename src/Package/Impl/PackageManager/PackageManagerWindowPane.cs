@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
+using Microsoft.R.Components.Search;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -16,20 +17,22 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Guid(WindowGuidString)]
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
         private readonly IRPackageManager _packageManager;
+        private readonly ISearchControlProvider _searchControlProvider;
         private readonly ICoreShell _coreShell;
         public const string WindowGuidString = "363F84AD-3397-4FDE-97EA-1ABD73C64BB3";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager, ICoreShell coreShell) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, ICoreShell coreShell) {
             _packageManager = packageManager;
+            _searchControlProvider = searchControlProvider;
             _coreShell = coreShell;
             Caption = Resources.PackageManagerWindowCaption;
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(_packageManager, this, _coreShell);
+            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, _coreShell);
             // TODO: Implement RPackageManagerVisualComponent.Controller
             //_commandTarget = new CommandTargetToOleShim(null, Component.Controller);
 

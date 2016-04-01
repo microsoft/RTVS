@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -23,6 +24,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private volatile IList<IRPackageViewModel> _availablePackages;
         private volatile IList<IRPackageViewModel> _installedPackages;
+        private volatile IList<IRPackageViewModel> _loadedPackages;
 
         public RPackageManagerViewModel(IRPackageManager packageManager, ICoreShell coreShell) {
             _packageManager = packageManager;
@@ -47,6 +49,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private SelectedTab _selectedTab;
         private bool _isLoading;
         private IRPackageViewModel _selectedPackage;
+        private volatile string _searchString;
 
         public void SwitchToAvailablePackages() {
             _coreShell.AssertIsOnMainThread();
@@ -142,7 +145,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task EnsureInstalledAndAvailablePackagesLoadedAsync() {
-            _coreShell.AssertIsOnMainThread();
             var areLoaded = await _availableAndInstalledLock.WaitAsync();
             if (!areLoaded) {
                 IsLoading = true;
@@ -191,6 +193,51 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             AvailablePackages,
             InstalledPackages,
             LoadedPackages,
+        }
+
+        public async Task<int> Search(string searchString, CancellationToken cancellationToken) {
+            _searchString = searchString;
+            await EnsureInstalledAndAvailablePackagesLoadedAsync();
+            switch (_selectedTab) {
+                case SelectedTab.AvailablePackages:
+                    return Search(_availablePackages, searchString, cancellationToken);
+                case SelectedTab.InstalledPackages:
+                    return Search(_installedPackages, searchString, cancellationToken);
+                case SelectedTab.LoadedPackages:
+                    return Search(_loadedPackages, searchString, cancellationToken);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private int Search(IList<IRPackageViewModel> packages, string searchString, CancellationToken cancellationToken) {
+            if (string.IsNullOrEmpty(searchString)) {
+                _coreShell.DispatchOnUIThread(() => ApplySearch(packages, cancellationToken));
+                return packages.Count;
+            }
+
+            var filteredPackages = new List<IRPackageViewModel>();
+            foreach (var package in packages){
+                if (cancellationToken.IsCancellationRequested) {
+                    return filteredPackages.Count;
+                }
+
+                if (package.Name.StartsWith(searchString)) {
+                    filteredPackages.Add(package);
+                }
+            }
+
+            _coreShell.DispatchOnUIThread(() => ApplySearch(filteredPackages, cancellationToken));
+            return filteredPackages.Count;
+        }
+
+        private void ApplySearch(IList<IRPackageViewModel> packages, CancellationToken cancellationToken) {
+            _coreShell.AssertIsOnMainThread();
+            if (cancellationToken.IsCancellationRequested) {
+                return;
+            }
+
+            _items.ReplaceWith(packages);
         }
     }
 }

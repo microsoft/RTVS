@@ -181,6 +181,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Resources\Images.cs" />
+    <Compile Include="Search\ISearchControl.cs" />
+    <Compile Include="Search\ISearchControlProvider.cs" />
+    <Compile Include="Search\ISearchHandler.cs" />
+    <Compile Include="Search\SearchControlSettings.cs" />
     <Compile Include="Services\ServiceManagerBase.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Settings\IRSettings.cs" />

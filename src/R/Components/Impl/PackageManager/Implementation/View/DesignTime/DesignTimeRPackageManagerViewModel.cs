@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
@@ -33,6 +35,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public void SelectPackage(IRPackageViewModel package) {
             
+        }
+
+        public Task<int> Search(string searchString, CancellationToken cancellationToken) {
+            return Task.FromResult(0);
         }
     }
 }
