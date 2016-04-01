@@ -112,5 +112,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAddRMarkdown = 1505;
         public const int icmdOpenCmdPromptHere = 1506;
         public const int icmdOpenAdminCmdPromptHere = 1507;
+
+        // Shiny
+        public const int icmdRunShinyApp = 1601;
+        public const int icmdStopShinyApp = 1602;
     }
 }

@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Windows {
     internal abstract class RToolWindowPane: ToolWindowPane {
         public override void OnToolWindowCreated() {
             // Binds all tool windows to the same set of keyboard bindings
-            ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, RGuidList.RCmdSetGuid);
+            ((IVsWindowFrame)Frame).SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, RGuidList.REditorFactoryGuid);
             base.OnToolWindowCreated();
         }
     }
