@@ -67,11 +67,15 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -128,19 +132,25 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />
+    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
+      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="PackageManager\Implementation\RPackageWebParser.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
     <Compile Include="PackageManager\RPackageManagerException.cs" />
-    <Compile Include="PackageManager\ViewModel\IRInstalledPackageViewModel.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManager.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerProvider.cs" />
     <Compile Include="PackageManager\Implementation\RPackageManagerVisualComponent.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageInfoListDataSource.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageViewModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerModel.cs" />
-    <Compile Include="PackageManager\Implementation\View\InfiniteScrollList.xaml.cs">
-      <DependentUpon>InfiniteScrollList.xaml</DependentUpon>
+    <Compile Include="PackageManager\Implementation\View\PackageList.xaml.cs">
+      <DependentUpon>PackageList.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManager\Implementation\View\LoadingStatusBar.xaml.cs">
       <DependentUpon>LoadingStatusBar.xaml</DependentUpon>
@@ -153,9 +163,6 @@
     </Compile>
     <Compile Include="PackageManager\Implementation\View\PackageManagerResources.xaml.cs">
       <DependentUpon>PackageManagerResources.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml.cs">
-      <DependentUpon>PackageManagerTopPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\Spinner.xaml.cs">
@@ -174,6 +181,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Resources\Images.cs" />
+    <Compile Include="Search\ISearchControl.cs" />
+    <Compile Include="Search\ISearchControlProvider.cs" />
+    <Compile Include="Search\ISearchHandler.cs" />
+    <Compile Include="Search\SearchControlSettings.cs" />
     <Compile Include="Services\ServiceManagerBase.cs" />
     <Compile Include="Services\ServiceManagerEventArgs.cs" />
     <Compile Include="Settings\IRSettings.cs" />
@@ -182,6 +193,7 @@
     <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />
     <Compile Include="View\IVisualComponent.cs" />
     <Compile Include="View\IVisualComponentContainer.cs" />
+    <Compile Include="View\IVisualComponentContainerFactory.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -220,9 +232,12 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.resx">
+      <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="PackageManager\Implementation\View\InfiniteScrollList.xaml">
+    <Page Include="PackageManager\Implementation\View\PackageList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -239,10 +254,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PackageManager\Implementation\View\PackageManagerResources.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\PackageManagerTopPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

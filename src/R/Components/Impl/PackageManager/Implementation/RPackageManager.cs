@@ -43,21 +43,30 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return await GetPackages(async (eval) => await eval.AvailablePackages());
         }
 
-        public async Task GetAdditionalPackageInfoAsync(RPackage pkg) {
+        public async Task AddAdditionalPackageInfoAsync(RPackage pkg) {
             try {
-                var uri = GetPackageWebIndexUri(pkg);
+                var uri = GetPackageWebIndexUri(pkg.Package, pkg.Repository);
                 await RPackageWebParser.RetrievePackageInfo(uri, pkg);
             } catch (WebException ex) {
                 throw new RPackageManagerException(ex.Message, ex);
             }
         }
 
+        public async Task<RPackage> GetAdditionalPackageInfoAsync(string pkg, string repository) {
+            try {
+                var uri = GetPackageWebIndexUri(pkg, repository);
+                return await RPackageWebParser.RetrievePackageInfo(uri);
+            } catch (WebException ex) {
+                throw new RPackageManagerException(ex.Message, ex);
+            }
+        }
+        
         public void InstallPackage(string name, string libraryPath) {
             string script;
             if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("install.packages({0})", name.ToRStringLiteral());
+                script = $"install.packages({name.ToRStringLiteral()})";
             } else {
-                script = string.Format("install.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+                script = $"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})";
             }
 
             _interactiveWorkflow.Operations.EnqueueExpression(script, true);
@@ -129,17 +138,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        private static Uri GetPackageWebIndexUri(RPackage pkg) {
+        private static Uri GetPackageWebIndexUri(string package, string repository) {
             // For example, if 'Repository' is:
             // "https://cloud.r-project.org/src/contrib"
             // Then the URI to the index page is:
             // "https://cloud.r-project.org/web/packages/<packagename>/index.html"
-            var contribUrl = pkg.Repository;
+            var contribUrl = repository;
             if (!contribUrl.EndsWith("/")) {
                 contribUrl += "/";
             }
 
-            return new Uri(new Uri(contribUrl), string.Format("../../web/packages/{0}/index.html", pkg.Package));
+            return new Uri(new Uri(contribUrl), $"../../web/packages/{package}/index.html");
         }
 
         private async Task<IReadOnlyList<RPackage>> GetPackages(Func<IRSessionEvaluation, Task<REvaluationResult>> fetchFunc) {

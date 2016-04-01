@@ -1,24 +1,49 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
+#if DEBUG
     internal class DesignTimeRPackageViewModel : IRPackageViewModel {
-        public DesignTimeRPackageViewModel(string name = null
+        public DesignTimeRPackageViewModel() {
+            Name = "rtvs";
+            Title = "An Implementation of the RTVS package";
+            Description = "";
+            LatestVersion = "2.0.4";
+            InstalledVersion = "2.0.0";
+            Depends = "R (>= 3.2.2)";
+            Imports = "digest, grid, gtable (>= 0.1.1), MASS, plyr (>= 1.7.1), reshape2, scales(>= 0.3.0), stats";
+            Suggests = "rtvs1, rtvs2, rtvs3";
+            License = "GPL (>= 2)";
+            Urls = new [] { "https://github.com/Microsoft/RTVS", "https://microsoft.github.io/RTVS-docs/" };
+            NeedsCompilation = false;
+            Authors = "Microsoft Corporation";
+            LibraryPath = "~/LibPath"; 
+            Repository = "CRAN";
+            Built = "R 3.3.0; ; 2016-02-16 11:24:44 UTC; windows";
+
+            IsInstalled = true;
+            IsUpdateAvailable = true;
+            IsSelected = true;
+            HasDetails = true;
+        }
+
+        public DesignTimeRPackageViewModel(string name
             , string latestVersion = null
             , string installedVersion = null
-            , string dependencies = null
+            , string depends = null
             , string license = null
             , bool isInstalled = false
             , bool isUpdateAvailable = false
             , bool isSelected = false) {
 
             Name = name;
-            LatestVersion = latestVersion != null ? new RPackageVersion(latestVersion) : null;
-            InstalledVersion = installedVersion != null ? new RPackageVersion(installedVersion) : null;
-            Dependencies = dependencies;
+            LatestVersion = latestVersion;
+            InstalledVersion = installedVersion;
+            Depends = depends;
             License = license;
             IsInstalled = isInstalled;
             IsUpdateAvailable = isUpdateAvailable;
@@ -27,12 +52,25 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public string Name { get; }
         public string Title { get; }
-        public RPackageVersion LatestVersion { get; }
-        public RPackageVersion InstalledVersion { get; }
-        public string Dependencies { get; }
+        public string Description { get; }
+        public string LatestVersion { get; }
+        public string InstalledVersion { get; }
+        public string Authors { get; set; }
         public string License { get; }
-        public bool IsInstalled { get; }
+        public ICollection<string> Urls { get; }
+        public bool NeedsCompilation { get; }
+        public string LibraryPath { get; }
+        public string Repository { get; }
+        public string Built { get; }
+        public string Depends { get; }
+        public string Imports { get; }
+        public string Suggests { get; }
+        public bool IsInstalled { get; set; }
+
         public bool IsUpdateAvailable { get; }
+        public bool HasDetails { get; }
         public bool IsSelected { get; set; }
+        public void AddDetails(RPackage package, bool isInstalled) {}
     }
+#endif
 }

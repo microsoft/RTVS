@@ -2,19 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
+using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
-    /// <summary>
-    /// Interaction logic for InfiniteScrollList.xaml
-    /// </summary>
-    public partial class InfiniteScrollList : UserControl {
+    public partial class PackageList : UserControl {
+        private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
+
         // Indicates wether check boxes are enabled on packages
         private bool _checkBoxesEnabled;
-        private ScrollViewer _scrollViewer;
 
         public bool CheckBoxesEnabled {
             get { return _checkBoxesEnabled; }
@@ -29,7 +28,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             }
         }
 
-        public InfiniteScrollList() {
+        public PackageList() {
             InitializeComponent();
             CheckBoxesEnabled = false;
         }
@@ -47,11 +46,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
-            throw new NotImplementedException();
+            
         }
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            throw new NotImplementedException();
+            Model.SelectPackage(e.AddedItems.OfType<IRPackageViewModel>().FirstOrDefault());
         }
 
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
@@ -60,29 +59,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
             throw new NotImplementedException();
-        }
-
-        private void List_Loaded(object sender, RoutedEventArgs e) {
-            List.Loaded -= List_Loaded;
-
-            var c = VisualTreeHelper.GetChild(List, 0) as Border;
-            if (c == null) {
-                return;
-            }
-
-            c.Padding = new Thickness(0);
-            _scrollViewer = VisualTreeHelper.GetChild(c, 0) as ScrollViewer;
-            if (_scrollViewer == null) {
-                return;
-            }
-
-            _scrollViewer.Padding = new Thickness(0);
-            _scrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
-        }
-
-
-        private void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e) {
-
         }
     }
 }

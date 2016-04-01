@@ -152,6 +152,10 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
+    <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
     <Compile Include="History\Commands\ShowHistoryWindowCommand.cs" />
@@ -334,6 +338,9 @@
     <Compile Include="RPackages\Mirrors\CranMirrorList.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
+    <Compile Include="Search\VsSearchControl.cs" />
+    <Compile Include="Search\VsSearchControlProvider.cs" />
+    <Compile Include="Search\VsSearchTask.cs" />
     <Compile Include="Shell\AppEventsSource.cs" />
     <Compile Include="Shell\VisualComponentToolWindow.cs" />
     <Compile Include="Shell\VisualComponentToolWindowAdapter.cs" />
@@ -392,6 +399,7 @@
     <Compile Include="Utilities\ActiveWpfTextViewTracker.cs" />
     <Compile Include="Repl\VsActiveRInteractiveWindowTracker.cs" />
     <Compile Include="Utilities\VsDebuggerModeTracker.cs" />
+    <Compile Include="Wpf\VsWpfOverrides.cs" />
     <Compile Include="Windows\GotoSolutionExplorerCommand.cs" />
     <Compile Include="Windows\GotoEditorWindowCommand.cs" />
     <Compile Include="Windows\RToolWindowPane.cs" />
@@ -1099,6 +1107,12 @@
     <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Wpf\Impl\Microsoft.R.Wpf.csproj">
+      <Project>{F951311C-D665-4987-95A4-72A2DE37E263}</Project>
+      <Name>Microsoft.R.Wpf</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
