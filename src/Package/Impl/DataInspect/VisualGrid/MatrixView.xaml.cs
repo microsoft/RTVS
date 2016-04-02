@@ -53,6 +53,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SetScrollBar(ScrollDirection.Both);
         }
 
+        public void OnClose() {
+            _scroller?.StopScroller();
+            _scroller = null;
+        }
+
         public void Refresh() {
             _scroller?.EnqueueCommand(ScrollType.Refresh, 0);
         }

@@ -56,6 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        internal void OnClose() {
+            VariableGrid.OnClose();
+            _evaluation = null;
+        }
+
         internal void SetEvaluation(EvaluationWrapper wrapper) {
             if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
                 // the variable should have been removed
