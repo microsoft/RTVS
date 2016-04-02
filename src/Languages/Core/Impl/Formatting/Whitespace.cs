@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
@@ -109,6 +110,29 @@ namespace Microsoft.Languages.Core.Formatting {
             }
 
             return false;
+        }
+
+        public static string NormalizeWhitespace(this string s) {
+            if(s == null || s.Length == 0) {
+                return s;
+            }
+
+            var cs = new CharacterStream(new TextStream(s));
+            var sb = new StringBuilder();
+
+            while (!cs.IsEndOfStream()) {
+                var current = cs.Position;
+                cs.SkipWhitespace();
+                if (cs.Position - current > 0) {
+                    sb.Append(' ');
+                }
+
+                while (!cs.IsEndOfStream() && !cs.IsWhiteSpace()) {
+                    sb.Append(cs.CurrentChar);
+                    cs.MoveToNextChar();
+                }
+            }
+            return sb.ToString().Trim();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
@@ -24,10 +25,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public static RPackageViewModel CreateAvailable(RPackage package) {
             return new RPackageViewModel(package.Package) {
                 LatestVersion = package.Version,
-                Depends = package.Depends,
-                Imports = package.Imports,
-                Suggests = package.Suggests,
-                License = package.License,
+                Depends = package.Depends.NormalizeWhitespace(),
+                Imports = package.Imports.NormalizeWhitespace(),
+                Suggests = package.Suggests.NormalizeWhitespace(),
+                License = package.License.NormalizeWhitespace(),
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 Repository = package.Repository,
             };
@@ -35,20 +36,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public static RPackageViewModel CreateInstalled(RPackage package) {
             return new RPackageViewModel(package.Package) {
-                Title = package.Title,
-                Authors = package.Author,
-                License = package.License,
+                Title = package.Title.NormalizeWhitespace(),
+                Authors = package.Author.NormalizeWhitespace(),
+                License = package.License.NormalizeWhitespace(),
                 Urls = package.URL?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                     .Select(s => s.Trim())
                     .ToArray() ?? new string[0],
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 LibraryPath = package.LibPath,
                 Repository = package.Repository,
-                Description = package.Description,
+                Description = package.Description.NormalizeWhitespace(),
                 Built = package.Built,
-                Depends = package.Depends,
-                Imports = package.Imports,
-                Suggests = package.Suggests,
+                Depends = package.Depends.NormalizeWhitespace(),
+                Imports = package.Imports.NormalizeWhitespace(),
+                Suggests = package.Suggests.NormalizeWhitespace(),
                 LatestVersion = package.Version,
                 InstalledVersion = package.Version,
                 IsInstalled = true,
@@ -133,9 +134,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public void AddDetails(RPackage package, bool isInstalled) {
-            Title = package.Title;
-            Description = package.Description;
-            Authors = package.Author;
+            Title = package.Title.NormalizeWhitespace();
+            Description = package.Description.NormalizeWhitespace();
+            Authors = package.Author.NormalizeWhitespace();
             Urls = package.URL?.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
                 .ToArray() ?? new string[0];
