@@ -32,13 +32,13 @@ namespace Microsoft.R.Editor.Navigation.Text {
         private static Span GetWordSpan(string text, int lineStart, int position) {
             int start = position;
             int end = position;
-            for (start = position; start >= 0; start--) {
+            for (start = position - 1; start >= 0; start--) {
                 if (IsSeparator(text[start])) {
                     start++;
                     break;
                 }
             }
-            for (end = position + 1; end < text.Length; end++) {
+            for (end = position; end < text.Length; end++) {
                 if (IsSeparator(text[end])) {
                     break;
                 }
