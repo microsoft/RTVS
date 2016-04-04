@@ -78,7 +78,8 @@ namespace Microsoft.R.Debugger.Test {
                     }
                     await bpHit.ShouldBeHitAtNextPromptAsync();
 
-                    (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                    var stackFrames = await debugSession.GetStackFramesAsync();
+                    stackFrames.Should().HaveTail(new MatchDebugStackFrames {
                         { (string)null, null, "f(4)" },
                         { sf1, 3, "g(n - 1)" },
                         { sf2, 3, "f(n - 1)" },
@@ -86,6 +87,30 @@ namespace Microsoft.R.Debugger.Test {
                         { sf2, 3, "f(n - 1)" },
                         { sf1, 5, MatchAny<string>.Instance },
                     });
+
+                    stackFrames.First().EnvironmentName.Should().Be("<environment: R_GlobalEnv>");
+                }
+            }
+        }
+
+        [CompositeTest]
+        [Category.R.Debugger]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task HideSourceFrames(bool debug) {
+            using (var debugSession = new DebugSession(_session)) {
+                using (var sf = new SourceFile("0")) { 
+                    await debugSession.EnableBreakpointsAsync(true);
+
+                    var bp = await debugSession.CreateBreakpointAsync(sf, 1);
+                    var bpHit = new BreakpointHitDetector(bp);
+
+                    await sf.Source(_session, debug);
+                    await bpHit.ShouldBeHitAtNextPromptAsync();
+
+                    var stackFrames = await debugSession.GetStackFramesAsync();
+                    stackFrames.Should().HaveCount(1);
+                    stackFrames[0].IsGlobal.Should().BeTrue();
                 }
             }
         }
