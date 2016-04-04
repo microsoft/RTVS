@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, hostClientApp);
             History = historyProvider.CreateRHistory(this);
-            Packages = packagesProvider.CreateRPackageManager(this);
+            Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, _coreShell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
