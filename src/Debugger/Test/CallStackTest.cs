@@ -108,8 +108,53 @@ namespace Microsoft.R.Debugger.Test {
                     await bpHit.ShouldBeHitAtNextPromptAsync();
 
                     var stackFrames = await debugSession.GetStackFramesAsync();
-                    stackFrames.Should().HaveCount(1);
-                    stackFrames[0].IsGlobal.Should().BeTrue();
+                    stackFrames.Should().Equal(new[] {
+                        new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, true)
+                    });
+                }
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
+        public async Task EnvironmentNames() {
+            const string code =
+@"f <- function() eval(quote(browser()), .GlobalEnv)
+  g <- function(f) eval(as.call(list(f)), getNamespace('utils'))
+  h <- function() eval(as.call(list(g, f)), as.environment('package:utils'))
+  h()";
+
+            using (var debugSession = new DebugSession(_session)) {
+                using (var sf = new SourceFile(code)) {
+                    await sf.Source(_session);
+                    await debugSession.NextPromptShouldBeBrowseAsync();
+
+                    var funcFrame = new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, false)
+                            .Matching(x => x.EnvironmentName, null);
+
+                    var stackFrames = await debugSession.GetStackFramesAsync();
+                    stackFrames.Should().Equal(new[] {
+                        new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, true)
+                            .Matching(x => x.EnvironmentName, "<environment: R_GlobalEnv>"),
+                        funcFrame, // h
+                        funcFrame, // eval
+                        new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, false)
+                            .Matching(x => x.EnvironmentName, "<environment: package:utils>"),
+                        funcFrame, // g
+                        funcFrame, // eval
+                        new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, false)
+                            .Matching(x => x.EnvironmentName, "<environment: namespace:utils>"),
+                        funcFrame, // f
+                        funcFrame, // eval
+                        new MatchMembers<DebugStackFrame>()
+                            .Matching(x => x.IsGlobal, true)
+                            .Matching(x => x.EnvironmentName, "<environment: R_GlobalEnv>"),
+                    });
                 }
             }
         }
