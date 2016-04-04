@@ -22,7 +22,9 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => Invariant($"base::sys.frame({Index})");
+        public string EnvironmentExpression => Invariant($"base::sys.frame({Index})");
+
+        public string EnvironmentName { get; }
 
         public DebugStackFrame CallingFrame { get; }
 
@@ -32,7 +34,7 @@ namespace Microsoft.R.Debugger {
 
         public string Call { get; }
 
-        public bool IsGlobal { get; }
+        public bool IsGlobal => EnvironmentName == "<environment: R_GlobalEnv>";
 
         internal DebugStackFrameKind FrameKind { get; }
 
@@ -44,7 +46,7 @@ namespace Microsoft.R.Debugger {
             FileName = jFrame.Value<string>("filename");
             LineNumber = jFrame.Value<int?>("line_number");
             Call = jFrame.Value<string>("call");
-            IsGlobal = jFrame.Value<bool?>("is_global") ?? false;
+            EnvironmentName = jFrame.Value<string>("env_name");
 
             if (Call != null) {
                 var match = _doTraceRegex.Match(Call);

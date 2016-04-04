@@ -109,7 +109,7 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if (dwFieldSpec.HasFlag(enum_FRAMEINFO_FLAGS.FIF_FUNCNAME)) {
-                fi.m_bstrFuncName = StackFrame.CallingFrame?.Call ?? (StackFrame.IsGlobal ? "<global>" : "<unknown>");
+                fi.m_bstrFuncName = StackFrame.EnvironmentName ?? StackFrame.CallingFrame?.Call ?? "<unknown>";
                 fi.m_dwValidFields |= enum_FRAMEINFO_FLAGS.FIF_FUNCNAME;
 
                 if (dwFieldSpec.HasFlag(enum_FRAMEINFO_FLAGS.FIF_FUNCNAME_MODULE) && moduleName != null) {

@@ -17,9 +17,9 @@ namespace Microsoft.R.Debugger.Test {
             }
         }
 
-        public async Task Source(IRSession session) {
+        public async Task Source(IRSession session, bool debug = true) {
             using (IRSessionInteraction eval = await session.BeginInteractionAsync()) {
-                await eval.RespondAsync($"rtvs::debug_source({FilePath.ToRStringLiteral()})" + Environment.NewLine);
+                await eval.RespondAsync($"{(debug ? "rtvs::debug_source" : "source")}({FilePath.ToRStringLiteral()})" + Environment.NewLine);
             }
         }
 

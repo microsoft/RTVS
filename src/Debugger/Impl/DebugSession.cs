@@ -196,7 +196,7 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync(cancellationToken);
 
-            env = env ?? stackFrame?.SysFrame ?? "NULL";
+            env = env ?? stackFrame?.EnvironmentExpression ?? "NULL";
             var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength})");
             var jEvalResult = await InvokeDebugHelperAsync<JObject>(code, cancellationToken);
             return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
@@ -277,7 +277,15 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(CancellationToken cancellationToken = default(CancellationToken)) {
+        /// <summary>
+        /// Retrieve the current call stack, in call order (i.e. the current active frame is last, the one that called it is second to last etc).
+        /// </summary>
+        /// <param name="skipSourceFrames">
+        /// If <see langword="true"/>, excludes frames that belong to <c>source()</c> or <c>rtvs:::debug_source()</c> internal machinery at the bottom of the stack;
+        /// the first reported frame will be the one with sourced code.
+        /// </param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -295,6 +303,16 @@ namespace Microsoft.R.Debugger {
                 lastFrame = new DebugStackFrame(this, i, lastFrame, jFrame, fallbackFrame);
                 stackFrames.Add(lastFrame);
                 ++i;
+            }
+
+            if (skipSourceFrames) {
+                var firstFrame = stackFrames.FirstOrDefault();
+                if (firstFrame != null && firstFrame.IsGlobal && firstFrame.Call != null) {
+                    if (firstFrame.Call.StartsWith("source(") || firstFrame.Call.StartsWith("rtvs::debug_source(")) {
+                        // Skip everything until the first frame that has a line number - that will be the sourced code.
+                        stackFrames = stackFrames.SkipWhile(f => f.LineNumber == null).ToList();
+                    }
+                }
             }
 
             return stackFrames;
