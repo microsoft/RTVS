@@ -11,7 +11,7 @@ matrix.as.lists <- function(matrix.data) {
 }
 
 packages.installed <- function() {
-    matrix.as.lists(installed.packages(fields = c('Title', 'Author')))
+    matrix.as.lists(installed.packages(fields = c('Title', 'Author', 'Description')))
 }
 
 packages.available <- function() {
