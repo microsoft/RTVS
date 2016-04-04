@@ -8,7 +8,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
-using Microsoft.VisualStudio.R.Package.Debugger.Commands;
 using Microsoft.VisualStudio.R.Package.Documentation;
 using Microsoft.VisualStudio.R.Package.Feedback;
 using Microsoft.VisualStudio.R.Package.Help;
@@ -21,9 +20,9 @@ using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Data;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
+using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Utilities;
 
@@ -71,8 +70,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
                 new SourceRScriptCommand(interactiveWorkflow, textViewTracker),
+                new RunShinyAppCommand(interactiveWorkflow),
+                new StopShinyAppCommand(interactiveWorkflow),
 
-                new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
+            new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
                 new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),
