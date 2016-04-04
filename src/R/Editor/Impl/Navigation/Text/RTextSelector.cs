@@ -27,9 +27,16 @@ namespace Microsoft.R.Editor.Navigation.Text {
         }
 
         private static Span GetWordSpan(string text, int lineStart, int position) {
-            // Select at least one character
+            // Select at least one character. Selection is a bit trickly since
+            // poisition is at character while actual user click and caret position
+            // is between character. So the position passed can be before or after 
+            // the actual caret position.
+            if (text.Length == 0) {
+                return new Span(lineStart, 0);
+            }
+
             int start, end;
-            for (start = position; start >= 0; start--) {
+            for (start = Math.Min(position, text.Length - 1); start >= 0; start--) {
                 if (IsSeparator(text[start])) {
                     if (start < position) {
                         start++;
@@ -37,13 +44,17 @@ namespace Microsoft.R.Editor.Navigation.Text {
                     break;
                 }
             }
+
             for (end = position; end < text.Length; end++) {
                 if (IsSeparator(text[end])) {
                     break;
                 }
             }
 
-            return Span.FromBounds(start + lineStart, Math.Min(end, text.Length) + lineStart);
+            end = Math.Min(Math.Max(end, start + 1), text.Length);
+            start = Math.Max(0, Math.Min(start, end - 1));
+
+            return Span.FromBounds(start + lineStart, end + lineStart);
         }
 
         private static bool IsSeparator(char ch) {
