@@ -41,6 +41,7 @@ namespace Microsoft.R.Host.Client.Session {
         private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
+        private TaskCompletionSource<object> _afterHostStartedTcs = new TaskCompletionSource<object>();
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
         private readonly IRHostClientApp _hostClientApp;
@@ -130,6 +131,8 @@ namespace Microsoft.R.Host.Client.Session {
                 return await CanceledEvaluateTask;
             }
 
+            await _afterHostStartedTcs.Task;
+
             try {
                 var result = await _host.EvaluateAsync(expression, kind, ct);
                 if (kind.HasFlag(REvaluationKind.Mutating)) {
@@ -176,6 +179,9 @@ namespace Microsoft.R.Host.Client.Session {
 
             var initializationTask = _initializationTcs.Task;
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
+
+            Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
+
             ScheduleAfterHostStarted(startupInfo);
 
             await initializationTask;
@@ -248,25 +254,33 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         private async Task AfterHostStarted(RSessionEvaluationSource evaluationSource, RHostStartupInfo startupInfo) {
-            using (var evaluation = await evaluationSource.Task) {
-                // Load RTVS R package before doing anything in R since the calls
-                // below calls may depend on functions exposed from the RTVS package
-                await LoadRtvsPackage(evaluation);
-                if (startupInfo.WorkingDirectory != null) {
-                    await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
-                } else {
-                    await evaluation.SetDefaultWorkingDirectory();
+            try {
+                using (var evaluation = await evaluationSource.Task) {
+                    // Load RTVS R package before doing anything in R since the calls
+                    // below calls may depend on functions exposed from the RTVS package
+                    await LoadRtvsPackage(evaluation);
+                    if (startupInfo.WorkingDirectory != null) {
+                        await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
+                    } else {
+                        await evaluation.SetDefaultWorkingDirectory();
+                    }
+
+                    if (_hostClientApp != null) {
+                        await evaluation.SetVsGraphicsDevice();
+
+                        string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
+                        await evaluation.SetVsCranSelection(mirrorUrl);
+
+                        await evaluation.SetVsHelpRedirection();
+                        await evaluation.SetChangeDirectoryRedirection();
+                    }
+
+                    _afterHostStartedTcs.SetResult(null);
                 }
-
-                if (_hostClientApp != null) {
-                    await evaluation.SetVsGraphicsDevice();
-
-                    string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
-                    await evaluation.SetVsCranSelection(mirrorUrl);
-
-                    await evaluation.SetVsHelpRedirection();
-                    await evaluation.SetChangeDirectoryRedirection();
-                }
+            } catch (OperationCanceledException oce) {
+                _afterHostStartedTcs.TrySetCanceled(oce.CancellationToken);
+            } catch (Exception ex) {
+                _afterHostStartedTcs.TrySetException(ex);
             }
         }
 
