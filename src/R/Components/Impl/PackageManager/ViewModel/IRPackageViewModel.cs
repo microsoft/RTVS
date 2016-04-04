@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.R.Components.PackageManager.Model;
 
@@ -16,7 +17,8 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         ICollection<string> Urls { get; }
         bool NeedsCompilation { get; }
         string LibraryPath { get; }
-        string Repository { get; }
+        string RepositoryText { get; }
+        Uri RepositoryUri { get; }
         string Built { get; }
 
         string Depends { get; }
