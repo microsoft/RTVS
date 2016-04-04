@@ -80,7 +80,7 @@ namespace Microsoft.R.Debugger.Test {
                     await bpHit.ShouldBeHitAtNextPromptAsync();
 
                     var stackFrames = await debugSession.GetStackFramesAsync();
-                    stackFrames.Should().HaveTail(new MatchDebugStackFrames {
+                    stackFrames.Should().Equal(new MatchDebugStackFrames {
                         { (string)null, null, "f(4)", "<environment: R_GlobalEnv>" },
                         { sf1, 3, "g(n - 1)", null },
                         { sf2, 3, "f(n - 1)", null },
