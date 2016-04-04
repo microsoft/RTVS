@@ -527,8 +527,11 @@ namespace Microsoft.R.Host.Client {
                 UseShellExecute = false
             };
 
-            psi.EnvironmentVariables["R_HOME"] = rHome;
-            psi.EnvironmentVariables["PATH"] = Environment.GetEnvironmentVariable("PATH") + ";" + rBinPath;
+            var shortHome = new StringBuilder(NativeMethods.MAX_PATH);
+            NativeMethods.GetShortPathName(rHome, shortHome, shortHome.Capacity);
+            psi.EnvironmentVariables["R_HOME"] = shortHome.ToString();
+
+            psi.EnvironmentVariables["PATH"] = rBinPath + ";" + Environment.GetEnvironmentVariable("PATH");
 
             if (_name != null) {
                 psi.Arguments += " --rhost-name " + _name;
