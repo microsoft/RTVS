@@ -23,8 +23,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private bool _isUpdateAvailable;
 
         public static RPackageViewModel CreateAvailable(RPackage package) {
-            Uri uri = null;
-            Uri.TryCreate(package.Repository, UriKind.Absolute, out uri);
+            Uri repositoryUri = null;
+            Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
 
             return new RPackageViewModel(package.Package) {
                 LatestVersion = package.Version,
@@ -33,14 +33,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 Suggests = package.Suggests.NormalizeWhitespace(),
                 License = package.License.NormalizeWhitespace(),
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
-                RepositoryUri = uri,
-                RepositoryText = uri != null ? null : package.Repository,
+                RepositoryUri = repositoryUri,
+                RepositoryText = repositoryUri != null ? null : package.Repository,
             };
         }
 
         public static RPackageViewModel CreateInstalled(RPackage package) {
-            Uri uri = null;
-            Uri.TryCreate(package.Repository, UriKind.Absolute, out uri);
+            Uri repositoryUri = null;
+            Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
 
             return new RPackageViewModel(package.Package) {
                 Title = package.Title.NormalizeWhitespace(),
@@ -51,8 +51,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     .ToArray() ?? new string[0],
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 LibraryPath = package.LibPath,
-                RepositoryUri = uri,
-                RepositoryText = uri != null ? null : package.Repository,
+                RepositoryUri = repositoryUri,
+                RepositoryText = repositoryUri != null ? null : package.Repository,
                 Description = package.Description.NormalizeWhitespace(),
                 Built = package.Built,
                 Depends = package.Depends.NormalizeWhitespace(),
