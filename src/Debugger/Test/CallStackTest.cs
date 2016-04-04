@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Match;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Debugger.Test.Match;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -82,15 +81,13 @@ namespace Microsoft.R.Debugger.Test {
 
                     var stackFrames = await debugSession.GetStackFramesAsync();
                     stackFrames.Should().HaveTail(new MatchDebugStackFrames {
-                        { (string)null, null, "f(4)" },
-                        { sf1, 3, "g(n - 1)" },
-                        { sf2, 3, "f(n - 1)" },
-                        { sf1, 3, "g(n - 1)" },
-                        { sf2, 3, "f(n - 1)" },
-                        { sf1, 5, MatchAny<string>.Instance },
+                        { (string)null, null, "f(4)", "<environment: R_GlobalEnv>" },
+                        { sf1, 3, "g(n - 1)", null },
+                        { sf2, 3, "f(n - 1)", null },
+                        { sf1, 3, "g(n - 1)", null },
+                        { sf2, 3, "f(n - 1)", null },
+                        { sf1, 5, MatchAny<string>.Instance, null },
                     });
-
-                    stackFrames.First().EnvironmentName.Should().Be("<environment: R_GlobalEnv>");
                 }
             }
         }

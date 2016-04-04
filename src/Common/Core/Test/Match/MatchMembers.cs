@@ -34,8 +34,16 @@ namespace Microsoft.Common.Core.Test.Match {
             _equals = equals;
         }
 
+        private static bool Matches(object expected, object actual) {
+            if (expected == null) {
+                return actual == null;
+            } else {
+                return expected.Equals(actual);
+            }
+        }
+
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember>> memberSelector, IEquatable<TMember> expected) =>
-            new MatchMembers<T>(this, memberSelector, expected, x => Equals(expected, memberSelector.Compile()(x)));
+            new MatchMembers<T>(this, memberSelector, expected, x => Matches(expected, memberSelector.Compile()(x)));
 
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember>> memberSelector, IComparable<TMember> from, IComparable<TMember> to)
             where TMember : IComparable<TMember> =>
@@ -43,7 +51,7 @@ namespace Microsoft.Common.Core.Test.Match {
 
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember?>> memberSelector, IEquatable<TMember> expected)
             where TMember : struct =>
-            new MatchMembers<T>(this, memberSelector, expected, x => Equals(expected, memberSelector.Compile()(x)));
+            new MatchMembers<T>(this, memberSelector, expected, x => Matches(expected, memberSelector.Compile()(x)));
 
         public MatchMembers<T> Matching<TMember>(Expression<Func<T, TMember?>> memberSelector, IComparable<TMember> from, IComparable<TMember> to)
             where TMember : struct, IComparable<TMember> =>
