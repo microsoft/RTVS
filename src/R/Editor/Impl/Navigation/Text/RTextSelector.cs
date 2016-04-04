@@ -29,9 +29,10 @@ namespace Microsoft.R.Editor.Navigation.Text {
         private static Span GetWordSpan(string text, int lineStart, int position) {
             // Select at least one character. Selection is a bit trickly since
             // poisition is at character while actual user click and caret position
-            // is between character. So the position passed can be before or after 
+            // is between characters. So the position passed can be before or after 
             // the actual caret position.
             if (text.Length == 0) {
+                // Nothing to select
                 return new Span(lineStart, 0);
             }
 
