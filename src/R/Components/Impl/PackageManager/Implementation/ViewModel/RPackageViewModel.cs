@@ -11,6 +11,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private bool _hasDetails;
         private bool _isSelected;
         private bool _isInstalled;
+        private bool _isLoaded;
         private string _title;
         private string _description;
         private string _authors;
@@ -118,6 +119,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             set { SetProperty(ref _isInstalled, value); }
         }
 
+        public bool IsLoaded {
+            get { return _isLoaded; }
+            set { SetProperty(ref _isLoaded, value); }
+        }
+
         public bool HasDetails {
             get { return _hasDetails; }
             private set { SetProperty(ref _hasDetails, value); }
@@ -130,6 +136,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public RPackageViewModel(string name) {
             Name = name;
+        }
+
+        public void UpdateAvailablePackageDetails(RPackage package) {
+            LatestVersion = package.Version;
+            Depends = package.Depends;
+            Imports = package.Imports;
+            Suggests = package.Suggests;
+            License = package.License;
+            Repository = package.Repository;
+            // TODO: Need proper version comparison
+            IsUpdateAvailable = InstalledVersion != LatestVersion;
         }
 
         public void AddDetails(RPackage package, bool isInstalled) {
