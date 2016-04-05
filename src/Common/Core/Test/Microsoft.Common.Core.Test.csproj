@@ -96,6 +96,10 @@
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Fakes\TestCoreShell.cs" />
+    <Compile Include="Match\MatchNull.cs" />
+    <Compile Include="Match\MatchRange.cs" />
+    <Compile Include="Match\MatchAny.cs" />
+    <Compile Include="Match\MatchMembers.cs" />
     <Compile Include="Script\EventsPump.cs" />
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />

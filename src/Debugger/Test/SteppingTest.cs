@@ -6,7 +6,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Test.Match;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Debugger.Test.Match;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -60,7 +62,7 @@ namespace Microsoft.R.Debugger.Test {
                 await debugSession.BreakAsync();
 
                 await debugSession.NextPromptShouldBeBrowseAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, new MatchRange<int>(1, 3) }
                 });
 
@@ -68,7 +70,7 @@ namespace Microsoft.R.Debugger.Test {
                 await debugSession.ContinueAsync();
 
                 await debugSession.NextPromptShouldBeBrowseAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, 6 }
                 });
             }
@@ -93,12 +95,12 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
                 await bpHit.ShouldBeHitAtNextPromptAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp.Location }
                 });
 
                 (await debugSession.StepOverAsync()).Should().Be(true);
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp.Location, +1 }
                 });
             }
@@ -123,12 +125,12 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
                 await bpHit.ShouldBeHitAtNextPromptAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp.Location }
                 });
 
                 (await debugSession.StepIntoAsync()).Should().Be(true);
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, 4, "f(1)" },
                     { sf, 1, MatchAny<string>.Instance },
                 });
@@ -154,12 +156,12 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
                 await bpHit.ShouldBeHitAtNextPromptAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp.Location, "f(1)" }
                 });
 
                 (await debugSession.StepOutAsync()).Should().Be(true);
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, 5 }
                 });
             }
@@ -187,14 +189,14 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
                 await bpHit.ShouldBeHitAtNextPromptAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, 8, "g()" },
                     { sf, 5, "f()" },
                     { bp.Location },
                 });
 
                 (await debugSession.StepOutAsync()).Should().Be(true);
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { sf, 8, "g()" },
                     { sf, 6, MatchAny<string>.Instance },
                 });
@@ -219,12 +221,12 @@ namespace Microsoft.R.Debugger.Test {
 
                 await sf.Source(_session);
                 await bp1Hit.ShouldBeHitAtNextPromptAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp1.Location }
                 });
 
                 (await debugSession.StepOutAsync()).Should().Be(false);
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
+                (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
                     { bp2.Location }
                 });
             }
