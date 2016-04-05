@@ -150,17 +150,22 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [Browsable(false)]
-        public string SurveyNewsFeedUrl
-        {
+        public string SurveyNewsFeedUrl {
             get { return RToolsSettings.Current.SurveyNewsFeedUrl; }
             set { RToolsSettings.Current.SurveyNewsFeedUrl = value; }
         }
 
         [Browsable(false)]
-        public string SurveyNewsIndexUrl
-        {
+        public string SurveyNewsIndexUrl {
             get { return RToolsSettings.Current.SurveyNewsIndexUrl; }
             set { RToolsSettings.Current.SurveyNewsIndexUrl = value; }
+        }
+        
+        [Browsable(false)]
+        [DefaultValue(true)]
+        public bool ShowPackageManagerDisclaimer {
+            get { return RToolsSettings.Current.ShowPackageManagerDisclaimer; }
+            set { RToolsSettings.Current.ShowPackageManagerDisclaimer = value; }
         }
 
         /// <summary>

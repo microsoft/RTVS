@@ -17,6 +17,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public IRPackageViewModel SelectedPackage => (IRPackageViewModel)Items[1];
         public bool IsLoading => false;
+        public bool ShowPackageManagerDisclaimer { get; set; } = true;
+
 
         public void SwitchToAvailablePackages() {
             
@@ -36,6 +38,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public void SelectPackage(IRPackageViewModel package) {
             
+        }
+
+        public void Install(IRPackageViewModel package) {
+        }
+
+        public void Uninstall(IRPackageViewModel package) {
         }
 
         public Task<int> Search(string searchString, CancellationToken cancellationToken) {

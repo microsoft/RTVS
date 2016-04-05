@@ -43,7 +43,9 @@
             <Grid Grid.Row="1" Margin="0,8" Background="{DynamicResource {x:Static wpf:Brushes.HeaderBackground}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="10" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -66,16 +68,16 @@
                         Content="{x:Static local:Resources.Uninstall}" />
 
                 <!-- Row 2 -->
-                <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,4,0,0" Text="{x:Static local:Resources.Package_LatestVersion}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0,4,0,0" Text="{x:Static local:Resources.Package_LatestVersion}" />
 
-                <TextBlock Grid.Row="2" Grid.Column="2" Margin="4,4,0,0" Text="{Binding Path=LatestVersion}"
+                <TextBlock Grid.Row="3" Grid.Column="2" Margin="4,4,0,0" Text="{Binding Path=LatestVersion}"
                            Visibility="{Binding Path=LatestVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
                 <!-- install button and update button. They are in fact the same button. Which one is displayed depends on whether InstalledVersion is null. -->
-                <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Install}"
+                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Install}"
                         Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}" />
 
-                <Button Grid.Row="2" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}">
+                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}">
                     <Button.Visibility>
                         <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}" Mode="OneWay">
                             <Binding Path="IsUpdateAvailable" />
@@ -105,111 +107,111 @@
 
             <Grid Grid.Row="4" Margin="0,12,0,0" Visibility="{Binding Path=HasDetails, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
+                <!--Depends -->
+                <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Title}"
+                           Visibility="{Binding Path=Title, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=Title}" Margin="8,8,0,0" 
+                           Visibility="{Binding Path=Title, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                
                 <!-- descriptions -->
-                <TextBlock Grid.Row="0" Text="{x:Static local:Resources.Package_Description}" FontWeight="Bold" />
-                <TextBlock Grid.Row="1" x:Name="Description" Margin="0,8,0,0" TextWrapping="Wrap" Text="{Binding Path=Description}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Description}" FontWeight="Bold" 
+                           Visibility="{Binding Path=Description, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" x:Name="Description" Margin="0,6,0,0" TextWrapping="Wrap" Text="{Binding Path=Description}" 
+                           Visibility="{Binding Path=Description, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
-                <!-- metadata -->
-                <Grid Grid.Row="2" x:Name="MetadataGrid" Margin="0,8">
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
+                <!--Depends -->
+                <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Depends}"
+                           Visibility="{Binding Path=Depends, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Path=Depends}" Margin="8,8,0,0" 
+                           Visibility="{Binding Path=Depends, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
-                    <!--Depends -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Depends}"
-                               Visibility="{Binding Path=Depends, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=Depends}" Margin="8,8,0,0" 
-                               Visibility="{Binding Path=Depends, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <!--Imports -->
+                <TextBlock Grid.Row="5" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Imports}"
+                            Visibility="{Binding Path=Imports, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding Path=Imports}" Margin="8,8,0,0" 
+                            Visibility="{Binding Path=Imports, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
 
-                    <!--Imports -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Imports}"
-                               Visibility="{Binding Path=Imports, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Imports}" Margin="8,8,0,0" 
-                               Visibility="{Binding Path=Imports, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <!--Suggests -->
+                <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Suggests}"
+                            Visibility="{Binding Path=Suggests, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding Path=Suggests}" Margin="8,8,0,0" 
+                            Visibility="{Binding Path=Suggests, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
+                <!-- License -->
+                <TextBlock Grid.Row="7" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_License}"
+                            Visibility="{Binding Path=License, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="7" Grid.Column="1" Text="{Binding Path=License}" Margin="8,8,0,0" 
+                            Visibility="{Binding Path=License, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
-                    <!--Suggests -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Suggests}"
-                               Visibility="{Binding Path=Suggests, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Path=Suggests}" Margin="8,8,0,0" 
-                               Visibility="{Binding Path=Suggests, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <!-- Urls -->
+                <TextBlock Grid.Row="8" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Urls}"
+                            Visibility="{Binding Path=Urls, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}" />
+                <ItemsControl Grid.Row="8" Grid.Column="1" IsTabStop="False" Margin="8,8,0,0" ItemsSource="{Binding Path=Urls}"
+                                Visibility="{Binding Path=Urls, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock TextWrapping="Wrap" >
+                                <Hyperlink NavigateUri="{Binding Mode=OneTime}" Style="{StaticResource HyperlinkStyle}" Click="HyperlinkUrl_Click">
+                                    <Run Text="{Binding Mode=OneTime}" />
+                                </Hyperlink>
+                            </TextBlock>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
 
-                    <!-- License -->
-                    <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_License}"
-                               Visibility="{Binding Path=License, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Path=License}" Margin="8,8,0,0" 
-                               Visibility="{Binding Path=License, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <!--Library -->
+                <TextBlock Grid.Row="9" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_LibraryPath}"
+                            Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="9" Grid.Column="1" Margin="8,8,0,0" 
+                            Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
+                    <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="LibraryPath_RequestNavigate">
+                        <Run Text="{Binding Mode=OneTime, Path=LibraryPath}" />
+                    </Hyperlink>
+                </TextBlock>
 
-                    <!-- Urls -->
-                    <TextBlock Grid.Row="5" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Urls}"
-                               Visibility="{Binding Path=Urls, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <ItemsControl Grid.Row="5" Grid.Column="1" IsTabStop="False" Margin="8,8,0,0" ItemsSource="{Binding Path=Urls}"
-                                  Visibility="{Binding Path=Urls, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" >
-                                    <Hyperlink NavigateUri="{Binding Mode=OneTime}" Style="{StaticResource HyperlinkStyle}" Click="HyperlinkUrl_Click">
-                                        <Run Text="{Binding Mode=OneTime}" />
-                                    </Hyperlink>
-                                </TextBlock>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-
-                    <!--Library -->
-                    <TextBlock Grid.Row="6" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_LibraryPath}"
-                               Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="6" Grid.Column="1" Margin="8,8,0,0" 
-                               Visibility="{Binding Path=LibraryPath, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
-                        <Hyperlink NavigateUri="{Binding Path=LibraryPath}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="LibraryPath_RequestNavigate">
-                            <Run Text="{Binding Mode=OneTime, Path=LibraryPath}" />
+                <!--Repository -->
+                <TextBlock Grid.Row="10" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}"
+                            Visibility="{Binding Path=Repository, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <StackPanel Grid.Row="10" Grid.Column="1">
+                    <TextBlock Margin="8,8,0,0" Text="{Binding Path=RepositoryText}"
+                            Visibility="{Binding Path=RepositoryText, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                    <TextBlock Margin="8,8,0,0"  Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
+                        <Hyperlink NavigateUri="{Binding Path=RepositoryUri}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="RepositoryUri_RequestNavigate">
+                            <Run Text="{Binding Mode=OneTime, Path=RepositoryUri}" />
                         </Hyperlink>
                     </TextBlock>
+                </StackPanel>
 
-                    <!--Repository -->
-                    <TextBlock Grid.Row="7" Grid.Column="0" FontWeight="Bold" Margin="0,8,0,0" Text="{x:Static local:Resources.Package_Repository}"
-                               Visibility="{Binding Path=Repository, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <StackPanel Grid.Row="7" Grid.Column="1">
-                        <TextBlock Margin="8,8,0,0" Text="{Binding Path=RepositoryText}"
-                               Visibility="{Binding Path=RepositoryText, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                        <TextBlock Margin="8,8,0,0"  Visibility="{Binding Path=RepositoryUri, Converter={x:Static wpf:Converters.NullIsCollapsed}}">
-                            <Hyperlink NavigateUri="{Binding Path=RepositoryUri}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="RepositoryUri_RequestNavigate">
-                                <Run Text="{Binding Mode=OneTime, Path=RepositoryUri}" />
-                            </Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
+                <!-- Author(s) -->
+                <TextBlock Grid.Row="11" Grid.Column="0" Margin="0,8,0,0" FontWeight="Bold" Text="{x:Static local:Resources.Package_Authors}"
+                            Visibility="{Binding Path=Authors, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
+                <TextBlock Grid.Row="11" Grid.Column="1" Text="{Binding Path=Authors}" Margin="8,8,0,0" TextWrapping="Wrap"
+                            Visibility="{Binding Path=Authors, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
-                    <!-- Author(s) -->
-                    <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,8,0,0" FontWeight="Bold" Text="{x:Static local:Resources.Package_Authors}"
-                               Visibility="{Binding Path=Authors, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-                    <TextBlock Grid.Row="8" Grid.Column="1" Text="{Binding Path=Authors}" Margin="8,8,0,0" TextWrapping="Wrap"
-                               Visibility="{Binding Path=Authors, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
-
-                </Grid>
             </Grid>
         </Grid>
 

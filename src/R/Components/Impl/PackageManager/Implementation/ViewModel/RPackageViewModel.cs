@@ -9,9 +9,11 @@ using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageViewModel : BindableBase, IRPackageViewModel {
+        private readonly IRPackageManagerViewModel _owner;
         private bool _hasDetails;
         private bool _isSelected;
         private bool _isInstalled;
+        private bool _isLoaded;
         private string _title;
         private string _description;
         private string _authors;
@@ -22,11 +24,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _built;
         private bool _isUpdateAvailable;
 
-        public static RPackageViewModel CreateAvailable(RPackage package) {
-            Uri repositoryUri = null;
+        public static RPackageViewModel CreateAvailable(RPackage package, IRPackageManagerViewModel owner) {
+            Uri repositoryUri;
             Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
 
-            return new RPackageViewModel(package.Package) {
+            return new RPackageViewModel(package.Package, owner) {
                 LatestVersion = package.Version,
                 Depends = package.Depends.NormalizeWhitespace(),
                 Imports = package.Imports.NormalizeWhitespace(),
@@ -38,11 +40,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             };
         }
 
-        public static RPackageViewModel CreateInstalled(RPackage package) {
-            Uri repositoryUri = null;
+        public static RPackageViewModel CreateInstalled(RPackage package, IRPackageManagerViewModel owner) {
+            Uri repositoryUri;
             Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
 
-            return new RPackageViewModel(package.Package) {
+            return new RPackageViewModel(package.Package, owner) {
                 Title = package.Title.NormalizeWhitespace(),
                 Authors = package.Author.NormalizeWhitespace(),
                 License = package.License.NormalizeWhitespace(),
@@ -130,6 +132,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             set { SetProperty(ref _isInstalled, value); }
         }
 
+        public bool IsLoaded {
+            get { return _isLoaded; }
+            set { SetProperty(ref _isLoaded, value); }
+        }
+
         public bool HasDetails {
             get { return _hasDetails; }
             private set { SetProperty(ref _hasDetails, value); }
@@ -140,8 +147,32 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             set { SetProperty(ref _isSelected, value); }
         }
 
-        public RPackageViewModel(string name) {
+        public RPackageViewModel(string name, IRPackageManagerViewModel owner) {
+            _owner = owner;
             Name = name;
+        }
+
+        public void UpdateAvailablePackageDetails(RPackage package) {
+            Uri repositoryUri;
+            Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
+
+            LatestVersion = package.Version;
+            Depends = package.Depends;
+            Imports = package.Imports;
+            Suggests = package.Suggests;
+            License = package.License;
+            RepositoryUri = repositoryUri;
+            RepositoryText = repositoryUri != null ? null : package.Repository;
+            // TODO: Need proper version comparison
+            IsUpdateAvailable = InstalledVersion != LatestVersion;
+        }
+
+        public void Install() {
+            _owner.Install(this);
+        }
+
+        public void Uninstall() {
+            _owner.Uninstall(this);
         }
 
         public void AddDetails(RPackage package, bool isInstalled) {

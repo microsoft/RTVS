@@ -54,11 +54,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            ((IRPackageViewModel)((FrameworkElement)e.Source).DataContext).Uninstall();
         }
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            ((IRPackageViewModel)((FrameworkElement)e.Source).DataContext).Install();
         }
     }
 }
