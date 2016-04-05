@@ -24,6 +24,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private bool _isUpdateAvailable;
 
         public static RPackageViewModel CreateAvailable(RPackage package) {
+            Uri repositoryUri = null;
+            Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
+
             return new RPackageViewModel(package.Package) {
                 LatestVersion = package.Version,
                 Depends = package.Depends.NormalizeWhitespace(),
@@ -31,11 +34,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 Suggests = package.Suggests.NormalizeWhitespace(),
                 License = package.License.NormalizeWhitespace(),
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
-                Repository = package.Repository,
+                RepositoryUri = repositoryUri,
+                RepositoryText = repositoryUri != null ? null : package.Repository,
             };
         }
 
         public static RPackageViewModel CreateInstalled(RPackage package) {
+            Uri repositoryUri = null;
+            Uri.TryCreate(package.Repository, UriKind.Absolute, out repositoryUri);
+
             return new RPackageViewModel(package.Package) {
                 Title = package.Title.NormalizeWhitespace(),
                 Authors = package.Author.NormalizeWhitespace(),
@@ -45,7 +52,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     .ToArray() ?? new string[0],
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 LibraryPath = package.LibPath,
-                Repository = package.Repository,
+                RepositoryUri = repositoryUri,
+                RepositoryText = repositoryUri != null ? null : package.Repository,
                 Description = package.Description.NormalizeWhitespace(),
                 Built = package.Built,
                 Depends = package.Depends.NormalizeWhitespace(),
@@ -56,6 +64,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsInstalled = true,
                 HasDetails = true
             };
+
+
         }
 
         public string Name { get; }
@@ -99,7 +109,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             private set { SetProperty(ref _libraryPath, value); }
         }
 
-        public string Repository { get; private set; }
+        public string RepositoryText { get; private set; }
+        public Uri RepositoryUri { get; private set; }
 
         public string Built {
             get { return _built; }
@@ -154,7 +165,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             Title = package.Title.NormalizeWhitespace();
             Description = package.Description.NormalizeWhitespace();
             Authors = package.Author.NormalizeWhitespace();
-            Urls = package.URL?.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries)
+            Urls = package.URL?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
                 .ToArray() ?? new string[0];
             LibraryPath = package.LibPath;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,9 @@ namespace Microsoft.R.Debugger {
 
         public int Index { get; }
 
-        internal string SysFrame => Invariant($"base::sys.frame({Index})");
+        public string EnvironmentExpression => Invariant($"base::sys.frame({Index})");
+
+        public string EnvironmentName { get; }
 
         public DebugStackFrame CallingFrame { get; }
 
@@ -32,7 +35,7 @@ namespace Microsoft.R.Debugger {
 
         public string Call { get; }
 
-        public bool IsGlobal { get; }
+        public bool IsGlobal => EnvironmentName == "<environment: R_GlobalEnv>";
 
         internal DebugStackFrameKind FrameKind { get; }
 
@@ -44,7 +47,7 @@ namespace Microsoft.R.Debugger {
             FileName = jFrame.Value<string>("filename");
             LineNumber = jFrame.Value<int?>("line_number");
             Call = jFrame.Value<string>("call");
-            IsGlobal = jFrame.Value<bool?>("is_global") ?? false;
+            EnvironmentName = jFrame.Value<string>("env_name");
 
             if (Call != null) {
                 var match = _doTraceRegex.Match(Call);
@@ -90,8 +93,13 @@ namespace Microsoft.R.Debugger {
             return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
 
-        public override string ToString() {
-            return Invariant($"{Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber != null ? LineNumber.ToString() : "<null>")}");
-        }
+        public override string ToString() =>
+            Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString() ?? "<null>")}");
+
+        public override bool Equals(object obj) =>
+            base.Equals(obj) || (obj as IEquatable<DebugStackFrame>)?.Equals(this) == true;
+
+        public override int GetHashCode() =>
+            base.GetHashCode();
     }
 }

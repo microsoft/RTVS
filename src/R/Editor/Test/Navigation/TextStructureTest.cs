@@ -21,7 +21,7 @@ namespace Microsoft.R.Editor.Test.Navigation {
         [CompositeTest]
         [InlineData("", 0, 0, 0)]
         [InlineData("x", 0, 0, 1)]
-        [InlineData("x", 1, 0, 0)]
+        [InlineData("x", 1, 0, 1)]
         [InlineData("ab", 0, 0, 2)]
         [InlineData("ab", 1, 0, 2)]
         [InlineData("a.b", 0, 0, 3)]
@@ -33,6 +33,11 @@ namespace Microsoft.R.Editor.Test.Navigation {
         [InlineData("*`zzz`-", 2, 1, 5)]
         [InlineData("1.5+3.6", 2, 0, 3)]
         [InlineData("'22.11'", 2, 1, 2)]
+        [InlineData("('a.b')", 6, 6, 1)]
+        [InlineData("('a.b')", 5, 5, 1)]
+        [InlineData("('')", 2, 2, 1)]
+        [InlineData("'", 0, 0, 1)]
+        [InlineData("'", 1, 0, 1)]
         public void GetWordSpan(string content, int position, int start, int length) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             Span? span = RTextStructure.GetWordSpan(tb.CurrentSnapshot, position);

@@ -129,7 +129,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private async Task<RPackage> GetAdditionalPackageInfoAsync(IRPackageViewModel package) {
             await TaskUtilities.SwitchToBackgroundThread();
-            return await _packageManager.GetAdditionalPackageInfoAsync(package.Name, package.Repository);
+            return await _packageManager.GetAdditionalPackageInfoAsync(package.Name, package.RepositoryText ?? package.RepositoryUri.AbsoluteUri);
         }
 
         private async Task SwitchToAvailablePackagesAsync() {

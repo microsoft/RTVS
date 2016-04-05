@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             NeedsCompilation = false;
             Authors = "Microsoft Corporation";
             LibraryPath = "~/LibPath"; 
-            Repository = "CRAN";
+            RepositoryUri = new Uri("https://cran.rstudio.com");
             Built = "R 3.3.0; ; 2016-02-16 11:24:44 UTC; windows";
 
             IsInstalled = true;
@@ -60,7 +61,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public ICollection<string> Urls { get; }
         public bool NeedsCompilation { get; }
         public string LibraryPath { get; }
-        public string Repository { get; }
+        public string RepositoryText { get; }
+        public Uri RepositoryUri { get; }
         public string Built { get; }
         public string Depends { get; }
         public string Imports { get; }
