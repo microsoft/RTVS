@@ -23,8 +23,27 @@ namespace Microsoft.Common.Core.Threading {
             tcs?.TrySetCanceled();
         }
 
+        public bool ResetIfNotWaiting() {
+            var tcs = _tcs;
+            if (tcs == null) {
+                return true;
+            }
+
+            if (tcs.Task.IsCompleted) {
+                var oldTcs = Interlocked.CompareExchange(ref _tcs, null, tcs);
+                if (oldTcs == tcs) {
+                    tcs.TrySetCanceled();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void Release() {
             _tcs.TrySetResult(true);
         }
+
+        public bool IsCompleted => _tcs?.Task.IsCompleted ?? false;
     }
 }

@@ -7,14 +7,13 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Tasks;
+using Microsoft.Common.Core.Test.Match;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
-using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
@@ -117,11 +116,10 @@ eval(substitute(f(P, x), list(P = x)))
             using (var debugSession = new DebugSession(_session)) {
                 var res = (await debugSession.EvaluateAsync(expr, DebugEvaluationResultFields.ReprDeparse | DebugEvaluationResultFields.ReprStr | DebugEvaluationResultFields.ReprToString))
                     .Should().BeAssignableTo<DebugValueEvaluationResult>().Which;
-                var repr = res.GetRepresentation();
-
-                repr.Deparse.Should().Be(deparse);
-                repr.Str.Should().Be(str);
-                repr.ToString.Should().Be(toString);
+                res.GetRepresentation().Should().Be(new MatchMembers<DebugValueRepresentation>()
+                    .Matching(x => x.Deparse, deparse)
+                    .Matching(x => x.Str, str)
+                    .Matching(x => x.ToString, toString));
             }
         }
 

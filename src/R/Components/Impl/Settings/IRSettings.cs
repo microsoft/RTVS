@@ -28,5 +28,10 @@ namespace Microsoft.R.Components.Settings {
         /// Current working directory for REPL
         /// </summary>
         string WorkingDirectory { get; set; }
+
+        /// <summary>
+        /// Show/Hide legal disclaimer for package manager
+        /// </summary>
+        bool ShowPackageManagerDisclaimer { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,8 +93,13 @@ namespace Microsoft.R.Debugger {
             return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
         }
 
-        public override string ToString() {
-            return Invariant($"{Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber != null ? LineNumber.ToString() : "<null>")}");
-        }
+        public override string ToString() =>
+            Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString() ?? "<null>")}");
+
+        public override bool Equals(object obj) =>
+            base.Equals(obj) || (obj as IEquatable<DebugStackFrame>)?.Equals(this) == true;
+
+        public override int GetHashCode() =>
+            base.GetHashCode();
     }
 }

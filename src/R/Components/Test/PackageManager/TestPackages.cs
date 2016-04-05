@@ -14,6 +14,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             Author = TestPackages.RtvsLib1Description.Author,
             Title = TestPackages.RtvsLib1Description.Title,
             NeedsCompilation = "no",
+            Description = TestPackages.RtvsLib1Description.DescriptionFromInstalled,
         };
 
         public static readonly RPackage RtvsLib1Additional = new RPackage {
@@ -42,6 +43,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             public const string Author = "RTVS Team";
             public const string Title = "The title for rtvslib1";
             public const string Description = "This is a library that is used only for testing package installation. It doesn't do anything.";
+            public const string DescriptionFromInstalled = "This is a library that is used only for testing package installation.  It doesn't do anything.";
             public const string Published = "2016-03-28";
             public const string Maintainer = "RTVS Team <rtvsuserfeedback@microsoft.com>";
         }

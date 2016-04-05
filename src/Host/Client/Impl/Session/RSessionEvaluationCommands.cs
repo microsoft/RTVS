@@ -84,7 +84,7 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task<REvaluationResult> AvailablePackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.available()";
-            return evaluation.EvaluateAsync(script, REvaluationKind.Json);
+            return evaluation.EvaluateAsync(script, REvaluationKind.Json | REvaluationKind.Reentrant);
         }
 
         public static Task<REvaluationResult> LoadedPackages(this IRExpressionEvaluator evaluation) {

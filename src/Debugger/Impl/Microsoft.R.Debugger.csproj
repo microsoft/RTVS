@@ -40,6 +40,11 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="DebugBreakpoint.cs" />
+    <Compile Include="DebugErrorEvaluationResult.cs" />
+    <Compile Include="DebugActiveBindingEvaluationResult.cs" />
+    <Compile Include="DebugPromiseEvaluationResult.cs" />
+    <Compile Include="DebugValueRepresentation.cs" />
+    <Compile Include="DebugValueEvaluationResult.cs" />
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
     <Compile Include="DebugValueRepresentationKind.cs" />

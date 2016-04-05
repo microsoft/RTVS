@@ -72,6 +72,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             rtvslib1Expected.Title = null;
             rtvslib1Expected.Built = null;
             rtvslib1Expected.Author = null;
+            rtvslib1Expected.Description = null;
             rtvslib1Expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
 
             var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);

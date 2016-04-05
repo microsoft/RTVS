@@ -70,7 +70,7 @@
     <Compile Include="CallStackTest.cs" />
     <Compile Include="DebugSessionExtensions.cs" />
     <Compile Include="EventTaskSources.cs" />
-    <Compile Include="Match.cs" />
+    <Compile Include="Match\MatchDebugStackFrames.cs" />
     <Compile Include="SourceFile.cs" />
     <Compile Include="DebugReplTest.cs" />
     <Compile Include="JsonTest.cs" />

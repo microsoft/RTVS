@@ -5,13 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
              xmlns:components="clr-namespace:Microsoft.R.Components"
-             xmlns:cwpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="300" d:DesignWidth="800">
+             d:DesignHeight="250" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -78,7 +77,6 @@
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- row 0: -->
                             <Grid Grid.Column="0" HorizontalAlignment="Right" Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="auto" />
