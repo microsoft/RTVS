@@ -91,12 +91,30 @@ dput_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix
 deparse_str <- function(x)
     paste0(deparse(x), collapse = '')
 
-# A wrapper for deparse that will first make name a symbol if it can be a legitimate one.
-deparse_symbol <- function(name) {
-  if (is.character(name) && length(name) == 1 && !is.na(name) && nchar(name) > 0) {
-    name <- as.symbol(name);
+# Makes a symbol token (properly quoted with backticks if necessary) out of a symbol or a string.
+symbol_token <- function(name) {
+  s <- force_toString(name);
+
+  # If it's an empty string, it's not a valid symbol, even if quoted.
+  if (identical(s, '')) {
+  	  return(NULL);
   }
-  deparse_str(name)
+
+  # If it's a valid identifier, it's good to go as is. Because the definition of identifier in R
+  # is locale-dependent, be conservative and match ASCII only; excessive quoting is always safe.
+  if (grepl('^[A-Za-z_.][A-Za-z0-9_.]*$', name)) {
+  	  return(s);
+  }
+
+  # Deparse it - this will take care of all the necessary escaping for everything other than
+  # backticks, but will also put double quotes around that we'll remove later.
+  s <- deparse_str(force_toString(s));
+
+  # Escape any backticks.
+  s <- gsub('`', '\\`', s, fixed = TRUE);
+
+  # Replace surrounding quotes with backticks.
+  paste0('`', substr(s, 2, nchar(s) - 1), '`', collapse = '')
 }
 
 # Like str(...)[[1]], but special-cases some common types to provide a more descriptive
