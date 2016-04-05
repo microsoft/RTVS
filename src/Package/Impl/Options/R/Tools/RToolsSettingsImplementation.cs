@@ -48,8 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public bool MultilineHistorySelection { get; set; } = true;
 
-        public bool ShowPackageManagerDisclaimer
-        {
+        public bool ShowPackageManagerDisclaimer {
             get { return _showPackageManagerDisclaimer; }
             set {
                 using (SaveSettings()) {
