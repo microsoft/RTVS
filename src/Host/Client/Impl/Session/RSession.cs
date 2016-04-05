@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Session {
         private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
-        private TaskCompletionSource<object> _afterHostStartedTcs = new TaskCompletionSource<object>();
+        private TaskCompletionSource<object> _afterHostStartedTcs;
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
         private readonly IRHostClientApp _hostClientApp;
@@ -168,6 +168,8 @@ namespace Microsoft.R.Host.Client.Session {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
+            Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
+
             await StartHostAsyncBackground(startupInfo, timeout);
         }
 
@@ -179,8 +181,6 @@ namespace Microsoft.R.Host.Client.Session {
 
             var initializationTask = _initializationTcs.Task;
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
-
-            Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
 
             ScheduleAfterHostStarted(startupInfo);
 
