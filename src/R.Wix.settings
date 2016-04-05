@@ -14,6 +14,9 @@
 
     <ProductName Condition=" '$(ProductName)'=='' ">R Tools for Visual Studio</ProductName>
     <DefineConstants>$(DefineConstants);CompatibleVsVersion=$(VsRcVersion);</DefineConstants>
+    
+    <DefineConstants Condition="'$(VsVersion)' == 14.0">$(DefineConstants);VS14;</DefineConstants>
+    <DefineConstants Condition="'$(VsVersion)' == 15.0">$(DefineConstants);VS15;</DefineConstants>
   </PropertyGroup>
 
 <!-- sign settings -->
