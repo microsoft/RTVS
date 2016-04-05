@@ -163,7 +163,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return new Uri(new Uri(contribUrl), $"../../web/packages/{package}/index.html");
         }
 
-        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRSessionEvaluation, Task<REvaluationResult>> queryFunc) {
+        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             await CreatePackageQuerySessionAsync();
@@ -178,14 +178,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 await EvalRepositoriesAsync(await DeparseRepositoriesAsync());
                 await EvalLibrariesAsync(await DeparseLibrariesAsync());
 
-                using (var eval = await _pkgQuerySession.BeginEvaluationAsync()) {
-                    var result = await queryFunc(eval);
-                    CheckEvaluationResult(result);
+                var result = await queryFunc(_pkgQuerySession);
+                CheckEvaluationResult(result);
 
-                    return ((JObject)result.JsonResult).Properties()
-                        .Select(p => p.Value.ToObject<RPackage>())
-                        .ToList().AsReadOnly();
-                }
+                return ((JObject)result.JsonResult).Properties()
+                    .Select(p => p.Value.ToObject<RPackage>())
+                    .ToList().AsReadOnly();
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
