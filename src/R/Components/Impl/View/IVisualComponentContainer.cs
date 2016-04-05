@@ -17,9 +17,5 @@ namespace Microsoft.R.Components.View {
         void ShowContextMenu(CommandID commandId, Point position);
         void UpdateCommandStatus(bool immediate);
     }
-
-    public interface IVisualComponentContainerFactory {
-        IVisualComponentContainer<T> GetOrCreate<T>(int instanceId = 0) where T : IVisualComponent;
-    }
 }
 

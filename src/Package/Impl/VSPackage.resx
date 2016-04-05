@@ -135,6 +135,9 @@
   <data name="20116" xml:space="preserve">
     <value>R Tools</value>
   </data>
+  <data name="20135" xml:space="preserve">
+    <value>Package Sources</value>
+  </data>
   <data name="20136" xml:space="preserve">
     <value>Advanced</value>
   </data>

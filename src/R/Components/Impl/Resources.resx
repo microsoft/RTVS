@@ -151,7 +151,7 @@
     <value>Do not show this again</value>
   </data>
   <data name="PackageManager_LegalDisclaimer" xml:space="preserve">
-    <value>Each package is licensed to you by its owner. RTVS is not responsible for, nor does it grant any licenses to, third-party packages.</value>
+    <value>Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages.</value>
   </data>
   <data name="PackageManager_PackageSources" xml:space="preserve">
     <value>Package sources:</value>
@@ -168,6 +168,12 @@
   <data name="PackageManager_ShowErrors" xml:space="preserve">
     <value>Show errors in output</value>
   </data>
+  <data name="Install" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="Uninstall" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>
   </data>
@@ -176,6 +182,54 @@
   </data>
   <data name="Dismiss" xml:space="preserve">
     <value>Dismiss</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="LoadingDetails" xml:space="preserve">
+    <value>Loading details...</value>
+  </data>
+  <data name="Package_Title" xml:space="preserve">
+    <value>Title:</value>
+  </data>
+  <data name="Package_Description" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="Package_LatestVersion" xml:space="preserve">
+    <value>Latest version:</value>
+  </data>
+  <data name="Package_InstalledVersion" xml:space="preserve">
+    <value>Installed version:</value>
+  </data>
+  <data name="Package_Authors" xml:space="preserve">
+    <value>Authors:</value>
+  </data>
+  <data name="Package_License" xml:space="preserve">
+    <value>License:</value>
+  </data>
+  <data name="Package_Urls" xml:space="preserve">
+    <value>Urls:</value>
+  </data>
+  <data name="Package_LibraryPath" xml:space="preserve">
+    <value>Library:</value>
+  </data>
+  <data name="Package_Repository" xml:space="preserve">
+    <value>Repository:</value>
+  </data>
+  <data name="Package_Built" xml:space="preserve">
+    <value>Built:</value>
+  </data>
+  <data name="Package_Depends" xml:space="preserve">
+    <value>Depends:</value>
+  </data>
+  <data name="Package_Imports" xml:space="preserve">
+    <value>Imports:</value>
+  </data>
+  <data name="Package_Suggests" xml:space="preserve">
+    <value>Suggests:</value>
   </data>
   <data name="PackageManager_InstalledVersionToolTip" xml:space="preserve">
     <value>Installed version: {0}</value>

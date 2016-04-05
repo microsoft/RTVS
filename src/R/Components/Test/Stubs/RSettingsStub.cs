@@ -12,5 +12,6 @@ namespace Microsoft.R.Components.Test.Stubs {
         public string CranMirror { get; set; }
         public string RCommandLineArguments { get; set; }
         public string WorkingDirectory { get; set; }
+        public bool ShowPackageManagerDisclaimer { get; set; }
     }
 }

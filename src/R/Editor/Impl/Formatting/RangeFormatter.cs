@@ -60,8 +60,12 @@ namespace Microsoft.R.Editor.Formatting {
             // Apply formatted text without indentation. We then will update the parse tree 
             // so we can calculate proper line indents from the AST via the smart indenter.
             if (!spanText.Equals(formattedText, StringComparison.Ordinal)) {
-                var selectionTracker = new RSelectionTracker(textView, textBuffer, formatRange);
+                // Extract existing indent before applying changes. Existing indent
+                // may be used by the smart indenter for function argument lists.
+                var startLine = snapshot.GetLineFromPosition(spanToFormat.Start);
+                var originalIndentSizeInSpaces = IndentBuilder.TextIndentInSpaces(startLine.GetText(), options.IndentSize);
 
+                var selectionTracker = new RSelectionTracker(textView, textBuffer, formatRange);
                 RTokenizer tokenizer = new RTokenizer();
                 IReadOnlyTextRangeCollection<RToken> oldTokens = tokenizer.Tokenize(spanText);
                 IReadOnlyTextRangeCollection<RToken> newTokens = tokenizer.Tokenize(formattedText);
@@ -75,7 +79,7 @@ namespace Microsoft.R.Editor.Formatting {
                     () => {
                         var ast = UpdateAst(textBuffer);
                         // Apply indentation
-                        IndentLines(textView, textBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, options);
+                        IndentLines(textView, textBuffer, new TextRange(formatRange.Start, formattedText.Length), ast, options, originalIndentSizeInSpaces);
                     });
 
                 return true;
@@ -97,7 +101,9 @@ namespace Microsoft.R.Editor.Formatting {
         /// Appends indentation to each line so formatted text appears properly 
         /// indented inside the host document (script block in HTML page).
         /// </summary>
-        private static void IndentLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, AstRoot ast, RFormatOptions options) {
+        private static void IndentLines(ITextView textView, ITextBuffer textBuffer, 
+                                        ITextRange range, AstRoot ast, 
+                                        RFormatOptions options, int originalIndentSizeInSpaces) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
             ITextSnapshotLine lastLine = snapshot.GetLineFromPosition(range.End);
@@ -106,7 +112,7 @@ namespace Microsoft.R.Editor.Formatting {
             for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache
                 ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                int indent = SmartIndenter.GetSmartIndent(line, ast);
+                int indent = SmartIndenter.GetSmartIndent(line, ast, originalIndentSizeInSpaces);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
                     int currentIndentSize = line.Length - line.GetText().TrimStart().Length;

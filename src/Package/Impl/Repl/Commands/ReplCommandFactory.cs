@@ -24,8 +24,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             var completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             var editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
 
-            GlobalShortcutSettings.SetBindings();
-
             return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
                 new WorkingDirectoryCommand(interactiveWorkflow),
@@ -39,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
                 new PasteCurrentCodeCommand(textView, interactiveWorkflow),
-                new SelectWordCommand(textView, textBuffer)
+                new SelectWordCommand(textView, textBuffer),
             };
         }
     }

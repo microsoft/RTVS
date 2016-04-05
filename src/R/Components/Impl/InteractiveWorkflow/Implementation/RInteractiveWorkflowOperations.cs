@@ -26,6 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly ICoreShell _coreShell;
         private readonly IRInteractiveWorkflow _workflow;
+        private Task _shinyRunningTask;
 
         public RInteractiveWorkflowOperations(IRInteractiveWorkflow workflow, IDebuggerModeTracker debuggerModeTracker, ICoreShell coreShell) {
             _workflow = workflow;
@@ -173,6 +174,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             });
         }
 
+        public void TryRunShinyApp () {
+            _shinyRunningTask = Task.Run(async () => {
+                try {
+                    using (var e = await _workflow.RSession.BeginInteractionAsync()) {
+                        await e.RespondAsync("library(shiny)" + Environment.NewLine + "runApp()" + Environment.NewLine);
+                    }
+                } catch (TaskCanceledException) { } catch (MessageTransportException) { }
+            }).ContinueWith((t) => _shinyRunningTask = null);
+        }
+
+        public bool IsShinyAppRunning => _shinyRunningTask != null;
 
         public void Dispose() {
             if (_interactiveWindow != null) {

@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
@@ -12,8 +14,11 @@ using Microsoft.R.Editor.Commands;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Document.R;
+using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -64,6 +69,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
             }
 
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
+        }
+
+        protected override void OnTextViewCreated(ITextView textView) {
+            // Ensure editor inherits core editor key bindings
+            BaseEditorFactory.InitKeyBindings(textView);
+            base.OnTextViewCreated(textView);
         }
 
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {

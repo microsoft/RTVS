@@ -3,14 +3,24 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Search;
 using Microsoft.R.Components.View;
+using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
     internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory { 
+        private readonly ISearchControlProvider _searchControlProvider;
+
+        [ImportingConstructor]
+        public VsRPackageManagerVisualComponentContainerFactory(ISearchControlProvider searchControlProvider) {
+            _searchControlProvider = searchControlProvider;
+        }
+
         public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId) {
-            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager));
+            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
         }
     }
 }

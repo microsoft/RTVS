@@ -42,6 +42,7 @@
     </Compile>
     <Compile Include="Brushes.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="StyleKeys.cs" />
     <Compile Include="ValueConverters\EnumDescriptionValueConverter.cs" />
     <Compile Include="ValueConverters\IconUrlToImageCacheConverter.cs" />
   </ItemGroup>

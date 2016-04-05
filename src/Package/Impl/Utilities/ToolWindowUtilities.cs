@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
             ErrorHandler.ThrowOnFailure(
                 vsUiShell.CreateToolWindow(
-                    (uint)(__VSCREATETOOLWIN.CTW_fInitNew | __VSCREATETOOLWIN.CTW_fToolbarHost),
+                    (uint)(__VSCREATETOOLWIN.CTW_fInitNew | __VSCREATETOOLWIN.CTW_fToolbarHost | __VSCREATETOOLWIN.CTW_fForceCreate),
                     (uint)instanceId,
                     toolWindow,
                     ref clsId,
@@ -66,6 +66,10 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static void SetToolbarToHost(IVsWindowFrame frame, ToolWindowPane toolWindow) {
+            if (toolWindow.ToolBar == null) {
+                return;
+            }
+
             var toolBarHost = GetToolbarHost(frame);
             if (toolBarHost == null) {
                 return;

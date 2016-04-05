@@ -21,8 +21,10 @@ using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
+using Microsoft.VisualStudio.R.Package.Options.PackageManager;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
+using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
@@ -31,6 +33,7 @@ using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Wpf;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -49,14 +52,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ShowBraceCompletion(RContentTypeDefinition.LanguageName)]
     [LanguageEditorOptions(RContentTypeDefinition.LanguageName, 2, true, true)]
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
+    [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
     [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
+    //[ProvideOptionPage(typeof(PackageSourceOptionsPage), "R Tools", "Package Sources", 20116, 20135, true)]
     [ProvideInteractiveWindow(RGuidList.ReplInteractiveWindowProviderGuidString, Style = VsDockStyle.Tabbed, Orientation = ToolWindowOrientation.Bottom, Window = ToolWindowGuids80.Outputwindow, DocumentLikeTool = true)]
     [ProvideToolWindow(typeof(PlotWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(PackageManagerWindowPane), Style = VsDockStyle.MDI)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString, DebuggerGuids.CustomViewerString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
@@ -64,7 +70,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideComClass(typeof(AD7CustomViewer))]
     [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(VariableGridWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer, Transient = true)]
-    [ProvideKeyBindingTable(RGuidList.RCmdSetGuidString, 20116)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
@@ -93,7 +98,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     #endregion
     internal class RPackage : BasePackage<RLanguageService>, IRPackage {
         public const string OptionsDialogName = "R Tools";
-        private uint _cmdContextCookie;
 
         private System.Threading.Tasks.Task _indexBuildingTask;
 
@@ -108,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return;
             }
 
+            VsWpfOverrides.Apply();
             CranMirrorList.Download();
             VerifyWebToolsInstalled();
 
@@ -121,7 +126,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
-            RegisterRCommandContext();
 
             _indexBuildingTask = FunctionIndex.BuildIndexAsync();
 
@@ -131,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
-            IdleTimeAction.Create(() => ExpansionsCache.Load(), 200, typeof(ExpansionsCache));
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
         }
 
         protected override void Dispose(bool disposing) {
@@ -150,7 +154,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p.SaveSettings();
             }
 
-            GlobalShortcutSettings.RestoreBindings();
             base.Dispose(disposing);
         }
 
@@ -210,11 +213,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return value is bool && (bool)value;
             }
             return false;
-        }
-
-        private void RegisterRCommandContext() {
-            var selMon = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>(typeof(SVsShellMonitorSelection));
-            selMon.GetCmdUIContextCookie(RGuidList.RCmdSetGuid, out _cmdContextCookie);
         }
     }
 }

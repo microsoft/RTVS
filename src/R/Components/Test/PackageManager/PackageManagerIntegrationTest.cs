@@ -49,15 +49,12 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public async Task AvailablePackagesCranRepo() {
             var result = await _workflow.Packages.GetAvailablePackagesAsync();
 
-            result.Should().NotBeEmpty();
-
             // Since this is coming from an internet repo where we don't control the data,
             // we only test a few of the values that are less likely to change over time.
-            var abcPkg = result.SingleOrDefault(pkg => pkg.Package == "abc");
-            abcPkg.Should().NotBeNull();
+            var abcPkg = result.Should().ContainSingle(pkg => pkg.Package == "abc").Which;
             abcPkg.Version.Length.Should().BeGreaterOrEqualTo(0);
-            abcPkg.Depends.IndexOf("abc.data").Should().BeGreaterOrEqualTo(0);
-            abcPkg.License.IndexOf("GPL").Should().BeGreaterOrEqualTo(0);
+            abcPkg.Depends.Should().Contain("abc.data");
+            abcPkg.License.Should().Contain("GPL");
             abcPkg.NeedsCompilation.Should().Be("no");
         }
 
@@ -75,7 +72,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
             rtvslib1Expected.Title = null;
             rtvslib1Expected.Built = null;
             rtvslib1Expected.Author = null;
-            rtvslib1Expected.Repository = string.Format("file:///{0}/src/contrib", _repo1Path.ToRPath());
+            rtvslib1Expected.Description = null;
+            rtvslib1Expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
 
             var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
             rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
@@ -85,9 +83,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task AdditionalFieldsCranRepo() {
             var all = await _workflow.Packages.GetAvailablePackagesAsync();
-            var actual = all.SingleOrDefault(pkg => pkg.Package == "ggplot2");
+            var repository = all.FirstOrDefault(pkg => pkg.Package == "ggplot2")?.Repository;
 
-            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+            var actual = await _workflow.Packages.GetAdditionalPackageInfoAsync("ggplot2", repository);
 
             // This additional data is retrieved from a live web site.  When that data changes in the future,
             // this test may start failing.  Update the assertions below as needed, or relax them.
@@ -118,11 +116,11 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var all = await _workflow.Packages.GetAvailablePackagesAsync();
             var actual = all.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
 
-            await _workflow.Packages.GetAdditionalPackageInfoAsync(actual);
+            await _workflow.Packages.AddAdditionalPackageInfoAsync(actual);
 
             var expected = TestPackages.RtvsLib1Additional.Clone();
             expected.Built = null;
-            expected.Repository = string.Format("file:///{0}/src/contrib", _repo1Path.ToRPath());
+            expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
 
             actual.ShouldBeEquivalentTo(expected);
         }

@@ -23,6 +23,8 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x <- function(a, b, c,\n              d) {\n}", 2, 0)]
         [InlineData("x <- function(a, b, c,\n              d) {\n\n}", 2, 4)]
         [InlineData("x <- function(a, b, c,\nd) {\n\n}", 2, 4)]
+        [InlineData("x <- function(a, b,\n   c,\n", 2, 3)]
+        [InlineData("x <- function(a, b, c,\nd) {\n\n}", 2, 4)]
         [InlineData("{\n", 1, 4)]
         [InlineData("{\n    {\n", 2, 8)]
         [InlineData("{\n    {\n    {\n", 3, 8)]

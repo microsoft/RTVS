@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluation : IRSessionEvaluation {
-        private readonly RSessionEvaluationSource _source;
         private readonly IRExpressionEvaluator _evaluator;
         private readonly TaskCompletionSource<object> _tcs;
         private readonly CancellationToken _ct;
