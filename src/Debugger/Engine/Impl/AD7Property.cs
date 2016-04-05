@@ -55,10 +55,21 @@ namespace Microsoft.R.Debugger.Engine {
             _reprToString = Lazy.Create(CreateReprToString);
         }
 
-        private IReadOnlyList<DebugEvaluationResult> CreateChildren() {
-            return TaskExtensions.RunSynchronouslyOnUIThread(ct => (EvaluationResult as DebugValueEvaluationResult)?.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct))
-                ?? new DebugEvaluationResult[0];
-        }
+        private IReadOnlyList<DebugEvaluationResult> CreateChildren() =>
+            TaskExtensions.RunSynchronouslyOnUIThread(async ct => {
+                var valueResult = EvaluationResult as DebugValueEvaluationResult;
+                if (valueResult != null) {
+                    var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct);
+
+                    // Children of environments do not have any meaningful order, so sort them by name.
+                    if (valueResult.TypeName == "environment") {
+                        children = children.OrderBy(er => er.Name).ToArray();
+                    }
+
+                    return children;
+                }
+                return new DebugEvaluationResult[0];
+            });
 
         private string CreateReprToString() {
             var ev = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
@@ -72,19 +83,26 @@ namespace Microsoft.R.Debugger.Engine {
                 children = children.Where(v => v.Name != null && !v.Name.StartsWith("."));
             }
 
-            if (IsFrameEnvironment) {
-                children = children.OrderBy(v => v.Name);
-            }
-
             var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));
 
             var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            if (valueResult != null && valueResult.HasAttributes == true) {
-                string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, ReprMaxLength, ct));
-                if (!(attrResult is DebugErrorEvaluationResult)) {
-                    var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
-                    infos = new[] { attrInfo }.Concat(infos);
+            if (valueResult != null) {
+                if (valueResult.HasAttributes == true) {
+                    string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
+                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, ReprMaxLength, ct));
+                    if (!(attrResult is DebugErrorEvaluationResult)) {
+                        var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
+                        infos = new[] { attrInfo }.Concat(infos);
+                    }
+                }
+
+                if (valueResult.Flags.HasFlag(DebugValueEvaluationResultFlags.HasParentEnvironment)) {
+                    string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
+                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(parentExpr, "parent.env()", PrefetchedFields, ReprMaxLength, ct));
+                    if (!(parentResult is DebugErrorEvaluationResult)) {
+                        var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
+                        infos = new[] { parentInfo }.Concat(infos);
+                    }
                 }
             }
 

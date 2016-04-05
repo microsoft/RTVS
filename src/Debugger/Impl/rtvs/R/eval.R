@@ -84,7 +84,7 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
     
   has_parent_env <- FALSE;
   if (is.environment(obj)) {
-    has_parent_env <- !identical(obj, emptyenv());
+    has_parent_env <- !identical(parent.env(obj), emptyenv());
     if (field('env_name')) {
       res$env_name <- NA_if_error(environmentName(obj));
     }
@@ -251,7 +251,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       # use slot(). Still, always use '@' as accessor name to show to the user.
       accessor <- paste0('@', name_sym, collapse = '');
       if (is_S4) {
-        slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
+        slot_expr <- paste0(expr, accessor, collapse = '')
       } else {
         slot_expr <- paste0('methods::slot((', expr, '), ', deparse_str(name), ')', collapse = '')
       }
