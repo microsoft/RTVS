@@ -104,7 +104,6 @@
     <Compile Include="StubFactories\DirectoryInfoStubFactory.cs" />
     <Compile Include="StubFactories\FileInfoStubFactory.cs" />
     <Compile Include="Script\TestScript.cs" />
-    <Compile Include="StackExtensionsTest.cs" />
     <Compile Include="StubFactories\FileSystemStubFactory.cs" />
     <Compile Include="Tasks\EventTaskSourceTest.cs" />
     <Compile Include="Tasks\FailOnTimeoutTest.cs" />

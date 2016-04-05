@@ -73,7 +73,6 @@
     <Compile Include="Shell\ICoreShell.cs" />
     <Compile Include="Shell\IIdleTimeService.cs" />
     <Compile Include="Shell\MessageButtons.cs" />
-    <Compile Include="Extensions\StackExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\StringBuilderExtensions.cs" />
     <Compile Include="Extensions\TaskExtensions.cs" />
