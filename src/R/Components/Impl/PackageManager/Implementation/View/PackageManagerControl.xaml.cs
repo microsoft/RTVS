@@ -18,7 +18,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void CheckBoxSuppressLegalDisclaimer_Checked(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            if (Model != null) {
+                Model.ShowPackageManagerDisclaimer = false;
+            }
         }
 
         private void TabLoaded_Checked(object sender, RoutedEventArgs e) {
@@ -38,7 +40,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ListPackages_Loaded(object sender, RoutedEventArgs e) {
-            Model?.ReloadItems();
+            TabInstalled.IsChecked = true;
         }
     }
 }

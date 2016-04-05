@@ -75,6 +75,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsSelected { get; set; }
         public void AddDetails(RPackage package, bool isInstalled) {}
         public void UpdateAvailablePackageDetails(RPackage package) {}
+        public void Install() {}
+        public void Uninstall() {}
     }
 #endif
 }

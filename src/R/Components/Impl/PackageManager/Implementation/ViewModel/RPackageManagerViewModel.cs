@@ -8,16 +8,20 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
+using Microsoft.R.Components.Settings;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageManagerViewModel : BindableBase, IRPackageManagerViewModel {
         private readonly IRPackageManager _packageManager;
+        private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
         private readonly BinaryAsyncLock _availableLock;
         private readonly BinaryAsyncLock _installedAndLoadedLock;
@@ -31,9 +35,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private SelectedTab _selectedTab;
         private bool _isLoading;
         private IRPackageViewModel _selectedPackage;
+        private static readonly Comparer<IRPackageViewModel> _comparer = Comparer<IRPackageViewModel>.Create((p1, p2) => string.Compare(p1.Name, p2.Name, StringComparison.InvariantCultureIgnoreCase));
 
-        public RPackageManagerViewModel(IRPackageManager packageManager, ICoreShell coreShell) {
+        public RPackageManagerViewModel(IRPackageManager packageManager, IRSettings settings, ICoreShell coreShell) {
             _packageManager = packageManager;
+            _settings = settings;
             _coreShell = coreShell;
             _selectedTab = SelectedTab.None;
             _availablePackages = new List<IRPackageViewModel>();
@@ -55,6 +61,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public bool IsLoading {
             get { return _isLoading; }
             private set { SetProperty(ref _isLoading, value); }
+        }
+
+        public bool ShowPackageManagerDisclaimer {
+            get { return _settings.ShowPackageManagerDisclaimer; }
+            set {
+                _settings.ShowPackageManagerDisclaimer = value;
+                OnPropertyChanged();
+            }
         }
 
         public void SwitchToAvailablePackages() {
@@ -121,6 +135,44 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
+        public void Install(IRPackageViewModel package) {
+            if (package.IsInstalled) {
+                return;
+            }
+
+            DispatchOnMainThread(() => InstallAsync(package));
+        }
+
+        private async Task InstallAsync(IRPackageViewModel package) {
+            var libPath = await GetLibPath();
+
+            _packageManager.InstallPackage(package.Name, libPath);
+            package.IsInstalled = true;
+            var installedPackages = _installedPackages;
+            installedPackages.AddSorted(package, _comparer);
+        }
+
+        public void Uninstall(IRPackageViewModel package) {
+            if (!package.IsInstalled) {
+                return;
+            }
+
+            DispatchOnMainThread(() => UninstallAsync(package));
+        }
+
+        private async Task UninstallAsync(IRPackageViewModel package) {
+            var libPaths = await _packageManager.GetLibraryPathsAsync();
+            var libPath = libPaths.FirstOrDefault();
+
+            _packageManager.UninstallPackage(package.Name, libPath);
+            package.IsInstalled = false;
+            var installedPackages = _installedPackages;
+            installedPackages.RemoveSorted(package, _comparer);
+            if (_selectedTab == SelectedTab.InstalledPackages) {
+                Items.RemoveWhere(o => o.Equals(package));
+            }
+        }
+
         private async Task AddPackageDetailsAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
             var details = await GetAdditionalPackageInfoAsync(package);
@@ -130,6 +182,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task<RPackage> GetAdditionalPackageInfoAsync(IRPackageViewModel package) {
             await TaskUtilities.SwitchToBackgroundThread();
             return await _packageManager.GetAdditionalPackageInfoAsync(package.Name, package.RepositoryText ?? package.RepositoryUri.AbsoluteUri);
+        }
+
+        private async Task<string> GetLibPath() {
+            var rBasePath = _settings.RBasePath.ToRPath();
+            var libPaths = await _packageManager.GetLibraryPathsAsync();
+            return libPaths.Select(p => p.ToRPath()).FirstOrDefault(s => !s.StartsWithIgnoreCase(rBasePath));
         }
 
         private async Task SwitchToAvailablePackagesAsync() {
@@ -146,7 +204,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (_availablePackages == null) {
                 return;
             }
-            _items.ReplaceWith(_availablePackages);
+            ReplaceItems(_availablePackages);
         }
 
         private async Task EnsureAvailablePackagesLoadedAsync() {
@@ -173,7 +231,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     installedPackage.UpdateAvailablePackageDetails(package);
                     vmAvailablePackages.Add(installedPackage);
                 } else {
-                    vmAvailablePackages.Add(RPackageViewModel.CreateAvailable(package));
+                    vmAvailablePackages.Add(RPackageViewModel.CreateAvailable(package, this));
                 }
             }
 
@@ -191,7 +249,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = false;
             }
             
-            _items.ReplaceWith(_installedPackages);
+            ReplaceItems(_installedPackages);
         }
 
         private async Task ReloadInstalledAndLoadedPackagesAsync() {
@@ -219,7 +277,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             var installedPackages = getInstalledPackagesTask.Result;
             if (!_availableLock.IsCompleted) {
                 _installedPackages = installedPackages
-                    .Select(RPackageViewModel.CreateInstalled)
+                    .Select(package => RPackageViewModel.CreateInstalled(package, this))
                     .OrderBy(p => p.Name)
                     .ToList<IRPackageViewModel>();
                 DispatchOnMainThread(EnsureAvailablePackagesLoadedAsync);
@@ -233,7 +291,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                         vmPackage.AddDetails(installedPackage, true);
                         vmInstalledPackages.Add(vmPackage);
                     } else {
-                        vmInstalledPackages.Add(RPackageViewModel.CreateInstalled(installedPackage));
+                        vmInstalledPackages.Add(RPackageViewModel.CreateInstalled(installedPackage, this));
                     }
                 }
 
@@ -260,7 +318,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task SwitchToLoadedPackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             if (_installedAndLoadedLock.IsCompleted) {
-                _items.ReplaceWith(_loadedPackages);
+                ReplaceItems(_loadedPackages);
                 return;
             }
 
@@ -273,7 +331,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = false;
             }
 
-            _items.ReplaceWith(_loadedPackages);
+            ReplaceItems(_loadedPackages);
+        }
+
+        private void ReplaceItems(IList<IRPackageViewModel> packages) {
+            _coreShell.AssertIsOnMainThread();
+            if (string.IsNullOrEmpty(_searchString)) {
+                _items.ReplaceWith(packages);
+            } else { 
+                Search(packages, _searchString, CancellationToken.None);
+            }
         }
 
         private void DispatchOnMainThread(Func<Task> callback) {

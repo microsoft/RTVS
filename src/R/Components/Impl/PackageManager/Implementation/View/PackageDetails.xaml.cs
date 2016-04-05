@@ -6,12 +6,15 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// <summary>
     /// Interaction logic for PackageDetails.xaml
     /// </summary>
     public partial class PackageDetails : UserControl {
+        private IRPackageViewModel Model => DataContext as IRPackageViewModel;
+
         public PackageDetails() {
             InitializeComponent();
         }
@@ -21,11 +24,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            Model?.Install();
         }
         
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            Model?.Uninstall();
         }
 
         private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) {

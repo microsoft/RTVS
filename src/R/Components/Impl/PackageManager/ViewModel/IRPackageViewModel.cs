@@ -32,5 +32,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         bool IsSelected { get; set; }
         void AddDetails(RPackage package, bool isInstalled);
         void UpdateAvailablePackageDetails(RPackage package);
+        void Install();
+        void Uninstall();
     }
 }

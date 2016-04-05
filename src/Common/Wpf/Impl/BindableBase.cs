@@ -42,7 +42,7 @@ namespace Microsoft.Common.Wpf {
         /// <param name="propertyName">Name of the property used to notify listeners. This
         /// value is optional and can be provided automatically when invoked from compilers
         /// that support <see cref="CallerMemberNameAttribute"/>.</param>
-        protected void OnPropertyChanged(string propertyName) {
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null) {
             var eventHandler = PropertyChanged;
             eventHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
