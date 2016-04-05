@@ -57,7 +57,7 @@ namespace Microsoft.R.Editor.Data {
                 const string PromiseVaue = "<promise>";
                 var promise = (DebugPromiseEvaluationResult)DebugEvaluation;
 
-                Value = promise.Code;
+                Value = PromiseVaue;
                 TypeName = PromiseVaue;
                 Class = PromiseVaue;
             } else if (DebugEvaluation is DebugActiveBindingEvaluationResult) {
