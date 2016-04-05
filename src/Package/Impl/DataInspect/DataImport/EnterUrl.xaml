@@ -8,7 +8,16 @@
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
         Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+        Foreground="{DynamicResource {x:Static ui:CommonControlsColors.TextBoxTextBrushKey}}"
+        Background="{DynamicResource {x:Static ui:CommonControlsColors.TextBoxBackgroundBrushKey}}"
         FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <StackPanel>
         <Grid Margin="6,3,3,3">
             <Grid.ColumnDefinitions>
