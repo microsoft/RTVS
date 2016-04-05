@@ -17,6 +17,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             InitializeComponent();
         }
 
+        private void PackageManagerControl_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e) {
+            if (TabLoaded.IsChecked.HasValue && TabLoaded.IsChecked.Value) {
+                Model?.SwitchToLoadedPackages();
+            } else if (TabInstalled.IsChecked.HasValue && TabInstalled.IsChecked.Value) {
+                Model?.SwitchToInstalledPackages();
+            } else if (TabAvailable.IsChecked.HasValue && TabAvailable.IsChecked.Value) {
+                Model?.SwitchToAvailablePackages();
+            }
+        }
+
         private void CheckBoxSuppressLegalDisclaimer_Checked(object sender, RoutedEventArgs e) {
             throw new NotImplementedException();
         }

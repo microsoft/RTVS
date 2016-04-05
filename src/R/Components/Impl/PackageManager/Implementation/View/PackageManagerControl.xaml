@@ -9,7 +9,8 @@
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
-             d:DesignHeight="600" d:DesignWidth="800">
+             d:DesignHeight="600" d:DesignWidth="800"
+             DataContextChanged="PackageManagerControl_DataContextChanged">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -91,7 +92,7 @@
                 </Grid.ColumnDefinitions>
 
                 <RadioButton Grid.Column="0" x:Name="TabAvailable" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Available}" Checked="TabAvailable_Checked" />
-                <RadioButton Grid.Column="2" x:Name="TabInstalled" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Installed}" Checked="TabInstalled_Checked" />
+                <RadioButton Grid.Column="2" x:Name="TabInstalled" GroupName="Tabs" IsChecked="True"  Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Installed}" Checked="TabInstalled_Checked" />
                 <RadioButton Grid.Column="4" x:Name="TabLoaded" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Loaded}" Checked="TabLoaded_Checked" />
 
                 <!-- container of the search control -->
