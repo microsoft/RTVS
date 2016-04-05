@@ -234,7 +234,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 if (_pkgQuerySession == null) {
                     _pkgQuerySession = _sessionProvider.GetOrCreate(PackageQuerySessionId, null);
-                    _pkgQuerySession.Disposed += OnSessionDisposed;
                 }
 
                 if (!_pkgQuerySession.IsHostRunning) {
@@ -249,17 +248,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        private void OnSessionDisposed(object sender, EventArgs e) {
-            if (_pkgQuerySession != null) {
-                _pkgQuerySession.Disposed -= OnSessionDisposed;
-                _pkgQuerySession = null;
-            }
-        }
-
         public void Dispose() {
             _dispose();
             if (_pkgQuerySession != null) {
-                _pkgQuerySession.Disposed -= OnSessionDisposed;
                 _pkgQuerySession.Dispose();
                 _pkgQuerySession = null;
             }
