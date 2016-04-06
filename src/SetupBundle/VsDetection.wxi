@@ -6,7 +6,7 @@
       Id="Community_DetectKey"
       Variable="Community_DetectKey"
       Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\community"
+      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VsVersion)\community"
       Value="Install"/>
 
   <!-- Detect Community update version -->
@@ -14,7 +14,7 @@
       Id="Community_VersionKey"
       Variable="Community_VersionKey"
       Root="HKLM"
-      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VSRegVer)\community"
+      Key="SOFTWARE\Microsoft\DevDiv\vs\Servicing\$(var.VsVersion)\community"
       Value="UpdateVersion"/>
 
 </Include>

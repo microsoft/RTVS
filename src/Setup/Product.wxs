@@ -21,19 +21,19 @@
 
     <!-- Search for shared root "MS VS XX.X" folder-->
     <Property Id="VS_ROOT_FOLDER" Secure="yes">
-      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
+      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VsVersion)\Setup\VS" Name="ProductDir" Type="raw" />
     </Property>
 
     <!-- RTVS detection key that is used by the secondary installer -->
     <Feature Id="RToolsDetection">
       <Component Id="RToolsDetectionKey" Directory="TARGETDIR">
-        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Installed" Type="integer" Value="1" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VsVersion)\Setup\VS\RTVS" Name="Installed" Type="integer" Value="1" />
       </Component>
     </Feature>
 
     <Feature Id="RToolsVersion">
       <Component Id="RToolsVersionKey" Directory="TARGETDIR">
-        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS\RTVS" Name="Version" Type="string" Value="$(var.MsiVersion)" />
+        <RegistryValue Root="HKLM" Key="Software\Microsoft\VisualStudio\$(var.VsVersion)\Setup\VS\RTVS" Name="Version" Type="string" Value="$(var.MsiVersion)" />
       </Component>
     </Feature>
 
@@ -90,7 +90,7 @@
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="VSFolder" Name="Microsoft Visual Studio $(var.VSRegVer)">
+        <Directory Id="VSFolder" Name="Microsoft Visual Studio $(var.VsVersion)">
           <Directory Id="VS_ROOT_FOLDER">
             <Directory Id="VSCommonFilesFolder" Name="Common7">
               <Directory Id="CommonIdeFolder" Name="IDE">
@@ -171,7 +171,7 @@
         <Directory Id="MSBuildFolder" Name="MSBuild">
           <Directory Id="MSBuildMicrosoftFolder" Name="Microsoft">
             <Directory Id="MSBuildMicrosoftVisualStudioFolder" Name="VisualStudio">
-              <Directory Id="MSBuildMicrosoftVisualStudioVersionFolder" Name="v$(var.VSRegVer)">
+              <Directory Id="MSBuildMicrosoftVisualStudioVersionFolder" Name="v$(var.VsVersion)">
                 <Directory Id="MSBuildRTVSFolder" Name="RTVS">
                   <Directory Id="CpsRulesInstallFolder" Name="Rules" />
                 </Directory>

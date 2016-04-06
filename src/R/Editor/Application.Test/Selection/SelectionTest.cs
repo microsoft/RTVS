@@ -47,7 +47,7 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
                 var selectedWord = span.GetText();
                 selectedWord.Should().Be("`abc`");
 
-                script.MoveRight(2);
+                script.MoveRight(3);
                 script.Execute(Languages.Editor.Controller.Constants.VSConstants.VSStd2KCmdID.SELECTCURRENTWORD);
                 span = EditorWindow.CoreEditor.View.Selection.StreamSelectionSpan;
                 selectedWord = span.GetText();
