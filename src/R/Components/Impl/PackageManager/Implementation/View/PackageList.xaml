@@ -59,9 +59,14 @@
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
 
                         <!-- Load button -->
-                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click" 
-                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.TrueIsCollapsed}}" VerticalAlignment="Center"
-                                        ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}">
+                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click"
+                                VerticalAlignment="Center" ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                                    <Binding Path="IsLoaded" Converter="{x:Static wpf:Converters.Not}" />
+                                    <Binding Path="IsInstalled" />
+                                </MultiBinding>
+                            </Button.Visibility>
                             <Rectangle Fill="{StaticResource IconLoad}" Width="16" Height="16" />
                         </Button>
 
