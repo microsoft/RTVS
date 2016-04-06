@@ -214,7 +214,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await _packageManager.LoadPackage(package.Name, package.RepositoryUri?.AbsolutePath.ToRPath());
             await ReloadLoadedPackagesAsync();
 
-            AfterLoadUnload();
+            AfterLoadUnload(package);
         }
 
         public void Unload(IRPackageViewModel package) {
@@ -233,7 +233,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await _packageManager.UnloadPackage(package.Name);
             await ReloadLoadedPackagesAsync();
 
-            AfterLoadUnload();
+            AfterLoadUnload(package);
         }
 
         private void BeforeLoadUnload() {
@@ -242,7 +242,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private void AfterLoadUnload() {
+        private void AfterLoadUnload(IRPackageViewModel package) {
+            package.IsChanging = false;
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
