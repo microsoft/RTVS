@@ -43,11 +43,23 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public void Install(IRPackageViewModel package) {
         }
 
+        public void Update(IRPackageViewModel package) {
+        }
+
         public void Uninstall(IRPackageViewModel package) {
+        }
+
+        public void Load(IRPackageViewModel package) {
+        }
+
+        public void Unload(IRPackageViewModel package) {
         }
 
         public Task<int> Search(string searchString, CancellationToken cancellationToken) {
             return Task.FromResult(0);
+        }
+
+        public void Dispose() {
         }
     }
 #endif

@@ -77,24 +77,48 @@
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <DrawingBrush x:Key="IconInstalledIndicator">
+    <DrawingBrush x:Key="IconGrayLoad">
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
-                    <GeometryDrawing Brush="#FF329932" Geometry="F1M8,12L6,12 4,8 6,8 7,10 10,4 12,4z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
-                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M12,4L8,12 6,12 4,8 6,8 7,10 10,4z" />
+                    <GeometryDrawing Brush="Gray" Geometry="F1M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8,2C4.6871429,2,2,4.6862857,2,8c0,3.312857,2.6871429,6,6,6,3.312857,0,6,-2.687143,6,-6 C14,4.6862857,11.312857,2,8,2" />
                 </DrawingGroup.Children>
             </DrawingGroup>
         </DrawingBrush.Drawing>
     </DrawingBrush>
 
-    <DrawingBrush x:Key="IconGrayInstalledIndicator">
+    <DrawingBrush x:Key="IconLoad">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
+                    <GeometryDrawing Brush="#FF329932" Geometry="F1M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M8,2C4.6871429,2,2,4.6862857,2,8c0,3.312857,2.6871429,6,6,6,3.312857,0,6,-2.687143,6,-6 C14,4.6862857,11.312857,2,8,2" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    
+    <DrawingBrush x:Key="IconGrayUnload">
         <DrawingBrush.Drawing>
             <DrawingGroup>
                 <DrawingGroup.Children>
                     <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
                     <GeometryDrawing Brush="Gray" Geometry="F1M8,12L6,12 4,8 6,8 7,10 10,4 12,4z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
+                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M12,4L8,12 6,12 4,8 6,8 7,10 10,4z" />
+                </DrawingGroup.Children>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    
+    <DrawingBrush x:Key="IconUnload">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <DrawingGroup.Children>
+                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
+                    <GeometryDrawing Brush="#FF329932" Geometry="F1M8,12L6,12 4,8 6,8 7,10 10,4 12,4z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
                     <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M12,4L8,12 6,12 4,8 6,8 7,10 10,4z" />
                 </DrawingGroup.Children>
             </DrawingGroup>

@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.View;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
@@ -19,8 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
             _searchControlProvider = searchControlProvider;
         }
 
-        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, int instanceId) {
-            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
+        public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, IRSession session, int instanceId = 0) {
+            return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, session, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
         }
     }
 }

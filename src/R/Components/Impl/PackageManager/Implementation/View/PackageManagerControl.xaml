@@ -104,7 +104,7 @@
                     <Border Grid.Column="6" x:Name="SearchControlHost" VerticalAlignment="Center" HorizontalAlignment="Stretch" MinHeight="22" MinWidth="224" />
 
                     <!-- Settings button -->
-                    <Button Grid.Column="8" x:Name="ButtonSettings" VerticalAlignment="Center" Padding="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" IsEnabled="False" Click="ButtonSettings_Click">
+                    <Button Grid.Column="8" x:Name="ButtonSettings" VerticalAlignment="Center" Padding="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Visibility="Hidden" Click="ButtonSettings_Click">
                         <Rectangle Width="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
                                    Height="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale122}}"
                                    Fill="{StaticResource IconSettings}" />

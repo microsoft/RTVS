@@ -46,8 +46,9 @@
 
             <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" x:Name="Container">
-                    <Grid Margin="16,8,7,8" MinHeight="32">
+                    <Grid Margin="8,8,7,8" MinHeight="32">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -57,9 +58,28 @@
                         <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsSelected}"
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
 
+                        <!-- Load button -->
+                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click"
+                                VerticalAlignment="Center" ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                                    <Binding Path="IsLoaded" Converter="{x:Static wpf:Converters.Not}" />
+                                    <Binding Path="IsInstalled" />
+                                </MultiBinding>
+                            </Button.Visibility>
+                            <Rectangle Fill="{StaticResource IconLoad}" Width="16" Height="16" />
+                        </Button>
+
+                        <!-- Unload button -->
+                        <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUnload_Click" 
+                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center"
+                                        ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}">
+                            <Rectangle Fill="{StaticResource IconUnload}" Width="16" Height="16" />
+                        </Button>
+
                         <!-- title & summary-->
-                        <TextBlock Grid.Column="1" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}">
+                        <TextBlock Grid.Column="2" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
+                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0">
                             <TextBlock.ToolTip>
                                 <TextBlock Style="{StaticResource TooltipStyle}" Visibility="{Binding Path=Title, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
                                     <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
@@ -69,7 +89,7 @@
                             </TextBlock.ToolTip>
                         </TextBlock>
 
-                        <Grid Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <Grid Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
@@ -77,21 +97,11 @@
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0" HorizontalAlignment="Right" Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <!-- installed indicator -->
-                                <Rectangle x:Name="_installedIndicator" Grid.Column="0" Width="12" Height="12" VerticalAlignment="Center"
-                                           Fill="{StaticResource IconGrayInstalledIndicator}" />
-
-                                <!-- installed version -->
-                                <TextBlock x:Name="TextInstalledVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center"
-                                           Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}"
-                                           ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
-                            </Grid>
+                            <!-- installed version -->
+                            <TextBlock x:Name="TextInstalledVersion" Grid.Column="0" Margin="4,0,4,0" VerticalAlignment="Center"
+                                       Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}" HorizontalAlignment="Right"
+                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                       ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
 
                             <!-- version to install. It occupies the same position as the installed version -->
                             <TextBlock x:Name="_versionToInstall" Grid.Column="0" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
@@ -101,7 +111,7 @@
                             </TextBlock>
 
                             <!-- uninstall button -->
-                            <Button x:Name="ButtonUninstall" Style="{StaticResource ButtonStyle}" Grid.Column="1" Click="ButtonUninstall_Click"
+                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUninstall_Click"
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                     ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
                                 <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />

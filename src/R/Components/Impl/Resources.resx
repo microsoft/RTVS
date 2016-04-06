@@ -249,6 +249,12 @@
   <data name="PackageManager_UpdateAvailableToolTip" xml:space="preserve">
     <value>Update available</value>
   </data>
+  <data name="PackageManager_LoadButtonToolTip" xml:space="preserve">
+    <value>Load {0}.</value>
+  </data>
+  <data name="PackageManager_UnloadButtonToolTip" xml:space="preserve">
+    <value>Unload {0}.</value>
+  </data>
   <data name="PackageManager_InstallButtonToolTip" xml:space="preserve">
     <value>Install {0} version {1}.</value>
   </data>

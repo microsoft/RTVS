@@ -65,7 +65,7 @@
 
                 <Button Grid.Row="0" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonUninstall_Click"
                         Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
-                        Content="{x:Static local:Resources.Uninstall}" />
+                        Content="{x:Static local:Resources.Uninstall}" IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" />
 
                 <!-- Row 2 -->
                 <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0,4,0,0" Text="{x:Static local:Resources.Package_LatestVersion}" />
@@ -75,9 +75,11 @@
 
                 <!-- install button and update button. They are in fact the same button. Which one is displayed depends on whether InstalledVersion is null. -->
                 <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Install}"
-                        Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}" />
+                        Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
+                        IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" />
 
-                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}">
+                <Button Grid.Row="3" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonInstall_Click" Content="{x:Static local:Resources.Update}"
+                        IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}">
                     <Button.Visibility>
                         <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotCollapsed}" Mode="OneWay">
                             <Binding Path="IsUpdateAvailable" />
@@ -119,6 +121,7 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition Height="16" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
