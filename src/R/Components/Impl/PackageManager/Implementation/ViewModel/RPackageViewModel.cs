@@ -55,7 +55,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 LibraryPath = package.LibPath,
                 RepositoryUri = repositoryUri,
                 RepositoryText = repositoryUri != null ? null : package.Repository,
-                Description = MakeDescription(package),
+                Description = package.Description.NormalizeWhitespace(),
                 Built = package.Built,
                 Depends = package.Depends.NormalizeWhitespace(),
                 Imports = package.Imports.NormalizeWhitespace(),
@@ -177,7 +177,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         public void AddDetails(RPackage package, bool isInstalled) {
             Title = package.Title.NormalizeWhitespace();
-            Description = MakeDescription(package);
+            Description = package.Description.NormalizeWhitespace();
             Authors = package.Author.NormalizeWhitespace();
             Urls = package.URL?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim())
@@ -193,10 +193,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             HasDetails = true;
-        }
-
-        private static string MakeDescription(RPackage package) {
-            return !string.IsNullOrWhiteSpace(package.Description) ? package.Description.NormalizeWhitespace() : package.Title.NormalizeWhitespace();
         }
     }
 }
