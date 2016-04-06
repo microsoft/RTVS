@@ -76,44 +76,74 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 throw new RPackageManagerException(ex.Message, ex);
             }
         }
-        
-        public void InstallPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = $"install.packages({name.ToRStringLiteral()})";
-            } else {
-                script = $"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})";
+
+        public async Task InstallPackage(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.InstallPackage(name);
+                    } else {
+                        await request.InstallPackage(name, libraryPath);
+                    }
+                }
+            }
+            catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
-        public void UninstallPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("remove.packages({0})", name.ToRStringLiteral());
-            } else {
-                script = string.Format("remove.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+        public async Task UninstallPackage(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.UninstallPackage(name);
+                    } else {
+                        await request.UninstallPackage(name, libraryPath);
+                    }
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
-        public void LoadPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("library({0})", name.ToRStringLiteral());
-            } else {
-                script = string.Format("library({0}, lib.loc={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+        public async Task LoadPackage(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.LoadPackage(name);
+                    } else {
+                        await request.LoadPackage(name, libraryPath);
+                    }
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
-        public void UnloadPackage(string name) {
-            string script = string.Format("unloadNamespace({0})", name.ToRStringLiteral());
+        public async Task UnloadPackage(string name) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    await request.UnloadPackage(name);
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
         public async Task<string[]> GetLoadedPackagesAsync() {

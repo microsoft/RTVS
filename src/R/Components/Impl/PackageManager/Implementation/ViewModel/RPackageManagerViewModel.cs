@@ -88,7 +88,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             _selectedTab = SelectedTab.InstalledPackages;
-            DispatchOnMainThread(SwitchToInstalledPackagesAsync);
+            DispatchOnMainThread(RefreshInstalledPackagesAsync);
         }
 
         public void SwitchToLoadedPackages() {
@@ -98,7 +98,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             _selectedTab = SelectedTab.LoadedPackages;
-            DispatchOnMainThread(SwitchToLoadedPackagesAsync);
+            DispatchOnMainThread(RefreshLoadedPackagesAsync);
         }
 
         public void ReloadItems() {
@@ -143,13 +143,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             DispatchOnMainThread(() => InstallAsync(package));
         }
 
-        private async Task InstallAsync(IRPackageViewModel package) {
-            var libPath = await GetLibPath();
+        public void Update(IRPackageViewModel package) {
+            if (package.IsInstalled) {
+                return;
+            }
 
-            _packageManager.InstallPackage(package.Name, libPath);
-            package.IsInstalled = true;
-            var installedPackages = _installedPackages;
-            installedPackages.AddSorted(package, _comparer);
+            DispatchOnMainThread(() => InstallAsync(package));
+        }
+
+        private async Task InstallAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+
+            var libPath = await GetLibPath();
+            await _packageManager.InstallPackage(package.Name, libPath);
+            await RefreshInstalledPackagesAsync();
         }
 
         public void Uninstall(IRPackageViewModel package) {
@@ -161,16 +168,38 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task UninstallAsync(IRPackageViewModel package) {
-            var libPaths = await _packageManager.GetLibraryPathsAsync();
-            var libPath = libPaths.FirstOrDefault();
+            var libPath = await GetLibPath();
+            await _packageManager.UninstallPackage(package.Name, libPath);
+            await RefreshInstalledPackagesAsync();
+        }
 
-            _packageManager.UninstallPackage(package.Name, libPath);
-            package.IsInstalled = false;
-            var installedPackages = _installedPackages;
-            installedPackages.RemoveSorted(package, _comparer);
-            if (_selectedTab == SelectedTab.InstalledPackages) {
-                Items.RemoveWhere(o => o.Equals(package));
+        public void Load(IRPackageViewModel package) {
+            if (package.IsLoaded) {
+                return;
             }
+
+            DispatchOnMainThread(() => LoadAsync(package));
+        }
+
+        private async Task LoadAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+
+            var libPath = await GetLibPath();
+            await _packageManager.LoadPackage(package.Name, libPath);
+            await RefreshLoadedPackagesAsync();
+        }
+
+        public void Unload(IRPackageViewModel package) {
+            if (!package.IsLoaded) {
+                return;
+            }
+
+            DispatchOnMainThread(() => UnloadAsync(package));
+        }
+
+        private async Task UnloadAsync(IRPackageViewModel package) {
+            await _packageManager.UnloadPackage(package.Name);
+            await RefreshLoadedPackagesAsync();
         }
 
         private async Task AddPackageDetailsAsync(IRPackageViewModel package) {
@@ -238,7 +267,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _availablePackages = vmAvailablePackages.OrderBy(p => p.Name).ToList();
         }
 
-        private async Task SwitchToInstalledPackagesAsync() {
+        private async Task RefreshInstalledPackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = true;
@@ -315,7 +344,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task SwitchToLoadedPackagesAsync() {
+        private async Task RefreshLoadedPackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             if (_installedAndLoadedLock.IsCompleted) {
                 ReplaceItems(_loadedPackages);

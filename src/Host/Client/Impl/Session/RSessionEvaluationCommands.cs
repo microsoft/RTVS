@@ -77,11 +77,46 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
+        public static Task InstallPackage(this IRSessionInteraction interaction, string name) {
+            var script = $"install.packages({name.ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+        
+        public static Task InstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+            var script = $"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+        
+        public static Task UninstallPackage(this IRSessionInteraction interaction, string name) {
+            var script = $"remove.packages({name.ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+
+        public static Task UninstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+            var script = $"remove.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+
+        public static Task LoadPackage(this IRSessionInteraction interaction, string name) {
+            var script = $"library({name.ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+
+        public static Task LoadPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+            var script = $"library({name.ToRStringLiteral()}, lib.loc={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+
+        public static Task UnloadPackage(this IRSessionInteraction interaction, string name) {
+            var script = $"unloadNamespace({name.ToRStringLiteral()})\n";
+            return interaction.RespondAsync(script);
+        }
+
         public static Task<REvaluationResult> InstalledPackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
-
+        
         public static Task<REvaluationResult> AvailablePackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json | REvaluationKind.Reentrant);

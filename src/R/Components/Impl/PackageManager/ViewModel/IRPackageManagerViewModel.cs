@@ -17,6 +17,9 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         void ReloadItems();
         void SelectPackage(IRPackageViewModel package);
         void Install(IRPackageViewModel package);
+        void Update(IRPackageViewModel package);
         void Uninstall(IRPackageViewModel package);
+        void Load(IRPackageViewModel package);
+        void Unload(IRPackageViewModel package);
     }
 }
