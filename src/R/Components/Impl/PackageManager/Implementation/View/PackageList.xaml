@@ -121,10 +121,14 @@
                             <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" 
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
                                 <Button.ToolTip>
-                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
-                                        <Binding Path="Name" />
-                                        <Binding Path="LatestVersion" />
-                                    </MultiBinding>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
+                                                <Binding Path="Name" />
+                                                <Binding Path="LatestVersion" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Button.ToolTip>
                                 <Rectangle Fill="{StaticResource IconInstall}" Width="16" Height="16" />
                             </Button>
@@ -142,10 +146,14 @@
                             <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Click="ButtonUpdate_Click"
                                     Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
-                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
-                                        <Binding Path="Name" />
-                                        <Binding Path="LatestVersion" />
-                                    </MultiBinding>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
+                                                <Binding Path="Name" />
+                                                <Binding Path="LatestVersion" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Button.ToolTip>
                                 <Rectangle Fill="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
                             </Button>

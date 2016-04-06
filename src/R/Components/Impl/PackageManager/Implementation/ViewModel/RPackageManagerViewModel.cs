@@ -211,7 +211,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.LoadPackageAsync(package.Name, package.RepositoryUri?.AbsolutePath.ToRPath());
+            var libPath = await GetLibPath();
+            await _packageManager.LoadPackageAsync(package.Name, libPath);
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
