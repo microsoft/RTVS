@@ -42,6 +42,27 @@ namespace Microsoft.R.Debugger.Test {
 
         [Test]
         [Category.R.Debugger]
+        public async Task BacktickNames() {
+            using (var debugSession = new DebugSession(_session)) {
+                await _session.EvaluateAsync("`123` <- list(`name with spaces` = 42)", REvaluationKind.Mutating);
+                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var frame = (await stackFrames.Last().GetEnvironmentAsync()).Should().BeOfType<DebugValueEvaluationResult>().Which;
+                var children = await frame.GetChildrenAsync(DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.ReprDeparse);
+                var parent = children.Should().Contain(er => er.Name == "`123`")
+                    .Which.Should().BeOfType<DebugValueEvaluationResult>().Which;
+                parent.Expression.Should().Be("`123`");
+
+                children = await parent.GetChildrenAsync(DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.ReprDeparse);
+                children.Should().Contain(er => er.Name == "$`name with spaces`")
+                    .Which.Should().BeOfType<DebugValueEvaluationResult>()
+                    .Which.Expression.Should().Be("`123`$`name with spaces`");
+            }
+        }
+
+        [Test]
+        [Category.R.Debugger]
         public async Task MultilinePromise() {
             const string code = @"
 f <- function(p, d) {

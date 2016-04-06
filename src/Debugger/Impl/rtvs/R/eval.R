@@ -175,11 +175,12 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
     
     for (name in names) {
       name <- force_toString(name);
-
       # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
       if (name == '') {
         next;
       }
+
+      name_sym <- symbol_token(name);
 
       # Check if it's a promise, and retrieve the promise expression if it is.
       code <- tryCatch({
@@ -190,9 +191,9 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
 
       item_expr <-
         if (expr == 'base::environment()') {
-          deparse_symbol(name)
+          name_sym
         } else {
-          paste0(expr, '$', deparse_symbol(name), collapse = '')
+          paste0(expr, '$', name_sym, collapse = '')
         };
 
       if (!is.null(code)) {
@@ -218,7 +219,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
       }
       
       child <- list(value);
-      names(child) <- name;
+      names(child) <- name_sym;
       last_child <<- last_child + 1;
       children[[last_child]] <<- child;
     }
@@ -239,15 +240,16 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
   
     for (name in names) {
       name <- force_toString(name);
-      
-      # If the name is not a string or blank, it cannot be accessed, so ignore it.
+      # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
       if (name == '') {
         next;
       }
+
+      name_sym <- symbol_token(name);
       
       # For S4 objects, slots can be accessed with '@'. For other objects, we have to
       # use slot(). Still, always use '@' as accessor name to show to the user.
-      accessor <- paste0('@', deparse_symbol(name), collapse = '');
+      accessor <- paste0('@', name_sym, collapse = '');
       if (is_S4) {
         slot_expr <- paste0('(', expr, ')', accessor, collapse = '')
       } else {
@@ -305,7 +307,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
           kind <- '$';
           # Named items can be accessed with '$' in lists, but other types require brackets.
           if (is.list(obj)) {
-            accessor <- paste0('$', deparse_symbol(name), collapse = '');
+            accessor <- paste0('$', symbol_token(name), collapse = '');
           } else {
             accessor <- paste0('[[', deparse_str(name), ']]', collapse = '');
           }
