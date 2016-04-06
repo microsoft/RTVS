@@ -212,7 +212,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 await SetLocalRepoAsync(eval, _repo1Path);
             }
 
-            await _workflow.Packages.InstallPackage(TestPackages.RtvsLib1Description.Package, _libPath);
+            await _workflow.Packages.InstallPackageAsync(TestPackages.RtvsLib1Description.Package, _libPath);
 
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalLibsAsync(eval, _libPath);
@@ -221,7 +221,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             var installed = await _workflow.Packages.GetInstalledPackagesAsync();
             ValidateRtvslib1Installed(installed, _libPath);
 
-            await _workflow.Packages.UninstallPackage(TestPackages.RtvsLib1Description.Package, _libPath);
+            await _workflow.Packages.UninstallPackageAsync(TestPackages.RtvsLib1Description.Package, _libPath);
 
             installed = await _workflow.Packages.GetInstalledPackagesAsync();
             installed.Should().NotContain(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package && pkg.LibPath == _libPath.ToRPath());
@@ -235,7 +235,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 await SetLocalLibsAsync(eval, _libPath);
             }
 
-            await _workflow.Packages.InstallPackage(TestPackages.RtvsLib1Description.Package, null);
+            await _workflow.Packages.InstallPackageAsync(TestPackages.RtvsLib1Description.Package, null);
 
             var installed = await _workflow.Packages.GetInstalledPackagesAsync();
             ValidateRtvslib1Installed(installed, _libPath);
@@ -252,14 +252,14 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             await EvaluateCode("func1();", expectedError: "Error: could not find function \"func1\"");
 
-            await _workflow.Packages.LoadPackage(TestPackages.RtvsLib1Description.Package, null);
+            await _workflow.Packages.LoadPackageAsync(TestPackages.RtvsLib1Description.Package, null);
 
             await EvaluateCode("func1();", expectedResult: "func1");
 
             var loaded = await _workflow.Packages.GetLoadedPackagesAsync();
             loaded.Should().Contain("rtvslib1");
 
-            await _workflow.Packages.UnloadPackage(TestPackages.RtvsLib1Description.Package);
+            await _workflow.Packages.UnloadPackageAsync(TestPackages.RtvsLib1Description.Package);
 
             await EvaluateCode("func1();", expectedError: "Error: could not find function \"func1\"");
 

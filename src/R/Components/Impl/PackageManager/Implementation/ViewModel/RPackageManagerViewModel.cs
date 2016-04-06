@@ -164,7 +164,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             var libPath = await GetLibPath();
-            await _packageManager.InstallPackage(package.Name, libPath);
+            await _packageManager.InstallPackageAsync(package.Name, libPath);
             await ReloadInstalledAndLoadedPackagesAsync();
 
             if (_selectedTab == SelectedTab.InstalledPackages) {
@@ -189,7 +189,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             var libPath = await GetLibPath();
-            await _packageManager.UninstallPackage(package.Name, libPath);
+            await _packageManager.UninstallPackageAsync(package.Name, libPath);
             await ReloadInstalledAndLoadedPackagesAsync();
 
             if (_selectedTab == SelectedTab.InstalledPackages) {
@@ -211,7 +211,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.LoadPackage(package.Name, package.RepositoryUri?.AbsolutePath.ToRPath());
+            await _packageManager.LoadPackageAsync(package.Name, package.RepositoryUri?.AbsolutePath.ToRPath());
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
@@ -230,7 +230,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.UnloadPackage(package.Name);
+            await _packageManager.UnloadPackageAsync(package.Name);
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);

@@ -77,7 +77,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task InstallPackage(string name, string libraryPath) {
+        public async Task InstallPackageAsync(string name, string libraryPath) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
@@ -96,7 +96,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task UninstallPackage(string name, string libraryPath) {
+        public async Task UninstallPackageAsync(string name, string libraryPath) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
@@ -114,7 +114,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task LoadPackage(string name, string libraryPath) {
+        public async Task LoadPackageAsync(string name, string libraryPath) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
@@ -132,7 +132,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task UnloadPackage(string name) {
+        public async Task UnloadPackageAsync(string name) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }

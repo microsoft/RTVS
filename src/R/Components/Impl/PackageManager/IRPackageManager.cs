@@ -72,7 +72,7 @@ namespace Microsoft.R.Components.PackageManager {
         ///     Optional library path (in any format). Pass null to use the default
         ///     for the session ie. the first one in .libPaths().
         /// </param>
-        Task InstallPackage(string name, string libraryPath);
+        Task InstallPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Uninstall a package by sending remove.packages() to the REPL.
@@ -82,7 +82,7 @@ namespace Microsoft.R.Components.PackageManager {
         ///     Optional library path (in any format) where the package is installed.
         ///     Pass null to use the defaults for the session ie. in .libPaths().
         /// </param>
-        Task UninstallPackage(string name, string libraryPath);
+        Task UninstallPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Load a package by sending library() to the REPL.
@@ -92,13 +92,13 @@ namespace Microsoft.R.Components.PackageManager {
         ///     Optional library path (in any format). Pass null to use the defaults
         ///     for the session ie. in .libPaths().
         /// </param>
-        Task LoadPackage(string name, string libraryPath);
+        Task LoadPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Unload a package by sending detach() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>
-        Task UnloadPackage(string name);
+        Task UnloadPackageAsync(string name);
 
         /// <summary>
         /// Package names that are currently loaded.
