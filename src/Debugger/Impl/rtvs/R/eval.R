@@ -174,7 +174,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
     }
     
     for (name in names) {
-	  name <- force_toString(name);
+      name <- force_toString(name);
       # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
       if (name == '') {
         next;
@@ -239,7 +239,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
     }
   
     for (name in names) {
-	  name <- force_toString(name);
+      name <- force_toString(name);
       # If a binding has an empty name, or it wasn't a string, it cannot be accessed, so ignore it.
       if (name == '') {
         next;

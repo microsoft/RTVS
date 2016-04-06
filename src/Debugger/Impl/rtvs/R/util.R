@@ -10,11 +10,11 @@ external_embedded <- function(name, ...) {
 }
 
 send_message <- function(name, ...) {
-	call_embedded('send_message', name, list(...))
+    call_embedded('send_message', name, list(...))
 }
 
 send_message_and_get_response <- function(name, ...) {
-	call_embedded('send_message_and_get_response', name, list(...))
+    call_embedded('send_message_and_get_response', name, list(...))
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {
@@ -97,13 +97,13 @@ symbol_token <- function(name) {
 
   # If it's an empty string, it's not a valid symbol, even if quoted.
   if (identical(s, '')) {
-  	  return(NULL);
+      return(NULL);
   }
 
   # If it's a valid identifier, it's good to go as is. Because the definition of identifier in R
   # is locale-dependent, be conservative and match ASCII only; excessive quoting is always safe.
   if (grepl('^[A-Za-z_.][A-Za-z0-9_.]*$', name)) {
-  	  return(s);
+      return(s);
   }
 
   # Deparse it - this will take care of all the necessary escaping for everything other than
