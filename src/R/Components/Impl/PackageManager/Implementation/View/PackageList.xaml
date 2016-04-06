@@ -60,20 +60,25 @@
 
                         <!-- Load button -->
                         <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click"
-                                VerticalAlignment="Center" ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}">
+                                VerticalAlignment="Center">
                             <Button.Visibility>
                                 <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
                                     <Binding Path="IsLoaded" Converter="{x:Static wpf:Converters.Not}" />
                                     <Binding Path="IsInstalled" />
                                 </MultiBinding>
                             </Button.Visibility>
+                            <Button.ToolTip>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}" />
+                            </Button.ToolTip>
                             <Rectangle Fill="{StaticResource IconLoad}" Width="16" Height="16" />
                         </Button>
 
                         <!-- Unload button -->
                         <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUnload_Click" 
-                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center"
-                                        ToolTip="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}">
+                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
+                            <Button.ToolTip>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}" />
+                            </Button.ToolTip>
                             <Rectangle Fill="{StaticResource IconUnload}" Width="16" Height="16" />
                         </Button>
 
