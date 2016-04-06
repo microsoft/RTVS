@@ -367,6 +367,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load {0}..
+        /// </summary>
+        public static string PackageManager_LoadButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_LoadButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loaded.
         /// </summary>
         public static string PackageManager_Loaded {
@@ -471,6 +480,15 @@ namespace Microsoft.R.Components {
         public static string PackageManager_UninstallButtonToolTip {
             get {
                 return ResourceManager.GetString("PackageManager_UninstallButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unload {0}..
+        /// </summary>
+        public static string PackageManager_UnloadButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_UnloadButtonToolTip", resourceCulture);
             }
         }
         

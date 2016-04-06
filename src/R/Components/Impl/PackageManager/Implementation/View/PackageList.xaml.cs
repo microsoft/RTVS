@@ -42,7 +42,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
+            var package = GetPackage(e);
+            Model?.Update(package);
+        }
+
+        private static IRPackageViewModel GetPackage(RoutedEventArgs e) {
+            return ((IRPackageViewModel)((FrameworkElement)e.Source).DataContext);
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
@@ -54,11 +59,23 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
-            ((IRPackageViewModel)((FrameworkElement)e.Source).DataContext).Uninstall();
+            var package = GetPackage(e);
+            Model?.Uninstall(package);
         }
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
-            ((IRPackageViewModel)((FrameworkElement)e.Source).DataContext).Install();
+            var package = GetPackage(e);
+            Model?.Install(package);
+        }
+
+        private void ButtonLoad_Click(object sender, RoutedEventArgs e) {
+            var package = GetPackage(e);
+            Model?.Load(package);
+        }
+
+        private void ButtonUnload_Click(object sender, RoutedEventArgs e) {
+            var package = GetPackage(e);
+            Model?.Unload(package);
         }
     }
 }

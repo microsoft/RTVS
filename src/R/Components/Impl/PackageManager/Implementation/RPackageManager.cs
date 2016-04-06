@@ -47,7 +47,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
             return VisualComponent;
         }
 

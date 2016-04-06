@@ -58,6 +58,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public Task<int> Search(string searchString, CancellationToken cancellationToken) {
             return Task.FromResult(0);
         }
+
+        public void Dispose() {
+        }
     }
 #endif
 }

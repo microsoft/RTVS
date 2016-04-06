@@ -69,6 +69,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public string Suggests { get; }
         public bool IsInstalled { get; set; }
         public bool IsLoaded { get; set; }
+        public bool IsChanging { get; set; }
 
         public bool IsUpdateAvailable { get; }
         public bool HasDetails { get; }

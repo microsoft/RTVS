@@ -1,11 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.ObjectModel;
 using Microsoft.R.Components.Search;
 
 namespace Microsoft.R.Components.PackageManager.ViewModel {
-    public interface IRPackageManagerViewModel : ISearchHandler {
+    public interface IRPackageManagerViewModel : ISearchHandler, IDisposable {
         ReadOnlyObservableCollection<object> Items { get; } 
         IRPackageViewModel SelectedPackage { get; }
         bool IsLoading { get; }
