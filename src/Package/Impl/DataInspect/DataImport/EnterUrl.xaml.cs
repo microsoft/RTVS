@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -16,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     public partial class EnterUrl : DialogWindow {
         public EnterUrl() {
             InitializeComponent();
+
+            EnterKeyCommand = new DelegateCommand(EnterKeyCommandHandler);
         }
 
         public string DownloadFilePath { get; private set; }
@@ -32,7 +35,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private void OkButton_Click(object sender, RoutedEventArgs e) {
+        public ICommand EnterKeyCommand { get; }
+
+        private void EnterKeyCommandHandler(object parameter) {
             OkButton.IsEnabled = false;
             CancelButton.IsEnabled = false;
             DownloadProgressBar.Value = 0;
@@ -40,6 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             ErrorTextBlock.Visibility = Visibility.Collapsed;
             ErrorTextBlock.Text = null;
             RunAsync().DoNotWait();
+        }
+
+        private void OkButton_Click(object sender, RoutedEventArgs e) {
+            EnterKeyCommandHandler(null);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {

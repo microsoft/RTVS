@@ -27,7 +27,11 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Margin="3" Text="URL :"/>
-            <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox" Width="600"/>
+            <TextBox Grid.Column="1" Margin="3" x:Name="UrlTextBox" Width="600">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding EnterKeyCommand, RelativeSource={RelativeSource AncestorType={x:Type local:EnterUrl}}}" />
+                </TextBox.InputBindings>
+            </TextBox>
         </Grid>
 
         <ProgressBar Margin="6"
