@@ -51,8 +51,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
-            HandleDefaultAction();
+            if (e.Key == Key.Enter) {
+                HandleDefaultAction();
+            }
         }
+
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             HandleDefaultAction();
         }
