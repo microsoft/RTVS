@@ -7,11 +7,18 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="{x:Static pkg:Resources.ImportData_Title}" Height="500" Width="700">
+        Title="{x:Static pkg:Resources.ImportData_Title}" Height="500" Width="700"
+        Style="{DynamicResource DialogStyle}"
+        WindowStartupLocation="CenterOwner">
     <ui:DialogWindow.Resources>
-        <DataTemplate x:Key="RStringTemplate">
-            <TextBlock Text="{Binding Name}" />
-        </DataTemplate>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="RStringTemplate">
+                <TextBlock Text="{Binding Name}" />
+            </DataTemplate>
+        </ResourceDictionary>
     </ui:DialogWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -134,7 +141,7 @@
                 <ColumnDefinition SharedSizeGroup="ButtonGroup"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="RunButton" Grid.Column="0"  Content="{x:Static pkg:Resources.Ok}" Padding="6" Margin="6" Click="RunButton_Click"/>
-            <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click"/>
+            <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click" IsCancel="True"/>
         </Grid>
     </Grid>
 </ui:DialogWindow>

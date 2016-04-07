@@ -1181,10 +1181,6 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="VSShell\ShellIcons.h" />
-    <Page Include="DataInspect\DataGridStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Content Include="Images\pdf.bmp" />
     <Content Include="Resources\Package.ico" />
     <VSTemplate Include="Templates\ItemTemplates\EmptyMD\emptymd.vstemplate">

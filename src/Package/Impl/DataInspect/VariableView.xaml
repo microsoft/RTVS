@@ -21,7 +21,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
-                <ResourceDictionary Source="DataGridStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <local:MultiplyConverter x:Key="MultiplyConverter" />
@@ -141,6 +140,12 @@
                     </StackPanel>
                 </Grid>
             </DataTemplate>
+
+            <Style TargetType="{x:Type local:TreeGrid}" BasedOn="{StaticResource {x:Type DataGrid}}">
+                <Setter Property="SelectionMode" Value="Single" />
+                <Setter Property="SelectionUnit" Value="FullRow" />
+                <Setter Property="HeadersVisibility" Value="Column" />
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 

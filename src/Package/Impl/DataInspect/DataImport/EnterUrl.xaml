@@ -7,17 +7,19 @@
         xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
-        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
-        Foreground="{DynamicResource {x:Static ui:CommonControlsColors.TextBoxTextBrushKey}}"
-        Background="{DynamicResource {x:Static ui:CommonControlsColors.TextBoxBackgroundBrushKey}}"
+        Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
+        Style="{DynamicResource DialogStyle}"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        SizeToContent="WidthAndHeight"
         FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
-    <Window.Resources>
+    <ui:DialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </Window.Resources>
+    </ui:DialogWindow.Resources>
     <StackPanel>
         <Grid Margin="6,3,3,3">
             <Grid.ColumnDefinitions>
@@ -31,7 +33,7 @@
         <ProgressBar Margin="6"
                      x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
 
-        <TextBlock Margin="3"
+        <TextBlock Margin="3" Padding="3"
                    x:Name="ErrorTextBlock" Visibility="Collapsed" />
 
         <Grid HorizontalAlignment="Right" Margin="3" Grid.IsSharedSizeScope="true">
@@ -40,7 +42,7 @@
                 <ColumnDefinition SharedSizeGroup="ButtonGroup"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="OkButton" Grid.Column="0"  Content="{x:Static pkg:Resources.Ok}" Padding="6" Margin="6" Click="OkButton_Click"/>
-            <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click"/>
+            <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click" IsCancel="True"/>
         </Grid>
     </StackPanel>
 </ui:DialogWindow>
