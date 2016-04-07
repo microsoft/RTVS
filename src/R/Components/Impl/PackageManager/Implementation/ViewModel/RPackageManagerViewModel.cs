@@ -154,6 +154,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 return;
             }
 
+            if (MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                    Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo)) {
+                return;
+            }
+
             package.IsChanging = true;
             DispatchOnMainThread(() => InstallAsync(package));
         }
