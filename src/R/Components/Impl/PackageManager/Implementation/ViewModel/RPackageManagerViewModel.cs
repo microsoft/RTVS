@@ -189,7 +189,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             if(package.IsLoaded) {
-                await UnloadAsync(package);
+                await _packageManager.UnloadPackageAsync(package.Name);
+                await ReloadLoadedPackagesAsync();
             }
 
             if (!package.IsLoaded) {
@@ -203,7 +204,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            IsLoading = false;
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = false;
+            }
         }
 
         public void Load(IRPackageViewModel package) {
@@ -252,8 +255,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private void AfterLoadUnload(IRPackageViewModel package) {
             package.IsChanging = false;
-            IsLoading = false;
-            if (_selectedTab == SelectedTab.InstalledPackages) {
+            if (_selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = false;
+                ReplaceItems(_loadedPackages);
+            } else if (_selectedTab == SelectedTab.InstalledPackages) {
+                IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
         }
@@ -402,12 +408,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
 
                 await UpdateLoadedPackages(currentInstalledPackages, loadedPackageNames);
-                _coreShell.DispatchOnUIThread(() => {
-                    if (_selectedTab == SelectedTab.LoadedPackages) {
-                        IsLoading = false;
-                        ReplaceItems(_loadedPackages);
-                    }
-                });
             } catch (RPackageManagerException ex) {
             }
         }
@@ -517,7 +517,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private void RSessionMutated(object sender, EventArgs e) {
-            ReloadLoadedPackagesAsync().DoNotWait();
+            ReloadLoadedPackagesAsync()
+                .ContinueWith(t => _coreShell.DispatchOnUIThread(() => {
+                    if (_selectedTab != SelectedTab.LoadedPackages) {
+                        return;
+                    }
+
+                    IsLoading = false;
+                    ReplaceItems(_loadedPackages);
+                }))
+                .DoNotWait();
         }
 
         public void Dispose() {
