@@ -51,7 +51,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
-            
+            if (e.Key == Key.Enter) {
+                HandleDefaultAction();
+            }
+        }
+
+        private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            HandleDefaultAction();
         }
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -76,6 +82,19 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         private void ButtonUnload_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
             Model?.Unload(package);
+        }
+
+        private void HandleDefaultAction() {
+            if (Model == null || Model.SelectedPackage == null) {
+                return;
+            }
+            // Available => Installed => Loaded
+            var package = Model.SelectedPackage;
+            if (!package.IsInstalled) {
+                Model.Install(package);
+            } else if (!package.IsLoaded) {
+                Model.Load(package);
+            }
         }
     }
 }

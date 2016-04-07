@@ -184,18 +184,26 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
-            if (_selectedTab == SelectedTab.InstalledPackages) {
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
                 IsLoading = true;
             }
 
-            var libPath = await GetLibPath();
-            await _packageManager.UninstallPackageAsync(package.Name, libPath);
-            await ReloadInstalledAndLoadedPackagesAsync();
-
-            if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = false;
-                ReplaceItems(_installedPackages);
+            if(package.IsLoaded) {
+                await UnloadAsync(package);
             }
+
+            if (!package.IsLoaded) {
+                await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
+                await ReloadInstalledAndLoadedPackagesAsync();
+
+                if (_selectedTab == SelectedTab.InstalledPackages) {
+                    ReplaceItems(_installedPackages);
+                } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                    ReplaceItems(_loadedPackages);
+                }
+            }
+
+            IsLoading = false;
         }
 
         public void Load(IRPackageViewModel package) {
@@ -211,7 +219,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.LoadPackageAsync(package.Name, package.RepositoryUri?.AbsolutePath.ToRPath());
+            await _packageManager.LoadPackageAsync(package.Name, package.LibraryPath.ToRPath());
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
@@ -244,8 +252,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private void AfterLoadUnload(IRPackageViewModel package) {
             package.IsChanging = false;
+            IsLoading = false;
             if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
         }
@@ -272,7 +280,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = !_availableLock.IsCompleted;
             }
-            
+
             await EnsureAvailablePackagesLoadedAsync();
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = false;
@@ -289,7 +297,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (!availablePackagesLoaded) {
                 try {
                     await LoadAvailablePackagesAsync();
-                } catch (RPackageManagerException ex) { 
+                } catch (RPackageManagerException ex) {
                 } finally {
                     _availableLock.Release();
                 }
@@ -325,7 +333,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
             }
-            
+
             ReplaceItems(_installedPackages);
         }
 
@@ -347,7 +355,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task LoadInstalledAndLoadedPackagesAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var markUninstalledAndUnloadedTask =  _coreShell.DispatchOnMainThreadAsync(MarkUninstalledAndUnloaded);
+            var markUninstalledAndUnloadedTask = _coreShell.DispatchOnMainThreadAsync(MarkUninstalledAndUnloaded);
             var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync();
             await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
 
@@ -401,7 +409,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     }
                 });
             } catch (RPackageManagerException ex) {
-            } 
+            }
         }
 
         private async Task UpdateLoadedPackages(IList<IRPackageViewModel> installedPackages, IList<string> loadedPackageNames = null) {
@@ -450,7 +458,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             if (string.IsNullOrEmpty(_searchString)) {
                 _items.ReplaceWith(packages);
-            } else { 
+            } else {
                 Search(packages, _searchString, CancellationToken.None);
             }
         }
@@ -485,7 +493,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             var filteredPackages = new List<IRPackageViewModel>();
-            foreach (var package in packages){
+            foreach (var package in packages) {
                 if (cancellationToken.IsCancellationRequested) {
                     return filteredPackages.Count;
                 }

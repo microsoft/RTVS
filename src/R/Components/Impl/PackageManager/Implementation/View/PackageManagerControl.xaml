@@ -74,16 +74,11 @@
             </DockPanel.MaxWidth>
             <Grid DockPanel.Dock="Top">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
                     <RowDefinition Height="14" />
                     <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="LabelTitle" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,8,8,8" Text="Package Manager"
-                           Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}"
-                           FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={x:Static rwpf:Converters.FontScale155}}" />
-
-                <Grid Grid.Row="2" Margin="24,0,12,17">
+                <Grid Grid.Row="1" Margin="24,0,12,17">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="35" />
