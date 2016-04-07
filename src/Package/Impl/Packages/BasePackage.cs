@@ -6,7 +6,10 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.Common.Core.Disposables;
+using Microsoft.VisualStudio.CommandBars;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -57,6 +60,14 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             var menuCommandService = (IMenuCommandService)GetService(typeof(IMenuCommandService));
             foreach (var commmand in CreateMenuCommands()) {
                 menuCommandService.AddCommand(commmand);
+            }
+
+            var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
+            var cbs = dte?.CommandBars;
+            var cb = dte?.CommandBars["R Toolbar"] as CommandBar;
+            Debug.Assert(cb != null, "Unable to find R Toolbar");
+            if (cb != null) {
+                cb.Visible = true;
             }
         }
 

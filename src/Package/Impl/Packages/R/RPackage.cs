@@ -21,7 +21,6 @@ using Microsoft.VisualStudio.R.Package.Expansions;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Logging;
-using Microsoft.VisualStudio.R.Package.Options.PackageManager;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Package.Options.R.Editor;
 using Microsoft.VisualStudio.R.Package.PackageManager;
