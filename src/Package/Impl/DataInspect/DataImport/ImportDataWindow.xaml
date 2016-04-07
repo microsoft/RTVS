@@ -1,16 +1,16 @@
-﻿<ui:DialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.ImportDataWindow"
+﻿<vsui:DialogWindow x:Class="Microsoft.VisualStudio.R.Package.DataInspect.DataImport.ImportDataWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.DataInspect.DataImport"
-        xmlns:ui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
+        xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
         xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
         mc:Ignorable="d"
         Title="{x:Static pkg:Resources.ImportData_Title}" Height="500" Width="700"
         Style="{DynamicResource DialogStyle}"
         WindowStartupLocation="CenterOwner">
-    <ui:DialogWindow.Resources>
+    <vsui:DialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
@@ -19,7 +19,7 @@
                 <TextBlock Text="{Binding Name}" />
             </DataTemplate>
         </ResourceDictionary>
-    </ui:DialogWindow.Resources>
+    </vsui:DialogWindow.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -47,7 +47,7 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                
+
                 <!-- FilePath -->
                 <TextBlock Grid.Column="0" Grid.Row="0" Margin="3">File</TextBlock>
                 <Grid Grid.Column="1" Grid.Row="0" Margin="3"
@@ -56,44 +56,44 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBox Grid.Column="0" x:Name="FilePathBox" />
-                    <Button Grid.Column="1" x:Name="FileOpenButton" Content="..." Click="FileOpenButton_Click" Padding="6,0,6,0"/>
+                    <TextBox Grid.Column="0" x:Name="FilePathBox" VerticalContentAlignment="Center" />
+                    <Button Grid.Column="1" x:Name="FileOpenButton" Content="..." Click="FileOpenButton_Click" Margin="3,0,0,0"  Padding="6,0,6,0"/>
                 </Grid>
                 <!-- Name -->
-                <TextBlock Grid.Column="0" Grid.Row="1" Margin="3">Name</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="1" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="1" Margin="3" VerticalAlignment="Center">Name</TextBlock>
+                <TextBox Grid.Column="1" Grid.Row="1" Margin="3" VerticalAlignment="Center"
                          x:Name="VariableNameBox" />
                 <!-- Encoding -->
-                <TextBlock Grid.Column="0" Grid.Row="2" Margin="3">Encoding</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="2" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="2" Margin="3" VerticalAlignment="Center">Encoding</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="2" Margin="3" VerticalAlignment="Center"
                           x:Name="EncodingComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- Header -->
-                <TextBlock Grid.Column="0" Grid.Row="3" Margin="3">Header</TextBlock>
-                <CheckBox Grid.Column="1" Grid.Row="3" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="3" Margin="3" VerticalAlignment="Center">Header</TextBlock>
+                <CheckBox Grid.Column="1" Grid.Row="3" Margin="3" VerticalAlignment="Center"
                           x:Name="HeaderCheckBox"  IsChecked="True" Unchecked="HeaderCheckBox_Changed" Checked="HeaderCheckBox_Changed"/>
                 <!-- Row names -->
-                <TextBlock Grid.Column="0" Grid.Row="4" Margin="3">Row names</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="4" Margin="3" VerticalAlignment="Center">Row names</TextBlock>
                 <ComboBox Grid.Column="1" Grid.Row="4" Margin="3"
                           x:Name="RowNamesComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- Separator -->
-                <TextBlock Grid.Column="0" Grid.Row="5" Margin="3">Separator</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="5" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="5" Margin="3" VerticalAlignment="Center">Separator</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="5" Margin="3" VerticalAlignment="Center"
                           x:Name="SeparatorComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- Decimal -->
-                <TextBlock Grid.Column="0" Grid.Row="6" Margin="3">Decimal</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="6" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="6" Margin="3" VerticalAlignment="Center">Decimal</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="6" Margin="3" VerticalAlignment="Center"
                           x:Name="DecimalComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- Quote -->
-                <TextBlock Grid.Column="0" Grid.Row="7" Margin="3">Quote</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="7" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="7" Margin="3" VerticalAlignment="Center">Quote</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="7" Margin="3" VerticalAlignment="Center"
                           x:Name="QuoteComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- Comment -->
-                <TextBlock Grid.Column="0" Grid.Row="8" Margin="3">Comment</TextBlock>
-                <ComboBox Grid.Column="1" Grid.Row="8" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="8" Margin="3" VerticalAlignment="Center">Comment</TextBlock>
+                <ComboBox Grid.Column="1" Grid.Row="8" Margin="3" VerticalAlignment="Center"
                           x:Name="CommentComboBox" ItemTemplate="{StaticResource RStringTemplate}" SelectionChanged="ComboBox_SelectionChanged" />
                 <!-- na.strings -->
-                <TextBlock Grid.Column="0" Grid.Row="9" Margin="3">na.strings</TextBlock>
-                <TextBox Grid.Column="1" Grid.Row="9" Margin="3"
+                <TextBlock Grid.Column="0" Grid.Row="9" Margin="3" VerticalAlignment="Center">na.strings</TextBlock>
+                <TextBox Grid.Column="1" Grid.Row="9" Margin="3" VerticalAlignment="Center"
                          x:Name="NAStringTextBox" >NA</TextBox>
             </Grid>
             <Grid Grid.Column="1">
@@ -108,9 +108,9 @@
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0">Input File</TextBlock>
-                        <Border Grid.Row="1" BorderThickness="1" BorderBrush="Black">
-                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                                <TextBlock x:Name="InputFilePreview"></TextBlock>
+                        <Border Grid.Row="1" BorderThickness="1" BorderBrush="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxBorderBrushKey}}">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}">
+                                <TextBlock x:Name="InputFilePreview" />
                             </ScrollViewer>
                         </Border>
                     </Grid>
@@ -124,7 +124,7 @@
                                 BorderThickness="1" BorderBrush="Black">
                             <TextBlock x:Name="ErrorText"/>
                         </Border>
-                        <DataGrid Grid.Row="1" x:Name="DataFramePreview" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False">
+                        <DataGrid Grid.Row="1" x:Name="DataFramePreview" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False" HeadersVisibility="Column">
                             <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
                                     <Setter Property="Content" Value="{Binding RowName}" />
@@ -144,4 +144,4 @@
             <Button x:Name="CancelButton" Grid.Column="1"  Content="{x:Static pkg:Resources.Cancel}" Padding="6" Margin="6" Click="CancelButton_Click" IsCancel="True"/>
         </Grid>
     </Grid>
-</ui:DialogWindow>
+</vsui:DialogWindow>
