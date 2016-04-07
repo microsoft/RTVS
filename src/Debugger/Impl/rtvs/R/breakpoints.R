@@ -12,6 +12,8 @@ is_breakpoint <- function(filename, line_number) {
   if (locals$breakpoints_enabled) {
     line_numbers <- breakpoints[[filename]];
     return(line_number %in% line_numbers);
+  } else {
+  	return(FALSE);
   }
 }
 

@@ -68,7 +68,6 @@ namespace Microsoft.R.Debugger.Test {
         [InlineData("structure(list(), names = ''[FALSE])", "{}")]
         [InlineData("list(n = 0, s = 's', u = NULL)", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
-        [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
         [InlineData("as.environment(list())", "{}")]
         [InlineData("as.environment(list(n = 0, s = 's', u = NULL))", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
