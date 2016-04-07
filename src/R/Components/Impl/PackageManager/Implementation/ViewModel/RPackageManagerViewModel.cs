@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -184,6 +185,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
+
+            if(MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, 
+                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), 
+                    MessageButtons.YesNo)) {
+                return;
+            }
+
             if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
                 IsLoading = true;
             }
