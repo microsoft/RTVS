@@ -186,15 +186,23 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             IsLoading = true;
 
-            var libPath = await GetLibPath();
-            await _packageManager.UninstallPackageAsync(package.Name, libPath);
-            await ReloadInstalledAndLoadedPackagesAsync();
+            if(package.IsLoaded) {
+                await UnloadAsync(package);
+            }
 
-            IsLoading = false;
-            if (_selectedTab == SelectedTab.InstalledPackages) {
-                ReplaceItems(_installedPackages);
-            } else if(_selectedTab == SelectedTab.LoadedPackages) {
-                ReplaceItems(_loadedPackages);
+            if (!package.IsLoaded) {
+                var libPath = await GetLibPath();
+                await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                await ReloadInstalledAndLoadedPackagesAsync();
+
+                IsLoading = false;
+                if (_selectedTab == SelectedTab.InstalledPackages) {
+                    ReplaceItems(_installedPackages);
+                } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                    ReplaceItems(_loadedPackages);
+                } else if (_selectedTab == SelectedTab.AvailablePackages) {
+                    ReplaceItems(_availablePackages);
+                }
             }
         }
 
