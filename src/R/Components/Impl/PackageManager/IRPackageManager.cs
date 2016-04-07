@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.PackageManager {
         /// </summary>
         /// <returns>
         /// List of packages. Note that several fields will not be populated,
-        /// you need to call <see cref="GetAdditionalPackageInfoAsync(RPackage)"/>
+        /// you need to call <see cref="AddAdditionalPackageInfoAsync(RPackage)"/>
         /// for each package to get fill in the missing fields.
         /// </returns>
         /// <exception cref="RPackageManagerException">

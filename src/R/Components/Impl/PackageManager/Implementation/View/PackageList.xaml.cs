@@ -61,7 +61,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            Model.SelectPackage(e.AddedItems.OfType<IRPackageViewModel>().FirstOrDefault());
+            var package = e.AddedItems.OfType<IRPackageViewModel>().FirstOrDefault();
+            if (package != null) {
+                Model.SelectPackage(package);
+                List.ScrollIntoView(package);
+            }
         }
 
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {

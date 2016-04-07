@@ -273,7 +273,7 @@
                      PreviewKeyUp="List_PreviewKeyUp" MouseDoubleClick="List_MouseDoubleClick"
                      SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
                      Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
-                     ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource PackageInfoTemplate}">
+                     ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedPackage, Mode=OneWay}" ItemTemplate="{StaticResource PackageInfoTemplate}">
                 <!-- set the template to disable the background change when the IsEnabled is false. -->
                 <ListBox.Template>
                     <ControlTemplate TargetType="{x:Type ListBox}">
