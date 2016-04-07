@@ -184,17 +184,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
-            if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = true;
-            }
+            IsLoading = true;
 
             var libPath = await GetLibPath();
             await _packageManager.UninstallPackageAsync(package.Name, libPath);
             await ReloadInstalledAndLoadedPackagesAsync();
 
+            IsLoading = false;
             if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = false;
                 ReplaceItems(_installedPackages);
+            } else if(_selectedTab == SelectedTab.LoadedPackages) {
+                ReplaceItems(_loadedPackages);
             }
         }
 
@@ -245,8 +245,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private void AfterLoadUnload(IRPackageViewModel package) {
             package.IsChanging = false;
+            IsLoading = false;
             if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
         }
@@ -273,7 +273,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = !_availableLock.IsCompleted;
             }
-            
+
             await EnsureAvailablePackagesLoadedAsync();
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = false;
@@ -290,7 +290,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (!availablePackagesLoaded) {
                 try {
                     await LoadAvailablePackagesAsync();
-                } catch (RPackageManagerException ex) { 
+                } catch (RPackageManagerException ex) {
                 } finally {
                     _availableLock.Release();
                 }
@@ -326,7 +326,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
             }
-            
+
             ReplaceItems(_installedPackages);
         }
 
@@ -348,7 +348,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task LoadInstalledAndLoadedPackagesAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var markUninstalledAndUnloadedTask =  _coreShell.DispatchOnMainThreadAsync(MarkUninstalledAndUnloaded);
+            var markUninstalledAndUnloadedTask = _coreShell.DispatchOnMainThreadAsync(MarkUninstalledAndUnloaded);
             var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync();
             await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
 
@@ -402,7 +402,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     }
                 });
             } catch (RPackageManagerException ex) {
-            } 
+            }
         }
 
         private async Task UpdateLoadedPackages(IList<IRPackageViewModel> installedPackages, IList<string> loadedPackageNames = null) {
@@ -451,7 +451,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             if (string.IsNullOrEmpty(_searchString)) {
                 _items.ReplaceWith(packages);
-            } else { 
+            } else {
                 Search(packages, _searchString, CancellationToken.None);
             }
         }
@@ -486,7 +486,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             var filteredPackages = new List<IRPackageViewModel>();
-            foreach (var package in packages){
+            foreach (var package in packages) {
                 if (cancellationToken.IsCancellationRequested) {
                     return filteredPackages.Count;
                 }
