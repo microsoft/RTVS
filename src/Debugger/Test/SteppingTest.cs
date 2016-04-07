@@ -41,7 +41,7 @@ namespace Microsoft.R.Debugger.Test {
             _sessionProvider.Dispose();
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1382")]
         [Category.R.Debugger]
         public async Task BreakContinue() {
             const string code =

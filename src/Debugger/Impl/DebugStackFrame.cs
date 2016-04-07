@@ -87,7 +87,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(
-            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount,
+            DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount | DebugEvaluationResultFields.Flags,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
