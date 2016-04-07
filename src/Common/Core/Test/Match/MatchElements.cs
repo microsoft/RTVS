@@ -53,12 +53,6 @@ namespace Microsoft.Common.Core.Test.Match {
         public override bool Equals(object obj) =>
             Equals(obj as IEnumerable<T>);
 
-        public override int GetHashCode() {
-            return 0;
-        }
-
-        public override string ToString() {
-            return "<any>";
-        }
+        public override int GetHashCode() => 0;
     }
 }

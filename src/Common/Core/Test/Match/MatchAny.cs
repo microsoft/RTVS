@@ -34,8 +34,9 @@ namespace Microsoft.Common.Core.Test.Match {
             _toString = () => $"<satisfies {condition.ToString()}>";
         }
 
-        public static MatchAny<T> ThatMatches<TOther>(IEquatable<TOther> match) {
-            return new MatchAny<T>(x => x is TOther && match.Equals((TOther)(object)x), match);
+        public static MatchAny<T> ThatMatches<TOther>(IEquatable<TOther> match)
+            where TOther : T  {
+            return new MatchAny<T>(x => x is TOther && match.Equals((TOther)x), match);
         }
 
         public bool Equals(T other) =>

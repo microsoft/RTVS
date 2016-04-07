@@ -247,6 +247,10 @@ namespace Microsoft.R.Debugger.Test {
             public static implicit operator object[] (ChildrenDataRow row) =>
                 new object[] { row };
 
+            // Class must implement IEnumerable in order to support collection initializers. However, for those classes
+            // that do that, when producing the signature of the test, xUnit will ignore ToString and just format them
+            // as a list, element by element. Since we want our ToString to show up, instead of the children, implement
+            // IEnumerable by returning our own ToString. 
             IEnumerator IEnumerable.GetEnumerator() =>
                 new[] { ToString() }.GetEnumerator();
 
@@ -390,7 +394,7 @@ namespace Microsoft.R.Debugger.Test {
 
         [CompositeTest]
         [Category.R.Debugger]
-        [MemberData("ChildrenData")]
+        [MemberData(nameof(ChildrenData))]
         public async Task Children(ChildrenDataRow row) {
             var children = row.Children.Select(childRow =>
                 MatchAny<DebugEvaluationResult>.ThatMatches(

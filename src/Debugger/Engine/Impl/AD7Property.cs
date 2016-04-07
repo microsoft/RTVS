@@ -58,17 +58,18 @@ namespace Microsoft.R.Debugger.Engine {
         private IReadOnlyList<DebugEvaluationResult> CreateChildren() =>
             TaskExtensions.RunSynchronouslyOnUIThread(async ct => {
                 var valueResult = EvaluationResult as DebugValueEvaluationResult;
-                if (valueResult != null) {
-                    var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct);
-
-                    // Children of environments do not have any meaningful order, so sort them by name.
-                    if (valueResult.TypeName == "environment") {
-                        children = children.OrderBy(er => er.Name).ToArray();
-                    }
-
-                    return children;
+                if (valueResult == null) {
+                    return new DebugEvaluationResult[0];
                 }
-                return new DebugEvaluationResult[0];
+
+                var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct);
+
+                // Children of environments do not have any meaningful order, so sort them by name.
+                if (valueResult.TypeName == "environment") {
+                    children = children.OrderBy(er => er.Name).ToArray();
+                }
+
+                return children;
             });
 
         private string CreateReprToString() {

@@ -36,7 +36,6 @@ namespace Microsoft.Common.Core.Test.Match {
                 _memberName = memberSelector.ToString();
             }
 
-            _memberName = (memberSelector.Body as MemberExpression)?.Member.Name ?? memberSelector.ToString();
             _next = next;
             _expected = expected;
             _equals = equals;
