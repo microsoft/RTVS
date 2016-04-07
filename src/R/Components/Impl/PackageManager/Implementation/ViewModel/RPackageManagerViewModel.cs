@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Collections;
 using Microsoft.Common.Core.Shell;
@@ -131,6 +130,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             SelectedPackage = package;
+
             if (package == null) {
                 return;
             }
@@ -189,7 +189,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             if(package.IsLoaded) {
-                await UnloadAsync(package);
+                await _packageManager.UnloadPackageAsync(package.Name);
+                await ReloadLoadedPackagesAsync();
             }
 
             if (!package.IsLoaded) {
@@ -203,7 +204,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            IsLoading = false;
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = false;
+            }
         }
 
         public void Load(IRPackageViewModel package) {
@@ -252,8 +255,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private void AfterLoadUnload(IRPackageViewModel package) {
             package.IsChanging = false;
-            IsLoading = false;
-            if (_selectedTab == SelectedTab.InstalledPackages) {
+            if (_selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = false;
+                ReplaceItems(_loadedPackages);
+            } else if (_selectedTab == SelectedTab.InstalledPackages) {
+                IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
         }
@@ -402,12 +408,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
 
                 await UpdateLoadedPackages(currentInstalledPackages, loadedPackageNames);
-                _coreShell.DispatchOnUIThread(() => {
-                    if (_selectedTab == SelectedTab.LoadedPackages) {
-                        IsLoading = false;
-                        ReplaceItems(_loadedPackages);
-                    }
-                });
             } catch (RPackageManagerException ex) {
             }
         }
@@ -458,8 +458,26 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             if (string.IsNullOrEmpty(_searchString)) {
                 _items.ReplaceWith(packages);
+                UpdateSelectedPackage(packages);
             } else {
                 Search(packages, _searchString, CancellationToken.None);
+            }
+        }
+
+        private void UpdateSelectedPackage(IList<IRPackageViewModel> packages) {
+            if (packages.Count == 0) {
+                SelectedPackage = null;
+                return;
+            }
+
+            var oldSelectedPackageName = SelectedPackage?.Name;
+            SelectPackage(packages[0]);
+
+            var selectedPackage = oldSelectedPackageName != null
+                ? packages.FirstOrDefault(p => p.Name.EqualsIgnoreCase(oldSelectedPackageName))
+                : null;
+            if (selectedPackage != null) {
+                SelectPackage(selectedPackage);
             }
         }
 
@@ -514,10 +532,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             _items.ReplaceWith(packages);
+            UpdateSelectedPackage(packages);
         }
 
         private void RSessionMutated(object sender, EventArgs e) {
-            ReloadLoadedPackagesAsync().DoNotWait();
+            ReloadLoadedPackagesAsync()
+                .ContinueWith(t => _coreShell.DispatchOnUIThread(() => {
+                    if (_selectedTab != SelectedTab.LoadedPackages) {
+                        return;
+                    }
+
+                    IsLoading = false;
+                    ReplaceItems(_loadedPackages);
+                }))
+                .DoNotWait();
         }
 
         public void Dispose() {
