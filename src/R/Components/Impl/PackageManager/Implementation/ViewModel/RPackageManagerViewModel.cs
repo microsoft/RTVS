@@ -141,15 +141,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public void Install(IRPackageViewModel package) {
-            if (package.IsInstalled) {
+            if (package.IsInstalled || package.IsChanging) {
                 return;
             }
 
+            package.IsChanging = true;
             DispatchOnMainThread(() => InstallAsync(package));
         }
 
         public void Update(IRPackageViewModel package) {
-            if (package.IsInstalled) {
+            if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
@@ -174,7 +175,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public void Uninstall(IRPackageViewModel package) {
-            if (!package.IsInstalled) {
+            if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
