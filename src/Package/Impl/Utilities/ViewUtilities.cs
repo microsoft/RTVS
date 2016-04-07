@@ -83,7 +83,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             if (textView != null) {
                 RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
                 string filePath = textView.TextBuffer.GetFilePath();
-                rdt.SaveFileIfDirty(filePath);
+                if (filePath != null) {
+                    rdt.SaveFileIfDirty(filePath);
+                }
             }
         }
 
