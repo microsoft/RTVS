@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Shiny {
 
         protected override void SetStatus() {
             Visible = true;
-            Enabled = !_interactiveWorkflow.Operations.IsShinyAppRunning;
+            Enabled = _interactiveWorkflow.ActiveWindow != null && !_interactiveWorkflow.Operations.IsShinyAppRunning;
         }
 
         protected override void Handle() {
