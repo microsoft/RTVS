@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Navigation.Text {
             var positionInLine = position - line.Start;
 
             var token = tokens.FirstOrDefault(t => t.Contains(positionInLine));
-            if (token != null && token.TokenType != RTokenType.String) {
+            if (token != null && token.TokenType != RTokenType.String && token.TokenType != RTokenType.Comment) {
                 return new Span(token.Start + line.Start, token.Length);
             }
             return GetWordSpan(text, line.Start, positionInLine);
