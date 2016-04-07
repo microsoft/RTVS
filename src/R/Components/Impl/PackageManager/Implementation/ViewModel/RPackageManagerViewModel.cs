@@ -184,26 +184,26 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
-            IsLoading = true;
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = true;
+            }
 
             if(package.IsLoaded) {
                 await UnloadAsync(package);
             }
 
             if (!package.IsLoaded) {
-                var libPath = await GetLibPath();
-                await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
                 await ReloadInstalledAndLoadedPackagesAsync();
 
-                IsLoading = false;
                 if (_selectedTab == SelectedTab.InstalledPackages) {
                     ReplaceItems(_installedPackages);
                 } else if (_selectedTab == SelectedTab.LoadedPackages) {
                     ReplaceItems(_loadedPackages);
-                } else if (_selectedTab == SelectedTab.AvailablePackages) {
-                    ReplaceItems(_availablePackages);
                 }
             }
+
+            IsLoading = false;
         }
 
         public void Load(IRPackageViewModel package) {
