@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private string GetFilePath() {
             ITextView textView = GetActiveTextView();
-            return textView.GetFilePath();
+            return textView?.GetFilePath();
         }
 
         protected override void SetStatus() {
@@ -38,8 +38,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (filePath != null) {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
-                textView.SaveFile();
-                _interactiveWorkflow.Operations.SourceFile(filePath);
+                if (textView != null) {
+                    textView.SaveFile();
+                    _interactiveWorkflow.Operations.SourceFile(filePath);
+                }
             }
         }
     }

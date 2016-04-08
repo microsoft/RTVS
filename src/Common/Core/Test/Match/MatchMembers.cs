@@ -23,12 +23,19 @@ namespace Microsoft.Common.Core.Test.Match {
         }
 
         private MatchMembers(MatchMembers<T> next, LambdaExpression memberSelector, object expected, Func<T, bool> equals) {
-            var member = memberSelector?.Body as MemberExpression;
-            if (member == null) {
-                throw new ArgumentException("Member selector must be of the form `x => x.Member`.", "memberSelector");
+            if (memberSelector == null) {
+                throw new ArgumentNullException("memberSelector");
             }
 
-            _memberName = member.Member.Name;
+            // If selector is of the form x => x.Member, which is the most common kind, then shorten it to Member.
+            // Otherwise, just use the whole body of the lambda.
+            var member = memberSelector.Body as MemberExpression;
+            if (member != null && member.Expression is ParameterExpression) {
+                _memberName = member.Member.Name;
+            } else {
+                _memberName = memberSelector.ToString();
+            }
+
             _next = next;
             _expected = expected;
             _equals = equals;
