@@ -8,7 +8,7 @@
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
              xmlns:viewModel="clr-namespace:Microsoft.R.Components.PackageManager.ViewModel"
-             mc:Ignorable="d" 
+             mc:Ignorable="d" x:Name="Self"
              d:DataContext="{d:DesignInstance Type=designTime:DesignTimeRPackageManagerViewModel, IsDesignTimeCreatable=True}"
              d:DesignHeight="250" d:DesignWidth="800">
     <UserControl.Resources>
