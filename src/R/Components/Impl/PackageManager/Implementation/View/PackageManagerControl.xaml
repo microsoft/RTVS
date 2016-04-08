@@ -55,8 +55,8 @@
 
                     <!-- Settings button -->
                     <Button Grid.Column="8" x:Name="ButtonSettings" VerticalAlignment="Center" Padding="0" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" Visibility="Hidden" Click="ButtonSettings_Click">
-                        <Rectangle Width="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.FontScale122}}"
-                                   Height="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.FontScale122}}"
+                        <Rectangle Width="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale122}}"
+                                   Height="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale122}}"
                                    Fill="{StaticResource IconSettings}" />
                     </Button>
                 </Grid>

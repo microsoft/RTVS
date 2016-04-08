@@ -11,8 +11,9 @@ using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Wpf {
     public static class Converters {
-        public static IValueConverter FontScale122 { get; } = LambdaConverter.Create<double>(x => x * 1.22);
-        public static IValueConverter FontScale155 { get; } = LambdaConverter.Create<double>(x => x * 1.55);
+        public static IValueConverter Scale122 { get; } = LambdaConverter.Create<double>(x => x * 1.22);
+        public static IValueConverter Scale155 { get; } = LambdaConverter.Create<double>(x => x * 1.55);
+        public static IValueConverter Scale190 { get; } = LambdaConverter.Create<double>(x => x * 1.90);
         public static IValueConverter StringJoin { get; } = LambdaConverter.Create<IEnumerable<string>>(x => string.Join(", ", x));
         public static IValueConverter NullIsTrue { get; } = LambdaConverter.Create<object>(x => x == null);
         public static IValueConverter NullIsFalse { get; } = LambdaConverter.Create<object>(x => x != null);

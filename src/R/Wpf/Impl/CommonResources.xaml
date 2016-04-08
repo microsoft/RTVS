@@ -38,7 +38,7 @@
             <StackPanel Orientation="Horizontal">
                 <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                                    Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
-                                   FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}"/>
+                                   FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static wpf:Converters.Scale122}}"/>
 
                 <!-- the textblock that displays the count -->
                 <!-- Commented since it is not clear if we want to display anything in this textblock

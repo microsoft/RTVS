@@ -10,7 +10,8 @@
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
-             mc:Ignorable="d" 
+             xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
              img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
              Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextBrushKey}}"
@@ -72,7 +73,7 @@
             </Style>
 
             <DataTemplate x:Key="NameCellTemplate">
-                <Grid>
+                <Grid VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto"/>
@@ -89,16 +90,18 @@
             </DataTemplate>
 
             <DataTemplate x:Key="ValueCellTemplate">
-                <Grid>
+                <Grid Height="{Binding Path=RowHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGrid}}, Converter={x:Static rwpf:Converters.Scale155}}"
+                      VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0"/>
+                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Padding="2,0,0,0"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
                         <Button
                             Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}">
+                            Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
+                            Height="18" VerticalAlignment="Center">
                             <Button.Template>
                                 <ControlTemplate>
                                     <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
@@ -117,7 +120,8 @@
                         </Button>
                         <Button
                             Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}"
-                            Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}">
+                            Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
+                            Height="18" VerticalAlignment="Center">
                             <Button.Template>
                                 <ControlTemplate>
                                     <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
@@ -136,6 +140,14 @@
                         </Button>
                     </StackPanel>
                 </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="ClassCellTemplate">
+                <TextBlock Text="{Binding Model.Content.Class}" VerticalAlignment="Center" Padding="2,0,0,0"/>
+            </DataTemplate>
+            
+            <DataTemplate x:Key="TypeNameCellTemplate">
+                <TextBlock Text="{Binding Model.Content.TypeName}" VerticalAlignment="Center" Padding="2,0,0,0"/>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -159,14 +171,15 @@
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   IsReadOnly="True"
                   MouseDoubleClick="RootTreeGrid_MouseDoubleClick"
-                  PreviewKeyUp="RootTreeGrid_PreviewKeyUp">
+                  PreviewKeyUp="RootTreeGrid_PreviewKeyUp"
+                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
             <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
                                         Width="2*" 
                                         CanUserSort="True" SortMemberPath="DummyValue" />
                 <DataGridTemplateColumn x:Name="ValueColumn" Header="{x:Static pkg:Resources.VariableExplorer_ValueHeader}" CellTemplate="{StaticResource ValueCellTemplate}" Width="3*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" Binding="{Binding Model.Content.Class}" Width="*" CanUserSort="False" />
-                <DataGridTextColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" Binding="{Binding Model.Content.TypeName}" Width="*" CanUserSort="False" />
+                <DataGridTemplateColumn x:Name="ClassColumn" Header="{x:Static pkg:Resources.VariableExplorer_ClassHeader}" CellTemplate="{StaticResource ClassCellTemplate}" Width="*" CanUserSort="False" />
+                <DataGridTemplateColumn x:Name="TypeColumn" Header="{x:Static pkg:Resources.VariableExplorer_TypeHeader}" CellTemplate="{StaticResource TypeNameCellTemplate}" Width="*" CanUserSort="False" />
             </DataGrid.Columns>
         </local:TreeGrid>
     </Grid>
