@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Title="{x:Static pkg:Resources.ImportData_Title}" Height="500" Width="700"
         Style="{DynamicResource DialogStyle}"
+        ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterOwner">
     <vsui:DialogWindow.Resources>
         <ResourceDictionary>
@@ -49,7 +50,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- FilePath -->
-                <TextBlock Grid.Column="0" Grid.Row="0" Margin="3">File</TextBlock>
+                <TextBlock Grid.Column="0" Grid.Row="0" Margin="3" VerticalAlignment="Center">File</TextBlock>
                 <Grid Grid.Column="1" Grid.Row="0" Margin="3"
                         x:Name="ChooseFile">
                     <Grid.ColumnDefinitions>

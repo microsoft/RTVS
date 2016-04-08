@@ -17,8 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     public partial class EnterUrl : DialogWindow {
         public EnterUrl() {
             InitializeComponent();
-
-            EnterKeyCommand = new DelegateCommand(EnterKeyCommandHandler);
         }
 
         public string DownloadFilePath { get; private set; }
@@ -35,20 +33,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        public ICommand EnterKeyCommand { get; }
+        public ICommand EnterKeyCommand { get; } = new DelegateCommand(EnterKeyCommandHandler);
 
-        private void EnterKeyCommandHandler(object parameter) {
-            OkButton.IsEnabled = false;
-            CancelButton.IsEnabled = false;
-            DownloadProgressBar.Value = 0;
-            DownloadProgressBar.Visibility = Visibility.Visible;
-            ErrorTextBlock.Visibility = Visibility.Collapsed;
-            ErrorTextBlock.Text = null;
-            RunAsync().DoNotWait();
-        }
-
-        private void OkButton_Click(object sender, RoutedEventArgs e) {
-            EnterKeyCommandHandler(null);
+        private static void EnterKeyCommandHandler(object parameter) {
+            var me = (EnterUrl)parameter;
+            me.OkButton.IsEnabled = false;
+            me.CancelButton.IsEnabled = false;
+            me.DownloadProgressBar.Value = 0;
+            me.DownloadProgressBar.Visibility = Visibility.Visible;
+            me.ErrorTextBlock.Visibility = Visibility.Collapsed;
+            me.ErrorTextBlock.Text = null;
+            me.RunAsync().DoNotWait();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
@@ -87,6 +82,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             DownloadProgressBar.Visibility = Visibility.Collapsed;
             ErrorTextBlock.Text = errorText;
             ErrorTextBlock.Visibility = Visibility.Visible;
+        }
+
+        private void WindowMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            DragMove();
         }
     }
 }
