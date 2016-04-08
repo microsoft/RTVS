@@ -169,6 +169,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ok.
+        /// </summary>
+        public static string Ok {
+            get {
+                return ResourceManager.GetString("Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authors:.
         /// </summary>
         public static string Package_Authors {
