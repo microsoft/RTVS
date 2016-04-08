@@ -402,7 +402,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             var basePackage = packages.FirstOrDefault(x => x.Name.EqualsOrdinal("base"));
             if (basePackage != null) {
                 foreach (var p in packages) {
-                    p.CanUninstall = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
+                    p.CanBeUninstalled = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
                 }
             }
         }
@@ -537,8 +537,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             // 2. Starts with the search term
             // 3. Everything else
             IList<IRPackageViewModel> result = filteredPackages;
-            var exact = filteredPackages.Where(x => x.Name.EqualsOrdinal(searchString));
-            var startsWith = filteredPackages.Where(x => x.Name.StartsWith(searchString, StringComparison.Ordinal) && !x.Name.EqualsOrdinal(searchString));
+            var exact = filteredPackages.Where(x => x.Name.EqualsOrdinal(searchString)).ToList();
+            var startsWith = filteredPackages.Where(x => x.Name.StartsWith(searchString, StringComparison.Ordinal) && !x.Name.EqualsOrdinal(searchString)).ToList();
             if (!cancellationToken.IsCancellationRequested) {
                 var remainder = filteredPackages.Except(startsWith).Except(exact);
                 if (!cancellationToken.IsCancellationRequested) {

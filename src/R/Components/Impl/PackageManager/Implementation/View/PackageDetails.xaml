@@ -64,8 +64,14 @@
                            Visibility="{Binding Path=InstalledVersion, Converter={x:Static wpf:Converters.NullIsCollapsed}}" />
 
                 <Button Grid.Row="0" Grid.Column="4" MinWidth="100" MinHeight="24" HorizontalAlignment="Left" Click="ButtonUninstall_Click"
-                        Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
-                        Content="{x:Static local:Resources.Uninstall}" IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}" />
+                        Content="{x:Static local:Resources.Uninstall}" IsEnabled="{Binding Path=IsChanging, Converter={x:Static wpf:Converters.Not}}">
+                    <Button.Visibility>
+                        <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                            <Binding Path="CanBeUninstalled" />
+                            <Binding Path="IsInstalled" />
+                        </MultiBinding>
+                    </Button.Visibility>
+                </Button>
 
                 <!-- Row 2 -->
                 <TextBlock Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="0,4,0,0" Text="{x:Static local:Resources.Package_LatestVersion}" />
