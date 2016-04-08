@@ -119,7 +119,7 @@
 
                             <!-- uninstall button -->
                             <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUninstall_Click"
-                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                    Visibility="{Binding Path=CanUninstall, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                     ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
                                 <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                             </Button>

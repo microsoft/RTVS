@@ -138,6 +138,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             set { SetProperty(ref _isLoaded, value); }
         }
 
+        public bool CanUninstall {
+            get { return IsInstalled && RepositoryUri != null; }
+        }
+
         public bool HasDetails {
             get { return _hasDetails; }
             private set { SetProperty(ref _hasDetails, value); }
