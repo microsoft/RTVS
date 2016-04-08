@@ -30,7 +30,7 @@ namespace Microsoft.R.Components.PackageManager {
         /// </summary>
         /// <returns>
         /// List of packages. Note that several fields will not be populated,
-        /// you need to call <see cref="GetAdditionalPackageInfoAsync(RPackage)"/>
+        /// you need to call <see cref="AddAdditionalPackageInfoAsync(RPackage)"/>
         /// for each package to get fill in the missing fields.
         /// </returns>
         /// <exception cref="RPackageManagerException">
@@ -41,64 +41,40 @@ namespace Microsoft.R.Components.PackageManager {
         Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
 
         /// <summary>
-        /// Add additional data to the package from its repository web site.
-        /// </summary>
-        /// <param name="pkg">
-        /// Package to populate with data. The <see cref="RPackage.Repository"/>
-        /// and <see cref="RPackage.Package"/> fields must be set prior to
-        /// calling this method. Any fields that are already filled in will not
-        /// be overwritten.
-        /// </param>
-        /// <exception cref="RPackageManagerException">
-        /// The web page for the package couldn't be downloaded.
-        /// </exception>
-        Task AddAdditionalPackageInfoAsync(RPackage pkg);
-
-        /// <summary>
-        /// Get additional data for a package from its repository web site.
-        /// </summary>
-        /// <param name="packageName">Package name</param>
-        /// <param name="repository">Repository from which additional data will be retrieved</param>
-        /// <exception cref="RPackageManagerException">
-        /// The web page for the package couldn't be downloaded.
-        /// </exception>
-        Task<RPackage> GetAdditionalPackageInfoAsync(string packageName, string repository);
-
-        /// <summary>
         /// Install a package by sending install.packages() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">
-        /// Optional library path (in any format). Pass null to use the default
-        /// for the session ie. the first one in .libPaths().
+        ///     Optional library path (in any format). Pass null to use the default
+        ///     for the session ie. the first one in .libPaths().
         /// </param>
-        void InstallPackage(string name, string libraryPath);
+        Task InstallPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Uninstall a package by sending remove.packages() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">
-        /// Optional library path (in any format) where the package is installed.
-        /// Pass null to use the defaults for the session ie. in .libPaths().
+        ///     Optional library path (in any format) where the package is installed.
+        ///     Pass null to use the defaults for the session ie. in .libPaths().
         /// </param>
-        void UninstallPackage(string name, string libraryPath);
+        Task UninstallPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Load a package by sending library() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">
-        /// Optional library path (in any format). Pass null to use the defaults
-        /// for the session ie. in .libPaths().
+        ///     Optional library path (in any format). Pass null to use the defaults
+        ///     for the session ie. in .libPaths().
         /// </param>
-        void LoadPackage(string name, string libraryPath);
+        Task LoadPackageAsync(string name, string libraryPath);
 
         /// <summary>
         /// Unload a package by sending detach() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>
-        void UnloadPackage(string name);
+        Task UnloadPackageAsync(string name);
 
         /// <summary>
         /// Package names that are currently loaded.

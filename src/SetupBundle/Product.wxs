@@ -48,9 +48,17 @@
 
     <?include VSDetection.wxi?>
 
+    <?if $(var.VsVersion) = 14.0?>
     <!-- Require VS 2015 Update 1 -->
     <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v14.0.24720"
                 DisplayText="R Tools require Visual Studio 2015 Update 1 or higher." />
+    <?endif?>
+    
+    <?if $(var.VsVersion) = 15.0?>
+    <!-- Require VS 15 Preview -->
+    <dd:Blocker ShortName="VsCommUpdateBlock" Type="Stop" Condition="Community_VersionKey &lt; v15.0.25123"
+                DisplayText="R Tools require Visual Studio 15 Preview." />
+    <?endif?>
 
     <dd:Blocker ShortName="Win64Block" Type="Stop" Condition="NOT VersionNT64"
             DisplayText="R Tools for Visual Studio require 64-bit Windows." />

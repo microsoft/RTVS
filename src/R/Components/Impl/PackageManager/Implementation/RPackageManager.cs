@@ -47,7 +47,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
             return VisualComponent;
         }
 
@@ -59,61 +59,73 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return await GetPackagesAsync(async (eval) => await eval.AvailablePackages());
         }
 
-        public async Task AddAdditionalPackageInfoAsync(RPackage pkg) {
+        public async Task InstallPackageAsync(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
+
             try {
-                var uri = GetPackageWebIndexUri(pkg.Package, pkg.Repository);
-                await RPackageWebParser.RetrievePackageInfo(uri, pkg);
-            } catch (WebException ex) {
-                throw new RPackageManagerException(ex.Message, ex);
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.InstallPackage(name);
+                    } else {
+                        await request.InstallPackage(name, libraryPath);
+                    }
+                }
+            }
+            catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
 
-        public async Task<RPackage> GetAdditionalPackageInfoAsync(string pkg, string repository) {
+        public async Task UninstallPackageAsync(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
+
             try {
-                var uri = GetPackageWebIndexUri(pkg, repository);
-                return await RPackageWebParser.RetrievePackageInfo(uri);
-            } catch (WebException ex) {
-                throw new RPackageManagerException(ex.Message, ex);
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.UninstallPackage(name);
+                    } else {
+                        await request.UninstallPackage(name, libraryPath);
+                    }
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
-        
-        public void InstallPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = $"install.packages({name.ToRStringLiteral()})";
-            } else {
-                script = $"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})";
+
+        public async Task LoadPackageAsync(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    if (string.IsNullOrEmpty(libraryPath)) {
+                        await request.LoadPackage(name);
+                    } else {
+                        await request.LoadPackage(name, libraryPath);
+                    }
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
         }
 
-        public void UninstallPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("remove.packages({0})", name.ToRStringLiteral());
-            } else {
-                script = string.Format("remove.packages({0}, lib={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+        public async Task UnloadPackageAsync(string name) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
-        }
-
-        public void LoadPackage(string name, string libraryPath) {
-            string script;
-            if (string.IsNullOrEmpty(libraryPath)) {
-                script = string.Format("library({0})", name.ToRStringLiteral());
-            } else {
-                script = string.Format("library({0}, lib.loc={1})", name.ToRStringLiteral(), libraryPath.ToRPath().ToRStringLiteral());
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    await request.UnloadPackage(name);
+                }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
-
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
-        }
-
-        public void UnloadPackage(string name) {
-            string script = string.Format("unloadNamespace({0})", name.ToRStringLiteral());
-
-            _interactiveWorkflow.Operations.EnqueueExpression(script, true);
         }
 
         public async Task<string[]> GetLoadedPackagesAsync() {
@@ -150,19 +162,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        private static Uri GetPackageWebIndexUri(string package, string repository) {
-            // For example, if 'Repository' is:
-            // "https://cloud.r-project.org/src/contrib"
-            // Then the URI to the index page is:
-            // "https://cloud.r-project.org/web/packages/<packagename>/index.html"
-            var contribUrl = repository;
-            if (!contribUrl.EndsWith("/")) {
-                contribUrl += "/";
-            }
-
-            return new Uri(new Uri(contribUrl), $"../../web/packages/{package}/index.html");
-        }
-
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
@@ -180,6 +179,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
                 var result = await queryFunc(_pkgQuerySession);
                 CheckEvaluationResult(result);
+
+                // An empty list is serialized as json array because it does not have names
+                // This happens when there are no results
+                if (result.JsonResult is JArray) {
+                    return new List<RPackage>().AsReadOnly();
+                }
 
                 return ((JObject)result.JsonResult).Properties()
                     .Select(p => p.Value.ToObject<RPackage>())

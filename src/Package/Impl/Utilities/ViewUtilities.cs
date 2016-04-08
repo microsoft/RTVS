@@ -80,9 +80,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static void SaveFile(this ITextView textView) {
-            RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
-            string filePath = textView.TextBuffer.GetFilePath();
-            rdt.SaveFileIfDirty(filePath);
+            if (textView != null) {
+                RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
+                string filePath = textView.TextBuffer.GetFilePath();
+                if (filePath != null) {
+                    rdt.SaveFileIfDirty(filePath);
+                }
+            }
         }
 
         public static string GetFilePath(this ITextView textView) {

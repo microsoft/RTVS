@@ -12,6 +12,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private readonly IRPackageManagerViewModel _owner;
         private bool _hasDetails;
         private bool _isSelected;
+        private bool _isChanging;
         private bool _isInstalled;
         private bool _isLoaded;
         private string _title;
@@ -37,6 +38,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 RepositoryUri = repositoryUri,
                 RepositoryText = repositoryUri != null ? null : package.Repository,
+                Title = package.Title.NormalizeWhitespace(),
+                Description = package.Description.NormalizeWhitespace(),
+                Built = package.Built,
+                Urls = package.URL?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .ToArray() ?? new string[0],
+                Authors = package.Author.NormalizeWhitespace(),
+                HasDetails = true,
             };
         }
 
@@ -145,6 +154,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public bool IsSelected {
             get { return _isSelected; }
             set { SetProperty(ref _isSelected, value); }
+        }
+
+        public bool IsChanging {
+            get { return _isChanging; }
+            set { SetProperty(ref _isChanging, value); }
         }
 
         public RPackageViewModel(string name, IRPackageManagerViewModel owner) {

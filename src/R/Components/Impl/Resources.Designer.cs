@@ -169,6 +169,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ok.
+        /// </summary>
+        public static string Ok {
+            get {
+                return ResourceManager.GetString("Ok", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Authors:.
         /// </summary>
         public static string Package_Authors {
@@ -367,6 +376,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Load {0}..
+        /// </summary>
+        public static string PackageManager_LoadButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_LoadButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Loaded.
         /// </summary>
         public static string PackageManager_Loaded {
@@ -399,6 +417,24 @@ namespace Microsoft.R.Components {
         public static string PackageManager_PackageSources {
             get {
                 return ResourceManager.GetString("PackageManager_PackageSources", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to permanently uninstall &apos;{0}&apos; package from library &apos;{1}&apos;? This action cannot be undone..
+        /// </summary>
+        public static string PackageManager_PackageUninstallWarning {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageUninstallWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to update &apos;{0}&apos; package? This action cannot be undone..
+        /// </summary>
+        public static string PackageManager_PackageUpdateWarning {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageUpdateWarning", resourceCulture);
             }
         }
         
@@ -471,6 +507,15 @@ namespace Microsoft.R.Components {
         public static string PackageManager_UninstallButtonToolTip {
             get {
                 return ResourceManager.GetString("PackageManager_UninstallButtonToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unload {0}..
+        /// </summary>
+        public static string PackageManager_UnloadButtonToolTip {
+            get {
+                return ResourceManager.GetString("PackageManager_UnloadButtonToolTip", resourceCulture);
             }
         }
         

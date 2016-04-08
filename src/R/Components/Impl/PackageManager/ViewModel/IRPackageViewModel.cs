@@ -30,6 +30,8 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         bool IsUpdateAvailable { get; }
         bool HasDetails { get; }
         bool IsSelected { get; set; }
+        bool IsChanging { get; set; }
+
         void AddDetails(RPackage package, bool isInstalled);
         void UpdateAvailablePackageDetails(RPackage package);
         void Install();

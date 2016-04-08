@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Common.Core.Collections {
     public static class ListExtensions {
@@ -66,6 +67,10 @@ namespace Microsoft.Common.Core.Collections {
             }
 
             return ~low;
+        }
+
+        public static bool Equals<T, TOther>(this IList<T> source, IList<TOther> other, Func<T, TOther, bool> predicate) {
+            return source.Count == other.Count && !source.Where((t, i) => !predicate(t, other[i])).Any();
         }
     }
 }

@@ -18,7 +18,7 @@
     <MediaTemplate EmbedCab="yes" />
 
     <Property Id="VS_ROOT_FOLDER" Secure="yes">
-      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VSRegVer)\Setup\VS" Name="ProductDir" Type="raw" />
+      <RegistrySearch Id="VSRootSearch" Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\$(var.VsVersion)\Setup\VS" Name="ProductDir" Type="raw" />
     </Property>
 
     <Feature Id="ProductFeature" Title="$(var.ProductName)">
@@ -29,7 +29,7 @@
   <Fragment>
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder">
-        <Directory Id="VSFolder" Name="Microsoft Visual Studio $(var.VSRegVer)">
+        <Directory Id="VSFolder" Name="Microsoft Visual Studio $(var.VsVersion)">
           <Directory Id="VS_ROOT_FOLDER">
             <Directory Id="VSCommonFilesFolder" Name="Common7">
               <Directory Id="CommonIdeFolder" Name="IDE">

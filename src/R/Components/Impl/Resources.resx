@@ -180,6 +180,9 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
+  <data name="Ok" xml:space="preserve">
+    <value>Ok</value>
+  </data>
   <data name="Dismiss" xml:space="preserve">
     <value>Dismiss</value>
   </data>
@@ -249,6 +252,12 @@
   <data name="PackageManager_UpdateAvailableToolTip" xml:space="preserve">
     <value>Update available</value>
   </data>
+  <data name="PackageManager_LoadButtonToolTip" xml:space="preserve">
+    <value>Load {0}.</value>
+  </data>
+  <data name="PackageManager_UnloadButtonToolTip" xml:space="preserve">
+    <value>Unload {0}.</value>
+  </data>
   <data name="PackageManager_InstallButtonToolTip" xml:space="preserve">
     <value>Install {0} version {1}.</value>
   </data>
@@ -269,5 +278,11 @@
   </data>
   <data name="PackageManager_TransportError" xml:space="preserve">
     <value>Connection to R host process failed.</value>
+  </data>
+  <data name="PackageManager_PackageUninstallWarning" xml:space="preserve">
+    <value>Are you sure you wish to permanently uninstall '{0}' package from library '{1}'? This action cannot be undone.</value>
+  </data>
+  <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
+    <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
   </data>
 </root>

@@ -43,7 +43,39 @@ namespace Microsoft.R.Debugger {
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
         public bool HasAttributes => AttributeCount != null && AttributeCount != 0;
         public bool HasSlots => SlotCount != null && SlotCount != 0;
-        public bool HasChildren => HasSlots || (Length != null && (Length > (IsAtomic || (TypeName == "closure" || TypeName == "symbol") ? 1 : 0)));
+
+        /// <summary>
+        /// <see langword="true"/> if <see cref="GetChildrenAsync"/> will return any items, otherwise <see langword="false"/>.
+        /// </summary>
+        public bool HasChildren {
+            get {
+                if (HasSlots) {
+                    return true;
+                }
+
+                // These have length 1, but are not subsettable, so report no children.
+                if (TypeName == "closure" || TypeName == "symbol") {
+                    return false;
+                }
+
+                if (Length != null) {
+                    if (IsAtomic) {
+                        // If it is a single-element vector, do not list the element as a child, because it is identical
+                        // to the vector itself. However, if the element is named, list it to provide access to the name.
+                        if (Length > 1 || (NameCount != null && NameCount != 0)) {
+                            return true;
+                        }
+                    } else {
+                        if (Length != 0) {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+        }
+
 
         private JObject _reprObj;
 
@@ -110,7 +142,11 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        public DebugValueRepresentation GetRepresentation(DebugValueRepresentationKind kind = DebugValueRepresentationKind.Normal) {
+        public DebugValueRepresentation GetRepresentation() {
+            return GetRepresentation(DebugValueRepresentationKind.Normal);
+        }
+
+        public DebugValueRepresentation GetRepresentation(DebugValueRepresentationKind kind) {
             if (_reprObj == null) {
                 throw new InvalidOperationException("Evaluation result does not have an associated representation.");
             }
@@ -130,6 +166,10 @@ namespace Microsoft.R.Debugger {
             }
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
+            }
+
+            if (!HasChildren) {
+                return new DebugEvaluationResult[0];
             }
 
             var call = Invariant($@"rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
@@ -153,10 +193,6 @@ namespace Microsoft.R.Debugger {
             }
 
             return children;
-        }
-
-        public override string ToString() {
-            return Invariant($"VALUE: {TypeName} {GetRepresentation().Deparse}");
         }
     }
 }

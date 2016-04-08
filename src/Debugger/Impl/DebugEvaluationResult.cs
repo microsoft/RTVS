@@ -28,6 +28,7 @@ namespace Microsoft.R.Debugger {
         Dim = 1 << 13,
         EnvName = 1 << 14,
         Flags = 1 << 15,
+        Children = Expression | Length | AttrCount | SlotCount | NameCount | Flags,
     }
 
     internal static class DebugEvaluationResultFieldsExtensions {

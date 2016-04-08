@@ -46,8 +46,9 @@
 
             <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" x:Name="Container">
-                    <Grid Margin="16,8,7,8" MinHeight="32">
+                    <Grid Margin="8,8,7,8" MinHeight="32">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
@@ -57,19 +58,48 @@
                         <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsSelected}"
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
 
-                        <!-- title & summary-->
-                        <TextBlock Grid.Column="1" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}">
-                            <TextBlock.ToolTip>
-                                <TextBlock Style="{StaticResource TooltipStyle}" Visibility="{Binding Path=Title, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
-                                    <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
-                                    <LineBreak />
-                                    <Run Text="{Binding Path=Title, Mode=OneWay}" />
-                                </TextBlock>
-                            </TextBlock.ToolTip>
-                        </TextBlock>
+                        <!-- Load button -->
+                        <Button x:Name="ButtonLoad" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonLoad_Click"
+                                VerticalAlignment="Center">
+                            <Button.Visibility>
+                                <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                                    <Binding Path="IsLoaded" Converter="{x:Static wpf:Converters.Not}" />
+                                    <Binding Path="IsInstalled" />
+                                </MultiBinding>
+                            </Button.Visibility>
+                            <Button.ToolTip>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_LoadButtonToolTip}}" />
+                            </Button.ToolTip>
+                            <Rectangle Fill="{StaticResource IconLoad}" Width="16" Height="16" />
+                        </Button>
 
-                        <Grid Grid.Column="2" VerticalAlignment="Center" Margin="10,0,0,0">
+                        <!-- Unload button -->
+                        <Button x:Name="ButtonUnload" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUnload_Click" 
+                                        Visibility="{Binding Path=IsLoaded, Converter={x:Static wpf:Converters.FalseIsCollapsed}}" VerticalAlignment="Center">
+                            <Button.ToolTip>
+                                <TextBlock Text="{Binding Path=Name, StringFormat={x:Static components:Resources.PackageManager_UnloadButtonToolTip}}" />
+                            </Button.ToolTip>
+                            <Rectangle Fill="{StaticResource IconUnload}" Width="16" Height="16" />
+                        </Button>
+
+                        <!-- title & summary-->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
+                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0">
+                                <TextBlock.ToolTip>
+                                    <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                                        <TextBlock Style="{StaticResource TooltipStyle}">
+                                        <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
+                                        <LineBreak />
+                                        <Run Text="{Binding Path=Description, Mode=OneWay}" />
+                                        </TextBlock>
+                                    </ToolTip>
+                                </TextBlock.ToolTip>
+                            </TextBlock>
+                            <TextBlock Text="{Binding Path=Title, Mode=OneWay}" Margin="4,0,0,0"></TextBlock>
+                        </StackPanel>
+
+                        <Grid Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="auto" />
                                 <ColumnDefinition Width="auto" />
@@ -77,21 +107,11 @@
                                 <ColumnDefinition Width="auto" />
                             </Grid.ColumnDefinitions>
 
-                            <Grid Grid.Column="0" HorizontalAlignment="Right" Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="auto" />
-                                    <ColumnDefinition Width="auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <!-- installed indicator -->
-                                <Rectangle x:Name="_installedIndicator" Grid.Column="0" Width="12" Height="12" VerticalAlignment="Center"
-                                           Fill="{StaticResource IconGrayInstalledIndicator}" />
-
-                                <!-- installed version -->
-                                <TextBlock x:Name="TextInstalledVersion" Grid.Column="1" Margin="4,0,4,0" VerticalAlignment="Center"
-                                           Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}"
-                                           ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
-                            </Grid>
+                            <!-- installed version -->
+                            <TextBlock x:Name="TextInstalledVersion" Grid.Column="0" Margin="4,0,4,0" VerticalAlignment="Center"
+                                       Text="{Binding Path=InstalledVersion, StringFormat={}v{0}}" HorizontalAlignment="Right"
+                                       Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
+                                       ToolTip="{Binding Path=InstalledVersion, StringFormat={x:Static components:Resources.PackageManager_InstalledVersionToolTip}}" />
 
                             <!-- version to install. It occupies the same position as the installed version -->
                             <TextBlock x:Name="_versionToInstall" Grid.Column="0" Margin="2,0,4,0" VerticalAlignment="Center" TextAlignment="Right"
@@ -101,7 +121,7 @@
                             </TextBlock>
 
                             <!-- uninstall button -->
-                            <Button x:Name="ButtonUninstall" Style="{StaticResource ButtonStyle}" Grid.Column="1" Click="ButtonUninstall_Click"
+                            <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUninstall_Click"
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                     ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
                                 <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
@@ -111,10 +131,14 @@
                             <Button x:Name="ButtonInstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonInstall_Click" 
                                     Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.TrueIsCollapsed}}">
                                 <Button.ToolTip>
-                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
-                                        <Binding Path="Name" />
-                                        <Binding Path="LatestVersion" />
-                                    </MultiBinding>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_InstallButtonToolTip}">
+                                                <Binding Path="Name" />
+                                                <Binding Path="LatestVersion" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Button.ToolTip>
                                 <Rectangle Fill="{StaticResource IconInstall}" Width="16" Height="16" />
                             </Button>
@@ -132,10 +156,14 @@
                             <Button x:Name="ButtonUpdate" Grid.Column="3" Style="{StaticResource ButtonStyle}" Click="ButtonUpdate_Click"
                                     Visibility="{Binding Path=IsUpdateAvailable, Mode=OneWay, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                                 <Button.ToolTip>
-                                    <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
-                                        <Binding Path="Name" />
-                                        <Binding Path="LatestVersion" />
-                                    </MultiBinding>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{x:Static components:Resources.PackageManager_UpdateButtonToolTip}">
+                                                <Binding Path="Name" />
+                                                <Binding Path="LatestVersion" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
                                 </Button.ToolTip>
                                 <Rectangle Fill="{StaticResource IconUpdateAvailableIndicator}" Width="16" Height="16" />
                             </Button>
@@ -245,9 +273,10 @@
             <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
                      VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
-                     PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
+                     PreviewKeyUp="List_PreviewKeyUp" MouseDoubleClick="List_MouseDoubleClick"
+                     SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
                      Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
-                     ItemsSource="{Binding Path=Items}" ItemTemplate="{StaticResource PackageInfoTemplate}">
+                     ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedPackage, Mode=OneWay}" ItemTemplate="{StaticResource PackageInfoTemplate}">
                 <!-- set the template to disable the background change when the IsEnabled is false. -->
                 <ListBox.Template>
                     <ControlTemplate TargetType="{x:Type ListBox}">

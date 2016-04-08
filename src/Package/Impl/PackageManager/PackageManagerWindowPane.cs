@@ -8,6 +8,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.Implementation;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -17,6 +18,7 @@ using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Guid(WindowGuidString)]
     internal class PackageManagerWindowPane : VisualComponentToolWindow<IRPackageManagerVisualComponent>, IOleCommandTarget {
+        private readonly IRSession _session;
         private readonly IRPackageManager _packageManager;
         private readonly ISearchControlProvider _searchControlProvider;
         private readonly IRSettings _settings;
@@ -26,8 +28,9 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
 
         private IOleCommandTarget _commandTarget;
 
-        public PackageManagerWindowPane(IRPackageManager packageManager, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
+        public PackageManagerWindowPane(IRPackageManager packageManager, IRSession session, ISearchControlProvider searchControlProvider, IRSettings settings, ICoreShell coreShell) {
             _packageManager = packageManager;
+            _session = session;
             _searchControlProvider = searchControlProvider;
             _settings = settings;
             _coreShell = coreShell;
@@ -35,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
         }
 
         protected override void OnCreate() {
-            Component = new RPackageManagerVisualComponent(_packageManager, this, _searchControlProvider, _settings, _coreShell);
+            Component = new RPackageManagerVisualComponent(_packageManager, this, _session, _searchControlProvider, _settings, _coreShell);
             // TODO: Implement RPackageManagerVisualComponent.Controller
             //_commandTarget = new CommandTargetToOleShim(null, Component.Controller);
 

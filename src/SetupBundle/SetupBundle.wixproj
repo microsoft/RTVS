@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.settings" />
   <Import Project="..\R.Wix.Path.settings" />
-  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" />
   <PropertyGroup>
     <DefineSolutionProperties>false</DefineSolutionProperties>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -27,14 +27,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\..\obj\$(Configuration)\SetupBundle\</IntermediateOutputPath>
-    <DefineConstants>$(DefineConstants);Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu</DefineConstants>
+    <DefineConstants>$(DefineConstants);Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu;VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <IntermediateOutputPath>..\..\obj\$(Configuration)\SetupBundle</IntermediateOutputPath>
-    <DefineConstants>$(DefineConstants);MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu</DefineConstants>
+    <DefineConstants>$(DefineConstants);MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu;VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
   </PropertyGroup>
   <ItemGroup>
@@ -83,8 +83,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.props'))" />
-    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets'))" />
+    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props'))" />
+    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets'))" />
   </Target>
-  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.1.1\build\MicroBuild.Core.targets')" />
+  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
 </Project>

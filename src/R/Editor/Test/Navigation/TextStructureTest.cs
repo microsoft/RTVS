@@ -38,6 +38,9 @@ namespace Microsoft.R.Editor.Test.Navigation {
         [InlineData("('')", 2, 2, 1)]
         [InlineData("'", 0, 0, 1)]
         [InlineData("'", 1, 0, 1)]
+        [InlineData("#abc def", 1, 1, 3)]
+        [InlineData("# abc.def", 2, 2, 3)]
+        [InlineData("#abc", 0, 0, 1)]
         public void GetWordSpan(string content, int position, int start, int length) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             Span? span = RTextStructure.GetWordSpan(tb.CurrentSnapshot, position);

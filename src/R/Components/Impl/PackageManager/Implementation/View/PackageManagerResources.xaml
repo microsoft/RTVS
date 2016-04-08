@@ -8,36 +8,11 @@
                     xmlns:valueConverters="clr-namespace:Microsoft.R.Wpf.ValueConverters;assembly=Microsoft.R.Wpf"
                     xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
                     mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <wpf:CommonResources />
+    </ResourceDictionary.MergedDictionaries>
     <valueConverters:IconUrlToImageCacheConverter x:Key="IconUrlToImageCacheConverter"/>
     <!-- Default styles -->
-    <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
-    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
-    <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollViewerStyleKey}}"/>
-    
-    <Style x:Key="TooltipStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="MaxWidth" Value="300" />
-    </Style>
-
-    <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
-
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextHoverKey}}" />
-            </Trigger>
-
-            <Trigger Property="IsMouseOver" Value="False">
-                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
-            </Trigger>
-
-            <Trigger Property="NavigateUri" Value="{x:Null}">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
-                <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
-                <Setter Property="IsEnabled" Value="False" />
-            </Trigger>
-        </Style.Triggers>
-    </Style>
 
     <Style x:Key="PackageIconImageStyle" TargetType="{x:Type Image}">
         <Setter Property="HorizontalAlignment" Value="Center" />
@@ -52,81 +27,4 @@
         </Setter>
         <EventSetter Event="ImageFailed" Handler="PackageIconImage_ImageFailed"/>
     </Style>
-
-    <DrawingBrush x:Key="IconInstall">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M6.0003,-0.000199999999999534L6.0003,4.9998 2.9993,1.9998 2.9993,8.9998 6.0003,12.0008 2.9993,12.0008 2.9993,15.9998 12.9993,15.9998 12.9993,12.0008 10.0003,12.0008 12.9993,8.9998 12.9993,1.9998 10.0003,4.9998 10.0003,-0.000199999999999534z" />
-                    <GeometryDrawing Brush="#FF414141" Geometry="F1M4,15L12,15 12,13 4,13z M9,8L9,1 7,1 7,8 4,5 4,8 8,12 12,8 12,5z" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
-    <DrawingBrush x:Key="IconUninstall">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M7.5254,10.8418L3.6074,15.1658C3.1354,15.6428 2.5314,15.8908 1.8744,15.8848 0.688400000000001,15.8748 0.000399999999999956,14.4528 0.000399999999999956,14.4528L0.000399999999999956,11.9998 4.4144,7.9568 2.1594,5.7018C1.1424,4.6728 1.3394,3.1068 2.1594,2.2878 2.5784,1.8658 3.2314,1.6118 3.9034,1.6118 4.5894,1.6118 5.2144,1.8758 5.6184,2.3358L7.5004,4.9998 12.5414,1.4948 15.5004,1.4998 10.1744,8.0418 16.0004,15.9998 14.0004,15.9998z" />
-                    <GeometryDrawing Brush="#FFA1250C" Geometry="F1M8.9629,7.9951L13.4999,2.5001 12.4999,2.5001 7.4629,6.4951 4.9629,2.9951C4.4839,2.4481 3.4339,2.5201 2.9629,2.9951 2.4759,3.4821 2.3789,4.4031 2.9629,4.9951L5.9629,7.9951 0.962899999999999,12.4951C0.4239,13.0371 0.462899999999999,13.9951 0.962899999999999,14.4951 1.4629,14.9951 2.4249,15.0351 2.9629,14.4951L7.5359,9.4471 13.9629,14.9951 14.4629,14.9881z" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
-    <DrawingBrush x:Key="IconInstalledIndicator">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
-                    <GeometryDrawing Brush="#FF329932" Geometry="F1M8,12L6,12 4,8 6,8 7,10 10,4 12,4z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
-                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M12,4L8,12 6,12 4,8 6,8 7,10 10,4z" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
-    <DrawingBrush x:Key="IconGrayInstalledIndicator">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M0,8C0,3.582 3.582,0 8,0 12.418,0 16,3.582 16,8 16,12.418 12.418,16 8,16 3.582,16 0,12.418 0,8" />
-                    <GeometryDrawing Brush="Gray" Geometry="F1M8,12L6,12 4,8 6,8 7,10 10,4 12,4z M8,1C4.135,1 1,4.134 1,8 1,11.865 4.135,15 8,15 11.865,15 15,11.865 15,8 15,4.134 11.865,1 8,1" />
-                    <GeometryDrawing Brush="#FFFFFFFF" Geometry="F1M12,4L8,12 6,12 4,8 6,8 7,10 10,4z" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
-    <DrawingBrush x:Key="IconUpdateAvailableIndicator">
-        <DrawingBrush.RelativeTransform>
-            <RotateTransform Angle="-90" CenterX="0.5" CenterY="0.5" />
-        </DrawingBrush.RelativeTransform>
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15,8C15,11.866 11.866,15 8,15 4.134,15 1,11.866 1,8 1,4.134 4.134,1 8,1 11.866,1 15,4.134 15,8" />
-                    <GeometryDrawing Brush="#FF1AA1E2" Geometry="F1M9,11L7,11 9,9 4,9 4,7 9,7 7,5 9,5 12,8z M8,2C4.755,2 2,4.756 2,8 2,11.247 4.755,14 8,14 11.245,14 14,11.247 14,8 14,4.756 11.245,2 8,2" />
-                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M9,11L7,11 9,9 4,9 4,7 9,7 7,5 9,5 12,8z" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
-
-    <DrawingBrush x:Key="IconSettings">
-        <DrawingBrush.Drawing>
-            <DrawingGroup>
-                <DrawingGroup.Children>
-                    <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
-                    <GeometryDrawing Brush="#FFF6F6F6" Geometry="F1M15.9434,7.0796L15.8734,6.4596 13.6374,5.6646 14.6544,3.5256 14.2684,3.0376C13.8854,2.5536,13.4464,2.1146,12.9644,1.7316L12.4754,1.3456 10.3354,2.3626 9.5414,0.1286 8.9224,0.057599999999999C8.6194,0.0215999999999994 8.3124,-0.000400000000000844 8.0004,-0.000400000000000844 7.6894,-0.000400000000000844 7.3824,0.0215999999999994 7.0804,0.0565999999999995L6.4614,0.126599999999999 5.6664,2.3626 3.5254,1.3456 3.0374,1.7316C2.5554,2.1126,2.1164,2.5516,1.7324,3.0366L1.3454,3.5246 2.3624,5.6646 0.1274,6.4596 0.0564,7.0796C0.0224000000000011,7.3816 0.000400000000000844,7.6876 0.000400000000000844,7.9996 0.000400000000000844,8.3116 0.0224000000000011,8.6186 0.0564,8.9206L0.1274,9.5396 2.3624,10.3346 1.3454,12.4746 1.7324,12.9626C2.1144,13.4466,2.5534,13.8846,3.0374,14.2676L3.5254,14.6556 5.6664,13.6376 6.4614,15.8726 7.0804,15.9436C7.3824,15.9786 7.6894,15.9996 8.0004,15.9996 8.3134,15.9996 8.6204,15.9786 8.9244,15.9426L9.5424,15.8706 10.3364,13.6366 12.4754,14.6556 12.9644,14.2676C13.4484,13.8836,13.8874,13.4446,14.2684,12.9616L14.6544,12.4736 13.6374,10.3346 15.8734,9.5396 15.9434,8.9206C15.9784,8.6186 16.0004,8.3116 16.0004,7.9996 16.0004,7.6876 15.9784,7.3816 15.9434,7.0796" />
-                    <GeometryDrawing Brush="#FF414141" Geometry="F1M8,5C6.343,5 5,6.343 5,8 5,9.657 6.343,11 8,11 9.657,11 11,9.657 11,8 11,6.343 9.657,5 8,5 M12.714,9.603C12.644,9.81,12.563,10.01,12.468,10.203L13.484,12.342C13.149,12.766,12.767,13.148,12.343,13.484L10.203,12.467C10.01,12.563,9.81,12.643,9.603,12.714L8.808,14.949C8.542,14.98 8.273,15 8,15 7.728,15 7.459,14.98 7.194,14.95L6.399,12.715C6.192,12.644,5.991,12.564,5.798,12.468L3.658,13.484C3.234,13.148,2.852,12.766,2.516,12.342L3.532,10.203C3.437,10.01,3.356,9.81,3.286,9.603L1.05,8.807C1.02,8.542 1,8.273 1,8 1,7.727 1.02,7.458 1.05,7.193L3.286,6.397C3.356,6.19,3.437,5.991,3.532,5.797L2.516,3.658C2.852,3.234,3.234,2.851,3.658,2.516L5.798,3.532C5.991,3.436,6.191,3.356,6.399,3.286L7.194,1.05C7.459,1.02 7.728,1 8,1 8.273,1 8.542,1.02 8.808,1.05L9.603,3.287C9.81,3.357,10.01,3.437,10.203,3.533L12.343,2.516C12.767,2.852,13.149,3.235,13.484,3.658L12.468,5.797C12.563,5.991,12.644,6.19,12.714,6.397L14.95,7.193C14.98,7.458 15,7.727 15,8 15,8.273 14.98,8.542 14.95,8.807z" />
-                    <GeometryDrawing Brush="#FF414141" Geometry="F1M9.5,8C9.5,8.828 8.829,9.5 8,9.5 7.171,9.5 6.5,8.828 6.5,8 6.5,7.172 7.171,6.5 8,6.5 8.829,6.5 9.5,7.172 9.5,8" />
-                    <GeometryDrawing Brush="#FFF0EFF1" Geometry="F1M8,9.5C7.172,9.5 6.5,8.828 6.5,8 6.5,7.172 7.172,6.5 8,6.5 8.828,6.5 9.5,7.172 9.5,8 9.5,8.828 8.828,9.5 8,9.5 M8,5C6.343,5 5,6.343 5,8 5,9.656 6.343,11 8,11 9.657,11 11,9.656 11,8 11,6.343 9.657,5 8,5" />
-                </DrawingGroup.Children>
-            </DrawingGroup>
-        </DrawingBrush.Drawing>
-    </DrawingBrush>
 </ResourceDictionary>
