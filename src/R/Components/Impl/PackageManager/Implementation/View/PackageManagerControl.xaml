@@ -15,52 +15,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <view:PackageManagerResources />
             </ResourceDictionary.MergedDictionaries>
-            <ControlTemplate x:Key="TabToggleButton" TargetType="{x:Type RadioButton}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto" />
-                        <RowDefinition Height="auto" />
-                    </Grid.RowDefinitions>
-                    <VisualStateManager.VisualStateGroups>
-                        <VisualStateGroup x:Name="CommonStates">
-                            <VisualState x:Name="Normal" />
-                            <VisualState x:Name="MouseOver">
-                                <Storyboard>
-                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground)" Storyboard.TargetName="LabelText">
-                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}" />
-                                    </ObjectAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </VisualState>
-                        </VisualStateGroup>
-                        <VisualStateGroup x:Name="CheckStates">
-                            <VisualState x:Name="Checked">
-                                <Storyboard>
-                                    <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="Underline">
-                                        <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}" />
-                                    </ObjectAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </VisualState>
-                            <VisualState x:Name="Unchecked" />
-                            <VisualState x:Name="Indeterminate" />
-                        </VisualStateGroup>
-                    </VisualStateManager.VisualStateGroups>
-
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}"
-                                   Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
-                                   FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static rwpf:Converters.FontScale122}}"/>
-
-                        <!-- the textblock that displays the count -->
-                        <!-- Commented since it is not clear if we want to display anything in this textblock
-                    <Border x:Name="TextBlockCountContainer" CornerRadius="2" Margin="3,0" Padding="3,0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}">
-                        <TextBlock x:Name="TextBlockCount" HorizontalAlignment="Right" VerticalAlignment="Top" Foreground="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedTextBrushKey}}"/>
-                    </Border>
-                    -->
-                    </StackPanel>
-
-                    <Rectangle x:Name="Underline" Visibility="Hidden" Margin="0" Height="3" Fill="{DynamicResource {x:Static rwpf:Brushes.ContentSelectedBrushKey}}" Grid.Row="1" />
-                </Grid>
-            </ControlTemplate>
+            
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -91,9 +46,9 @@
                         <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
-                    <RadioButton Grid.Column="0" x:Name="TabAvailable" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Available}" Checked="TabAvailable_Checked" />
-                    <RadioButton Grid.Column="2" x:Name="TabInstalled" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Installed}" Checked="TabInstalled_Checked" />
-                    <RadioButton Grid.Column="4" x:Name="TabLoaded" GroupName="Tabs" Template="{StaticResource TabToggleButton}" Content="{x:Static components:Resources.PackageManager_Loaded}" Checked="TabLoaded_Checked" />
+                    <RadioButton Grid.Column="0" x:Name="TabAvailable" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="{x:Static components:Resources.PackageManager_Available}" Checked="TabAvailable_Checked" />
+                    <RadioButton Grid.Column="2" x:Name="TabInstalled" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="{x:Static components:Resources.PackageManager_Installed}" Checked="TabInstalled_Checked" />
+                    <RadioButton Grid.Column="4" x:Name="TabLoaded" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="{x:Static components:Resources.PackageManager_Loaded}" Checked="TabLoaded_Checked" />
 
                     <!-- container of the search control -->
                     <Border Grid.Column="6" x:Name="SearchControlHost" VerticalAlignment="Center" HorizontalAlignment="Stretch" MinHeight="22" MinWidth="224" />

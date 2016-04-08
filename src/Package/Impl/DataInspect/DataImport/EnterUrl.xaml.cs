@@ -14,6 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
     public partial class EnterUrl : DialogWindow {
+        private WebClient _client;
+
         public EnterUrl() {
             InitializeComponent();
         }
@@ -34,32 +36,42 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private void OkButton_Click(object sender, RoutedEventArgs e) {
             OkButton.IsEnabled = false;
-            CancelButton.IsEnabled = false;
             DownloadProgressBar.Value = 0;
+            UrlTextBox.Visibility = Visibility.Hidden;
             DownloadProgressBar.Visibility = Visibility.Visible;
-            ErrorTextBlock.Visibility = Visibility.Collapsed;
-            ErrorTextBlock.Text = null;
+            ErrorBlock.Visibility = Visibility.Collapsed;
+            ErrorText.Text = null;
             RunAsync().DoNotWait();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
-            base.Close();
+            var client = _client;
+            if (client == null) {
+                Close();
+                return;
+            }
+
+            client.CancelAsync();
+            UrlTextBox.Visibility = Visibility.Visible;
+            DownloadProgressBar.Visibility = Visibility.Collapsed;
+            ErrorBlock.Visibility = Visibility.Collapsed;
         }
 
         private async Task RunAsync() {
             try {
                 var temporaryFile = Path.GetTempFileName();
-                Uri uri = new Uri(UrlTextBox.Text);
+                var uri = new Uri(UrlTextBox.Text);
                 using (var client = new WebClient()) {
+                    _client = client;
                     client.DownloadProgressChanged += DownloadProgressChanged;
-
                     await client.DownloadFileTaskAsync(uri, temporaryFile);
+                    _client = null;
                 }
 
                 DownloadFilePath = temporaryFile;
                 VariableName = Path.GetFileNameWithoutExtension(uri.Segments[uri.Segments.Length - 1]);
                 OnSuccess();
-            } catch (Exception ex) {
+            } catch (Exception ex) when (!(ex is OperationCanceledException)) {
                 OnError(ex.Message);
             }
         }
@@ -69,15 +81,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void OnSuccess() {
-            base.Close();
+            Close();
         }
 
         private void OnError(string errorText) {
             OkButton.IsEnabled = true;
             CancelButton.IsEnabled = true;
+            ErrorText.Text = errorText;
+
+            UrlTextBox.Visibility = Visibility.Visible;
             DownloadProgressBar.Visibility = Visibility.Collapsed;
-            ErrorTextBlock.Text = errorText;
-            ErrorTextBlock.Visibility = Visibility.Visible;
+            ErrorBlock.Visibility = Visibility.Visible;
         }
     }
 }
