@@ -59,24 +59,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return await GetPackagesAsync(async (eval) => await eval.AvailablePackages());
         }
 
-        public async Task AddAdditionalPackageInfoAsync(RPackage pkg) {
-            try {
-                var uri = GetPackageWebIndexUri(pkg.Package, pkg.Repository);
-                await RPackageWebParser.RetrievePackageInfo(uri, pkg);
-            } catch (WebException ex) {
-                throw new RPackageManagerException(ex.Message, ex);
-            }
-        }
-
-        public async Task<RPackage> GetAdditionalPackageInfoAsync(string pkg, string repository) {
-            try {
-                var uri = GetPackageWebIndexUri(pkg, repository);
-                return await RPackageWebParser.RetrievePackageInfo(uri);
-            } catch (WebException ex) {
-                throw new RPackageManagerException(ex.Message, ex);
-            }
-        }
-
         public async Task InstallPackageAsync(string name, string libraryPath) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
@@ -180,19 +162,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        private static Uri GetPackageWebIndexUri(string package, string repository) {
-            // For example, if 'Repository' is:
-            // "https://cloud.r-project.org/src/contrib"
-            // Then the URI to the index page is:
-            // "https://cloud.r-project.org/web/packages/<packagename>/index.html"
-            var contribUrl = repository;
-            if (!contribUrl.EndsWith("/")) {
-                contribUrl += "/";
-            }
-
-            return new Uri(new Uri(contribUrl), $"../../web/packages/{package}/index.html");
-        }
-
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
@@ -210,6 +179,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
                 var result = await queryFunc(_pkgQuerySession);
                 CheckEvaluationResult(result);
+
+                // An empty list is serialized as json array because it does not have names
+                // This happens when there are no results
+                if (result.JsonResult is JArray) {
+                    return new List<RPackage>().AsReadOnly();
+                }
 
                 return ((JObject)result.JsonResult).Properties()
                     .Select(p => p.Value.ToObject<RPackage>())

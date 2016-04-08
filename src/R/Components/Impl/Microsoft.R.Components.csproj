@@ -141,7 +141,6 @@
     <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
       <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\RPackageWebParser.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
     <Compile Include="PackageManager\RPackageManagerException.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />

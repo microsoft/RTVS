@@ -52,6 +52,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
             abcPkg.Version.Length.Should().BeGreaterOrEqualTo(0);
             abcPkg.Depends.Should().Contain("abc.data");
             abcPkg.License.Should().Contain("GPL");
+            abcPkg.Title.Should().Be("Tools for Approximate Bayesian Computation (ABC)");
+            abcPkg.Description.Should().StartWith("Implements several ABC algorithms");
+            abcPkg.Author.Should().Contain("Csillery Katalin");
             abcPkg.NeedsCompilation.Should().Be("no");
         }
 
@@ -74,52 +77,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
             rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
-        }
-
-        [Test]
-        [Category.PackageManager]
-        public async Task AdditionalFieldsCranRepo() {
-            var all = await _workflow.Packages.GetAvailablePackagesAsync();
-            var repository = all.FirstOrDefault(pkg => pkg.Package == "ggplot2")?.Repository;
-
-            var actual = await _workflow.Packages.GetAdditionalPackageInfoAsync("ggplot2", repository);
-
-            // This additional data is retrieved from a live web site.  When that data changes in the future,
-            // this test may start failing.  Update the assertions below as needed, or relax them.
-            actual.Package.Should().Be("ggplot2");
-            actual.Title.Should().Be("An Implementation of the Grammar of Graphics");
-            actual.Description.Should().StartWith("An implementation of the grammar of graphics in R. It combines");
-            actual.Published.Should().NotBeEmpty();
-            actual.Depends.Should().NotBeEmpty();
-            actual.Suggests.Should().NotBeEmpty();
-            actual.Imports.Should().NotBeEmpty();
-            actual.Enhances.Should().NotBeEmpty();
-            actual.Author.Should().NotBeEmpty();
-            actual.Maintainer.Should().NotBeEmpty();
-            actual.Version.Should().NotBeEmpty();
-            actual.URL.Should().Be("http://ggplot2.org, https://github.com/hadley/ggplot2");
-            actual.BugReports.Should().Be("https://github.com/hadley/ggplot2/issues");
-            actual.License.Should().Be("GPL-2");
-            actual.NeedsCompilation.Should().Be("no");
-        }
-
-        [Test]
-        [Category.PackageManager]
-        public async Task AdditionalFieldsLocalRepo() {
-            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-            }
-
-            var all = await _workflow.Packages.GetAvailablePackagesAsync();
-            var actual = all.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
-
-            await _workflow.Packages.AddAdditionalPackageInfoAsync(actual);
-
-            var expected = TestPackages.RtvsLib1Additional.Clone();
-            expected.Built = null;
-            expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
-
-            actual.ShouldBeEquivalentTo(expected);
         }
 
         [Test]
