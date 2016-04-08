@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -17,29 +17,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageManager : IRPackageManager {
-        private readonly IRSessionProvider _sessionProvider;
-        private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly Action _dispose;
+        private readonly SessionPool _sessionPool;
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
         public IRPackageManagerViewModel _viewModel;
 
-        private static readonly Guid PackageQuerySessionId = new Guid("FE7177D8-532E-4BBE-AFCF-E62FDC3520C8");
-        private IRSession _pkgQuerySession;
-        private SemaphoreSlim _pkgQuerySessionSemaphore = new SemaphoreSlim(1, 1);
-
-        /// <summary>
-        /// Timeout to allow R-Host to start. Typically only needs
-        /// different value in tests or code coverage runs.
-        /// </summary>
-        public static int HostStartTimeout { get; set; } = 3000;
-
         public RPackageManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
-            _sessionProvider = sessionProvider;
-            _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
             _dispose = dispose;
+            _sessionPool = new SessionPool(sessionProvider, settings);
         }
 
         public IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
@@ -72,8 +60,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.InstallPackage(name, libraryPath);
                     }
                 }
-            }
-            catch (MessageTransportException ex) {
+            } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -165,46 +152,42 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
-            await CreatePackageQuerySessionAsync();
+            using (var session = await _sessionPool.GetSession()) {
+                try {
+                    // Get the repos and libpaths from the REPL session and set them
+                    // in the package query session
+                    await EvalRepositoriesAsync(session, await DeparseRepositoriesAsync());
+                    await EvalLibrariesAsync(session, await DeparseLibrariesAsync());
 
-            if (!_pkgQuerySession.IsHostRunning) {
-                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
-            }
+                    var result = await queryFunc(session);
+                    CheckEvaluationResult(result);
 
-            try {
-                // Get the repos and libpaths from the REPL session and set them
-                // in the package query session
-                await EvalRepositoriesAsync(await DeparseRepositoriesAsync());
-                await EvalLibrariesAsync(await DeparseLibrariesAsync());
+                    // An empty list is serialized as json array because it does not have names
+                    // This happens when there are no results
+                    if (result.JsonResult is JArray) {
+                        return new List<RPackage>().AsReadOnly();
+                    }
 
-                var result = await queryFunc(_pkgQuerySession);
-                CheckEvaluationResult(result);
-
-                // An empty list is serialized as json array because it does not have names
-                // This happens when there are no results
-                if (result.JsonResult is JArray) {
-                    return new List<RPackage>().AsReadOnly();
+                    return ((JObject)result.JsonResult).Properties()
+                        .Select(p => p.Value.ToObject<RPackage>())
+                        .ToList().AsReadOnly();
+                } catch (MessageTransportException ex) {
+                    throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
                 }
-
-                return ((JObject)result.JsonResult).Properties()
-                    .Select(p => p.Value.ToObject<RPackage>())
-                    .ToList().AsReadOnly();
-            } catch (MessageTransportException ex) {
-                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
 
-        private async Task EvalRepositoriesAsync(string deparsedRepositories) {
+        private async Task EvalRepositoriesAsync(IRSession session, string deparsedRepositories) {
             var code = string.Format("options(repos=eval(parse(text={0})))", deparsedRepositories.ToRStringLiteral());
-            using (var eval = await _pkgQuerySession.BeginEvaluationAsync()) {
+            using (var eval = await session.BeginEvaluationAsync()) {
                 var result = await eval.EvaluateAsync(code, REvaluationKind.Normal);
                 CheckEvaluationResult(result);
             }
         }
 
-        private async Task EvalLibrariesAsync(string deparsedLibraries) {
+        private async Task EvalLibrariesAsync(IRSession session, string deparsedLibraries) {
             var code = string.Format(".libPaths(eval(parse(text={0})))", deparsedLibraries.ToRStringLiteral());
-            using (var eval = await _pkgQuerySession.BeginEvaluationAsync()) {
+            using (var eval = await session.BeginEvaluationAsync()) {
                 var result = await eval.EvaluateAsync(code, REvaluationKind.Normal);
                 CheckEvaluationResult(result);
             }
@@ -232,31 +215,107 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        private async Task CreatePackageQuerySessionAsync() {
-            await _pkgQuerySessionSemaphore.WaitAsync();
-            try {
-                if (_pkgQuerySession == null) {
-                    _pkgQuerySession = _sessionProvider.GetOrCreate(PackageQuerySessionId, null);
-                }
+        public void Dispose() {
+            _sessionPool.Dispose();
+            _dispose();
+        }
+    }
 
-                if (!_pkgQuerySession.IsHostRunning) {
-                    await _pkgQuerySession.StartHostAsync(new RHostStartupInfo {
-                        Name = "PkgMgr",
-                        RBasePath = _settings.RBasePath,
-                        CranMirrorName = _settings.CranMirror
-                    }, HostStartTimeout);
+    class SessionPool : IDisposable {
+        private readonly List<IRSession> _freeSessions = new List<IRSession>();
+        private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
+        private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSettings _settings;
+        private bool _disposed;
+
+        private const int MaxFreeSessions = 1;
+
+        /// <summary>
+        /// Timeout to allow R-Host to start. Typically only needs
+        /// different value in tests or code coverage runs.
+        /// </summary>
+        private const int HostStartTimeout = 3000;
+
+        public SessionPool(IRSessionProvider sessionProvider, IRSettings settings) {
+            _sessionProvider = sessionProvider;
+            _settings = settings;
+        }
+
+        public async Task<IRSession> GetSession() {
+            if (_disposed) {
+                throw new InvalidOperationException("Session pool is disposed");
+            }
+
+            await _sem.WaitAsync();
+            try {
+                IRSession session = null;
+                while (_freeSessions.Count > 0) {
+                    var s = _freeSessions[0];
+                    _freeSessions.RemoveAt(0);
+
+                    if (s.IsHostRunning) {
+                        session = s;
+                        break;
+                    }
+                    s.Dispose();
                 }
+                return session ?? await CreatePackageQuerySessionAsync();
             } finally {
-                _pkgQuerySessionSemaphore.Release();
+                _sem.Release();
             }
         }
 
-        public void Dispose() {
-            _dispose();
-            if (_pkgQuerySession != null) {
-                _pkgQuerySession.Dispose();
-                _pkgQuerySession = null;
+        public async Task ReleaseSession(IRSession session) {
+            if (session == null) {
+                return;
             }
+            await _sem.WaitAsync();
+            if (_disposed || _freeSessions.Count > MaxFreeSessions || !session.IsHostRunning) {
+                session.Dispose();
+            } else {
+                _freeSessions.Add(session);
+            }
+            _sem.Release();
+        }
+
+        public void Dispose() {
+            foreach (var s in _freeSessions) {
+                s.Dispose();
+            }
+            _freeSessions.Clear();
+            _disposed = true;
+        }
+
+        private async Task<IRSession> CreatePackageQuerySessionAsync() {
+            var g = Guid.NewGuid();
+            var session = _sessionProvider.GetOrCreate(g, null);
+            if (!session.IsHostRunning) {
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = "PkgMgr " + g.ToString(),
+                    RBasePath = _settings.RBasePath,
+                    CranMirrorName = _settings.CranMirror
+                }, HostStartTimeout);
+            }
+            return session;
+        }
+    }
+
+    class SessionToken : IDisposable {
+        private readonly SessionPool _pool;
+        private IRSession _session;
+
+        public SessionToken(SessionPool pool) {
+            _pool = pool;
+        }
+
+        public async Task<IRSession> GetSession() {
+            if (_session == null) {
+                _session = await _pool.GetSession();
+            }
+            return _session;
+        }
+        public void Dispose() {
+            _pool.ReleaseSession(_session).DoNotWait();
         }
     }
 }

@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _libraryPath;
         private string _built;
         private bool _isUpdateAvailable;
+        private bool _canUninstall;
 
         public static RPackageViewModel CreateAvailable(RPackage package, IRPackageManagerViewModel owner) {
             Uri repositoryUri;
@@ -74,8 +75,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsInstalled = true,
                 HasDetails = true
             };
-
-
         }
 
         public string Name { get; }
@@ -147,7 +146,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public bool CanUninstall {
-            get { return IsInstalled && RepositoryUri != null; }
+            get { return _isInstalled && _canUninstall; }
+            set { SetProperty(ref _canUninstall, value); }
         }
 
         public bool HasDetails {

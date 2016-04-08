@@ -188,8 +188,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
 
-            if(MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, 
-                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), 
+            if (MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath),
                     MessageButtons.YesNo)) {
                 return;
             }
@@ -198,7 +198,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = true;
             }
 
-            if(package.IsLoaded) {
+            if (package.IsLoaded) {
                 await _packageManager.UnloadPackageAsync(package.Name);
                 await ReloadLoadedPackagesAsync();
             }
@@ -371,6 +371,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     .OrderBy(p => p.Name)
                     .ToList<IRPackageViewModel>();
 
+                IdentifyRemovablePackages(vmInstalledPackages);
+
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
                 DispatchOnMainThread(EnsureAvailablePackagesLoadedAsync);
@@ -388,10 +390,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     }
                 }
 
+                IdentifyRemovablePackages(vmInstalledPackages);
                 vmInstalledPackages = vmInstalledPackages.OrderBy(p => p.Name).ToList();
 
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
+            }
+        }
+
+        private void IdentifyRemovablePackages(IEnumerable<IRPackageViewModel> packages) {
+            var basePackage = packages.FirstOrDefault(x => x.Name.EqualsOrdinal("base"));
+            if (basePackage != null) {
+                foreach (var p in packages) {
+                    p.CanUninstall = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
+                }
             }
         }
 
