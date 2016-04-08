@@ -48,7 +48,7 @@
         <ItemsControl ItemsSource="{Binding Source={StaticResource EllipseData}}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <Canvas Style="{StaticResource AnimatedCanvasStyle}" Visibility="{Binding Visibility,RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>
+                    <Canvas Style="{StaticResource AnimatedCanvasStyle}" Visibility="{Binding Visibility, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"/>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemContainerStyle>

@@ -94,7 +94,7 @@
                                 </ToolTip>
                             </StackPanel.ToolTip>
                             <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                       FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0" />
+                                       FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0" />
                             <TextBlock Text="{Binding Path=Title, Mode=OneWay}" Margin="4,0,0,0" />
                         </StackPanel>
 

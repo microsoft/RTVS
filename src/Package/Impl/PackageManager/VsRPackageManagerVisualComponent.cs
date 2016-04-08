@@ -2,18 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
-using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
@@ -30,9 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
         }
 
         public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, IRSession session, int instanceId = 0) {
-            var o = new object();
-            var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            shell.PostExecCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdShowReplWindow, 0, ref o);
+            var workflow = _workflowProvider.GetOrCreate();
+            if (workflow.ActiveWindow == null) {
+                VsAppShell.Current.DispatchOnMainThreadAsync(() => workflow.GetOrCreateVisualComponent(_componentContainerFactory));
+            }
             return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, session, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
         }
     }
