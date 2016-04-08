@@ -150,14 +150,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
-            using (var session = await _sessionPool.GetSession()) {
+            using (var sessionToken = await _sessionPool.GetSession()) {
                 try {
                     // Get the repos and libpaths from the REPL session and set them
                     // in the package query session
-                    await EvalRepositoriesAsync(session, await DeparseRepositoriesAsync());
-                    await EvalLibrariesAsync(session, await DeparseLibrariesAsync());
+                    await EvalRepositoriesAsync(sessionToken.Session, await DeparseRepositoriesAsync());
+                    await EvalLibrariesAsync(sessionToken.Session, await DeparseLibrariesAsync());
 
-                    var result = await queryFunc(session);
+                    var result = await queryFunc(sessionToken.Session);
                     CheckEvaluationResult(result);
 
                     // An empty list is serialized as json array because it does not have names

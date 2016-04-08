@@ -131,11 +131,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             return Encoding.Default;
         }
 
-        private void AppendString(StringBuilder builder, string value) {
-            value = value.Replace("\"", "\\\"");
-            builder.AppendFormat("\"{0}\"", value);
-        }
-
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
             string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
             if (!string.IsNullOrEmpty(filePath)) {

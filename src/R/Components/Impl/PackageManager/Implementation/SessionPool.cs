@@ -30,25 +30,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _settings = settings;
         }
 
-        public async Task<IRSession> GetSession() {
+        public async Task<SessionToken> GetSession() {
             if (_disposed) {
                 throw new InvalidOperationException("Session pool is disposed");
             }
 
             await _sem.WaitAsync();
             try {
-                IRSession session = null;
-                while (_freeSessions.Count > 0) {
-                    var s = _freeSessions[0];
-                    _freeSessions.RemoveAt(0);
-
-                    if (s.IsHostRunning) {
-                        session = s;
-                        break;
-                    }
-                    s.Dispose();
-                }
-                return session ?? await CreatePackageQuerySessionAsync();
+                return new SessionToken(this, await GetSessionInternal());
             } finally {
                 _sem.Release();
             }
@@ -75,6 +64,21 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             _disposed = true;
         }
 
+        private async Task<IRSession> GetSessionInternal() {
+            IRSession session = null;
+            while (_freeSessions.Count > 0) {
+                var s = _freeSessions[0];
+                _freeSessions.RemoveAt(0);
+
+                if (s.IsHostRunning) {
+                    session = s;
+                    break;
+                }
+                s.Dispose();
+            }
+            return session ?? await CreatePackageQuerySessionAsync();
+        }
+
         private async Task<IRSession> CreatePackageQuerySessionAsync() {
             var g = Guid.NewGuid();
             var session = _sessionProvider.GetOrCreate(g, null);
@@ -91,20 +95,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
     internal sealed class SessionToken : IDisposable {
         private readonly SessionPool _pool;
-        private IRSession _session;
 
-        public SessionToken(SessionPool pool) {
+        public SessionToken(SessionPool pool, IRSession session) {
             _pool = pool;
+            Session = session;
         }
 
-        public async Task<IRSession> GetSession() {
-            if (_session == null) {
-                _session = await _pool.GetSession();
-            }
-            return _session;
-        }
+        public IRSession Session { get; }
+
         public void Dispose() {
-            _pool.ReleaseSession(_session).DoNotWait();
+            _pool.ReleaseSession(Session).DoNotWait();
         }
     }
 }
