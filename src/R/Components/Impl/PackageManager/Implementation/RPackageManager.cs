@@ -180,6 +180,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 var result = await queryFunc(_pkgQuerySession);
                 CheckEvaluationResult(result);
 
+                // An empty list is serialized as json array because it does not have names
+                // This happens when there are no results
+                if (result.JsonResult is JArray) {
+                    return new List<RPackage>().AsReadOnly();
+                }
+
                 return ((JObject)result.JsonResult).Properties()
                     .Select(p => p.Value.ToObject<RPackage>())
                     .ToList().AsReadOnly();
