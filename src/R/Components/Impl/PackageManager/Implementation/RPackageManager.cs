@@ -150,8 +150,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
-            using (var sessionToken = await _sessionPool.GetSession()) {
-                try {
+            try {
+                using (var sessionToken = await _sessionPool.GetSession()) {
                     // Get the repos and libpaths from the REPL session and set them
                     // in the package query session
                     await EvalRepositoriesAsync(sessionToken.Session, await DeparseRepositoriesAsync());
@@ -169,9 +169,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                     return ((JObject)result.JsonResult).Properties()
                         .Select(p => p.Value.ToObject<RPackage>())
                         .ToList().AsReadOnly();
-                } catch (MessageTransportException ex) {
-                    throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
                 }
+            } catch (MessageTransportException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
 

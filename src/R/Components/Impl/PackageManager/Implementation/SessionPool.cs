@@ -43,12 +43,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task ReleaseSession(IRSession session) {
+        internal async Task ReleaseSession(IRSession session) {
             if (session == null) {
                 return;
             }
             await _sem.WaitAsync();
-            if (_disposed || _freeSessions.Count > MaxFreeSessions || !session.IsHostRunning) {
+            if (_disposed || _freeSessions.Count >= MaxFreeSessions || !session.IsHostRunning) {
                 session.Dispose();
             } else {
                 _freeSessions.Add(session);
