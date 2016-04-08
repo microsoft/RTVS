@@ -28,6 +28,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         bool IsInstalled { get; set; }
         bool IsLoaded { get; set; }
         bool IsUpdateAvailable { get; }
+        bool CanUninstall { get; set; }
         bool HasDetails { get; }
         bool IsSelected { get; set; }
         bool IsChanging { get; set; }

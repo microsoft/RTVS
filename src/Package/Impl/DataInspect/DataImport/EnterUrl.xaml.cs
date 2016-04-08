@@ -73,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 OnSuccess();
             } catch (Exception ex) when (!(ex is OperationCanceledException)) {
                 OnError(ex.Message);
-            } 
+            }
         }
 
         private void DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {

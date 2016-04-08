@@ -652,4 +652,37 @@ Additional information:
   <data name="ImportData_EnterUrlTitle" xml:space="preserve">
     <value>Import from Web URL</value>
   </data>
+  <data name="AutomaticValue" xml:space="preserve">
+    <value>&lt;Automatic&gt;</value>
+  </data>
+  <data name="ImportData_Comma" xml:space="preserve">
+    <value>Comma (,)</value>
+  </data>
+  <data name="ImportData_DoubleQuote" xml:space="preserve">
+    <value>Double quote (")</value>
+  </data>
+  <data name="ImportData_None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="ImportData_Period" xml:space="preserve">
+    <value>Period (.)</value>
+  </data>
+  <data name="ImportData_Semicolon" xml:space="preserve">
+    <value>Semicolon (;)</value>
+  </data>
+  <data name="ImportData_SingleQuote" xml:space="preserve">
+    <value>Single quote (')</value>
+  </data>
+  <data name="ImportData_Tab" xml:space="preserve">
+    <value>Tab (\t)</value>
+  </data>
+  <data name="ImportData_UseFirstColumn" xml:space="preserve">
+    <value>Use first column</value>
+  </data>
+  <data name="ImportData_UseNumber" xml:space="preserve">
+    <value>Use number</value>
+  </data>
+  <data name="ImportData_Whitespace" xml:space="preserve">
+    <value>White space</value>
+  </data>
 </root>

@@ -106,6 +106,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Automatic&gt;.
+        /// </summary>
+        public static string AutomaticValue {
+            get {
+                return ResourceManager.GetString("AutomaticValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose Directory.
         /// </summary>
         public static string ChooseDirectory {
@@ -430,6 +439,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comma (,).
+        /// </summary>
+        public static string ImportData_Comma {
+            get {
+                return ResourceManager.GetString("ImportData_Comma", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Double quote (&quot;).
+        /// </summary>
+        public static string ImportData_DoubleQuote {
+            get {
+                return ResourceManager.GetString("ImportData_DoubleQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import from Web URL.
         /// </summary>
         public static string ImportData_EnterUrlTitle {
@@ -439,11 +466,83 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string ImportData_None {
+            get {
+                return ResourceManager.GetString("ImportData_None", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Period (.).
+        /// </summary>
+        public static string ImportData_Period {
+            get {
+                return ResourceManager.GetString("ImportData_Period", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Semicolon (;).
+        /// </summary>
+        public static string ImportData_Semicolon {
+            get {
+                return ResourceManager.GetString("ImportData_Semicolon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Single quote (&apos;).
+        /// </summary>
+        public static string ImportData_SingleQuote {
+            get {
+                return ResourceManager.GetString("ImportData_SingleQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tab (\t).
+        /// </summary>
+        public static string ImportData_Tab {
+            get {
+                return ResourceManager.GetString("ImportData_Tab", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import Dataset.
         /// </summary>
         public static string ImportData_Title {
             get {
                 return ResourceManager.GetString("ImportData_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use first column.
+        /// </summary>
+        public static string ImportData_UseFirstColumn {
+            get {
+                return ResourceManager.GetString("ImportData_UseFirstColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use number.
+        /// </summary>
+        public static string ImportData_UseNumber {
+            get {
+                return ResourceManager.GetString("ImportData_UseNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to White space.
+        /// </summary>
+        public static string ImportData_Whitespace {
+            get {
+                return ResourceManager.GetString("ImportData_Whitespace", resourceCulture);
             }
         }
         
