@@ -535,8 +535,22 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            _coreShell.DispatchOnUIThread(() => ApplySearch(filteredPackages, cancellationToken));
-            return filteredPackages.Count;
+            // Preset results as:
+            // 1. Exact match
+            // 2. Starts with the search term
+            // 3. Everything else
+            IList<IRPackageViewModel> result = filteredPackages;
+            var exact = filteredPackages.Where(x => x.Name.EqualsOrdinal(searchString));
+            var startsWith = filteredPackages.Where(x => x.Name.StartsWith(searchString, StringComparison.Ordinal) && !x.Name.EqualsOrdinal(searchString));
+            if (!cancellationToken.IsCancellationRequested) {
+                var remainder = filteredPackages.Except(startsWith).Except(exact);
+                if (!cancellationToken.IsCancellationRequested) {
+                    result = exact.Concat(startsWith).Concat(remainder).ToList();
+                }
+            }
+
+            _coreShell.DispatchOnUIThread(() => ApplySearch(result, cancellationToken));
+            return result.Count;
         }
 
         private void ApplySearch(IList<IRPackageViewModel> packages, CancellationToken cancellationToken) {
