@@ -412,6 +412,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to permanently uninstall &apos;{0}&apos; package from library &apos;{1}&apos;? This action cannot be undone..
+        /// </summary>
+        public static string PackageManager_PackageUninstallWarning {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageUninstallWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you wish to update &apos;{0}&apos; package? This action cannot be undone..
+        /// </summary>
+        public static string PackageManager_PackageUpdateWarning {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageUpdateWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prerelease.
         /// </summary>
         public static string PackageManager_Prerelease {
