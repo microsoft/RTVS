@@ -8,13 +8,14 @@
                  xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
                  mc:Ignorable="d" MinHeight="500" MinWidth="728" x:Name="Self"
-                 ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
-                 Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"
-                 Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                 Style="{DynamicResource DialogStyle}"
+                 WindowStartupLocation="CenterOwner"
+                 DataContext="{Binding RelativeSource={RelativeSource Self}}"
                  Title="{x:Static pkg:Resources.ImportData_Title}">
     <ui:DialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
                 <wpf:CommonResources />
             </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="KvpItemTemplate">
@@ -162,8 +163,8 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" />
-            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" />
+            <Button Grid.Column="1" x:Name="OkButton" MinWidth="86" MinHeight="24" Margin="0,12" Content="{x:Static components:Resources.Ok}" Click="OkButton_Click" />
+            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" IsCancel="True" />
         </Grid>
     </Grid>
 </ui:DialogWindow>

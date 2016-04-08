@@ -125,8 +125,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             await PreviewAsync();
         }
 
-        private void RunButton_Click(object sender, RoutedEventArgs e) {
-            RunButton.IsEnabled = false;
+        private void OkButton_Click(object sender, RoutedEventArgs e) {
+            OkButton.IsEnabled = false;
             CancelButton.IsEnabled = false;
 
             var expression = BuildCommandLine(false);

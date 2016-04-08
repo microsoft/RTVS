@@ -1202,27 +1202,32 @@
 
     <Style x:Key="DialogStyle"  TargetType="{x:Type vsui:DialogWindow}">
         <Setter Property="ShowInTaskbar" Value="false" />
-        <Setter Property="ResizeMode" Value="CanResizeWithGrip" />
         <Setter Property="HasDialogFrame" Value="True" />
         <Setter Property="Background" Value="{DynamicResource {x:Static vsui:ThemedDialogColors.WindowPanelBrushKey}}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static vsui:ThemedDialogColors.WindowPanelTextBrushKey}}" />
         <Setter Property="vsui:ThemedDialogStyleLoader.UseDefaultThemedDialogStyles" Value="True" />
-        <Setter Property="WindowStyle" Value="None" />
-        <Setter Property="AllowsTransparency" Value="True" />
+        <Setter Property="WindowChrome.WindowChrome">
+            <Setter.Value>
+                <WindowChrome GlassFrameThickness="1" />
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Window}">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.MainWindowActiveDefaultBorderBrushKey}}" BorderThickness="1">
-                        <DockPanel>
-                            <TextBlock DockPanel.Dock="Top" Text="{TemplateBinding Title}" HorizontalAlignment="Stretch" TextAlignment="Left" Padding="8"
-                                       FontWeight="Bold"
-                                       Background="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxBackgroundDisabledBrushKey}}"
-                                       Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextDisabledBrushKey}}"/>
-                            <AdornerDecorator>
-                                <ContentPresenter />
-                            </AdornerDecorator>
-                        </DockPanel>
+                <ControlTemplate TargetType="{x:Type vsui:DialogWindow}">
+                    <Border BorderThickness="1" BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.MainWindowActiveDefaultBorderBrushKey}}"
+                            Background="{TemplateBinding Background}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Border Background="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxBackgroundDisabledBrushKey}}"
+                                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                <TextBlock Grid.Row="0" Text="{TemplateBinding Title}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                           Foreground="{DynamicResource {x:Static vsui:CommonControlsColors.TextBoxTextDisabledBrushKey}}"/>
+                            </Border>
+                            <ContentPresenter Grid.Row="1" Content="{TemplateBinding Content}"/>
+                        </Grid>
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

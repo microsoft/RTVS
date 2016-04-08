@@ -7,13 +7,17 @@
                  xmlns:pkg="clr-namespace:Microsoft.VisualStudio.R.Package"
                  xmlns:wpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
-                 ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
-                 mc:Ignorable="d" d:DesignWidth="500" MinWidth="700" MaxWidth="700" MinHeight="120" MaxHeight="120"
+                 mc:Ignorable="d" d:DesignWidth="500"
+                 MinWidth="700" MaxWidth="700" MinHeight="120" MaxHeight="120" ResizeMode="NoResize"
                  Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
+                 Style="{DynamicResource DialogStyle}"
+                 DataContext="{Binding RelativeSource={RelativeSource Self}}"
+                 WindowStartupLocation="CenterOwner"
                  FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
     <ui:DialogWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
                 <wpf:CommonResources />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -30,7 +34,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="URL:" VerticalAlignment="Center" />
-            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" />
+            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="{Binding OkCommand}" CommandParameter="{Binding DataContext}" />
+                </TextBox.InputBindings>
+            </TextBox>
             <ProgressBar Grid.Column="2" x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
         </Grid>
 
@@ -42,12 +50,12 @@
                 <ColumnDefinition Width="6" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
+            <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch">
                 <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" />
             </Border>
             
-            <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Ok}" Click="OkButton_Click" />
-            <Button Grid.Column="4" x:Name="CancelButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" />
+            <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Ok}" Command="{Binding OkCommand}" CommandParameter="{Binding DataContext}" />
+            <Button Grid.Column="4" x:Name="CancelButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" IsCancel="True" />
         </Grid>
     </Grid>
 </ui:DialogWindow>

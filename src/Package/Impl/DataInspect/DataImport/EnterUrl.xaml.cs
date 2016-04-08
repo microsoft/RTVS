@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -19,6 +20,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         public EnterUrl() {
             InitializeComponent();
         }
+
+        public ICommand OkCommand { get; } = new DelegateCommand(OkCommandHandler);
 
         public string DownloadFilePath { get; private set; }
 
@@ -34,14 +37,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private void OkButton_Click(object sender, RoutedEventArgs e) {
-            OkButton.IsEnabled = false;
-            DownloadProgressBar.Value = 0;
-            UrlTextBox.Visibility = Visibility.Hidden;
-            DownloadProgressBar.Visibility = Visibility.Visible;
-            ErrorBlock.Visibility = Visibility.Collapsed;
-            ErrorText.Text = null;
-            RunAsync().DoNotWait();
+        private static void OkCommandHandler(object parameter) {
+            var me = (EnterUrl)parameter;
+
+            me.OkButton.IsEnabled = false;
+            me.DownloadProgressBar.Value = 0;
+            me.UrlTextBox.Visibility = Visibility.Hidden;
+            me.DownloadProgressBar.Visibility = Visibility.Visible;
+            me.ErrorBlock.Visibility = Visibility.Collapsed;
+            me.ErrorText.Text = null;
+            me.RunAsync().DoNotWait();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
