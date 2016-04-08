@@ -134,10 +134,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (package == null) {
                 return;
             }
-
-            if (!package.HasDetails) {
-                DispatchOnMainThread(() => AddPackageDetailsAsync(package));
-            }
         }
 
         public void Install(IRPackageViewModel package) {
@@ -262,17 +258,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
-        }
-
-        private async Task AddPackageDetailsAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
-            var details = await GetAdditionalPackageInfoAsync(package);
-            package.AddDetails(details, false);
-        }
-
-        private async Task<RPackage> GetAdditionalPackageInfoAsync(IRPackageViewModel package) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            return await _packageManager.GetAdditionalPackageInfoAsync(package.Name, package.RepositoryText ?? package.RepositoryUri.AbsoluteUri);
         }
 
         private async Task<string> GetLibPath() {
