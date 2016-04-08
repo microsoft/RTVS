@@ -177,8 +177,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             License = package.License;
             RepositoryUri = repositoryUri;
             RepositoryText = repositoryUri != null ? null : package.Repository;
-            // TODO: Need proper version comparison
-            IsUpdateAvailable = InstalledVersion != LatestVersion;
+            IsUpdateAvailable = new RPackageVersion(LatestVersion).CompareTo(new RPackageVersion(InstalledVersion)) > 0;
         }
 
         public void Install() {
@@ -202,8 +201,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (isInstalled) {
                 InstalledVersion = package.Version;
                 IsInstalled = true;
-                // TODO: Need proper version comparison
-                IsUpdateAvailable = InstalledVersion != LatestVersion;
+                IsUpdateAvailable = new RPackageVersion(LatestVersion).CompareTo(new RPackageVersion(InstalledVersion)) > 0;
             }
 
             HasDetails = true;
