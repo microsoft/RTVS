@@ -807,6 +807,7 @@
         <Parent guid="guidRToolsCmdSet" id="windowsSubMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="Editor"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Source Editor</ButtonText>
           <MenuText>&amp;Source Editor</MenuText>
@@ -1707,6 +1708,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="REditor" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="InteractiveWindow" key1="2" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="SolutionExplorer" key1="2" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdShowReplWindow" editor="guidVSStd97" key1="2" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="guidRToolsCmdSet" key1="3" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowHelpWindow" editor="REditor" key1="3" mod1="CONTROL"/>
