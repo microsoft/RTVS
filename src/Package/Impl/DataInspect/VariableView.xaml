@@ -157,7 +157,9 @@
         <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"
                   AutoGenerateColumns="False"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
-                  IsReadOnly="True">
+                  IsReadOnly="True"
+                  MouseDoubleClick="RootTreeGrid_MouseDoubleClick"
+                  PreviewKeyUp="RootTreeGrid_PreviewKeyUp">
             <DataGrid.Columns>
                 <DataGridTemplateColumn x:Name="NameColumn" Header="{x:Static pkg:Resources.VariableExplorer_NameHeader}" CellTemplate="{StaticResource NameCellTemplate}"
                                         Width="2*" 

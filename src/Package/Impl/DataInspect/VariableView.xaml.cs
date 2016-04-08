@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
@@ -157,6 +158,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private int Comparison(ITreeNode left, ITreeNode right) {
             return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
+        }
+
+        private void RootTreeGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            HandleDefaultAction();
+        }
+
+        private void RootTreeGrid_PreviewKeyUp(object sender, KeyEventArgs e) {
+            if(e.Key == Key.Enter) {
+                HandleDefaultAction();
+            }
+        }
+
+        private void HandleDefaultAction() {
+            var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
+            var ew = node?.Model?.Content as EvaluationWrapper;
+            if(ew != null && ew.CanShowDetail) {
+                ew.ShowDetailCommand.Execute(ew);
+            }
         }
     }
 }
