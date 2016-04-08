@@ -59,9 +59,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             [Package.Resources.ImportData_UseNumber] = "NULL"
         };
 
+        private Task _encodingsInitTask;
+
         public ImportDataWindow() {
             InitializeComponent();
-            SetEncodingComboBoxAsync().DoNotWait();
+            _encodingsInitTask = SetEncodingComboBoxAsync();
         }
 
         public ImportDataWindow(string filePath, string name)
@@ -162,6 +164,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private async Task PreviewAsync() {
+            if(_encodingsInitTask == null) {
+                return;
+            }
+
+            await _encodingsInitTask;
+
             if (!string.IsNullOrEmpty(FilePathBox.Text)) {
                 string text = ReadFile(FilePathBox.Text, ToEncoding(GetSelectedString(EncodingComboBox)));
                 InputFilePreview.Text = text;
