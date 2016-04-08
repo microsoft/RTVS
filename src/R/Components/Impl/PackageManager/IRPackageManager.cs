@@ -41,30 +41,6 @@ namespace Microsoft.R.Components.PackageManager {
         Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync();
 
         /// <summary>
-        /// Add additional data to the package from its repository web site.
-        /// </summary>
-        /// <param name="pkg">
-        /// Package to populate with data. The <see cref="RPackage.Repository"/>
-        /// and <see cref="RPackage.Package"/> fields must be set prior to
-        /// calling this method. Any fields that are already filled in will not
-        /// be overwritten.
-        /// </param>
-        /// <exception cref="RPackageManagerException">
-        /// The web page for the package couldn't be downloaded.
-        /// </exception>
-        Task AddAdditionalPackageInfoAsync(RPackage pkg);
-
-        /// <summary>
-        /// Get additional data for a package from its repository web site.
-        /// </summary>
-        /// <param name="packageName">Package name</param>
-        /// <param name="repository">Repository from which additional data will be retrieved</param>
-        /// <exception cref="RPackageManagerException">
-        /// The web page for the package couldn't be downloaded.
-        /// </exception>
-        Task<RPackage> GetAdditionalPackageInfoAsync(string packageName, string repository);
-
-        /// <summary>
         /// Install a package by sending install.packages() to the REPL.
         /// </summary>
         /// <param name="name">Package name.</param>

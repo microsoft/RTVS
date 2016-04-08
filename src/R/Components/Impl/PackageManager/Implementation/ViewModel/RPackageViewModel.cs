@@ -38,6 +38,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 NeedsCompilation = package.NeedsCompilation != null && !package.NeedsCompilation.EqualsIgnoreCase("no"),
                 RepositoryUri = repositoryUri,
                 RepositoryText = repositoryUri != null ? null : package.Repository,
+                Title = package.Title.NormalizeWhitespace(),
+                Description = package.Description.NormalizeWhitespace(),
+                Built = package.Built,
+                Urls = package.URL?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .ToArray() ?? new string[0],
+                Authors = package.Author.NormalizeWhitespace(),
+                HasDetails = true,
             };
         }
 
