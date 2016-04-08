@@ -87,11 +87,11 @@
                             <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
                                    FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0">
                                 <TextBlock.ToolTip>
-                                    <ToolTip Visibility="{Binding Path=Title, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                                    <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
                                         <TextBlock Style="{StaticResource TooltipStyle}">
                                         <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
                                         <LineBreak />
-                                        <Run Text="{Binding Path=Title, Mode=OneWay}" />
+                                        <Run Text="{Binding Path=Description, Mode=OneWay}" />
                                         </TextBlock>
                                     </ToolTip>
                                 </TextBlock.ToolTip>
