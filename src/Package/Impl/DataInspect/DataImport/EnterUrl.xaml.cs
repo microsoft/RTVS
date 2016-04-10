@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.PlatformUI;
 
@@ -35,6 +36,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e) {
+            DoOK();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e) {
+            DoCancel();
+        }
+
+        private void DoOK() {
             OkButton.IsEnabled = false;
             DownloadProgressBar.Value = 0;
             UrlTextBox.Visibility = Visibility.Hidden;
@@ -44,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             RunAsync().DoNotWait();
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e) {
+        private void DoCancel() {
             var client = _client;
             if (client == null) {
                 Close();
@@ -92,6 +101,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             UrlTextBox.Visibility = Visibility.Visible;
             DownloadProgressBar.Visibility = Visibility.Collapsed;
             ErrorBlock.Visibility = Visibility.Visible;
+        }
+
+        private void OkButton_KeyUp(object sender, KeyEventArgs e) {
+            if(e.Key == System.Windows.Input.Key.Enter) {
+                DoOK();
+            }
+        }
+
+        private void CancelButton_KeyUp(object sender, KeyEventArgs e) {
+            if(e.Key == System.Windows.Input.Key.Escape) {
+                DoCancel();
+            }
         }
     }
 }

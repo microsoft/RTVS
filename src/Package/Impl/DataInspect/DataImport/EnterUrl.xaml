@@ -45,9 +45,15 @@
             <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch" Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
                 <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" />
             </Border>
-            
-            <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Ok}" Click="OkButton_Click" />
-            <Button Grid.Column="4" x:Name="CancelButton" MinWidth="86" MinHeight="24" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" />
+
+            <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" 
+                    Content="{x:Static components:Resources.Ok}" 
+                    Click="OkButton_Click" IsDefault="True" 
+                    KeyUp="OkButton_KeyUp"/>
+            <Button Grid.Column="4" x:Name="CancelButton" MinWidth="86" MinHeight="24" 
+                    Content="{x:Static components:Resources.Cancel}" 
+                    Click="CancelButton_Click" 
+                    KeyUp="CancelButton_KeyUp" IsCancel="True" />
         </Grid>
     </Grid>
 </ui:DialogWindow>
