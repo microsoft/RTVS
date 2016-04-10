@@ -36,7 +36,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" MinHeight="32" Margin="0,8">
 
                 <TextBox Background="Transparent" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" BorderThickness="0" Margin="-2,0,-2,0"
-                         Text="{Binding Path=Name, Mode=OneWay}" IsReadOnly="True" FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale155}}" />
+                         Text="{Binding Path=Name, Mode=OneWay}" IsReadOnly="True" FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" />
             </StackPanel>
 
             <!-- project action when in project package manager -->
