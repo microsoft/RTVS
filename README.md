@@ -48,7 +48,7 @@ milestone. If you have a key bug or feature that should be attended to, please t
 ### Builds and pull requests
 
 If you would like to build RTVS yourself, and maybe even make a pull request (highly appreciated!), please take
-a look at the [contributing guidelines](https://github.com/Microsoft/RTVS/blob/master/CONTRIBUTING.md) first.
+a look at the [contributing guidelines](CONTRIBUTING.md) first.
 
 ### Miscelaneous
 
