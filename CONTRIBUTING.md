@@ -5,7 +5,7 @@ This project's code of conduct can be found in the [CODE_OF_CONDUCT.md file](COD
 (v1.4.0 of the http://contributor-covenant.org/ CoC).
 
 ## Contributor License Agreement
-If your contribution is large enough you will be asked to sign the Microsoft CLA (the CLA bot will tell you if it's necessary).
+If your contribution is large enough, you will be asked to sign the Microsoft CLA (the CLA bot will tell you if it's necessary).
 
 ## Development
 
@@ -14,8 +14,8 @@ If your contribution is large enough you will be asked to sign the Microsoft CLA
 1. Visual Studio 2015 Update 1 or higher.
    - You must have C++, Web Tools, and VS Extensibility components (VS SDK) installed.
 1. R 3.2.2 or later; either one of:
-   - [CRAN](https://cran.r-project.org/bin/windows/)
-   - [Microsoft R Open](https://mran.revolutionanalytics.com/open/)).
+   - [CRAN R](https://cran.r-project.org/bin/windows/);
+   - [Microsoft R Open](https://mran.revolutionanalytics.com/open/).
 1. [Wix Tools 3.10](https://wix.codeplex.com/releases/view/617257) (only needed if you want to build the installer).
 
 ### Getting the source code
