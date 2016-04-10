@@ -90,7 +90,7 @@
             </DataTemplate>
 
             <DataTemplate x:Key="ValueCellTemplate">
-                <Grid Height="{Binding Path=RowHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type DataGrid}}, Converter={x:Static rwpf:Converters.Scale155}}"
+                <Grid Height="{Binding Path=RowHeight, ElementName=RootTreeGrid, Converter={x:Static rwpf:Converters.Scale155}}"
                       VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
