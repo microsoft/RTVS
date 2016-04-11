@@ -14,6 +14,7 @@ using System.Windows.Data;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Encodings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -118,21 +119,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             return s;
         }
 
-        private Encoding ToEncoding(string encoding) {
-            if (!string.IsNullOrEmpty(encoding)) {
-
-                int cp;
-                if (Int32.TryParse(encoding, out cp)) {
-                    return Encoding.GetEncoding(cp);
-                }
-                // TODO: map names that R uses to actual encoding names
-                try {
-                    return Encoding.GetEncoding(encoding);
-                } catch (ArgumentException) { }
-            }
-            return Encoding.Default;
-        }
-
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
             string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
             if (!string.IsNullOrEmpty(filePath)) {
@@ -171,7 +157,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             await _encodingsInitTask;
 
             if (!string.IsNullOrEmpty(FilePathBox.Text)) {
-                string text = ReadFile(FilePathBox.Text, ToEncoding(GetSelectedString(EncodingComboBox)));
+                string rEncoding = GetSelectedString(EncodingComboBox);
+                Encoding encoding = REncodingsMap.GetEncoding(rEncoding);
+                string text = ReadFile(FilePathBox.Text, encoding);
                 InputFilePreview.Text = text;
             }
 
@@ -278,7 +266,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 };
 
                 for (int c = 0; c < gridData.Grid.Range.Columns.Count; c++) {
-                    row.Values.Add(gridData.Grid[gridData.Grid.Range.Rows.Start + r, gridData.Grid.Range.Columns.Start + c]);
+                    row.Values.Add(gridData.Grid[gridData.Grid.Range.Rows.Start + r, gridData.Grid.Range.Columns.Start + c].ToUnicodeQuotes());
                 }
 
                 rows.Add(row);
