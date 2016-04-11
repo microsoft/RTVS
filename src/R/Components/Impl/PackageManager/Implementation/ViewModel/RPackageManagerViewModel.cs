@@ -151,13 +151,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 return;
             }
 
-            if (MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
                     Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo)) {
-                return;
+                package.IsChanging = true;
+                DispatchOnMainThread(() => InstallAsync(package));
             }
-
-            package.IsChanging = true;
-            DispatchOnMainThread(() => InstallAsync(package));
         }
 
         private async Task InstallAsync(IRPackageViewModel package) {
@@ -174,6 +172,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
+            package.IsChanging = false;
         }
 
         public void Uninstall(IRPackageViewModel package) {
@@ -188,35 +187,35 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
 
-            if (MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
                     Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath),
                     MessageButtons.YesNo)) {
-                return;
-            }
 
-            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
-                IsLoading = true;
-            }
+                if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                    IsLoading = true;
+                }
 
-            if (package.IsLoaded) {
-                await _packageManager.UnloadPackageAsync(package.Name);
-                await ReloadLoadedPackagesAsync();
-            }
+                if (package.IsLoaded) {
+                    await _packageManager.UnloadPackageAsync(package.Name);
+                    await ReloadLoadedPackagesAsync();
+                }
 
-            if (!package.IsLoaded) {
-                await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
-                await ReloadInstalledAndLoadedPackagesAsync();
+                if (!package.IsLoaded) {
+                    await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
+                    await ReloadInstalledAndLoadedPackagesAsync();
 
-                if (_selectedTab == SelectedTab.InstalledPackages) {
-                    ReplaceItems(_installedPackages);
-                } else if (_selectedTab == SelectedTab.LoadedPackages) {
-                    ReplaceItems(_loadedPackages);
+                    if (_selectedTab == SelectedTab.InstalledPackages) {
+                        ReplaceItems(_installedPackages);
+                    } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                        ReplaceItems(_loadedPackages);
+                    }
+                }
+
+                if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                    IsLoading = false;
                 }
             }
-
-            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
-                IsLoading = false;
-            }
+            package.IsChanging = false;
         }
 
         public void Load(IRPackageViewModel package) {
