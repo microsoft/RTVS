@@ -143,7 +143,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             package.IsChanging = true;
-            DispatchOnMainThread(() => InstallAsync(package));
+            DispatchOnMainThread(async () => {
+                await InstallAsync(package);
+                package.IsChanging = false;
+            });
         }
 
         public void Update(IRPackageViewModel package) {
@@ -157,7 +160,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             package.IsChanging = true;
-            DispatchOnMainThread(() => InstallAsync(package));
+            DispatchOnMainThread(async () => {
+                await InstallAsync(package);
+                package.IsChanging = false;
+            });
         }
 
         private async Task InstallAsync(IRPackageViewModel package) {
@@ -182,7 +188,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             package.IsChanging = true;
-            DispatchOnMainThread(() => UninstallAsync(package));
+            DispatchOnMainThread(async () => {
+                await UninstallAsync(package);
+                package.IsChanging = false;
+            });
         }
 
         private async Task UninstallAsync(IRPackageViewModel package) {
