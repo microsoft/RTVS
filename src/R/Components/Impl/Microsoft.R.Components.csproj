@@ -132,6 +132,7 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\Implementation\SessionPool.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />

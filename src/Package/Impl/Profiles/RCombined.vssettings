@@ -110,7 +110,7 @@
                         <wm:ToolWindowView ForceCreate="ForceCreate" Name="ST:2:0:{08a1bf1d-7967-4afc-8253-1790862ab8c9}" DockedHeight="430" DockedWidth="1024" FloatingTop="100" FloatingLeft="100" FloatingHeight="450" FloatingWidth="450"/>
                         <wm:ToolWindowView ForceCreate="ForceCreate" Name="ST:0:0:{2ffc3976-88be-4e8a-8913-68245bb123f9}" DockedHeight="430" DockedWidth="1024" FloatingTop="100" FloatingLeft="100" FloatingHeight="450" FloatingWidth="450"/>
                         <wm:ToolWindowView ForceCreate="ForceCreate" Name="ST:1:0:{08a1bf1d-7967-4afc-8253-1790862ab8c9}" DockedHeight="430" DockedWidth="1024" FloatingTop="100" FloatingLeft="100" FloatingHeight="450" FloatingWidth="450"/>
-                        <wm:ToolWindowView ForceCreate="DontForceCreate" Name="ST:0:0:{c2582843-58c9-4fe7-b4bd-864c17ad7ce2}" IsSelected="True" IsVisible="True" DockedHeight="430" DockedWidth="1024" FloatingTop="100" FloatingLeft="100" FloatingHeight="450" FloatingWidth="450"/>
+                        <wm:ToolWindowView ForceCreate="ForceCreate" Name="ST:0:0:{c2582843-58c9-4fe7-b4bd-864c17ad7ce2}" IsSelected="True" IsVisible="True" DockedHeight="430" DockedWidth="1024" FloatingTop="100" FloatingLeft="100" FloatingHeight="450" FloatingWidth="450"/>
                       </TabGroup>
                       <TabGroup DockedHeight="430" DockedWidth="100">
                         <ViewBookmark Name="ST:0:0:{53024d34-0ef5-11d3-87e0-00c04f7971a5}" DockedHeight="430" DockedWidth="100"/>

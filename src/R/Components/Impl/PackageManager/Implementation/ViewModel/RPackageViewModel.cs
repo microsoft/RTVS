@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private string _libraryPath;
         private string _built;
         private bool _isUpdateAvailable;
+        private bool _canBeUninstalled;
 
         public static RPackageViewModel CreateAvailable(RPackage package, IRPackageManagerViewModel owner) {
             Uri repositoryUri;
@@ -74,8 +75,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsInstalled = true,
                 HasDetails = true
             };
-
-
         }
 
         public string Name { get; }
@@ -146,6 +145,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             set { SetProperty(ref _isLoaded, value); }
         }
 
+        public bool CanBeUninstalled {
+            get { return _canBeUninstalled; }
+            set { SetProperty(ref _canBeUninstalled, value); }
+        }
+
         public bool HasDetails {
             get { return _hasDetails; }
             private set { SetProperty(ref _hasDetails, value); }
@@ -177,8 +181,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             License = package.License;
             RepositoryUri = repositoryUri;
             RepositoryText = repositoryUri != null ? null : package.Repository;
-            // TODO: Need proper version comparison
-            IsUpdateAvailable = InstalledVersion != LatestVersion;
+            IsUpdateAvailable = new RPackageVersion(LatestVersion).CompareTo(new RPackageVersion(InstalledVersion)) > 0;
         }
 
         public void Install() {
@@ -202,8 +205,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (isInstalled) {
                 InstalledVersion = package.Version;
                 IsInstalled = true;
-                // TODO: Need proper version comparison
-                IsUpdateAvailable = InstalledVersion != LatestVersion;
+                IsUpdateAvailable = new RPackageVersion(LatestVersion).CompareTo(new RPackageVersion(InstalledVersion)) > 0;
             }
 
             HasDetails = true;

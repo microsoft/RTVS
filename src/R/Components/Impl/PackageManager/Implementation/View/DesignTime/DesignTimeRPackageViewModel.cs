@@ -30,6 +30,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             IsUpdateAvailable = true;
             IsSelected = true;
             HasDetails = true;
+            CanBeUninstalled = true;
         }
 
         public DesignTimeRPackageViewModel(string name
@@ -69,6 +70,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public string Suggests { get; }
         public bool IsInstalled { get; set; }
         public bool IsLoaded { get; set; }
+        public bool CanBeUninstalled { get; set; }
         public bool IsChanging { get; set; }
 
         public bool IsUpdateAvailable { get; }

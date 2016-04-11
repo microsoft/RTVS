@@ -115,6 +115,7 @@
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
+    <Compile Include="PackageManager\PackageVersionTest.cs" />
     <Compile Include="PackageManager\PackageManagerIntegrationTest.cs" />
     <Compile Include="PackageManager\TestPackages.cs" />
     <Compile Include="PackageManager\TestRepositories.cs" />

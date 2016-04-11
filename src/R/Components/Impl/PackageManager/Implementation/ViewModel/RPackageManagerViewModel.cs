@@ -188,8 +188,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task UninstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
 
-            if(MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, 
-                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), 
+            if (MessageButtons.No == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath),
                     MessageButtons.YesNo)) {
                 return;
             }
@@ -198,7 +198,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = true;
             }
 
-            if(package.IsLoaded) {
+            if (package.IsLoaded) {
                 await _packageManager.UnloadPackageAsync(package.Name);
                 await ReloadLoadedPackagesAsync();
             }
@@ -371,6 +371,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     .OrderBy(p => p.Name)
                     .ToList<IRPackageViewModel>();
 
+                IdentifyRemovablePackages(vmInstalledPackages);
+
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
                 DispatchOnMainThread(EnsureAvailablePackagesLoadedAsync);
@@ -388,10 +390,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     }
                 }
 
+                IdentifyRemovablePackages(vmInstalledPackages);
                 vmInstalledPackages = vmInstalledPackages.OrderBy(p => p.Name).ToList();
 
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
+            }
+        }
+
+        private void IdentifyRemovablePackages(IEnumerable<IRPackageViewModel> packages) {
+            var basePackage = packages.FirstOrDefault(x => x.Name.EqualsOrdinal("base"));
+            if (basePackage != null) {
+                foreach (var p in packages) {
+                    p.CanBeUninstalled = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
+                }
             }
         }
 
@@ -520,8 +532,22 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
             }
 
-            _coreShell.DispatchOnUIThread(() => ApplySearch(filteredPackages, cancellationToken));
-            return filteredPackages.Count;
+            // Preset results as:
+            // 1. Exact match
+            // 2. Starts with the search term
+            // 3. Everything else
+            IList<IRPackageViewModel> result = filteredPackages;
+            var exact = filteredPackages.Where(x => x.Name.EqualsOrdinal(searchString)).ToList();
+            var startsWith = filteredPackages.Where(x => x.Name.StartsWith(searchString, StringComparison.Ordinal) && !x.Name.EqualsOrdinal(searchString)).ToList();
+            if (!cancellationToken.IsCancellationRequested) {
+                var remainder = filteredPackages.Except(startsWith).Except(exact);
+                if (!cancellationToken.IsCancellationRequested) {
+                    result = exact.Concat(startsWith).Concat(remainder).ToList();
+                }
+            }
+
+            _coreShell.DispatchOnUIThread(() => ApplySearch(result, cancellationToken));
+            return result.Count;
         }
 
         private void ApplySearch(IList<IRPackageViewModel> packages, CancellationToken cancellationToken) {

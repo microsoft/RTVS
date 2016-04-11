@@ -84,19 +84,18 @@
 
                         <!-- title & summary-->
                         <StackPanel Grid.Column="2">
-                            <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
-                                   FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0">
-                                <TextBlock.ToolTip>
-                                    <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
-                                        <TextBlock Style="{StaticResource TooltipStyle}">
+                            <StackPanel.ToolTip>
+                                <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
+                                    <TextBlock Style="{StaticResource TooltipStyle}">
                                         <Run Text="{Binding Path=Name, Mode=OneWay}" FontWeight="Bold" />
                                         <LineBreak />
                                         <Run Text="{Binding Path=Description, Mode=OneWay}" />
-                                        </TextBlock>
-                                    </ToolTip>
-                                </TextBlock.ToolTip>
-                            </TextBlock>
-                            <TextBlock Text="{Binding Path=Title, Mode=OneWay}" Margin="4,0,0,0"></TextBlock>
+                                    </TextBlock>
+                                </ToolTip>
+                            </StackPanel.ToolTip>
+                            <TextBlock FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" Text="{Binding Path=Name, Mode=OneWay}"
+                                       FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale122}}" Margin="4,0,0,0" />
+                            <TextBlock Text="{Binding Path=Title, Mode=OneWay}" Margin="4,0,0,0" />
                         </StackPanel>
 
                         <Grid Grid.Column="3" VerticalAlignment="Center" Margin="10,0,0,0">
@@ -122,8 +121,13 @@
 
                             <!-- uninstall button -->
                             <Button x:Name="ButtonUninstall" Grid.Column="1" Style="{StaticResource ButtonStyle}" Click="ButtonUninstall_Click"
-                                    Visibility="{Binding Path=IsInstalled, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"
                                     ToolTip="{x:Static components:Resources.PackageManager_UninstallButtonToolTip}">
+                                <Button.Visibility>
+                                    <MultiBinding Converter="{x:Static wpf:Converters.AllIsNotHidden}">
+                                        <Binding Path="CanBeUninstalled" />
+                                        <Binding Path="IsInstalled" />
+                                    </MultiBinding>
+                                </Button.Visibility>
                                 <Rectangle Fill="{StaticResource IconUninstall}" Width="16" Height="16" />
                             </Button>
 
