@@ -41,14 +41,13 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="FilePathBox" MinHeight="20" VerticalContentAlignment="Center" />
-            <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center"
-                    Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
+            <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center" MinHeight="22" MinWidth="22" 
                     FontSize="{Binding ElementName=_self, Path=FontSize, Converter={x:Static wpf:Converters.FontScale155}}" />
             <RadioButton Grid.Column="4" x:Name="TabFile" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="Input File" />
             <RadioButton Grid.Column="6" x:Name="TabFrame" GroupName="Tabs" Template="{StaticResource TabHeaderToggleButton}" Content="Data Frame" IsChecked="True" />
         </Grid>
 
-        <Border Grid.Row="1" Margin="12,12,12,0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" VerticalAlignment="Stretch">
+        <Border Grid.Row="1" Margin="12,12,12,0" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource {x:Static ui:EnvironmentColors.ToolWindowBorderBrushKey}}" VerticalAlignment="Stretch">
             <Grid Margin="0,-0.333,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="30*" MinWidth="210" />
@@ -131,7 +130,7 @@
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+                              Background="{DynamicResource {x:Static wpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static ui:EnvironmentColors.ToolWindowBorderBrushKey}}" />
 
                 <!-- right side -->
                 <Grid Grid.Column="2">
@@ -148,6 +147,7 @@
                                    Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}" BorderThickness="0">
                             <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static ui:EnvironmentColors.ToolWindowBackgroundBrushKey}}" />
                                     <Setter Property="Content" Value="{Binding RowName}" />
                                 </Style>
                             </DataGrid.RowHeaderStyle>
