@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync()) {
                         await evaluation.EvaluateAsync("help.start()", REvaluationKind.Normal);
                     }
-                } catch (RException) { } catch (OperationCanceledException) { }
+                } catch (OperationCanceledException) { }
             }
         }
     }

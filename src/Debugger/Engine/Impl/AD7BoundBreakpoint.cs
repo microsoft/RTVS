@@ -82,7 +82,6 @@ namespace Microsoft.R.Debugger.Engine {
                                 // later, but as soon as it's actually possible.
                                 DebugBreakpoint.DeleteAsync()
                                     .SilenceException<MessageTransportException>()
-                                    .SilenceException<RException>()
                                     .DoNotWait();
                             } else {
                                 TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugBreakpoint.DeleteAsync(ct));
