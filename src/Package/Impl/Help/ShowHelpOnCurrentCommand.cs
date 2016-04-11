@@ -93,7 +93,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                             "Evaluation of help expression failed. Error: {0}, Status: {1}", result.Error, result.ParseStatus));
                     }
                 }
-            } catch (RException) {
             } catch (OperationCanceledException) {
             }
 
@@ -104,12 +103,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 using (IRSessionInteraction interaction = await _workflow.RSession.BeginInteractionAsync(isVisible: false)) {
                     try {
                         await interaction.RespondAsync(prefix + item + Environment.NewLine);
-                    } catch (RException ex) {
-                        if ((uint)ex.HResult == 0x80131500) {
-                            // Typically 'starting help server...' so try again
-                            retries++;
-                            continue;
-                        }
                     } catch (OperationCanceledException) { }
                 }
 

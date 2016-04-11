@@ -218,7 +218,6 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             ExecuteBrowserCommandAsync("c", null, cancellationToken)
                 .SilenceException<MessageTransportException>()
-                .SilenceException<RException>()
                 .DoNotWait();
         }
 
@@ -260,7 +259,6 @@ namespace Microsoft.R.Debugger {
             _stepTcs = new TaskCompletionSource<bool>();
             ExecuteBrowserCommandAsync(command, prepare, cancellationToken)
                 .SilenceException<MessageTransportException>()
-                .SilenceException<RException>()
                 .DoNotWait();
             return await _stepTcs.Task;
         }

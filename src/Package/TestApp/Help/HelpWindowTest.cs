@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         private void ShowHelp(string command, VsRHostScript hostScript, RHostClientHelpTestApp clientApp) {
             clientApp.Ready = false;
             using (var request = hostScript.Session.BeginInteractionAsync().Result) {
-                request.RespondAsync(command).SilenceException<RException>();
+                request.RespondAsync(command);
             }
             WaitForAppReady(clientApp);
         }

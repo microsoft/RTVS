@@ -128,9 +128,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 return ExecutionResult.Success;
-            } catch (RException) {
-                // It was already reported via RSession.Error and printed out; just return failure.
-                return ExecutionResult.Failure;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
                 return ExecutionResult.Failure;

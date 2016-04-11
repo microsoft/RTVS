@@ -395,7 +395,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         private async Task ExecuteRCode(IRSession session, string expression) {
             using (var interaction = await session.BeginInteractionAsync(isVisible: false)) {
-                await interaction.RespondAsync(expression).SilenceException<RException>();
+                await interaction.RespondAsync(expression);
             }
         }
     }

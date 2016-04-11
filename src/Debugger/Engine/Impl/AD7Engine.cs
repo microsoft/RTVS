@@ -81,7 +81,6 @@ namespace Microsoft.R.Debugger.Engine {
 
             ExitBrowserAsync(rSession)
                 .SilenceException<MessageTransportException>()
-                .SilenceException<RException>()
                 .DoNotWait();
         }
 
@@ -195,7 +194,6 @@ namespace Microsoft.R.Debugger.Engine {
             ThrowIfDisposed();
             DebugSession.BreakAsync()
                 .SilenceException<MessageTransportException>()
-                .SilenceException<RException>()
                 .DoNotWait();
             return VSConstants.S_OK;
         }
@@ -307,7 +305,6 @@ namespace Microsoft.R.Debugger.Engine {
                 // let breakpoints be taken care of later.
                 DebugSession.EnableBreakpointsAsync(false)
                     .SilenceException<MessageTransportException>()
-                    .SilenceException<RException>()
                     .DoNotWait();
             } finally {
                 // Detach should never fail, even if something above didn't work.
