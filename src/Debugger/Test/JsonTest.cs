@@ -68,9 +68,11 @@ namespace Microsoft.R.Debugger.Test {
         [InlineData("structure(list(), names = ''[FALSE])", "{}")]
         [InlineData("list(n = 0, s = 's', u = NULL)", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
+        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}")]
         [InlineData("as.environment(list())", "{}")]
         [InlineData("as.environment(list(n = 0, s = 's', u = NULL))", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
+        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}")]
         [InlineData("list(as.environment(list(l = list())))", @"[{""l"":[]}]")]
         public async Task Serialize(string expr, string json) {
             if (json == SameAsInput) {
