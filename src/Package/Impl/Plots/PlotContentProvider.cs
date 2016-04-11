@@ -31,7 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
             if (_lastPixelWidth >= 0 && _lastPixelHeight >= 0) {
-                await ApplyNewSize();
+                try {
+                    await ApplyNewSize();
+                } catch (OperationCanceledException) { } catch (MessageTransportException) { } catch (RException) { }
             }
 
             VsAppShell.Current.DispatchOnUIThread(() => {
