@@ -76,6 +76,8 @@
                         <RowDefinition Height="20" />
                         <RowDefinition Height="8" />
                         <RowDefinition Height="20" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="20" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -131,9 +133,15 @@
                              Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
                              Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
 
+                    <!-- NRows -->
+                    <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="NRows" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" VerticalContentAlignment="Center" 
+                             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+
                     <!-- Header -->
-                    <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="Header" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="16" Grid.Column="2" VerticalAlignment="Center" Margin="0,1,0,0" HorizontalAlignment="Left"
+                    <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="Header" VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="18" Grid.Column="2" VerticalAlignment="Center" Margin="0,1,0,0" HorizontalAlignment="Left"
                               x:Name="HeaderCheckBox" IsChecked="True" Unchecked="HeaderCheckBox_Changed" Checked="HeaderCheckBox_Changed" />
                 </Grid>
 
@@ -150,15 +158,39 @@
                     <Grid Visibility="{Binding ElementName=TabFrame, Path=IsChecked, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                         <Border x:Name="ErrorBlock" Visibility="Collapsed" VerticalAlignment="Top"
                                 Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
-                            <TextBlock x:Name="ErrorText" Margin="6" />
+                            <TextBlock x:Name="ErrorText" Margin="6" Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
                         </Border>
                         <DataGrid x:Name="DataFramePreview" Visibility="Visible" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False"
                                    Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}" BorderThickness="0">
                             <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
                                     <Setter Property="Content" Value="{Binding RowName}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
                                 </Style>
                             </DataGrid.RowHeaderStyle>
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+                                    <Setter Property="Padding" Value="12" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+                                    <Setter Property="Padding" Value="8" />
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Resources>
+                                <Style TargetType="Button" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                </Style>
+                            </DataGrid.Resources>
                         </DataGrid>
                     </Grid>
                 </Grid>

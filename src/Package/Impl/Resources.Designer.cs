@@ -493,6 +493,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to parse NRows value.
+        /// </summary>
+        public static string ImportData_NRowsError {
+            get {
+                return ResourceManager.GetString("ImportData_NRowsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Period (.).
         /// </summary>
         public static string ImportData_Period {

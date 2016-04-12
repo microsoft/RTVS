@@ -15,6 +15,7 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Wpf;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -148,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             int cp = GetSelectedValueAsInt(EncodingComboBox);
             PreviewFileContent(FilePathBox.Text, cp);
-            await ConvertToUtf8(FilePathBox.Text, cp, MaxPreviewLines);
+            await ConvertToUtf8(FilePathBox.Text, cp, false, MaxPreviewLines);
 
             if (!string.IsNullOrEmpty(_tempFilePath)) {
                 var expression = BuildCommandLine(preview: true);
@@ -276,10 +277,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             InputFilePreview.Text = text;
         }
 
-        private async Task ConvertToUtf8(string file, int codePage, int maxLines = Int32.MaxValue) {
+        private async Task ConvertToUtf8(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
             try {
                 DeleteTempFile();
-                await ConvertToUtf8Worker(file, codePage, maxLines);
+                await ConvertToUtf8Worker(file, codePage, reportProgress, nRows);
             } catch (IOException ex) {
                 OnError(ex.Message);
             } catch (UnauthorizedAccessException ex) {
@@ -287,7 +288,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private async Task ConvertToUtf8Worker(string file, int codePage, int maxLines = Int32.MaxValue) {
+        private async Task ConvertToUtf8Worker(string file, int codePage, bool reportProgress, int nRows = Int32.MaxValue) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             Encoding encoding = Encoding.GetEncoding(codePage);
@@ -295,7 +296,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             int lineCount = 0;
             double progressValue = 0;
-            bool reportProgress = maxLines == Int32.MaxValue;
 
             using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
                 if (reportProgress) {
@@ -307,7 +307,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     while (true) {
                         line = sr.ReadLine();
                         lineCount++;
-                        if (line == null || lineCount >= maxLines) {
+                        if (line == null || lineCount > nRows) {
                             break;
                         }
 
@@ -343,7 +343,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
                 try {
                     int cp = GetSelectedValueAsInt(EncodingComboBox);
-                    await ConvertToUtf8(FilePathBox.Text, cp);
+
+                    var nRowsString = NRowsTextBox.Text;
+                    int nrows = Int32.MaxValue;
+                    if (!string.IsNullOrWhiteSpace(nRowsString)) {
+                        if (!Int32.TryParse(nRowsString, out nrows)) {
+                            VsAppShell.Current.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
+                            return;
+                        }
+                        nrows++; // for possible header
+                    }
+
+                    await ConvertToUtf8(FilePathBox.Text, cp, true, nrows);
                     await SetProgressMessage(Package.Resources.Importing);
 
                     var expression = BuildCommandLine(false);
