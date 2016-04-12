@@ -275,5 +275,23 @@ namespace Microsoft.R.Core.Test.Parser {
 }";
             ParserTest.VerifyParse(expected, content);
         }
+
+        [Test]
+        [Category.R.Parser]
+        public void ParsePipe() {
+            string expected =
+@"GlobalScope  [Global]
+    ExpressionStatement  [a() %>% b]
+        Expression  [a() %>% b]
+            TokenOperator  [%>% [4...7)]
+                FunctionCall  [0...3)
+                    Variable  [a]
+                    TokenNode  [( [1...2)]
+                    TokenNode  [) [2...3)]
+                TokenNode  [%>% [4...7)]
+                Variable  [b]
+";
+            ParserTest.VerifyParse(expected, @"a() %>% b");
+        }
     }
 }
