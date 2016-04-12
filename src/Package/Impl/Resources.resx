@@ -691,4 +691,10 @@ Additional information:
   <data name="OSDefaultEncoding" xml:space="preserve">
     <value>OS Default</value>
   </data>
+  <data name="Converting" xml:space="preserve">
+    <value>Converting...</value>
+  </data>
+  <data name="Importing" xml:space="preserve">
+    <value>Importing...</value>
+  </data>
 </root>

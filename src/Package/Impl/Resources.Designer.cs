@@ -160,6 +160,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Converting....
+        /// </summary>
+        public static string Converting {
+            get {
+                return ResourceManager.GetString("Converting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Use .Rprofile).
         /// </summary>
         public static string CranMirror_UseRProfile {
@@ -552,6 +561,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ImportData_Whitespace {
             get {
                 return ResourceManager.GetString("ImportData_Whitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importing....
+        /// </summary>
+        public static string Importing {
+            get {
+                return ResourceManager.GetString("Importing", resourceCulture);
             }
         }
         

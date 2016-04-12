@@ -165,6 +165,10 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
+            <ProgressBar Grid.Column="0" x:Name="ProgressBar" Value="-10" Minimum="-10" Maximum="100"
+                         Height="{Binding ElementName=RunButton, Path=ActualHeight}" Margin="16,0,16,0" />
+            <TextBlock Grid.Column="0" x:Name="ProgressBarText" Background="Transparent" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" 
                     Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" 
                     PreviewKeyUp="RunButton_PreviewKeyUp"

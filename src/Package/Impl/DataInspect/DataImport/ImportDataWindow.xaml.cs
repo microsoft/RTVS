@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// Interaction logic for ImportDataWindow.xaml
     /// </summary>
     public partial class ImportDataWindow : DialogWindow {
+        private const int MaxPreviewLines = 20;
         private string _tempFilePath;
 
         public IDictionary<string, string> Separators { get; } = new Dictionary<string, string> {
@@ -69,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         public ImportDataWindow(string filePath, string name)
             : this() {
-            SetFilePathAsync(filePath, name).DoNotWait();
+            SetFilePath(filePath, name);
         }
 
         private IRSession GetRSession() {
@@ -126,25 +128,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         private void FileOpenButton_Click(object sender, RoutedEventArgs e) {
             string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, Package.Resources.CsvFileFilter);
             if (!string.IsNullOrEmpty(filePath)) {
-                SetFilePathAsync(filePath).DoNotWait();
+                SetFilePath(filePath);
             }
         }
 
-        private async Task SetFilePathAsync(string filePath, string name = null) {
+        private void SetFilePath(string filePath, string name = null) {
             FilePathBox.Text = filePath;
             FilePathBox.CaretIndex = FilePathBox.Text.Length;
             FilePathBox.ScrollToEnd();
 
             VariableNameBox.Text = name ?? Path.GetFileNameWithoutExtension(filePath);
-            await PreviewAsync();
+            PreviewContent();
         }
 
-        private async Task PreviewAsync() {
+        private async void PreviewContent() {
             if (string.IsNullOrEmpty(FilePathBox.Text)) {
                 return;
             }
 
-            ConvertToUtf8(FilePathBox.Text, maxLines: 20);
+            int cp = GetSelectedValueAsInt(EncodingComboBox);
+            PreviewFileContent(FilePathBox.Text, cp);
+            await ConvertToUtf8(FilePathBox.Text, cp, MaxPreviewLines);
 
             if (!string.IsNullOrEmpty(_tempFilePath)) {
                 var expression = BuildCommandLine(preview: true);
@@ -230,11 +234,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             dg.ItemsSource = rows;
         }
 
-        private string ReadFile(string filePath, Encoding enc, int lineCount = 20) {
+        private string ReadFilePreview(string filePath, Encoding enc) {
             StringBuilder sb = new StringBuilder();
             using (var sr = new StreamReader(filePath, enc, detectEncodingFromByteOrderMarks: true)) {
                 int readCount = 0;
-                while (readCount < lineCount) {
+                while (readCount < MaxPreviewLines) {
                     string read = sr.ReadLine();
                     if (read == null) {
                         break;
@@ -243,7 +247,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     readCount++;
                 }
             }
-
             return sb.ToString();
         }
 
@@ -253,11 +256,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            PreviewAsync().DoNotWait();
+            PreviewContent();
         }
 
         private void HeaderCheckBox_Changed(object sender, RoutedEventArgs e) {
-            PreviewAsync().DoNotWait();
+            PreviewContent();
         }
 
         protected override void OnClosed(EventArgs e) {
@@ -265,33 +268,58 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             base.OnClosed(e);
         }
 
-        private void ConvertToUtf8(string file, int maxLines = Int32.MaxValue) {
+        private void PreviewFileContent(string file, int codePage) {
+            Encoding encoding = Encoding.GetEncoding(codePage);
+            string text = ReadFilePreview(file, encoding);
+            InputFilePreview.Text = text;
+        }
+
+        private Task ConvertToUtf8(string file, int codePage, int maxLines = Int32.MaxValue) {
             DeleteTempFile();
+            bool reportProgress = maxLines == Int32.MaxValue;
 
-            try {
-                int cp = GetSelectedValueAsInt(EncodingComboBox);
-                Encoding encoding = Encoding.GetEncoding(cp);
-                string text = ReadFile(FilePathBox.Text, encoding);
-                InputFilePreview.Text = text;
+            // Convert file to UTF-8 so it can be properly imported
+            return Task.Run(async () => {
+                try {
+                    Encoding encoding = Encoding.GetEncoding(codePage);
+                    _tempFilePath = Path.GetTempFileName();
+                    int lineCount = 0;
+                    double progressValue = 0;
 
-                // Convert file to UTF-8 so it can be properly imported
-                _tempFilePath = Path.GetTempFileName();
-                using (var sr = new StreamReader(FilePathBox.Text, encoding, detectEncodingFromByteOrderMarks: true)) {
-                    using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
-                        string line;
-                        int count = 0;
-                        while (true) {
-                            line = sr.ReadLine();
-                            if (line == null || ++count >= maxLines) {
-                                break;
+                    using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
+                        if (reportProgress) {
+                            await StartReportProgress(Package.Resources.Converting);
+                        }
+                        long read = 0;
+                        using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
+                            string line;
+                            while (true) {
+                                line = sr.ReadLine();
+                                lineCount++;
+                                if (line == null || lineCount >= maxLines) {
+                                    break;
+                                }
+
+                                read += line.Length;
+                                sw.WriteLine(line);
+
+                                if (reportProgress) {
+                                    var newProgressValue = 90 * (double)read / (double)sr.BaseStream.Length;
+                                    if (newProgressValue - progressValue >= 10) {
+                                        progressValue = newProgressValue;
+                                        await ReportProgress(progressValue);
+                                    }
+                                }
                             }
-                            sw.WriteLine(line);
                         }
                     }
+                } catch (IOException ex) {
+                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
                 }
-            } catch (IOException ex) {
-                OnError(ex.Message);
-            }
+                if (reportProgress) {
+                    await ReportProgress(90);
+                }
+            });
         }
 
         private void DeleteTempFile() {
@@ -302,22 +330,49 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             } catch (UnauthorizedAccessException) { }
         }
 
-        private async Task DoDefaultAction() {
-            var expression = BuildCommandLine(false);
-            if (expression != null) {
-                RunButton.IsEnabled = CancelButton.IsEnabled = false;
-                // TODO: this may take a while and must be cancellable
-                await RunAsync(expression);
+        private async void DoDefaultAction() {
+            RunButton.IsEnabled = CancelButton.IsEnabled = false;
+
+            try {
+                int cp = GetSelectedValueAsInt(EncodingComboBox);
+                await ConvertToUtf8(FilePathBox.Text, cp);
+                await SetProgressMessage(Package.Resources.Importing);
+
+                var expression = BuildCommandLine(false);
+                if (expression != null) {
+                    // TODO: this may take a while and must be cancellable
+                    await RunAsync(expression);
+                }
+            } finally {
                 RunButton.IsEnabled = CancelButton.IsEnabled = true;
             }
         }
 
+        private async Task StartReportProgress(string message) {
+            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+                ProgressBarText.Text = message;
+                ProgressBar.Value = 0;
+            });
+        }
+
+        private async Task ReportProgress(double value) {
+            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+                ProgressBar.Value = value;
+            });
+        }
+
+        private async Task SetProgressMessage(string message) {
+            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+                ProgressBarText.Text = message;
+            });
+        }
+
         private void RunButton_Click(object sender, RoutedEventArgs e) {
-            DoDefaultAction().DoNotWait();
+            DoDefaultAction();
         }
 
         private void RunButton_PreviewKeyUp(object sender, KeyEventArgs e) {
-            DoDefaultAction().DoNotWait();
+            DoDefaultAction();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
