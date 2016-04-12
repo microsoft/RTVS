@@ -358,6 +358,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; is not a known CRAN mirror name..
+        /// </summary>
+        public static string Error_UnknownMirror {
+            get {
+                return ResourceManager.GetString("Error_UnknownMirror", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
         /// </summary>
         public static string Error_UnsupportedRVersion {
