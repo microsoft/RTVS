@@ -68,6 +68,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="EventTaskSources.cs" />
     <Compile Include="GraphicsDeviceTestFilesFixture.cs" />
     <Compile Include="Mocks\RContextMock.cs" />
     <Compile Include="Mocks\RSessionEvaluationMock.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="IdeGraphicsDeviceTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
     <Compile Include="Session\RSessionProviderTest.cs" />
+    <Compile Include="Session\RSessionTest.Output.cs" />
     <Compile Include="Session\RSessionTest.cs" />
     <Compile Include="Session\RSessionTest.CancelAll.cs" />
     <Compile Include="Session\RSessionTest.InteractionEvaluation.cs" />

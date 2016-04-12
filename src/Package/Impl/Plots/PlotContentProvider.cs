@@ -31,7 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
             if (_lastPixelWidth >= 0 && _lastPixelHeight >= 0) {
-                await ApplyNewSize();
+                try {
+                    await ApplyNewSize();
+                } catch (OperationCanceledException) { } catch (MessageTransportException) { }
             }
 
             VsAppShell.Current.DispatchOnUIThread(() => {
@@ -275,7 +277,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
             // as the user can see them in the REPL.
             task.SilenceException<MessageTransportException>()
-                .SilenceException<Microsoft.R.Host.Client.RException>()
                 .DoNotWait();
         }
     }

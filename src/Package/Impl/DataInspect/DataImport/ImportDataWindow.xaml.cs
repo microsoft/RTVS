@@ -61,7 +61,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         public IDictionary<string, string> RowNames { get; } = new Dictionary<string, string> {
             [Package.Resources.AutomaticValue] = null,
             [Package.Resources.ImportData_UseFirstColumn] = "1",
-            [Package.Resources.ImportData_UseNumber] = "NULL"
+            [Package.Resources.ImportData_UseNumber] = null
         };
 
         public ImportDataWindow() {

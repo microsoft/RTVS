@@ -39,8 +39,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
                     }
                 });
 
-                _runningAction.SilenceException<RException>()
-                              .SilenceException<OperationCanceledException>()
+                _runningAction.SilenceException<OperationCanceledException>()
                               .SilenceException<MessageTransportException>();
             }
         }

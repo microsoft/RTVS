@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
@@ -313,7 +314,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
                 if (valueResult != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.GetRepresentation().Deparse;
+                    dpi.bstrValue = valueResult.GetRepresentation().Deparse.ToUnicodeQuotes();
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (promiseResult != null) {
                     dpi.bstrValue = promiseResult.Code;
