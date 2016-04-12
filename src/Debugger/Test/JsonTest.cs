@@ -83,7 +83,7 @@ namespace Microsoft.R.Debugger.Test {
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
                 res.JsonResult.Should().NotBeNull();
-                var actualJson = JsonConvert.SerializeObject(res.JsonResult);
+                var actualJson = JsonConvert.SerializeObject(res.JsonResult).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
             }
         }
