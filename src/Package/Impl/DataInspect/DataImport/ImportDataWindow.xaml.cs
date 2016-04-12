@@ -274,54 +274,57 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             InputFilePreview.Text = text;
         }
 
-        private Task ConvertToUtf8(string file, int codePage, int maxLines = Int32.MaxValue) {
-            DeleteTempFile();
+        private async Task ConvertToUtf8(string file, int codePage, int maxLines = Int32.MaxValue) {
+            try {
+                DeleteTempFile();
+                await ConvertToUtf8Worker(file, codePage, maxLines);
+            } catch (IOException ex) {
+                OnError(ex.Message);
+            } catch (UnauthorizedAccessException ex) {
+                OnError(ex.Message);
+            }
+        }
+
+        private async Task ConvertToUtf8Worker(string file, int codePage, int maxLines = Int32.MaxValue) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            Encoding encoding = Encoding.GetEncoding(codePage);
+            _tempFilePath = Path.GetTempFileName();
+
+            int lineCount = 0;
+            double progressValue = 0;
             bool reportProgress = maxLines == Int32.MaxValue;
 
-            // Convert file to UTF-8 so it can be properly imported
-            return Task.Run(async () => {
-                try {
-                    Encoding encoding = Encoding.GetEncoding(codePage);
-                    _tempFilePath = Path.GetTempFileName();
-                    int lineCount = 0;
-                    double progressValue = 0;
-
-                    using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
-                        if (reportProgress) {
-                            await StartReportProgress(Package.Resources.Converting);
+            using (var sr = new StreamReader(file, encoding, detectEncodingFromByteOrderMarks: true)) {
+                if (reportProgress) {
+                    await StartReportProgress(Package.Resources.Converting);
+                }
+                long read = 0;
+                using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
+                    string line;
+                    while (true) {
+                        line = sr.ReadLine();
+                        lineCount++;
+                        if (line == null || lineCount >= maxLines) {
+                            break;
                         }
-                        long read = 0;
-                        using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
-                            string line;
-                            while (true) {
-                                line = sr.ReadLine();
-                                lineCount++;
-                                if (line == null || lineCount >= maxLines) {
-                                    break;
-                                }
 
-                                read += line.Length;
-                                sw.WriteLine(line);
+                        read += line.Length;
+                        sw.WriteLine(line);
 
-                                if (reportProgress) {
-                                    var newProgressValue = 90 * (double)read / (double)sr.BaseStream.Length;
-                                    if (newProgressValue - progressValue >= 10) {
-                                        progressValue = newProgressValue;
-                                        await ReportProgress(progressValue);
-                                    }
-                                }
+                        if (reportProgress) {
+                            var newProgressValue = 90 * (double)read / (double)sr.BaseStream.Length;
+                            if (newProgressValue - progressValue >= 10) {
+                                progressValue = newProgressValue;
+                                await ReportProgress(progressValue);
                             }
                         }
                     }
-                } catch (IOException ex) {
-                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
-                } catch(UnauthorizedAccessException ex) {
-                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
                 }
-                if (reportProgress) {
-                    await ReportProgress(90);
-                }
-            });
+            }
+            if (reportProgress) {
+                await ReportProgress(90);
+            }
         }
 
         private void DeleteTempFile() {
