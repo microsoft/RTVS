@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
@@ -25,7 +26,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
             string s = value as string;
-            return s == Resources.CranMirror_UseRProfile ? null : s;
+            if (s == Resources.CranMirror_UseRProfile) {
+                return null;
+            } else if (CranMirrorList.MirrorNames.Contains(s)) {
+                return s;
+            } else {
+                throw new NotSupportedException(string.Format(Resources.Error_UnknownMirror, value));
+            }
         }
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) {
