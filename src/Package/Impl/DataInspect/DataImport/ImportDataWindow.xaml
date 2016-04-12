@@ -136,7 +136,8 @@
 
                 <!-- right side -->
                 <Grid Grid.Column="2">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}"
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                                  Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}"
                                   Visibility="{Binding ElementName=TabFile, Path=IsChecked, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                         <TextBlock x:Name="InputFilePreview" Margin="6" />
                     </ScrollViewer>
@@ -164,8 +165,14 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" />
-            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" />
+            <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" 
+                    Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" 
+                    PreviewKeyUp="RunButton_PreviewKeyUp"
+                    IsDefault="True" />
+            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" 
+                    Content="{x:Static components:Resources.Cancel}" 
+                    Click="CancelButton_Click" PreviewKeyUp="CancelButton_PreviewKeyUp"
+                    IsCancel="True" />
         </Grid>
     </Grid>
 </ui:DialogWindow>

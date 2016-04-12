@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -136,20 +137,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             VariableNameBox.Text = name ?? Path.GetFileNameWithoutExtension(filePath);
             await PreviewAsync();
-        }
-
-        private async void RunButton_Click(object sender, RoutedEventArgs e) {
-            var expression = BuildCommandLine(false);
-            if (expression != null) {
-                RunButton.IsEnabled = CancelButton.IsEnabled = false;
-                // TODO: this may take a while and must be cancellable
-                await RunAsync(expression);
-                RunButton.IsEnabled = CancelButton.IsEnabled = true;
-            }
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e) {
-            Close();
         }
 
         private async Task PreviewAsync() {
@@ -313,6 +300,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     File.Delete(_tempFilePath);
                 }
             } catch (UnauthorizedAccessException) { }
+        }
+
+        private async Task DoDefaultAction() {
+            var expression = BuildCommandLine(false);
+            if (expression != null) {
+                RunButton.IsEnabled = CancelButton.IsEnabled = false;
+                // TODO: this may take a while and must be cancellable
+                await RunAsync(expression);
+                RunButton.IsEnabled = CancelButton.IsEnabled = true;
+            }
+        }
+
+        private void RunButton_Click(object sender, RoutedEventArgs e) {
+            DoDefaultAction().DoNotWait();
+        }
+
+        private void RunButton_PreviewKeyUp(object sender, KeyEventArgs e) {
+            DoDefaultAction().DoNotWait();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
+        private void CancelButton_PreviewKeyUp(object sender, KeyEventArgs e) {
+            Close();
         }
     }
 }
