@@ -315,6 +315,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     }
                 } catch (IOException ex) {
                     VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
+                } catch(UnauthorizedAccessException ex) {
+                    VsAppShell.Current.DispatchOnUIThread(() => OnError(ex.Message));
                 }
                 if (reportProgress) {
                     await ReportProgress(90);
@@ -330,22 +332,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             } catch (UnauthorizedAccessException) { }
         }
 
-        private async void DoDefaultAction() {
-            RunButton.IsEnabled = CancelButton.IsEnabled = false;
+        private async Task DoDefaultAction() {
+            await VsAppShell.Current.DispatchOnMainThreadAsync(async () => {
+                RunButton.IsEnabled = CancelButton.IsEnabled = false;
 
-            try {
-                int cp = GetSelectedValueAsInt(EncodingComboBox);
-                await ConvertToUtf8(FilePathBox.Text, cp);
-                await SetProgressMessage(Package.Resources.Importing);
+                try {
+                    int cp = GetSelectedValueAsInt(EncodingComboBox);
+                    await ConvertToUtf8(FilePathBox.Text, cp);
+                    await SetProgressMessage(Package.Resources.Importing);
 
-                var expression = BuildCommandLine(false);
-                if (expression != null) {
-                    // TODO: this may take a while and must be cancellable
-                    await RunAsync(expression);
+                    var expression = BuildCommandLine(false);
+                    if (expression != null) {
+                        // TODO: this may take a while and must be cancellable
+                        await RunAsync(expression);
+                    }
+                } finally {
+                    RunButton.IsEnabled = CancelButton.IsEnabled = true;
                 }
-            } finally {
-                RunButton.IsEnabled = CancelButton.IsEnabled = true;
-            }
+            });
         }
 
         private async Task StartReportProgress(string message) {
@@ -368,11 +372,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void RunButton_Click(object sender, RoutedEventArgs e) {
-            DoDefaultAction();
+            DoDefaultAction().DoNotWait();
         }
 
         private void RunButton_PreviewKeyUp(object sender, KeyEventArgs e) {
-            DoDefaultAction();
+            DoDefaultAction().DoNotWait();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
