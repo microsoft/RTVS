@@ -87,12 +87,14 @@
 
                     <!-- Encoding -->
                     <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="Encoding" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged" />
+                    <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged"
+                              ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=RowNames}"
+                              SelectedIndex="0"/>
 
                     <!-- Row names -->
                     <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Text="Row names" VerticalAlignment="Center" />
                     <ComboBox Grid.Row="4" Grid.Column="2" x:Name="RowNamesComboBox" SelectionChanged="ComboBox_SelectionChanged" 
-                              ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=RowNames}"
+                              ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Encodings}"
                               SelectedIndex="0"/>
 
                     <!-- Separator -->

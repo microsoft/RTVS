@@ -187,6 +187,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to CSV (*.csv;*.txt)|*.csv;*.txt|All Files (*.*)|*.*.
+        /// </summary>
+        public static string CsvFileFilter {
+            get {
+                return ResourceManager.GetString("CsvFileFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Control+E, Control+E.
         /// </summary>
         public static string CtrlECtrlE {
@@ -706,6 +715,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string OpenRProjMessage {
             get {
                 return ResourceManager.GetString("OpenRProjMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OS Default.
+        /// </summary>
+        public static string OSDefaultEncoding {
+            get {
+                return ResourceManager.GetString("OSDefaultEncoding", resourceCulture);
             }
         }
         

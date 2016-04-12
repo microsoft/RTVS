@@ -685,4 +685,10 @@ Additional information:
   <data name="ImportData_Whitespace" xml:space="preserve">
     <value>White space</value>
   </data>
+  <data name="CsvFileFilter" xml:space="preserve">
+    <value>CSV (*.csv;*.txt)|*.csv;*.txt|All Files (*.*)|*.*</value>
+  </data>
+  <data name="OSDefaultEncoding" xml:space="preserve">
+    <value>OS Default</value>
+  </data>
 </root>

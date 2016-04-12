@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
         protected override void Handle() {
             base.Handle();
 
-            string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, "CSV file|*.csv");
+            string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, Package.Resources.CsvFileFilter);
             if (!string.IsNullOrEmpty(filePath)) {
                 var dlg = new ImportDataWindow(filePath, null);
                 dlg.ShowModal();
