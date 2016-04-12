@@ -183,6 +183,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             ErrorText.Text = errorText;
             ErrorBlock.Visibility = Visibility.Visible;
             DataFramePreview.Visibility = Visibility.Collapsed;
+            ProgressBarText.Text = string.Empty;
+            ProgressBar.Value = -10;
         }
 
         private async Task<REvaluationResult> EvaluateAsync(string expression) {
