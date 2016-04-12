@@ -377,7 +377,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task DataFrameTest() {
-            var script = "df.test <- data.frame(101:103, c('a', 'b', 'c'))";
+            var script = "df.test <- data.frame(101:103, c('\"a', 'b', 'c'))";
             var expectation = new VariableExpectation() { Name = "df.test", Value = "3 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
 
             using (var hostScript = new VariableRHostScript()) {
@@ -392,7 +392,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 grid.ColumnHeader.Range.Should().Be(columnRange);
                 grid.ColumnHeader[0].Should().Be("X101.103");
-                grid.ColumnHeader[1].Should().Be("c..a....b....c..");
+                grid.ColumnHeader[1].Should().Be("c....a....b....c..");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
                 grid.RowHeader[0].Should().Be("1");
@@ -401,7 +401,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 0].Should().Be("101");
-                grid.Grid[0, 1].Should().Be("a");
+                grid.Grid[0, 1].Should().Be("\"a");
                 grid.Grid[1, 0].Should().Be("102");
                 grid.Grid[1, 1].Should().Be("b");
                 grid.Grid[2, 0].Should().Be("103");
@@ -411,7 +411,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 columnRange = new Range(1, 1);
                 grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
                 grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[1].Should().Be("c..a....b....c..");
+                grid.ColumnHeader[1].Should().Be("c....a....b....c..");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
                 grid.RowHeader[0].Should().Be("1");
@@ -419,7 +419,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 grid.RowHeader[2].Should().Be("3");
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
-                grid.Grid[0, 1].Should().Be("a");
+                grid.Grid[0, 1].Should().Be("\"a");
                 grid.Grid[1, 1].Should().Be("b");
                 grid.Grid[2, 1].Should().Be("c");
             }
@@ -447,8 +447,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "e <- (function(x, y, z) base::environment())(1,,3)";
             var expectation = new VariableExpectation() { Name = "e", Value = "<environment:", TypeName = "environment", Class = "environment", HasChildren = true, CanShowDetail = false };
 
-            var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
-            var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+            var x_expectation = new VariableExpectation() { Name = "x", Value = "<promise>", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+            var y_expectation = new VariableExpectation() { Name = "z", Value = "<promise>", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(

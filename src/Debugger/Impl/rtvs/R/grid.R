@@ -10,7 +10,7 @@ grid.trim <- function(str, max_length = 100) {
 }
 
 grid.format <- function(x) {
-  sapply(format(x, trim = TRUE), grid.trim);
+  sapply(format(x, trim = TRUE, justify = "none"), grid.trim);
 }
 
 grid.data <- function(x, rows, cols) {
@@ -44,28 +44,30 @@ grid.data <- function(x, rows, cols) {
   }
 
   # format row names
-  dimnames <- 0;
+  x.rownames <- NULL;
   if (length(rn) > 0) {
     x.rownames <- sapply(rn, format, USE.NAMES = FALSE);
-    dimnames <- dimnames + 1;
-  } else {
-    x.rownames <- 'dummy';
   }
 
   #format column names
+  x.colnames <- NULL;
   if (!is.null(cn) && (length(cn)>0)) {
     x.colnames <- sapply(cn, format, USE.NAMES = FALSE);
-    dimnames <- dimnames + 2;
-  } else {
-    x.colnames <- 'dummy';
   }
 
   # assign return value
   vp<-list();
-  vp$dimnames <- format(dimnames);
-  vp$row.names <- x.rownames;
-  vp$col.names <- x.colnames;
-  vp$data<-data;
+  vp$row.start <- rows[1];
+  vp$row.count <- length(rows);
+  vp$row.names <- as.list(x.rownames);
+  vp$col.start <- cols[1];
+  vp$col.count <- length(cols);
+  vp$col.names <- as.list(x.colnames);
+  data.list <- list();
+  for (i in data) {
+     data.list[length(data.list) + 1] <- as.list(i);
+  }
+  vp$data<-data.list;
   vp;
 }
 
