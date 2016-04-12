@@ -19,10 +19,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             InitializeComponent();
         }
 
-        private void HyperlinkUrl_Click(object sender, RoutedEventArgs e) {
-            throw new NotImplementedException();
-        }
-
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
             Model?.Install();
         }
@@ -37,6 +33,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void LibraryPath_RequestNavigate(object sender, RequestNavigateEventArgs e) {
             Process.Start(e.Uri.ToString().Replace('/', '\\'));
+        }
+
+        private void Urls_RequestNavigate(object sender, RequestNavigateEventArgs e) {
+            Process.Start(e.Uri.AbsoluteUri);
         }
     }
 }

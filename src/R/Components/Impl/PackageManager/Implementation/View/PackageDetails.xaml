@@ -184,7 +184,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock TextWrapping="Wrap" >
-                                <Hyperlink NavigateUri="{Binding Mode=OneTime}" Style="{StaticResource HyperlinkStyle}" Click="HyperlinkUrl_Click">
+                                <Hyperlink NavigateUri="{Binding Mode=OneTime}" Style="{StaticResource HyperlinkStyle}" RequestNavigate="Urls_RequestNavigate">
                                     <Run Text="{Binding Mode=OneTime}" />
                                 </Hyperlink>
                             </TextBlock>
