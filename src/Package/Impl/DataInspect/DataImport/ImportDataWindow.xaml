@@ -160,7 +160,7 @@
                                 Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
                             <TextBlock x:Name="ErrorText" Margin="6" Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
                         </Border>
-                        <DataGrid x:Name="DataFramePreview" Visibility="Visible" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False" CanUserDeleteRows="False"
+                        <DataGrid x:Name="DataFramePreview" Visibility="Visible" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False"
                                    Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}" BorderThickness="0">
                             <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
