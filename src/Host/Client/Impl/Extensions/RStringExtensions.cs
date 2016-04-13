@@ -121,7 +121,7 @@ namespace Microsoft.R.Host.Client {
             char[] converted = new char[s.Length];
             int j = 0;
             for (int i = 0; i < s.Length;) {
-                if (i < s.Length - 8 &&
+                if (i <= s.Length - 8 &&
                     s[i] == '<' && s[i + 1] == 'U' && s[i + 2] == '+' && s[i + 7] == '>') {
                     int code = s.SubstringToHex(i + 3, 4);
                     if (code > 0 && code < 65535) {

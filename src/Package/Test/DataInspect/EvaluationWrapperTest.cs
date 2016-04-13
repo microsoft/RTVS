@@ -427,6 +427,38 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
+        public async Task DataFrameLangTest() {
+            var script = "df.lang <- data.frame(col1=c('a','中'),col2=c('國','d'),row.names = c('マイクロソフト','row2'));";
+            var expectation = new VariableExpectation() { Name = "df.lang", Value = "2 obs. of  2 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
+
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluation = (EvaluationWrapper)await hostScript.EvaluateAndAssert(
+                    script,
+                    expectation,
+                    VariableRHostScript.AssertEvaluationWrapper);
+
+                Range rowRange = new Range(0, 2);
+                Range columnRange = new Range(0, 2);
+                var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
+
+                grid.ColumnHeader.Range.Should().Be(columnRange);
+                grid.ColumnHeader[0].Should().Be("col1");
+                grid.ColumnHeader[1].Should().Be("col2");
+
+                grid.RowHeader.Range.Should().Be(rowRange);
+                grid.RowHeader[0].Should().Be("マイクロソフト");
+                grid.RowHeader[1].Should().Be("row2");
+
+                grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
+                grid.Grid[0, 0].Should().Be("a");
+                grid.Grid[0, 1].Should().Be("國");
+                grid.Grid[1, 0].Should().Be("中");
+                grid.Grid[1, 1].Should().Be("d");
+            }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
         public async Task DataFrameManyColumnTest() {
             var script = "df.manycolumn<-data.frame(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30);";
             var expectation = new VariableExpectation() { Name = "df.manycolumn", Value = "1 obs. of  30 variables", TypeName = "list", Class = "data.frame", HasChildren = true, CanShowDetail = true };
