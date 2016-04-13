@@ -159,11 +159,12 @@
                     <Grid Visibility="{Binding ElementName=TabFrame, Path=IsChecked, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                         <DataGrid x:Name="DataFramePreview" Visibility="Visible" AutoGenerateColumns="False" 
                                   CanUserAddRows="False" CanUserSortColumns="False" IsReadOnly="True"
-                                  Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}"
+                                  Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}"
+                                  RowBackground="{DynamicResource {x:Static wpf:Brushes.WindowKey}}"
                                   VerticalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
                                   HorizontalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
                                   BorderThickness="0">
-                             <DataGrid.RowHeaderStyle>
+                            <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
                                     <Setter Property="Content" Value="{Binding RowName}" />
                                     <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
@@ -172,31 +173,32 @@
                                     <Setter Property="BorderThickness" Value="0,0,0,1" />
                                     <Setter Property="Padding" Value="4" />
                                 </Style>
-                            </DataGrid.RowHeaderStyle>
-                            <DataGrid.ColumnHeaderStyle>
-                                <Style TargetType="{x:Type DataGridColumnHeader}">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
-                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
-                                    <Setter Property="BorderThickness" Value="0,0,1,0" />
-                                    <Setter Property="Padding" Value="8" />
-                                </Style>
-                            </DataGrid.ColumnHeaderStyle>
-                            <DataGrid.CellStyle>
-                                <Style TargetType="{x:Type DataGridCell}">
-                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
-                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
-                                    <Setter Property="Padding" Value="4" />
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                </Style>
-                            </DataGrid.CellStyle>
-                            <DataGrid.Resources>
-                                <Style TargetType="Button" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
-                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
-                                    <Setter Property="BorderThickness" Value="0" />
-                                </Style>
-                            </DataGrid.Resources>
+                                </DataGrid.RowHeaderStyle>
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
+                                        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
+                                        <Setter Property="BorderThickness" Value="0,0,1,0" />
+                                        <Setter Property="Padding" Value="8" />
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+                                <DataGrid.CellStyle>
+                                    <Style TargetType="{x:Type DataGridCell}">
+                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
+                                        <Setter Property="Padding" Value="4" />
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                        <Setter Property="TextBlock.VerticalAlignment" Value="Center" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </DataGrid.CellStyle>
+                                <DataGrid.Resources>
+                                    <Style TargetType="Button" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
+                                        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
+                                        <Setter Property="BorderThickness" Value="0" />
+                                    </Style>
+                                </DataGrid.Resources>
                         </DataGrid>
                     </Grid>
                 </Grid>
