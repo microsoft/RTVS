@@ -147,11 +147,6 @@ namespace Microsoft.R.Core.AST.Operators {
 
                 default:
                     if (text.Length > 2 && text[0] == '%' && text[text.Length - 1] == '%') {
-                        for (int i = 1; i < text.Length - 1; i++) {
-                            if (!char.IsLetter(text[i]))
-                                return OperatorType.Unknown;
-                        }
-
                         return OperatorType.Special; // %abc%
                     }
                     break;

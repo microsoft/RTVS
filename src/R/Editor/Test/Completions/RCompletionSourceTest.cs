@@ -156,7 +156,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 @"
 aaa123 <- 1
 
-bbb123 <- 1
+bbb123 = 1
 
 ";
             GetCompletions(content, 0, completionSets);
@@ -198,7 +198,7 @@ bbb123 <- 1
 
     aaa123 <- 1
 
-    bbb123 <- 1
+    1 -> bbb123
 
 }
 ";
@@ -283,7 +283,7 @@ aaa456 <- function() { }
 
 aa
 }
-aaa789 <- function(a,b,c) { }
+aaa789 = function(a,b,c) { }
 ";
             GetCompletions(content, 4, 0, completionSets);
 

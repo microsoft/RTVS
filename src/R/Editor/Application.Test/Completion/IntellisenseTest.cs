@@ -384,6 +384,44 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
+        [Test]
+        [Category.Interactive]
+        public async Task R_DeclaredVariablesCompletion03() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+
+                    await ExecuteRCode(hostScript.Session, "i1 <- 1\r\n");
+                    PrimeIntellisenseProviders();
+                    script.DoIdle(1000);
+
+                    script.Type("i");
+
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+
+                    var list = session.SelectedCompletionSet.Completions.ToList();
+                    var item = list.FirstOrDefault(x => x.DisplayText == "i1");
+                    item.Should().NotBeNull();
+                    script.DoIdle(100);
+
+                    script.Type("{ESC}");
+                    script.Backspace();
+
+                    script.DoIdle(100);
+                    script.Type("graphics::");
+                    script.DoIdle(300);
+
+                    session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+
+                    list = session.SelectedCompletionSet.Completions.ToList();
+                    item = list.FirstOrDefault(x => x.DisplayText == "i1");
+                    item.Should().BeNull();
+                }
+            }
+        }
+
         private void PrimeIntellisenseProviders() {
             // Prime variable provider
             EditorShell.Current.DispatchOnUIThread(() => {
