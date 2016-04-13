@@ -1,39 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Runtime.Serialization;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
+    [DataContract]
     internal class GridData : IGridData<string> {
-        [Flags]
-        public enum HeaderNames {
-            None = 0,
-            Row = 1,
-            Column = 2,
-        }
+        [DataMember(Name = "row.start")]
+        int RowStart { get; set; }
 
+        [DataMember(Name = "row.count")]
+        int RowCount { get; set; }
 
-        public GridData(
-            IList<string> rowNames,
-            IList<string> columnNames,
-            IList<string> values) {
-            RowNames = rowNames;
-            ColumnNames = columnNames;
-            Values = values;
+        [DataMember(Name = "row.names")]
+        public ReadOnlyCollection<string> RowNames { get; set; }
 
-            if (rowNames != null && columnNames != null) {
-                Range = new GridRange(new Range(0, rowNames.Count), new Range(0, columnNames.Count));
-            }
-        }
+        [DataMember(Name = "col.start")]
+        int ColumnStart { get; set; }
 
-        public HeaderNames ValidHeaderNames { get; set; }
+        [DataMember(Name = "col.count")]
+        int ColumnCount { get; set; }
 
-        public IList<string> RowNames { get; }
+        [DataMember(Name = "col.names")]
+        public ReadOnlyCollection<string> ColumnNames { get; set; }
 
-        public IList<string> ColumnNames { get; }
-
-        public IList<string> Values { get; }
+        [DataMember(Name = "data")]
+        public ReadOnlyCollection<string> Values { get; set; }
 
         public GridRange Range { get; set; }
 
@@ -41,12 +34,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> ColumnHeader {
             get {
                 if (_columnHeader == null) {
-                    if (ValidHeaderNames.HasFlag(HeaderNames.Column)) {
+                    if (ColumnNames != null && ColumnNames.Count > 0) {
                         _columnHeader = new ListToRange<string>(
-                            Range.Columns,
+                            new Range(ColumnStart - 1, ColumnCount),
                             ColumnNames);
                     } else {
-                        _columnHeader = new DefaultHeaderData(Range.Columns, DefaultHeaderData.Mode.Column);
+                        _columnHeader = new DefaultHeaderData(new Range(ColumnStart - 1, ColumnCount), DefaultHeaderData.Mode.Column);
                     }
                 }
                 return _columnHeader;
@@ -57,12 +50,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IRange<string> RowHeader {
             get {
                 if (_rowHeader == null) {
-                    if (ValidHeaderNames.HasFlag(HeaderNames.Row)) {
+                    if (RowNames != null && RowNames.Count > 0) {
                         _rowHeader = new ListToRange<string>(
-                            Range.Rows,
+                            new Range(RowStart - 1, RowCount),
                             RowNames);
                     } else {
-                        _rowHeader = new DefaultHeaderData(Range.Rows, DefaultHeaderData.Mode.Row);
+                        _rowHeader = new DefaultHeaderData(new Range(RowStart - 1, RowCount), DefaultHeaderData.Mode.Row);
                     }
                 }
 
@@ -75,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get {
                 if (_grid == null) {
                     _grid = new Grid<string>(
-                        Range,
+                        new GridRange(new Range(RowStart - 1, RowCount), new Range(ColumnStart - 1, ColumnCount)),
                         Values);
                 }
 

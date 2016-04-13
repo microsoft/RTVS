@@ -7,6 +7,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Newtonsoft.Json;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
@@ -26,29 +27,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
 
             REvaluationResult? result = null;
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                result = await evaluator.EvaluateAsync($"rtvs:::grid.dput(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+                result = await evaluator.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
 
-                if (result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
+                if (!result.HasValue || result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
                     throw new InvalidOperationException($"Grid data evaluation failed{Environment.NewLine} {result}");
                 }
+                return JsonConvert.DeserializeObject<GridData>(result.Value.StringResult.ConvertCharacterCodes());
             }
-
-            GridData data = null;
-
-            if (result.HasValue) {
-                string stringResult = result.Value.StringResult;
-                data = GridParser.Parse(stringResult.ConvertCharacterCodes());
-                if (gridRange.HasValue) {
-                    data.Range = gridRange.Value;
-                }
-
-                if ((data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Row) && data.RowNames.Count != data.Range.Rows.Count)
-                    || (data.ValidHeaderNames.HasFlag(GridData.HeaderNames.Column) && data.ColumnNames.Count != data.Range.Columns.Count)) {
-                    throw new InvalidOperationException("Header names lengths are different from data's length");
-                }
-            }
-
-            return data;
         }
     }
 }
