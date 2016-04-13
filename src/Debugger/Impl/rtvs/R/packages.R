@@ -4,7 +4,8 @@
 packages.installed <- function() {
   pkgs <- installed.packages(fields = c('Title', 'Author', 'Description'))
   pkgs <- pkgs[!duplicated(pkgs[, 'Package']),]
-  apply(pkgs, 1, as.list)
+  pkgs <- apply(pkgs, 1, as.list)
+  unname(pkgs)
 }
 
 packages.loaded <- function() {
@@ -67,7 +68,7 @@ packages.available <- function() {
   # the urls of the repos we'll need to get additional details from
   repo.urls <- unique(all.available[, 'Repository'])
 
-  # we return a named list (where the names are the package names)
+  # we return an unnamed list
   # each element in that list is a named list
   # ie. Package='abc', Version='1.0', Title='', etc.
   res <- list()
@@ -82,5 +83,5 @@ packages.available <- function() {
     res <- append(res, apply(repo.available.with.details, 1, function(x) as.list(x)))
   }
 
-  return(res)
+  return(unname(res))
 }
