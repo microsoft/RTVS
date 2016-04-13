@@ -453,7 +453,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// Displays error message
         /// </summary>
         Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
-            return _hostClientApp?.ShowErrorMessage(message);
+            return _hostClientApp != null ? _hostClientApp.ShowErrorMessage(message) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -494,7 +494,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
-            return _hostClientApp?.Plot(filePath, ct);
+            return _hostClientApp != null ? _hostClientApp.Plot(filePath, ct) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -503,7 +503,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.Browser(string url) {
-            return _hostClientApp?.ShowHelp(url);
+            return _hostClientApp != null ? _hostClientApp.ShowHelp(url) : Task.CompletedTask;
         }
 
         void IRCallbacks.DirectoryChanged() {

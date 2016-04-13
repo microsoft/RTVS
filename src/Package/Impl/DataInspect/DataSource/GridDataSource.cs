@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 if (!result.HasValue || result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
                     throw new InvalidOperationException($"Grid data evaluation failed{Environment.NewLine} {result}");
                 }
-                return JsonConvert.DeserializeObject<GridData>(result.Value.StringResult.ToUnicodeQuotes());
+                return JsonConvert.DeserializeObject<GridData>(result.Value.StringResult.ConvertCharacterCodes());
             }
         }
     }

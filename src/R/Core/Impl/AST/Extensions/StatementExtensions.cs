@@ -26,11 +26,14 @@ namespace Microsoft.R.Core.AST {
             if (c.Count == 1) {
                 var op = c[0] as IOperator;
                 if (op != null) {
-                    if (op.OperatorType == OperatorType.LeftAssign) {
+                    if (op.OperatorType == OperatorType.LeftAssign || op.OperatorType == OperatorType.Equals) {
                         v = op.LeftOperand as Variable;
                         if (v != null) {
                             return op.RightOperand as IFunctionDefinition;
                         }
+                    }
+                    else if (op.OperatorType == OperatorType.RightAssign) {
+                        v = op.RightOperand as Variable;
                     }
                 }
             }

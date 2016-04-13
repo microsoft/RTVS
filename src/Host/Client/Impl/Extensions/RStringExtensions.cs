@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client {
     public static class RStringExtensions {
@@ -98,6 +99,40 @@ namespace Microsoft.R.Host.Client {
 
         public static string FromRPath(this string s) {
             return s.Replace("/", "\\");
+        }
+
+        /// <summary>
+        /// Convert R string that comes encoded into &lt;U+ABCD&gt; into Unicode
+        /// characters so user can see actual language symbols rather than 
+        /// the character codes. Trims trailing '| __truncated__' that R tends 
+        /// to append at the end.
+        /// </summary>
+        public static string ConvertCharacterCodes(this string s) {
+            int t = s.IndexOf("\"| __truncated__");
+            if (t >= 0) {
+                s = s.Substring(0, t);
+            }
+
+            if (s.IndexOf("<U+") < 0) {
+                // Nothing to convert
+                return s;
+            }
+
+            char[] converted = new char[s.Length];
+            int j = 0;
+            for (int i = 0; i < s.Length;) {
+                if (i < s.Length - 8 &&
+                    s[i] == '<' && s[i + 1] == 'U' && s[i + 2] == '+' && s[i + 7] == '>') {
+                    int code = s.SubstringToHex(i + 3, 4);
+                    if (code > 0 && code < 65535) {
+                        converted[j++] = Convert.ToChar(code);
+                        i += 8;
+                        continue;
+                    }
+                }
+                converted[j++] = s[i++];
+            }
+            return new string(converted, 0, j);
         }
     }
 }

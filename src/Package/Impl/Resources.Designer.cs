@@ -160,6 +160,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Converting....
+        /// </summary>
+        public static string Converting {
+            get {
+                return ResourceManager.GetString("Converting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to (Use .Rprofile).
         /// </summary>
         public static string CranMirror_UseRProfile {
@@ -183,6 +192,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string CreatingArchive {
             get {
                 return ResourceManager.GetString("CreatingArchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CSV (*.csv;*.txt)|*.csv;*.txt|All Files (*.*)|*.*.
+        /// </summary>
+        public static string CsvFileFilter {
+            get {
+                return ResourceManager.GetString("CsvFileFilter", resourceCulture);
             }
         }
         
@@ -484,6 +502,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to parse NRows value.
+        /// </summary>
+        public static string ImportData_NRowsError {
+            get {
+                return ResourceManager.GetString("ImportData_NRowsError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Period (.).
         /// </summary>
         public static string ImportData_Period {
@@ -552,6 +579,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ImportData_Whitespace {
             get {
                 return ResourceManager.GetString("ImportData_Whitespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Importing....
+        /// </summary>
+        public static string Importing {
+            get {
+                return ResourceManager.GetString("Importing", resourceCulture);
             }
         }
         
@@ -715,6 +751,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string OpenRProjMessage {
             get {
                 return ResourceManager.GetString("OpenRProjMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OS Default.
+        /// </summary>
+        public static string OSDefaultEncoding {
+            get {
+                return ResourceManager.GetString("OSDefaultEncoding", resourceCulture);
             }
         }
         
