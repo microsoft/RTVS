@@ -94,7 +94,9 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 }
             }
 
-            providers.Add(new WorkspaceVariableCompletionProvider());
+            if (!context.IsInNameSpace()) {
+                providers.Add(new WorkspaceVariableCompletionProvider());
+            }
 
             return providers;
         }
