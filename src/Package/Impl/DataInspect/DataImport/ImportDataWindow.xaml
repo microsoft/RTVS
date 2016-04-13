@@ -39,7 +39,9 @@
                 <ColumnDefinition Width="12" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <TextBox Grid.Column="0" x:Name="FilePathBox" MinHeight="20" VerticalContentAlignment="Center" />
+            <TextBox Grid.Column="0" x:Name="FilePathBox" MinHeight="20" VerticalContentAlignment="Center" 
+                     Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                     Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
             <Button Grid.Column="2" x:Name="FileOpenButton" Padding="0" Content="..." Click="FileOpenButton_Click" VerticalAlignment="Center"
                     Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}" MinHeight="22" MinWidth="22" 
                     FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" />
@@ -74,6 +76,8 @@
                         <RowDefinition Height="20" />
                         <RowDefinition Height="8" />
                         <RowDefinition Height="20" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="20" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -83,11 +87,15 @@
 
                     <!-- Name -->
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="Bold" Text="Name" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="2" x:Name="VariableNameBox" VerticalContentAlignment="Center" 
+                             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
 
                     <!-- Encoding -->
                     <TextBlock Grid.Row="2" Grid.Column="0" FontWeight="Bold" Text="Encoding" VerticalAlignment="Center" />
-                    <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged" />
+                    <ComboBox Grid.Row="2" Grid.Column="2" x:Name="EncodingComboBox" SelectionChanged="ComboBox_SelectionChanged"
+                              ItemTemplate="{StaticResource KvpItemTemplate}" ItemsSource="{Binding ElementName=Self, Path=Encodings}"
+                              SelectedIndex="0"/>
 
                     <!-- Row names -->
                     <TextBlock Grid.Row="4" Grid.Column="0" FontWeight="Bold" Text="Row names" VerticalAlignment="Center" />
@@ -121,11 +129,19 @@
 
                     <!-- Name -->
                     <TextBlock Grid.Row="14" Grid.Column="0" FontWeight="Bold" Text="na.strings" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" VerticalContentAlignment="Center" />
+                    <TextBox Grid.Row="14" Grid.Column="2" x:Name="NaStringTextBox" VerticalContentAlignment="Center" 
+                             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+
+                    <!-- NRows -->
+                    <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="NRows" VerticalAlignment="Center" />
+                    <TextBox Grid.Row="16" Grid.Column="2" x:Name="NRowsTextBox" VerticalContentAlignment="Center" 
+                             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
 
                     <!-- Header -->
-                    <TextBlock Grid.Row="16" Grid.Column="0" FontWeight="Bold" Text="Header" VerticalAlignment="Center" />
-                    <CheckBox Grid.Row="16" Grid.Column="2" VerticalAlignment="Center" Margin="0,1,0,0" HorizontalAlignment="Left"
+                    <TextBlock Grid.Row="18" Grid.Column="0" FontWeight="Bold" Text="Header" VerticalAlignment="Center" />
+                    <CheckBox Grid.Row="18" Grid.Column="2" VerticalAlignment="Center" Margin="0,1,0,0" HorizontalAlignment="Left"
                               x:Name="HeaderCheckBox" IsChecked="True" Unchecked="HeaderCheckBox_Changed" Checked="HeaderCheckBox_Changed" />
                 </Grid>
 
@@ -134,22 +150,47 @@
 
                 <!-- right side -->
                 <Grid Grid.Column="2">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}"
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" 
+                                  Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}"
                                   Visibility="{Binding ElementName=TabFile, Path=IsChecked, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                         <TextBlock x:Name="InputFilePreview" Margin="6" />
                     </ScrollViewer>
                     <Grid Visibility="{Binding ElementName=TabFrame, Path=IsChecked, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
                         <Border x:Name="ErrorBlock" Visibility="Collapsed" VerticalAlignment="Top"
                                 Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
-                            <TextBlock x:Name="ErrorText" Margin="6" />
+                            <TextBlock x:Name="ErrorText" Margin="6" Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
                         </Border>
                         <DataGrid x:Name="DataFramePreview" Visibility="Visible" AutoGenerateColumns="False" CanUserAddRows="False" CanUserSortColumns="False"
                                    Background="{DynamicResource {x:Static wpf:Brushes.ContentBrushKey}}" BorderThickness="0">
                             <DataGrid.RowHeaderStyle>
                                 <Style TargetType="{x:Type DataGridRowHeader}">
                                     <Setter Property="Content" Value="{Binding RowName}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
                                 </Style>
                             </DataGrid.RowHeaderStyle>
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="{x:Type DataGridColumnHeader}">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+                                    <Setter Property="Padding" Value="12" />
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="{x:Type DataGridCell}">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+                                    <Setter Property="Padding" Value="8" />
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Resources>
+                                <Style TargetType="Button" x:Key="{ComponentResourceKey ResourceId=DataGridSelectAllButtonStyle, TypeInTargetAssembly={x:Type DataGrid}}">
+                                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" />
+                                </Style>
+                            </DataGrid.Resources>
                         </DataGrid>
                     </Grid>
                 </Grid>
@@ -162,8 +203,21 @@
                 <ColumnDefinition Width="auto" />
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" />
-            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" Content="{x:Static components:Resources.Cancel}" Click="CancelButton_Click" />
+            <ProgressBar Grid.Column="0" x:Name="ProgressBar" Value="-10" Minimum="-10" Maximum="100"
+                         Height="{Binding ElementName=RunButton, Path=ActualHeight}" Margin="16,0,16,0" 
+                         Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}"/>
+            <TextBlock Grid.Column="0" x:Name="ProgressBarText" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Background="Transparent"
+                       Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
+            <Button Grid.Column="1" x:Name="RunButton" MinWidth="86" MinHeight="24" Margin="0,12" 
+                    Content="{x:Static components:Resources.Ok}" Click="RunButton_Click" 
+                    PreviewKeyUp="RunButton_PreviewKeyUp"
+                    IsDefault="True" />
+            <Button Grid.Column="2" x:Name="CancelButton" MinWidth="86" MinHeight="24" Margin="6,12,12,12" 
+                    Content="{x:Static components:Resources.Cancel}" 
+                    Click="CancelButton_Click" PreviewKeyUp="CancelButton_PreviewKeyUp"
+                    IsCancel="True" />
         </Grid>
     </Grid>
 </ui:DialogWindow>

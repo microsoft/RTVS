@@ -9,6 +9,8 @@
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  mc:Ignorable="d" d:DesignWidth="500" MinWidth="700" MaxWidth="700" MinHeight="120" MaxHeight="120"
+                 Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                 Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                  Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
                  FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
     <ui:DialogWindow.Resources>
@@ -30,7 +32,9 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="URL:" VerticalAlignment="Center" />
-            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" />
+            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" 
+                     Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                     Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
             <ProgressBar Grid.Column="2" x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
         </Grid>
 

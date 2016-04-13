@@ -36,7 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             GridData data = null;
 
             if (result.HasValue) {
-                data = GridParser.Parse(result.Value.StringResult.ToUnicodeQuotes());
+                string stringResult = result.Value.StringResult;
+                data = GridParser.Parse(stringResult.ConvertCharacterCodes());
                 if (gridRange.HasValue) {
                     data.Range = gridRange.Value;
                 }

@@ -685,6 +685,21 @@ Additional information:
   <data name="ImportData_Whitespace" xml:space="preserve">
     <value>White space</value>
   </data>
+  <data name="CsvFileFilter" xml:space="preserve">
+    <value>CSV (*.csv;*.txt)|*.csv;*.txt|All Files (*.*)|*.*</value>
+  </data>
+  <data name="OSDefaultEncoding" xml:space="preserve">
+    <value>OS Default</value>
+  </data>
+  <data name="Converting" xml:space="preserve">
+    <value>Converting...</value>
+  </data>
+  <data name="Importing" xml:space="preserve">
+    <value>Importing...</value>
+  </data>
+  <data name="ImportData_NRowsError" xml:space="preserve">
+    <value>Unable to parse NRows value</value>
+  </data>
   <data name="Error_UnknownMirror" xml:space="preserve">
     <value>'{0}' is not a known CRAN mirror name.</value>
   </data>
