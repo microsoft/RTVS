@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.Serialization;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [DataContract]
@@ -37,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (ColumnNames != null && ColumnNames.Count > 0) {
                         _columnHeader = new ListToRange<string>(
                             new Range(ColumnStart - 1, ColumnCount),
-                            ColumnNames);
+                            ColumnNames.Select(s => s.ConvertCharacterCodes()).ToList());
                     } else {
                         _columnHeader = new DefaultHeaderData(new Range(ColumnStart - 1, ColumnCount), DefaultHeaderData.Mode.Column);
                     }
@@ -53,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (RowNames != null && RowNames.Count > 0) {
                         _rowHeader = new ListToRange<string>(
                             new Range(RowStart - 1, RowCount),
-                            RowNames);
+                            RowNames.Select(s => s.ConvertCharacterCodes()).ToList());
                     } else {
                         _rowHeader = new DefaultHeaderData(new Range(RowStart - 1, RowCount), DefaultHeaderData.Mode.Row);
                     }
@@ -69,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (_grid == null) {
                     _grid = new Grid<string>(
                         new GridRange(new Range(RowStart - 1, RowCount), new Range(ColumnStart - 1, ColumnCount)),
-                        Values);
+                        Values.Select(s => s.ConvertCharacterCodes()).ToList());
                 }
 
                 return _grid;

@@ -7,7 +7,6 @@ using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Newtonsoft.Json;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
@@ -27,12 +26,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
 
             REvaluationResult? result = null;
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                result = await evaluator.EvaluateAsync($"rtvs:::toJSON(rtvs:::grid.data({expression}, {rows}, {columns}))", REvaluationKind.Normal);
+                result = await evaluator.EvaluateAsync($"rtvs:::grid.data({expression}, {rows}, {columns})", REvaluationKind.Json);
 
                 if (!result.HasValue || result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
                     throw new InvalidOperationException($"Grid data evaluation failed{Environment.NewLine} {result}");
                 }
-                return JsonConvert.DeserializeObject<GridData>(result.Value.StringResult.ConvertCharacterCodes());
+                return result.Value.JsonResult.ToObject<GridData>();
             }
         }
     }

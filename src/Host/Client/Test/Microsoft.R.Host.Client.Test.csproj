@@ -78,6 +78,7 @@
     <Compile Include="PdfComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
+    <Compile Include="RStringExtensionsTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
     <Compile Include="Session\RSessionProviderTest.cs" />
     <Compile Include="Session\RSessionTest.Output.cs" />
