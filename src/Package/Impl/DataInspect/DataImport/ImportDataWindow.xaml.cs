@@ -347,7 +347,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                     var nRowsString = NRowsTextBox.Text;
                     int nrows = Int32.MaxValue;
                     if (!string.IsNullOrWhiteSpace(nRowsString)) {
-                        if (!Int32.TryParse(nRowsString, out nrows)) {
+                        if (!Int32.TryParse(nRowsString, out nrows) || nrows <= 0) {
                             VsAppShell.Current.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
                             return;
                         }
