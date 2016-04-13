@@ -218,6 +218,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             for (int i = 0; i < gridData.ColumnHeader.Range.Count; i++) {
                 dg.Columns.Add(new DataGridTextColumn() {
                     Header = gridData.ColumnHeader[gridData.ColumnHeader.Range.Start + i],
+                    IsReadOnly = true,
                     Binding = new Binding(Invariant($"Values[{i}]")),
                 });
             }
