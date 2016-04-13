@@ -40,6 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
             Brushes.UIText = VsBrushes.BrandedUITextKey;
             Brushes.WindowTextKey = VsBrushes.WindowTextKey;
+            Brushes.WindowKey = VsBrushes.WindowKey;
 
             Brushes.HeaderColorsDefaultBrushKey = HeaderColors.DefaultBrushKey;
             Brushes.HeaderColorsDefaultTextBrushKey = HeaderColors.DefaultTextBrushKey;

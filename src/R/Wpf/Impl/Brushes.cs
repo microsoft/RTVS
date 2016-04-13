@@ -40,5 +40,7 @@ namespace Microsoft.R.Wpf {
         public static object ToolWindowButtonHoverActiveKey { get; set; } = SystemColors.WindowBrushKey;
         public static object UIText { get; set; } = SystemColors.ControlTextBrushKey;
         public static object WindowTextKey { get; set; } = SystemColors.WindowTextBrushKey;
+        public static object WindowKey { get; set; } = SystemColors.WindowColorKey;
+
     }
 }

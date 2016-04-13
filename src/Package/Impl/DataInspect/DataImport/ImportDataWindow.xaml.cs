@@ -158,7 +158,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                         var grid = await GridDataSource.GetGridDataAsync(expression, null);
 
                         PopulateDataFramePreview(grid);
-                        ErrorBlock.Visibility = Visibility.Collapsed;
                         DataFramePreview.Visibility = Visibility.Visible;
                     } catch (Exception ex) {
                         OnError(ex.Message);
@@ -181,9 +180,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private void OnError(string errorText) {
-            ErrorText.Text = errorText;
-            ErrorBlock.Visibility = Visibility.Visible;
-            DataFramePreview.Visibility = Visibility.Collapsed;
+            VsAppShell.Current.ShowErrorMessage(errorText);
             ProgressBarText.Text = string.Empty;
             ProgressBar.Value = -10;
         }
