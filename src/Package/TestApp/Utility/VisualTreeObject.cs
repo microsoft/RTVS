@@ -40,13 +40,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         private static List<VisualTreeObject> GetChildren(DependencyObject o) {
             List<VisualTreeObject> children = new List<VisualTreeObject>();
 
-            int childrenCount = VisualTreeHelper.GetChildrenCount(o);
-            if (childrenCount > 0) {
-                for (int i = 0; i < childrenCount; i++) {
-                    var child = VisualTreeHelper.GetChild(o, i);
-                    children.Add(Create(child));
+            UIThreadHelper.Instance.Invoke(() => {
+                int childrenCount = VisualTreeHelper.GetChildrenCount(o);
+                if (childrenCount > 0) {
+                    for (int i = 0; i < childrenCount; i++) {
+                        var child = VisualTreeHelper.GetChild(o, i);
+                        children.Add(Create(child));
+                    }
                 }
-            }
+            });
 
             return children;
         }
