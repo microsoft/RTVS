@@ -502,7 +502,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to parse NRows value.
+        ///   Looks up a localized string similar to NRows value must be integer that is greater than zero..
         /// </summary>
         public static string ImportData_NRowsError {
             get {
