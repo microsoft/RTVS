@@ -3,64 +3,11 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
-    [Flags]
-    public enum REvaluationKind {
-        Normal = 0,
-        /// <summary>
-        /// Allows other evaluations to occur while this evaluation is ongoing.
-        /// </summary>
-        Reentrant = 1 << 1,
-        /// <summary>
-        /// Indicates that the result of this evaluation is a value that should be serialized to JSON.
-        /// When this flag is set, <see cref="REvaluationResult.StringResult"/> will be null, but
-        /// <see cref="REvaluationResult.JsonResult"/> will contain the value after it has been deserialized.
-        /// </summary>
-        Json = 1 << 2,
-        /// <summary>
-        /// Indicates that this expression should be evaluated in the base environment (<c>baseenv()</c>).
-        /// Not compatible with <see cref="EmptyEnv"/>.
-        /// </summary>
-        BaseEnv = 1 << 3,
-        /// <summary>
-        /// Indicates that this expression should be evaluated in the empty environment (<c>emptyenv()</c>).
-        /// Not compatible with <see cref="BaseEnv"/>.
-        /// </summary>
-        EmptyEnv = 1 << 4,
-        /// <summary>
-        /// Allows this expression to be cancelled.
-        /// </summary>
-        /// <remarks>
-        /// If this evaluation happens as a nested evaluation inside some other <seealso cref="Reentrant"/>
-        /// evaluation, it must be <seealso cref="Cancelable"/> for the outer evaluation to be cancelable.
-        /// </remarks>
-        Cancelable = 1 << 5,
-        /// <summary>
-        /// Indicates that this expression should be evaluated in a fresh blank environment, that has the
-        /// otherwise designated target environment set as its parent, and which is discarded immediately
-        /// after evaluation.
-        /// </summary>
-        /// <remarks>
-        /// Similar to <c>local()</c>, in that it will contain and discard any assignments to local variables
-        /// that are performed as part of evaluation.
-        /// </remarks>
-        NewEnv = 1 << 6,
-        /// <summary>
-        /// Indicates that this expression can potentially change the observable R state (variable values etc).
-        /// </summary>
-        /// <remarks>
-        /// <see cref="IRSession.Mutated"/> is raised after the evaluation completes.
-        /// </remarks>
-        Mutating = 1 << 7,
-    }
-
     public interface IRExpressionEvaluator {
         /// <summary>
         /// Evaluates an R expression, and returns the result.
