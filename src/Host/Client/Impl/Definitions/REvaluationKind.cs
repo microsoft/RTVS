@@ -36,16 +36,6 @@ namespace Microsoft.R.Host.Client {
         /// </remarks>
         Cancelable = 1 << 5,
         /// <summary>
-        /// Indicates that this expression should be evaluated in a fresh blank environment, that has the
-        /// otherwise designated target environment set as its parent, and which is discarded immediately
-        /// after evaluation.
-        /// </summary>
-        /// <remarks>
-        /// Similar to <c>local()</c>, in that it will contain and discard any assignments to local variables
-        /// that are performed as part of evaluation.
-        /// </remarks>
-        NewEnv = 1 << 6,
-        /// <summary>
         /// Indicates that this expression can potentially change the observable R state (variable values etc).
         /// </summary>
         /// <remarks>
