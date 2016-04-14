@@ -156,8 +156,8 @@
   <data name="PackageManager_PackageSources" xml:space="preserve">
     <value>Package sources:</value>
   </data>
-  <data name="PackageManager_SearchStopped" xml:space="preserve">
-    <value>Unable to retrieve results from one or more sources</value>
+  <data name="PackageManager_Error" xml:space="preserve">
+    <value>Error: </value>
   </data>
   <data name="PackageManager_SearchIncomplete" xml:space="preserve">
     <value>Retrieving results from one or more sources</value>
@@ -185,6 +185,10 @@
   </data>
   <data name="Dismiss" xml:space="preserve">
     <value>Dismiss</value>
+  </data>
+
+  <data name="DismissAll" xml:space="preserve">
+    <value>Dismiss all</value>
   </data>
   <data name="Ready" xml:space="preserve">
     <value>Ready</value>

@@ -37,5 +37,6 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         void UpdateAvailablePackageDetails(RPackage package);
         void Install();
         void Uninstall();
+        void Update();
     }
 }

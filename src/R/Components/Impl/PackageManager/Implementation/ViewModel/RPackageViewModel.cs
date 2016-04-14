@@ -192,6 +192,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _owner.Uninstall(this);
         }
 
+        public void Update() {
+            _owner.Update(this);
+        }
+
         public void AddDetails(RPackage package, bool isInstalled) {
             Title = package.Title.NormalizeWhitespace();
             Description = package.Description.NormalizeWhitespace();

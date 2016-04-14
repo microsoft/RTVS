@@ -27,6 +27,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
             Model?.Uninstall();
         }
 
+        private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {
+            Model?.Update();
+        }
+
         private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) {
             Process.Start(e.Uri.AbsoluteUri);
         }

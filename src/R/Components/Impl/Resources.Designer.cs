@@ -79,6 +79,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dismiss all.
+        /// </summary>
+        public static string DismissAll {
+            get {
+                return ResourceManager.GetString("DismissAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do not show this again.
         /// </summary>
         public static string DoNotShowThisAgain {
@@ -304,6 +313,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error: .
+        /// </summary>
+        public static string PackageManager_Error {
+            get {
+                return ResourceManager.GetString("PackageManager_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error: {0}.
         /// </summary>
         public static string PackageManager_EvalError {
@@ -453,15 +471,6 @@ namespace Microsoft.R.Components {
         public static string PackageManager_SearchIncomplete {
             get {
                 return ResourceManager.GetString("PackageManager_SearchIncomplete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to retrieve results from one or more sources.
-        /// </summary>
-        public static string PackageManager_SearchStopped {
-            get {
-                return ResourceManager.GetString("PackageManager_SearchStopped", resourceCulture);
             }
         }
         

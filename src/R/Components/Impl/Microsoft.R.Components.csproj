@@ -152,9 +152,6 @@
     <Compile Include="PackageManager\Implementation\View\PackageList.xaml.cs">
       <DependentUpon>PackageList.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PackageManager\Implementation\View\LoadingStatusBar.xaml.cs">
-      <DependentUpon>LoadingStatusBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PackageManager\Implementation\View\PackageDetails.xaml.cs">
       <DependentUpon>PackageDetails.xaml</DependentUpon>
     </Compile>
@@ -238,10 +235,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="PackageManager\Implementation\View\PackageList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PackageManager\Implementation\View\LoadingStatusBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
