@@ -62,13 +62,13 @@ namespace Microsoft.R.Debugger {
 
         internal async Task ReapplyBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.RSession.EvaluateAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
+            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
             // TODO: mark breakpoint as invalid if this fails.
         }
 
         internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.RSession.EvaluateAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
+            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
             ++UseCount;
         }
 
@@ -87,10 +87,11 @@ namespace Microsoft.R.Debugger {
             if (--UseCount == 0) {
                 Session.RemoveBreakpoint(this);
 
-                var code = Invariant($"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})");
-                var res = await Session.RSession.EvaluateAsync(code, REvaluationKind.Mutating, cancellationToken);
-                if (res.ParseStatus != RParseStatus.OK || res.Error != null) {
-                    throw new InvalidOperationException(res.ToString());
+                var code = $"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})";
+                try {
+                    await Session.RSession.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
+                } catch (RException ex) {
+                    throw new InvalidOperationException(ex.Message, ex);
                 }
             }
         }

@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger {
                         await bp.ReapplyBreakpointAsync(cancellationToken);
                     }
 
-                    await eval.EvaluateAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
+                    await eval.ExecuteAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
                 }
 
                 // Attach might happen when session is already at the Browse prompt, in which case we have
@@ -143,8 +143,9 @@ namespace Microsoft.R.Debugger {
             using (var eval = await RSession.BeginEvaluationAsync(cancellationToken)) {
                 res = await eval.EvaluateAsync(expression, json ? REvaluationKind.Json : REvaluationKind.Normal);
                 if (res.ParseStatus != RParseStatus.OK || res.Error != null || (json && res.JsonResult == null)) {
-                    Trace.Fail(Invariant($"Internal debugger evaluation {expression} failed: {res}"));
-                    throw new REvaluationException(res);
+                    string message = Invariant($"Internal debugger evaluation {expression} failed: {res}");
+                    Trace.Fail(message);
+                    throw new REvaluationException(message);
                 }
             }
 
@@ -165,6 +166,7 @@ namespace Microsoft.R.Debugger {
 
             return token;
         }
+
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
@@ -207,7 +209,7 @@ namespace Microsoft.R.Debugger {
 
             // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
             // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
-            RSession.EvaluateAsync("browser()", REvaluationKind.Reentrant, ct)
+            RSession.ExecuteAsync("browser()", REvaluationKind.Reentrant, ct)
                 .SilenceException<MessageTransportException>().DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.
@@ -320,7 +322,7 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             using (var eval = await RSession.BeginEvaluationAsync(ct)) {
-                await eval.EvaluateAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
+                await eval.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
             }
         }
 
@@ -436,14 +438,6 @@ namespace Microsoft.R.Debugger {
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
             _currentBrowseEventArgs = null;
-        }
-    }
-
-    public class REvaluationException : Exception {
-        public REvaluationResult Result { get; }
-
-        public REvaluationException(REvaluationResult result) {
-            Result = result;
         }
     }
 

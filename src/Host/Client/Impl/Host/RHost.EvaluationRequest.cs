@@ -34,9 +34,6 @@ namespace Microsoft.R.Host.Client {
                 if (kind.HasFlag(REvaluationKind.EmptyEnv)) {
                     nameBuilder.Append('E');
                 }
-                if (kind.HasFlag(REvaluationKind.NewEnv)) {
-                    nameBuilder.Append("N");
-                }
                 MessageName = nameBuilder.ToString();
 
                 expression = expression.Replace("\r\n", "\n");

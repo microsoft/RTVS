@@ -57,7 +57,10 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Definitions\REvaluationKind.cs" />
+    <Compile Include="Definitions\REvaluationResult.cs" />
     <Compile Include="Definitions\IRSessionContext.cs" />
+    <Compile Include="Definitions\REvaluationException.cs" />
     <Compile Include="Encodings\REncodingsMap.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
