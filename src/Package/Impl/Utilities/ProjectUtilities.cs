@@ -56,10 +56,20 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         public static EnvDTE.Project GetActiveProject() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             if (dte.Solution.Projects.Count > 0) {
-                var projects = (Array)dte.ActiveSolutionProjects;
-                if (projects != null && projects.Length == 1) {
-                    return (EnvDTE.Project)projects.GetValue(0);
-                }
+                try {
+                    if (dte.Solution != null) {
+                        Array projects;
+                        var solutionFile = dte.Solution.FullName;
+                        if (!string.IsNullOrEmpty(solutionFile)) {
+                            projects = (Array)dte.ActiveSolutionProjects;
+                            return (EnvDTE.Project)projects.GetValue(0);
+                        } else {
+                            var e = dte.Solution.Projects.GetEnumerator();
+                            e.MoveNext();
+                            return (EnvDTE.Project)e.Current;
+                        }
+                    }
+                } catch (COMException) { }
             }
             return null;
         }
@@ -82,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                 // Extract template files overwriting any existing ones
                 using (ZipArchive zip = ZipFile.OpenRead(templatePath)) {
                     foreach (ZipArchiveEntry entry in zip.Entries) {
-                        if(!Directory.Exists(uncompressedTemplateFolder)) {
+                        if (!Directory.Exists(uncompressedTemplateFolder)) {
                             Directory.CreateDirectory(uncompressedTemplateFolder);
                         }
                         string destFilePath = Path.Combine(uncompressedTemplateFolder, entry.FullName);
@@ -103,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
 
                         if (destinationPath.Length > projectFolder.Length) {
                             var relativePath = destinationPath.Substring(projectFolder.Length + 1);
-                            
+
                             // Go into folders and find project item to insert the file in
                             while (relativePath.Length > 0) {
                                 int index = relativePath.IndexOf('\\');
@@ -148,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             // In F5 (Experimental instance) scenario templates are deployed where the extension is.
             string assemblyPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
             var templatesFolder = Path.Combine(Path.GetDirectoryName(assemblyPath), @"ItemTemplates\");
-            if(!Directory.Exists(templatesFolder)) {
+            if (!Directory.Exists(templatesFolder)) {
                 // Real install scenario, templates are in 
                 // C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\ItemTemplates\R
                 string vsExecutableFileName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
