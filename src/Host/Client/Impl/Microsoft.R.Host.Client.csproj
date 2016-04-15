@@ -69,7 +69,7 @@
     <Compile Include="Definitions\RHostStartupInfo.cs" />
     <Compile Include="Extensions\RStringExtensions.cs" />
     <Compile Include="Host\RHost.EvaluationRequest.cs" />
-    <Compile Include="MessageTransportException.cs" />
+    <Compile Include="Definitions\MessageTransportException.cs" />
     <Compile Include="Definitions\IMessageTransport.cs" />
     <Compile Include="Definitions\IRContext.cs" />
     <Compile Include="Definitions\IRCallbacks.cs" />
@@ -99,7 +99,7 @@
     <Compile Include="Session\RSessionInteractionCommands.cs" />
     <Compile Include="Session\RSessionProvider.cs" />
     <Compile Include="Session\RSessionRequestSource.cs" />
-    <Compile Include="WebSocketMessageTransport.cs" />
+    <Compile Include="Transports\WebSocketMessageTransport.cs" />
     <Compile Include="Definitions\YesNoCancel.cs" />
   </ItemGroup>
   <ItemGroup>

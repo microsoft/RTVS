@@ -28,6 +28,15 @@ namespace Microsoft.R.Host.Client {
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
 
+        private static readonly TimeSpan HeartbeatTimeout =
+#if DEBUG
+            // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
+            // the client won't immediately timeout and disconnect.
+            TimeSpan.FromMinutes(10);
+#else
+            TimeSpan.FromSeconds(5);
+#endif
+
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
         private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
@@ -501,7 +510,10 @@ namespace Microsoft.R.Host.Client {
             foreach (var port in ports) {
                 ct.ThrowIfCancellationRequested();
 
-                server = new WebSocketServer(port) { ReuseAddress = false };
+                server = new WebSocketServer(port) {
+                    ReuseAddress = false,
+                    WaitTime = HeartbeatTimeout,
+                };
                 server.AddWebSocketService("/", CreateWebSocketMessageTransport);
 
                 try {
