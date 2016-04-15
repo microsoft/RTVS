@@ -3,8 +3,10 @@
 
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Text;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {
 
@@ -23,12 +25,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             return format != PublishFormat.Pdf;
         }
 
-        public string GetCommandLine(string inputFile, string outputFilePath, PublishFormat publishFormat) {
+        public string GetCommandLine(string inputFile, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {
             string format = GetDocumentTypeString(publishFormat);
             string outputFile = Path.GetFileName(outputFilePath);
             string outputFolder = Path.GetDirectoryName(outputFilePath).Replace('\\', '/');
             // Run rmarkdown::render
-            return $"\"rmarkdown::render(\'{inputFile}\', output_format=\'{format}\', output_file='{outputFile}',  output_dir='{outputFolder}')\"";
+            return Invariant($"\"rmarkdown::render('{inputFile}', output_format='{format}', output_file='{outputFile}',  output_dir='{outputFolder}', encoding='cp{encoding.CodePage}')\"");
         }
 
         private string GetDocumentTypeString(PublishFormat publishFormat) {
