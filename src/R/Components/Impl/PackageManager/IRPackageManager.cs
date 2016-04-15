@@ -97,5 +97,14 @@ namespace Microsoft.R.Components.PackageManager {
         /// <exception cref="OperationCanceledException">
         /// </exception>
         Task<string[]> GetLibraryPathsAsync();
+
+        /// <summary>
+        /// Check if the dll for the specified package is locked by the REPL
+        /// session or external process.
+        /// </summary>
+        /// <param name="name">Package name.</param>
+        /// <param name="libraryPath">Library path (in any format).</param>
+        /// <returns>Lock state.</returns>
+        PackageLockState GetPackageLockState(string name, string libraryPath);
     }
 }

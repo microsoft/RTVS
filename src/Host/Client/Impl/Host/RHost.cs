@@ -59,6 +59,8 @@ namespace Microsoft.R.Host.Client {
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
 
+        public int? ProcessId => _process?.Id;
+
         public RHost(string name, IRCallbacks callbacks) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
 
