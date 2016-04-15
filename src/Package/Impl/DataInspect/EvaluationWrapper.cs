@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,13 +13,15 @@ using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
-using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
     public sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
+        [ImportMany]
+        private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
         public EvaluationWrapper() { Index = -1; }
 
@@ -29,16 +32,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
         public EvaluationWrapper(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
+            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             Index = index;
 
-            CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
+            Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(DebugEvaluation as DebugValueEvaluationResult));
+            CanShowDetail = lazyViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(async (o) => await lazyViewer.Value.ViewAsync(this), (o) => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
-            CanShowOpenCsv = ComputeCsvAvailability(DebugEvaluation as DebugValueEvaluationResult);
+            var result = DebugEvaluation as DebugValueEvaluationResult;
+            CanShowOpenCsv = (CanShowDetail && lazyViewer.Value.IsTable) || (!CanShowDetail && result.Length > 1);
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
                 OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
@@ -134,35 +140,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public ICommand OpenInCsvAppCommand { get; }
         public string OpenCsvAppCommandTooltip { get; }
 
-        private void ShowVariableGridWindowPane(object parameter) {
-            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
-            pane.SetEvaluation(this);
-        }
-
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
-
-        private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
-        private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
-            if (evaluation != null && evaluation.Classes.Any(t => detailClasses.Contains(t))) {
-                if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
-                    return true;
-                }
-            }
-            return false;
-        }
         #endregion
-
-        private bool ComputeCsvAvailability(DebugValueEvaluationResult evaluation) {
-            bool result = false;
-            if (evaluation != null) {
-                result = ComputeDetailAvailability(evaluation);
-                if (!result) {
-                    result = evaluation.Length > 1;
-                }
-            }
-            return result;
-        }
     }
 }

@@ -13,7 +13,6 @@ using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings.Definitions;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;

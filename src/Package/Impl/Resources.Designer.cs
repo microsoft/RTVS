@@ -1553,7 +1553,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open in a Grid Viewer.
+        ///   Looks up a localized string similar to Show item details.
         /// </summary>
         public static string ShowDetailCommandTooltip {
             get {

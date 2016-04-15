@@ -71,6 +71,7 @@
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DebugGridViewProvider.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
+    <Compile Include="DataInspect\Definitions\IObjectDetailsViewer.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
     <Compile Include="DataInspect\Office\CsvAppFileIO.cs" />
@@ -81,6 +82,8 @@
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
+    <Compile Include="DataInspect\Viewers\FunctionViewer.cs" />
+    <Compile Include="DataInspect\Viewers\GridViewer.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
