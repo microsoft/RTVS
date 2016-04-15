@@ -31,21 +31,20 @@ namespace Microsoft.Languages.Core.Tokens {
 
             cs.MoveToNextChar();
 
-            if (cs.IsEndOfStream())
-                return;
+            if (!cs.IsEndOfStream()) {
+                while (true) {
+                    if (cs.CurrentChar == openQuote) {
+                        cs.MoveToNextChar();
+                        break;
+                    }
 
-            while (true) {
-                if (cs.CurrentChar == openQuote) {
-                    cs.MoveToNextChar();
-                    break;
+                    if (cs.CurrentChar == '\\') {
+                        cs.MoveToNextChar();
+                    }
+
+                    if (!cs.MoveToNextChar())
+                        break;
                 }
-
-                if (cs.CurrentChar == '\\') {
-                    cs.MoveToNextChar();
-                }
-
-                if (!cs.MoveToNextChar())
-                    break;
             }
 
             int length = cs.Position - start;

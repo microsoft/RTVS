@@ -45,8 +45,20 @@ namespace Microsoft.R.Editor.Completion.Engine {
                 return providers;
             }
 
+            // Special case for unterminated strings
+            var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position, includeEnd: true);
+            if (tokenNode != null && context.Position == tokenNode.End && tokenNode.Token.TokenType == RTokenType.String) {
+                var snapshot = context.TextBuffer.CurrentSnapshot;
+                // String token at least has opening quote
+                char quote = snapshot[tokenNode.Start];
+                if (tokenNode.Length == 1 || quote != snapshot[tokenNode.End - 1]) {
+                    // No completion at the end of underminated string
+                    return providers;
+                }
+            }
+
             // Now check if position is inside a string or a number and if so, suppress the completion list
-            var tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
+            tokenNode = context.AstRoot.GetNodeOfTypeFromPosition<TokenNode>(context.Position);
             if (tokenNode != null && (tokenNode.Token.TokenType == RTokenType.String ||
                                       tokenNode.Token.TokenType == RTokenType.Number ||
                                       tokenNode.Token.TokenType == RTokenType.Complex)) {

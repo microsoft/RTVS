@@ -37,6 +37,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null && !document.EditorTree.IsReady) {
                 document.EditorTree.InvokeWhenReady((p) => {
                     var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                    broker.DismissAllSessions((ITextView)p);
                     broker.TriggerSignatureHelp((ITextView)p);
                 }, session.TextView, this.GetType(), processNow: true);
             }
