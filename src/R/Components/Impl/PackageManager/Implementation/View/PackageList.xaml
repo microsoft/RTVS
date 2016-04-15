@@ -46,7 +46,7 @@
 
             <DataTemplate x:Key="PackageInfoTemplate" DataType="{x:Type viewModel:IRPackageViewModel}">
                 <Border BorderThickness="0,0,0,0" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" Background="Transparent" x:Name="Container">
-                    <Grid Margin="8,8,7,8" MinHeight="32">
+                    <Grid Margin="8,4,7,4" MinHeight="32">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -83,7 +83,7 @@
                         </Button>
 
                         <!-- title & summary-->
-                        <StackPanel Grid.Column="2">
+                        <StackPanel Grid.Column="2" Margin="0,-1,0,1">
                             <StackPanel.ToolTip>
                                 <ToolTip Visibility="{Binding Path=Description, Mode=OneWay, Converter={x:Static wpf:Converters.NullOrEmptyIsCollapsed}}">
                                     <TextBlock Style="{StaticResource TooltipStyle}">

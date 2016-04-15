@@ -14,7 +14,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
-using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
@@ -36,8 +35,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
         private SelectedTab _selectedTab;
         private bool _isLoading;
+        private string _firstError;
+        private bool _hasMultipleErrors;
         private IRPackageViewModel _selectedPackage;
-        private static readonly Comparer<IRPackageViewModel> _comparer = Comparer<IRPackageViewModel>.Create((p1, p2) => string.Compare(p1.Name, p2.Name, StringComparison.InvariantCultureIgnoreCase));
+        private Queue<string> _errorMessages;
 
         public RPackageManagerViewModel(IRPackageManager packageManager, IRSession session, IRSettings settings, ICoreShell coreShell) {
             _packageManager = packageManager;
@@ -51,6 +52,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _availableLock = new BinaryAsyncLock();
             _installedAndLoadedLock = new BinaryAsyncLock();
             _items = new BatchObservableCollection<object>();
+            _errorMessages = new Queue<string>();
             Items = new ReadOnlyObservableCollection<object>(_items);
 
             _session.Mutated += RSessionMutated;
@@ -66,6 +68,16 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         public bool IsLoading {
             get { return _isLoading; }
             private set { SetProperty(ref _isLoading, value); }
+        }
+
+        public string FirstError {
+            get { return _firstError; }
+            private set { SetProperty(ref _firstError, value); }
+        }
+
+        public bool HasMultipleErrors {
+            get { return _hasMultipleErrors; }
+            private set { SetProperty(ref _hasMultipleErrors, value); }
         }
 
         public bool ShowPackageManagerDisclaimer {
@@ -164,10 +176,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = true;
             }
 
-            var libPath = await GetLibPath();
-            await _packageManager.InstallPackageAsync(package.Name, libPath);
-            await ReloadInstalledAndLoadedPackagesAsync();
+            try {
+                var libPath = await GetLibPath();
+                await _packageManager.InstallPackageAsync(package.Name, libPath);
+            } catch (RPackageManagerException ex) {
+                AddErrorMessage(ex.Message);
+            }
 
+            await ReloadInstalledAndLoadedPackagesAsync();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
@@ -196,12 +212,21 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 }
 
                 if (package.IsLoaded) {
-                    await _packageManager.UnloadPackageAsync(package.Name);
+                    try {
+                        await _packageManager.UnloadPackageAsync(package.Name);
+                    } catch (RPackageManagerException ex) {
+                        AddErrorMessage(ex.Message);
+                    }
                     await ReloadLoadedPackagesAsync();
                 }
 
                 if (!package.IsLoaded) {
-                    await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
+                    try {
+                        await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
+                    } catch (RPackageManagerException ex) {
+                        AddErrorMessage(ex.Message);
+                    }
+                    
                     await ReloadInstalledAndLoadedPackagesAsync();
 
                     if (_selectedTab == SelectedTab.InstalledPackages) {
@@ -231,7 +256,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.LoadPackageAsync(package.Name, package.LibraryPath.ToRPath());
+            try {
+                await _packageManager.LoadPackageAsync(package.Name, package.LibraryPath.ToRPath());
+            } catch (RPackageManagerException ex) {
+                AddErrorMessage(ex.Message);
+            }
+            
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
@@ -250,7 +280,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
-            await _packageManager.UnloadPackageAsync(package.Name);
+            try {
+                await _packageManager.UnloadPackageAsync(package.Name);
+            } catch (RPackageManagerException ex) {
+                AddErrorMessage(ex.Message);
+            }
+            
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
@@ -270,6 +305,34 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             } else if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
+            }
+        }
+
+        public void DismissErrorMessage() {
+            _coreShell.AssertIsOnMainThread();
+            if (HasMultipleErrors) {
+                FirstError = _errorMessages.Dequeue();
+                HasMultipleErrors = _errorMessages.Count > 0;
+            } else {
+                FirstError = null;
+                HasMultipleErrors = false;
+            }
+        }
+
+        public void DismissAllErrorMessages() {
+            _coreShell.AssertIsOnMainThread();
+            FirstError = null;
+            HasMultipleErrors = false;
+            _errorMessages.Clear();
+        }
+
+        private void AddErrorMessage(string message) {
+            _coreShell.AssertIsOnMainThread();
+            if (FirstError == null) {
+                FirstError = message;
+            } else {
+                _errorMessages.Enqueue(message);
+                HasMultipleErrors = true;
             }
         }
 
@@ -302,6 +365,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 try {
                     await LoadAvailablePackagesAsync();
                 } catch (RPackageManagerException ex) {
+                    _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
                 } finally {
                     _availableLock.Release();
                 }
@@ -351,6 +415,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             try {
                 await LoadInstalledAndLoadedPackagesAsync();
             } catch (RPackageManagerException ex) {
+                _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
             } finally {
                 _installedAndLoadedLock.Release();
             }
@@ -397,7 +462,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private void IdentifyRemovablePackages(IEnumerable<IRPackageViewModel> packages) {
+        private void IdentifyRemovablePackages(ICollection<IRPackageViewModel> packages) {
             var basePackage = packages.FirstOrDefault(x => x.Name.EqualsOrdinal("base"));
             if (basePackage != null) {
                 foreach (var p in packages) {
@@ -419,6 +484,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
                 await UpdateLoadedPackages(currentInstalledPackages, loadedPackageNames);
             } catch (RPackageManagerException ex) {
+                _coreShell.DispatchOnUIThread(() => AddErrorMessage(ex.Message));
             }
         }
 

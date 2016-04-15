@@ -19,6 +19,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsLoading => false;
         public bool ShowPackageManagerDisclaimer { get; set; } = true;
 
+        public string FirstError => null;
+        public bool HasMultipleErrors => false;
+
 
         public void SwitchToAvailablePackages() {
             
@@ -53,6 +56,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         }
 
         public void Unload(IRPackageViewModel package) {
+        }
+
+        public void DismissErrorMessage() {
+        }
+
+        public void DismissAllErrorMessages() {
         }
 
         public Task<int> Search(string searchString, CancellationToken cancellationToken) {

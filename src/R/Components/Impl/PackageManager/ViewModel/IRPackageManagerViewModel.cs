@@ -12,6 +12,9 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         bool IsLoading { get; }
         bool ShowPackageManagerDisclaimer { get; set; }
 
+        string FirstError { get; }
+        bool HasMultipleErrors { get; }
+
         void SwitchToAvailablePackages();
         void SwitchToInstalledPackages();
         void SwitchToLoadedPackages();
@@ -22,5 +25,7 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         void Uninstall(IRPackageViewModel package);
         void Load(IRPackageViewModel package);
         void Unload(IRPackageViewModel package);
+        void DismissErrorMessage();
+        void DismissAllErrorMessages();
     }
 }

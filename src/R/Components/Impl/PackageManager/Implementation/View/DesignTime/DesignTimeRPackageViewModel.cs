@@ -80,6 +80,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public void UpdateAvailablePackageDetails(RPackage package) {}
         public void Install() {}
         public void Uninstall() {}
+        public void Update() {}
     }
 #endif
 }
