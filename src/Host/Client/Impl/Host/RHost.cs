@@ -250,11 +250,15 @@ namespace Microsoft.R.Host.Client {
             var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
             var error = response.GetString(1, "error", allowNull: true);
 
-            if (request.Kind.HasFlag(REvaluationKind.Json)) {
-                request.CompletionSource.SetResult(new REvaluationResult(response[2], error, parseStatus));
+            REvaluationResult result;
+            if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
+                result = new REvaluationResult(error, parseStatus);
+            } else if (request.Kind.HasFlag(REvaluationKind.Json)) {
+                result = new REvaluationResult(response[2], error, parseStatus);
             } else {
-                request.CompletionSource.SetResult(new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus));
+                result = new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
             }
+            request.CompletionSource.SetResult(result);
         }
 
         /// <summary>
