@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,14 +58,41 @@ namespace Microsoft.Common.Core {
         }
 
         /// <summary>
-        /// Suppresses warnings about unawaited tasks and ensures that unhandled
-        /// errors will cause the process to terminate.
+        /// Rethrows task exceptions back to the callers synchronization context if it is possible
         /// </summary>
         /// <remarks>
         /// <see cref="OperationCanceledException"/> is always ignored.
         /// </remarks>
-        public static async void DoNotWait(this Task task) {
-            await task.SilenceException<OperationCanceledException>();
+        public static void DoNotWait(this Task task) {
+            if (task.IsCompleted) {
+                ReThrowTaskException(task);
+                return;
+            }
+
+            var synchronizationContext = SynchronizationContext.Current;
+            if (synchronizationContext != null && synchronizationContext.GetType() != typeof(SynchronizationContext)) {
+                task.ContinueWith(ReThrowTaskExceptionIntoSynchronizationContext, synchronizationContext, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            }
+
+            task.ContinueWith(DebugFailTaskException, TaskContinuationOptions.ExecuteSynchronously);
+        }
+
+        private static void ReThrowTaskException(object state) {
+            var task = (Task) state;
+            if (task.IsFaulted && task.Exception != null) {
+                ExceptionDispatchInfo.Capture(task.Exception.InnerException).Throw();
+            }
+        }
+
+        private static void DebugFailTaskException(Task task) {
+            if (task.IsFaulted && task.Exception != null) {
+                Debug.Fail(task.Exception.InnerException.Message, task.Exception.InnerException.StackTrace);
+            }
+        }
+
+        private static void ReThrowTaskExceptionIntoSynchronizationContext(Task task, object state) {
+            var context = (SynchronizationContext) state;
+            context.Post(ReThrowTaskException, task);
         }
 
         /// <summary>
