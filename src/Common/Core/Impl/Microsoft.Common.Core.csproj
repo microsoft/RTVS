@@ -39,6 +39,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Collections\ListExtensions.cs" />
+    <Compile Include="Diagnostics\RestartManager.cs" />
     <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />

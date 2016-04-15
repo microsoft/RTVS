@@ -7,55 +7,49 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Microsoft.R.Components.PackageManager.Implementation {
-    internal class RestartManager {
+namespace Microsoft.Common.Core.Diagnostics {
+    public static class RestartManager {
         /// <summary>
-        /// Given a list of filenames with aboslute path, returns list of process currently locking those files.
+        /// Given a list of filenames with absolute path, returns enumerable of process currently locking those files.
         /// </summary>
         /// <param name="filePaths">Filenames with absolute path.</param>
-        /// <returns>List of processes locking the files. null if it encounters any error.</returns>
-        public static IList<Process> GetProcessesUsingFiles(string[] filePaths) {
+        /// <returns>Enumerable of processes locking the files. Empty if it encounters any error.</returns>
+        public static IEnumerable<Process> GetProcessesUsingFiles(string[] filePaths) {
             uint sessionHandle;
-            List<Process> processes = new List<Process>();
+            int error = NativeMethods.RmStartSession(out sessionHandle, 0, Guid.NewGuid().ToString("N"));
+            if (error == 0) {
+                try {
+                    error = NativeMethods.RmRegisterResources(sessionHandle, (uint)filePaths.Length, filePaths, 0, null, 0, null);
+                    if (error == 0) {
+                        RM_PROCESS_INFO[] processInfo = null;
+                        uint pnProcInfoNeeded = 0, pnProcInfo = 0, lpdwRebootReasons = RmRebootReasonNone;
+                        error = NativeMethods.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, null, ref lpdwRebootReasons);
+                        while (error == ERROR_MORE_DATA) {
+                            processInfo = new RM_PROCESS_INFO[pnProcInfoNeeded];
+                            pnProcInfo = (uint)processInfo.Length;
+                            error = NativeMethods.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, processInfo, ref lpdwRebootReasons);
+                        }
 
-            int restartManager = NativeMethods.RmStartSession(out sessionHandle, 0, Guid.NewGuid().ToString("N"));
-            if (restartManager != 0) {
-                return null;
-            }
+                        if (error == 0 && processInfo != null) {
+                            for (var i = 0; i < pnProcInfo; i++) {
+                                RM_PROCESS_INFO procInfo = processInfo[i];
+                                Process proc = null;
+                                try {
+                                    proc = Process.GetProcessById(procInfo.Process.dwProcessId);
+                                } catch (ArgumentException) {
+                                    // Eat exceptions for processes which are no longer running.
+                                }
 
-            try {
-                restartManager = NativeMethods.RmRegisterResources(sessionHandle, (uint)filePaths.Length, filePaths, 0, null, 0, null);
-                if (restartManager != 0) {
-                    return null;
-                }
-
-                uint pnProcInfoNeeded = 0, pnProcInfo = 0, lpdwRebootReasons = RmRebootReasonNone;
-                restartManager = NativeMethods.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, null, ref lpdwRebootReasons);
-
-                if (restartManager == ERROR_MORE_DATA) {
-                    RM_PROCESS_INFO[] processInfo = new RM_PROCESS_INFO[pnProcInfoNeeded];
-                    pnProcInfo = (uint)processInfo.Length;
-
-                    restartManager = NativeMethods.RmGetList(sessionHandle, out pnProcInfoNeeded, ref pnProcInfo, processInfo, ref lpdwRebootReasons);
-                    if (restartManager == 0) {
-                        foreach (RM_PROCESS_INFO procInfo in processInfo) {
-                            try {
-                                processes.Add(Process.GetProcessById(procInfo.Process.dwProcessId));
-                            } catch (ArgumentException) {
-                                // Eat exceptions for processes which are no longer running.
+                                if (proc != null) {
+                                    yield return proc;
+                                }
                             }
                         }
-                    } else {
-                        return null;
                     }
-                } else if (restartManager != 0) {
-                    return null;
+                } finally {
+                    NativeMethods.RmEndSession(sessionHandle);
                 }
-            } finally {
-                NativeMethods.RmEndSession(sessionHandle);
             }
-
-            return processes;
         }
 
         private const int RmRebootReasonNone = 0;

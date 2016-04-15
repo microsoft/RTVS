@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -152,13 +152,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         public PackageLockState GetPackageLockState(string name, string libraryPath) {
             string dllPath = GetPackageDllPath(name, libraryPath);
             if (!string.IsNullOrEmpty(dllPath)) {
-                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath });
+                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
                 if (processes != null) {
-                    if (processes.Count == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
+                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
                         return PackageLockState.LockedByRSession;
                     }
 
-                    if (processes.Count > 0) {
+                    if (processes.Length > 0) {
                         return PackageLockState.LockedByOther;
                     }
                 }
