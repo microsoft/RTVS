@@ -52,18 +52,21 @@ namespace Microsoft.R.Host.Client {
         /// </remarks>
         public RParseStatus ParseStatus { get; }
 
-        public REvaluationResult(string result, string error, RParseStatus parseStatus) {
-            StringResult = result;
-            JsonResult = null;
+        public REvaluationResult(string error, RParseStatus parseStatus) {
             Error = error;
             ParseStatus = parseStatus;
+            StringResult = null;
+            JsonResult = null;
         }
 
-        public REvaluationResult(JToken result, string error, RParseStatus parseStatus) {
-            StringResult = null;
+        public REvaluationResult(string result, string error, RParseStatus parseStatus)
+            : this(error, parseStatus) {
+            StringResult = result;
+        }
+
+        public REvaluationResult(JToken result, string error, RParseStatus parseStatus)
+            : this(error, parseStatus) {
             JsonResult = result;
-            Error = error;
-            ParseStatus = parseStatus;
         }
 
         public override string ToString() {
