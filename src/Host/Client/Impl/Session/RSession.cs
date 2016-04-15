@@ -57,12 +57,7 @@ namespace Microsoft.R.Host.Client.Session {
         public bool IsHostRunning => _isHostRunning;
         public Task HostStarted => _initializationTcs?.Task ?? Task.FromCanceled(new CancellationToken(true));
 
-        public int ProcessId {
-            get
-            {
-                return _host != null ? _host.ProcessId : 0;
-            }
-        }
+        public int? ProcessId => _host?.ProcessId;
 
         /// <summary>
         /// For testing purpose only
