@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {
 
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             string outputFile = Path.GetFileName(outputFilePath);
             string outputFolder = Path.GetDirectoryName(outputFilePath).Replace('\\', '/');
             // Run rmarkdown::render
-            return $"\"rmarkdown::render(\'{inputFile}\', output_format=\'{format}\', output_file='{outputFile}',  output_dir='{outputFolder}')\"";
+            return Invariant($"\"rmarkdown::render('{inputFile}', output_format='{format}', output_file='{outputFile}',  output_dir='{outputFolder}', encoding='UTF-8')\"");
         }
 
         private string GetDocumentTypeString(PublishFormat publishFormat) {

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Text;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.Extensions {
@@ -39,9 +40,12 @@ namespace Microsoft.R.Components.Extensions {
             return textBuffer.ToTextDocument()?.FilePath;
         }
 
-        public static void Save(this ITextBuffer textBuffer) {
+        public static void Save(this ITextBuffer textBuffer, Encoding encoding = null) {
             ITextDocument textDocument = textBuffer.ToTextDocument();
             if (textDocument != null && textDocument.IsDirty) {
+                if(encoding != null) {
+                    textDocument.Encoding = encoding;
+                }
                 textDocument.Save();
             }
         }

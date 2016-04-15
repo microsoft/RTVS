@@ -69,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 }
 
                 // Save the file
-                TextView.TextBuffer.Save();
+                TextView.TextBuffer.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
                 var inputFilePath = TextView.TextBuffer.GetFilePath();
                 _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
