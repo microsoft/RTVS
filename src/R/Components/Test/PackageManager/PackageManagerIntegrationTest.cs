@@ -260,7 +260,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         [Test]
         [Category.PackageManager]
-        public async Task GetPackageLockState() {
+        public async Task GetPackageLockStateLockByRSession() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, "abn", _libPath);
@@ -278,7 +278,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         [Test]
         [Category.PackageManager]
-        public async Task ResetNotRecommendedPriorToInstall() {
+        public async Task GetPackageLockStateUnlocked() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 await SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, "abn", _libPath);
