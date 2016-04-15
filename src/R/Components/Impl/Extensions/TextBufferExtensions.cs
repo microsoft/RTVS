@@ -1,7 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.IO;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Components.Extensions {
@@ -43,11 +45,51 @@ namespace Microsoft.R.Components.Extensions {
         public static void Save(this ITextBuffer textBuffer, Encoding encoding = null) {
             ITextDocument textDocument = textBuffer.ToTextDocument();
             if (textDocument != null && textDocument.IsDirty) {
-                if(encoding != null) {
+                if (encoding != null) {
                     textDocument.Encoding = encoding;
                 }
                 textDocument.Save();
             }
+        }
+
+        /// <summary>
+        /// Checks if file contents can be represented in the specified encoding without data loss.
+        /// </summary>
+        /// <param name="encoding"></param>
+        public static bool IsConververtibleTo(this ITextBuffer textBuffer, Encoding encoding) {
+            string original = textBuffer.CurrentSnapshot.GetText();
+            using (var ms = new MemoryStream(original.Length * 2)) {
+                using (var sw = new StreamWriter(ms, encoding)) {
+                    sw.Write(original);
+                    sw.Flush();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    using (var sr = new StreamReader(ms, encoding)) {
+                        var converted = sr.ReadToEnd();
+                        return converted.EqualsOrdinal(original);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if file contents can be saved to disk in the current encoding without data loss.
+        /// </summary>
+        /// <param name="encoding"></param>
+        public static bool CanBeSavedInCurrentEncoding(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = textBuffer.ToTextDocument();
+            if (textDocument != null) {
+                return textBuffer.IsConververtibleTo(textDocument.Encoding);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if file contents can be saved to disk in the current encoding without data loss.
+        /// </summary>
+        /// <param name="encoding"></param>
+        public static Encoding GetEncoding(this ITextBuffer textBuffer) {
+            ITextDocument textDocument = textBuffer.ToTextDocument();
+            return textDocument != null ? textDocument.Encoding : Encoding.Default;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
@@ -69,8 +70,17 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 }
 
                 // Save the file
-                TextView.TextBuffer.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-                var inputFilePath = TextView.TextBuffer.GetFilePath();
+                var tb = TextView.TextBuffer;
+                if (!tb.CanBeSavedInCurrentEncoding()) {
+                    if(MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                        return CommandResult.Executed;
+                    }
+                    tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+                } else {
+                    tb.Save();
+                }
+
+                var inputFilePath = tb.GetFilePath();
                 _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
                 try {
@@ -83,7 +93,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 inputFilePath = inputFilePath.Replace('\\', '/');
                 string outputFilePath = _outputFilePath.Replace('\\', '/');
 
-                string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format);
+                string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format, tb.GetEncoding());
 
                 _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current, RToolsSettings.Current.RBasePath);
                 _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));

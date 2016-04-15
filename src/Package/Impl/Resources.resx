@@ -703,4 +703,7 @@ Additional information:
   <data name="Error_UnknownMirror" xml:space="preserve">
     <value>'{0}' is not a known CRAN mirror name.</value>
   </data>
+  <data name="Warning_SaveInUtf8" xml:space="preserve">
+    <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
+  </data>
 </root>
