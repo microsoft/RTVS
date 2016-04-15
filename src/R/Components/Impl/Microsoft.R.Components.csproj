@@ -132,6 +132,7 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
+    <Compile Include="PackageManager\Implementation\RestartManager.cs" />
     <Compile Include="PackageManager\Implementation\SessionPool.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
       <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="PackageManager\Model\PackageLockState.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
     <Compile Include="PackageManager\RPackageManagerException.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />

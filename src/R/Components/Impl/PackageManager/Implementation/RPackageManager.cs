@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -145,6 +147,37 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
+        }
+
+        public PackageLockState GetPackageLockState(string name, string libraryPath) {
+            string dllPath = GetPackageDllPath(name, libraryPath);
+            if (!string.IsNullOrEmpty(dllPath)) {
+                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath });
+                if (processes.Count == 1 && IsProcessRHost(processes[0])) {
+                    return PackageLockState.LockedByRSession;
+                }
+
+                if (processes.Count > 0) {
+                    return PackageLockState.LockedByOther;
+                }
+            }
+
+            return PackageLockState.Unlocked;
+        }
+
+        private bool IsProcessRHost(Process proc) {
+            return _interactiveWorkflow.RSession.ProcessId == proc.Id;
+        }
+
+        private string GetPackageDllPath(string name, string libraryPath) {
+            string pkgFolder = Path.Combine(libraryPath.Replace("/", "\\"), name);
+            if (Directory.Exists(pkgFolder)) {
+                string dllPath = Path.Combine(pkgFolder, "libs", "x64", name + ".dll");
+                if (File.Exists(dllPath)) {
+                    return dllPath;
+                }
+            }
+            return null;
         }
 
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
