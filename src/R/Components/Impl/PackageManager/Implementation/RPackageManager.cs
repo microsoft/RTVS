@@ -153,12 +153,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             string dllPath = GetPackageDllPath(name, libraryPath);
             if (!string.IsNullOrEmpty(dllPath)) {
                 var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath });
-                if (processes.Count == 1 && IsProcessRHost(processes[0])) {
-                    return PackageLockState.LockedByRSession;
-                }
+                if (processes != null) {
+                    if (processes.Count == 1 && IsProcessRHost(processes[0])) {
+                        return PackageLockState.LockedByRSession;
+                    }
 
-                if (processes.Count > 0) {
-                    return PackageLockState.LockedByOther;
+                    if (processes.Count > 0) {
+                        return PackageLockState.LockedByOther;
+                    }
                 }
             }
 
