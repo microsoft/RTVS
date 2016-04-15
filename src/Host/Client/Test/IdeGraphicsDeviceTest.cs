@@ -189,6 +189,22 @@ rtvs:::graphics.ide.resize(600, 600)
 
         [Test]
         [Category.Plots]
+        public async Task ResizeInteractiveNoTempFilesLeak() {
+            //https://github.com/Microsoft/RTVS/issues/1568
+            var code = @"
+plot(0:10)
+rtvs:::graphics.ide.resize(600, 600)
+";
+            var tmpFilesBefore = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
+            actualPlotFilePaths.Should().HaveCount(2);
+            var tmpFilesAfter = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
+            tmpFilesAfter.ShouldAllBeEquivalentTo(tmpFilesBefore);
+        }
+
+        [Test]
+        [Category.Plots]
         public async Task ExportToImage() {
             var exportedBmpFilePath = _files.ExportToBmpResultPath;
             var exportedPngFilePath = _files.ExportToPngResultPath;
