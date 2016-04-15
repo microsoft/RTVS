@@ -154,7 +154,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             if (!string.IsNullOrEmpty(dllPath)) {
                 var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath });
                 if (processes != null) {
-                    if (processes.Count == 1 && IsProcessRHost(processes[0])) {
+                    if (processes.Count == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
                         return PackageLockState.LockedByRSession;
                     }
 
@@ -165,10 +165,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             return PackageLockState.Unlocked;
-        }
-
-        private bool IsProcessRHost(Process proc) {
-            return _interactiveWorkflow.RSession.ProcessId == proc.Id;
         }
 
         private string GetPackageDllPath(string name, string libraryPath) {
