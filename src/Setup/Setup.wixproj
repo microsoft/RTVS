@@ -19,21 +19,21 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\bin\</BaseOutputPath>
+  <PropertyGroup>
+    <BinDirectory Condition="'$(BinDirectory)' == ''">..\..\bin\</BinDirectory>
+    <ObjDirectory Condition="'$(ObjDirectory)' == ''">..\..\obj\</ObjDirectory>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DefineConstants>Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <Chip>x86</Chip>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <BaseIntermediateOutputPath>..\..\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>..\..\bin\</BaseOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Setup\</IntermediateOutputPath>
-    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <Chip>x86</Chip>
     <DefineConstants>LabBuild=1;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>

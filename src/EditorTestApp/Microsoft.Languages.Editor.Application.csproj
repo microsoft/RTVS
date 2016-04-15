@@ -11,8 +11,8 @@
   </PropertyGroup>
   <Import Project="..\R.Settings.targets" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\Microsoft.Languages.Editor.Application\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
