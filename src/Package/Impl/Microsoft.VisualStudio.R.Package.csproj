@@ -19,8 +19,8 @@
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
     <SchemaVersion>2.0</SchemaVersion>
@@ -858,7 +858,7 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Language.Intellisense.14.1.24720\lib\net45\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
@@ -905,7 +905,7 @@
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -923,7 +923,7 @@
     <Reference Include="Microsoft.Office.Interop.Outlook, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\..\..\lib\Microsoft.Office.Interop.Outlook.dll</HintPath>
+      <HintPath>$(LibDirectory)\Microsoft.Office.Interop.Outlook.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=14.0.0.0">
       <Private>False</Private>

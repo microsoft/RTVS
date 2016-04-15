@@ -24,16 +24,20 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
+  <PropertyGroup>
+    <BinDirectory Condition="'$(BinDirectory)' == ''">..\..\bin\</BinDirectory>
+    <ObjDirectory Condition="'$(ObjDirectory)' == ''">..\..\obj\</ObjDirectory>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\SetupBundle\</IntermediateOutputPath>
+    <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>..\..\obj\$(Configuration)\SetupBundle\</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants);Debug;MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu;VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
     <SuppressPdbOutput>True</SuppressPdbOutput>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <IntermediateOutputPath>..\..\obj\$(Configuration)\SetupBundle</IntermediateOutputPath>
     <DefineConstants>$(DefineConstants);MsiVersion=$(BuildVersion);ProductVersion=$(MajorVersion).$(MinorVersion);Chip=x86;Lang=enu;VsVersion=$(VsVersion)</DefineConstants>
     <SuppressSpecificWarnings>1076</SuppressSpecificWarnings>
   </PropertyGroup>

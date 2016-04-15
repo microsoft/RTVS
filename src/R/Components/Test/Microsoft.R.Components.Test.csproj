@@ -18,8 +18,8 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
-    <BaseIntermediateOutputPath>$(RootDirectory)\obj\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(RootDirectory)\bin\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
@@ -85,7 +85,7 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(RootDirectory)\lib\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
       <Private>False</Private>
