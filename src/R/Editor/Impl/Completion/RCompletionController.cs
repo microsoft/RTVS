@@ -246,7 +246,7 @@ namespace Microsoft.R.Editor.Completion {
                                 int pos = position.Value;
                                 var snapshot = position.Value.Snapshot;
                                 // Trigger on first character
-                                if (RTokenizer.IsIdentifierCharacter(typedCharacter) && !char.IsDigit(typedCharacter) || typedCharacter == '%') {
+                                if (RTokenizer.IsIdentifierCharacter(typedCharacter) && !char.IsDigit(typedCharacter)) {
                                     // Ignore if this is not the first character
                                     return pos <= 1 || (pos > 1 && !RTokenizer.IsIdentifierCharacter(snapshot[pos - 2]));
                                 }
