@@ -33,8 +33,6 @@ namespace Microsoft.Common.Core.Test.Utility {
             "Data",
             "DataContext",
             "Visibility",
-            "IsEnabled",
-            "IsVisible",
             "IsVirtualizing",
             "TextAlignment",
             "ToolTip",
@@ -45,7 +43,6 @@ namespace Microsoft.Common.Core.Test.Utility {
             "VerticalScrollBarVisibility",
             "Padding",
             "Margin",
-            "ContentTemplate",
             "ContentTemplate",
         };
     }

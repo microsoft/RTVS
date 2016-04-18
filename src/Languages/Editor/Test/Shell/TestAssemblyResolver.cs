@@ -16,7 +16,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
-            string name = args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll";
+            int index = args.Name.IndexOf(',');
+            string name = index >= 0 ? args.Name.Substring(0, args.Name.IndexOf(',')) + ".dll" : args.Name;
             Assembly asm = null;
 
             string path = Path.Combine(AssemblyLocations.PrivatePath, name);
