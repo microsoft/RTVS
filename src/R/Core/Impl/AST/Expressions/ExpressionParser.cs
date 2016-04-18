@@ -386,22 +386,12 @@ namespace Microsoft.R.Core.AST.Expressions {
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
             // We must distinguish between operator definition and the operator use.
             // in case of %a% <- left side behaves as identifier rather than the operator
-            // Check for `% abc %` <- function() or %abc% <- function()
             var tokens = context.Tokens;
-            if (IsStartOfExpression() && tokens.NextToken.TokenType == RTokenType.Operator && tokens.LookAhead(2).TokenType == RTokenType.Keyword) {
-
-                string thisOperatorText = context.TextProvider.GetText((tokens.CurrentToken));
-                if (thisOperatorText.StartsWith("`%", StringComparison.Ordinal) || thisOperatorText.StartsWith("%", StringComparison.Ordinal)) {
-
-                    string nextOperatorText = context.TextProvider.GetText((tokens.NextToken));
-                    if (nextOperatorText.EqualsOrdinal("<-") || nextOperatorText.EqualsOrdinal("=")) {
-
-                        string keywordText = context.TextProvider.GetText((tokens.LookAhead(2)));
-                        if (keywordText.EqualsOrdinal("function")) {
-                            errorType = ParseErrorType.None;
-                            return HandleIdentifier(context);
-                        }
-                    }
+            if (IsStartOfExpression() && tokens.NextToken.TokenType == RTokenType.Operator) {
+                string operatorText = context.TextProvider.GetText((tokens.NextToken));
+                if(operatorText.EqualsOrdinal("<-") || operatorText.EqualsOrdinal("=")) {
+                    errorType = ParseErrorType.None;
+                    return HandleIdentifier(context);
                 }
             }
 
