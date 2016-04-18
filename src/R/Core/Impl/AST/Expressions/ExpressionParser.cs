@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
@@ -383,6 +384,27 @@ namespace Microsoft.R.Core.AST.Expressions {
         }
 
         private OperationType HandleOperator(ParseContext context, out ParseErrorType errorType) {
+            // We must distinguish between operator definition and the operator use.
+            // in case of %a% <- left side behaves as identifier rather than the operator
+            // Check for `% abc %` <- function() or %abc% <- function()
+            var tokens = context.Tokens;
+            if (IsStartOfExpression() && tokens.NextToken.TokenType == RTokenType.Operator && tokens.LookAhead(2).TokenType == RTokenType.Keyword) {
+
+                string thisOperatorText = context.TextProvider.GetText((tokens.CurrentToken));
+                if (thisOperatorText.StartsWith("`%", StringComparison.Ordinal) || thisOperatorText.StartsWith("%", StringComparison.Ordinal)) {
+
+                    string nextOperatorText = context.TextProvider.GetText((tokens.NextToken));
+                    if (nextOperatorText.EqualsOrdinal("<-") || nextOperatorText.EqualsOrdinal("=")) {
+
+                        string keywordText = context.TextProvider.GetText((tokens.LookAhead(2)));
+                        if (keywordText.EqualsOrdinal("function")) {
+                            errorType = ParseErrorType.None;
+                            return HandleIdentifier(context);
+                        }
+                    }
+                }
+            }
+
             bool isUnary;
             errorType = this.HandleOperator(context, null, out isUnary);
             return isUnary ? OperationType.UnaryOperator : OperationType.BinaryOperator;
@@ -603,6 +625,10 @@ namespace Microsoft.R.Core.AST.Expressions {
             Debug.Assert(term != null);
             term.Parse(context, null);
             return term;
+        }
+
+        private bool IsStartOfExpression() {
+            return _operands.Count == 0 && _operators.Count == 1;
         }
     }
 }
