@@ -236,6 +236,7 @@
             <!-- the style of the ListBoxItem when the item is a package. -->
             <Style x:Key="PackageItemStyle" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource ListBoxItemStyle}">
                 <Setter Property="Template" Value="{StaticResource ListBoxItemTemplate}" />
+                <EventSetter Event="MouseDoubleClick" Handler="List_MouseDoubleClick" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -277,8 +278,7 @@
             <ListBox x:Name="List" Background="{DynamicResource {x:Static wpf:Brushes.ListPaneBackground}}" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" ItemContainerStyle="{DynamicResource PackageItemStyle}"
                      VirtualizingPanel.IsVirtualizing="true" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.CacheLength="1,2" VirtualizingPanel.CacheLengthUnit="Page"
-                     PreviewKeyUp="List_PreviewKeyUp" MouseDoubleClick="List_MouseDoubleClick"
-                     SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
+                     PreviewKeyUp="List_PreviewKeyUp" SelectionChanged="List_SelectionChanged" HorizontalContentAlignment="Stretch" BorderThickness="0,0,0,0" 
                      Visibility="{Binding Path=IsLoading, Converter={x:Static wpf:Converters.TrueIsCollapsed}}"
                      ItemsSource="{Binding Path=Items}" SelectedItem="{Binding Path=SelectedPackage, Mode=OneWay}" ItemTemplate="{StaticResource PackageInfoTemplate}">
                 <!-- set the template to disable the background change when the IsEnabled is false. -->
