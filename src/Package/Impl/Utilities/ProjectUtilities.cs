@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using EnvDTE;
@@ -57,17 +58,13 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             if (dte.Solution.Projects.Count > 0) {
                 try {
-                    if (dte.Solution != null) {
-                        Array projects;
-                        var solutionFile = dte.Solution.FullName;
-                        if (!string.IsNullOrEmpty(solutionFile)) {
-                            projects = (Array)dte.ActiveSolutionProjects;
-                            return (EnvDTE.Project)projects.GetValue(0);
-                        } else {
-                            var e = dte.Solution.Projects.GetEnumerator();
-                            e.MoveNext();
-                            return (EnvDTE.Project)e.Current;
-                        }
+                    Array projects;
+                    var solutionFile = dte.Solution.FullName;
+                    if (!string.IsNullOrEmpty(solutionFile)) {
+                        projects = (Array)dte.ActiveSolutionProjects;
+                        return (EnvDTE.Project)projects.GetValue(0);
+                    } else {
+                        return dte.Solution.Projects.Cast<EnvDTE.Project>().First();
                     }
                 } catch (COMException) { }
             }
