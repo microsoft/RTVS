@@ -81,6 +81,10 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("iii ", 2)]
         [InlineData("`i `", 2)]
         [InlineData("2. ", 2)]
+        [InlineData("' ", 2)]
+        [InlineData("\"a", 2)]
+        [InlineData("\"a'", 2)]
+        [InlineData("\"", 1)]
         public void SuppressedCompletion(string content, int position) {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
