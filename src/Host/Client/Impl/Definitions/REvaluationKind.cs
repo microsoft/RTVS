@@ -16,6 +16,7 @@ namespace Microsoft.R.Host.Client {
         /// When this flag is set, <see cref="REvaluationResult.StringResult"/> will be null, but
         /// <see cref="REvaluationResult.JsonResult"/> will contain the value after it has been deserialized.
         /// </summary>
+        /// <seealso cref="RExpressionEvaluatorExtensions.EvaluateAsync{T}"/>
         Json = 1 << 2,
         /// <summary>
         /// Indicates that this expression should be evaluated in the base environment (<c>baseenv()</c>).
@@ -42,6 +43,16 @@ namespace Microsoft.R.Host.Client {
         /// <see cref="IRSession.Mutated"/> is raised after the evaluation completes.
         /// </remarks>
         Mutating = 1 << 7,
+        /// <summary>
+        /// Do not retrieve the result of this expression. The returned <see cref="REvaluationResult"/> will
+        /// only be used for error reporting, and both <see cref="REvaluationResult.StringResult"/> and
+        /// <see cref="REvaluationResult.JsonResult"/> will be <see langword="null"/> upon successful evaluation.
+        /// </summary>
+        /// <remarks>
+        /// Used when expression is evaluated solely for its side effects.
+        /// </remarks>
+        /// <seealso cref="RExpressionEvaluatorExtensions.ExecuteAsync"/>
+        NoResult = 1 << 8,
     }
 }
 

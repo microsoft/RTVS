@@ -153,6 +153,12 @@
   <data name="PackageManager_LegalDisclaimer" xml:space="preserve">
     <value>Each package is licensed to you by its owner. Microsoft is not responsible for, nor does it grant any licenses to, third-party packages.</value>
   </data>
+  <data name="PackageManager_PackageLockedByRSession" xml:space="preserve">
+    <value>Package {0} can't be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled.</value>
+  </data>
+  <data name="PackageManager_PackageLocked" xml:space="preserve">
+    <value>Package {0} can't be uninstalled because one of its files is locked by other process.</value>
+  </data>
   <data name="PackageManager_PackageSources" xml:space="preserve">
     <value>Package sources:</value>
   </data>

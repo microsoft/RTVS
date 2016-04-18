@@ -7,9 +7,12 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
@@ -253,6 +256,38 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             var result = await _workflow.Packages.GetLibraryPathsAsync();
             result[0].Should().Be(_libPath.ToRPath());
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task GetPackageLockStateLockByRSession() {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalLibsAsync(eval, _libPath);
+                await InstallPackageAsync(eval, "abn", _libPath);
+            }
+
+            await _workflow.Packages.LoadPackageAsync("abn", null);
+
+            var pkgs = await _workflow.Packages.GetInstalledPackagesAsync();
+            var abn = pkgs.Should().ContainSingle(pkg => pkg.Package == "abn").Which;
+            var cairo = pkgs.Should().ContainSingle(pkg => pkg.Package == "Cairo").Which;
+
+            _workflow.Packages.GetPackageLockState(abn.Package, abn.LibPath).Should().Be(PackageLockState.LockedByRSession);
+            _workflow.Packages.GetPackageLockState(cairo.Package, cairo.LibPath).Should().Be(PackageLockState.LockedByRSession);
+        }
+
+        [Test]
+        [Category.PackageManager]
+        public async Task GetPackageLockStateUnlocked() {
+            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
+                await SetLocalLibsAsync(eval, _libPath);
+                await InstallPackageAsync(eval, "abn", _libPath);
+            }
+
+            var pkgs = await _workflow.Packages.GetInstalledPackagesAsync();
+            var abn = pkgs.Should().ContainSingle(pkg => pkg.Package == "abn").Which;
+
+            _workflow.Packages.GetPackageLockState(abn.Package, abn.LibPath).Should().Be(PackageLockState.Unlocked);
         }
 
         private async Task EvaluateCode(string code, string expectedResult = null, string expectedError = null) {

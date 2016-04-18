@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -145,6 +147,35 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
+        }
+
+        public PackageLockState GetPackageLockState(string name, string libraryPath) {
+            string dllPath = GetPackageDllPath(name, libraryPath);
+            if (!string.IsNullOrEmpty(dllPath)) {
+                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
+                if (processes != null) {
+                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
+                        return PackageLockState.LockedByRSession;
+                    }
+
+                    if (processes.Length > 0) {
+                        return PackageLockState.LockedByOther;
+                    }
+                }
+            }
+
+            return PackageLockState.Unlocked;
+        }
+
+        private string GetPackageDllPath(string name, string libraryPath) {
+            string pkgFolder = Path.Combine(libraryPath.Replace("/", "\\"), name);
+            if (Directory.Exists(pkgFolder)) {
+                string dllPath = Path.Combine(pkgFolder, "libs", "x64", name + ".dll");
+                if (File.Exists(dllPath)) {
+                    return dllPath;
+                }
+            }
+            return null;
         }
 
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {

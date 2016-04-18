@@ -17,6 +17,7 @@ namespace Microsoft.R.Host.Client {
         event EventHandler<EventArgs> DirectoryChanged;
 
         int Id { get; }
+        int? ProcessId { get; }
         string Prompt { get; }
         bool IsHostRunning { get; }
         Task HostStarted { get; }
