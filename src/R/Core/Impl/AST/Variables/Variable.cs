@@ -25,6 +25,8 @@ namespace Microsoft.R.Core.AST.Variables {
 
         public override bool Parse(ParseContext context, IAstNode parent) {
             RToken currentToken = context.Tokens.CurrentToken;
+            Debug.Assert(currentToken.IsVariableKind());
+
             // Not calling base since expression parser will decide 
             // what parent node the variable belongs to.
             this.Token = currentToken;

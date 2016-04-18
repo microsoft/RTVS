@@ -10,7 +10,7 @@ namespace Microsoft.R.Core.Test.Parser {
     public class ParseFunctionDefinitionTest {
         [Test]
         [Category.R.Parser]
-        public void Test01() {
+        public void ParseFunctionDefinitionTest01() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) { return(1) }]
@@ -45,7 +45,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void Test02() {
+        public void ParseFunctionDefinitionTest02() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) return(1)]
@@ -78,7 +78,7 @@ namespace Microsoft.R.Core.Test.Parser {
 
         [Test]
         [Category.R.Parser]
-        public void Test03() {
+        public void ParseFunctionDefinitionTest03() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a b, c d, e) { }]
@@ -114,7 +114,7 @@ OperatorExpected Token [21...22)
 
         [Test]
         [Category.R.Parser]
-        public void Test04() {
+        public void ParseFunctionDefinitionTest04() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a b) { }]
@@ -141,7 +141,7 @@ OperatorExpected Token [16...17)
 
         [Test]
         [Category.R.Parser]
-        public void Test05() {
+        public void ParseFunctionDefinitionTest05() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a, b) a + b]
@@ -174,7 +174,7 @@ OperatorExpected Token [16...17)
 
         [Test]
         [Category.R.Parser]
-        public void Test06() {
+        public void ParseFunctionDefinitionTest06() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [x <- function(a) -a]
@@ -202,7 +202,7 @@ OperatorExpected Token [16...17)
 
         [Test]
         [Category.R.Parser]
-        public void Test07() {
+        public void ParseFunctionDefinitionTest07() {
             string expected =
 @"GlobalScope  [Global]
     FunctionStatement  [0...14)
@@ -222,7 +222,7 @@ OperatorExpected Token [16...17)
 
         [Test]
         [Category.R.Parser]
-        public void Test08() {
+        public void ParseFunctionDefinitionTest08() {
             string expected =
 @"GlobalScope  [Global]
     ExpressionStatement  [a((function(x) vector(length = x))(x), 1)]
@@ -272,56 +272,6 @@ OperatorExpected Token [16...17)
                 TokenNode  [) [40...41)]
 ";
             ParserTest.VerifyParse(expected, "a((function(x) vector(length = x))(x), 1))");
-        }
-
-        [Test]
-        [Category.R.Parser]
-        public void OperatorDefinition01() {
-            string expected =
-@"GlobalScope  [Global]
-    ExpressionStatement  [%x% <- function(a) {}]
-        Expression  [%x% <- function(a) {}]
-            TokenOperator  [<- [4...6)]
-                Variable  [%x%]
-                TokenNode  [<- [4...6)]
-                FunctionDefinition  [7...21)
-                    TokenNode  [function [7...15)]
-                    TokenNode  [( [15...16)]
-                    ArgumentList  [16...17)
-                        ExpressionArgument  [16...17)
-                            Expression  [a]
-                                Variable  [a]
-                    TokenNode  [) [17...18)]
-                    Scope  []
-                        TokenNode  [{ [19...20)]
-                        TokenNode  [} [20...21)]
-";
-            ParserTest.VerifyParse(expected, "%x% <- function(a) {}");
-        }
-
-        [Test]
-        [Category.R.Parser]
-        public void OperatorDefinition02() {
-            string expected =
-@"GlobalScope  [Global]
-    ExpressionStatement  [`% x %` <- function(a) {}]
-        Expression  [`% x %` <- function(a) {}]
-            TokenOperator  [<- [8...10)]
-                Variable  [`% x %`]
-                TokenNode  [<- [8...10)]
-                FunctionDefinition  [11...25)
-                    TokenNode  [function [11...19)]
-                    TokenNode  [( [19...20)]
-                    ArgumentList  [20...21)
-                        ExpressionArgument  [20...21)
-                            Expression  [a]
-                                Variable  [a]
-                    TokenNode  [) [21...22)]
-                    Scope  []
-                        TokenNode  [{ [23...24)]
-                        TokenNode  [} [24...25)]
-";
-            ParserTest.VerifyParse(expected, "`% x %` <- function(a) {}");
         }
     }
 }
