@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
@@ -158,18 +159,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             DispatchOnMainThread(() => InstallAsync(package));
         }
 
-        public void Update(IRPackageViewModel package) {
-            if (!package.IsInstalled || package.IsChanging) {
-                return;
-            }
-
-            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
-                    Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo)) {
-                package.IsChanging = true;
-                DispatchOnMainThread(() => InstallAsync(package));
-            }
-        }
-
         private async Task InstallAsync(IRPackageViewModel package) {
             _coreShell.AssertIsOnMainThread();
             if (_selectedTab == SelectedTab.InstalledPackages) {
@@ -188,6 +177,61 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = false;
                 ReplaceItems(_installedPackages);
             }
+            package.IsChanging = false;
+        }
+
+        public void Update(IRPackageViewModel package) {
+            if (!package.IsInstalled || package.IsChanging) {
+                return;
+            }
+
+            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                    Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo)) {
+                package.IsChanging = true;
+                DispatchOnMainThread(() => UpdateAsync(package));
+            }
+        }
+
+        private async Task UpdateAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = true;
+            }
+
+            if (package.IsLoaded) {
+                try {
+                    await _packageManager.UnloadPackageAsync(package.Name);
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
+                }
+                await ReloadLoadedPackagesAsync();
+            }
+
+            if (!package.IsLoaded) {
+                try {
+                    var libPath = package.LibraryPath.ToRPath();
+                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                    if (packageLockState == PackageLockState.Unlocked) {
+                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                        await _packageManager.InstallPackageAsync(package.Name, libPath);
+                    } else {
+                        ShowPackageLockedMessage(packageLockState, package.Name);
+                    }
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
+                }
+
+                await ReloadInstalledAndLoadedPackagesAsync();   
+            }
+
+            if (_selectedTab == SelectedTab.InstalledPackages) {
+                ReplaceItems(_installedPackages);
+                IsLoading = false;
+            } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                ReplaceItems(_loadedPackages);
+                IsLoading = false;
+            }
+            
             package.IsChanging = false;
         }
 
@@ -222,24 +266,29 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
                 if (!package.IsLoaded) {
                     try {
-                        await _packageManager.UninstallPackageAsync(package.Name, package.LibraryPath.ToRPath());
+                        var libPath = package.LibraryPath.ToRPath();
+                        var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                        if (packageLockState == PackageLockState.Unlocked) {
+                            await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                        } else {
+                            ShowPackageLockedMessage(packageLockState, package.Name);
+                        }
                     } catch (RPackageManagerException ex) {
                         AddErrorMessage(ex.Message);
                     }
-                    
-                    await ReloadInstalledAndLoadedPackagesAsync();
 
-                    if (_selectedTab == SelectedTab.InstalledPackages) {
-                        ReplaceItems(_installedPackages);
-                    } else if (_selectedTab == SelectedTab.LoadedPackages) {
-                        ReplaceItems(_loadedPackages);
-                    }
+                    await ReloadInstalledAndLoadedPackagesAsync();   
                 }
 
-                if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                if (_selectedTab == SelectedTab.InstalledPackages) {
+                    ReplaceItems(_installedPackages);
+                    IsLoading = false;
+                } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                    ReplaceItems(_loadedPackages);
                     IsLoading = false;
                 }
             }
+
             package.IsChanging = false;
         }
 
@@ -333,6 +382,17 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             } else {
                 _errorMessages.Enqueue(message);
                 HasMultipleErrors = true;
+            }
+        }
+
+        private void ShowPackageLockedMessage(PackageLockState packageLockState, string packageName) {
+            switch (packageLockState) {
+                case PackageLockState.LockedByRSession:
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentUICulture, Resources.PackageManager_PackageLockedByRSession, packageName));
+                    break;
+                case PackageLockState.LockedByOther:
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentUICulture, Resources.PackageManager_PackageLocked, packageName));
+                    break;
             }
         }
 
