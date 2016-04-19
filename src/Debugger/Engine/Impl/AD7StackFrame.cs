@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
@@ -149,7 +150,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugExpressionContext2.GetName(out string pbstrName) {
-            pbstrName = string.Format("{0}:{1}|{2}", StackFrame.FileName, StackFrame.LineNumber, StackFrame.CallingFrame?.Call);
+            pbstrName = string.Format(CultureInfo.InvariantCulture, "{0}:{1}|{2}", StackFrame.FileName, StackFrame.LineNumber, StackFrame.CallingFrame?.Call);
             return VSConstants.S_OK;
         }
 

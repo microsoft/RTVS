@@ -2,12 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.IO;
-using System.Net;
-using System.Net.WebSockets;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
+using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine.PortSupplier {
     partial class RDebugPortSupplier {
@@ -16,6 +14,9 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
         internal const uint BaseProcessId = 1000000000;
 
         public static uint GetProcessId(int sessionId) {
+            if(sessionId < 0 || sessionId > 1000000000) {
+                throw new ArgumentOutOfRangeException(nameof(sessionId));
+            }
             return (uint)sessionId + BaseProcessId;
         }
 
@@ -27,7 +28,7 @@ namespace Microsoft.R.Debugger.Engine.PortSupplier {
 
             public uint ProcessId => RDebugPortSupplier.GetProcessId(_sessionId);
 
-            public string Name => $"R session {_sessionId}";
+            public string Name => Invariant($"R session {_sessionId}");
 
             public DebugProcess(DebugPort port, IRSession session) {
                 _port = port;

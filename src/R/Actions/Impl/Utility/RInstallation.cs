@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
@@ -260,7 +259,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static Version GetRVersionFromFolderName(string folderName) {
-            if (folderName.StartsWithIgnoreCase("R-")) {
+            if (folderName.StartsWith("R-", StringComparison.OrdinalIgnoreCase)) {
                 try {
                     Version v;
                     if (Version.TryParse(folderName.Substring(2), out v)) {
