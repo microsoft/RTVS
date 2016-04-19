@@ -3,10 +3,10 @@
   <!-- Common Build Settings and Configurations -->
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
-    <RootDirectory Condition="'$(RootDirectory)' == ''">$(MSBuildThisFileDirectory)\..\</RootDirectory>
-    <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)\lib\</LibDirectory>
-    <BinDirectory Condition="'$(BinDirectory)' == ''">$(RootDirectory)\bin\</BinDirectory>
-    <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)\obj\</ObjDirectory>
+    <RootDirectory Condition="'$(RootDirectory)' == ''">$(MSBuildThisFileDirectory)..</RootDirectory>
+    <LibDirectory Condition="'$(LibDirectory)' == ''">$(RootDirectory)\lib</LibDirectory>
+    <BinDirectory Condition="'$(BinDirectory)' == ''">$(RootDirectory)\bin</BinDirectory>
+    <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)\obj</ObjDirectory>
     <MicroBuildPluginDirectory Condition=" '$(MicroBuildPluginDirectory)' == '' ">$(RootDirectory)\NugetPackages\</MicroBuildPluginDirectory>
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
   </PropertyGroup>
