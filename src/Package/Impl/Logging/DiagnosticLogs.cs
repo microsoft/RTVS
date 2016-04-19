@@ -157,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                         .Where(e => InterestingApplicationLogEntries.IsMatch(e.Message))
                         .OrderByDescending(e => e.TimeGenerated)
                     ) {
-                        sw.WriteLine(string.Format("Time: {0:s}", entry.TimeGenerated));
+                        sw.WriteLine(string.Format(CultureInfo.InvariantCulture, "Time: {0:s}", entry.TimeGenerated));
                         using (var reader = new StringReader(entry.Message.TrimEnd())) {
                             for (var line = reader.ReadLine(); line != null; line = reader.ReadLine()) {
                                 sw.WriteLine(line);

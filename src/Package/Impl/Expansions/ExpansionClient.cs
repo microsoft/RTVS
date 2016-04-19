@@ -17,8 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// Text view client that manages insertion of snippets
     /// </summary>
     public sealed class ExpansionClient : IVsExpansionClient {
-        public static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
-        public static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
+        private static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
+        private static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
 
         private IVsExpansionManager _expansionManager;
         private IVsExpansionSession _expansionSession;

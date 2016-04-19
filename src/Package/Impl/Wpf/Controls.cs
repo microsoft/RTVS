@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -72,6 +73,7 @@ namespace Microsoft.VisualStudioTools.Wpf {
         public static readonly object SearchGlyphBrushKey = VsBrushes.WindowTextKey;
 #endif
 
+        [SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         public static readonly BitmapSource UacShield = CreateUacShield();
 
         private static BitmapSource CreateUacShield() {

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,7 +14,6 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Wpf;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -103,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             var inputString = string.Join(", ", input
                 .Where(kvp => kvp.Value != null)
-                .Select(kvp => $"{kvp.Key}={kvp.Value}"));
+                .Select(kvp => Invariant($"{kvp.Key}={kvp.Value}")));
 
             return preview
                 ? Invariant($"read.csv({inputString}, nrows=20)")

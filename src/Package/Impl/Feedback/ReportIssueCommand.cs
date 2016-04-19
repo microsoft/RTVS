@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Documentation {
         }
 
         protected override void Handle() {
-            var generalData = new StringWriter();
+            var generalData = new StringWriter(CultureInfo.InvariantCulture);
             DiagnosticLogs.WriteGeneralData(generalData, detailed: false);
 
             var body = string.Format(CultureInfo.InvariantCulture, Resources.ReportIssueBody, generalData.ToString());

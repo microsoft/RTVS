@@ -27,6 +27,9 @@ namespace Microsoft.Common.Core {
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
         }
+        public static int IndexOfIgnoreCase(this string s, string searchFor, int startIndex) {
+            return s.IndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
+        }
         public static int IndexOfOrdinal(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.Ordinal);
         }

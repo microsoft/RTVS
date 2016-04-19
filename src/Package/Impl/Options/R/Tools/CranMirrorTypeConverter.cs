@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             } else if (CranMirrorList.MirrorNames.Contains(s)) {
                 return s;
             } else {
-                throw new NotSupportedException(string.Format(Resources.Error_UnknownMirror, value));
+                throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnknownMirror, value));
             }
         }
 

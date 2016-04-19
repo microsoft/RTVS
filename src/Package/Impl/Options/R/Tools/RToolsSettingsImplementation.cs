@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
@@ -72,7 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set {
                 var newDirectory = value;
                 var newDirectoryIsRoot = newDirectory.Length >= 2 && newDirectory[newDirectory.Length - 2] == Path.VolumeSeparatorChar;
-                if (newDirectory.EndsWith("\\") && !newDirectoryIsRoot) {
+                if (newDirectory.EndsWithOrdinal("\\") && !newDirectoryIsRoot) {
                     newDirectory = newDirectory.Substring(0, newDirectory.Length - 1);
                 }
 
