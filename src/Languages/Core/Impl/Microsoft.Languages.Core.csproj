@@ -43,6 +43,7 @@
     <Compile Include="Formatting\StringBuilderIterator.cs" />
     <Compile Include="Formatting\TextBuilder.cs" />
     <Compile Include="Formatting\Whitespace.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\ISettingsStorage.cs" />
     <Compile Include="Text\BraceCounter.cs" />
