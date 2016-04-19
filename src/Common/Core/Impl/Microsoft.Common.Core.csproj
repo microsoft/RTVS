@@ -21,7 +21,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <CodeAnalysisRuleSet>..\..\..\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
@@ -43,7 +43,6 @@
     <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IO\FileVersionInfo.cs" />
     <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="OS\IProcessServices.cs" />

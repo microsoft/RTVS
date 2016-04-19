@@ -18,7 +18,8 @@ namespace Microsoft.Common.Core.Shell {
         // in isolation. In this case code uses reflection to instatiate 
         // service provider with a specific name.
         [SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", 
-            MessageId = "System.Reflection.Assembly.LoadFrom", Justification ="Needed for tests")]
+                         MessageId = "System.Reflection.Assembly.LoadFrom", 
+                         Justification ="Needed for test shell creation")]
         public static void TryCreateTestInstance(string assemblyName, string className) {
             string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
