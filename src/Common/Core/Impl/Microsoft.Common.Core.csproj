@@ -43,6 +43,7 @@
     <Compile Include="Disposables\DisposeToken.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IO\FileVersionInfo.cs" />
     <Compile Include="IO\IFileVersionInfo.cs" />
     <Compile Include="OS\IProcessServices.cs" />
