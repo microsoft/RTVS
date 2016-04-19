@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
     internal static class MsBuildFileSystemWatcherLoggingExtensions {
@@ -30,19 +31,19 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
         }
 
         public static void WatcherApplyChange(this IActionLog log, string change) {
-            log.WriteLineAsync(MessageCategory.General, $"Apply change: {change}");
+            log.WriteLineAsync(MessageCategory.General, Invariant($"Apply change: {change}"));
         }
 
         public static void WatcherApplyChangeFailed(this IActionLog log, string change, Exception exception) {
-            log.WriteLineAsync(MessageCategory.Error, $"Failed to apply change '{change}':{exception}");
+            log.WriteLineAsync(MessageCategory.Error, Invariant($"Failed to apply change '{change}':{exception}"));
         }
 
         public static void WatcherApplyRecoveryChange(this IActionLog log, string change) {
-            log.WriteLineAsync(MessageCategory.General, $"Apply recovery change: {change}");
+            log.WriteLineAsync(MessageCategory.General, Invariant($"Apply recovery change: {change}"));
         }
 
         public static void WatcherApplyRecoveryChangeFailed(this IActionLog log, string change, Exception exception) {
-            log.WriteLineAsync(MessageCategory.Error, $"Failed to apply recovery change '{change}', closing watcher:{exception}");
+            log.WriteLineAsync(MessageCategory.Error, Invariant($"Failed to apply recovery change '{change}', closing watcher:{exception}"));
         }
 
         public static void WatcherChangesetSent(this IActionLog log, MsBuildFileSystemWatcher.Changeset changeset) {
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
         }
 
         public static void ErrorInFileSystemWatcher(this IActionLog log, string watcherName, Exception e) {
-            log.WriteAsync(MessageCategory.Error, $"{watcherName} failed with exception:{e}");
+            log.WriteAsync(MessageCategory.Error, Invariant($"{watcherName} failed with exception:{e}"));
         }
 
         private static StringBuilder AppendWatcherChangesetPart(this StringBuilder sb, ISet<string> changesetPart, string name) {
@@ -78,7 +79,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
             if (changesetPart.Count > 0) {
                 sb.AppendLine(name);
                 foreach (var item in changesetPart) {
-                    sb.AppendLine($"{item.Key} -> {item.Value}");
+                    sb.AppendLine(Invariant($"{item.Key} -> {item.Value}"));
                 }
             }
 
