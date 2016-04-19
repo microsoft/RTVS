@@ -507,11 +507,7 @@ rtvs:::graphics.ide.previousplot()
         }
 
         private void CompareImages(string[] actualPlotPaths, string[] expectedPlotPaths) {
-            actualPlotPaths.Should().HaveSameCount(expectedPlotPaths);
-
-            for (int i = 0; i < actualPlotPaths.Length; i++) {
-                File.ReadAllBytes(actualPlotPaths[i]).Should().Equal(File.ReadAllBytes(expectedPlotPaths[i]));
-            }
+            actualPlotPaths.Select(f => File.ReadAllBytes(f)).ShouldBeEquivalentTo(expectedPlotPaths.Select(f => File.ReadAllBytes(f)));
         }
 
         private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
