@@ -18,6 +18,9 @@ namespace Microsoft.Common.Core {
         public static bool EndsWithIgnoreCase(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
         }
+        public static bool EndsWithOrdinal(this string s, string suffix) {
+            return s.EndsWith(suffix, StringComparison.Ordinal);
+        }
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
         }

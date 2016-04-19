@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core {
     public static class TaskUtilities {
@@ -56,7 +57,7 @@ namespace Microsoft.Common.Core {
             [CallerLineNumber] int sourceLineNumber = 0
         ) {
             if (!IsOnBackgroundThread()) {
-                Trace.Fail($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread.");
+                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
             }
         }
 
@@ -68,7 +69,7 @@ namespace Microsoft.Common.Core {
             [CallerLineNumber] int sourceLineNumber = 0
         ) {
             if (coreShell.MainThread != Thread.CurrentThread) {
-                Trace.Fail($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread.");
+                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
             }
         }
     }

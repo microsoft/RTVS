@@ -4,7 +4,7 @@
 namespace Microsoft.Common.Core {
     public static class IOExtensions {
         public static string MakeRelativePath(this string path, string basePath) {
-            if (!basePath.EndsWith("\\")) {
+            if (!basePath.EndsWithOrdinal("\\")) {
                 basePath += "\\";
             }
             if (path.StartsWithIgnoreCase(basePath)) {

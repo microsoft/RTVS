@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,8 @@ namespace Microsoft.Common.Core.Shell {
         // in tests the application is not and objects often are instantiated
         // in isolation. In this case code uses reflection to instatiate 
         // service provider with a specific name.
+        [SuppressMessage("Microsoft.Reliability", "CA2001:AvoidCallingProblematicMethods", 
+            MessageId = "System.Reflection.Assembly.LoadFrom", Justification ="Needed for tests")]
         public static void TryCreateTestInstance(string assemblyName, string className) {
             string thisAssembly = Assembly.GetExecutingAssembly().GetAssemblyPath();
             string assemblyLoc = Path.GetDirectoryName(thisAssembly);
