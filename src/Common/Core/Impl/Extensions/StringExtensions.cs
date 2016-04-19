@@ -15,6 +15,9 @@ namespace Microsoft.Common.Core {
         public static bool StartsWithIgnoreCase(this string s, string prefix) {
             return s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
         }
+        public static bool StartsWithOrdinal(this string s, string prefix) {
+            return s.StartsWith(prefix, StringComparison.Ordinal);
+        }
         public static bool EndsWithIgnoreCase(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
         }
