@@ -1,5 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	
+
   <!-- Common Build Settings and Configurations -->
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">$(DefineConstants);VS14</DefineConstants>
@@ -11,15 +11,15 @@
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
   </PropertyGroup>
 
-	<PropertyGroup Condition=" $(VisualStudioVersion) == '14.0' ">
-		<TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-		<MSBuildAssembly>Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</MSBuildAssembly>
-		<MSBuildUtilitiesAssembly>Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</MSBuildUtilitiesAssembly>
-		<BuildFrameworkAssembly>Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</BuildFrameworkAssembly>
-		<VSThreadingAssembly>Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</VSThreadingAssembly>
-	</PropertyGroup>
+  <PropertyGroup Condition=" $(VisualStudioVersion) == '14.0' ">
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <MSBuildAssembly>Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</MSBuildAssembly>
+    <MSBuildUtilitiesAssembly>Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</MSBuildUtilitiesAssembly>
+    <BuildFrameworkAssembly>Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</BuildFrameworkAssembly>
+    <VSThreadingAssembly>Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL</VSThreadingAssembly>
+  </PropertyGroup>
 
-	<!--
+  <!--
   Inside Visual Studio, we want to deploy to the experimental hive when
   building for ease of debugging.
   -->
@@ -30,7 +30,7 @@
     <CopyVsixManifestToOutput Condition="'$(CopyVsixManifestToOutput)' == ''">true</CopyVsixManifestToOutput>
     <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">true</RegisterOutputPackage>
   </PropertyGroup>
-  
+
   <!--
   Outside of Visual Studio, we want to create VSIX containers rather than
   deploying to the experimental hive.
@@ -42,7 +42,7 @@
     <CopyVsixManifestToOutput Condition="'$(CopyVsixManifestToOutput)' == ''">true</CopyVsixManifestToOutput>
     <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">false</RegisterOutputPackage>
   </PropertyGroup>
-	
+
   <!-- Signing -->
   <PropertyGroup Condition=" '$(SignType)' == 'real' OR '$(SignType)' == 'test' ">
     <DefineConstants>$(DefineConstants);SIGN</DefineConstants>
@@ -50,7 +50,7 @@
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>$(RootDirectory)\src\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -61,7 +61,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>$(RootDirectory)\src\DevDivRuleSet.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
