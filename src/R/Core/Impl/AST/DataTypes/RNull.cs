@@ -6,7 +6,7 @@ using Microsoft.R.Core.AST.DataTypes.Definitions;
 
 namespace Microsoft.R.Core.AST.DataTypes {
     public sealed class RNull : RObject, IRVector {
-        public static RNull Null => new RNull();
+        public static RNull Null { get; } = new RNull();
 
         public int Length {
             get { return 0; }
