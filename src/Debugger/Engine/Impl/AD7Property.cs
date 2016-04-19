@@ -82,7 +82,7 @@ namespace Microsoft.R.Debugger.Engine {
             IEnumerable<DebugEvaluationResult> children = _children.Value;
 
             if (!RToolsSettings.Current.ShowDotPrefixedVariables) {
-                children = children.Where(v => v.Name != null && !v.Name.StartsWith("."));
+                children = children.Where(v => v.Name != null && !v.Name.StartsWithOrdinal("."));
             }
 
             var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));
@@ -289,7 +289,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME)) {
                 dpi.bstrName = EvaluationResult.Name ?? EvaluationResult.Expression;
-                if (Parent?.IsFrameEnvironment == true && dpi.bstrName?.StartsWith("$") == true) {
+                if (Parent?.IsFrameEnvironment == true && dpi.bstrName?.StartsWithOrdinal("$") == true) {
                     dpi.bstrName = dpi.bstrName.Substring(1);
                 }
                 dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_NAME;

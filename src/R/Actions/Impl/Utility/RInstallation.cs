@@ -259,7 +259,7 @@ namespace Microsoft.R.Actions.Utility {
         }
 
         public static Version GetRVersionFromFolderName(string folderName) {
-            if (folderName.StartsWith("R-")) {
+            if (folderName.StartsWith("R-", StringComparison.OrdinalIgnoreCase)) {
                 try {
                     Version v;
                     if (Version.TryParse(folderName.Substring(2), out v)) {

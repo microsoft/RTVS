@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -303,7 +304,7 @@ namespace Microsoft.Languages.Editor.Completion {
                 try {
                     var viewSnapshot = TextView.TextBuffer.CurrentSnapshot;
                     SnapshotSpan span = completionSet.ApplicableTo.GetSpan(viewSnapshot);
-                    if (status.Completion.InsertionText.StartsWith(span.GetText())) {
+                    if (status.Completion.InsertionText.StartsWithOrdinal(span.GetText())) {
                         return true;
                     }
                 } catch (ArgumentException) { }

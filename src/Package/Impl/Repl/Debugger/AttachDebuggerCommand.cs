@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger.Engine;
@@ -54,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
                 // to session ID. For LaunchDebugTargets2 to attach a process by ID rather than by name,
                 // dwProcessId must be set accordingly, _and_ bstrExe must be set to \0 + hex ID.
                 dwProcessId = pid,
-                bstrExe = (char)0 + "0x" + pid.ToString("X"),
+                bstrExe = (char)0 + "0x" + pid.ToString("X", CultureInfo.InvariantCulture),
             };
 
             var pDebugTarget = stackalloc byte[Marshal.SizeOf(debugTarget)];

@@ -388,10 +388,10 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private void ShowPackageLockedMessage(PackageLockState packageLockState, string packageName) {
             switch (packageLockState) {
                 case PackageLockState.LockedByRSession:
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentUICulture, Resources.PackageManager_PackageLockedByRSession, packageName));
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageLockedByRSession, packageName));
                     break;
                 case PackageLockState.LockedByOther:
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentUICulture, Resources.PackageManager_PackageLocked, packageName));
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageLocked, packageName));
                     break;
             }
         }

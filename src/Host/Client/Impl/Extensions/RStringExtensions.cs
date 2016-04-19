@@ -108,12 +108,12 @@ namespace Microsoft.R.Host.Client {
         /// to append at the end.
         /// </summary>
         public static string ConvertCharacterCodes(this string s) {
-            int t = s.IndexOf("\"| __truncated__");
+            int t = s.IndexOfOrdinal("\"| __truncated__");
             if (t >= 0) {
                 s = s.Substring(0, t);
             }
 
-            if (s.IndexOf("<U+") < 0) {
+            if (s.IndexOfOrdinal("<U+") < 0) {
                 // Nothing to convert
                 return s;
             }

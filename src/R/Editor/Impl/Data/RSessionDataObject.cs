@@ -167,7 +167,7 @@ namespace Microsoft.R.Editor.Data {
         public IReadOnlyList<int> Dimensions { get; protected set; }
 
         public bool IsHidden {
-            get { return Name.StartsWith(HiddenVariablePrefix); }
+            get { return Name.StartsWithOrdinal(HiddenVariablePrefix); }
         }
 
         public string Expression {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class DisposeToken {
@@ -10,7 +11,7 @@ namespace Microsoft.Common.Core.Disposables {
         private int _disposed;
 
         public static DisposeToken Create<T>() where T : IDisposable {
-            return new DisposeToken($"{typeof(T).Name} instance is disposed");
+            return new DisposeToken(Invariant($"{typeof(T).Name} instance is disposed"));
         }
 
         public DisposeToken(string message = null) {

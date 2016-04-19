@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -94,7 +93,7 @@ namespace Microsoft.R.Actions.Logging {
 
         public static FileLogWriter InTempFolder(string fileName) {
             return _writers.GetOrAdd(fileName, _ => {
-                var path = $@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log";
+                var path = Invariant($@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log");
                 return new FileLogWriter(path);
             });
         }

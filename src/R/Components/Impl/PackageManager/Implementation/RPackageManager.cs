@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -234,7 +235,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             if (result.Error != null) {
-                throw new RPackageManagerException(string.Format(Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
+                throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
             }
         }
 

@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion {
+    using Common.Core;
     using Completion = VisualStudio.Language.Intellisense.Completion;
     using CompletionList = Microsoft.Languages.Editor.Completion.CompletionList;
 
@@ -84,7 +85,7 @@ namespace Microsoft.R.Editor.Completion {
             // at the end of the list.
             var argumentNames = completions.Where(x => RTokenizer.IsIdentifierCharacter(x.DisplayText[0]) && x.DisplayText.EndsWith("=", StringComparison.Ordinal));
 
-            var rtvsNames = completions.Where(x => x.DisplayText.IndexOf(".rtvs") >= 0);
+            var rtvsNames = completions.Where(x => x.DisplayText.IndexOfIgnoreCase(".rtvs") >= 0);
             var specialNames = completions.Where(x => !char.IsLetter(x.DisplayText[0]));
             specialNames = specialNames.Except(rtvsNames);
 

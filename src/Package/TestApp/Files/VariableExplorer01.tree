@@ -13,10 +13,6 @@
     <VisualTreeProperty Name="ToolTip" Value="null" />
     <VisualTreeProperty Name="ContextMenu" Value="null" />
     <VisualTreeProperty Name="Visibility" Value="Visible" />
-    <VisualTreeProperty Name="IsEnabled" Value="True" />
-    <VisualTreeProperty Name="IsVisible" Value="True" />
-    <VisualTreeProperty Name="IsEnabled" Value="True" />
-    <VisualTreeProperty Name="IsEnabled" Value="True" />
     <VisualTreeProperty Name="TextAlignment" Value="Left" />
     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -36,10 +32,6 @@
         <VisualTreeProperty Name="ToolTip" Value="null" />
         <VisualTreeProperty Name="ContextMenu" Value="null" />
         <VisualTreeProperty Name="Visibility" Value="Visible" />
-        <VisualTreeProperty Name="IsEnabled" Value="True" />
-        <VisualTreeProperty Name="IsVisible" Value="True" />
-        <VisualTreeProperty Name="IsEnabled" Value="True" />
-        <VisualTreeProperty Name="IsEnabled" Value="True" />
         <VisualTreeProperty Name="TextAlignment" Value="Left" />
         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -60,10 +52,6 @@
             <VisualTreeProperty Name="ToolTip" Value="null" />
             <VisualTreeProperty Name="ContextMenu" Value="null" />
             <VisualTreeProperty Name="Visibility" Value="Visible" />
-            <VisualTreeProperty Name="IsEnabled" Value="True" />
-            <VisualTreeProperty Name="IsVisible" Value="True" />
-            <VisualTreeProperty Name="IsEnabled" Value="True" />
-            <VisualTreeProperty Name="IsEnabled" Value="True" />
             <VisualTreeProperty Name="TextAlignment" Value="Left" />
             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -82,10 +70,6 @@
                 <VisualTreeProperty Name="ToolTip" Value="null" />
                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                <VisualTreeProperty Name="IsVisible" Value="True" />
-                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                <VisualTreeProperty Name="IsEnabled" Value="True" />
                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -107,10 +91,6 @@
                     <VisualTreeProperty Name="ToolTip" Value="null" />
                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                     <VisualTreeProperty Name="Visibility" Value="Collapsed" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                    <VisualTreeProperty Name="IsVisible" Value="False" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
                     <VisualTreeProperty Name="VerticalScrollBarVisibility" Value="Visible" />
@@ -132,10 +112,6 @@
                     <VisualTreeProperty Name="ToolTip" Value="null" />
                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -155,10 +131,6 @@
                         <VisualTreeProperty Name="ToolTip" Value="null" />
                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -179,10 +151,6 @@
                             <VisualTreeProperty Name="ToolTip" Value="null" />
                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -201,10 +169,6 @@
                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -224,10 +188,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -246,10 +206,6 @@
                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -271,10 +227,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -294,10 +246,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -317,10 +265,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -340,10 +284,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -364,10 +304,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -386,10 +322,6 @@
                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -409,10 +341,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -435,10 +363,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -458,10 +382,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -482,10 +402,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -505,10 +421,6 @@
                                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -534,10 +446,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -559,10 +467,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -581,10 +485,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -609,10 +509,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -631,10 +527,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -657,10 +549,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -679,10 +567,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -709,10 +593,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -732,10 +612,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -756,10 +632,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -779,10 +651,6 @@
                                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -812,10 +680,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -836,10 +700,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -858,10 +718,6 @@
                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -881,10 +737,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -907,10 +759,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -930,10 +778,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -954,10 +798,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -977,10 +817,6 @@
                                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1006,10 +842,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1031,10 +863,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1053,10 +881,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1081,10 +905,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1103,10 +923,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1129,10 +945,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1151,10 +963,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1181,10 +989,6 @@
                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
                                             <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                            <VisualTreeProperty Name="IsVisible" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                            <VisualTreeProperty Name="IsEnabled" Value="True" />
                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1204,10 +1008,6 @@
                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                 <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1228,10 +1028,6 @@
                                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1251,10 +1047,6 @@
                                                         <VisualTreeProperty Name="ToolTip" Value="null" />
                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="False" />
-                                                        <VisualTreeProperty Name="IsVisible" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                                        <VisualTreeProperty Name="IsEnabled" Value="True" />
                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                         <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1284,10 +1076,6 @@
                                     <VisualTreeProperty Name="ToolTip" Value="null" />
                                     <VisualTreeProperty Name="ContextMenu" Value="null" />
                                     <VisualTreeProperty Name="Visibility" Value="Visible" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsVisible" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
-                                    <VisualTreeProperty Name="IsEnabled" Value="True" />
                                     <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                     <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                     <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />

@@ -15,11 +15,23 @@ namespace Microsoft.Common.Core {
         public static bool StartsWithIgnoreCase(this string s, string prefix) {
             return s.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
         }
+        public static bool StartsWithOrdinal(this string s, string prefix) {
+            return s.StartsWith(prefix, StringComparison.Ordinal);
+        }
         public static bool EndsWithIgnoreCase(this string s, string suffix) {
             return s.EndsWith(suffix, StringComparison.OrdinalIgnoreCase);
         }
+        public static bool EndsWithOrdinal(this string s, string suffix) {
+            return s.EndsWith(suffix, StringComparison.Ordinal);
+        }
         public static int IndexOfIgnoreCase(this string s, string searchFor) {
             return s.IndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
+        }
+        public static int IndexOfIgnoreCase(this string s, string searchFor, int startIndex) {
+            return s.IndexOf(searchFor, startIndex, StringComparison.OrdinalIgnoreCase);
+        }
+        public static int IndexOfOrdinal(this string s, string searchFor) {
+            return s.IndexOf(searchFor, StringComparison.Ordinal);
         }
         public static int LastIndexOfIgnoreCase(this string s, string searchFor) {
             return s.LastIndexOf(searchFor, StringComparison.OrdinalIgnoreCase);
