@@ -73,12 +73,21 @@ namespace Microsoft.R.Editor {
         /// <summary>
         /// Extracts identifier sequence at the caret location.
         /// Fetches parts of 'abc$def' rather than tne entire expression.
+        /// If there is selection, returns complete selected item as is.
         /// </summary>
         public static string GetIdentifierUnderCaret(this ITextView textView, out Span span) {
             if (!textView.Caret.InVirtualSpace) {
-                SnapshotPoint position = textView.Caret.Position.BufferPosition;
-                ITextSnapshotLine line = position.GetContainingLine();
-                return GetItemAtPosition(line, position.Position, (x) => x == RTokenType.Identifier, out span);
+                if (textView.Selection.Mode == TextSelectionMode.Stream) {
+                    if (textView.Selection.SelectedSpans.Count > 0) {
+                        span = textView.Selection.SelectedSpans[0];
+                        if(span.Length > 0) {
+                            return textView.TextBuffer.CurrentSnapshot.GetText(span);
+                        }
+                    }
+                    SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                    ITextSnapshotLine line = position.GetContainingLine();
+                    return GetItemAtPosition(line, position.Position, (x) => x == RTokenType.Identifier, out span);
+                }
             }
             span = Span.FromBounds(0, 0);
             return string.Empty;
