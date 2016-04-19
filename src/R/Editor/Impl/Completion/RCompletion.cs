@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.Completion {
 
         #region IComparable<RCompletion>
         public int CompareTo(RCompletion other) {
-            return DisplayText.CompareTo(other.DisplayText);
+            return string.Compare(this.DisplayText, other.DisplayText, StringComparison.Ordinal);
         }
         #endregion
     }

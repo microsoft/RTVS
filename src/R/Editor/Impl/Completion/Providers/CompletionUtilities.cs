@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Core.Tokens;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Completion.Providers {
     internal static class CompletionUtilities {
@@ -10,7 +11,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 var t = new RTokenizer();
                 var tokens = t.Tokenize(name);
                 if (tokens.Count > 1) {
-                    return $"`{name}`";
+                    return Invariant($"`{name}`");
                 }
             }
             return name;

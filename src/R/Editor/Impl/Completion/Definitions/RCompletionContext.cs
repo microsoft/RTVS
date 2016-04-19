@@ -41,11 +41,12 @@ namespace Microsoft.R.Editor.Completion.Definitions {
         }
 
         public static bool IsInNamespace(ITextSnapshot snapshot, int position) {
-            ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
-            if (line.Length > 2 && position - line.Start > 2) {
-                return snapshot[position - 1] == ':';
+            if (position > 0) {
+                ITextSnapshotLine line = snapshot.GetLineFromPosition(position);
+                if (line.Length > 2 && position - line.Start > 2) {
+                    return snapshot[position - 1] == ':';
+                }
             }
-
             return false;
         }
 

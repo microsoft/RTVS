@@ -1,15 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
+using System.Globalization;
 using System.Threading.Tasks;
 using static System.FormattableString;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
         public static Task OptionsSetWidth(this IRExpressionEvaluator evaluation, int width) {
-            return evaluation.EvaluateAsync($"options(width=as.integer({width}))\n", REvaluationKind.Mutating);
+            return evaluation.EvaluateAsync(Invariant($"options(width=as.integer({width}))\n"), REvaluationKind.Mutating);
         }
 
         public static async Task<string> GetRUserDirectory(this IRExpressionEvaluator evaluation) {
@@ -23,7 +22,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static Task SetWorkingDirectory(this IRExpressionEvaluator evaluation, string path) {
-            return evaluation.EvaluateAsync($"setwd('{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
+            return evaluation.EvaluateAsync(Invariant($"setwd('{path.Replace('\\', '/')}')\n"), REvaluationKind.Normal);
         }
 
         public static Task SetDefaultWorkingDirectory(this IRExpressionEvaluator evaluation) {
@@ -31,11 +30,11 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static Task<REvaluationResult> LoadWorkspace(this IRExpressionEvaluator evaluation, string path) {
-            return evaluation.EvaluateAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n", REvaluationKind.Mutating);
+            return evaluation.EvaluateAsync(Invariant($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n"), REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> SaveWorkspace(this IRExpressionEvaluator evaluation, string path) {
-            return evaluation.EvaluateAsync($"save.image(file='{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
+            return evaluation.EvaluateAsync(Invariant($"save.image(file='{path.Replace('\\', '/')}')\n"), REvaluationKind.Normal);
         }
 
         public static Task<REvaluationResult> SetVsGraphicsDevice(this IRExpressionEvaluator evaluation) {
@@ -48,7 +47,7 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height) {
-            var script = string.Format("rtvs:::graphics.ide.resize({0}, {1})\n", width, height);
+            var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height})\n");
             return evaluation.RespondAsync(script);
         }
 
@@ -78,37 +77,37 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task InstallPackage(this IRSessionInteraction interaction, string name) {
-            var script = $"install.packages({name.ToRStringLiteral()})\n";
+            var script = Invariant($"install.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
         
         public static Task InstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
-            var script = $"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            var script = Invariant($"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
         
         public static Task UninstallPackage(this IRSessionInteraction interaction, string name) {
-            var script = $"remove.packages({name.ToRStringLiteral()})\n";
+            var script = Invariant($"remove.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
         public static Task UninstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
-            var script = $"remove.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            var script = Invariant($"remove.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
         public static Task LoadPackage(this IRSessionInteraction interaction, string name) {
-            var script = $"library({name.ToRStringLiteral()})\n";
+            var script = Invariant($"library({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
         public static Task LoadPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
-            var script = $"library({name.ToRStringLiteral()}, lib.loc={libraryPath.ToRPath().ToRStringLiteral()})\n";
+            var script = Invariant($"library({name.ToRStringLiteral()}, lib.loc={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
         public static Task UnloadPackage(this IRSessionInteraction interaction, string name) {
-            var script = $"unloadNamespace({name.ToRStringLiteral()})\n";
+            var script = Invariant($"unloadNamespace({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
@@ -133,17 +132,17 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
-            string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
+            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
         public static Task<REvaluationResult> ExportToMetafile(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format("rtvs:::graphics.ide.exportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
         public static Task<REvaluationResult> ExportToPdf(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format("rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
