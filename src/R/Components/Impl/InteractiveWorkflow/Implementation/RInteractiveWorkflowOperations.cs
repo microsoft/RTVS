@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Extensions;
@@ -56,6 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
+            _coreShell.AssertIsOnMainThread();
             InteractiveWindow.AddInput(expression);
 
             var buffer = InteractiveWindow.CurrentLanguageBuffer;
@@ -72,8 +74,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
+            _coreShell.AssertIsOnMainThread();
+
             var curBuffer = InteractiveWindow.CurrentLanguageBuffer;
             var documentPoint = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, curBuffer);
+
             var text = curBuffer.CurrentSnapshot.GetText();
             if (!documentPoint.HasValue ||
                 documentPoint.Value == documentPoint.Value.Snapshot.Length ||
@@ -124,6 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
+            _coreShell.AssertIsOnMainThread();
             var textBuffer = InteractiveWindow.CurrentLanguageBuffer;
             var span = new Span(0, textBuffer.CurrentSnapshot.Length);
             if (!textBuffer.IsReadOnly(span)) {
@@ -136,6 +142,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
+            _coreShell.AssertIsOnMainThread();
             var textView = InteractiveWindow.TextView;
             // Click on text view will move the caret so we need 
             // to move caret to the prompt after view finishes its

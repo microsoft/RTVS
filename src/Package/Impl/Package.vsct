@@ -683,7 +683,7 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Remove Plot</ButtonText>
-          <MenuText>Remo&amp;ve Plot</MenuText>
+          <MenuText>&amp;Remove Plot</MenuText>
         </Strings>
       </Button>
 
