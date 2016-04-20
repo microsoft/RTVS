@@ -63,15 +63,17 @@ namespace Microsoft.R.Editor.Test.Completions {
                 .Which.Description.Should().Be("Base R functions.");
         }
 
-        [Test]
-        public void SpecificPackage01() {
+        [CompositeTest]
+        [InlineData("utils::", 7, "adist", "Approximate String Distances")]
+        [InlineData("lm(utils::)", 10, "adist", "Approximate String Distances")]
+        public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
             List<CompletionSet> completionSets = new List<CompletionSet>();
-            GetCompletions("utils::", 7, completionSets);
+            GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle();
 
-            completionSets[0].Completions.Should().Contain(c => c.DisplayText == "adist")
-                .Which.Description.Should().Be("Approximate String Distances");
+            completionSets[0].Completions.Should().Contain(c => c.DisplayText == expectedEntry)
+                .Which.Description.Should().Be(expectedDescription);
         }
 
         [CompositeTest]

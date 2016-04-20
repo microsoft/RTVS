@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
@@ -27,6 +28,17 @@ x <- function(a) { }
 z <- 1
 x()";
             RunPeekTest(content, 3, 0, "x");
+        }
+
+        [Test]
+        public void PeekFunction02() {
+            List<IPeekableItem> items = new List<IPeekableItem>();
+            string content =
+@"
+func1 <- function(a) { }
+z <- 1
+func1()";
+            RunPeekTest(content, 3, 0, "func1", new TextRange(content.Length - 7, 5));
         }
 
         [Test]
@@ -54,10 +66,10 @@ x <- function(a) {
             RunPeekTest(content, 4, 4, "a");
         }
 
-        private void RunPeekTest(string content, int line, int column, string name) {
+        private void RunPeekTest(string content, int line, int column, string name, ITextRange selection = null) {
             List<IPeekableItem> items = new List<IPeekableItem>();
 
-            GetPeekableItems(content, line, column, items);
+            GetPeekableItems(content, line, column, items, selection);
             items.Should().ContainSingle();
             var item = items[0];
 
@@ -79,17 +91,23 @@ x <- function(a) {
             coll[0].DisplayInfo.TitleTooltip.Should().Be(@"C:\file.r");
         }
 
-        private void GetPeekableItems(string content, int lineNumber, int column, IList<IPeekableItem> items) {
+        private void GetPeekableItems(string content, int lineNumber, int column, IList<IPeekableItem> items, ITextRange selection = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             var line = tb.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
-            GetPeekableItems(content, line.Start + column, items);
+            GetPeekableItems(content, line.Start + column, items, selection);
         }
 
-        private void GetPeekableItems(string content, int position, IList<IPeekableItem> items) {
+        private void GetPeekableItems(string content, int position, IList<IPeekableItem> items, ITextRange selection = null) {
             var document = new EditorDocumentMock(content, @"C:\file.r");
 
             TextViewMock textView = new TextViewMock(document.TextBuffer, position);
-            textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));
+
+            if (selection != null) {
+                textView.Selection.Select(new SnapshotSpan(document.TextBuffer.CurrentSnapshot, new Span(selection.Start, selection.Length)), isReversed: false);
+                textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, selection.End));
+            } else {
+                textView.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position));
+            }
 
             var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();

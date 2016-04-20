@@ -158,7 +158,7 @@
       <Menu guid="guidRToolsCmdSet" id="rtvsDocsSubMenu" type="Menu" priority="0x100">
         <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
         <Strings>
-          <ButtonText>RTVS Doc&amp;umentation and Samples</ButtonText>
+          <ButtonText>RTVS Documentation and Sa&amp;mples</ButtonText>
         </Strings>
       </Menu>
 
@@ -166,7 +166,7 @@
       <Menu guid="guidRToolsCmdSet" id="rDocsSubMenu" type="Menu" priority="0x200">
         <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
         <Strings>
-          <ButtonText>R &amp;Documentation</ButtonText>
+          <ButtonText>R D&amp;ocumentation</ButtonText>
         </Strings>
       </Menu>
 
@@ -885,7 +885,7 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
           <ButtonText>Help</ButtonText>
-          <MenuText>&amp;Help</MenuText>
+          <MenuText>H&amp;elp</MenuText>
           <CommandName>R Help Window</CommandName>
         </Strings>
       </Button>
@@ -966,7 +966,7 @@
         <Icon guid="ImageCatalogGuid" id="NotificationHub"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>S&amp;urvey/News...</ButtonText>
+          <ButtonText>Survey/&amp;News...</ButtonText>
           <CommandName>Survey News</CommandName>
         </Strings>
       </Button>
@@ -1029,7 +1029,7 @@
         <Icon guid="ImageCatalogGuid" id="LibrarySettings"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>D&amp;ata Science Settings...</ButtonText>
+          <ButtonText>Data Science Se&amp;ttings...</ButtonText>
           <CommandName>Data Science Settings</CommandName>
         </Strings>
       </Button>
