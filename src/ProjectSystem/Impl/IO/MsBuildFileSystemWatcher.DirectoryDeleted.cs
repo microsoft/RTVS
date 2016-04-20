@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.Common.Core;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher {
@@ -29,7 +28,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             public override string ToString() {
-                return $"Directory deleted: {_fullPath}";
+                return Invariant($"Directory deleted: {_fullPath}");
             }
         }
     }

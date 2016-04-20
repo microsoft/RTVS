@@ -64,13 +64,7 @@ namespace Microsoft.R.Host.Client {
         /// </remarks>
         public static async Task<T> EvaluateAsync<T>(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
             var res = await evaluator.EvaluateAsync(expression, kind | REvaluationKind.Json, cancellationToken);
-
-            if (res.ParseStatus != RParseStatus.OK) {
-                throw new REvaluationException(Invariant($"R evaluation failed:\n\n{expression}\n\nExpression could not be parsed; ParseStatus={res.ParseStatus}"));
-            } else if (res.Error != null) {
-                throw new REvaluationException(Invariant($"R evaluation failed:\n\n{expression}\n\n{res.Error}"));
-            }
-
+            ThrowOnError(expression, res);
             Trace.Assert(res.JsonResult != null);
             return res.JsonResult.ToObject<T>();
         }
@@ -90,9 +84,13 @@ namespace Microsoft.R.Host.Client {
         /// Use in lieu of <see cref="EvaluateAsync{T}(IRExpressionEvaluator, string, REvaluationKind, CancellationToken)"/> for
         /// evaluations that are performed solely for their side effects, when the result is not inspected.
         /// </remarks>
+        /// <remarks>
+        /// Automatically adds <see cref="REvaluationKind.NoResult"/> to <paramref name="kind"/>.
+        /// </remarks>
         public static async Task ExecuteAsync(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
-            var res = await evaluator.EvaluateAsync<string>($"({expression}); NULL", kind, cancellationToken);
-            Debug.Assert(res == null);
+            var res = await evaluator.EvaluateAsync(expression, kind | REvaluationKind.NoResult, cancellationToken);
+            ThrowOnError(expression, res);
+            Trace.Assert(res.StringResult == null && res.JsonResult == null);
         }
 
         /// <summary>
@@ -101,6 +99,14 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         public static Task ExecuteAsync(this IRExpressionEvaluator evaluator, FormattableString expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) =>
             evaluator.ExecuteAsync(Invariant(expression), kind, cancellationToken);
+
+        private static void ThrowOnError(string expression, REvaluationResult res) {
+            if (res.ParseStatus != RParseStatus.OK) {
+                throw new REvaluationException(Invariant($"R evaluation failed:\n\n{expression}\n\nExpression could not be parsed; ParseStatus={res.ParseStatus}"));
+            } else if (res.Error != null) {
+                throw new REvaluationException(Invariant($"R evaluation failed:\n\n{expression}\n\n{res.Error}"));
+            }
+        }
     }
 }
 

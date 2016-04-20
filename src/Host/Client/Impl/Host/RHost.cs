@@ -28,6 +28,15 @@ namespace Microsoft.R.Host.Client {
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
 
+        private static readonly TimeSpan HeartbeatTimeout =
+#if DEBUG
+            // In debug mode, increase the timeout significantly, so that when the host is paused in debugger,
+            // the client won't immediately timeout and disconnect.
+            TimeSpan.FromMinutes(10);
+#else
+            TimeSpan.FromSeconds(5);
+#endif
+
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
         private static bool showConsole = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("RTVS_HOST_CONSOLE"));
@@ -49,6 +58,8 @@ namespace Microsoft.R.Host.Client {
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
+
+        public int? ProcessId => _process?.Id;
 
         public RHost(string name, IRCallbacks callbacks) {
             Check.ArgumentStringNullOrEmpty(nameof(name), name);
@@ -241,11 +252,15 @@ namespace Microsoft.R.Host.Client {
             var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
             var error = response.GetString(1, "error", allowNull: true);
 
-            if (request.Kind.HasFlag(REvaluationKind.Json)) {
-                request.CompletionSource.SetResult(new REvaluationResult(response[2], error, parseStatus));
+            REvaluationResult result;
+            if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
+                result = new REvaluationResult(error, parseStatus);
+            } else if (request.Kind.HasFlag(REvaluationKind.Json)) {
+                result = new REvaluationResult(response[2], error, parseStatus);
             } else {
-                request.CompletionSource.SetResult(new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus));
+                result = new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
             }
+            request.CompletionSource.SetResult(result);
         }
 
         /// <summary>
@@ -501,7 +516,10 @@ namespace Microsoft.R.Host.Client {
             foreach (var port in ports) {
                 ct.ThrowIfCancellationRequested();
 
-                server = new WebSocketServer(port) { ReuseAddress = false };
+                server = new WebSocketServer(port) {
+                    ReuseAddress = false,
+                    WaitTime = HeartbeatTimeout,
+                };
                 server.AddWebSocketService("/", CreateWebSocketMessageTransport);
 
                 try {

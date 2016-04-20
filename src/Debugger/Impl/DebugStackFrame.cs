@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -94,7 +95,7 @@ namespace Microsoft.R.Debugger {
         }
 
         public override string ToString() =>
-            Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString() ?? "<null>")}");
+            Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString(CultureInfo.InvariantCulture) ?? "<null>")}");
 
         public override bool Equals(object obj) =>
             base.Equals(obj) || (obj as IEquatable<DebugStackFrame>)?.Equals(this) == true;

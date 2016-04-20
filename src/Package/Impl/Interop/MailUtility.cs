@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -192,10 +193,13 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         public string dateReceived;
         public string conversationID;
         public int flags;
+        [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
         public IntPtr originator;
         public int recipCount;
+        [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
         public IntPtr recips;
         public int fileCount;
+        [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
         public IntPtr files;
     }
 
@@ -206,6 +210,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         public int position;
         public string path;
         public string name;
+        [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
         public IntPtr type;
     }
 
@@ -216,6 +221,7 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
         public string name;
         public string address;
         public int eIDSize;
+        [SuppressMessage("Microsoft.Security", "CA2111:PointersShouldNotBeVisible")]
         public IntPtr entryID;
     }
 

@@ -430,6 +430,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Package {0} can&apos;t be uninstalled because one of its files is locked by other process..
+        /// </summary>
+        public static string PackageManager_PackageLocked {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageLocked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Package {0} can&apos;t be uninstalled because it has been loaded into R. You need to reset R before package can be uninstalled..
+        /// </summary>
+        public static string PackageManager_PackageLockedByRSession {
+            get {
+                return ResourceManager.GetString("PackageManager_PackageLockedByRSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Package sources:.
         /// </summary>
         public static string PackageManager_PackageSources {

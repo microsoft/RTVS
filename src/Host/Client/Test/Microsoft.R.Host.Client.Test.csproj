@@ -120,24 +120,6 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Files\ExportPreviousPlotToImageExpectedResult.bmp" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-0.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-1.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryInfo-2.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-0.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-1.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-2.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-HistoryResizeOldPlot-3.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-0.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-1.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-2.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-3.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeInteractiveMultiPlots-4.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeNonInteractiveMultiPlots-0.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-ResizeNonInteractiveMultiPlots-1.png" />
-    <Content Include="Files\Microsoft.R.Host.Client.Test.IdeGraphicsDeviceTest-PlotCars-0.png" />
-  </ItemGroup>
   <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

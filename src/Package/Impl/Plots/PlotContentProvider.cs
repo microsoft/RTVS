@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -50,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // Empty filename means clear
             if (!string.IsNullOrEmpty(fileName)) {
                 try {
-                    if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.InvariantCultureIgnoreCase) == 0) {
+                    if (string.Compare(Path.GetExtension(fileName), ".png", StringComparison.OrdinalIgnoreCase) == 0) {
                         var fileInfo = new FileInfo(fileName);
                         if (fileInfo.Length > 0) {
                             element = CreateBitmapContent(fileName);
@@ -63,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                     }
                 } catch (Exception e) when (!e.IsCriticalException()) {
                     element = CreateErrorContent(
-                        new FormatException(string.Format(Resources.PlotLoadError, fileName), e));
+                        new FormatException(string.Format(CultureInfo.InvariantCulture, Resources.PlotLoadError, fileName), e));
                 }
             }
 

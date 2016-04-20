@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using static System.FormattableString;
 
 namespace Microsoft.R.Actions.Logging {
     public static class GeneralLog {
@@ -20,8 +21,8 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public static void Write(Exception ex) {
-            LogWriter.WriteAsync(MessageCategory.Error, $"Exception {ex.Message}" + Environment.NewLine);
-            LogWriter.WriteAsync(MessageCategory.Error, $"Stack trace {ex.StackTrace}" + Environment.NewLine);
+            LogWriter.WriteAsync(MessageCategory.Error, Invariant($"Exception {ex.Message}") + Environment.NewLine);
+            LogWriter.WriteAsync(MessageCategory.Error, Invariant($"Stack trace {ex.StackTrace}") + Environment.NewLine);
         }
     }
 }

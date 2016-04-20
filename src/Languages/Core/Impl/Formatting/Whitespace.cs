@@ -95,23 +95,6 @@ namespace Microsoft.Languages.Core.Formatting {
             return count;
         }
 
-        /// <summary>
-        /// Determines if there is only whitespace and a line break after position
-        /// </summary>
-        public static bool IsNewLineAfterPosition(ITextProvider iterator, int position) {
-            for (int i = position + 1; i < iterator.Length; i++) {
-                char ch = iterator[i];
-
-                if (!Char.IsWhiteSpace(ch))
-                    return false;
-
-                if (ch.IsLineBreak())
-                    return true;
-            }
-
-            return false;
-        }
-
         public static string NormalizeWhitespace(this string s) {
             if(s == null || s.Length == 0) {
                 return s;

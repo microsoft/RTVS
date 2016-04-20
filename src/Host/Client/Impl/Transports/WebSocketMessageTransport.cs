@@ -20,9 +20,6 @@ namespace Microsoft.R.Host.Client {
         public event EventHandler Open;
         public event EventHandler Close;
 
-        /// <remarks>
-        /// 
-        /// </remarks>
         public WebSocketMessageTransport() {
             Protocol = "Microsoft.R.Host";
         }

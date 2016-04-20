@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
@@ -38,7 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
                         device = "jpeg";
                         break;
                     default:
-                        VsAppShell.Current.ShowErrorMessage(string.Format(Resources.PlotExportUnsupportedImageFormat, extension));
+                        VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.PlotExportUnsupportedImageFormat, extension));
                         return;
                 }
 

@@ -129,11 +129,15 @@ plot(5:15)
         [Test]
         [Category.Plots]
         public async Task PlotCars() {
+            var expectedPath = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected", "plot(cars)");
+
             var code = @"
 plot(cars)
 ";
             var inputs = Batch(code);
-            await GraphicsTestAgainstExpectedFilesAsync(inputs);
+            var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
+            var expectedPlotPaths = new string[] { expectedPath };
+            CompareImages(actualPlotPaths, expectedPlotPaths);
         }
 
         [Test]
@@ -189,6 +193,22 @@ rtvs:::graphics.ide.resize(600, 600)
 
         [Test]
         [Category.Plots]
+        public async Task ResizeInteractiveNoTempFilesLeak() {
+            //https://github.com/Microsoft/RTVS/issues/1568
+            var code = @"
+plot(0:10)
+rtvs:::graphics.ide.resize(600, 600)
+";
+            var tmpFilesBefore = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
+            actualPlotFilePaths.Should().HaveCount(2);
+            var tmpFilesAfter = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
+            tmpFilesAfter.ShouldAllBeEquivalentTo(tmpFilesBefore);
+        }
+
+        [Test]
+        [Category.Plots]
         public async Task ExportToImage() {
             var exportedBmpFilePath = _files.ExportToBmpResultPath;
             var exportedPngFilePath = _files.ExportToPngResultPath;
@@ -237,15 +257,16 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
         [Test]
         [Category.Plots]
         public async Task ExportPreviousPlotToImage() {
-            var exportedBmpFilePath = _files.ExportPreviousPlotToImageResultPath;
+            var expectedExportedBmpFilePath = await WriteExpectedImageAsync("bmp", 360, 360, 96, "Expected", "plot(0:10)");
 
+            var actualExportedBmpFilePath = _files.GetDestinationPath("ExportPreviousPlotToImageExpected1.bmp");
             var code = string.Format(@"
 plot(0:10)
 plot(10:20)
 rtvs:::graphics.ide.previousplot()
 rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2})
 ",
-                QuotedRPath(exportedBmpFilePath),
+                QuotedRPath(actualExportedBmpFilePath),
                 DefaultWidth,
                 DefaultHeight
             );
@@ -254,7 +275,7 @@ rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2})
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(3);
 
-            File.ReadAllBytes(exportedBmpFilePath).Should().Equal(File.ReadAllBytes(_files.ExpectedExportPreviousPlotToImagePath));
+            CompareImages(new string[] { actualExportedBmpFilePath }, new string[] { expectedExportedBmpFilePath });
         }
 
         [Test]
@@ -290,6 +311,12 @@ rtvs:::graphics.ide.exportpdf({0}, {1}, {2})
             // Make sure that all parts of the graph are present
             // We used to have a bug where the resized image only had
             // the top left plot, and the others were missing
+            var expected1Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected1", "par(mfrow=c(2,2));plot(0:1)");
+            var expected2Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected2", "par(mfrow=c(2,2));plot(0:1);plot(1:2)");
+            var expected3Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected3", "par(mfrow=c(2,2));plot(0:1);plot(1:2);plot(2:3)");
+            var expected4Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected4", "par(mfrow=c(2,2));plot(0:1);plot(1:2);plot(2:3);plot(3:4)");
+            var expected5Path = await WriteExpectedImageAsync("png", 600, 600, 96, "Expected5", "par(mfrow=c(2,2));plot(0:1);plot(1:2);plot(2:3);plot(3:4)");
+
             var code = @"
 par(mfrow = c(2, 2))
 plot(0:1)
@@ -299,7 +326,9 @@ plot(3:4)
 rtvs:::graphics.ide.resize(600, 600)
 ";
             var inputs = Interactive(code);
-            await GraphicsTestAgainstExpectedFilesAsync(inputs);
+            var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
+            var expectedPlotPaths = new string[] { expected1Path, expected2Path, expected3Path, expected4Path, expected5Path };
+            CompareImages(actualPlotPaths, expectedPlotPaths);
         }
 
         [Test]
@@ -310,6 +339,9 @@ rtvs:::graphics.ide.resize(600, 600)
             // Make sure that all parts of the graph are present
             // We used to have a bug where the resized image only had
             // the top left plot, and the others were missing
+            var expected1Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected1", "par(mfrow=c(2,2));plot(0:1);plot(1:2);plot(2:3);plot(3:4)");
+            var expected2Path = await WriteExpectedImageAsync("png", 600, 600, 96, "Expected2", "par(mfrow=c(2,2));plot(0:1);plot(1:2);plot(2:3);plot(3:4)");
+
             var inputs = new [] {
                 @"
 par(mfrow = c(2, 2))
@@ -320,7 +352,9 @@ plot(3:4)
 ",
 "rtvs:::graphics.ide.resize(600, 600)",
             };
-            await GraphicsTestAgainstExpectedFilesAsync(inputs);
+            var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
+            var expectedPlotPaths = new string[] { expected1Path, expected2Path };
+            CompareImages(actualPlotPaths, expectedPlotPaths);
         }
 
         [Test]
@@ -337,7 +371,7 @@ write(info, {0})
                 QuotedRPath(outputFilePath));
 
             var inputs = Interactive(code);
-            var actualPlotFilePaths = await GraphicsTestAgainstExpectedFilesAsync(inputs);
+            var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
             actualPlotFilePaths.Should().HaveCount(3);
 
             File.ReadAllBytes(actualPlotFilePaths[2]).Should().Equal(File.ReadAllBytes(actualPlotFilePaths[0]));
@@ -454,6 +488,11 @@ write(info, {0})
         [Test]
         [Category.Plots]
         public async Task HistoryResizeOldPlot() {
+            var expected1Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected1", "plot(0:10)");
+            var expected2Path = await WriteExpectedImageAsync("png", 360, 360, 96, "Expected2", "plot(5:15)");
+            var expected3Path = await WriteExpectedImageAsync("png", 600, 600, 96, "Expected3", "plot(5:15)");
+            var expected4Path = await WriteExpectedImageAsync("png", 600, 600, 96, "Expected4", "plot(0:10)");
+
             var code = @"
 plot(0:10)
 plot(5:15)
@@ -462,46 +501,18 @@ rtvs:::graphics.ide.previousplot()
 ";
 
             var inputs = Interactive(code);
-            var actualPlotFilePaths = await GraphicsTestAgainstExpectedFilesAsync(inputs);
-            actualPlotFilePaths.Should().HaveCount(4);
+            var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
+            var expectedPlotPaths = new string[] { expected1Path, expected2Path, expected3Path, expected4Path };
+            CompareImages(actualPlotPaths, expectedPlotPaths);
+        }
 
-            var bmp1 = (Bitmap)Image.FromFile(actualPlotFilePaths[0]);
-            var bmp2 = (Bitmap)Image.FromFile(actualPlotFilePaths[1]);
-            var bmp3 = (Bitmap)Image.FromFile(actualPlotFilePaths[2]);
-            var bmp4 = (Bitmap)Image.FromFile(actualPlotFilePaths[3]);
-            bmp1.Width.Should().Be(DefaultWidth);
-            bmp1.Height.Should().Be(DefaultHeight);
-            bmp2.Width.Should().Be(DefaultWidth);
-            bmp2.Height.Should().Be(DefaultHeight);
-            bmp3.Width.Should().Be(600);
-            bmp3.Height.Should().Be(600);
-            bmp4.Width.Should().Be(600);
-            bmp4.Height.Should().Be(600);
+        private void CompareImages(string[] actualPlotPaths, string[] expectedPlotPaths) {
+            actualPlotPaths.Select(f => File.ReadAllBytes(f)).ShouldBeEquivalentTo(expectedPlotPaths.Select(f => File.ReadAllBytes(f)));
         }
 
         private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
             string json = File.ReadAllText(historyInfoFilePath).Trim();
             json.Should().Be($"[{expectedActive},{expectedCount}]");
-        }
-
-        private async Task<string[]> GraphicsTestAgainstExpectedFilesAsync(string[] inputs) {
-            var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
-            var expectedPlotPaths = GetTestExpectedFiles();
-            actualPlotPaths.Length.Should().Be(expectedPlotPaths.Length);
-
-            foreach (string path in expectedPlotPaths) {
-                var actualPlotPath = actualPlotPaths.First(p => Path.GetFileName(p) == Path.GetFileName(path));
-                File.ReadAllBytes(actualPlotPath).Should().Equal(File.ReadAllBytes(path));
-            }
-
-            return actualPlotPaths;
-        }
-
-        private string[] GetTestExpectedFiles() {
-            var folderPath = _files.DestinationPath;
-            var expectedFilesFilter = $"{_testMethod.DeclaringType?.FullName}-{_testMethod.Name}-*.png";
-            var expectedFiles = Directory.GetFiles(folderPath, expectedFilesFilter);
-            return expectedFiles;
         }
 
         internal string SavePlotFile(string plotFilePath, int i) {
@@ -511,9 +522,34 @@ rtvs:::graphics.ide.previousplot()
             return testOutputFilePath;
         }
 
+        private async Task<string> WriteExpectedImageAsync(string imageType, int width, int height, int res, string name, string code) {
+            string filePath = _files.GetDestinationPath(_testMethod.Name + name + "." + imageType);
+            var inputs = Batch(string.Format(@"
+{0}({1}, width={2}, height={3}, res={4})
+{5}
+dev.off()
+", imageType, filePath.ToRPath().ToRStringLiteral(), width, height, res, code));
+
+            // Don't set PlotHandler, so if any code accidentally triggers a plot msg, it will fail
+            await ExecuteInSession(inputs, new RHostClientTestApp());
+
+            return filePath;
+        }
+
         private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs) {
+            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot });
+
+            // Ensure that all plot files created by the graphics device have been deleted
+            foreach (var deletedFilePath in OriginalPlotFilePaths) {
+                File.Exists(deletedFilePath).Should().BeFalse();
+            }
+
+            return PlotFilePaths.AsReadOnly();
+        }
+
+        private async Task ExecuteInSession(string[] inputs, IRHostClientApp app) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp {PlotHandler = OnPlot});
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), app);
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
@@ -527,13 +563,6 @@ rtvs:::graphics.ide.previousplot()
 
                 await session.StopHostAsync();
             }
-            
-            // Ensure that all plot files created by the graphics device have been deleted
-            foreach (var deletedFilePath in OriginalPlotFilePaths) {
-                File.Exists(deletedFilePath).Should().BeFalse();
-            }
-
-            return PlotFilePaths.AsReadOnly();
         }
 
         private static string QuotedRPath(string path) {

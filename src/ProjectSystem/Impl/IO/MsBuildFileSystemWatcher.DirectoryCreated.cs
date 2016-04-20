@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher {
@@ -72,7 +73,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
 
             public override string ToString() {
-                return $"Directory created: {_directoryFullPath}";
+                return Invariant($"Directory created: {_directoryFullPath}");
             }
         }
     }

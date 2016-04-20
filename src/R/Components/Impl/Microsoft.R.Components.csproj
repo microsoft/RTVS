@@ -142,6 +142,7 @@
     <Compile Include="PackageManager\Implementation\View\PackageSourcesOptionsControl.Designer.cs">
       <DependentUpon>PackageSourcesOptionsControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="PackageManager\Model\PackageLockState.cs" />
     <Compile Include="PackageManager\Model\RPackage.cs" />
     <Compile Include="PackageManager\RPackageManagerException.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageViewModel.cs" />
@@ -192,7 +193,9 @@
     <Compile Include="View\IVisualComponentContainer.cs" />
     <Compile Include="View\IVisualComponentContainerFactory.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>

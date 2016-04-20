@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Support.Settings.Definitions;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsService))]
@@ -62,7 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
                     shouldQuery = elapsedTime.TotalDays >= 30;
                     break;
                 default:
-                    Debug.Assert(false, String.Format("Unexpected SurveyNewsPolicy: {0}.", _options.SurveyNewsCheck));
+                    Debug.Assert(false, Invariant($"Unexpected SurveyNewsPolicy: {_options.SurveyNewsCheck}."));
                     break;
             }
 

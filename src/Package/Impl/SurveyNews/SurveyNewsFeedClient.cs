@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Common.Core;
 using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
@@ -52,9 +53,9 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
             // so the json is found in the document in a PRE element.
             string text = br.DocumentText;
             if (!string.IsNullOrEmpty(text)) {
-                int startIndex = text.IndexOf("<PRE>");
+                int startIndex = text.IndexOfIgnoreCase("<PRE>");
                 if (startIndex > 0) {
-                    int endIndex = text.IndexOf("</PRE>", startIndex);
+                    int endIndex = text.IndexOfIgnoreCase("</PRE>", startIndex);
                     if (endIndex > 0) {
                         text = text.Substring(startIndex + 5, endIndex - startIndex - 5);
                         try {

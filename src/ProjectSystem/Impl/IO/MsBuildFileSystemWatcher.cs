@@ -14,6 +14,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
     public sealed partial class MsBuildFileSystemWatcher : IDisposable {
@@ -148,7 +149,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 } catch (Exception e) {
                     _hasErrors = 1;
                     _log.WatcherApplyChangeFailed(change.ToString(), e);
-                    Debug.Fail($"Failed to apply change {change}:\n{e}");
+                    Debug.Fail(Invariant($"Failed to apply change {change}:\n{e}"));
                 }
             }
         }

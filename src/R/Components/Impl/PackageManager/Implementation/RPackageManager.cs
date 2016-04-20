@@ -3,8 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -147,6 +150,35 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
+        public PackageLockState GetPackageLockState(string name, string libraryPath) {
+            string dllPath = GetPackageDllPath(name, libraryPath);
+            if (!string.IsNullOrEmpty(dllPath)) {
+                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
+                if (processes != null) {
+                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
+                        return PackageLockState.LockedByRSession;
+                    }
+
+                    if (processes.Length > 0) {
+                        return PackageLockState.LockedByOther;
+                    }
+                }
+            }
+
+            return PackageLockState.Unlocked;
+        }
+
+        private string GetPackageDllPath(string name, string libraryPath) {
+            string pkgFolder = Path.Combine(libraryPath.Replace("/", "\\"), name);
+            if (Directory.Exists(pkgFolder)) {
+                string dllPath = Path.Combine(pkgFolder, "libs", "x64", name + ".dll");
+                if (File.Exists(dllPath)) {
+                    return dllPath;
+                }
+            }
+            return null;
+        }
+
         private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
@@ -203,7 +235,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             if (result.Error != null) {
-                throw new RPackageManagerException(string.Format(Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
+                throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
             }
         }
 

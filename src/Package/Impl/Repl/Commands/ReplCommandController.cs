@@ -100,7 +100,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             var status = _snippetController.Status(group, id);
             if (status != CommandStatus.NotSupported) {
-                return _snippetController.Invoke(group, id, inputArg, ref outputArg);
+                var result = _snippetController.Invoke(group, id, inputArg, ref outputArg);
+                if(result.Status != CommandStatus.NotSupported) {
+                    return result;
+                }
             }
 
             return base.Invoke(group, id, inputArg, ref outputArg);

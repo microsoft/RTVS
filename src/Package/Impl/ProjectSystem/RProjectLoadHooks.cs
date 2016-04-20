@@ -164,34 +164,31 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         private async Task ProjectUnloading(object sender, EventArgs args) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
-            if (!_session.IsHostRunning) {
-                return;
-            }
-
+            
             if (!_fileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }
 
+            if (_toolsSettings.AlwaysSaveHistory) {
+                _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+            }
+
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
+            if (!_session.IsHostRunning) {
+                return;
+            }
 
             Task.Run(async () => {
-                try {
-                    using (var evaluation = await _session.BeginEvaluationAsync()) {
-                        if (saveDefaultWorkspace) {
-                            await evaluation.SaveWorkspace(rdataPath);
-                        }
-                        await evaluation.SetDefaultWorkingDirectory();
+                using (var evaluation = await _session.BeginEvaluationAsync()) {
+                    if (saveDefaultWorkspace) {
+                        await evaluation.SaveWorkspace(rdataPath);
                     }
-                } catch (OperationCanceledException) {
-                    return;
-                }
-
-                if (saveDefaultWorkspace || _toolsSettings.AlwaysSaveHistory) {
-                    await _threadHandling.SwitchToUIThread();
-                    _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                    await evaluation.SetDefaultWorkingDirectory();
                 }
             }).DoNotWait();
         }

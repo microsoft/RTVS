@@ -32,9 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     cts.Token.ThrowIfCancellationRequested();
                     msgPump.CurrentStep = i + 1;
                     if (actions[i].Name == null) {
-                        msgPump.ProgressText = string.Format(Resources.LongOperationProgressMessage1, i + 1, msgPump.TotalSteps);
+                        msgPump.ProgressText = string.Format(CultureInfo.InvariantCulture, Resources.LongOperationProgressMessage1, i + 1, msgPump.TotalSteps);
                     } else {
-                        msgPump.ProgressText = string.Format(Resources.LongOperationProgressMessage2, i + 1, msgPump.TotalSteps, actions[i].Name);
+                        msgPump.ProgressText = string.Format(CultureInfo.InvariantCulture, Resources.LongOperationProgressMessage2, i + 1, msgPump.TotalSteps, actions[i].Name);
                     }
                     actions[i].Action(actions[i].Data);
                 }

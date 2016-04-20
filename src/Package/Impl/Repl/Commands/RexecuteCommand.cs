@@ -3,6 +3,7 @@
 
 using System;
 using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -59,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private string TrimText(string text) {
             var newLine = TextView.Options.GetNewLineCharacter();
-            if (text.EndsWith(newLine)) {
+            if (text.EndsWithOrdinal(newLine)) {
                 text = text.Substring(0, text.Length - newLine.Length);
             }
 

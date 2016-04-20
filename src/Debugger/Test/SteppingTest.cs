@@ -41,12 +41,12 @@ namespace Microsoft.R.Debugger.Test {
             _sessionProvider.Dispose();
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1382")]
+        [Test]
         [Category.R.Debugger]
         public async Task BreakContinue() {
             const string code =
-@"browser()
-  x <- 0
+@"x <- 0
+  browser()
   while (x >= 0) {
     x <- x + 1
   }
@@ -63,7 +63,7 @@ namespace Microsoft.R.Debugger.Test {
 
                 await debugSession.NextPromptShouldBeBrowseAsync();
                 (await debugSession.GetStackFramesAsync()).Should().Equal(new MatchDebugStackFrames {
-                    { sf, new MatchRange<int>(1, 3) }
+                    { sf, new MatchRange<int>(3, 5) }
                 });
 
                 await _session.EvaluateAsync("x <- -42", REvaluationKind.Mutating);
