@@ -12,7 +12,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
@@ -63,7 +62,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             [Package.Resources.ImportData_UseFirstColumn] = "1",
             [Package.Resources.ImportData_UseNumber] = null
         };
-        public object IdleTimeTask { get; private set; }
 
         public ImportDataWindow() {
             InitializeComponent();
