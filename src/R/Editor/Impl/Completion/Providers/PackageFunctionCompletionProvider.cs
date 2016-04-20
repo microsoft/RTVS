@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
+using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help.Definitions;
@@ -110,7 +111,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
                 for (int i = end - 1; i >= 0; i--) {
                     char ch = snapshot[i];
-                    if (char.IsWhiteSpace(ch)) {
+                    if (!RTokenizer.IsIdentifierCharacter(ch)) {
                         start = i + 1;
                         break;
                     }
@@ -119,9 +120,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 if (start < end) {
                     packageName = snapshot.GetText(Span.FromBounds(start, end));
                     if (packageName.Length > 0) {
-                        if (colons == 3)
-                            context.InternalFunctions = true;
-
+                        context.InternalFunctions = colons == 3;
                         IPackageInfo package = PackageIndex.GetPackageByName(packageName);
                         if (package != null) {
                             packages.Add(package);
