@@ -20,12 +20,18 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using IThreadHandling = using Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
+#endif
+#if VS15
+using IThreadHandling = using Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo("RTools")]
