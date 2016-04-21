@@ -71,26 +71,28 @@ namespace Microsoft.Common.Core {
 
             var synchronizationContext = SynchronizationContext.Current;
             if (synchronizationContext != null && synchronizationContext.GetType() != typeof(SynchronizationContext)) {
-                task.ContinueWith(ReThrowTaskExceptionIntoSynchronizationContext, synchronizationContext, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                task.ContinueWith(DoNotWaitSynchronizationContextContinuation, synchronizationContext, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
 
-            task.ContinueWith(DebugFailTaskException, TaskContinuationOptions.ExecuteSynchronously);
+            task.ContinueWith(DoNotWaitThreadContinuation, TaskContinuationOptions.ExecuteSynchronously);
         }
 
         private static void ReThrowTaskException(object state) {
-            var task = (Task) state;
+            var task = (Task)state;
             if (task.IsFaulted && task.Exception != null) {
-                ExceptionDispatchInfo.Capture(task.Exception.InnerException).Throw();
+                var exception = task.Exception.InnerException;
+                ExceptionDispatchInfo.Capture(exception).Throw();
             }
         }
 
-        private static void DebugFailTaskException(Task task) {
+        private static void DoNotWaitThreadContinuation(Task task) {
             if (task.IsFaulted && task.Exception != null) {
-                Debug.Fail(task.Exception.InnerException.Message, task.Exception.InnerException.StackTrace);
+                var exception = task.Exception.InnerException;
+                ThreadPool.QueueUserWorkItem(s => ((ExceptionDispatchInfo)s).Throw(), ExceptionDispatchInfo.Capture(exception));
             }
         }
 
-        private static void ReThrowTaskExceptionIntoSynchronizationContext(Task task, object state) {
+        private static void DoNotWaitSynchronizationContextContinuation(Task task, object state) {
             var context = (SynchronizationContext) state;
             context.Post(ReThrowTaskException, task);
         }
