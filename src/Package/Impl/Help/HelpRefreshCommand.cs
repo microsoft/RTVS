@@ -6,14 +6,15 @@ using Microsoft.Languages.Editor;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Help;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpRefreshCommand : Command {
-        private IHelpWindowVisualComponent _component;
+        private IHelpVisualComponent _component;
 
-        public HelpRefreshCommand(IHelpWindowVisualComponent component) :
+        public HelpRefreshCommand(IHelpVisualComponent component) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpRefresh)) {
             _component = component;
         }

@@ -235,11 +235,11 @@ namespace Microsoft.R.Host.Client.Test {
 
         private async Task<XDocument> RunGraphicsTest(string code, string outputFilePath) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
-                }, 50000);
+                }, new RHostClientTestApp(), 50000);
 
                 using (var interaction = await session.BeginInteractionAsync()) {
                     await interaction.RespondAsync(code);

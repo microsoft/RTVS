@@ -22,14 +22,14 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             public Output(TestMethodFixture testMethod) {
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, null, () => { });
+                _session = new RSession(0, () => { });
             }
 
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
-                }, 50000);
+                }, null, 50000);
             }
 
             public async Task DisposeAsync() {

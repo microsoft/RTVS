@@ -8,6 +8,8 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.R.Host.Client {
     public static class RStringExtensions {
+        public static string EnsureLineBreak(this string s) => s.Length > 0 && s[s.Length - 1] == '\n' ? s : s + "\n";
+
         public static string ToRStringLiteral(this string s, char quote = '"', string nullValue = "NULL") {
             Debug.Assert(quote == '"' || quote == '\'');
 

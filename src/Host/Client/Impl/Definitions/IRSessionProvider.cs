@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
-        IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp);
+        IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();
     }
 }

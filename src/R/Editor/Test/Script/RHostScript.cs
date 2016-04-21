@@ -15,10 +15,10 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; private set; }
 
-        public RHostScript(IRSessionProvider sessionProvider, IRHostClientApp clientApp = null) {
+        public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;
 
-            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, clientApp ?? new RHostClientTestApp());
+            Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             Session.IsHostRunning.Should().BeFalse();
 
             Session.StartHostAsync(new RHostStartupInfo {
@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror
-            }, 50000).Wait();
+            }, clientApp ?? new RHostClientTestApp(), 50000).Wait();
         }
 
         public void Dispose() {

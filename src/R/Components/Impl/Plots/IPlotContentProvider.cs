@@ -3,13 +3,12 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows;
 
-namespace Microsoft.VisualStudio.R.Package.Plots {
+namespace Microsoft.R.Components.Plots {
     /// <summary>
     /// Plot content provider to load and consume plot content
     /// </summary>
-    internal interface IPlotContentProvider : IDisposable {
+    public interface IPlotContentProvider : IDisposable {
         /// <summary>
         /// Event raised when UIElement is loaded, content presenter listens to this event
         /// </summary>
@@ -77,30 +76,5 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// Remove the current plot from the plot history.
         /// </summary>
         Task RemoveCurrentPlotAsync();
-    }
-
-    /// <summary>
-    /// provide data ralated to PlotChanged event
-    /// </summary>
-    internal class PlotChangedEventArgs : EventArgs {
-        /// <summary>
-        /// new plot UIElement
-        /// </summary>
-        public UIElement NewPlotElement { get; set; }
-    }
-
-    internal class PlotHistoryInfo {
-        public PlotHistoryInfo() :
-            this(-1, 0) {
-        }
-
-        public PlotHistoryInfo(int activePlotIndex, int plotCount) {
-            this.ActivePlotIndex = activePlotIndex;
-            this.PlotCount = plotCount;
-        }
-
-        public int ActivePlotIndex { get; set; }
-
-        public int PlotCount { get; set; }
     }
 }

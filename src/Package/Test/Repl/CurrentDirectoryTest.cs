@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var packagesProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPackageManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, packagesProvider, activeTextViewTracker, debuggerModeTracker, null, VsAppShell.Current, RToolsSettings.Current, () => {});
+            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, packagesProvider, activeTextViewTracker, debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, () => {});
         }
 
         public void Dispose() {

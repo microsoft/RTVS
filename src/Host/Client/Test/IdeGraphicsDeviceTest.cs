@@ -550,13 +550,13 @@ dev.off()
             return PlotFilePaths.AsReadOnly();
         }
 
-        private async Task ExecuteInSession(string[] inputs, IRHostClientApp app) {
+        private async Task ExecuteInSession(string[] inputs, IRSessionCallback app) {
             using (var sessionProvider = new RSessionProvider()) {
-                var session = sessionProvider.GetOrCreate(Guid.NewGuid(), app);
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
-                }, 50000);
+                }, app, 50000);
 
                 foreach (var input in inputs) {
                     using (var interaction = await session.BeginInteractionAsync()) {

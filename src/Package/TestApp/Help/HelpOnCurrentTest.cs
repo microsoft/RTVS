@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             var clientApp = new RHostClientHelpTestApp();
             var historyProvider = RHistoryProviderStubFactory.CreateDefault();
             using (var hostScript = new VsRHostScript(clientApp)) {
-                using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
+                using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
                     DoIdle(100);
 
                     var activeViewTrackerMock = new ActiveTextViewTrackerMock("  plot", RContentTypeDefinition.ContentType);
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     var interactiveWorkflowProvider = TestRInteractiveWorkflowProviderFactory.Create(sessionProvider, activeTextViewTracker: activeViewTrackerMock);
                     var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
 
-                    var component = ControlWindow.Component as IHelpWindowVisualComponent;
+                    var component = ControlWindow.Component as IHelpVisualComponent;
                     component.Should().NotBeNull();
 
                     component.VisualTheme = "Light.css";

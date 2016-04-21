@@ -27,7 +27,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
 
         protected void SubmitToInteractive(string command, CancellationToken cancellationToken) {
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+            var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (session != null && session.IsHostRunning) {
                 _runningAction = Task.Run(async () => {
                     try {

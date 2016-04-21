@@ -26,14 +26,14 @@ namespace Microsoft.R.Debugger.Test {
         public SteppingTest(TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _sessionProvider = new RSessionProvider();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid(), new RHostClientTestApp());
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
         }
 
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 RBasePath = RUtilities.FindExistingRBasePath()
-            }, 50000);
+            }, new RHostClientTestApp(), 50000);
         }
 
         public async Task DisposeAsync() {

@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         private readonly IDebuggerModeTracker _debuggerModeTracker;
 
         private Lazy<IRInteractiveWorkflow> _instanceLazy;
-        public IRHostClientApp HostClientApp { get; set; }
+        public IRSessionCallback HostClientApp { get; set; }
 
         [ImportingConstructor]
         public TestRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
@@ -51,7 +51,7 @@ namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
         }
         
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, HostClientApp, _shell, _settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, _shell, _settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

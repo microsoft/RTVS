@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
+using Microsoft.R.Components.Settings.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class CranMirrorTypeConverter : TypeConverter {

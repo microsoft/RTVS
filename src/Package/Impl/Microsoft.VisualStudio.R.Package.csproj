@@ -106,8 +106,8 @@
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
       <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Help\HelpWindowVisualComponent.cs" />
-    <Compile Include="Help\IHelpWindowVisualComponent.cs" />
+    <Compile Include="Help\HelpVisualComponent.cs" />
+    <Compile Include="Help\VsHelpVisualComponentContainerFactory.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
@@ -193,9 +193,6 @@
     <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
     <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
     <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
-    <Compile Include="Plots\Definitions\IPlotHistory.cs" />
-    <Compile Include="Plots\Definitions\IPlotHistoryProvider.cs" />
-    <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\PlotContentProvider.cs" />
     <Compile Include="Plots\PlotHistory.cs" />
     <Compile Include="Plots\PlotHistoryProvider.cs" />
@@ -237,7 +234,6 @@
     <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
-    <Compile Include="Repl\RHostClientApp.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
     <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
@@ -335,8 +331,6 @@
     </Compile>
     <Compile Include="RPackages\Commands\CheckForPackageUpdatesCommand.cs" />
     <Compile Include="RPackages\Commands\InstallPackagesCommand.cs" />
-    <Compile Include="RPackages\Mirrors\CranMirrorEntry.cs" />
-    <Compile Include="RPackages\Mirrors\CranMirrorList.cs" />
     <Compile Include="Options\R\Tools\CranMirrorTypeConverter.cs" />
     <Compile Include="RtvsProductInfo.cs" />
     <Compile Include="Search\VsSearchControl.cs" />
@@ -420,7 +414,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <EmbeddedResource Include="RPackages\Mirrors\CranMirrors.csv" />
     <None Include="Rules\rtvs.rules.props">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -1353,7 +1346,9 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Plots\Definitions\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddTemplatesToVsixSources" AfterTargets="GetVsixSourceItems">

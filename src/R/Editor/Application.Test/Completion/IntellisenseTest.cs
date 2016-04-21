@@ -125,7 +125,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     var item = list.FirstOrDefault(x => x.DisplayText == "codoc");
                     item.Should().BeNull();
 
-                    var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+                    var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                     rSession.Should().NotBeNull();
 
                     using (var eval = rSession.BeginEvaluationAsync().Result) {

@@ -15,9 +15,9 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly ConcurrentDictionary<Guid, IRSession> _sessions = new ConcurrentDictionary<Guid, IRSession>();
         private readonly DisposeToken _disposeToken = DisposeToken.Create<RSessionProvider>();
 
-        public IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp) {
+        public IRSession GetOrCreate(Guid guid) {
             _disposeToken.ThrowIfDisposed();
-            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), hostClientApp, () => DisposeSession(guid)));
+            return _sessions.GetOrAdd(guid, id => new RSession(Interlocked.Increment(ref _sessionCounter), () => DisposeSession(guid)));
         }
 
         public IEnumerable<IRSession> GetSessions() {

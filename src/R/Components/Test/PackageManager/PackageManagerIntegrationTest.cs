@@ -36,7 +36,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _testMethod = testMethod.MethodInfo;
-            _workflowProvider.HostClientApp = new RHostClientTestApp();
             _repo1Path = testFiles.GetDestinationPath(Path.Combine("Repos", TestRepositories.Repo1));
             _libPath = Path.Combine(testFiles.GetDestinationPath("library"), _testMethod.Name);
             _lib2Path = Path.Combine(testFiles.GetDestinationPath("library2"), _testMethod.Name);
@@ -326,7 +325,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror,
-            }, 50000);
+            }, new RHostClientTestApp(), 50000);
             return workflow;
         }
         
