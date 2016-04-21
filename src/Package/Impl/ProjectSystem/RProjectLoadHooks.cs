@@ -27,11 +27,9 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
 #endif
 #if VS15
 using Microsoft.VisualStudio.ProjectSystem.VS;
-using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -47,7 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly string _projectDirectory;
         private readonly IRToolsSettings _toolsSettings;
         private readonly IFileSystem _fileSystem;
-        private readonly IThreadHandling _threadHandling;
+#if VS14
+        private readonly Microsoft.VisualStudio.ProjectSystem.IThreadHandling _threadHandling;
+#endif
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
@@ -69,8 +69,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
             , IFileSystem fileSystem
-            , IThreadHandling threadHandling,
-            ISurveyNewsService surveyNews) {
+#if VS14
+            , IThreadHandling threadHandling
+#endif
+            , ISurveyNewsService surveyNews) {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
@@ -79,7 +81,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _toolsSettings = toolsSettings;
             _fileSystem = fileSystem;
+#if VS14
             _threadHandling = threadHandling;
+#endif
             _surveyNews = surveyNews;
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
@@ -92,17 +96,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         [AppliesTo("RTools")]
 #if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
-#endif
-#if VS15
-        [ProjectAutoLoad(completeBy: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished)]
+#else
+        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
+                         completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
+                         RequiresUIThread = true)]
 #endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
 
-            // Force REPL window up and continue only when it is shown
+#if VS14
             await _threadHandling.SwitchToUIThread();
-
+#endif
             // Make sure R package is loaded
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
 
@@ -125,7 +130,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-            bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
+            bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) &&
+#if VS14
+                await GetLoadDefaultWorkspace(rdataPath);
+#endif
+                GetLoadDefaultWorkspace(rdataPath);
 
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (loadDefaultWorkspace) {
@@ -168,8 +177,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof (SVsSolution));
-                    solution.CloseSolutionElement((uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
+                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+                    solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }
             });
@@ -180,7 +189,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
-            
+
             if (!_fileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }
@@ -190,7 +199,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+#if VS14
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
+#else
+            var saveDefaultWorkspace = GetSaveDefaultWorkspace(rdataPath);
+#endif
             if (!_session.IsHostRunning) {
                 return;
             }
@@ -205,12 +218,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }).DoNotWait();
         }
 
+#if VS14
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {
+#else
+        private bool GetLoadDefaultWorkspace(string rdataPath) {
+#endif
             switch (_toolsSettings.LoadRDataOnProjectLoad) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:
+#if VS14
                     await _threadHandling.SwitchToUIThread();
+#endif
                     return VsAppShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceIntoGlobalEnvironment, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
@@ -219,12 +238,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
         }
 
+#if VS14
         private async Task<bool> GetSaveDefaultWorkspace(string rdataPath) {
+#else
+        private bool GetSaveDefaultWorkspace(string rdataPath) {
+#endif
             switch (_toolsSettings.SaveRDataOnProjectUnload) {
                 case YesNoAsk.Yes:
                     return true;
                 case YesNoAsk.Ask:
+#if VS14
                     await _threadHandling.SwitchToUIThread();
+#endif
                     return VsAppShell.Current.ShowMessage(
                         string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceOnProjectUnload, rdataPath),
                         MessageButtons.YesNo) == MessageButtons.Yes;
@@ -240,7 +265,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 var driveType = (NativeMethods.DriveType)NativeMethods.GetDriveType(pathRoot);
                 remoteDrive = driveType == NativeMethods.DriveType.Remote;
             }
-            if(remoteDrive) {
+            if (remoteDrive) {
                 VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
