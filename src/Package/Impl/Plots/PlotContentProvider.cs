@@ -20,10 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private IRSession _rSession;
         private int _lastPixelWidth;
         private int _lastPixelHeight;
+        private int _lastResolution;
 
         public PlotContentProvider(IRSession session) {
             _lastPixelWidth = -1;
             _lastPixelHeight = -1;
+            _lastResolution = -1;
 
             _rSession = session;
             _rSession.Connected += RSession_Connected;
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         private async void RSession_Connected(object sender, EventArgs e) {
             // Let the host know the size of plot window
-            if (_lastPixelWidth >= 0 && _lastPixelHeight >= 0) {
+            if (_lastPixelWidth >= 0 && _lastPixelHeight >= 0 && _lastResolution >= 0) {
                 try {
                     await ApplyNewSize();
                 } catch (OperationCanceledException) { } catch (MessageTransportException) { }
@@ -215,11 +217,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
         }
 
-        public async System.Threading.Tasks.Task ResizePlotAsync(int pixelWidth, int pixelHeight) {
+        public async System.Threading.Tasks.Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution) {
             // Cache the size, so we can set the initial size
             // whenever we get a new session
             _lastPixelWidth = pixelWidth;
             _lastPixelHeight = pixelHeight;
+            _lastResolution = resolution;
 
             if (_rSession != null) {
                 await ApplyNewSize();
@@ -229,7 +232,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ApplyNewSize() {
             if (_rSession != null) {
                 using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                    await eval.ResizePlot(_lastPixelWidth, _lastPixelHeight);
+                    await eval.ResizePlot(_lastPixelWidth, _lastPixelHeight, _lastResolution);
                 }
             }
         }
@@ -291,6 +294,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public static Size ToPixels(Visual visual, Size wpfSize) {
             var source = PresentationSource.FromVisual(visual);
             return (Size)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
+        }
+
+        public static int GetResolution(Visual visual) {
+            var source = PresentationSource.FromVisual(visual);
+            int res = (int)(96 * source.CompositionTarget.TransformToDevice.M11);
+            return res;
         }
     }
 

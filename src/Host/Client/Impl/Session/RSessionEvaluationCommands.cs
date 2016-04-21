@@ -46,8 +46,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height) {
-            var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height})\n");
+        public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height, int resolution) {
+            var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height}, {resolution})\n");
             return evaluation.RespondAsync(script);
         }
 

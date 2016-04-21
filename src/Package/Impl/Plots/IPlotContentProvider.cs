@@ -49,7 +49,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         /// </summary>
         /// <param name="pixelWidth">Width in pixels.</param>
         /// <param name="pixelHeight">Height in pixels.</param>
-        Task ResizePlotAsync(int pixelWidth, int pixelHeight);
+        /// <param name="resolution">Resolution in dpi.</param>
+        Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution);
 
         /// <summary>
         /// Navigate to the next plot in the plot history.
