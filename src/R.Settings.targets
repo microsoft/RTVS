@@ -8,6 +8,8 @@
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(RootDirectory)obj\</ObjDirectory>
     <MicroBuildPluginDirectory Condition=" '$(MicroBuildPluginDirectory)' == '' ">$(RootDirectory)\NugetPackages\</MicroBuildPluginDirectory>
     <PrivateAssembliesFolderPath>$(DevEnvDir)\PrivateAssemblies\</PrivateAssembliesFolderPath>
+    <Vs14Version>14.1.24720</Vs14Version>
+    <Vs15Version>15.0.25123-Dev15Preview</Vs15Version>
   </PropertyGroup>
 
   <!--
