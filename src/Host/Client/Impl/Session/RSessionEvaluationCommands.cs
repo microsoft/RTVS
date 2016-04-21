@@ -131,18 +131,18 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
 
-        public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels) {
-            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportimage(\"{0}\", {1}, {2}, {3})", outputFilePath.Replace("\\", "/"), deviceName, widthInPixels, heightInPixels);
+        public static Task<REvaluationResult> ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+            string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToMetafile(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportimage(\"{0}\", win.metafile, {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+        public static Task<REvaluationResult> ExportToMetafile(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+            string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 
         public static Task<REvaluationResult> ExportToPdf(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
-            string script = string.Format(CultureInfo.InvariantCulture, "rtvs:::graphics.ide.exportpdf(\"{0}\", {1}, {2})", outputFilePath.Replace("\\", "/"), widthInInches, heightInInches);
+            string script = Invariant($"rtvs:::graphics.ide.exportpdf({outputFilePath.ToRPath().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
             return evaluation.EvaluateAsync(script, REvaluationKind.Normal);
         }
 

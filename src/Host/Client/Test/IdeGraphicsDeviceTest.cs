@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private const int DefaultExportWidth = 480;
         private const int DefaultExportHeight = 480;
+        private const int DefaultExportResolution = 96;
 
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<string> OriginalPlotFilePaths { get; } = new List<string>();
@@ -217,17 +218,18 @@ rtvs:::graphics.ide.resize(600, 600, 96)
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5})
-rtvs:::graphics.ide.exportimage({1}, png, {4}, {5})
-rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5})
-rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
+rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({1}, png, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
 ",
                 QuotedRPath(exportedBmpFilePath),
                 QuotedRPath(exportedPngFilePath),
                 QuotedRPath(exportedJpegFilePath),
                 QuotedRPath(exportedTiffFilePath),
                 DefaultExportWidth,
-                DefaultExportHeight);
+                DefaultExportHeight,
+                DefaultExportResolution);
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
@@ -264,11 +266,12 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
 plot(0:10)
 plot(10:20)
 rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2})
+rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
 ",
                 QuotedRPath(actualExportedBmpFilePath),
                 DefaultWidth,
-                DefaultHeight
+                DefaultHeight,
+                DefaultExportResolution
             );
 
             var inputs = Interactive(code);

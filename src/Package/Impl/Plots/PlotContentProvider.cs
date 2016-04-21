@@ -92,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsImageAsync(string fileName, string deviceName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap(deviceName, fileName, _lastPixelWidth, _lastPixelHeight);
+                    await eval.ExportToBitmap(deviceName, fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
                 }
             }
         }
@@ -101,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap("bmp", fileName, _lastPixelWidth, _lastPixelHeight);
+                    await eval.ExportToBitmap("bmp", fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
                             try {
@@ -126,7 +126,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
+                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
 
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
