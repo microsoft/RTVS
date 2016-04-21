@@ -9,6 +9,10 @@ using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
 #endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem;
+#endif
+
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
     public static class ProjectTreeExtensions {
         public static bool IsProjectSelected(this IImmutableSet<IProjectTree> nodes) {

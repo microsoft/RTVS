@@ -27,10 +27,11 @@ using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using IThreadHandling = using Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
+using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
 #endif
 #if VS15
-using IThreadHandling = using Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
+using Microsoft.VisualStudio.ProjectSystem.VS;
+using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -89,7 +90,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         [AppliesTo("RTools")]
+#if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
+#endif
+#if VS15
+        [ProjectAutoLoad(completeBy: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished)]
+#endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
