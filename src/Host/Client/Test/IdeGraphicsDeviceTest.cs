@@ -27,6 +27,7 @@ namespace Microsoft.R.Host.Client.Test {
 
         private const int DefaultExportWidth = 480;
         private const int DefaultExportHeight = 480;
+        private const int DefaultExportResolution = 96;
 
         public List<string> PlotFilePaths { get; } = new List<string>();
         public List<string> OriginalPlotFilePaths { get; } = new List<string>();
@@ -144,7 +145,7 @@ plot(cars)
         [Category.Plots]
         public async Task SetInitialSize() {
             var code = @"
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 plot(0:10)
 ";
             var inputs = Batch(code);
@@ -161,7 +162,7 @@ plot(0:10)
         public async Task ResizeNonInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 ";
             var inputs = Batch(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
@@ -177,7 +178,7 @@ rtvs:::graphics.ide.resize(600, 600)
         public async Task ResizeInteractive() {
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -197,7 +198,7 @@ rtvs:::graphics.ide.resize(600, 600)
             //https://github.com/Microsoft/RTVS/issues/1568
             var code = @"
 plot(0:10)
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 ";
             var tmpFilesBefore = Directory.GetFiles(Path.GetTempPath(), "rhost-ide-plot-*.png");
             var inputs = Interactive(code);
@@ -217,17 +218,18 @@ rtvs:::graphics.ide.resize(600, 600)
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5})
-rtvs:::graphics.ide.exportimage({1}, png, {4}, {5})
-rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5})
-rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
+rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({1}, png, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5}, {6})
+rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
 ",
                 QuotedRPath(exportedBmpFilePath),
                 QuotedRPath(exportedPngFilePath),
                 QuotedRPath(exportedJpegFilePath),
                 QuotedRPath(exportedTiffFilePath),
                 DefaultExportWidth,
-                DefaultExportHeight);
+                DefaultExportHeight,
+                DefaultExportResolution);
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
@@ -264,11 +266,12 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5})
 plot(0:10)
 plot(10:20)
 rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2})
+rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
 ",
                 QuotedRPath(actualExportedBmpFilePath),
                 DefaultWidth,
-                DefaultHeight
+                DefaultHeight,
+                DefaultExportResolution
             );
 
             var inputs = Interactive(code);
@@ -323,7 +326,7 @@ plot(0:1)
 plot(1:2)
 plot(2:3)
 plot(3:4)
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 ";
             var inputs = Interactive(code);
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -350,7 +353,7 @@ plot(1:2)
 plot(2:3)
 plot(3:4)
 ",
-"rtvs:::graphics.ide.resize(600, 600)",
+"rtvs:::graphics.ide.resize(600, 600, 96)",
             };
             var actualPlotPaths = (await GraphicsTestAsync(inputs)).ToArray();
             var expectedPlotPaths = new string[] { expected1Path, expected2Path };
@@ -496,7 +499,7 @@ write(info, {0})
             var code = @"
 plot(0:10)
 plot(5:15)
-rtvs:::graphics.ide.resize(600, 600)
+rtvs:::graphics.ide.resize(600, 600, 96)
 rtvs:::graphics.ide.previousplot()
 ";
 
