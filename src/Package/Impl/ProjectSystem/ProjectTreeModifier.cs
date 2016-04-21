@@ -3,22 +3,15 @@
 #if VS14
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Windows.Forms;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.Imaging.Interop;
-using Microsoft.VisualStudio.R.Package;
-using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-
     [Export(typeof(IProjectTreeModifier))]
     [AppliesTo("RTools")]
     internal sealed class ProjectTreeModifier : IProjectTreeModifier {
-
         public IProjectTree ApplyModifications(IProjectTree tree, IProjectTreeProvider projectTreeProvider) {
             if (tree != null) {
                 if (tree.Capabilities.Contains(ProjectTreeCapabilities.ProjectRoot)) {
