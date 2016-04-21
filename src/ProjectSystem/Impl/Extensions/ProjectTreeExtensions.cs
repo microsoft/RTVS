@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
-
+#endif
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring {
     public static class ProjectTreeExtensions {
         public static bool IsProjectSelected(this IImmutableSet<IProjectTree> nodes) {

@@ -5,7 +5,9 @@ using System.IO;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
