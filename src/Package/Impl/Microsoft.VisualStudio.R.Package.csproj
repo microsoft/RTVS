@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="$(VisualStudioVersion)" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props" 
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='14.0'" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props" 
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='15.0'" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='14.0'" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='15.0'" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -175,6 +173,7 @@
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="Packages\R\RProjLanguageService.cs" />
     <Compile Include="Packages\R\RProjEditorFactory.cs" />
+    <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
@@ -1422,36 +1421,25 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='14.0'" 
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='14.0'" 
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='14.0'" 
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='15.0'"
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='15.0'"
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='15.0'"
-           Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='14.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='14.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='14.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='15.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props') AND '$(VisualStudioVersion)'=='15.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='15.0'" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets'))" />
   </Target>
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets" 
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='14.0'" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets"
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='15.0'" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='14.0'" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\tools\vssdk\Microsoft.VsSDK.targets') AND '$(VisualStudioVersion)'=='15.0'" />
   <Target Name="BeforeBuild">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
   </Target>
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets" 
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='14.0'" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets" 
-          Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='15.0'" />
-  <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" 
-          Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs14Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='14.0'" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.$(Vs15Version)\build\Microsoft.VSSDK.BuildTools.targets') AND '$(VisualStudioVersion)'=='15.0'" />
+  <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="AfterBuild">
