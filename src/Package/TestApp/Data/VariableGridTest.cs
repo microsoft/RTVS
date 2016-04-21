@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(100);
 
                     var result = await hostScript.EvaluateAsync("grid.test <- matrix(1:10, 2, 5)");
-                    EvaluationWrapper wrapper = new EvaluationWrapper(result);
+                    VariableViewModel wrapper = new VariableViewModel(result);
 
                     DoIdle(2000);
 

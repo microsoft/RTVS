@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
 
-        internal void SetEvaluation(EvaluationWrapper evaluation) {
+        internal void SetEvaluation(VariableViewModel evaluation) {
             if (!string.IsNullOrWhiteSpace(evaluation.Expression)) {
                 Caption = Invariant($"{Resources.VariableGrid_Caption}: {evaluation.Expression}");
             }

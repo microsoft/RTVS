@@ -14,12 +14,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IDebugGridViewProvider))]
     internal class DebugGridViewProvider : IDebugGridViewProvider {
         public bool CanShowDataGrid(DebugEvaluationResult evaluationResult) {
-            var wrapper = new EvaluationWrapper(evaluationResult);
+            var wrapper = new VariableViewModel(evaluationResult);
             return wrapper.CanShowDetail;
         }
 
         public void ShowDataGrid(DebugEvaluationResult evaluationResult) {
-            var wrapper = new EvaluationWrapper(evaluationResult);
+            var wrapper = new VariableViewModel(evaluationResult);
             if (!wrapper.CanShowDetail) {
                 throw new InvalidOperationException("Cannot show data grid on evaluation result " + evaluationResult);
             }

@@ -706,4 +706,7 @@ Additional information:
   <data name="Warning_SaveInUtf8" xml:space="preserve">
     <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
   </data>
+  <data name="TooltipPlaceholder" xml:space="preserve">
+    <value>Fetching data...</value>
+  </data>
 </root>

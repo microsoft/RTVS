@@ -10,6 +10,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         bool CanView(DebugValueEvaluationResult evaluation);
 
-        Task ViewAsync(EvaluationWrapper evaluation);
+        Task ViewAsync(DebugValueEvaluationResult evaluation);
+
+        Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation);
     }
 }

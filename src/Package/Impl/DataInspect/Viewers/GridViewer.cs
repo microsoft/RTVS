@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
@@ -26,10 +27,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return false;
         }
 
-        public Task ViewAsync(EvaluationWrapper evaluation) {
+        public Task ViewAsync(DebugValueEvaluationResult evaluation) {
             VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
-            pane.SetEvaluation(evaluation);
+            pane.SetEvaluation(new VariableViewModel(evaluation));
             return Task.CompletedTask;
+        }
+
+        public Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation) {
+            string tooltip = null;
+            if (CanView(evaluation)) {
+                var className = evaluation.Classes.FirstOrDefault(t => _classes.Contains(t));
+                if (!string.IsNullOrEmpty(className))
+                    tooltip = Invariant($"{className} {evaluation.Dim[0]}x{evaluation.Dim[1]}");
+            }
+            return Task.FromResult<object>(tooltip);
         }
         #endregion
     }

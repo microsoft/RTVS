@@ -19,49 +19,56 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    public sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
+    public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
         [ImportMany]
         private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
-        public EvaluationWrapper() { Index = -1; }
+        private readonly IObjectDetailsViewer _detailsViewer;
+        private volatile object _tooltip;
+        private Task<object> _tooltipFetchingTask;
+
+        public VariableViewModel() { Index = -1; }
 
         /// <summary>
-        /// Create new instance of <see cref="EvaluationWrapper"/>
+        /// Create new instance of <see cref="VariableViewModel"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
             VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             Index = index;
-
-            Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(DebugEvaluation as DebugValueEvaluationResult));
-            CanShowDetail = lazyViewer != null;
-            if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(async (o) => await lazyViewer.Value.ViewAsync(this), (o) => CanShowDetail);
-                ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
-            }
-
             var result = DebugEvaluation as DebugValueEvaluationResult;
-            CanShowOpenCsv = (CanShowDetail && lazyViewer.Value.IsTable) || (!CanShowDetail && result.Length > 1);
-            if (CanShowOpenCsv) {
-                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
-                OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
+            if (result != null) {
+                Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));
+
+                CanShowDetail = lazyViewer != null;
+                if (CanShowDetail) {
+                    _detailsViewer = lazyViewer.Value;
+                    ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result), (o) => CanShowDetail);
+                    ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
+                }
+
+                CanShowOpenCsv = (CanShowDetail && lazyViewer.Value.IsTable) || (!CanShowDetail && result.Length > 1);
+                if (CanShowOpenCsv) {
+                    OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
+                    OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
+                }
             }
         }
 
         #region Ellipsis 
 
-        private static Lazy<EvaluationWrapper> _ellipsis = Lazy.Create(() => {
-            var instance = new EvaluationWrapper();
+        private static Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
+            var instance = new VariableViewModel();
             instance.Name = string.Empty;
             instance.Value = Resources.VariableExplorer_Truncated;
             instance.HasChildren = false;
             return instance;
         });
 
-        public static EvaluationWrapper Ellipsis {
+        public static VariableViewModel Ellipsis {
             get { return _ellipsis.Value; }
         }
 
@@ -72,7 +79,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 if (base.DebugEvaluation != null && base.DebugEvaluation.StackFrame != null) {
                     return base.DebugEvaluation.StackFrame.Index;
                 }
-
                 Debug.Fail("DebugEvaluationResult doesn't set StackFrame");
                 return 0;   // global frame index, by default
             }
@@ -83,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var valueEvaluation = DebugEvaluation as DebugValueEvaluationResult;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"{nameof(EvaluationWrapper)} result type is not {typeof(DebugValueEvaluationResult)}");
+                Debug.Assert(false, $"{nameof(VariableViewModel)} result type is not {typeof(DebugValueEvaluationResult)}");
                 return result;
             }
 
@@ -105,13 +111,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 result = new List<IRSessionDataObject>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter
                 if (valueEvaluation.Length > result.Count
                     && (valueEvaluation.Length > MaxChildrenCount)) {
-                    result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
+                    result.Add(VariableViewModel.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
 
@@ -144,5 +150,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
         #endregion
+
+        public object Tooltip {
+            get {
+                if (_tooltip == null && _tooltipFetchingTask == null) {
+                    FetchToolTip().DoNotWait();
+                }
+                return _tooltip ?? Resources.TooltipPlaceholder;
+            }
+        }
+
+        private async Task FetchToolTip() {
+            if (_detailsViewer != null && _tooltipFetchingTask == null) {
+                _tooltipFetchingTask = _detailsViewer.GetTooltipAsync(DebugEvaluation as DebugValueEvaluationResult);
+                _tooltip = await _tooltipFetchingTask;
+            }
+        }
     }
 }

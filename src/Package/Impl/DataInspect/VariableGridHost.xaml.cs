@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Control that shows two dimensional R object
     /// </summary>
     public partial class VariableGridHost : UserControl {
-        private EvaluationWrapper _evaluation;
+        private VariableViewModel _evaluation;
         private IRSession _rSession;
 
         public VariableGridHost() {
@@ -48,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
 
-                var wrapper = new EvaluationWrapper(result);
+                var wrapper = new VariableViewModel(result);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void SetEvaluation(EvaluationWrapper wrapper) {
+        internal void SetEvaluation(VariableViewModel wrapper) {
             if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
                 // the variable should have been removed
                 SetError(

@@ -120,7 +120,7 @@
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
-    <Compile Include="DataInspect\EvaluationWrapper.cs" />
+    <Compile Include="DataInspect\VariableViewModel.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
     <Compile Include="DataInspect\VariableGridHost.xaml.cs">
       <DependentUpon>VariableGridHost.xaml</DependentUpon>

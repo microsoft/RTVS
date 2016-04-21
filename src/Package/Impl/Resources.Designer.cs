@@ -1616,6 +1616,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fetching data....
+        /// </summary>
+        public static string TooltipPlaceholder {
+            get {
+                return ResourceManager.GetString("TooltipPlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format Document.
         /// </summary>
         public static string UndoActionFormatDocument {

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             InitializeComponent();
 
-            SetRootNode(EvaluationWrapper.Ellipsis);
+            SetRootNode(VariableViewModel.Ellipsis);
             EnvironmentComboBox.ItemsSource = _defaultEnvironments;
             EnvironmentComboBox.SelectedIndex = 0;
 
@@ -127,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     GetExpression(env),
                     fields);
 
-                var wrapper = new EvaluationWrapper(result);
+                var wrapper = new VariableViewModel(result);
                 var rootNodeModel = new VariableNode(_settings, wrapper);
 
                 VsAppShell.Current.DispatchOnUIThread(
@@ -145,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void SetRootNode(EvaluationWrapper evaluation) {
+        private void SetRootNode(VariableViewModel evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(_settings, evaluation),
                 Comparer<ITreeNode>.Create(Comparison));
@@ -159,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
         }
 
-        private void RootTreeGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             HandleDefaultAction();
         }
 
@@ -171,9 +172,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private void HandleDefaultAction() {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
-            var ew = node?.Model?.Content as EvaluationWrapper;
+            var ew = node?.Model?.Content as VariableViewModel;
             if(ew != null && ew.CanShowDetail) {
                 ew.ShowDetailCommand.Execute(ew);
+            }
+        }
+
+        private void OnToolTipOpening(object sender, ToolTipEventArgs e) {
+            var element = e.Source as FrameworkElement;
+            var node = element?.DataContext as ObservableTreeNode;
+            var ew = node?.Model?.Content as VariableViewModel;
+            if (ew != null) {
+                element.ToolTip = new ToolTip() { Content = ew.Tooltip };
             }
         }
     }

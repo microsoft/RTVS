@@ -73,7 +73,7 @@
             </Style>
 
             <DataTemplate x:Key="NameCellTemplate">
-                <Grid VerticalAlignment="Center">
+                <Grid VerticalAlignment="Center" ToolTip="" ToolTipOpening="OnToolTipOpening">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto"/>
@@ -174,7 +174,7 @@
                   RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
-                    <EventSetter Event="MouseDoubleClick" Handler="RootTreeGrid_MouseDoubleClick" />
+                    <EventSetter Event="MouseDoubleClick" Handler="GridRow_MouseDoubleClick" />
                 </Style>
             </DataGrid.RowStyle>
             <DataGrid.Columns>

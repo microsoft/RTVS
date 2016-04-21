@@ -17,7 +17,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     public class VariableRHostScript : RHostScript {
-        private EvaluationWrapper _globalEnv;
+        private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         private IDebugSessionProvider _debugSessionProvider;
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
         }
 
-        public EvaluationWrapper GlobalEnvrionment {
+        public VariableViewModel GlobalEnvrionment {
             get {
                 return _globalEnv;
             }
@@ -52,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var result = await frame.EvaluateAsync(rScript, fields);
 
                 var globalResult = await frame.EvaluateAsync("base::environment()", fields);
-                _globalEnv = new EvaluationWrapper(globalResult);
+                _globalEnv = new VariableViewModel(globalResult);
 
                 return result;
             } finally {
@@ -80,12 +80,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         public static void AssertEvaluationWrapper(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
         public static void AssertEvaluationWrapper_ValueStartWith(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.Name.ShouldBeEquivalentTo(expectation.Name);
             v.Value.Should().StartWith(expectation.Value);
             v.Class.ShouldBeEquivalentTo(expectation.Class);
