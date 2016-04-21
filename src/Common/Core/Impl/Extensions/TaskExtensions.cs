@@ -70,11 +70,11 @@ namespace Microsoft.Common.Core {
             }
 
             var synchronizationContext = SynchronizationContext.Current;
-            if (synchronizationContext != null && synchronizationContext.GetType() != typeof(SynchronizationContext)) {
+            if (synchronizationContext != null && synchronizationContext.GetType() != typeof (SynchronizationContext)) {
                 task.ContinueWith(DoNotWaitSynchronizationContextContinuation, synchronizationContext, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            } else {
+                task.ContinueWith(DoNotWaitThreadContinuation, TaskContinuationOptions.ExecuteSynchronously);
             }
-
-            task.ContinueWith(DoNotWaitThreadContinuation, TaskContinuationOptions.ExecuteSynchronously);
         }
 
         private static void ReThrowTaskException(object state) {
