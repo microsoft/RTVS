@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
@@ -108,6 +109,11 @@ namespace Microsoft.UnitTests.Core.Threading {
             result.Exception?.Throw();
 
             return result.Value;
+        }
+
+        public async Task<Exception> WaitForNextExceptionAsync(CancellationToken cancellationToken = default (CancellationToken)) {
+            var args = await EventTaskSources.Dispatcher.UnhandledException.Create(_application.Dispatcher, e => e.Handled = true, cancellationToken);
+            return args.Exception;
         }
 
         private void RunMainThread(object obj) {
