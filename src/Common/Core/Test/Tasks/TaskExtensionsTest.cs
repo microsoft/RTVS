@@ -36,5 +36,66 @@ namespace Microsoft.Common.Core.Test.Tasks {
             var actual = await exceptionTask;
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void SilenceException() {
+            var tcs = new TaskCompletionSource<object>();
+            var task = tcs.Task.SilenceException<SystemException>();
+            tcs.SetException(new InvalidOperationException());
+            Func<Task> f = async () => await task;
+            f.ShouldNotThrow();
+            task.IsCanceled.Should().BeFalse();
+            task.IsFaulted.Should().BeFalse();
+        }
+
+        [Test]
+        public void SilenceException_Sequence() {
+            var tcs = new TaskCompletionSource<object>();
+            var task = tcs.Task
+                .SilenceException<InvalidOperationException>()
+                .SilenceException<NullReferenceException>();
+
+            tcs.SetException(new Exception [] { new NullReferenceException(), new InvalidOperationException() });
+            Func<Task> f = async () => await task;
+            f.ShouldNotThrow();
+            task.IsCanceled.Should().BeFalse();
+            task.IsFaulted.Should().BeFalse();
+        }
+
+        [Test]
+        public void SilenceException_Faulted() {
+            var tcs = new TaskCompletionSource<object>();
+            var task = tcs.Task.SilenceException<NullReferenceException>();
+            tcs.SetException(new InvalidOperationException());
+            Func<Task> f = async () => await task;
+            f.ShouldThrow<InvalidOperationException>();
+            task.IsCanceled.Should().BeFalse();
+            task.IsFaulted.Should().BeTrue();
+        }
+
+        [Test]
+        public void SilenceException_SequenceFaulted() {
+            var tcs = new TaskCompletionSource<object>();
+            var task = tcs.Task
+                .SilenceException<NotSupportedException>()
+                .SilenceException<NullReferenceException>();
+
+            tcs.SetException(new Exception[] { new NullReferenceException(), new InvalidOperationException() });
+            Func<Task> f = async () => await task;
+            f.ShouldThrowExactly<InvalidOperationException>();
+            task.IsCanceled.Should().BeFalse();
+            task.IsFaulted.Should().BeTrue();
+        }
+
+        [Test]
+        public void SilenceException_Canceled() {
+            var tcs = new TaskCompletionSource<object>();
+            var task = tcs.Task.SilenceException<SystemException>();
+            tcs.SetCanceled();
+            Func<Task> f = async () => await task;
+            f.ShouldThrow<OperationCanceledException>();
+            task.IsCanceled.Should().BeTrue();
+            task.IsFaulted.Should().BeFalse();
+        }
     }
 }
