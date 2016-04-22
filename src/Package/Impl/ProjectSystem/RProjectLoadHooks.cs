@@ -134,9 +134,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) &&
 #if VS14
                 await GetLoadDefaultWorkspace(rdataPath);
-#endif
+#else
                 GetLoadDefaultWorkspace(rdataPath);
-
+#endif
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (loadDefaultWorkspace) {
                     await evaluation.LoadWorkspace(rdataPath);
