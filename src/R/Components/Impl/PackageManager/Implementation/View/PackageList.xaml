@@ -55,7 +55,7 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- check box -->
-                        <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsSelected}"
+                        <CheckBox Grid.Column="0" Margin="0,1,8,0" VerticalAlignment="Center" IsChecked="{Binding Path=IsChecked}"
                                   Visibility="{Binding Path=CheckBoxesEnabled, RelativeSource={RelativeSource AncestorType={x:Type view:PackageList}}, Converter={x:Static wpf:Converters.FalseIsCollapsed}}"/>
 
                         <!-- Load button -->

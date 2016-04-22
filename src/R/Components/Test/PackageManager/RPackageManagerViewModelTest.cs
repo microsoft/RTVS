@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.ViewModel;
@@ -12,7 +13,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
-using static Microsoft.UnitTests.Core.Threading.UITools;
+using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Components.Test.PackageManager {
     public class RPackageManagerViewModelTest : IAsyncLifetime {
@@ -58,6 +59,50 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Test]
         public void ViewModelExists() {
             _packageManagerViewModel.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task SwitchAvailableInstalledLoadedAsync() {
+            var t1 = InUI(() => _packageManagerViewModel.SwitchToAvailablePackagesAsync());
+            var t2 = InUI(() => _packageManagerViewModel.SwitchToInstalledPackagesAsync());
+            var t3 = InUI(() => _packageManagerViewModel.SwitchToLoadedPackagesAsync());
+
+            await Task.WhenAll(t1, t2, t3);
+
+            _packageManagerViewModel.IsLoading.Should().BeFalse();
+            _packageManagerViewModel.SelectedPackage.Should().NotBeNull();
+            _packageManagerViewModel.Items.Should().OnlyContain(o => ((IRPackageViewModel) o).IsLoaded)
+                .And.Contain(_packageManagerViewModel.SelectedPackage);
+        }
+
+        [Test]
+        public async Task SwitchAvailableLoadedInstalledAsync() {
+            var t1 = InUI(() => _packageManagerViewModel.SwitchToAvailablePackagesAsync());
+            var t2 = InUI(() => _packageManagerViewModel.SwitchToLoadedPackagesAsync());
+            var t3 = InUI(() => _packageManagerViewModel.SwitchToInstalledPackagesAsync());
+
+            await Task.WhenAll(t1, t2, t3);
+
+            _packageManagerViewModel.IsLoading.Should().BeFalse();
+            _packageManagerViewModel.SelectedPackage.Should().NotBeNull();
+            _packageManagerViewModel.Items.Should().OnlyContain(o => ((IRPackageViewModel) o).IsInstalled)
+                .And.Contain(_packageManagerViewModel.SelectedPackage);
+        }
+
+        [Test]
+        public async Task SwitchLoadedInstalledAvailableAsync() {
+            var t1 = InUI(() => _packageManagerViewModel.SwitchToLoadedPackagesAsync());
+            var t2 = InUI(() => _packageManagerViewModel.SwitchToInstalledPackagesAsync());
+            var t3 = InUI(() => _packageManagerViewModel.SwitchToAvailablePackagesAsync());
+            
+            await Task.WhenAll(t1, t2, t3);
+            var expected = new [] { "NotAvailable1", "NotAvailable2", "rtvslib1" };
+
+            _packageManagerViewModel.IsLoading.Should().BeFalse();
+            _packageManagerViewModel.SelectedPackage.Should().NotBeNull();
+            _packageManagerViewModel.Items.Should().Equal(expected, (o, n) => ((IRPackageViewModel)o).Name.EqualsOrdinal(n))
+                .And.Contain(_packageManagerViewModel.SelectedPackage);
+            
         }
 
         [Test]

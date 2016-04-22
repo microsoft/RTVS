@@ -12,7 +12,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageViewModel : BindableBase, IRPackageViewModel {
         private readonly IRPackageManagerViewModel _owner;
         private bool _hasDetails;
-        private bool _isSelected;
+        private bool _isChecked;
         private bool _isChanging;
         private bool _isInstalled;
         private bool _isLoaded;
@@ -156,9 +156,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             private set { SetProperty(ref _hasDetails, value); }
         }
 
-        public bool IsSelected {
-            get { return _isSelected; }
-            set { SetProperty(ref _isSelected, value); }
+        public bool IsChecked {
+            get { return _isChecked; }
+            set { SetProperty(ref _isChecked, value); }
         }
 
         public bool IsChanging {

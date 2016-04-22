@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
-    public static class UITools {
+    public static class UIThreadTools {
         public static Task InUI(Action action) {
             return UIThreadHelper.Instance.InvokeAsync(action);
         }

@@ -380,12 +380,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await EnsureAvailablePackagesLoadedAsync();
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = false;
+                ReplaceItems(_availablePackages);
             }
-
-            if (_availablePackages == null) {
-                return;
-            }
-            ReplaceItems(_availablePackages);
         }
 
         private async Task EnsureAvailablePackagesLoadedAsync() {
@@ -432,9 +428,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await ReloadInstalledAndLoadedPackagesAsync();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
+                ReplaceItems(_installedPackages);
             }
-
-            ReplaceItems(_installedPackages);
         }
 
         private async Task ReloadInstalledAndLoadedPackagesAsync() {
@@ -562,9 +557,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             await ReloadInstalledAndLoadedPackagesAsync();
             if (_selectedTab == SelectedTab.LoadedPackages) {
                 IsLoading = false;
+                ReplaceItems(_loadedPackages);
             }
-
-            ReplaceItems(_loadedPackages);
         }
 
         private void ReplaceItems(IList<IRPackageViewModel> packages) {
