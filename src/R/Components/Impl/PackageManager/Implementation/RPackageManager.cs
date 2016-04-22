@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
-using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -23,7 +22,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private readonly SessionPool _sessionPool;
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
-        public IRPackageManagerViewModel _viewModel;
 
         public RPackageManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
             _interactiveWorkflow = interactiveWorkflow;
@@ -240,6 +238,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public void Dispose() {
+            VisualComponent.Dispose();
             _sessionPool.Dispose();
             _dispose();
         }

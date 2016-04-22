@@ -9,5 +9,9 @@ namespace Microsoft.R.Components.Test {
     [AssemblyFixture]
     public class TestFilesFixture : DeployFilesFixture {
         public TestFilesFixture() : base(@"R\Components\Test\Files", "Files") { }
+
+        public string ReposDestinationPath => GetDestinationPath("Repos");
+        public string LibraryDestinationPath => GetDestinationPath("Library");
+        public string Library2DestinationPath => GetDestinationPath("Library2");
     }
 }

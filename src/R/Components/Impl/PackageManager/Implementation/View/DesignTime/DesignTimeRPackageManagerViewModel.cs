@@ -23,17 +23,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool HasMultipleErrors => false;
 
 
-        public void SwitchToAvailablePackages() {
-            
-        }
-
-        public void SwitchToInstalledPackages() {
-            
-        }
-
-        public void SwitchToLoadedPackages() {
-            
-        }
+        public Task SwitchToAvailablePackagesAsync() => Task.CompletedTask;
+        public Task SwitchToInstalledPackagesAsync() => Task.CompletedTask;
+        public Task SwitchToLoadedPackagesAsync() => Task.CompletedTask;
 
         public void ReloadItems() {
             
@@ -43,20 +35,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             
         }
 
-        public void Install(IRPackageViewModel package) {
-        }
-
-        public void Update(IRPackageViewModel package) {
-        }
-
-        public void Uninstall(IRPackageViewModel package) {
-        }
-
-        public void Load(IRPackageViewModel package) {
-        }
-
-        public void Unload(IRPackageViewModel package) {
-        }
+        public Task InstallAsync(IRPackageViewModel package) => Task.CompletedTask;
+        public Task UpdateAsync(IRPackageViewModel package) => Task.CompletedTask;
+        public Task UninstallAsync(IRPackageViewModel package) => Task.CompletedTask;
+        public Task LoadAsync(IRPackageViewModel package) => Task.CompletedTask;
+        public Task UnloadAsync(IRPackageViewModel package) => Task.CompletedTask;
+        public Task DefaultActionAsync() => Task.CompletedTask;
 
         public void DismissErrorMessage() {
         }

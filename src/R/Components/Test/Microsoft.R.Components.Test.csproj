@@ -95,6 +95,8 @@
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />
+    <Compile Include="Fakes\Search\TestSearchControl.cs" />
+    <Compile Include="Fakes\Search\TestSearchControlProvider.cs" />
     <Compile Include="Fakes\Trackers\TestActiveWpfTextViewTracker.cs" />
     <Compile Include="Fakes\Trackers\TestDebuggerModeTracker.cs" />
     <Compile Include="Fakes\Undo\AutoEnclose.cs" />
@@ -111,12 +113,15 @@
     <Compile Include="Fakes\VisualComponentFactories\ContainerFactoryBase.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="Fakes\VisualComponentFactories\TestRInteractiveWindowComponentContainerFactory.cs" />
+    <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
     <Compile Include="PackageManager\PackageVersionTest.cs" />
     <Compile Include="PackageManager\PackageManagerIntegrationTest.cs" />
+    <Compile Include="PackageManager\RPackageManagerViewModelTest.cs" />
+    <Compile Include="PackageManager\TestLibraries.cs" />
     <Compile Include="PackageManager\TestPackages.cs" />
     <Compile Include="PackageManager\TestRepositories.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
@@ -191,6 +196,7 @@
     <Content Include="Files\Packages\readme.txt" />
     <Content Include="Files\Repos\Repo1\web\packages\rtvslib1\index.html" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
