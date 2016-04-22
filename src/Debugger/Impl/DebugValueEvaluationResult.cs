@@ -79,8 +79,8 @@ namespace Microsoft.R.Debugger {
 
         private JObject _reprObj;
 
-        internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
-            : base(stackFrame, expression, name) {
+        internal DebugValueEvaluationResult(DebugSession session, string environmentExpression, string expression, string name, JObject json)
+            : base(session, environmentExpression, expression, name) {
 
             var repr = json["repr"];
             if (repr != null) {
@@ -153,7 +153,16 @@ namespace Microsoft.R.Debugger {
             return new DebugValueRepresentation(_reprObj, kind);
         }
 
+        public Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
+            DebugEvaluationResultFields fields,
+            int? maxLength = null,
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            GetChildrenAsync(Session.RSession, fields, maxLength, reprMaxLength, cancellationToken);
+
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
+            IRExpressionEvaluator evaluator,
             DebugEvaluationResultFields fields,
             int? maxLength = null,
             int? reprMaxLength = null,
@@ -161,8 +170,8 @@ namespace Microsoft.R.Debugger {
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            if (StackFrame == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
+            if (EnvironmentExpression == null) {
+                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated environment expression.");
             }
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
@@ -172,8 +181,8 @@ namespace Microsoft.R.Debugger {
                 return new DebugEvaluationResult[0];
             }
 
-            var call = Invariant($@"rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call, cancellationToken);
+            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
+            var jChildren = await evaluator.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
@@ -187,7 +196,7 @@ namespace Microsoft.R.Debugger {
                 foreach (var kv in childObject) {
                     var name = kv.Key;
                     var jEvalResult = (JObject)kv.Value;
-                    var evalResult = Parse(StackFrame, name, jEvalResult);
+                    var evalResult = Parse(Session, EnvironmentExpression, name, jEvalResult);
                     children.Add(evalResult);
                 }
             }

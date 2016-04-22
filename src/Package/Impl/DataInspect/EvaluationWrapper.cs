@@ -61,17 +61,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        public int FrameIndex {
-            get {
-                if (base.DebugEvaluation != null && base.DebugEvaluation.StackFrame != null) {
-                    return base.DebugEvaluation.StackFrame.Index;
-                }
-
-                Debug.Fail("DebugEvaluationResult doesn't set StackFrame");
-                return 0;   // global frame index, by default
-            }
-        }
-
         protected override async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 

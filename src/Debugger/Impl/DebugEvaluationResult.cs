@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -57,43 +58,45 @@ namespace Microsoft.R.Debugger {
     }
 
     public abstract class DebugEvaluationResult {
-        public DebugStackFrame StackFrame { get; }
+        public DebugSession Session { get; }
+        public string EnvironmentExpression { get; }
         public string Expression { get; }
         public string Name { get; }
 
-        internal DebugEvaluationResult(DebugStackFrame stackFrame, string expression, string name) {
-            StackFrame = stackFrame;
+        internal DebugEvaluationResult(DebugSession session, string environmentExpression, string expression, string name) {
+            Session = session;
+            EnvironmentExpression = environmentExpression;
             Expression = expression;
             Name = name;
         }
 
-        internal static DebugEvaluationResult Parse(DebugStackFrame stackFrame, string name, JObject json) {
+        internal static DebugEvaluationResult Parse(DebugSession session, string environmentExpression, string name, JObject json) {
             var expression = json.Value<string>("expression");
 
             var errorText = json.Value<string>("error");
             if (errorText != null) {
-                return new DebugErrorEvaluationResult(stackFrame, expression, name, errorText);
+                return new DebugErrorEvaluationResult(session, environmentExpression, expression, name, errorText);
             }
 
             var code = json.Value<string>("promise");
             if (code != null) {
-                return new DebugPromiseEvaluationResult(stackFrame, expression, name, code);
+                return new DebugPromiseEvaluationResult(session, environmentExpression, expression, name, code);
             }
 
             var isActiveBinding = json.Value<bool?>("active_binding");
             if (isActiveBinding == true) {
-                return new DebugActiveBindingEvaluationResult(stackFrame, expression, name);
+                return new DebugActiveBindingEvaluationResult(session, environmentExpression, expression, name);
             }
 
-            return new DebugValueEvaluationResult(stackFrame, expression, name, json);
+            return new DebugValueEvaluationResult(session, environmentExpression, expression, name, json);
         }
 
-        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
 
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), DebugEvaluationResultFields.None, reprMaxLength: 0, cancellationToken: cancellationToken);
+            return Session.RSession.ExecuteAsync($"{Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
         }
 
         public Task<DebugEvaluationResult> EvaluateAsync(
@@ -101,14 +104,14 @@ namespace Microsoft.R.Debugger {
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            if (StackFrame == null) {
-                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that is not tied to a frame.");
+            if (EnvironmentExpression == null) {
+                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated environment expression.");
             }
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
             }
 
-            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength, cancellationToken);
+            return Session.EvaluateAsync(EnvironmentExpression, Expression, Name, fields, reprMaxLength, cancellationToken);
         }
 
         public override bool Equals(object obj) =>

@@ -85,14 +85,11 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             try {
-                using (var eval = await RSession.BeginEvaluationAsync(cancellationToken: cancellationToken)) {
-                    // Re-initialize the breakpoint table.
-                    foreach (var bp in _breakpoints.Values) {
-                        await bp.ReapplyBreakpointAsync(cancellationToken);
-                    }
-
-                    await eval.ExecuteAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
+                // Re-initialize the breakpoint table.
+                foreach (var bp in _breakpoints.Values) {
+                    await bp.ReapplyBreakpointAsync(RSession, cancellationToken);
                 }
+                await RSession.ExecuteAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
 
                 // Attach might happen when session is already at the Browse prompt, in which case we have
                 // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
@@ -135,60 +132,36 @@ namespace Microsoft.R.Debugger {
             return false;
         }
 
-        internal async Task<REvaluationResult> InvokeDebugHelperAsync(string expression, CancellationToken cancellationToken, bool json = false) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-            ThrowIfDisposed();
-
-            REvaluationResult res;
-            using (var eval = await RSession.BeginEvaluationAsync(cancellationToken)) {
-                res = await eval.EvaluateAsync(expression, json ? REvaluationKind.Json : REvaluationKind.Normal);
-                if (res.ParseStatus != RParseStatus.OK || res.Error != null || (json && res.JsonResult == null)) {
-                    string message = Invariant($"Internal debugger evaluation {expression} failed: {res}");
-                    Trace.Fail(message);
-                    throw new REvaluationException(message);
-                }
-            }
-
-            return res;
-        }
-
-        internal async Task<TToken> InvokeDebugHelperAsync<TToken>(string expression, CancellationToken cancellationToken)
-            where TToken : JToken {
-
-            var res = await InvokeDebugHelperAsync(expression, cancellationToken, json: true);
-
-            var token = res.JsonResult as TToken;
-            if (token == null) {
-                var err = Invariant($"Expected to receive {typeof(TToken).Name} in response to {expression}, but got {res.JsonResult?.GetType().Name}");
-                Trace.Fail(err);
-                throw new JsonException(err);
-            }
-
-            return token;
-        }
-
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return EvaluateAsync(null, expression, null, null, fields, null, cancellationToken);
-        }
+        ) =>
+            EvaluateAsync(expression, fields, null, cancellationToken);
 
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
             int? reprMaxLength,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return EvaluateAsync(null, expression, null, null, fields, reprMaxLength, cancellationToken);
-        }
+        ) =>
+            EvaluateAsync("base::.GlobalEnv", expression, null, fields, reprMaxLength, cancellationToken);
 
-        public async Task<DebugEvaluationResult> EvaluateAsync(
-            DebugStackFrame stackFrame,
+        public Task<DebugEvaluationResult> EvaluateAsync(
+            string environmentExpression,
             string expression,
             string name,
-            string env,
+            DebugEvaluationResultFields fields,
+            int? reprMaxLength = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            EvaluateAsync(RSession, environmentExpression, expression, name, fields, reprMaxLength, cancellationToken);
+
+        public async Task<DebugEvaluationResult> EvaluateAsync(
+            IRExpressionEvaluator evaluator,
+            string environmentExpression,
+            string expression,
+            string name,
             DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
@@ -198,22 +171,22 @@ namespace Microsoft.R.Debugger {
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync(cancellationToken);
 
-            env = env ?? stackFrame?.EnvironmentExpression ?? "NULL";
-            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, {env},, {fields.ToRVector()},, {reprMaxLength})");
-            var jEvalResult = await InvokeDebugHelperAsync<JObject>(code, cancellationToken);
-            return DebugEvaluationResult.Parse(stackFrame, name, jEvalResult);
+            environmentExpression = environmentExpression ?? "NULL";
+            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {fields.ToRVector()},, {reprMaxLength})");
+            var result = await evaluator.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
+            return DebugEvaluationResult.Parse(this, environmentExpression, name, result);
         }
 
-        public async Task BreakAsync(CancellationToken ct = default(CancellationToken)) {
+        public async Task BreakAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
             // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
-            RSession.ExecuteAsync("browser()", REvaluationKind.Reentrant, ct)
+            RSession.ExecuteAsync("browser()", REvaluationKind.Reentrant, cancellationToken)
                 .SilenceException<MessageTransportException>().DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.
-            using (var inter = await RSession.BeginInteractionAsync(true, ct)) { }
+            using (var inter = await RSession.BeginInteractionAsync(true, cancellationToken)) { }
         }
 
         public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {
@@ -234,17 +207,15 @@ namespace Microsoft.R.Debugger {
         public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "c", async inter => {
                 using (var eval = await RSession.BeginEvaluationAsync(cancellationToken)) {
-                    // EvaluateAsync will push a new toplevel context on the context stack before
-                    // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
-                    // before locating the target context for step-out.
-                    var res = await eval.EvaluateAsync("rtvs:::browser_set_debug(1, 1)", REvaluationKind.Normal);
-                    Trace.Assert(res.ParseStatus == RParseStatus.OK);
-
-                    if (res.ParseStatus != RParseStatus.OK || res.Error != null) {
+                    try {
+                        // EvaluateAsync will push a new toplevel context on the context stack before
+                        // evaluating the expression, so tell browser_set_debug to skip 1 toplevel context
+                        // before locating the target context for step-out.
+                        await eval.ExecuteAsync("rtvs:::browser_set_debug(1, 1)", REvaluationKind.Normal);
+                    } catch (RException) {
                         _stepTcs.TrySetResult(false);
                         return false;
                     }
-
                     return true;
                 }
             });
@@ -277,6 +248,9 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
+        public Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) =>
+            GetStackFramesAsync(RSession, skipSourceFrames, cancellationToken);
+
         /// <summary>
         /// Retrieve the current call stack, in call order (i.e. the current active frame is last, the one that called it is second to last etc).
         /// </summary>
@@ -285,13 +259,17 @@ namespace Microsoft.R.Debugger {
         /// the first reported frame will be the one with sourced code.
         /// </param>
         /// <returns></returns>
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(
+            IRExpressionEvaluator evaluator,
+            bool skipSourceFrames = true,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ){
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync(cancellationToken);
 
-            var jFrames = await InvokeDebugHelperAsync<JArray>("rtvs:::describe_traceback()", cancellationToken);
+            var jFrames = await evaluator.EvaluateAsync<JArray>("rtvs:::describe_traceback()", REvaluationKind.Json, cancellationToken);
             Trace.Assert(jFrames.All(t => t is JObject), "rtvs:::describe_traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
@@ -318,15 +296,19 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public async Task EnableBreakpointsAsync(bool enable, CancellationToken ct = default(CancellationToken)) {
+        public Task EnableBreakpointsAsync(bool enable, CancellationToken cancellationToken = default(CancellationToken)) =>
+            EnableBreakpointsAsync(RSession, enable, cancellationToken);
+
+        public async Task EnableBreakpointsAsync(IRExpressionEvaluator evaluator, bool enable, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            using (var eval = await RSession.BeginEvaluationAsync(ct)) {
-                await eval.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
-            }
+            await evaluator.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
         }
 
-        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
+        public Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) =>
+            CreateBreakpointAsync(RSession, location, cancellationToken);
+
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(IRExpressionEvaluator evaluator, DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -338,7 +320,7 @@ namespace Microsoft.R.Debugger {
                 _breakpoints.Add(location, bp);
             }
 
-            await bp.SetBreakpointAsync(cancellationToken);
+            await bp.SetBreakpointAsync(evaluator, cancellationToken);
             return bp;
         }
 

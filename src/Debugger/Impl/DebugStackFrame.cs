@@ -74,25 +74,22 @@ namespace Microsoft.R.Debugger {
             DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return Session.EvaluateAsync(this, expression, name, null, fields, reprMaxLength, cancellationToken);
-        }
+        ) =>
+            Session.EvaluateAsync(EnvironmentExpression, expression, name, fields, reprMaxLength, cancellationToken);
 
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return EvaluateAsync(expression, null, fields, reprMaxLength, cancellationToken);
-        }
+        ) =>
+            EvaluateAsync(expression, null, fields, reprMaxLength, cancellationToken);
 
         public Task<DebugEvaluationResult> GetEnvironmentAsync(
             DebugEvaluationResultFields fields = DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length | DebugEvaluationResultFields.AttrCount | DebugEvaluationResultFields.Flags,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
-        }
+        ) =>
+            EvaluateAsync("base::environment()", fields: fields, cancellationToken: cancellationToken);
 
         public override string ToString() =>
             Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString(CultureInfo.InvariantCulture) ?? "<null>")}");
