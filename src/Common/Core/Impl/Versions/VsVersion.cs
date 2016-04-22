@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.Common.Core {
-    public static class VsVersion {
+    public static class Toolset {
 #if VS14
         public const string Version = "14.0";
 #endif

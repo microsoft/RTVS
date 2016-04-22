@@ -109,7 +109,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         private static string GetDevEnvIdePath() {
-            return (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{VsVersion.Version}"), "InstallDir", string.Empty);
+            return (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{Toolset.Version}"), "InstallDir", string.Empty);
         }
     }
 }

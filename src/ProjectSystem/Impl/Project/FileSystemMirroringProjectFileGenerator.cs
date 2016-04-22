@@ -44,12 +44,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
             var xProjDocument = new XProjDocument(
-                new XProject(VsVersion.Version, "Build",
+                new XProject(Toolset.Version, "Build",
                     new XPropertyGroup("Globals", null,
                         new XProperty("ProjectGuid", Guid.NewGuid().ToString("D"))
                     ),
                     new XPropertyGroup(
-                        new XDefaultValueProperty("VisualStudioVersion", VsVersion.Version),
+                        new XDefaultValueProperty("VisualStudioVersion", Toolset.Version),
                         new XDefaultValueProperty("Configuration", "Debug"),
                         new XDefaultValueProperty("Platform", "AnyCPU")
                     ),

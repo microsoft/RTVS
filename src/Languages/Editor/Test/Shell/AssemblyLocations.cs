@@ -42,7 +42,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private static string GetHostVersion() {
             string version = Environment.GetEnvironmentVariable("ExtensionsVSVersion");
-            foreach (string checkVersion in new string[] { VsVersion.Version }) {
+            foreach (string checkVersion in new string[] { Toolset.Version }) {
                 if (string.IsNullOrEmpty(version)) {
                     using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\VisualStudio\" + checkVersion)) {
                         if (key != null) {

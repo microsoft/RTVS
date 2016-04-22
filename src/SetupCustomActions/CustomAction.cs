@@ -12,7 +12,7 @@ using Microsoft.Win32;
 
 namespace SetupCustomActions {
     public class CustomActions {
-        private const string vsServicingKeyName = @"SOFTWARE\Microsoft\DevDiv\vs\Servicing\" + VsVersion.Version;
+        private const string vsServicingKeyName = @"SOFTWARE\Microsoft\DevDiv\vs\Servicing\" + Toolset.Version;
 
         [CustomAction]
         public static ActionResult MROInstallPromptAction(Session session) {

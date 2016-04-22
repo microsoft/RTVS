@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             _logFiles.AddRange(logs);
 
             string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string vsActivityLog = Path.Combine(roamingFolder, Invariant($"Microsoft\\VisualStudio\\{VsVersion.Version}\\ActivityLog.xml"));
+            string vsActivityLog = Path.Combine(roamingFolder, Invariant($"Microsoft\\VisualStudio\\{Toolset.Version}\\ActivityLog.xml"));
             if (File.Exists(vsActivityLog)) {
                 _logFiles.Add(vsActivityLog);
             }
