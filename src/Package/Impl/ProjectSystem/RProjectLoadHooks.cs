@@ -98,9 +98,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 #if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
 #else
-        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.NotSpecified,
-                         completeBy: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
-                         RequiresUIThread = true)]
+        [ProjectAutoLoad(
+            startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
+            completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration, 
+            RequiresUIThread = true)]
 #endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
