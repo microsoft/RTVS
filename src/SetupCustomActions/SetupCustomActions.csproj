@@ -89,8 +89,8 @@
     <Compile Include="..\Common\Core\Impl\OS\RegistryKeyImpl.cs">
       <Link>OS\RegistryKeyImpl.cs</Link>
     </Compile>
-    <Compile Include="..\Common\Core\Impl\Versions\VsVersion.cs">
-      <Link>VsVersion.cs</Link>
+    <Compile Include="..\Common\Core\Impl\Versions\Toolset.cs">
+      <Link>Toolset.cs</Link>
     </Compile>
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>

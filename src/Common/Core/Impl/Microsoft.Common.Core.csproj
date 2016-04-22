@@ -93,7 +93,7 @@
     <Compile Include="Telemetry\TelemetryArea.cs" />
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
-    <Compile Include="Versions\VsVersion.cs" />
+    <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
