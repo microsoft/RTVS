@@ -10,11 +10,13 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Microsoft.Common.Core;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
     internal static class DiagnosticLogs {
@@ -85,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             _logFiles.AddRange(logs);
 
             string roamingFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string vsActivityLog = Path.Combine(roamingFolder, @"Microsoft\VisualStudio\14.0\ActivityLog.xml");
+            string vsActivityLog = Path.Combine(roamingFolder, Invariant($"Microsoft\\VisualStudio\\{VsVersion.Version}\\ActivityLog.xml"));
             if (File.Exists(vsActivityLog)) {
                 _logFiles.Add(vsActivityLog);
             }

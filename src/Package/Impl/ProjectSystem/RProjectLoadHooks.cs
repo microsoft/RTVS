@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
+    [Export]
     [AppliesTo("RTools")]
     internal sealed class RProjectLoadHooks {
         private const string DefaultRDataName = ".RData";
@@ -97,8 +98,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 #if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
 #else
-        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
-                         completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
+        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.NotSpecified,
+                         completeBy: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
                          RequiresUIThread = true)]
 #endif
         public async Task InitializeProjectFromDiskAsync() {
@@ -184,38 +185,41 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             });
         }
 
+#if VS14
         private async Task ProjectUnloading(object sender, EventArgs args) {
+#else
+        private Task ProjectUnloading(object sender, EventArgs args) {
+#endif
             VsAppShell.Current.AssertIsOnMainThread();
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
 
-            if (!_fileSystem.DirectoryExists(_projectDirectory)) {
-                return;
-            }
+            if (_fileSystem.DirectoryExists(_projectDirectory)) {
+                if (_toolsSettings.AlwaysSaveHistory) {
+                    _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+                }
 
-            if (_toolsSettings.AlwaysSaveHistory) {
-                _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-            }
-
-            var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+                var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
 #if VS14
             var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
 #else
-            var saveDefaultWorkspace = GetSaveDefaultWorkspace(rdataPath);
+                var saveDefaultWorkspace = GetSaveDefaultWorkspace(rdataPath);
 #endif
-            if (!_session.IsHostRunning) {
-                return;
-            }
-
-            Task.Run(async () => {
-                using (var evaluation = await _session.BeginEvaluationAsync()) {
-                    if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspace(rdataPath);
-                    }
-                    await evaluation.SetDefaultWorkingDirectory();
+                if (_session.IsHostRunning) {
+                    Task.Run(async () => {
+                        using (var evaluation = await _session.BeginEvaluationAsync()) {
+                            if (saveDefaultWorkspace) {
+                                await evaluation.SaveWorkspace(rdataPath);
+                            }
+                            await evaluation.SetDefaultWorkingDirectory();
+                        }
+                    }).DoNotWait();
                 }
-            }).DoNotWait();
+            }
+#if VS15
+            return Task.CompletedTask;
+#endif
         }
 
 #if VS14

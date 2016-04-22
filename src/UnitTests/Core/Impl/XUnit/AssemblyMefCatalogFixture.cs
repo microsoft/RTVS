@@ -12,6 +12,7 @@ using System.Reflection;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Win32;
+using static System.FormattableString;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
@@ -108,7 +109,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         private static string GetDevEnvIdePath() {
-            return (string)Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\14.0", "InstallDir", string.Empty);
+            return (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{VsVersion.Version}"), "InstallDir", string.Empty);
         }
     }
 }

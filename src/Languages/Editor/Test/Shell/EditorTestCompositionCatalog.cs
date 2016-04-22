@@ -87,7 +87,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.ProjectSystem.Implementation.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.Implementation.dll"
         };
-
+#if VS14
         /// <summary>
         /// VS project system assemblies
         /// </summary>
@@ -96,7 +96,16 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             "Microsoft.VisualStudio.ProjectSystem.V14Only.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.V14Only.dll",
          };
-
+#else
+        /// <summary>
+        /// VS project system assemblies
+        /// </summary>
+        private static string[] _projectAssemblies = {
+            "Microsoft.VisualStudio.ProjectSystem.dll",
+            "Microsoft.VisualStudio.ProjectSystem.Interop.dll",
+            "Microsoft.VisualStudio.ProjectSystem.VS.dll",
+         };
+#endif
         /// <summary>
         /// Additional assemblies supplied by the creator class
         /// </summary>
@@ -274,12 +283,12 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             }
         }
 
-        #region ICompositionCatalog
+#region ICompositionCatalog
         public ICompositionService CompositionService => _container;
 
         public ExportProvider ExportProvider => _container;
 
         public CompositionContainer Container => _container;
-        #endregion 
+#endregion
     }
 }
