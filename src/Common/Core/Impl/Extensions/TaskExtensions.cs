@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -120,22 +121,34 @@ namespace Microsoft.Common.Core {
         /// </summary>
         public static Task SilenceException<T>(this Task task) where T : Exception {
             var tcs = new TaskCompletionSource<object>();
-            task.ContinueWith(t => {
-                try {
-                    t.Wait();
-                    tcs.SetResult(null);
-                } catch (AggregateException ex) {
-                    try {
-                        ex.Handle(e => e is T);
-                        tcs.SetResult(null);
-                    } catch (AggregateException ex2) {
-                        tcs.SetException(ex2.InnerExceptions);
-                    }
-                } catch (OperationCanceledException) {
-                    tcs.SetCanceled();
-                }
-            });
+            task.ContinueWith(SilenceExceptionContinuation<T>, tcs, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             return tcs.Task;
+        }
+
+        private static void SilenceExceptionContinuation<T>(Task task, object state) {
+            var tcs = (TaskCompletionSource<object>)state;
+
+            switch (task.Status) {
+                case TaskStatus.Faulted:
+                    var unhandledExceptions = task.Exception?.InnerExceptions
+                        .Where(e => !(e is T))
+                        .ToList();
+
+                    if (unhandledExceptions?.Count == 1) {
+                        tcs.TrySetException(unhandledExceptions[0]);
+                    } else if (unhandledExceptions?.Count > 1) {
+                        tcs.TrySetException(unhandledExceptions);
+                    } else {
+                        tcs.TrySetResult(null);
+                    }
+                    break;
+                case TaskStatus.Canceled:
+                    tcs.TrySetCanceled();
+                    break;
+                case TaskStatus.RanToCompletion:
+                    tcs.TrySetResult(null);
+                    break;
+            }
         }
 
         public class TimeoutAfterState<T> {
