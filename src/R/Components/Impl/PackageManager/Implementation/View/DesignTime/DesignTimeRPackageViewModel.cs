@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
@@ -78,9 +79,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
         public bool IsSelected { get; set; }
         public void AddDetails(RPackage package, bool isInstalled) {}
         public void UpdateAvailablePackageDetails(RPackage package) {}
-        public void Install() {}
-        public void Uninstall() {}
-        public void Update() {}
+        public Task InstallAsync() => Task.CompletedTask;
+        public Task UninstallAsync() => Task.CompletedTask;
+        public Task UpdateAsync() => Task.CompletedTask;
     }
 #endif
 }

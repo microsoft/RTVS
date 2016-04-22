@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager.Model;
 
 namespace Microsoft.R.Components.PackageManager.ViewModel {
@@ -35,8 +36,8 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
 
         void AddDetails(RPackage package, bool isInstalled);
         void UpdateAvailablePackageDetails(RPackage package);
-        void Install();
-        void Uninstall();
-        void Update();
+        Task InstallAsync();
+        Task UninstallAsync();
+        Task UpdateAsync();
     }
 }

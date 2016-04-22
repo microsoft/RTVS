@@ -22,7 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Task ShowErrorMessage(string message) {
             ShowErrorMessageCalls.Add(message);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
@@ -32,12 +32,12 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Task ShowHelp(string url) {
             HelpUrlCalls.Add(url);
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task Plot(string filePath, CancellationToken ct) {
             PlotCalls.Add(new Tuple<string, CancellationToken>(filePath, ct));
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

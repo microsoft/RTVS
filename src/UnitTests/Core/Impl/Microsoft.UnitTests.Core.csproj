@@ -118,6 +118,7 @@
     <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
     <Compile Include="Threading\ParallelTools.cs" />
     <Compile Include="Threading\UIThreadHelper.cs" />
+    <Compile Include="Threading\UITools.cs" />
     <Compile Include="UI\ContainerHost.cs" />
     <Compile Include="XUnit\AssemblyRunner.cs" />
     <Compile Include="XUnit\BeforeCtorAfterDisposeAttribute.cs" />

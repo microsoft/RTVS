@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
@@ -43,7 +44,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
-            Model?.Update(package);
+            Model?.UpdateAsync(package).DoNotWait();
         }
 
         private static IRPackageViewModel GetPackage(RoutedEventArgs e) {
@@ -52,12 +53,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void List_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
-                HandleDefaultAction();
+                Model?.DefaultActionAsync().DoNotWait();
             }
         }
 
         private void List_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            HandleDefaultAction();
+            Model?.DefaultActionAsync().DoNotWait();
         }
 
         private void List_SelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -70,35 +71,22 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
 
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
-            Model?.Uninstall(package);
+            Model?.UninstallAsync(package).DoNotWait();
         }
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
-            Model?.Install(package);
+            Model?.InstallAsync(package).DoNotWait();
         }
 
         private void ButtonLoad_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
-            Model?.Load(package);
+            Model?.LoadAsync(package).DoNotWait();
         }
 
         private void ButtonUnload_Click(object sender, RoutedEventArgs e) {
             var package = GetPackage(e);
-            Model?.Unload(package);
-        }
-
-        private void HandleDefaultAction() {
-            if (Model == null || Model.SelectedPackage == null) {
-                return;
-            }
-            // Available => Installed => Loaded
-            var package = Model.SelectedPackage;
-            if (!package.IsInstalled) {
-                Model.Install(package);
-            } else if (!package.IsLoaded) {
-                Model.Load(package);
-            }
+            Model?.UnloadAsync(package).DoNotWait();
         }
     }
 }
