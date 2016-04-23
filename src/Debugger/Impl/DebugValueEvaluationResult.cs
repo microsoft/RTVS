@@ -153,16 +153,7 @@ namespace Microsoft.R.Debugger {
             return new DebugValueRepresentation(_reprObj, kind);
         }
 
-        public Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
-            DebugEvaluationResultFields fields,
-            int? maxLength = null,
-            int? reprMaxLength = null,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) =>
-            GetChildrenAsync(Session.RSession, fields, maxLength, reprMaxLength, cancellationToken);
-
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
-            IRExpressionEvaluator evaluator,
             DebugEvaluationResultFields fields,
             int? maxLength = null,
             int? reprMaxLength = null,
@@ -182,7 +173,7 @@ namespace Microsoft.R.Debugger {
             }
 
             var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
-            var jChildren = await evaluator.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
+            var jChildren = await Session.RSession.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));

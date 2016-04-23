@@ -60,22 +60,19 @@ namespace Microsoft.R.Debugger {
             return Invariant($"rtvs:::add_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber}, {(reapply ? "TRUE" : "FALSE")})");
         }
 
-        internal async Task ReapplyBreakpointAsync(IRExpressionEvaluator evaluator, CancellationToken cancellationToken = default(CancellationToken)) {
+        internal async Task ReapplyBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await evaluator.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
+            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
             // TODO: mark breakpoint as invalid if this fails.
         }
 
-        internal async Task SetBreakpointAsync(IRExpressionEvaluator evaluator, CancellationToken cancellationToken = default(CancellationToken)) {
+        internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await evaluator.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
+            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
             ++UseCount;
         }
 
-        public Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
-            DeleteAsync(Session.RSession, cancellationToken);
-
-        public async Task DeleteAsync(IRExpressionEvaluator evaluator, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
             await Session.InitializeAsync(cancellationToken);
@@ -92,7 +89,7 @@ namespace Microsoft.R.Debugger {
 
                 var code = $"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})";
                 try {
-                    await evaluator.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
+                    await Session.RSession.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
                 } catch (RException ex) {
                     throw new InvalidOperationException(ex.Message, ex);
                 }

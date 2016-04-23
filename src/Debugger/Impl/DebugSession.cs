@@ -87,7 +87,7 @@ namespace Microsoft.R.Debugger {
             try {
                 // Re-initialize the breakpoint table.
                 foreach (var bp in _breakpoints.Values) {
-                    await bp.ReapplyBreakpointAsync(RSession, cancellationToken);
+                    await bp.ReapplyBreakpointAsync(cancellationToken);
                 }
                 await RSession.ExecuteAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
 
@@ -147,18 +147,7 @@ namespace Microsoft.R.Debugger {
         ) =>
             EvaluateAsync("base::.GlobalEnv", expression, null, fields, reprMaxLength, cancellationToken);
 
-        public Task<DebugEvaluationResult> EvaluateAsync(
-            string environmentExpression,
-            string expression,
-            string name,
-            DebugEvaluationResultFields fields,
-            int? reprMaxLength = null,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) =>
-            EvaluateAsync(RSession, environmentExpression, expression, name, fields, reprMaxLength, cancellationToken);
-
         public async Task<DebugEvaluationResult> EvaluateAsync(
-            IRExpressionEvaluator evaluator,
             string environmentExpression,
             string expression,
             string name,
@@ -173,7 +162,7 @@ namespace Microsoft.R.Debugger {
 
             environmentExpression = environmentExpression ?? "NULL";
             var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {fields.ToRVector()},, {reprMaxLength})");
-            var result = await evaluator.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
+            var result = await RSession.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
             return DebugEvaluationResult.Parse(this, environmentExpression, name, result);
         }
 
@@ -248,9 +237,6 @@ namespace Microsoft.R.Debugger {
             return true;
         }
 
-        public Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) =>
-            GetStackFramesAsync(RSession, skipSourceFrames, cancellationToken);
-
         /// <summary>
         /// Retrieve the current call stack, in call order (i.e. the current active frame is last, the one that called it is second to last etc).
         /// </summary>
@@ -259,17 +245,13 @@ namespace Microsoft.R.Debugger {
         /// the first reported frame will be the one with sourced code.
         /// </param>
         /// <returns></returns>
-        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(
-            IRExpressionEvaluator evaluator,
-            bool skipSourceFrames = true,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ){
+        public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync(cancellationToken);
 
-            var jFrames = await evaluator.EvaluateAsync<JArray>("rtvs:::describe_traceback()", REvaluationKind.Json, cancellationToken);
+            var jFrames = await RSession.EvaluateAsync<JArray>("rtvs:::describe_traceback()", REvaluationKind.Json, cancellationToken);
             Trace.Assert(jFrames.All(t => t is JObject), "rtvs:::describe_traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<DebugStackFrame>();
@@ -296,19 +278,13 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
-        public Task EnableBreakpointsAsync(bool enable, CancellationToken cancellationToken = default(CancellationToken)) =>
-            EnableBreakpointsAsync(RSession, enable, cancellationToken);
-
-        public async Task EnableBreakpointsAsync(IRExpressionEvaluator evaluator, bool enable, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task EnableBreakpointsAsync(bool enable, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            await evaluator.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
+            await RSession.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
         }
 
-        public Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) =>
-            CreateBreakpointAsync(RSession, location, cancellationToken);
-
-        public async Task<DebugBreakpoint> CreateBreakpointAsync(IRExpressionEvaluator evaluator, DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -320,7 +296,7 @@ namespace Microsoft.R.Debugger {
                 _breakpoints.Add(location, bp);
             }
 
-            await bp.SetBreakpointAsync(evaluator, cancellationToken);
+            await bp.SetBreakpointAsync(cancellationToken);
             return bp;
         }
 
