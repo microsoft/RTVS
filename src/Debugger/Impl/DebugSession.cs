@@ -14,6 +14,16 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
+    /// <summary>
+    /// An R debug session for a specific <see cref="IRSession"/>. Provides functionality to:
+    /// <list type="bullet">
+    /// <item>
+    /// Evaluate R expressions and reflect over the resulting values, providing type information, children retrieval for containers etc.
+    /// </item>
+    /// <item>Step through R code.</item>
+    /// <item>Create breakpoints in R code, and be notified when they are hit.</item>
+    /// </list>
+    /// </summary>
     public sealed class DebugSession : IDisposable {
         private Task _initializeTask;
         private readonly object _initializeLock = new object();
@@ -31,8 +41,19 @@ namespace Microsoft.R.Debugger {
 
         public IRSession RSession { get; private set; }
 
-        public bool IsBrowsing => _currentBrowseEventArgs != null;
-
+        /// <summary>
+        /// Raised when the associated R session is stopped at the Browse> prompt.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// If a handler is subscribed when the session is already at a Browse> prompt, that handler will be
+        /// invoked immediately.
+        /// </para>
+        /// <para>
+        /// If a stepping operation is in progress that requires issuing several consecutive commands, the event is not
+        /// raised for any intermediate Browse> prompts, but only for the final prompt at which the step is complete.
+        /// </para>
+        /// </remarks>
         public event EventHandler<DebugBrowseEventArgs> Browse {
             add {
                 var eventArgs = _currentBrowseEventArgs;
@@ -52,6 +73,10 @@ namespace Microsoft.R.Debugger {
         }
 
         public DebugSession(IRSession session) {
+            if (session == null) {
+                throw new ArgumentNullException(nameof(session));
+            }
+
             RSession = session;
             RSession.Connected += RSession_Connected;
             RSession.BeforeRequest += RSession_BeforeRequest;
@@ -71,12 +96,19 @@ namespace Microsoft.R.Debugger {
             }
         }
 
+        /// <summary>
+        /// Initializes the debug session, enabling all other operations on it.
+        /// </summary>
+        /// <remarks>
+        /// All operations that require initialization will automatically perform it if it hasn't been performed
+        /// already, so calling this method is never a requirement. However, since initialization can be potentially
+        /// costly, calling it in advance at a more opportune moment can be preferable to lazy initialization.
+        /// </remarks>
         public Task InitializeAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             lock (_initializeLock) {
                 if (_initializeTask == null) {
                     _initializeTask = InitializeWorkerAsync(cancellationToken);
                 }
-
                 return _initializeTask;
             }
         }
@@ -112,8 +144,23 @@ namespace Microsoft.R.Debugger {
             }
         }
 
+        /// <summary>
+        /// Waits for the next REPL prompt, and executes the given command at it if it is a Browse> prompt.
+        /// </summary>
+        /// <param name="command">Command to execute. The trailing newline is appended automatically.</param>
+        /// <param name="prepare">
+        /// If not <see langword="null"/>, the provided delegate is invoked after getting exclusive access
+        /// to the prompt, but before command is executed. Can be used to perform preparatory evaluations.</param>
+        /// <returns>
+        /// <see langword="true"/> if command was successfully submitted for execution.
+        /// <see langword="false"/> if the next prompt was not a Browse> prompt.
+        /// </returns>
         public async Task<bool> ExecuteBrowserCommandAsync(string command, Func<IRSessionInteraction, Task<bool>> prepare = null, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
+            if (command == null) {
+                throw new ArgumentNullException(nameof(command));
+            }
+
             await TaskUtilities.SwitchToBackgroundThread();
 
             using (var inter = await RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
@@ -132,6 +179,10 @@ namespace Microsoft.R.Debugger {
             return false;
         }
 
+        /// <summary>
+        /// Like <see cref="EvaluateAsync(string, DebugEvaluationResultFields, int?, CancellationToken)"/>, with no limit on
+        /// representation length.
+        /// </summary>
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
@@ -139,6 +190,10 @@ namespace Microsoft.R.Debugger {
         ) =>
             EvaluateAsync(expression, fields, null, cancellationToken);
 
+        /// <summary>
+        /// Like <see cref="EvaluateAsync(string, string, string, DebugEvaluationResultFields, int?, CancellationToken)"/>,
+        /// but evaluates in the global environment (<c>.GlobalEnv</c>), and the result is not named.
+        /// </summary>
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
@@ -147,6 +202,19 @@ namespace Microsoft.R.Debugger {
         ) =>
             EvaluateAsync("base::.GlobalEnv", expression, null, fields, reprMaxLength, cancellationToken);
 
+        /// <summary>
+        /// Evaluates the expresion in the specified environment, and returns an object describing the result.
+        /// </summary>
+        /// <param name="environmentExpression">
+        /// Expression designating the environment in which <paramref name="expression"/> will be evaluated.
+        /// </param>
+        /// <param name="expression">Expression to evaluate.</param>
+        /// <param name="name"><see cref="DebugEvaluationResult.Name"/> of the returned evaluation result.</param>
+        /// <param name="fields">Specifies which <see cref="DebugEvaluationResult"/> properties should be present in the result.</param>
+        /// <param name="reprMaxLength">
+        /// If not <see langword="null"/>, trims representation (as returned by <see cref="DebugValueEvaluationResult.GetRepresentation"/>)
+        /// of the resulting value to the specified length.
+        /// </param>
         public async Task<DebugEvaluationResult> EvaluateAsync(
             string environmentExpression,
             string expression,
@@ -156,6 +224,12 @@ namespace Microsoft.R.Debugger {
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             ThrowIfDisposed();
+            if (environmentExpression == null) {
+                throw new ArgumentNullException(nameof(environmentExpression));
+            }
+            if (expression == null) {
+                throw new ArgumentNullException(nameof(expression));
+            }
 
             await TaskUtilities.SwitchToBackgroundThread();
             await InitializeAsync(cancellationToken);
@@ -166,6 +240,10 @@ namespace Microsoft.R.Debugger {
             return DebugEvaluationResult.Parse(this, environmentExpression, name, result);
         }
 
+        /// <summary>
+        /// Force the R session to pause wherever it is currently executing, with a Browse> prompt.
+        /// </summary>
+        /// <returns>A task that completes when the prompt appears.</returns>
         public async Task BreakAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
 
@@ -178,6 +256,9 @@ namespace Microsoft.R.Debugger {
             using (var inter = await RSession.BeginInteractionAsync(true, cancellationToken)) { }
         }
 
+        /// <summary>
+        /// When paused at a Browse> prompt, continue execution.
+        /// </summary>
         public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
             ExecuteBrowserCommandAsync("c", null, cancellationToken)
@@ -185,14 +266,46 @@ namespace Microsoft.R.Debugger {
                 .DoNotWait();
         }
 
+        /// <summary>
+        /// When paused at a Browse> prompt, step into the next call.
+        /// </summary>
+        /// <returns>
+        /// A task that completes when the step is either completed or interrupted (e.g. by a breakpoint).
+        /// The result is <see langword="true"/> if step was completed, and <see langword="false"/> if it was abandoned.
+        /// </returns>
+        /// <remarks>
+        /// Detailed semantics of step in are described in R documentation for
+        /// <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/browser.html"><c>browser()</c></a> "s" command.
+        /// </remarks>
         public Task<bool> StepIntoAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "s");
         }
 
+        /// <summary>
+        /// When paused at a Browse> prompt, step over the next call.
+        /// </summary>
+        /// <returns>
+        /// A task that completes when the step is either completed or interrupted (e.g. by a breakpoint).
+        /// The result is <see langword="true"/> if step was completed, and <see langword="false"/> if it was abandoned.
+        /// </returns>
+        /// <remarks>
+        /// Detailed semantics of step over are described in R documentation for
+        /// <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/browser.html"><c>browser()</c></a> "n" command.
+        /// </remarks>
         public Task<bool> StepOverAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "n");
         }
 
+        /// <summary>
+        /// When paused at a Browse> prompt, step out from the current call.
+        /// </summary>
+        /// <returns>
+        /// A task that completes when the step is either completed or interrupted (e.g. by a breakpoint).
+        /// The result is <see langword="true"/> if step was completed, and <see langword="false"/> if it was abandoned.
+        /// </returns>
+        /// Detailed semantics of step out are described in R documentation for
+        /// <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/browserText.html"><c>browserSetDebug()</c></a> function.
+        /// </remarks>
         public Task<bool> StepOutAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             return StepAsync(cancellationToken, "c", async inter => {
                 using (var eval = await RSession.BeginEvaluationAsync(cancellationToken)) {
@@ -225,6 +338,9 @@ namespace Microsoft.R.Debugger {
             return await _stepTcs.Task;
         }
 
+        /// <summary>
+        /// If a step operation is currently in progress, cancel it.
+        /// </summary>
         public bool CancelStep() {
             ThrowIfDisposed();
 
@@ -278,12 +394,18 @@ namespace Microsoft.R.Debugger {
             return stackFrames;
         }
 
+        /// <summary>
+        /// Enables or disables breakpoints. When enabled, <see cref="DebugBreakpoint.BreakpointHit"/> events are raised.
+        /// </summary>
         public async Task EnableBreakpointsAsync(bool enable, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
             await RSession.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
         }
 
+        /// <summary>
+        /// Creates a new breakpoint at the specified location.
+        /// </summary>
         public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
@@ -376,7 +498,7 @@ namespace Microsoft.R.Debugger {
                 browse = _browse;
             }
 
-            var eventArgs = new DebugBrowseEventArgs(inter.Contexts, isStepCompleted, breakpointsHit);
+            var eventArgs = new DebugBrowseEventArgs(inter, isStepCompleted, breakpointsHit);
             _currentBrowseEventArgs = eventArgs;
             browse?.Invoke(this, eventArgs);
         }
@@ -399,13 +521,23 @@ namespace Microsoft.R.Debugger {
         }
     }
 
+    /// <seealso cref="DebugSession.Browse"/>
     public class DebugBrowseEventArgs : EventArgs {
-        public IReadOnlyList<IRContext> Contexts { get; }
+        /// <summary>
+        /// R context for the Browse> prompt.
+        /// </summary>
+        public IRSessionContext Context { get; }
+        /// <summary>
+        /// Whether this Browse> prompt signifies the completion of a stepping operation.
+        /// </summary>
         public bool IsStepCompleted { get; }
+        /// <summary>
+        /// Breakpoints that were hit at this Browse> prompt.
+        /// </summary>
         public IReadOnlyCollection<DebugBreakpoint> BreakpointsHit { get; }
 
-        public DebugBrowseEventArgs(IReadOnlyList<IRContext> contexts, bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
-            Contexts = contexts;
+        public DebugBrowseEventArgs(IRSessionContext context, bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
+            Context = context;
             IsStepCompleted = isStepCompleted;
             BreakpointsHit = breakpointsHit ?? new DebugBreakpoint[0];
         }
