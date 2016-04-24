@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var shell = EditorShell.Current;
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, RHostClientApp.Instance, shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

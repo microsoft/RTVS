@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
@@ -13,7 +14,7 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpHomeCommand : Command {
-        public HelpHomeCommand(IHelpWindowVisualComponent component) :
+        public HelpHomeCommand(IHelpVisualComponent component) :
             base(new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdHelpHome)) {
         }
 

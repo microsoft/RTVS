@@ -7,12 +7,9 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
@@ -27,7 +24,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         private readonly ExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly MethodInfo _testMethod;
-        private readonly string _repo1Path;
+        private readonly string _repoPath;
         private readonly string _libPath;
         private readonly string _lib2Path;
         private IRInteractiveWorkflow _workflow;
@@ -36,10 +33,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
             _exportProvider = catalog.CreateExportProvider();
             _workflowProvider = _exportProvider.GetExportedValue<TestRInteractiveWorkflowProvider>();
             _testMethod = testMethod.MethodInfo;
-            _workflowProvider.HostClientApp = new RHostClientTestApp();
-            _repo1Path = testFiles.GetDestinationPath(Path.Combine("Repos", TestRepositories.Repo1));
-            _libPath = Path.Combine(testFiles.GetDestinationPath("library"), _testMethod.Name);
-            _lib2Path = Path.Combine(testFiles.GetDestinationPath("library2"), _testMethod.Name);
+            _repoPath = TestRepositories.GetRepoPath(testFiles);
+            _libPath = Path.Combine(testFiles.LibraryDestinationPath, _testMethod.Name);
+            _lib2Path = Path.Combine(testFiles.Library2DestinationPath, _testMethod.Name);
             Directory.CreateDirectory(_libPath);
             Directory.CreateDirectory(_lib2Path);
         }
@@ -65,7 +61,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task AvailablePackagesLocalRepo() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
             }
 
             var result = await _workflow.Packages.GetAvailablePackagesAsync();
@@ -76,7 +72,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             rtvslib1Expected.Built = null;
             rtvslib1Expected.Author = null;
             rtvslib1Expected.Description = null;
-            rtvslib1Expected.Repository = $"file:///{_repo1Path.ToRPath()}/src/contrib";
+            rtvslib1Expected.Repository = $"file:///{_repoPath.ToRPath()}/src/contrib";
 
             var rtvslib1Actual = result.SingleOrDefault(pkg => pkg.Package == TestPackages.RtvsLib1Description.Package);
             rtvslib1Actual.ShouldBeEquivalentTo(rtvslib1Expected);
@@ -108,7 +104,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public async Task InstalledPackagesCustomLibPathNoPackages() {
             // Setup library path to point to the test folder, don't install anything in it
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
             }
 
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
@@ -123,8 +119,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public async Task InstalledPackagesCustomLibPathOnePackage() {
             // Setup library path to point to the test folder, install a package into it
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
             }
 
@@ -137,19 +133,19 @@ namespace Microsoft.R.Components.Test.PackageManager {
         public async Task InstalledPackagesMultiLibsSamePackage() {
             // Install the same package in 2 different libraries
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
-                await SetLocalLibsAsync(eval, _lib2Path);
+                await TestLibraries.SetLocalLibsAsync(eval, _lib2Path);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _lib2Path);
-                await SetLocalLibsAsync(eval, _libPath, _lib2Path);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath, _lib2Path);
             }
 
             var result = await _workflow.Packages.GetInstalledPackagesAsync();
             ValidateRtvslib1Installed(result, _libPath);
 
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibsAsync(eval, _lib2Path, _libPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _lib2Path, _libPath);
             }
 
             result = await _workflow.Packages.GetInstalledPackagesAsync();
@@ -169,13 +165,13 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task InstallAndUninstallPackageSpecifiedLib() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
             }
 
             await _workflow.Packages.InstallPackageAsync(TestPackages.RtvsLib1Description.Package, _libPath);
 
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
             }
 
             var installed = await _workflow.Packages.GetInstalledPackagesAsync();
@@ -191,8 +187,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task InstallPackageDefaultLib() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
             }
 
             await _workflow.Packages.InstallPackageAsync(TestPackages.RtvsLib1Description.Package, null);
@@ -205,8 +201,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task LoadAndUnloadPackage() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
             }
 
@@ -231,8 +227,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task GetLoadedPackages() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, TestPackages.RtvsLib1Description.Package, _libPath);
             }
 
@@ -250,8 +246,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task LibraryPaths() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalRepoAsync(eval, _repo1Path);
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestRepositories.SetLocalRepoAsync(eval, _repoPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
             }
 
             var result = await _workflow.Packages.GetLibraryPathsAsync();
@@ -262,7 +258,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task GetPackageLockStateLockByRSession() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, "abn", _libPath);
             }
 
@@ -280,7 +276,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         [Category.PackageManager]
         public async Task GetPackageLockStateUnlocked() {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await SetLocalLibsAsync(eval, _libPath);
+                await TestLibraries.SetLocalLibsAsync(eval, _libPath);
                 await InstallPackageAsync(eval, "abn", _libPath);
             }
 
@@ -302,17 +298,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
             }
         }
 
-        private async Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
-            var code = $"options(repos=list(LOCAL=\"file:///{localRepoPath.ToRPath()}\"))";
-            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Mutating);
-        }
-
-        private async Task SetLocalLibsAsync(IRSessionEvaluation eval, params string[] libPaths) {
-            var paths = string.Join(",", libPaths.Select(p => p.ToRPath().ToRStringLiteral()));
-            var code = $".libPaths(c({paths}))";
-            var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
-        }
-
         private async Task InstallPackageAsync(IRSessionEvaluation eval, string packageName, string libPath) {
             var code = $"install.packages(\"{packageName}\", verbose=FALSE, quiet=TRUE)";
             var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
@@ -326,7 +311,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror,
-            }, 50000);
+            }, new RHostClientTestApp(), 50000);
             return workflow;
         }
         

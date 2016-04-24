@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
@@ -28,7 +29,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
             IsInstalled = true;
             IsUpdateAvailable = true;
-            IsSelected = true;
+            IsChecked = true;
             HasDetails = true;
             CanBeUninstalled = true;
         }
@@ -40,7 +41,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             , string license = null
             , bool isInstalled = false
             , bool isUpdateAvailable = false
-            , bool isSelected = false) {
+            , bool isChecked = false) {
 
             Name = name;
             LatestVersion = latestVersion;
@@ -49,7 +50,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
             License = license;
             IsInstalled = isInstalled;
             IsUpdateAvailable = isUpdateAvailable;
-            IsSelected = isSelected;
+            IsChecked = isChecked;
         }
 
         public string Name { get; }
@@ -75,12 +76,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View.DesignTime {
 
         public bool IsUpdateAvailable { get; }
         public bool HasDetails { get; }
-        public bool IsSelected { get; set; }
+        public bool IsChecked { get; set; }
         public void AddDetails(RPackage package, bool isInstalled) {}
         public void UpdateAvailablePackageDetails(RPackage package) {}
-        public void Install() {}
-        public void Uninstall() {}
-        public void Update() {}
+        public Task InstallAsync() => Task.CompletedTask;
+        public Task UninstallAsync() => Task.CompletedTask;
+        public Task UpdateAsync() => Task.CompletedTask;
     }
 #endif
 }

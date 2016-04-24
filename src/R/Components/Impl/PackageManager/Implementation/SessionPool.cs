@@ -81,13 +81,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
         private async Task<IRSession> CreatePackageQuerySessionAsync() {
             var g = Guid.NewGuid();
-            var session = _sessionProvider.GetOrCreate(g, null);
+            var session = _sessionProvider.GetOrCreate(g);
             if (!session.IsHostRunning) {
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = "PkgMgr " + g.ToString(),
                     RBasePath = _settings.RBasePath,
                     CranMirrorName = _settings.CranMirror
-                }, HostStartTimeout);
+                }, null, HostStartTimeout);
             }
             return session;
         }

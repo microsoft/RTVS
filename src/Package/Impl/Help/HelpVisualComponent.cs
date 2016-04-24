@@ -14,7 +14,7 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
-using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.R.Components.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -24,9 +24,10 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.View;
 using ContentControl = System.Windows.Controls.ContentControl;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.Help;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
-    internal sealed class HelpWindowVisualComponent : IHelpWindowVisualComponent {
+    internal sealed class HelpVisualComponent : IHelpVisualComponent {
         /// <summary>
         /// Holds browser control. When R session is restarted
         /// it is necessary to re-create the browser control since
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private IRSession _session;
         private WindowsFormsHost _host;
 
-        public HelpWindowVisualComponent() {
+        public HelpVisualComponent() {
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
@@ -75,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public void Navigate(string url) {
             // Filter out localhost help URL from absolute URLs
             // except when the URL is the main landing page.
-            if (RToolsSettings.Current.HelpBrowser == HelpBrowserType.Automatic && IsHelpUrl(url)) {
+            if (RToolsSettings.Current.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 NavigateTo(url);
             } else {
                 Process.Start(url);

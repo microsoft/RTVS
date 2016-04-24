@@ -10,7 +10,7 @@ namespace Microsoft.R.Host.Client {
     /// Implemented by the application that uses Microsoft.R.Host.Client.
     /// Provides services for plotting, help display, etc.
     /// </summary>
-    public interface IRHostClientApp {
+    public interface IRSessionCallback {
         /// <summary>
         /// Displays error message in the host-specific UI
         /// </summary>
@@ -30,6 +30,11 @@ namespace Microsoft.R.Host.Client {
         /// Displays R plot in the host app-provided window
         /// </summary>
         Task Plot(string filePath, CancellationToken ct);
+
+        /// <summary>
+        /// Requests user input from UI
+        /// </summary>
+        Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct);
 
         /// <summary>
         /// Given CRAN mirror name returns server URL

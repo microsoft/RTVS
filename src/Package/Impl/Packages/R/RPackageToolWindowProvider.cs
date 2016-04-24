@@ -4,10 +4,12 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.View;
+using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.Shell;
@@ -23,6 +25,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private Lazy<IRHistoryVisualComponentContainerFactory> HistoryComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
+        [Import]
+        private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
 
         public bool TryCreateToolWindow(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -37,6 +41,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
                 CreatePackageManagerToolWindow(id);
+                return true;
+            }
+
+            if (toolWindowType == HelpWindowPane.WindowGuid) {
+                CreateHelpToolWindow(id);
                 return true;
             }
 
@@ -60,6 +69,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return CreatePackageManagerToolWindow(id).Container;
             }
 
+            if (toolWindowType == HelpWindowPane.WindowGuid) {
+                return CreateHelpToolWindow(id).Container;
+            }
+
             return null;
         }
 
@@ -76,6 +89,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
             return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
+        }
+
+        private IHelpVisualComponent CreateHelpToolWindow(int id) {
+            return HelpVisualComponentContainerFactory.Value.GetOrCreate(id).Component;
         }
     }
 }

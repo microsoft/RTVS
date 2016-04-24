@@ -12,7 +12,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public void Dispose() {
         }
 
-        public IRSession GetOrCreate(Guid guid, IRHostClientApp hostClientApp) {
+        public IRSession GetOrCreate(Guid guid) {
             IRSession session;
             if (!_sessions.TryGetValue(guid, out session)) {
                 session = new RSessionMock();

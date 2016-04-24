@@ -4,8 +4,8 @@
 using System.Windows.Forms;
 using Microsoft.R.Components.View;
 
-namespace Microsoft.VisualStudio.R.Package.Help {
-    public interface IHelpWindowVisualComponent : IVisualComponent {
+namespace Microsoft.R.Components.Help {
+    public interface IHelpVisualComponent : IVisualComponent {
         /// <summary>
         /// Browser that displays help content
         /// </summary>

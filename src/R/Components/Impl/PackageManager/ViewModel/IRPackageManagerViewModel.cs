@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using Microsoft.R.Components.Search;
 
 namespace Microsoft.R.Components.PackageManager.ViewModel {
@@ -15,16 +16,17 @@ namespace Microsoft.R.Components.PackageManager.ViewModel {
         string FirstError { get; }
         bool HasMultipleErrors { get; }
 
-        void SwitchToAvailablePackages();
-        void SwitchToInstalledPackages();
-        void SwitchToLoadedPackages();
+        Task SwitchToAvailablePackagesAsync();
+        Task SwitchToInstalledPackagesAsync();
+        Task SwitchToLoadedPackagesAsync();
         void ReloadItems();
         void SelectPackage(IRPackageViewModel package);
-        void Install(IRPackageViewModel package);
-        void Update(IRPackageViewModel package);
-        void Uninstall(IRPackageViewModel package);
-        void Load(IRPackageViewModel package);
-        void Unload(IRPackageViewModel package);
+        Task InstallAsync(IRPackageViewModel package);
+        Task UpdateAsync(IRPackageViewModel package);
+        Task UninstallAsync(IRPackageViewModel package);
+        Task LoadAsync(IRPackageViewModel package);
+        Task UnloadAsync(IRPackageViewModel package);
+        Task DefaultActionAsync();
         void DismissErrorMessage();
         void DismissAllErrorMessages();
     }

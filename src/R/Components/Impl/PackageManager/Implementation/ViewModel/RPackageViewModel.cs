@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf;
 using Microsoft.Languages.Core.Formatting;
@@ -11,7 +12,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageViewModel : BindableBase, IRPackageViewModel {
         private readonly IRPackageManagerViewModel _owner;
         private bool _hasDetails;
-        private bool _isSelected;
+        private bool _isChecked;
         private bool _isChanging;
         private bool _isInstalled;
         private bool _isLoaded;
@@ -155,9 +156,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             private set { SetProperty(ref _hasDetails, value); }
         }
 
-        public bool IsSelected {
-            get { return _isSelected; }
-            set { SetProperty(ref _isSelected, value); }
+        public bool IsChecked {
+            get { return _isChecked; }
+            set { SetProperty(ref _isChecked, value); }
         }
 
         public bool IsChanging {
@@ -184,17 +185,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             IsUpdateAvailable = new RPackageVersion(LatestVersion).CompareTo(new RPackageVersion(InstalledVersion)) > 0;
         }
 
-        public void Install() {
-            _owner.Install(this);
-        }
-
-        public void Uninstall() {
-            _owner.Uninstall(this);
-        }
-
-        public void Update() {
-            _owner.Update(this);
-        }
+        public Task InstallAsync() => _owner.InstallAsync(this);
+        public Task UninstallAsync() => _owner.UninstallAsync(this);
+        public Task UpdateAsync() => _owner.UpdateAsync(this);
 
         public void AddDetails(RPackage package, bool isInstalled) {
             Title = package.Title.NormalizeWhitespace();

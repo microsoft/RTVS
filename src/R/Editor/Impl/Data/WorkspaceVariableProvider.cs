@@ -129,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 _updating = true;
                 // May be null in tests
                 var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IRSessionProvider>();
-                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 if (session.IsHostRunning) {
                     var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IDebugSessionProvider>();
                     if (debugSessionProvider != null) {

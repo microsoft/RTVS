@@ -5,30 +5,30 @@ using Microsoft.R.Components.PackageManager.Model;
 
 namespace Microsoft.R.Components.Test.PackageManager {
     internal static class TestPackages {
-        public static readonly RPackage RtvsLib1 = new RPackage() {
-            Package = TestPackages.RtvsLib1Description.Package,
-            Version = TestPackages.RtvsLib1Description.Version,
-            Depends = TestPackages.RtvsLib1Description.Depends,
-            License = TestPackages.RtvsLib1Description.License,
-            Built = TestPackages.RtvsLib1Description.Built,
-            Author = TestPackages.RtvsLib1Description.Author,
-            Title = TestPackages.RtvsLib1Description.Title,
+        public static readonly RPackage RtvsLib1 = new RPackage {
+            Package = RtvsLib1Description.Package,
+            Version = RtvsLib1Description.Version,
+            Depends = RtvsLib1Description.Depends,
+            License = RtvsLib1Description.License,
+            Built = RtvsLib1Description.Built,
+            Author = RtvsLib1Description.Author,
+            Title = RtvsLib1Description.Title,
             NeedsCompilation = "no",
-            Description = TestPackages.RtvsLib1Description.DescriptionFromInstalled,
+            Description = RtvsLib1Description.DescriptionFromInstalled,
         };
 
         public static readonly RPackage RtvsLib1Additional = new RPackage {
-            Package = TestPackages.RtvsLib1Description.Package,
-            Version = TestPackages.RtvsLib1Description.Version,
-            Depends = TestPackages.RtvsLib1Description.Depends,
-            License = TestPackages.RtvsLib1Description.License,
-            Built = TestPackages.RtvsLib1Description.Built,
-            Author = TestPackages.RtvsLib1Description.Author,
-            Title = TestPackages.RtvsLib1Description.Title,
+            Package = RtvsLib1Description.Package,
+            Version = RtvsLib1Description.Version,
+            Depends = RtvsLib1Description.Depends,
+            License = RtvsLib1Description.License,
+            Built = RtvsLib1Description.Built,
+            Author = RtvsLib1Description.Author,
+            Title = RtvsLib1Description.Title,
             NeedsCompilation = "no",
-            Description = TestPackages.RtvsLib1Description.Description,
-            Published = TestPackages.RtvsLib1Description.Published,
-            Maintainer = TestPackages.RtvsLib1Description.Maintainer,
+            Description = RtvsLib1Description.Description,
+            Published = RtvsLib1Description.Published,
+            Maintainer = RtvsLib1Description.Maintainer,
         };
 
         /// <summary>

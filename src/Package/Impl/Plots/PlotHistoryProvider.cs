@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 

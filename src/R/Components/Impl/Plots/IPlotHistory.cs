@@ -4,8 +4,8 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Microsoft.VisualStudio.R.Package.Plots.Definitions {
-    internal interface IPlotHistory: IDisposable {
+namespace Microsoft.R.Components.Plots {
+    public interface IPlotHistory: IDisposable {
         int PlotCount { get; }
         int ActivePlotIndex { get; }
         IPlotContentProvider PlotContentProvider { get; }

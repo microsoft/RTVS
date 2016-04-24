@@ -6,7 +6,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Actions.Utility;
-using Microsoft.R.Editor.Settings;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Options.Attributes;
@@ -112,8 +112,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
         [DefaultValue(HelpBrowserType.Automatic)]
         public HelpBrowserType HelpBrowser {
-            get { return RToolsSettings.Current.HelpBrowser; }
-            set { RToolsSettings.Current.HelpBrowser = value; }
+            get { return RToolsSettings.Current.HelpBrowserType; }
+            set { RToolsSettings.Current.HelpBrowserType = value; }
         }
 
         [LocCategory("Settings_DebuggingCategory")]

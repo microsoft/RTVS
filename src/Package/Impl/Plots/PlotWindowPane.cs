@@ -6,6 +6,7 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -56,11 +57,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // and user will be able to use scrollbars to see the whole thing
             int pixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
             int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
+            int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
 
             // Throttle resize requests since we get a lot of size changed events when the tool window is undocked
             IdleTimeAction.Cancel(this);
             IdleTimeAction.Create(() => {
-                PlotContentProvider.DoNotWait(_plotHistory.PlotContentProvider.ResizePlotAsync(pixelWidth, pixelHeight));
+                PlotContentProvider.DoNotWait(_plotHistory.PlotContentProvider.ResizePlotAsync(pixelWidth, pixelHeight, resolution));
             }, 100, this);
         }
 

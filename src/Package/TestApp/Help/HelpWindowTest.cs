@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.R.Packages.R;
 using mshtml;
+using Microsoft.R.Components.Help;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
@@ -27,10 +28,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
             using (var hostScript = new VsRHostScript(clientApp)) {
-                using (var script = new ControlTestScript(typeof(HelpWindowVisualComponent))) {
+                using (var script = new ControlTestScript(typeof(HelpVisualComponent))) {
                     DoIdle(100);
 
-                    var component = ControlWindow.Component as IHelpWindowVisualComponent;
+                    var component = ControlWindow.Component as IHelpVisualComponent;
                     component.Should().NotBeNull();
 
                     component.VisualTheme = "Dark.css";

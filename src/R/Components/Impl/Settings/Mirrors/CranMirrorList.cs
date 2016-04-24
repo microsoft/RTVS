@@ -10,15 +10,14 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
+namespace Microsoft.R.Components.Settings.Mirrors {
     /// <summary>
     /// Represents collection of CRAN mirrors. Default list is packaged
     /// as a CSV file in resources. Up to date list is downloaded and
     /// cached in TEMP folder when it is possible.
     /// </summary>
-    internal static class CranMirrorList {
+    public static class CranMirrorList {
         private static string _cranCsvFileTempPath;
         private static CranMirrorEntry[] _mirrors = new CranMirrorEntry[0];
 
@@ -73,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
                 }
             } else {
                 var assembly = Assembly.GetExecutingAssembly();
-                var resourceStream = assembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.RPackages.Mirrors.CranMirrors.csv");
+                var resourceStream = assembly.GetManifestResourceStream("Microsoft.R.Components.Settings.Mirrors.CranMirrors.csv");
                 using (var streamReader = new StreamReader(resourceStream)) {
                     content = streamReader.ReadToEnd();
                 }
@@ -114,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.RPackages.Mirrors {
 
         private static void ReadCsv(string content) {
             string[] lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
-            char[] comma = new char[] { ',' };
+            char[] comma = { ',' };
 
             List<CranMirrorEntry> entries = new List<CranMirrorEntry>();
 

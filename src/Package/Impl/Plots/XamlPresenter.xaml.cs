@@ -3,6 +3,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.R.Components.Plots;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     /// <summary>

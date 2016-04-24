@@ -14,11 +14,11 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
 
         public string[] WorkingDirectoryList { get; set; } = new string[0];
         public string RCommandLineArguments { get; set; }
-        public HelpBrowserType HelpBrowser { get; set; }
+        public HelpBrowserType HelpBrowserType { get; set; }
         public bool ShowDotPrefixedVariables { get; set; }
         public SurveyNewsPolicy SurveyNewsCheck { get; set; } = SurveyNewsPolicy.CheckOnceWeek;
         public DateTime SurveyNewsLastCheck { get; set; }
