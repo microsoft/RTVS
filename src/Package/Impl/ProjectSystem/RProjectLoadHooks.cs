@@ -20,6 +20,7 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
+using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
@@ -35,8 +36,6 @@ using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingSe
 
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-    [Export]
-    [AppliesTo("RTools")]
     internal sealed class RProjectLoadHooks {
         private const string DefaultRDataName = ".RData";
         private const string DefaultRHistoryName = ".RHistory";
@@ -95,8 +94,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
 #else
         [ProjectAutoLoad(
-            startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
-            completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration)]
+            startAfter: ProjectLoadCheckpoint.AfterLoadInitialConfiguration,
+            completeBy: ProjectLoadCheckpoint.ProjectInitialCapabilitiesEstablished)]
 #endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();

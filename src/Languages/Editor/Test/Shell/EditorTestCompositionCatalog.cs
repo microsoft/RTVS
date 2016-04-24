@@ -102,7 +102,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         /// </summary>
         private static string[] _projectAssemblies = {
             "Microsoft.VisualStudio.ProjectSystem.dll",
-            "Microsoft.VisualStudio.ProjectSystem.Interop.dll",
             "Microsoft.VisualStudio.ProjectSystem.VS.dll",
          };
 #endif
