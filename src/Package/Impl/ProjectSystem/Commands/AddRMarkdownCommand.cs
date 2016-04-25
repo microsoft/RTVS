@@ -3,13 +3,14 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo("RTools")]
-    [OrderPrecedence(200)]
     internal sealed class AddRMarkdownCommand : AddItemCommand {
 
         [ImportingConstructor]

@@ -14,7 +14,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -22,6 +22,9 @@ using Microsoft.VisualStudio.R.Package.Test.FakeFactories;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using NSubstitute;
 using Xunit;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
