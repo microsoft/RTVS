@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="$(VisualStudioVersion)" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.props')" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props')" />
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -881,7 +881,7 @@
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\14.0\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.Language.Intellisense, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Language.Intellisense.15.0.25123-Dev15Preview\lib\net45\Microsoft.VisualStudio.Language.Intellisense.dll</HintPath>
@@ -967,7 +967,7 @@
     <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\$(VisualStudioVersion)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\14.0\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -1393,16 +1393,17 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props'))" />
     <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.targets'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props'))" />
+    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets'))" />
   </Target>
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Target Name="BeforeBuild">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
   </Target>
   <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25201-Dev15Preview2\build\Microsoft.VSSDK.BuildTools.targets')" />
+  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="AfterBuild">
