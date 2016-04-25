@@ -8,6 +8,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.Languages.Core.Classification;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
@@ -16,6 +18,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
@@ -41,7 +44,11 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
 
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider();
+            var crs = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationTypeRegistryService>();
+            var ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var cnp = EditorShell.Current.ExportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
+
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp);
             EditorShell.Current.CompositionService.SatisfyImportsOnce(classifierProvider);
 
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
