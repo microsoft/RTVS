@@ -176,7 +176,7 @@ grDevices::deviceIsInteractive('ide')
       if (missing(title)) {
         title <- ''
       }
-      invisible(rtvs:::send_message('View', substitute(x), title))
+      invisible(rtvs:::send_message('View', deparse(substitute(x)), title))
     } else {
       print(x)
     }

@@ -35,13 +35,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 
-        public Task ViewAsync(DebugValueEvaluationResult evaluation) {
+        public Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
             string functionCode = evaluation.GetRepresentation().Deparse;
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 functionCode = formatter.Format(functionCode);
 
-                string functionName = evaluation.Name ?? "function";
+                title = !string.IsNullOrEmpty(title) ? title : "function";
+                string functionName = evaluation.Name ?? title;
                 string fileName = "~" + functionName;
                 string tempFile = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
                 try {

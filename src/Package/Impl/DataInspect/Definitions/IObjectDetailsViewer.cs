@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         bool CanView(DebugValueEvaluationResult evaluation);
 
-        Task ViewAsync(DebugValueEvaluationResult evaluation);
+        Task ViewAsync(DebugValueEvaluationResult evaluation, string title);
 
         Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation);
     }

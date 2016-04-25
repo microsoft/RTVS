@@ -38,11 +38,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return false;
         }
 
-        public Task ViewAsync(DebugValueEvaluationResult evaluation) {
+        public Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name);
+                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name ?? title);
             });
             return Task.CompletedTask;
         }
