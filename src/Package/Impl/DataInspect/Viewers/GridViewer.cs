@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name ?? title);
+                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Expression ?? title);
             });
             return Task.CompletedTask;
         }
