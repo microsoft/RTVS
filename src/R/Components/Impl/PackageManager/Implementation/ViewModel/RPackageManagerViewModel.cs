@@ -89,36 +89,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        public void SwitchToAvailablePackages() {
-            _coreShell.AssertIsOnMainThread();
-            if (_selectedTab == SelectedTab.AvailablePackages) {
-                return;
-            }
-
-            _selectedTab = SelectedTab.AvailablePackages;
-            DispatchOnMainThread(SwitchToAvailablePackagesAsync);
-        }
-
-        public void SwitchToInstalledPackages() {
-            _coreShell.AssertIsOnMainThread();
-            if (_selectedTab == SelectedTab.InstalledPackages) {
-                return;
-            }
-
-            _selectedTab = SelectedTab.InstalledPackages;
-            DispatchOnMainThread(SwitchToInstalledPackagesAsync);
-        }
-
-        public void SwitchToLoadedPackages() {
-            _coreShell.AssertIsOnMainThread();
-            if (_selectedTab == SelectedTab.LoadedPackages) {
-                return;
-            }
-
-            _selectedTab = SelectedTab.LoadedPackages;
-            DispatchOnMainThread(SwitchToLoadedPackagesAsync);
-        }
-
         public void ReloadItems() {
             _coreShell.AssertIsOnMainThread();
             switch (_selectedTab) {
@@ -144,23 +114,31 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             SelectedPackage = package;
+        }
 
-            if (package == null) {
+        public async Task DefaultActionAsync() {
+            _coreShell.AssertIsOnMainThread();
+            if (SelectedPackage == null) {
                 return;
+            }
+
+            // Available => Installed => Loaded
+            var package = SelectedPackage;
+            if (!package.IsInstalled) {
+                await InstallAsync(package);
+            } else if (!package.IsLoaded) {
+                await LoadAsync(package);
             }
         }
 
-        public void Install(IRPackageViewModel package) {
+        public async Task InstallAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
             if (package.IsInstalled || package.IsChanging) {
                 return;
             }
 
             package.IsChanging = true;
-            DispatchOnMainThread(() => InstallAsync(package));
-        }
 
-        private async Task InstallAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = true;
             }
@@ -180,20 +158,19 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             package.IsChanging = false;
         }
 
-        public void Update(IRPackageViewModel package) {
+        public async Task UpdateAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
-            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
-                    Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo)) {
-                package.IsChanging = true;
-                DispatchOnMainThread(() => UpdateAsync(package));
+            var confirmUpdate = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUpdateWarning, package.Name), MessageButtons.YesNo);
+            if (confirmUpdate != MessageButtons.Yes) {
+                return;
             }
-        }
 
-        private async Task UpdateAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            package.IsChanging = true;
+
             if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
                 IsLoading = true;
             }
@@ -221,7 +198,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     AddErrorMessage(ex.Message);
                 }
 
-                await ReloadInstalledAndLoadedPackagesAsync();   
+                await ReloadInstalledAndLoadedPackagesAsync();
             }
 
             if (_selectedTab == SelectedTab.InstalledPackages) {
@@ -231,78 +208,70 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 ReplaceItems(_loadedPackages);
                 IsLoading = false;
             }
-            
+
             package.IsChanging = false;
         }
 
-        public void Uninstall(IRPackageViewModel package) {
+        public async Task UninstallAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
 
+            var confirmUninstall = _coreShell.ShowMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath), MessageButtons.YesNo);
+            if (confirmUninstall != MessageButtons.Yes) {
+                return;
+            }
+
             package.IsChanging = true;
-            DispatchOnMainThread(() => UninstallAsync(package));
-        }
 
-        private async Task UninstallAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
+                IsLoading = true;
+            }
 
-            if (MessageButtons.Yes == _coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
-                    Resources.PackageManager_PackageUninstallWarning, package.Name, package.LibraryPath),
-                    MessageButtons.YesNo)) {
-
-                if (_selectedTab == SelectedTab.InstalledPackages || _selectedTab == SelectedTab.LoadedPackages) {
-                    IsLoading = true;
+            if (package.IsLoaded) {
+                try {
+                    await _packageManager.UnloadPackageAsync(package.Name);
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
                 }
+                await ReloadLoadedPackagesAsync();
+            }
 
-                if (package.IsLoaded) {
-                    try {
-                        await _packageManager.UnloadPackageAsync(package.Name);
-                    } catch (RPackageManagerException ex) {
-                        AddErrorMessage(ex.Message);
+            if (!package.IsLoaded) {
+                try {
+                    var libPath = package.LibraryPath.ToRPath();
+                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                    if (packageLockState == PackageLockState.Unlocked) {
+                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                    } else {
+                        ShowPackageLockedMessage(packageLockState, package.Name);
                     }
-                    await ReloadLoadedPackagesAsync();
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
                 }
 
-                if (!package.IsLoaded) {
-                    try {
-                        var libPath = package.LibraryPath.ToRPath();
-                        var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
-                        if (packageLockState == PackageLockState.Unlocked) {
-                            await _packageManager.UninstallPackageAsync(package.Name, libPath);
-                        } else {
-                            ShowPackageLockedMessage(packageLockState, package.Name);
-                        }
-                    } catch (RPackageManagerException ex) {
-                        AddErrorMessage(ex.Message);
-                    }
+                await ReloadInstalledAndLoadedPackagesAsync();
+            }
 
-                    await ReloadInstalledAndLoadedPackagesAsync();   
-                }
-
-                if (_selectedTab == SelectedTab.InstalledPackages) {
-                    ReplaceItems(_installedPackages);
-                    IsLoading = false;
-                } else if (_selectedTab == SelectedTab.LoadedPackages) {
-                    ReplaceItems(_loadedPackages);
-                    IsLoading = false;
-                }
+            if (_selectedTab == SelectedTab.InstalledPackages) {
+                ReplaceItems(_installedPackages);
+                IsLoading = false;
+            } else if (_selectedTab == SelectedTab.LoadedPackages) {
+                ReplaceItems(_loadedPackages);
+                IsLoading = false;
             }
 
             package.IsChanging = false;
         }
 
-        public void Load(IRPackageViewModel package) {
+        public async Task LoadAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
             if (package.IsLoaded) {
                 return;
             }
 
             package.IsChanging = true;
-            DispatchOnMainThread(() => LoadAsync(package));
-        }
-
-        private async Task LoadAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
             try {
@@ -310,23 +279,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             } catch (RPackageManagerException ex) {
                 AddErrorMessage(ex.Message);
             }
-            
+
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
         }
 
-        public void Unload(IRPackageViewModel package) {
+        public async Task UnloadAsync(IRPackageViewModel package) {
+            _coreShell.AssertIsOnMainThread();
+
             if (!package.IsLoaded) {
                 return;
             }
-
             package.IsChanging = true;
-            DispatchOnMainThread(() => UnloadAsync(package));
-        }
 
-        private async Task UnloadAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
             BeforeLoadUnload();
 
             try {
@@ -334,7 +300,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             } catch (RPackageManagerException ex) {
                 AddErrorMessage(ex.Message);
             }
-            
+
             await ReloadLoadedPackagesAsync();
 
             AfterLoadUnload(package);
@@ -402,21 +368,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             return libPaths.Select(p => p.ToRPath()).FirstOrDefault(s => !s.StartsWithIgnoreCase(rBasePath));
         }
 
-        private async Task SwitchToAvailablePackagesAsync() {
+        public async Task SwitchToAvailablePackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             if (_selectedTab == SelectedTab.AvailablePackages) {
-                IsLoading = !_availableLock.IsCompleted;
+                return;
             }
+
+            _selectedTab = SelectedTab.AvailablePackages;
+            IsLoading = !_availableLock.IsCompleted;
 
             await EnsureAvailablePackagesLoadedAsync();
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 IsLoading = false;
+                ReplaceItems(_availablePackages);
             }
-
-            if (_availablePackages == null) {
-                return;
-            }
-            ReplaceItems(_availablePackages);
         }
 
         private async Task EnsureAvailablePackagesLoadedAsync() {
@@ -451,18 +416,20 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _availablePackages = vmAvailablePackages.OrderBy(p => p.Name).ToList();
         }
 
-        private async Task SwitchToInstalledPackagesAsync() {
+        public async Task SwitchToInstalledPackagesAsync() {
             _coreShell.AssertIsOnMainThread();
             if (_selectedTab == SelectedTab.InstalledPackages) {
-                IsLoading = true;
+                return;
             }
+
+            _selectedTab = SelectedTab.InstalledPackages;
+            IsLoading = true;
 
             await ReloadInstalledAndLoadedPackagesAsync();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 IsLoading = false;
+                ReplaceItems(_installedPackages);
             }
-
-            ReplaceItems(_installedPackages);
         }
 
         private async Task ReloadInstalledAndLoadedPackagesAsync() {
@@ -522,12 +489,14 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private void IdentifyRemovablePackages(ICollection<IRPackageViewModel> packages) {
+        private static void IdentifyRemovablePackages(ICollection<IRPackageViewModel> packages) {
             var basePackage = packages.FirstOrDefault(x => x.Name.EqualsOrdinal("base"));
-            if (basePackage != null) {
-                foreach (var p in packages) {
-                    p.CanBeUninstalled = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
-                }
+            if (basePackage == null) {
+                return;
+            }
+
+            foreach (var p in packages) {
+                p.CanBeUninstalled = !p.LibraryPath.EqualsIgnoreCase(basePackage.LibraryPath);
             }
         }
 
@@ -571,23 +540,25 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
         }
 
-        private async Task SwitchToLoadedPackagesAsync() {
+        public async Task SwitchToLoadedPackagesAsync() {
             _coreShell.AssertIsOnMainThread();
+            if (_selectedTab == SelectedTab.LoadedPackages) {
+                return;
+            }
+
+            _selectedTab = SelectedTab.LoadedPackages;
             if (_installedAndLoadedLock.IsCompleted) {
                 ReplaceItems(_loadedPackages);
                 return;
             }
 
-            if (_selectedTab == SelectedTab.LoadedPackages) {
-                IsLoading = true;
-            }
+            IsLoading = true;
 
             await ReloadInstalledAndLoadedPackagesAsync();
             if (_selectedTab == SelectedTab.LoadedPackages) {
                 IsLoading = false;
+                ReplaceItems(_loadedPackages);
             }
-
-            ReplaceItems(_loadedPackages);
         }
 
         private void ReplaceItems(IList<IRPackageViewModel> packages) {

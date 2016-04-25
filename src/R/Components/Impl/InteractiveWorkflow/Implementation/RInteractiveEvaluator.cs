@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         WorkingDirectory = _settings.WorkingDirectory
-                    });
+                    }, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
@@ -109,7 +109,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             try {
-                Session.BeforeRequest -= SessionOnBeforeRequest;
                 using (Session.DisableMutatedOnReadConsole()) {
                     while (end != -1) {
                         var line = text.Substring(start, end - start + 1);
@@ -132,11 +131,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
                 return ExecutionResult.Failure;
             } catch (Exception ex) {
-
                 await _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(ex.ToString()));
                 return ExecutionResult.Failure;
             } finally {
-                Session.BeforeRequest += SessionOnBeforeRequest;
                 History.AddToHistory(text);
             }
         }

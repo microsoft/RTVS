@@ -4,8 +4,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.RPackages.Mirrors;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]

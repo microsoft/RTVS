@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.Data {
 
         private void ConnectToSession() {
             if (Session == null) {
-                Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+                Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 Session.Mutated += OnSessionMutated;
                 Session.Disposed += OnSessionDisposed;
                 SessionMutated();

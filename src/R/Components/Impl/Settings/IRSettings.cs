@@ -33,5 +33,12 @@ namespace Microsoft.R.Components.Settings {
         /// Show/Hide legal disclaimer for package manager
         /// </summary>
         bool ShowPackageManagerDisclaimer { get; set; }
+
+        /// <summary>
+        /// Determines if R Tools should always be using external Web browser or
+        /// try and send Help pages to the Help window and other Web requests 
+        /// to the external default Web browser.
+        /// </summary>
+        HelpBrowserType HelpBrowserType { get; set; }
     }
 }

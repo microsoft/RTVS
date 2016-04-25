@@ -44,12 +44,12 @@ namespace Microsoft.R.Host.Client.Session {
         private TaskCompletionSource<object> _afterHostStartedTcs;
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
-        private readonly IRHostClientApp _hostClientApp;
         private readonly Action _onDispose;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
         private readonly DisposeToken _disposeToken;
         private volatile bool _isHostRunning;
         private volatile bool _delayedMutatedOnReadConsole;
+        private volatile IRSessionCallback _callback;
 
         public int Id { get; }
         public string Prompt { get; private set; } = DefaultPrompt;
@@ -73,9 +73,8 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledEvaluateTask = Task.FromCanceled<REvaluationResult>(tcs.Token);
         }
 
-        public RSession(int id, IRHostClientApp hostClientApp, Action onDispose) {
+        public RSession(int id, Action onDispose) {
             Id = id;
-            _hostClientApp = hostClientApp;
             _onDispose = onDispose;
             _disposeToken = DisposeToken.Create<RSession>();
             _disableMutatingOnReadConsole = new CountdownDisposable(() => {
@@ -156,28 +155,29 @@ namespace Microsoft.R.Host.Client.Session {
             await cancelTask;
         }
 
-        public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
+        public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
             var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null);
             if (existingInitializationTcs == null) {
-                await StartHostAsyncBackground(startupInfo, timeout);
+                await StartHostAsyncBackground(startupInfo, callback, timeout);
             } else {
                 await existingInitializationTcs.Task;
             }
         }
 
-        public async Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
+        public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
             if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
             Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
 
-            await StartHostAsyncBackground(startupInfo, timeout);
+            await StartHostAsyncBackground(startupInfo, callback, timeout);
         }
 
-        private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, int timeout) {
+        private async Task StartHostAsyncBackground(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            _callback = callback;
             _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
             ClearPendingRequests();
 
@@ -267,10 +267,11 @@ namespace Microsoft.R.Host.Client.Session {
                         await evaluation.SetDefaultWorkingDirectory();
                     }
 
-                    if (_hostClientApp != null) {
+                    var callback = _callback;
+                    if (callback != null) {
                         await evaluation.SetVsGraphicsDevice();
 
-                        string mirrorUrl = _hostClientApp.CranUrlFromName(startupInfo.CranMirrorName);
+                        string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
                         await evaluation.SetVsHelpRedirection();
@@ -340,6 +341,11 @@ namespace Microsoft.R.Host.Client.Session {
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var callback = _callback;
+            if (!addToHistory && callback != null) {
+                return await callback.ReadUserInput(prompt, len, ct);
+            }
+
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
 
             _contexts = contexts;
@@ -349,11 +355,8 @@ namespace Microsoft.R.Host.Client.Session {
             var requestEventArgs = new RRequestEventArgs(contexts, prompt, len, addToHistory);
             BeforeRequest?.Invoke(this, requestEventArgs);
 
-            CancellationTokenSource evaluationCts;
-            Task evaluationTask;
-
-            evaluationCts = new CancellationTokenSource();
-            evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct); // will raise Mutate
+            var evaluationCts = new CancellationTokenSource();
+            var evaluationTask = EvaluateUntilCancelled(contexts, evaluationCts.Token, ct);
 
             currentRequest?.CompleteResponse();
 
@@ -370,8 +373,10 @@ namespace Microsoft.R.Host.Client.Session {
                 }
             } while (consoleInput == null);
 
+            consoleInput = consoleInput.EnsureLineBreak();
+
             // If evaluation was allowed, cancel evaluation processing but await evaluation that is in progress
-            evaluationCts?.Cancel();
+            evaluationCts.Cancel();
             await evaluationTask;
 
             AfterRequest?.Invoke(this, requestEventArgs);
@@ -455,7 +460,8 @@ namespace Microsoft.R.Host.Client.Session {
         /// Displays error message
         /// </summary>
         Task IRCallbacks.ShowMessage(string message, CancellationToken ct) {
-            return _hostClientApp != null ? _hostClientApp.ShowErrorMessage(message) : Task.CompletedTask;
+            var callback = _callback;
+            return callback != null ? callback.ShowErrorMessage(message) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -484,8 +490,9 @@ namespace Microsoft.R.Host.Client.Session {
 
             await EvaluateAll(contexts, true, ct);
 
-            if (_hostClientApp != null) {
-                return await _hostClientApp.ShowMessage(s, buttons);
+            var callback = _callback;
+            if (callback != null) {
+                return await callback.ShowMessage(s, buttons);
             }
 
             return MessageButtons.OK;
@@ -496,7 +503,8 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
-            return _hostClientApp != null ? _hostClientApp.Plot(filePath, ct) : Task.CompletedTask;
+            var callback = _callback;
+            return callback != null ? callback.Plot(filePath, ct) : Task.CompletedTask;
         }
 
         /// <summary>
@@ -505,7 +513,8 @@ namespace Microsoft.R.Host.Client.Session {
         /// <param name="url"></param>
         /// <returns></returns>
         Task IRCallbacks.Browser(string url) {
-            return _hostClientApp != null ? _hostClientApp.ShowHelp(url) : Task.CompletedTask;
+            var callback = _callback;
+            return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
 
         void IRCallbacks.DirectoryChanged() {

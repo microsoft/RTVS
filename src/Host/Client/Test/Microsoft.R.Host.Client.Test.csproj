@@ -85,6 +85,8 @@
     <Compile Include="Session\RSessionTest.cs" />
     <Compile Include="Session\RSessionTest.CancelAll.cs" />
     <Compile Include="Session\RSessionTest.InteractionEvaluation.cs" />
+    <Compile Include="Session\RSessionTest.ReadInput.cs" />
+    <Compile Include="Stubs\RSessionCallbackStub.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>

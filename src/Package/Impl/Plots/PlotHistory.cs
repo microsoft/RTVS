@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;

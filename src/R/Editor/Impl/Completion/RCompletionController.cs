@@ -406,7 +406,7 @@ namespace Microsoft.R.Editor.Completion {
             }
 
             var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, null);
+            IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
                     REvaluationResult result = await eval.EvaluateAsync(expression, REvaluationKind.Normal);

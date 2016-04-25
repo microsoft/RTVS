@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client.Test.Script {
-    public class RHostClientTestApp : IRHostClientApp {
+    public class RHostClientTestApp : IRSessionCallback {
         public Action<string> PlotHandler { get; set; }
 
         public virtual string CranUrlFromName(string name) {
@@ -32,6 +32,10 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public virtual Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
             return Task.FromResult(MessageButtons.OK);
+        }
+
+        public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
+            return Task.FromResult("\n");
         }
     }
 }

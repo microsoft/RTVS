@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Script;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -156,7 +157,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             }
         }
 
-        class RHostClientPlotTestApp : IRHostClientApp {
+        class RHostClientPlotTestApp : IRSessionCallback {
             public IPlotHistory History { get; set; }
 
             public virtual string CranUrlFromName(string name) {
@@ -180,6 +181,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
 
             public virtual Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
                 return Task.FromResult(MessageButtons.OK);
+            }
+
+            public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
+                return Task.FromResult("\n");
             }
         }
     }

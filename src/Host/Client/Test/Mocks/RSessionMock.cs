@@ -63,7 +63,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public void FlushLog() {
         }
 
-        public Task StartHostAsync(RHostStartupInfo startupInfo, int timeout = 3000) {
+        public Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
             IsHostRunning = true;
             Connected?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;

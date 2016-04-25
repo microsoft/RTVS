@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;

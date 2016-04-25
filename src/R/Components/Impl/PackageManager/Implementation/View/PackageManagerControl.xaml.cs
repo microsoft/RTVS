@@ -4,6 +4,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
@@ -24,15 +25,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void TabLoaded_Checked(object sender, RoutedEventArgs e) {
-            Model?.SwitchToLoadedPackages();
+            Model?.SwitchToLoadedPackagesAsync().DoNotWait();
         }
 
         private void TabInstalled_Checked(object sender, RoutedEventArgs e) {
-            Model?.SwitchToInstalledPackages();
+            Model?.SwitchToInstalledPackagesAsync().DoNotWait();
         }
 
         private void TabAvailable_Checked(object sender, RoutedEventArgs e) {
-            Model?.SwitchToAvailablePackages();
+            Model?.SwitchToAvailablePackagesAsync().DoNotWait();
         }
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e) {

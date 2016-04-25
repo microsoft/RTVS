@@ -57,9 +57,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         public IDictionary<string, int> Encodings { get; } = new Dictionary<string, int>();
 
-        public IDictionary<string, string> RowNames { get; } = new Dictionary<string, string> {
+        public IDictionary<string, int?> RowNames { get; } = new Dictionary<string, int?> {
             [Package.Resources.AutomaticValue] = null,
-            [Package.Resources.ImportData_UseFirstColumn] = "1",
+            [Package.Resources.ImportData_UseFirstColumn] = 1,
             [Package.Resources.ImportData_UseNumber] = null
         };
 
@@ -90,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             var input = new Dictionary<string, string> {
                 ["file"] = _utf8FilePath.ToRPath().ToRStringLiteral(),
                 ["header"] = (HeaderCheckBox.IsChecked != null && HeaderCheckBox.IsChecked.Value).ToString().ToUpperInvariant(),
-                ["row.names"] = GetSelectedValue(RowNamesComboBox),
+                ["row.names"] = GetSelectedNullableIntValueAsString(RowNamesComboBox),
                 ["encoding"] = "UTF-8".ToRStringLiteral(),
                 ["sep"] = GetSelectedValue(SeparatorComboBox),
                 ["dec"] = GetSelectedValue(DecimalComboBox),
@@ -110,6 +110,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private static string GetSelectedValue(ComboBox comboBox) {
             return comboBox.SelectedItem != null ? ((KeyValuePair<string, string>)comboBox.SelectedItem).Value.ToRStringLiteral() : null;
+        }
+
+        private static string GetSelectedNullableIntValueAsString(ComboBox comboBox) {
+            if (comboBox.SelectedItem != null) {
+                var val = ((KeyValuePair<string, int?>)comboBox.SelectedItem).Value;
+                return val == null ? "NULL" : val.ToString();
+            }
+            return null;
         }
 
         private static int GetSelectedValueAsInt(ComboBox comboBox) {

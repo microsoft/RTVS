@@ -56,7 +56,7 @@ namespace Microsoft.R.Host.Client.Signatures {
             try {
                 if (_session == null) {
                     var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    _session = provider.GetOrCreate(SessionId, null);
+                    _session = provider.GetOrCreate(SessionId);
                     _session.Disposed += OnSessionDisposed;
                 }
 
@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Client.Signatures {
                         Name = "RdData",
                         RBasePath = RToolsSettings.Current.RBasePath,
                         CranMirrorName = RToolsSettings.Current.CranMirror
-                    }, timeout);
+                    }, null, timeout);
                 }
             } finally {
                 _sessionSemaphore.Release();

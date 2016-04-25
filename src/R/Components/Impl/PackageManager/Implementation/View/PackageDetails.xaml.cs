@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.PackageManager.ViewModel;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.View {
@@ -20,15 +21,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
         }
 
         private void ButtonInstall_Click(object sender, RoutedEventArgs e) {
-            Model?.Install();
+            Model?.InstallAsync().DoNotWait();
         }
         
         private void ButtonUninstall_Click(object sender, RoutedEventArgs e) {
-            Model?.Uninstall();
+            Model?.UninstallAsync().DoNotWait();
         }
 
         private void ButtonUpdate_Click(object sender, RoutedEventArgs e) {
-            Model?.Update();
+            Model?.UpdateAsync().DoNotWait();
         }
 
         private void RepositoryUri_RequestNavigate(object sender, RequestNavigateEventArgs e) {

@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public void Lifecycle() {
             var disposed = false;
 
-            var session = new RSession(0, null, () => disposed = true);
+            var session = new RSession(0, () => disposed = true);
             disposed.Should().BeFalse();
 
             session.MonitorEvents();
@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task StartStop() {
-            var session = new RSession(0, null, () => { });
+            var session = new RSession(0, () => { });
 
             session.HostStarted.Status.Should().Be(TaskStatus.Canceled);
             session.IsHostRunning.Should().BeFalse();
@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             await session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 RBasePath = RUtilities.FindExistingRBasePath()
-            }, 50000);
+            }, null, 50000);
 
             session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
             session.IsHostRunning.Should().BeTrue();
@@ -67,11 +67,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public async Task DoubleStart() {
-            var session = new RSession(0, null, () => { });
+            var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 RBasePath = RUtilities.FindExistingRBasePath()
-            }, 50000);
+            }, null, 50000);
 
             Func<Task> f = () => ParallelTools.InvokeAsync(4, i => start());
             f.ShouldThrow<InvalidOperationException>();
@@ -87,8 +87,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Category.R.Session]
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
-                var session = new RSession(i, null, () => { });
-                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = RUtilities.FindExistingRBasePath()}, 50000);
+                var session = new RSession(i, () => { });
+                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = RUtilities.FindExistingRBasePath()}, null, 50000);
                 return session;
             };
 
@@ -102,11 +102,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test]
         [Category.R.Session]
         public void StartRHostMissing() {
-            var session = new RSession(0, null, () => { });
+            var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 RHostDirectory = Environment.SystemDirectory
-            }, 10000);
+            }, null, 10000);
 
             start.ShouldThrow<RHostBinaryMissingException>();
         }
@@ -114,11 +114,11 @@ namespace Microsoft.R.Host.Client.Test.Session {
         [Test(Skip="https://github.com/Microsoft/RTVS/issues/1196")]
         [Category.R.Session]
         public async Task StopBeforeInitialized() {
-            var session = new RSession(0, null, () => { });
+            var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
                 RHostDirectory = Environment.SystemDirectory
-            }, 10000);
+            }, null, 10000);
 
             Task.Run(start).DoNotWait();
             await session.StopHostAsync();

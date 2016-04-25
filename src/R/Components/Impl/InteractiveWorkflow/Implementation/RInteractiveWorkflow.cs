@@ -39,7 +39,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             , IRPackageManagerProvider packagesProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
-            , IRHostClientApp hostClientApp
             , ICoreShell coreShell
             , IRSettings settings
             , Action onDispose) {
@@ -50,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _coreShell = coreShell;
             _onDispose = onDispose;
 
-            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid, hostClientApp);
+            RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, _coreShell);

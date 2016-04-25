@@ -4,14 +4,15 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.R.Package.Help;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     class RHostClientHelpTestApp : RHostClientTestApp {
-        IHelpWindowVisualComponent _component;
-        public IHelpWindowVisualComponent Component {
+        IHelpVisualComponent _component;
+        public IHelpVisualComponent Component {
             get { return _component; }
             set {
                 _component = value;
