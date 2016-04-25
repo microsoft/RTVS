@@ -298,6 +298,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 if (reportProgress) {
                     await StartReportProgress(Package.Resources.Converting);
                 }
+
                 long read = 0;
                 using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
                     string line;
@@ -335,37 +336,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private async Task DoDefaultAction() {
-            await VsAppShell.Current.DispatchOnMainThreadAsync(async () => {
-                RunButton.IsEnabled = CancelButton.IsEnabled = false;
+            VsAppShell.Current.AssertIsOnMainThread();
+            RunButton.IsEnabled = CancelButton.IsEnabled = false;
 
-                try {
-                    int cp = GetSelectedValueAsInt(EncodingComboBox);
+            try {
+                int cp = GetSelectedValueAsInt(EncodingComboBox);
 
-                    var nRowsString = NRowsTextBox.Text;
-                    int nrows = Int32.MaxValue;
-                    if (!string.IsNullOrWhiteSpace(nRowsString)) {
-                        if (!Int32.TryParse(nRowsString, out nrows) || nrows <= 0) {
-                            VsAppShell.Current.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
-                            return;
-                        }
-                        nrows++; // for possible header
+                var nRowsString = NRowsTextBox.Text;
+                int nrows = Int32.MaxValue;
+                if (!string.IsNullOrWhiteSpace(nRowsString)) {
+                    if (!Int32.TryParse(nRowsString, out nrows) || nrows <= 0) {
+                        VsAppShell.Current.ShowErrorMessage(Package.Resources.ImportData_NRowsError);
+                        return;
                     }
-
-                    await ConvertToUtf8(FilePathBox.Text, cp, true, nrows);
-                    await SetProgressMessage(Package.Resources.Importing);
-
-                    var expression = BuildCommandLine(false);
-                    if (expression != null) {
-                        // TODO: this may take a while and must be cancellable
-                        await RunAsync(expression);
-                    }
-                } finally {
-                    RunButton.IsEnabled = CancelButton.IsEnabled = true;
+                    nrows++; // for possible header
                 }
-            });
+
+                await ConvertToUtf8(FilePathBox.Text, cp, true, nrows);
+                ProgressBarText.Text = Package.Resources.Importing;
+
+                var expression = BuildCommandLine(false);
+                if (expression != null) {
+                    // TODO: this may take a while and must be cancellable
+                    await RunAsync(expression);
+                }
+            } finally {
+                RunButton.IsEnabled = CancelButton.IsEnabled = true;
+            }
         }
 
         private async Task StartReportProgress(string message) {
+            TaskUtilities.AssertIsOnBackgroundThread();
             await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
                 ProgressBarText.Text = message;
                 ProgressBar.Value = 0;
@@ -373,14 +374,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         }
 
         private async Task ReportProgress(double value) {
+            TaskUtilities.AssertIsOnBackgroundThread();
             await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
                 ProgressBar.Value = value;
-            });
-        }
-
-        private async Task SetProgressMessage(string message) {
-            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                ProgressBarText.Text = message;
             });
         }
 

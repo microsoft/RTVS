@@ -16,10 +16,8 @@ using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
-using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
@@ -28,6 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private static int _busy;
 
         public static async Task OpenDataCsvApp(DebugEvaluationResult result) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
                 return;
             }
@@ -46,34 +46,34 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
             var rfile = file.Replace('\\', '/');
 
-            string currentStatusText = string.Empty;
-            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-                statusBar.GetText(out currentStatusText);
-            });
+            string currentStatusText;
+            var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            statusBar.GetText(out currentStatusText);
 
             try {
-                await SetStatusTextAsync(Resources.Status_WritingCSV);
-                using (var e = await session.BeginEvaluationAsync()) {
-                    await e.EvaluateAsync($"write.csv({result.Expression}, file='{rfile}')", REvaluationKind.Normal);
-                }
-
-                if (File.Exists(file)) {
-                    Task.Run(() => {
-                        try {
-                            Process.Start(file);
-                        } catch (Win32Exception ex) {
-                            ShowErrorMessage(ex.Message);
-                        } catch (FileNotFoundException ex) {
-                            ShowErrorMessage(ex.Message);
-                        }
-                    }).DoNotWait();
-                }
+                statusBar.SetText(Resources.Status_WritingCSV);
+                await CreateCsvAndStartProcess(result, session, rfile, file);
+            } catch (Win32Exception ex) {
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
+            } catch (FileNotFoundException ex) {
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } finally {
-                await SetStatusTextAsync(currentStatusText);
+                statusBar.SetText(currentStatusText);
             }
 
             Interlocked.Exchange(ref _busy, 0);
+        }
+
+        private static async Task CreateCsvAndStartProcess(DebugEvaluationResult result, IRSession session, string rfile, string file) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            using (var e = await session.BeginEvaluationAsync()) {
+                await e.EvaluateAsync($"write.csv({result.Expression}, file='{rfile}')", REvaluationKind.Normal);
+            }
+
+            if (File.Exists(file)) {
+                Process.Start(file);
+            }
         }
 
         public static void Close() {
@@ -90,19 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var folder = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             return Path.Combine(folder, @"RTVS_CSV_Exports\");
         }
-
-        private static void ShowErrorMessage(string message) {
-            VsAppShell.Current.ShowErrorMessage(
-                string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, message));
-        }
-
-        private static async Task SetStatusTextAsync(string text) {
-            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-                statusBar.SetText(text);
-            });
-        }
-
+        
         private static string MakeCsvFileName(string variableName) {
             var project = ProjectUtilities.GetActiveProject();
             var projectName = project?.FileName;

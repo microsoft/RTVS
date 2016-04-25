@@ -92,12 +92,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
-            // Right now only one instance of interactive window is allowed
-            if (ActiveWindow != null) {
-                throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
-            }
-
             _coreShell.AssertIsOnMainThread();
+
+            if (ActiveWindow != null) {
+                // Right now only one instance of interactive window is allowed
+                if (instanceId != 0) {
+                    throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
+                }
+
+                return ActiveWindow;
+            }
 
             var evaluator = RInstallationHelper.VerifyRIsInstalled(_coreShell, _settings.RBasePath)
                 ? new RInteractiveEvaluator(RSession, History, _coreShell, _settings)
