@@ -140,11 +140,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
-            return MainThreadDispatcher.InvokeAsync(action, DispatcherPriority.Normal, cancellationToken).Task;
+            if (MainThreadDispatcher.Thread != Thread.CurrentThread) {
+                return MainThreadDispatcher.InvokeAsync(action, DispatcherPriority.Normal, cancellationToken).Task;
+            }
+
+            action();
+            return Task.CompletedTask;
         }
 
         public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = new CancellationToken()) {
-            return MainThreadDispatcher.InvokeAsync(callback, DispatcherPriority.Normal, cancellationToken).Task;
+            return MainThreadDispatcher.Thread != Thread.CurrentThread 
+                ? MainThreadDispatcher.InvokeAsync(callback, DispatcherPriority.Normal, cancellationToken).Task 
+                : Task.FromResult(callback());
         }
 
         private Dispatcher MainThreadDispatcher { get; }
