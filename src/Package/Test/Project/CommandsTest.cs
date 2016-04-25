@@ -13,6 +13,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -47,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var cmd = new CopyItemPathCommand(_interactiveWorkflowProvider);
             await CheckSingleNodeCommandStatusAsync(cmd, RPackageCommandId.icmdCopyItemPath, nodes1, nodes2);
 
-            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
+            await UIThreadHelper.Instance.InvokeAsync(() => {
                 var contents = Clipboard.GetText();
                 contents.Should().Be("\"" + filePath + "\"");
             });

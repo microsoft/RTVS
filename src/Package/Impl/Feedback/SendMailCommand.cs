@@ -39,13 +39,12 @@ namespace Microsoft.VisualStudio.R.Package.Feedback {
             }
 
             if (outlookApp == null) {
-                VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                    var fallbackWindow = new SendMailFallbackWindow {
-                        MessageBody = body
-                    };
-                    fallbackWindow.Show();
-                    fallbackWindow.Activate();
-                }).Wait();
+                var fallbackWindow = new SendMailFallbackWindow {
+                    MessageBody = body
+                };
+
+                fallbackWindow.Show();
+                fallbackWindow.Activate();
 
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = true;

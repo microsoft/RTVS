@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
         public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, IRSession session, int instanceId = 0) {
             var workflow = _workflowProvider.GetOrCreate();
             if (workflow.ActiveWindow == null) {
-                VsAppShell.Current.DispatchOnMainThreadAsync(() => workflow.GetOrCreateVisualComponent(_componentContainerFactory));
+                VsAppShell.Current.DispatchOnUIThread(() => workflow.GetOrCreateVisualComponent(_componentContainerFactory).DoNotWait());
             }
             return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, session, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
         }
