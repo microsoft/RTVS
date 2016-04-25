@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class GridViewer : IObjectDetailsViewer {
+        private const int _toolWindowIdBase = 100; 
         private readonly static string[] _classes = new string[] { "matrix", "data.frame", "table" };
 
         #region IObjectDetailsViewer
@@ -28,8 +30,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public Task ViewAsync(DebugValueEvaluationResult evaluation) {
-            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
-            pane.SetEvaluation(new VariableViewModel(evaluation));
+            var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
+            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
+            pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name);
             return Task.CompletedTask;
         }
 
