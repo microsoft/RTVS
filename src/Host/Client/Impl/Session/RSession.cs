@@ -276,6 +276,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                         await evaluation.SetVsHelpRedirection();
                         await evaluation.SetChangeDirectoryRedirection();
+                        await evaluation.SetViewRedirection();
                     }
 
                     _afterHostStartedTcs.SetResult(null);
@@ -519,6 +520,11 @@ namespace Microsoft.R.Host.Client.Session {
 
         void IRCallbacks.DirectoryChanged() {
             DirectoryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.ViewObject(string obj, string title) {
+            var callback = _callback;
+            callback?.ViewObject(obj, title);
         }
     }
 }

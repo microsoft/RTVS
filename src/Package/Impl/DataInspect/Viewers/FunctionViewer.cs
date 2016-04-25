@@ -14,6 +14,7 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
@@ -28,31 +29,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public bool IsTable => false;
 
+        public DebugEvaluationResultFields EvaluationFields => DebugEvaluationResultFields.ReprDeparse;
+
         public bool CanView(DebugValueEvaluationResult evaluation) {
             return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 
-        public async Task ViewAsync(DebugValueEvaluationResult evaluation) {
-            string functionName = evaluation.Name as string;
-            if (string.IsNullOrEmpty(functionName)) {
-                return;
-            }
-
-            var session = _sessionProvider.GetInteractiveWindowRSession();
-            string functionCode = null;
-            using (var e = await session.BeginEvaluationAsync()) {
-                var result = await e.EvaluateAsync(functionName, REvaluationKind.Json);
-                if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.JsonResult != null) {
-                    try {
-                        functionCode = (string)result.JsonResult;
-                    } catch (InvalidCastException) { }
-                }
-            }
-
+        public Task ViewAsync(DebugValueEvaluationResult evaluation) {
+            string functionCode = evaluation.GetRepresentation().Deparse;
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 functionCode = formatter.Format(functionCode);
 
+                string functionName = evaluation.Name ?? "function";
                 string fileName = "~" + functionName;
                 string tempFile = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
                 try {
@@ -63,11 +52,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     using (var sw = new StreamWriter(tempFile)) {
                         sw.Write(functionCode);
                     }
-                    var dte = VsAppShell.Current.GetGlobalService<DTE>();
-                    dte.ItemOperations.OpenFile(tempFile);
-                    File.Delete(tempFile);
+
+                    VsAppShell.Current.DispatchOnUIThread(() => {
+                        var dte = VsAppShell.Current.GetGlobalService<DTE>();
+                        dte.ItemOperations.OpenFile(tempFile);
+                        try {
+                            File.Delete(tempFile);
+                        } catch (IOException) { } catch (AccessViolationException) { }
+                    });
                 } catch (IOException) { } catch (AccessViolationException) { }
             }
+            return Task.CompletedTask;
         }
 
         public async Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation) {
@@ -76,10 +71,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 return Task.FromResult<object>(null);
             }
 
-            var presenter = new FunctionInfoPresenter();
-            presenter.DataContext = await FunctionSignatureSource.GetSignatureAsync(functionName);
+            var data = await FunctionSignatureSource.GetSignatureAsync(functionName);
+            var tcs = new TaskCompletionSource<object>();
 
-            return Task.FromResult<object>(presenter);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var presenter = new FunctionInfoPresenter();
+                presenter.DataContext = data;
+                tcs.TrySetResult(presenter);
+            });
+
+            return tcs;
         }
         #endregion
     }

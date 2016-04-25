@@ -168,5 +168,20 @@ grDevices::deviceIsInteractive('ide')
   }, 'base')";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
+
+        public static Task<REvaluationResult> SetViewRedirection(this IRExpressionEvaluator evaluation) {
+            var script =
+@"View <- function(x, title) {
+    if(is.function(x) || is.data.frame(x) || is.matrix(x)) {
+      if (missing(title)) {
+        title <- ''
+      }
+      invisible(rtvs:::send_message('View', substitute(x), title))
+    } else {
+      print(x)
+    }
+  }";
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+        }
     }
 }

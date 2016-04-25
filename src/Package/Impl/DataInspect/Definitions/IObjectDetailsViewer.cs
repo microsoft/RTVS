@@ -8,6 +8,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewer {
         bool IsTable { get; }
 
+        DebugEvaluationResultFields EvaluationFields { get; }
+
         bool CanView(DebugValueEvaluationResult evaluation);
 
         Task ViewAsync(DebugValueEvaluationResult evaluation);

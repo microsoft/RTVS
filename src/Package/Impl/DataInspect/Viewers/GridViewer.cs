@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Debugger;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using static System.FormattableString;
 
@@ -14,9 +15,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal sealed class GridViewer : IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100; 
         private readonly static string[] _classes = new string[] { "matrix", "data.frame", "table" };
+        private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
+                                                        | DebugEvaluationResultFields.Expression
+                                                        | DebugEvaluationResultFields.TypeName
+                                                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                                                        | DebugEvaluationResultFields.Dim
+                                                        | DebugEvaluationResultFields.Length;
 
         #region IObjectDetailsViewer
         public bool IsTable => true;
+
+        public DebugEvaluationResultFields EvaluationFields => _fields;
 
         public bool CanView(DebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
@@ -30,9 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public Task ViewAsync(DebugValueEvaluationResult evaluation) {
-            var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
-            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-            pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
+                VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
+                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Name);
+            });
             return Task.CompletedTask;
         }
 

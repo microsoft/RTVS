@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Settings;
@@ -82,6 +83,11 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// </summary>
         public string CranUrlFromName(string mirrorName) {
             return CranMirrorList.UrlFromName(mirrorName);
+        }
+
+        public void ViewObject(string expression, string title) {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            viewer?.ViewObject(expression, title);
         }
     }
 }

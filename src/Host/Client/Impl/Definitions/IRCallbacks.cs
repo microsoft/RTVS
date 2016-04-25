@@ -42,6 +42,15 @@ namespace Microsoft.R.Host.Client {
         /// <returns></returns>
         Task Browser(string url);
 
+        /// <summary>
+        /// Called when working directory has changed in R.
+        /// </summary>
         void DirectoryChanged();
+
+        /// <summary>
+        /// Called when used invoked View(obj) in R.
+        /// </summary>
+        /// <returns></returns>
+        void ViewObject(string expression, string title);
     }
 }

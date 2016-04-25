@@ -4,8 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -23,8 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IRToolsSettings _settings;
         ObservableTreeNode _rootNode;
         IREnvironmentProvider _environmentProvider;
-        IRSession _rSession;
-        DebugSession _debugSession;
+        IDebugObjectEvaluator _evaluator;
 
         private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
@@ -43,9 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            var rSession = sessionProvider.GetInteractiveWindowRSession();
 
-            _environmentProvider = new REnvironmentProvider(_rSession);
+            _environmentProvider = new REnvironmentProvider(rSession);
             _environmentProvider.EnvironmentChanged += EnvironmentProvider_EnvironmentChanged;
         }
 
@@ -96,45 +93,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task<DebugSession> GetDebugSessionAsync() {
-            if (_debugSession != null) {
-                return _debugSession;
-            }
-
-            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
-            if (_debugSession == null) {
-                Debug.Assert(_rSession != null);
-                _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
-
-            return _debugSession;
-        }
-
         private async Task SetRootModelAsync(REnvironment env) {
+            if (_evaluator == null) {
+                _evaluator = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugObjectEvaluator>();
+            }
+
             await TaskUtilities.SwitchToBackgroundThread();
+            const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
+                    | DebugEvaluationResultFields.Expression
+                    | DebugEvaluationResultFields.TypeName
+                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
+                    | DebugEvaluationResultFields.Dim
+                    | DebugEvaluationResultFields.Length;
 
-            var debugSession = await GetDebugSessionAsync();
-            var frames = await debugSession.GetStackFramesAsync();
-            var frame = frames.FirstOrDefault(f => f.Index == 0);
-
-            if (frame != null) {
-                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                        | DebugEvaluationResultFields.Expression
-                        | DebugEvaluationResultFields.TypeName
-                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
-                        | DebugEvaluationResultFields.Dim
-                        | DebugEvaluationResultFields.Length;
-                DebugEvaluationResult result = await frame.EvaluateAsync(
-                    GetExpression(env),
-                    fields);
-
+            DebugEvaluationResult result = await _evaluator.EvaluateAsync(GetExpression(env), fields);
+            if (result != null) {
                 var wrapper = new VariableViewModel(result);
                 var rootNodeModel = new VariableNode(_settings, wrapper);
-
-                VsAppShell.Current.DispatchOnUIThread(
-                    () => {
-                        _rootNode.Model = rootNodeModel;
-                    });
+                VsAppShell.Current.DispatchOnUIThread(() => _rootNode.Model = rootNodeModel);
             }
         }
 
@@ -165,7 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void RootTreeGrid_PreviewKeyUp(object sender, KeyEventArgs e) {
-            if(e.Key == Key.Enter) {
+            if (e.Key == Key.Enter) {
                 HandleDefaultAction();
             }
         }
@@ -173,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void HandleDefaultAction() {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
             var ew = node?.Model?.Content as VariableViewModel;
-            if(ew != null && ew.CanShowDetail) {
+            if (ew != null && ew.CanShowDetail) {
                 ew.ShowDetailCommand.Execute(ew);
             }
         }

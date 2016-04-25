@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
@@ -100,6 +101,10 @@ namespace Microsoft.R.Host.Client {
 
         public async void DirectoryChanged() {
             await Console.Error.WriteLineAsync("Directory changed.");
+        }
+
+        public void ViewObject(string x, string title) {
+            Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
         }
 
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {

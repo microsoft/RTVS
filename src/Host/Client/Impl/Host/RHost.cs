@@ -401,6 +401,11 @@ namespace Microsoft.R.Host.Client {
                                 _callbacks.DirectoryChanged();
                                 break;
 
+                            case "View":
+                                message.ExpectArguments(2);
+                                _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"));
+                                break;
+
                             case "Plot":
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 break;
