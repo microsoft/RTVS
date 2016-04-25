@@ -6,20 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <VsVersion Condition="'$(VsVersion)' == ''">14.0</VsVersion>
-    <VsRcVersion Condition="'$(VsRcVersion)' == ''">$(VsVersion).22823</VsRcVersion>
-    
     <Manufacturer>Microsoft Corporation</Manufacturer>
     <ManufacturerShortName>Microsoft</ManufacturerShortName>
-
     <ProductName Condition=" '$(ProductName)'=='' ">R Tools for Visual Studio</ProductName>
-    <DefineConstants>$(DefineConstants);CompatibleVsVersion=$(VsRcVersion);</DefineConstants>
-    
-    <DefineConstants Condition="'$(VsVersion)' == 14.0">$(DefineConstants);VS14;</DefineConstants>
-    <DefineConstants Condition="'$(VsVersion)' == 15.0">$(DefineConstants);VS15;</DefineConstants>
   </PropertyGroup>
 
-<!-- sign settings -->
+  <!-- sign settings -->
   <PropertyGroup>
     <SignOutput Condition=" '$(SignOutput)'=='' ">true</SignOutput>
     <AuthenticodeCertFriendlyName>Microsoft</AuthenticodeCertFriendlyName>
