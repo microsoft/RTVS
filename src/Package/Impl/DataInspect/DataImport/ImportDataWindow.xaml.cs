@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
     /// </summary>
     public partial class ImportDataWindow : DialogWindow {
         private const int MaxPreviewLines = 20;
-        private string _tempFilePath;
+        private string _utf8FilePath;
 
         public IDictionary<string, string> Separators { get; } = new Dictionary<string, string> {
             [Package.Resources.ImportData_Whitespace] = "",
@@ -58,9 +58,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         public IDictionary<string, int> Encodings { get; } = new Dictionary<string, int>();
 
-        public IDictionary<string, string> RowNames { get; } = new Dictionary<string, string> {
+        public IDictionary<string, int?> RowNames { get; } = new Dictionary<string, int?> {
             [Package.Resources.AutomaticValue] = null,
-            [Package.Resources.ImportData_UseFirstColumn] = "1",
+            [Package.Resources.ImportData_UseFirstColumn] = 1,
             [Package.Resources.ImportData_UseNumber] = null
         };
 
@@ -74,24 +74,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             SetFilePath(filePath, name);
         }
 
-        private IRSession GetRSession() {
-            IRSession rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate().RSession;
-            if (rSession == null) {
-                throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for importing data set"));
-            }
-            return rSession;
-        }
-
         private string BuildCommandLine(bool preview) {
-            if (string.IsNullOrEmpty(_tempFilePath)) {
+            if (string.IsNullOrEmpty(_utf8FilePath)) {
                 return null;
             }
 
             var encoding = GetSelectedString(EncodingComboBox);
             var input = new Dictionary<string, string> {
-                ["file"] = _tempFilePath.ToRPath().ToRStringLiteral(),
+                ["file"] = _utf8FilePath.ToRPath().ToRStringLiteral(),
                 ["header"] = (HeaderCheckBox.IsChecked != null && HeaderCheckBox.IsChecked.Value).ToString().ToUpperInvariant(),
-                ["row.names"] = GetSelectedValue(RowNamesComboBox),
+                ["row.names"] = GetSelectedNullableIntValueAsString(RowNamesComboBox),
                 ["encoding"] = "UTF-8".ToRStringLiteral(),
                 ["sep"] = GetSelectedValue(SeparatorComboBox),
                 ["dec"] = GetSelectedValue(DecimalComboBox),
@@ -102,7 +94,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
             var inputString = string.Join(", ", input
                 .Where(kvp => kvp.Value != null)
-                .Select(kvp => $"{kvp.Key}={kvp.Value}"));
+                .Select(kvp => Invariant($"{kvp.Key}={kvp.Value}")));
 
             return preview
                 ? Invariant($"read.csv({inputString}, nrows=20)")
@@ -111,6 +103,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private static string GetSelectedValue(ComboBox comboBox) {
             return comboBox.SelectedItem != null ? ((KeyValuePair<string, string>)comboBox.SelectedItem).Value.ToRStringLiteral() : null;
+        }
+
+        private static string GetSelectedNullableIntValueAsString(ComboBox comboBox) {
+            if (comboBox.SelectedItem == null) {
+                return null;
+            }
+
+            var val = ((KeyValuePair<string, int?>)comboBox.SelectedItem).Value;
+            return val?.ToString() ?? "NULL";
         }
 
         private static int GetSelectedValueAsInt(ComboBox comboBox) {
@@ -150,7 +151,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             PreviewFileContent(FilePathBox.Text, cp);
             await ConvertToUtf8(FilePathBox.Text, cp, false, MaxPreviewLines);
 
-            if (!string.IsNullOrEmpty(_tempFilePath)) {
+            if (!string.IsNullOrEmpty(_utf8FilePath)) {
                 var expression = BuildCommandLine(preview: true);
                 if (expression != null) {
                     try {
@@ -165,16 +166,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             }
         }
 
-        private async Task RunAsync(string expression) {
+        private bool Execute(string expression) {
             try {
-                REvaluationResult result = await EvaluateAsync(expression);
-                if (result.ParseStatus == RParseStatus.OK && result.Error == null) {
-                    Close();
-                } else {
-                    OnError(result.ToString());
-                }
+                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                workflow.Operations.ExecuteExpression(expression);
+                return true;
             } catch (Exception ex) {
                 OnError(ex.Message);
+                return false;
             }
         }
 
@@ -182,18 +181,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             VsAppShell.Current.ShowErrorMessage(errorText);
             ProgressBarText.Text = string.Empty;
             ProgressBar.Value = -10;
-        }
-
-        private async Task<REvaluationResult> EvaluateAsync(string expression) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            IRSession rSession = GetRSession();
-            REvaluationResult result;
-            using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                result = await evaluator.EvaluateAsync(expression, REvaluationKind.Mutating);
-            }
-
-            return result;
         }
 
         private void PopulateEncodingList() {
@@ -288,7 +275,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             await TaskUtilities.SwitchToBackgroundThread();
 
             Encoding encoding = Encoding.GetEncoding(codePage);
-            _tempFilePath = Path.GetTempFileName();
+            _utf8FilePath = Path.GetTempFileName();
 
             int lineCount = 0;
             double progressValue = 0;
@@ -299,7 +286,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 }
 
                 long read = 0;
-                using (var sw = new StreamWriter(_tempFilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
+                using (var sw = new StreamWriter(_utf8FilePath, append: false, encoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false))) {
                     string line;
                     while (true) {
                         line = sr.ReadLine();
@@ -328,8 +315,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
 
         private void DeleteTempFile() {
             try {
-                if (!string.IsNullOrEmpty(_tempFilePath) && File.Exists(_tempFilePath)) {
-                    File.Delete(_tempFilePath);
+                if (!string.IsNullOrEmpty(_utf8FilePath) && File.Exists(_utf8FilePath)) {
+                    File.Delete(_utf8FilePath);
                 }
             } catch (UnauthorizedAccessException) { }
         }
@@ -337,6 +324,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
         private async Task DoDefaultAction() {
             await VsAppShell.Current.SwitchToMainThreadAsync();
             RunButton.IsEnabled = CancelButton.IsEnabled = false;
+            var result = false;
 
             try {
                 int cp = GetSelectedValueAsInt(EncodingComboBox);
@@ -357,10 +345,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
                 var expression = BuildCommandLine(false);
                 if (expression != null) {
                     // TODO: this may take a while and must be cancellable
-                    await RunAsync(expression);
+                    result = Execute(expression);
                 }
             } finally {
-                RunButton.IsEnabled = CancelButton.IsEnabled = true;
+                if (result) {
+                    Close();
+                } else {
+                    RunButton.IsEnabled = CancelButton.IsEnabled = true;
+                }
             }
         }
 
