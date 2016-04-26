@@ -132,13 +132,14 @@ namespace Microsoft.R.Support.Help.Functions {
                     }
                     if (!_functionToInfoMap.ContainsKey(functionName)) {
                         if (functionInfos.Count > 0) {
-                            // RD doesn't contain the requested function.
-                            // e.g. as.Date.character has RD for as.Date but not itself
-                            // without its own named info, this will request indefinitely many times
-                            // as workaround, add the first info with functionName
+                            // RD doesn't contain the requested function. For example, as.Date.character()
+                            // has RD for the as.Date() but not for itself. In order to prevent indefinite
+                            // cache misses add the first info with the function name
                             _functionToInfoMap[functionName] = functionInfos[0];
                         } else {
-                            // TODO: add some stub function info here to prevent subsequent calls for the same function as we already know the call will fail.
+                            // No information whatsoever. Add stub information in order to prevent
+                            // indefinite cache misses.
+                            _functionToInfoMap[functionName] = new FunctionInfo(functionName);
                         }
                     }
 

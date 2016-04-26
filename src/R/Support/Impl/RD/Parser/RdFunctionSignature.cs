@@ -150,7 +150,9 @@ namespace Microsoft.R.Support.RD.Parser {
                     // Check if { is preceded by \method
                 }
 
-                if (tokens.CurrentToken.TokenType != RTokenType.Identifier) {
+                // function name can be a Keyword. For example, return() is a function.
+                if (tokens.CurrentToken.TokenType != RTokenType.Identifier &&
+                    tokens.CurrentToken.TokenType != RTokenType.Keyword) {
                     break;
                 }
 
@@ -161,6 +163,10 @@ namespace Microsoft.R.Support.RD.Parser {
                 if (info != null) {
                     signatures.Add(info);
                 }
+
+                // Skip to the end of the line such as in case of 'function( arglist ) expr'
+                // where we don't need the 'expr' part.
+                tokens.MoveToNextLine(textProvider);
             }
 
             return signatures;
