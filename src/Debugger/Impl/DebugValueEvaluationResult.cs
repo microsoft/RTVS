@@ -14,34 +14,72 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
-    public enum DebugValueEvaluationResultKind {
-        UnnamedItem,
-        NamedItem,
-        Slot,
-    }
-
-    [Flags]
-    public enum DebugValueEvaluationResultFlags {
-        None,
-        Atomic = 1 << 1,
-        Recursive = 1 << 2,
-        HasParentEnvironment = 1 << 3,
-    }
-
+    /// <summary>
+    /// Describes the result of evaluating an expression that produced a value that is not a promise or an active binding. 
+    /// </summary>
+    /// <remarks>
+    /// Note that most properties of the object will only have a meaningful value if the corresponding <see cref="DebugEvaluationResultFields"/>
+    /// flag was specified when producing the result. All properties which were not so requested will be <see langword="null"/>.
+    /// </remarks>
     public class DebugValueEvaluationResult : DebugEvaluationResult {
-        public DebugValueEvaluationResultKind Kind { get; }
+        private JObject _reprObj;
+
+        /// <summary>
+        /// The kind of accessor that was used to obtain this <see cref="DebugValueEvaluationResult"/> from its parent.
+        /// </summary>
+        public DebugChildAccessorKind AccessorKind { get; }
+        /// <summary>
+        /// Type of the value, as computed by <c>typeof(...)</c>.
+        /// </summary>
         public string TypeName { get; }
+        /// <summary>
+        /// List of classes of the value, as computed by <c>classes(...)</c>.
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="DebugEvaluationResultFields.Classes"/> was not specified, this property will be
+        /// <see langword="null"/>, rather than an empty collection.
+        /// </remarks>
         public IReadOnlyList<string> Classes { get; }
+        /// <summary>
+        /// Length of the value, as computed by <c>length(...)</c>.
+        /// </summary>
         public int? Length { get; }
+        /// <summary>
+        /// Number of attributes that this value has, as computed by <c>length(attributes(...))</c>.
+        /// </summary>
         public int? AttributeCount { get; }
+        /// <summary>
+        /// Number of slots that this value has, as computed by <c>length(slotNames(class(...)))</c>.
+        /// </summary>
         public int? SlotCount { get; }
+        /// <summary>
+        /// Number of names that the children of value have, as computed by <c>length(names(...))</c>.
+        /// </summary>
         public int? NameCount { get; }
+        /// <summary>
+        /// Dimensions that this value has, as computed by <c>dim(...)</c>.
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="DebugEvaluationResultFields.Dim"/> was not specified, this property will be
+        /// <see langword="null"/>, rather than an empty collection.
+        /// </remarks>
         public IReadOnlyList<int> Dim { get; }
+        /// <summary>
+        /// Various miscellaneous flags describing this value.
+        /// </summary>
         public DebugValueEvaluationResultFlags Flags { get; }
 
+        /// <seealso cref="DebugValueEvaluationResultFlags.Atomic"/>
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);
+
+        /// <seealso cref="DebugValueEvaluationResultFlags.Recursive"/>
         public bool IsRecursive => Flags.HasFlag(DebugValueEvaluationResultFlags.Recursive);
+
+        /// <summary>
+        /// Whether this value has any attributes.
+        /// </summary>
         public bool HasAttributes => AttributeCount != null && AttributeCount != 0;
+
         public bool HasSlots => SlotCount != null && SlotCount != 0;
 
         /// <summary>
@@ -76,11 +114,8 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-
-        private JObject _reprObj;
-
-        internal DebugValueEvaluationResult(DebugStackFrame stackFrame, string expression, string name, JObject json)
-            : base(stackFrame, expression, name) {
+        internal DebugValueEvaluationResult(DebugSession session, string environmentExpression, string expression, string name, JObject json)
+            : base(session, environmentExpression, expression, name) {
 
             var repr = json["repr"];
             if (repr != null) {
@@ -109,14 +144,16 @@ namespace Microsoft.R.Debugger {
             var kind = json.Value<string>("kind");
             switch (kind) {
                 case null:
+                    AccessorKind = DebugChildAccessorKind.None;
+                    break;
                 case "[[":
-                    Kind = DebugValueEvaluationResultKind.UnnamedItem;
+                    AccessorKind = DebugChildAccessorKind.Brackets;
                     break;
                 case "$":
-                    Kind = DebugValueEvaluationResultKind.NamedItem;
+                    AccessorKind = DebugChildAccessorKind.Dollar;
                     break;
                 case "@":
-                    Kind = DebugValueEvaluationResultKind.Slot;
+                    AccessorKind = DebugChildAccessorKind.At;
                     break;
                 default:
                     throw new InvalidDataException(Invariant($"Invalid kind '{kind}' in:\n\n{json}"));
@@ -142,17 +179,36 @@ namespace Microsoft.R.Debugger {
             }
         }
 
+        /// <summary>
+        /// Returns a structure containing various representations of this value, as requested via <see cref="DebugEvaluationResultFields"/>
+        /// when this result was produced.
+        /// </summary>
         public DebugValueRepresentation GetRepresentation() {
-            return GetRepresentation(DebugValueRepresentationKind.Normal);
-        }
-
-        public DebugValueRepresentation GetRepresentation(DebugValueRepresentationKind kind) {
             if (_reprObj == null) {
                 throw new InvalidOperationException("Evaluation result does not have an associated representation.");
             }
-            return new DebugValueRepresentation(_reprObj, kind);
+            return new DebugValueRepresentation(_reprObj);
         }
 
+        /// <summary>
+        /// Computes the children of this value, and returns a collection of evaluation results describing each child.
+        /// See <see cref="DebugSession.EvaluateAsync"/> for the meaning of parameters.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
+        /// Otherwise, the order is undefined. If an object has both ordered and unordered children (e.g. it is a vector
+        /// with slots), then it is guaranteed that each group is reported as a contiguous sequence within the returned
+        /// collection, and order is honored within each group; but groups themselves are not ordered relative to each other.
+        /// </para>
+        /// <para>
+        /// This method does not respect snapshot semantics - that is, it will re-evaluate the expression that produced
+        /// its value, and will obtain the most current list of children, rather than the ones that were there when
+        /// the result was originally produced. If the context in which this result was produced is no longer available
+        /// (e.g. if it was a stack frame that has since went away), the results are undefined.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="RException">Raised if child retrieval fails.</exception>
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields,
             int? maxLength = null,
@@ -161,8 +217,8 @@ namespace Microsoft.R.Debugger {
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            if (StackFrame == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that is not tied to a frame.");
+            if (EnvironmentExpression == null) {
+                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated environment expression.");
             }
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
@@ -172,8 +228,8 @@ namespace Microsoft.R.Debugger {
                 return new DebugEvaluationResult[0];
             }
 
-            var call = Invariant($@"rtvs:::describe_children({Expression.ToRStringLiteral()}, {StackFrame.EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
-            var jChildren = await StackFrame.Session.InvokeDebugHelperAsync<JArray>(call, cancellationToken);
+            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
+            var jChildren = await Session.RSession.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
@@ -187,7 +243,7 @@ namespace Microsoft.R.Debugger {
                 foreach (var kv in childObject) {
                     var name = kv.Key;
                     var jEvalResult = (JObject)kv.Value;
-                    var evalResult = Parse(StackFrame, name, jEvalResult);
+                    var evalResult = Parse(Session, EnvironmentExpression, name, jEvalResult);
                     children.Add(evalResult);
                 }
             }

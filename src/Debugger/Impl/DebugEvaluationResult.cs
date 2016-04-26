@@ -2,113 +2,114 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
-    [Flags]
-    public enum DebugEvaluationResultFields : ulong {
-        None,
-        Expression = 1 << 1,
-        Kind = 1 << 2,
-        Repr = 1 << 3,
-        ReprDeparse = Repr | (1 << 4),
-        ReprToString = Repr | (1 << 5),
-        ReprStr = Repr | (1 << 6),
-        TypeName = 1 << 7,
-        Classes = 1 << 8,
-        Length = 1 << 9,
-        SlotCount = 1 << 10,
-        AttrCount = 1 << 11,
-        NameCount = 1 << 12,
-        Dim = 1 << 13,
-        EnvName = 1 << 14,
-        Flags = 1 << 15,
-        Children = Expression | Length | AttrCount | SlotCount | NameCount | Flags,
-    }
-
-    internal static class DebugEvaluationResultFieldsExtensions {
-        private static readonly Dictionary<DebugEvaluationResultFields, string> _mapping = new Dictionary<DebugEvaluationResultFields, string> {
-            [DebugEvaluationResultFields.Expression] = "expression",
-            [DebugEvaluationResultFields.Kind] = "kind",
-            [DebugEvaluationResultFields.Repr] = "repr",
-            [DebugEvaluationResultFields.ReprDeparse] = "repr.deparse",
-            [DebugEvaluationResultFields.ReprToString] = "repr.toString",
-            [DebugEvaluationResultFields.ReprStr] = "repr.str",
-            [DebugEvaluationResultFields.TypeName] = "type",
-            [DebugEvaluationResultFields.Classes] = "classes",
-            [DebugEvaluationResultFields.Length] = "length",
-            [DebugEvaluationResultFields.SlotCount] = "slot_count",
-            [DebugEvaluationResultFields.AttrCount] = "attr_count",
-            [DebugEvaluationResultFields.NameCount] = "name_count",
-            [DebugEvaluationResultFields.Dim] = "dim",
-            [DebugEvaluationResultFields.EnvName] = "env_name",
-            [DebugEvaluationResultFields.Flags] = "flags",
-        };
-
-        public static string ToRVector(this DebugEvaluationResultFields fields) {
-            var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
-            return Invariant($"base::c({string.Join(", ", fieldNames)})");
-        }
-    }
-
+    /// <summary>
+    /// Describes the result of evaluating an R expression, with additional metadata such as type information.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// All properties of this class, and its derived classes such as <see cref="DebugValueEvaluationResult"/>, implement snapshot
+    /// semantics - that is, they have values that describe the result of evaluation at the point where it took place, and do not
+    /// reflect any changes to R state that have occurred since then. For methods, however, this can vary; if the method does not
+    /// implement snapshot semantics, then its documentation will reflect that.
+    /// </para>
+    /// <para>
+    /// Those methods that do not have snapshot semantics will return fresh results obtained by evaluating the expression that produced
+    /// this result in its original context. If the context is no longer available (for example, it was a stack frame that is no
+    /// longer there), the results are undefined. 
+    /// </remarks>
     public abstract class DebugEvaluationResult {
-        public DebugStackFrame StackFrame { get; }
+        public DebugSession Session { get; }
+
+        /// <summary>
+        /// R expression designating the environment in which the evaluation that produced this result took place.
+        /// </summary>
+        public string EnvironmentExpression { get; }
+
+        /// <summary>
+        /// R expression that was evaluated to produce this result.
+        /// </summary>
         public string Expression { get; }
+
+        /// <summary>
+        /// Name of the result. This corresponds to the <c>name</c> parameter of <see cref="DebugSession.EvaluateAsync"/>.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// This property is filled automatically when the result is produced by <see cref="DebugValueEvaluationResult.GetChildrenAsync"/>, 
+        /// and is primarily useful in that scenario. See the documentation of that method for more information.
+        /// </para>
         public string Name { get; }
 
-        internal DebugEvaluationResult(DebugStackFrame stackFrame, string expression, string name) {
-            StackFrame = stackFrame;
+        internal DebugEvaluationResult(DebugSession session, string environmentExpression, string expression, string name) {
+            Session = session;
+            EnvironmentExpression = environmentExpression;
             Expression = expression;
             Name = name;
         }
 
-        internal static DebugEvaluationResult Parse(DebugStackFrame stackFrame, string name, JObject json) {
+        internal static DebugEvaluationResult Parse(DebugSession session, string environmentExpression, string name, JObject json) {
             var expression = json.Value<string>("expression");
 
             var errorText = json.Value<string>("error");
             if (errorText != null) {
-                return new DebugErrorEvaluationResult(stackFrame, expression, name, errorText);
+                return new DebugErrorEvaluationResult(session, environmentExpression, expression, name, errorText);
             }
 
             var code = json.Value<string>("promise");
             if (code != null) {
-                return new DebugPromiseEvaluationResult(stackFrame, expression, name, code);
+                return new DebugPromiseEvaluationResult(session, environmentExpression, expression, name, code);
             }
 
             var isActiveBinding = json.Value<bool?>("active_binding");
             if (isActiveBinding == true) {
-                return new DebugActiveBindingEvaluationResult(stackFrame, expression, name);
+                return new DebugActiveBindingEvaluationResult(session, environmentExpression, expression, name);
             }
 
-            return new DebugValueEvaluationResult(stackFrame, expression, name, json);
+            return new DebugValueEvaluationResult(session, environmentExpression, expression, name, json);
         }
 
-        public Task<DebugEvaluationResult> SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
+        /// <summary>
+        /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the
+        /// left side of R operator <c>&lt;-</c>, such as a variable), assigns the specified value to that target.
+        /// </summary>
+        /// <param name="value">Value to assign. Must be a valid R expression.</param>
+        /// <returns>
+        /// A task that is completed once the assignment completes. Failure to assign is reported as exception on the task.
+        /// </returns>
+        public Task SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(Expression)) {
                 throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(DebugEvaluationResult)} because it doesn't have an associated {nameof(Expression)}."));
             }
-
-            return StackFrame.EvaluateAsync(Invariant($"{Expression} <- {value}"), DebugEvaluationResultFields.None, reprMaxLength: 0, cancellationToken: cancellationToken);
+            return Session.RSession.ExecuteAsync($"{Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
         }
 
+        /// <summary>
+        /// Re-evaluates the expression that produced this result in its original context, and produces a new result.
+        /// <see cref="DebugSession.EvaluateAsync"/> for description of parameters.
+        /// </summary>
+        /// <remarks>
+        /// This is used primarily to evaluate the result with a different set of <see cref="DebugEvaluationResultFields"/>,
+        /// or different <c>reprMaxLength</c>, to load additional data on demand.
+        /// </remarks>
         public Task<DebugEvaluationResult> EvaluateAsync(
             DebugEvaluationResultFields fields,
             int? reprMaxLength = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            if (StackFrame == null) {
-                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that is not tied to a frame.");
+            if (EnvironmentExpression == null) {
+                throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated environment expression.");
             }
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
             }
-
-            return StackFrame.EvaluateAsync(Expression, Name, fields, reprMaxLength, cancellationToken);
+            return Session.EvaluateAsync(EnvironmentExpression, Expression, Name, fields, reprMaxLength, cancellationToken);
         }
 
         public override bool Equals(object obj) =>

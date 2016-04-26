@@ -39,15 +39,19 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DebugEvaluationResultFields.cs" />
+    <Compile Include="DebugSourceLocation.cs" />
     <Compile Include="DebugBreakpoint.cs" />
     <Compile Include="DebugErrorEvaluationResult.cs" />
     <Compile Include="DebugActiveBindingEvaluationResult.cs" />
     <Compile Include="DebugPromiseEvaluationResult.cs" />
+    <Compile Include="DebugBrowseEventArgs.cs" />
+    <Compile Include="DebugChildAccessorKind.cs" />
+    <Compile Include="DebugValueEvaluationResultFlags.cs" />
     <Compile Include="DebugValueRepresentation.cs" />
     <Compile Include="DebugValueEvaluationResult.cs" />
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
-    <Compile Include="DebugValueRepresentationKind.cs" />
     <Compile Include="IDebugSessionProvider.cs" />
     <Compile Include="DebugStackFrame.cs" />
     <Compile Include="RDebugSessionProvider.cs" />

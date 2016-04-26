@@ -42,7 +42,7 @@ namespace Microsoft.R.Debugger.Test {
         }
 
         public static Task<DebugBreakpoint> CreateBreakpointAsync(this DebugSession session, SourceFile sf, int lineNumber) {
-            return session.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, lineNumber));
+            return session.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, lineNumber));
         }
     }
 }

@@ -11,40 +11,17 @@ using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.Debugger {
-    public struct DebugBreakpointLocation : IEquatable<DebugBreakpointLocation> {
-        public string FileName { get; }
-        public int LineNumber { get; }
-
-        public DebugBreakpointLocation(string fileName, int lineNumber) {
-            FileName = fileName;
-            LineNumber = lineNumber;
-        }
-
-        public override int GetHashCode() {
-            return new { FileName, LineNumber }.GetHashCode();
-        }
-
-        public override bool Equals(object obj) {
-            return (obj as DebugBreakpointLocation?)?.Equals(this) ?? false;
-        }
-
-        public bool Equals(DebugBreakpointLocation other) {
-            return FileName == other.FileName && LineNumber == other.LineNumber;
-        }
-
-        public override string ToString() {
-            return Invariant($"{FileName}:{LineNumber}");
-        }
-    }
-
+    /// <summary>
+    /// A breakpoint in R code.
+    /// </summary>
     public sealed class DebugBreakpoint {
         public DebugSession Session { get; }
-        public DebugBreakpointLocation Location { get; }
+        public DebugSourceLocation Location { get; }
         internal int UseCount { get; private set; }
 
         public event EventHandler BreakpointHit;
 
-        internal DebugBreakpoint(DebugSession session, DebugBreakpointLocation location) {
+        internal DebugBreakpoint(DebugSession session, DebugSourceLocation location) {
             Session = session;
             Location = location;
         }

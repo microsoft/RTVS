@@ -112,7 +112,7 @@ namespace Microsoft.R.Debugger.Engine {
                     currentBrowseDebugEventArgs = _currentBrowseEventArgs;
                 }
 
-                if (currentBrowseDebugEventArgs != null && currentBrowseDebugEventArgs.Contexts == inter.Contexts) {
+                if (currentBrowseDebugEventArgs != null && currentBrowseDebugEventArgs.Context.Contexts == inter.Contexts) {
                     await inter.RespondAsync("Q\n");
                 }
             }
@@ -587,7 +587,7 @@ namespace Microsoft.R.Debugger.Engine {
             bool? sentContinue;
             lock (_browseLock) {
                 var browseEventArgs = _currentBrowseEventArgs;
-                if (browseEventArgs == null || browseEventArgs.Contexts != e.Contexts) {
+                if (browseEventArgs == null || browseEventArgs.Context.Contexts != e.Contexts) {
                     // This AfterRequest does not correspond to a Browse prompt, or at least not one
                     // that we have seen before (and paused on), so there's nothing to do.
                     return;
