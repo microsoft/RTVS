@@ -7,8 +7,8 @@ namespace Microsoft.R.Debugger {
     public class DebugErrorEvaluationResult : DebugEvaluationResult {
         public string ErrorText { get; }
 
-        public DebugErrorEvaluationResult(DebugStackFrame stackFrame, string expression, string name, string errorText)
-            : base(stackFrame, expression, name) {
+        internal DebugErrorEvaluationResult(DebugSession session, string environmentExpression, string expression, string name, string errorText)
+            : base(session, environmentExpression, expression, name) {
             ErrorText = errorText;
         }
 

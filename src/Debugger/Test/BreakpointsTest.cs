@@ -51,7 +51,7 @@ namespace Microsoft.R.Debugger.Test {
 
             using (var debugSession = new DebugSession(_session))
             using (var sf = new SourceFile(code)) {
-                var bp1Loc = new DebugBreakpointLocation(sf.FilePath, 1);
+                var bp1Loc = new DebugSourceLocation(sf.FilePath, 1);
                 var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
 
                 bp1.Location.Should().Be(bp1Loc);
@@ -59,7 +59,7 @@ namespace Microsoft.R.Debugger.Test {
 
                 debugSession.Breakpoints.Count.Should().Be(1);
 
-                var bp2Loc = new DebugBreakpointLocation(sf.FilePath, 3);
+                var bp2Loc = new DebugSourceLocation(sf.FilePath, 3);
                 var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
 
                 bp2.Location.Should().Be(bp2Loc);
@@ -86,7 +86,7 @@ namespace Microsoft.R.Debugger.Test {
             using (var sf = new SourceFile(code)) {
                 await debugSession.EnableBreakpointsAsync(true);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 await sf.Source(_session);
@@ -107,7 +107,7 @@ namespace Microsoft.R.Debugger.Test {
             using (var sf = new SourceFile(code)) {
                 await debugSession.EnableBreakpointsAsync(true);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 await sf.Source(_session);
@@ -128,7 +128,7 @@ namespace Microsoft.R.Debugger.Test {
                 await debugSession.EnableBreakpointsAsync(true);
                 await sf.Source(_session);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -152,7 +152,7 @@ namespace Microsoft.R.Debugger.Test {
                 await debugSession.EnableBreakpointsAsync(true);
                 await sf.Source(_session);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -184,7 +184,7 @@ namespace Microsoft.R.Debugger.Test {
 
             using (var debugSession = new DebugSession(_session))
             using (var sf = new SourceFile(code)) {
-                var bp = await debugSession.CreateBreakpointAsync(new DebugBreakpointLocation(sf.FilePath, 2));
+                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
                 debugSession.Breakpoints.Count.Should().Be(1);
 
                 await sf.Source(_session);
@@ -259,11 +259,11 @@ namespace Microsoft.R.Debugger.Test {
             using (var sf2 = new SourceFile($"eval(parse({sf1.FilePath.ToRStringLiteral()}))")) {
                 await debugSession.EnableBreakpointsAsync(true);
 
-                var bp1Loc = new DebugBreakpointLocation(sf1.FilePath, 1);
+                var bp1Loc = new DebugSourceLocation(sf1.FilePath, 1);
                 var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
                 bp1.Location.Should().Be(bp1Loc);
 
-                var bp2Loc = new DebugBreakpointLocation(sf2.FilePath, 1);
+                var bp2Loc = new DebugSourceLocation(sf2.FilePath, 1);
                 var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
                 bp2.Location.Should().Be(bp2Loc);
 

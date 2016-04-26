@@ -13,12 +13,12 @@ namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7BoundBreakpoint : IDebugBoundBreakpoint2 {
         private enum_BP_STATE _state;
         public AD7PendingBreakpoint PendingBreakpoint { get; }
-        public DebugBreakpointLocation Location { get; }
+        public DebugSourceLocation Location { get; }
         public DebugBreakpoint DebugBreakpoint { get; private set; }
 
         public AD7Engine Engine => PendingBreakpoint.Engine;
 
-        public AD7BoundBreakpoint(AD7PendingBreakpoint pendingBreakpoint, DebugBreakpointLocation location, enum_PENDING_BP_STATE state) {
+        public AD7BoundBreakpoint(AD7PendingBreakpoint pendingBreakpoint, DebugSourceLocation location, enum_PENDING_BP_STATE state) {
             PendingBreakpoint = pendingBreakpoint;
             Location = location;
             SetState((enum_BP_STATE)state);

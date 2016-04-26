@@ -7,8 +7,8 @@ namespace Microsoft.R.Debugger {
     public class DebugPromiseEvaluationResult : DebugEvaluationResult {
         public string Code { get; }
 
-        public DebugPromiseEvaluationResult(DebugStackFrame stackFrame, string expression, string name, string code)
-            : base(stackFrame, expression, name) {
+        internal DebugPromiseEvaluationResult(DebugSession session, string environmentExpression, string expression, string name, string code)
+            : base(session, environmentExpression, expression, name) {
             Code = code;
         }
 

@@ -262,9 +262,10 @@ namespace Microsoft.R.Debugger.Engine {
             errorString = null;
 
             // TODO: dwRadix
-            var setResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.SetValueAsync(pszValue, ct)) as DebugErrorEvaluationResult;
-            if (setResult != null) {
-                errorString = setResult.ErrorText;
+            try {
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.SetValueAsync(pszValue, ct));
+            } catch (RException ex) { 
+                errorString = ex.Message;
                 return VSConstants.E_FAIL;
             }
 
