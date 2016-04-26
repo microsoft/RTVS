@@ -167,12 +167,6 @@
     <Compile Include="Selection\RSelectionTracker.cs" />
     <Compile Include="Selection\SelectWordCommand.cs" />
     <Compile Include="Settings\REditorSettings.cs" />
-    <Compile Include="Signatures\FunctionInfoPresenter.xaml.cs">
-      <DependentUpon>FunctionInfoPresenter.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Signatures\FunctionSignature.cs" />
-    <Compile Include="Signatures\FunctionSignatureSource.cs" />
-    <Compile Include="Signatures\IFunctionSignature.cs" />
     <Compile Include="Signatures\RSignatureHelpContext.cs" />
     <Compile Include="Signatures\ParametersInfo.cs" />
     <Compile Include="Signatures\SignatureHelp.cs" />
@@ -282,12 +276,6 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Signatures\FunctionInfoPresenter.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />

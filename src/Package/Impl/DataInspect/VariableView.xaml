@@ -73,7 +73,7 @@
             </Style>
 
             <DataTemplate x:Key="NameCellTemplate">
-                <Grid VerticalAlignment="Center" ToolTip="" ToolTipOpening="OnToolTipOpening">
+                <Grid VerticalAlignment="Center" ToolTip="{Binding Model.Content.Value}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="Auto"/>
@@ -91,7 +91,7 @@
 
             <DataTemplate x:Key="ValueCellTemplate">
                 <Grid Height="{Binding Path=RowHeight, ElementName=RootTreeGrid, Converter={x:Static rwpf:Converters.Scale155}}"
-                      VerticalAlignment="Center">
+                      VerticalAlignment="Center"  ToolTip="{Binding Model.Content.Value}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -143,11 +143,13 @@
             </DataTemplate>
 
             <DataTemplate x:Key="ClassCellTemplate">
-                <TextBlock Text="{Binding Model.Content.Class}" VerticalAlignment="Center" Padding="2,0,0,0"/>
+                <TextBlock Text="{Binding Model.Content.Class}" ToolTip="{Binding Model.Content.Value}"
+                           VerticalAlignment="Center" Padding="2,0,0,0"/>
             </DataTemplate>
             
             <DataTemplate x:Key="TypeNameCellTemplate">
-                <TextBlock Text="{Binding Model.Content.TypeName}" VerticalAlignment="Center" Padding="2,0,0,0"/>
+                <TextBlock Text="{Binding Model.Content.TypeName}" ToolTip="{Binding Model.Content.Value}"
+                           VerticalAlignment="Center" Padding="2,0,0,0"/>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>

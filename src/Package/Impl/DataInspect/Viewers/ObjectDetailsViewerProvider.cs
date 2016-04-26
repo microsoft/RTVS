@@ -7,18 +7,18 @@ using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
-    [Export(typeof(IObjectViewer))]
-    public sealed class ObjectViewer : IObjectViewer {
+    [Export(typeof(IObjectDetailsViewerProvider))]
+    public sealed class ObjectDetailsViewerProvider : IObjectDetailsViewerProvider {
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly IDebugObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public ObjectViewer(IObjectDetailsViewerAggregator aggregator, IDebugObjectEvaluator evaluator) {
+        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator, IDebugObjectEvaluator evaluator) {
             _aggregator = aggregator;
             _evaluator = evaluator;
         }
 
-        public Task ViewObject(string expression, string title) {
+        public Task ViewObjectDetails(string expression, string title) {
             return Task.Run(async () => {
                 var classes = await _evaluator.EvaluateAsync(expression, 
                                     DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim) 

@@ -76,6 +76,7 @@
     <Compile Include="DataInspect\Definitions\IObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\Definitions\ViewerCapabilities.cs" />
     <Compile Include="DataInspect\Office\CsvAppFileIO.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
     <Compile Include="DataInspect\REnvironmentChangedEventArgs.cs" />
@@ -88,7 +89,7 @@
     <Compile Include="DataInspect\Viewers\FunctionViewer.cs" />
     <Compile Include="DataInspect\Viewers\GridViewer.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
-    <Compile Include="DataInspect\Viewers\ObjectViewer.cs" />
+    <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />

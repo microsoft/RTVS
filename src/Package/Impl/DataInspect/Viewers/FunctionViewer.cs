@@ -27,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         #region IObjectDetailsViewer
-        public bool IsTable => false;
+        public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
         public DebugEvaluationResultFields EvaluationFields => DebugEvaluationResultFields.Expression;
 
@@ -75,24 +75,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     });
                 } catch (IOException) { } catch (AccessViolationException) { }
             }
-        }
-
-        public async Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation) {
-            string functionName = evaluation.Name as string;
-            if (string.IsNullOrEmpty(functionName)) {
-                return Task.FromResult<object>(null);
-            }
-
-            var data = await FunctionSignatureSource.GetSignatureAsync(functionName);
-            var tcs = new TaskCompletionSource<object>();
-
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                var presenter = new FunctionInfoPresenter();
-                presenter.DataContext = data;
-                tcs.TrySetResult(presenter);
-            });
-
-            return tcs;
         }
         #endregion
     }

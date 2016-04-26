@@ -153,14 +153,5 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ew.ShowDetailCommand.Execute(ew);
             }
         }
-
-        private void OnToolTipOpening(object sender, ToolTipEventArgs e) {
-            var element = e.Source as FrameworkElement;
-            var node = element?.DataContext as ObservableTreeNode;
-            var ew = node?.Model?.Content as VariableViewModel;
-            if (ew != null) {
-                element.ToolTip = new ToolTip() { Content = ew.Tooltip };
-            }
-        }
     }
 }

@@ -22,7 +22,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (!string.IsNullOrWhiteSpace(evaluation.Expression)) {
                 Caption = Invariant($"{Resources.VariableGrid_Caption}: {caption}");
             }
-
             _gridHost.SetEvaluation(evaluation);
         }
     }

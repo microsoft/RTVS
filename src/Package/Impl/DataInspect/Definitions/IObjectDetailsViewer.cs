@@ -6,14 +6,12 @@ using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewer {
-        bool IsTable { get; }
+        ViewerCapabilities Capabilities { get; }
 
         DebugEvaluationResultFields EvaluationFields { get; }
 
         bool CanView(DebugValueEvaluationResult evaluation);
 
         Task ViewAsync(DebugValueEvaluationResult evaluation, string title);
-
-        Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation);
     }
 }

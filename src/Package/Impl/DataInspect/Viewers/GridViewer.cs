@@ -5,10 +5,10 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
@@ -23,17 +23,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                                                         | DebugEvaluationResultFields.Length;
 
         #region IObjectDetailsViewer
-        public bool IsTable => true;
+        public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
 
         public DebugEvaluationResultFields EvaluationFields => _fields;
 
         public bool CanView(DebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
                 if (evaluation.Classes.Any(t => _classes.Contains(t))) {
-                    if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
+                    if (evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2) {
                         return true;
                     }
                 }
+                //if (evaluation.Dim == null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("list")) {
+                //    return true;
+                //}
             }
             return false;
         }
@@ -42,19 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                pane.SetEvaluation(new VariableViewModel(evaluation), evaluation.Expression ?? title);
+                title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
+                pane.SetEvaluation(new VariableViewModel(evaluation), title);
             });
             return Task.CompletedTask;
-        }
-
-        public Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation) {
-            string tooltip = null;
-            if (CanView(evaluation)) {
-                var className = evaluation.Classes.FirstOrDefault(t => _classes.Contains(t));
-                if (!string.IsNullOrEmpty(className))
-                    tooltip = Invariant($"{className} {evaluation.Dim[0]}x{evaluation.Dim[1]}");
-            }
-            return Task.FromResult<object>(tooltip);
         }
         #endregion
     }

@@ -153,34 +153,18 @@ grDevices::deviceIsInteractive('ide')
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
-  options(browser = function(url) { 
-      rtvs:::send_message('Browser', url) 
-  })";
+  options(browser = rtvs:::browser)
+";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRExpressionEvaluator evaluation) {
-            var script =
-@"utils::assignInNamespace('setwd', function(dir) {
-    old <- .Internal(setwd(dir))
-    rtvs:::send_message('setwd', dir)
-    invisible(old)
-  }, 'base')";
+            var script = @"utils::assignInNamespace('setwd', rtvs:::setwd, 'base')";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> SetViewRedirection(this IRExpressionEvaluator evaluation) {
-            var script =
-@"View <- function(x, title) {
-    if(is.function(x) || is.data.frame(x) || is.matrix(x)) {
-      if (missing(title)) {
-        title <- ''
-      }
-      invisible(rtvs:::send_message('View', deparse(substitute(x)), title))
-    } else {
-      print(x)
-    }
-  }";
+            var script = @"View <- rtvs:::view";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
     }

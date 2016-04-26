@@ -47,7 +47,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         | DebugEvaluationResultFields.Length;
 
                 var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
-
                 var wrapper = new VariableViewModel(result);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
@@ -57,46 +56,36 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         internal void SetEvaluation(VariableViewModel wrapper) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
                 // the variable should have been removed
-                SetError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        Package.Resources.VariableGrid_Missing,
-                        wrapper.Expression));
-            } else if (wrapper.Dimensions.Count != 2) {
-                // the same evaluation changed to non-matrix
-                SetError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        Package.Resources.VariableGrid_NotTwoDimension,
-                        wrapper.Expression));
+                SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
             } else if (_evaluation == null
                 || (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1])) {
                 // matrix size changed. Reset the evaluation
                 ClearError();
-
                 VariableGrid.Initialize(new GridDataProvider(wrapper));
-
                 _evaluation = wrapper;
             } else {
                 ClearError();
-
                 // size stays same. Refresh
                 VariableGrid.Refresh();
             }
         }
 
         private void SetError(string text) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             ErrorTextBlock.Text = text;
             ErrorTextBlock.Visibility = Visibility.Visible;
-
             VariableGrid.Visibility = Visibility.Collapsed;
         }
 
         private void ClearError() {
-            ErrorTextBlock.Visibility = Visibility.Collapsed;
+            VsAppShell.Current.AssertIsOnMainThread();
 
+            ErrorTextBlock.Visibility = Visibility.Collapsed;
             VariableGrid.Visibility = Visibility.Visible;
         }
     }

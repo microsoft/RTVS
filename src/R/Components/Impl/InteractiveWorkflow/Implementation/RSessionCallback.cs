@@ -86,8 +86,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void ViewObject(string expression, string title) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            viewer?.ViewObject(expression, title);
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectDetailsViewerProvider>();
+            viewer?.ViewObjectDetails(expression, title);
         }
     }
 }

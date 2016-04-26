@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -20,12 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
     public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
-        [ImportMany]
-        private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
-
-        private readonly IObjectDetailsViewer _detailsViewer;
-        private volatile object _tooltip;
-        private Task<object> _tooltipFetchingTask;
+        private IObjectDetailsViewer _detailsViewer;
+        private string _title;
 
         public VariableViewModel() { Index = -1; }
 
@@ -36,25 +30,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
         public VariableViewModel(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
-            VsAppShell.Current.CompositionService.SatisfyImportsOnce(this);
 
             Index = index;
             var result = DebugEvaluation as DebugValueEvaluationResult;
             if (result != null) {
-                Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));
+                SetViewButtonStatus(result);
+            }
+        }
 
-                CanShowDetail = lazyViewer != null;
-                if (CanShowDetail) {
-                    _detailsViewer = lazyViewer.Value;
-                    ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result, null), (o) => CanShowDetail);
-                    ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
-                }
+        private void SetViewButtonStatus(DebugValueEvaluationResult result) {
+            var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+            _detailsViewer = aggregator.GetViewer(result);
+            _title = result.Name;
 
-                CanShowOpenCsv = (CanShowDetail && lazyViewer.Value.IsTable) || (!CanShowDetail && result.Length > 1);
-                if (CanShowOpenCsv) {
-                    OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
-                    OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
-                }
+            CanShowDetail = _detailsViewer != null;
+            if (CanShowDetail) {
+                ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result, _title), (o) => CanShowDetail);
+                ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
+            }
+
+            var tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
+            CanShowOpenCsv = CanShowDetail && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
+            if (CanShowOpenCsv) {
+                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
+                OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
             }
         }
 
@@ -136,35 +135,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Variable Grid command
 
-        public bool CanShowDetail { get; }
+        public bool CanShowDetail { get; private set; }
 
-        public ICommand ShowDetailCommand { get; }
-        public string ShowDetailCommandTooltip { get; }
+        public ICommand ShowDetailCommand { get; private set; }
+        public string ShowDetailCommandTooltip { get; private set; }
 
-        public bool CanShowOpenCsv { get; }
+        public bool CanShowOpenCsv { get; private set; }
 
-        public ICommand OpenInCsvAppCommand { get; }
-        public string OpenCsvAppCommandTooltip { get; }
+        public ICommand OpenInCsvAppCommand { get; private set; }
+        public string OpenCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
         #endregion
-
-        public object Tooltip {
-            get {
-                if (_tooltip == null && _tooltipFetchingTask == null) {
-                    FetchToolTip().DoNotWait();
-                }
-                return _tooltip ?? Resources.TooltipPlaceholder;
-            }
-        }
-
-        private async Task FetchToolTip() {
-            if (_detailsViewer != null && _tooltipFetchingTask == null) {
-                _tooltipFetchingTask = _detailsViewer.GetTooltipAsync(DebugEvaluation as DebugValueEvaluationResult);
-                _tooltip = await _tooltipFetchingTask;
-            }
-        }
-    }
+     }
 }
