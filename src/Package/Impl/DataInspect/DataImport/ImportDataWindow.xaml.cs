@@ -249,11 +249,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             PreviewContent();
         }
 
-        protected override void OnClosed(EventArgs e) {
-            DeleteTempFile();
-            base.OnClosed(e);
-        }
-
         private void PreviewFileContent(string file, int codePage) {
             Encoding encoding = Encoding.GetEncoding(codePage);
             string text = ReadFilePreview(file, encoding);
@@ -275,7 +270,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataImport {
             await TaskUtilities.SwitchToBackgroundThread();
 
             Encoding encoding = Encoding.GetEncoding(codePage);
-            _utf8FilePath = Path.GetTempFileName();
+            _utf8FilePath = Path.Combine(Path.GetTempPath(), Path.GetFileName(file) + ".utf8");
 
             int lineCount = 0;
             double progressValue = 0;
