@@ -29,21 +29,33 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public bool IsTable => false;
 
-        public DebugEvaluationResultFields EvaluationFields => DebugEvaluationResultFields.ReprDeparse;
+        public DebugEvaluationResultFields EvaluationFields => DebugEvaluationResultFields.Expression;
 
         public bool CanView(DebugValueEvaluationResult evaluation) {
             return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 
-        public Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
-            string functionCode = evaluation.GetRepresentation().Deparse;
+        public async Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
+            string functionName = evaluation.Expression as string;
+            if (string.IsNullOrEmpty(functionName)) {
+                return;
+            }
+
+            var session = _sessionProvider.GetInteractiveWindowRSession();
+            string functionCode = null;
+            using (var e = await session.BeginEvaluationAsync()) {
+                var result = await e.EvaluateAsync(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
+                if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
+                    functionCode = result.StringResult;
+                }
+            }
+
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 functionCode = formatter.Format(functionCode);
 
-                title = !string.IsNullOrEmpty(title) ? title : "function";
-                string functionName = evaluation.Name ?? title;
-                string fileName = "~" + functionName;
+                string name = (!string.IsNullOrEmpty(title) && title.IndexOfAny(Path.GetInvalidFileNameChars()) < 0) ? title : functionName;
+                string fileName = "~" + name;
                 string tempFile = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
                 try {
                     if (File.Exists(tempFile)) {
@@ -63,7 +75,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     });
                 } catch (IOException) { } catch (AccessViolationException) { }
             }
-            return Task.CompletedTask;
         }
 
         public async Task<object> GetTooltipAsync(DebugValueEvaluationResult evaluation) {
