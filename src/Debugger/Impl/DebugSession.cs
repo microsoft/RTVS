@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
@@ -24,6 +23,11 @@ namespace Microsoft.R.Debugger {
     /// <item>Create breakpoints in R code, and be notified when they are hit.</item>
     /// </list>
     /// </summary>
+    /// <remarks>
+    /// <see cref="DebugSession"/> handles certain <see cref="IRSession"/> events in a way that is non-cooperative with other instances.
+    /// Thus, there should never be more than one <see cref="DebugSession"/> instance for a given <see cref="IRSession"/>. To ensure this
+    /// in an environment where the session is shared, use <see cref="IDebugSessionProvider"/>.
+    /// </remarks>
     public sealed class DebugSession : IDisposable {
         private Task _initializeTask;
         private readonly object _initializeLock = new object();
@@ -34,8 +38,7 @@ namespace Microsoft.R.Debugger {
         private volatile EventHandler<DebugBrowseEventArgs> _browse;
         private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
         private readonly object _browseLock = new object();
-
-        private Dictionary<DebugBreakpointLocation, DebugBreakpoint> _breakpoints = new Dictionary<DebugBreakpointLocation, DebugBreakpoint>();
+        private Dictionary<DebugSourceLocation, DebugBreakpoint> _breakpoints = new Dictionary<DebugSourceLocation, DebugBreakpoint>();
 
         public IReadOnlyCollection<DebugBreakpoint> Breakpoints => _breakpoints.Values;
 
@@ -203,10 +206,10 @@ namespace Microsoft.R.Debugger {
             EvaluateAsync("base::.GlobalEnv", expression, null, fields, reprMaxLength, cancellationToken);
 
         /// <summary>
-        /// Evaluates the expresion in the specified environment, and returns an object describing the result.
+        /// Evaluates an R expresion in the specified environment, and returns an object describing the result.
         /// </summary>
         /// <param name="environmentExpression">
-        /// Expression designating the environment in which <paramref name="expression"/> will be evaluated.
+        /// R expression designating the environment in which <paramref name="expression"/> will be evaluated.
         /// </param>
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="name"><see cref="DebugEvaluationResult.Name"/> of the returned evaluation result.</param>
@@ -215,6 +218,10 @@ namespace Microsoft.R.Debugger {
         /// If not <see langword="null"/>, trims representation (as returned by <see cref="DebugValueEvaluationResult.GetRepresentation"/>)
         /// of the resulting value to the specified length.
         /// </param>
+        /// <remarks>
+        /// If expression fails to evaluate, this method does <em>not</em> raise <see cref="RException"/>. Instead, an instance
+        /// of <see cref="DebugErrorEvaluationResult"/> describing the error is returned.
+        /// </remarks>
         public async Task<DebugEvaluationResult> EvaluateAsync(
             string environmentExpression,
             string expression,
@@ -360,7 +367,12 @@ namespace Microsoft.R.Debugger {
         /// If <see langword="true"/>, excludes frames that belong to <c>source()</c> or <c>rtvs:::debug_source()</c> internal machinery at the bottom of the stack;
         /// the first reported frame will be the one with sourced code.
         /// </param>
-        /// <returns></returns>
+        /// <remarks>
+        /// This method has snapshot semantics for the frames and their properties - that is, the returned collection is not going to change as code runs.
+        /// However, calling various methods on the returned <see cref="DebugStackFrame"/> objects, such as <see cref="DebugStackFrame.GetEnvironmentAsync"/>,
+        /// will fetch fresh data, possibly from altogether different frames if the call stack has changed. Thus, it is inadvisable to retain the returned
+        /// stack and use it at a later point - it should always be obtained anew at the point where it is used. 
+        /// </remarks>
         public async Task<IReadOnlyList<DebugStackFrame>> GetStackFramesAsync(bool skipSourceFrames = true, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
@@ -406,7 +418,7 @@ namespace Microsoft.R.Debugger {
         /// <summary>
         /// Creates a new breakpoint at the specified location.
         /// </summary>
-        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugBreakpointLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
+        public async Task<DebugBreakpoint> CreateBreakpointAsync(DebugSourceLocation location, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
 
             await TaskUtilities.SwitchToBackgroundThread();
@@ -476,7 +488,7 @@ namespace Microsoft.R.Debugger {
                 // Report breakpoints first, so that by the time step completion is reported, all actions associated
                 // with breakpoints (e.g. printing messages for tracepoints) have already been completed.
                 if (lastFrame.FileName != null && lastFrame.LineNumber != null) {
-                    var location = new DebugBreakpointLocation(lastFrame.FileName, lastFrame.LineNumber.Value);
+                    var location = new DebugSourceLocation(lastFrame.FileName, lastFrame.LineNumber.Value);
                     DebugBreakpoint bp;
                     if (_breakpoints.TryGetValue(location, out bp)) {
                         bp.RaiseBreakpointHit();
@@ -518,28 +530,6 @@ namespace Microsoft.R.Debugger {
 
         private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
             _currentBrowseEventArgs = null;
-        }
-    }
-
-    /// <seealso cref="DebugSession.Browse"/>
-    public class DebugBrowseEventArgs : EventArgs {
-        /// <summary>
-        /// R context for the Browse> prompt.
-        /// </summary>
-        public IRSessionContext Context { get; }
-        /// <summary>
-        /// Whether this Browse> prompt signifies the completion of a stepping operation.
-        /// </summary>
-        public bool IsStepCompleted { get; }
-        /// <summary>
-        /// Breakpoints that were hit at this Browse> prompt.
-        /// </summary>
-        public IReadOnlyCollection<DebugBreakpoint> BreakpointsHit { get; }
-
-        public DebugBrowseEventArgs(IRSessionContext context, bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
-            Context = context;
-            IsStepCompleted = isStepCompleted;
-            BreakpointsHit = breakpointsHit ?? new DebugBreakpoint[0];
         }
     }
 }

@@ -50,15 +50,15 @@ namespace Microsoft.R.Debugger.Test.Match {
             Add(sourceFile.FilePath, lineNumber);
         }
 
-        public void Add(DebugBreakpointLocation location, int offset, IEquatable<string> call) {
+        public void Add(DebugSourceLocation location, int offset, IEquatable<string> call) {
             Add(location.FileName, location.LineNumber + offset, call);
         }
 
-        public void Add(DebugBreakpointLocation location, int offset = 0) {
+        public void Add(DebugSourceLocation location, int offset = 0) {
             Add(location.FileName, location.LineNumber + offset, MatchAny<string>.Instance);
         }
 
-        public void Add(DebugBreakpointLocation location, IEquatable<string> call) {
+        public void Add(DebugSourceLocation location, IEquatable<string> call) {
             Add(location.FileName, location.LineNumber, call);
         }
     }
