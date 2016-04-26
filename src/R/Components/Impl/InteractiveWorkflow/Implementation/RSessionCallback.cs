@@ -4,8 +4,8 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
@@ -31,41 +31,35 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays error message in the host-specific UI
         /// </summary>
-        public Task ShowErrorMessage(string message) {
-            return _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(message));
-        }
+        public Task ShowErrorMessage(string message) => _coreShell.ShowErrorMessageAsync(message);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
-            return _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowMessage(message, buttons));
-        }
-
+        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) => _coreShell.ShowMessageAsync(message, buttons);
+            
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
         /// </summary>
-        public Task ShowHelp(string url) {
-            return _coreShell.DispatchOnMainThreadAsync(() => {
-                if (_settings.HelpBrowserType == HelpBrowserType.External) {
-                    Process.Start(url);
-                } else {
-                    var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
-                    container.Show(false);
-                    container.Component.Navigate(url);
-                }
-            });
+        public async Task ShowHelp(string url) {
+            await _coreShell.SwitchToMainThreadAsync();
+            if (_settings.HelpBrowserType == HelpBrowserType.External) {
+                Process.Start(url);
+            } else {
+                var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
+                container.Show(false);
+                container.Component.Navigate(url);
+            }
         }
 
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public Task Plot(string filePath, CancellationToken ct) {
-            return _coreShell.DispatchOnMainThreadAsync(() => {
-                var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
-                var history = historyProvider.GetPlotHistory(_session);
-                history.PlotContentProvider.LoadFile(filePath);
-            }, ct);
+        public async Task Plot(string filePath, CancellationToken ct) {
+            await _coreShell.SwitchToMainThreadAsync();
+            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(_session);
+            history.PlotContentProvider.LoadFile(filePath);
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

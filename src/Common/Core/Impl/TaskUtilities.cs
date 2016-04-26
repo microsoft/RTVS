@@ -1,12 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using static System.FormattableString;
 
 namespace Microsoft.Common.Core {
@@ -25,31 +24,6 @@ namespace Microsoft.Common.Core {
             return new BackgroundThreadAwaitable();
         }
 
-        public struct BackgroundThreadAwaitable {
-            public Awaiter GetAwaiter() {
-                return new Awaiter();
-            }
-
-            public struct Awaiter : ICriticalNotifyCompletion {
-                private static readonly WaitCallback WaitCallback = state => ((Action)state)();
-
-                public bool IsCompleted => IsOnBackgroundThread();
-
-                public void OnCompleted(Action continuation) {
-                    Trace.Assert(continuation != null);
-                    ThreadPool.QueueUserWorkItem(WaitCallback, continuation);
-                }
-
-                public void UnsafeOnCompleted(Action continuation) {
-                    Trace.Assert(continuation != null);
-                    ThreadPool.UnsafeQueueUserWorkItem(WaitCallback, continuation);
-                }
-
-                public void GetResult() {
-                }
-            }
-        }
-
         [Conditional("TRACE")]
         public static void AssertIsOnBackgroundThread(
             [CallerMemberName] string memberName = "",
@@ -57,18 +31,6 @@ namespace Microsoft.Common.Core {
             [CallerLineNumber] int sourceLineNumber = 0
         ) {
             if (!IsOnBackgroundThread()) {
-                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
-            }
-        }
-
-        [Conditional("TRACE")]
-        public static void AssertIsOnMainThread(
-            this ICoreShell coreShell,
-            [CallerMemberName] string memberName = "",
-            [CallerFilePath] string sourceFilePath = "",
-            [CallerLineNumber] int sourceLineNumber = 0
-        ) {
-            if (coreShell.MainThread != Thread.CurrentThread) {
                 Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
             }
         }
