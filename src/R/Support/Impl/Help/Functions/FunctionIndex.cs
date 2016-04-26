@@ -139,7 +139,12 @@ namespace Microsoft.R.Support.Help.Functions {
                         } else {
                             // No information whatsoever. Add stub information in order to prevent
                             // indefinite cache misses.
-                            _functionToInfoMap[functionName] = new FunctionInfo(functionName);
+                            var stubFi = new FunctionInfo(functionName);
+                            stubFi.Aliases = new List<string>();
+                            stubFi.Signatures = new List<ISignatureInfo>();
+                            stubFi.ReturnValue = string.Empty;
+                            
+                            _functionToInfoMap[functionName] = stubFi;
                         }
                     }
 

@@ -73,17 +73,20 @@ namespace Microsoft.R.Support.RD.Parser {
             // does not always list all possible arguments.
             if (argumentDescriptions != null && signatureInfos != null) {
                 foreach (ISignatureInfo sigInfo in signatureInfos) {
-                    // Add missing arguments from the \arguments{} section
-                    foreach (string name in argumentDescriptions.Keys) {
-                        // TODO: do we need HashSet here instead? Generally arguments
-                        // list is relatively short, about 10 items on average.
-                        if (sigInfo.Arguments.FirstOrDefault(x => x.Name.Equals(name)) == null) {
-                            sigInfo.Arguments.Add(new ArgumentInfo(name));
-                        }
-                    }
+                    
                     // Relocate ..., if any, to the end
                     var ellipsisArgument = sigInfo.Arguments.FirstOrDefault(x => x.IsEllipsis);
                     if (ellipsisArgument != null) {
+                        // Add missing arguments from the \arguments{} section
+                        // but only if function has ellipsis argument
+                        foreach (string name in argumentDescriptions.Keys) {
+                            // TODO: do we need HashSet here instead? Generally arguments
+                            // list is relatively short, about 10 items on average.
+                            if (sigInfo.Arguments.FirstOrDefault(x => x.Name.Equals(name)) == null) {
+                                sigInfo.Arguments.Add(new ArgumentInfo(name));
+                            }
+                        }
+
                         int index = sigInfo.Arguments.IndexOf(ellipsisArgument);
                         sigInfo.Arguments.RemoveAt(index);
                         sigInfo.Arguments.Add(ellipsisArgument);
