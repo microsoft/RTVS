@@ -150,7 +150,6 @@ namespace Microsoft.R.Support.RD.Parser {
                     // Check if { is preceded by \method
                 }
 
-                // function name can be a Keyword. For example, return() is a function.
                 if (tokens.CurrentToken.TokenType != RTokenType.Identifier) {
                     break;
                 }
