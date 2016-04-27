@@ -85,10 +85,10 @@ namespace Microsoft.R.Host.Client {
         /// evaluations that are performed solely for their side effects, when the result is not inspected.
         /// </remarks>
         /// <remarks>
-        /// Automatically adds <see cref="REvaluationKind.NoResult"/> to <paramref name="kind"/>.
+        /// Automatically adds <see cref="REvaluationKind.Mutating"/> to <paramref name="kind"/>.
         /// </remarks>
-        public static async Task ExecuteAsync(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
-            var res = await evaluator.EvaluateAsync(expression, kind | REvaluationKind.NoResult, cancellationToken);
+        public static async Task ExecuteAsync(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind = REvaluationKind.Mutating, CancellationToken cancellationToken = default(CancellationToken)) {
+            var res = await evaluator.EvaluateAsync(expression, kind | REvaluationKind.NoResult | REvaluationKind.Mutating, cancellationToken);
             ThrowOnError(expression, res);
             Trace.Assert(res.StringResult == null && res.JsonResult == null);
         }

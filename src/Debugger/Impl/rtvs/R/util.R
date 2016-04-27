@@ -117,33 +117,6 @@ symbol_token <- function(name) {
   paste0('`', substr(s, 2, nchar(s) - 1), '`', collapse = '')
 }
 
-# Like str(...)[[1]], but special-cases some common types to provide a more descriptive
-# and concise output, and can limit the output to a desired length.
-fancy_str <- function(obj, max_length = NA, expected_length = NA, overflow_suffix = '...') {
-  con <- memory_connection(max_length, expected_length, overflow_suffix, eof_marker = '\n');
-  on.exit(close(con), add = TRUE);
-
-  tryCatch({
-    if (length(obj) == 1) {
-      if (any(class(obj) == 'factor')) {
-        if (is.na(obj) && !is.nan(obj)) {
-          cat('NA', file = con);
-        } else {
-          capture.output(str(levels(obj)[[obj]], max.level = 0, give.head = FALSE), file = con);
-        }
-      } else {
-        capture.output(str(obj, max.level = 0, give.head = FALSE), file = con);
-      }
-    } else {
-      capture.output(str(obj, max.level = 0, give.head = TRUE), file = con);
-    }
-  }, error = function(e) {
-  });
-    
-  str <- memory_connection_tochar(con);
-  if (length(str) == 0) NA else str;
-}
-
 # Like eval, but will not enter Browse mode if env has its debug bit set
 # (e.g. when it has just been stepped into).
 safe_eval <- function(expr, env) {

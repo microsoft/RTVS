@@ -29,7 +29,7 @@ namespace Microsoft.R.Debugger.Test.Match {
                         .Matching(r => r.Name, name)
                         .Matching(r => r.Expression, expr)
                         .Matching(r => r.Classes, new MatchElements<string>(false, classes))
-                        .Matching(r => r.GetRepresentation().Deparse, deparse)));
+                        .Matching(r => r.Representation, deparse)));
         }
     }
 }

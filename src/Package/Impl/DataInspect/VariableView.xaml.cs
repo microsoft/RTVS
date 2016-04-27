@@ -121,12 +121,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                         | DebugEvaluationResultFields.Expression
                         | DebugEvaluationResultFields.TypeName
-                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
                         | DebugEvaluationResultFields.Dim
                         | DebugEvaluationResultFields.Length;
                 DebugEvaluationResult result = await frame.EvaluateAsync(
                     GetExpression(env),
-                    fields);
+                    fields,
+                    "rtvs:::make_repr_str()");
 
                 var wrapper = new EvaluationWrapper(result);
                 var rootNodeModel = new VariableNode(_settings, wrapper);
