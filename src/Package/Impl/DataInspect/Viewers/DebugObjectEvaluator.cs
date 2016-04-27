@@ -25,14 +25,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public async Task<DebugEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields) {
             await TaskUtilities.SwitchToBackgroundThread();
-            var frame = await GetFrameAsync();
-            return await frame?.EvaluateAsync(expression, fields) as DebugValueEvaluationResult;
-        }
+            DebugEvaluationResult result = null;
 
-        private async Task<DebugStackFrame> GetFrameAsync(int index = 0) {
             var debugSession = await GetDebugSessionAsync();
             var frames = await debugSession.GetStackFramesAsync();
-            return frames.FirstOrDefault(f => f.Index == index);
+
+            for (int i = frames.Count - 1; i >= 0; i--) {
+                result = await frames[i].EvaluateAsync(expression, fields) as DebugValueEvaluationResult;
+                if (result != null) {
+                    break;
+                }
+            }
+            return result;
         }
 
         private async Task<DebugSession> GetDebugSessionAsync() {

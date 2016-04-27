@@ -20,22 +20,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class FunctionViewer : IObjectDetailsViewer {
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IDebugObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public FunctionViewer(IRSessionProvider sessionProvider) {
+        public FunctionViewer(IRSessionProvider sessionProvider, IDebugObjectEvaluator evaluator) {
             _sessionProvider = sessionProvider;
+            _evaluator = evaluator;
         }
 
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
-        public DebugEvaluationResultFields EvaluationFields => DebugEvaluationResultFields.Expression;
-
         public bool CanView(DebugValueEvaluationResult evaluation) {
             return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 
-        public async Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
+        public async Task ViewAsync(string expression, string title) {
+            var evaluation = await _evaluator.EvaluateAsync(expression, DebugEvaluationResultFields.Expression) as DebugValueEvaluationResult;
+            if(evaluation == null) {
+                return;
+            }
+
             string functionName = evaluation.Expression as string;
             if (string.IsNullOrEmpty(functionName)) {
                 return;

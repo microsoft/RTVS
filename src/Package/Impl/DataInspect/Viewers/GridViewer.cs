@@ -23,10 +23,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                                                         | DebugEvaluationResultFields.Dim
                                                         | DebugEvaluationResultFields.Length;
 
+        private readonly IDebugObjectEvaluator _evaluator;
+
+        [ImportingConstructor]
+        public GridViewer(IDebugObjectEvaluator evaluator) {
+            _evaluator = evaluator;
+        }
+
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
-
-        public DebugEvaluationResultFields EvaluationFields => _fields;
 
         public bool CanView(DebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
@@ -40,14 +45,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return false;
         }
 
-        public Task ViewAsync(DebugValueEvaluationResult evaluation, string title) {
+        public async Task ViewAsync(string expression, string title) {
+            var evaluation = await _evaluator.EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
+            if (evaluation == null) {
+                return;
+            }
+
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
                 title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
                 pane.SetEvaluation(new VariableViewModel(evaluation), title);
             });
-            return Task.CompletedTask;
         }
         #endregion
     }
