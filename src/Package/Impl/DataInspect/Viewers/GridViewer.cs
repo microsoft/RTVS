@@ -34,9 +34,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         return true;
                     }
                 }
-                //if (evaluation.Dim == null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("list")) {
-                //    return true;
-                //}
+                if (evaluation.Dim == null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("list")) {
+                    return true;
+                }
             }
             return false;
         }

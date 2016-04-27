@@ -15,10 +15,6 @@ grid.format <- function(x) {
 
 grid.data <- function(x, rows, cols) {
   d <- dim(x);
-  if (is.null(d) || (length(d) != 2)) {
-    stop('grid.data requires two dimensional object');
-  }
-
   if (missing(rows)) {
     rows <- 1:d[[1]];
   }
@@ -30,7 +26,11 @@ grid.data <- function(x, rows, cols) {
   onedim <- ((length(rows) == 1) || (length(cols) == 1));
   if (onedim || is.matrix(x)) {
     if (onedim) {
-      data <- grid.format(x[rows, cols]);
+      if(is.list(x)) {
+        data <- grid.format(x[rows]);
+      } else {
+        data <- grid.format(x[rows, cols]);
+      }
     } else {
       data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
     }
