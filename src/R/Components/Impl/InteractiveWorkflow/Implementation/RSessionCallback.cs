@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
-                    return Task.FromResult(reader.ReadToEnd());
+                    return reader != null ? Task.FromResult(reader.ReadToEnd()) : Task.FromResult("\n");
                 }
             }, ct);
         }
