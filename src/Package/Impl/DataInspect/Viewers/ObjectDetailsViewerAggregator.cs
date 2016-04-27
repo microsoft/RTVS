@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
@@ -12,6 +13,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     public sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
         [ImportMany]
         private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
+
+        [Import]
+        private IDebugObjectEvaluator Evaluator { get; set; }
+
+        public async Task<IObjectDetailsViewer> GetViewer(string expression) {
+            var preliminary = await Evaluator.EvaluateAsync(expression,
+                                DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim | DebugEvaluationResultFields.Length)
+                                as DebugValueEvaluationResult;
+            if (preliminary != null) {
+                return GetViewer(preliminary);
+            }
+            return null;
+        }
 
         public IObjectDetailsViewer GetViewer(DebugValueEvaluationResult result) {
             Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));

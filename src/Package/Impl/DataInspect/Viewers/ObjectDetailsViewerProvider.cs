@@ -3,7 +3,6 @@
 
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
-using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
@@ -18,18 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             _evaluator = evaluator;
         }
 
-        public Task ViewObjectDetails(string expression, string title) {
-            return Task.Run(async () => {
-                var classes = await _evaluator.EvaluateAsync(expression,
-                                    DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim | DebugEvaluationResultFields.Length)
-                                    as DebugValueEvaluationResult;
-                if (classes != null) {
-                    var viewer = _aggregator.GetViewer(classes);
-                    if (viewer != null) {
-                        await viewer?.ViewAsync(expression, title);
-                    }
-                }
-            });
+        public async Task ViewObjectDetails(string expression, string title) {
+            var viewer = await _aggregator.GetViewer(expression);
+            if (viewer != null) {
+                await viewer?.ViewAsync(expression, title);
+            }
         }
     }
 }

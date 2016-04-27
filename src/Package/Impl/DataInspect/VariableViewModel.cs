@@ -45,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result, _title), (o) => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result.Expression, _title), (o) => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
