@@ -66,7 +66,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
             var history = historyProvider.GetPlotHistory(_session);
             var tcs = new TaskCompletionSource<LocatorResult>();
-            await _coreShell.DispatchOnMainThreadAsync(() => {
+            _coreShell.DispatchOnUIThread(() => {
                 if (history.PlotContentProvider.Locator != null) {
                     history.PlotContentProvider.Locator.StartLocatorMode(ct, tcs);
                 } else {
