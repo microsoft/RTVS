@@ -26,7 +26,7 @@ grid.data <- function(x, rows, cols) {
   onedim <- ((length(rows) == 1) || (length(cols) == 1));
   if (onedim || is.matrix(x)) {
     if (onedim) {
-      if(is.list(x)) {
+      if(is.list(x) || is.vector(x) || is.ts(x)) {
         data <- grid.format(x[rows]);
       } else {
         data <- grid.format(x[rows, cols]);

@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public Task ViewObjectDetails(string expression, string title) {
             return Task.Run(async () => {
                 var classes = await _evaluator.EvaluateAsync(expression, 
-                                    DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim) 
+                                    DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim | DebugEvaluationResultFields.Length) 
                                     as DebugValueEvaluationResult;
                 if (classes != null) {
                     var viewer = _aggregator.GetViewer(classes);

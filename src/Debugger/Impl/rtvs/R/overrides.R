@@ -2,13 +2,14 @@
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
 view <- function(x, title) {
-  if(is.function(x) || is.data.frame(x) || is.matrix(x) || is.list(x)) {
+  if(is.function(x) || is.data.frame(x) || is.table(x) || 
+     is.matrix(x) || is.list(x) || is.ts(x) || length(x) > 1) {
     if (missing(title)) {
       title <- ""
     }
     invisible(rtvs:::send_message('View', deparse(substitute(x)), title))
   } else {
-    utils::View(x, title)
+    print(x)
   }
 }
 

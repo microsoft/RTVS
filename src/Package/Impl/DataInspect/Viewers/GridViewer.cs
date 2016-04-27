@@ -13,8 +13,9 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class GridViewer : IObjectDetailsViewer {
-        private const int _toolWindowIdBase = 100; 
-        private readonly static string[] _classes = new string[] { "matrix", "data.frame", "table" };
+        private const int _toolWindowIdBase = 100;
+        private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table" };
+        private readonly static string[] _listClasses = new string[] { "list", "ts" };
         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
                                                         | DebugEvaluationResultFields.Expression
                                                         | DebugEvaluationResultFields.TypeName
@@ -29,14 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public bool CanView(DebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
-                if (evaluation.Classes.Any(t => _classes.Contains(t))) {
-                    if (evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2) {
-                        return true;
-                    }
+                if (evaluation.Classes.Any(t => _tableClasses.Contains(t))) {
+                    return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2;
+                } else if (evaluation.Classes.Any(t => _listClasses.Contains(t))) {
+                    return evaluation.Dim == null && evaluation.Classes.Count == 1;
                 }
-                if (evaluation.Dim == null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("list")) {
-                    return true;
-                }
+                return evaluation.Length > 1;
             }
             return false;
         }
