@@ -3,8 +3,8 @@
 
 using System;
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -29,6 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
             VsAppShell.Current.AssertIsOnMainThread();
+
             var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
             vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, _contentType);
 

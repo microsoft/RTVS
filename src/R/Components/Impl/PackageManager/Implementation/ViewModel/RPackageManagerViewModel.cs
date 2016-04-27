@@ -14,6 +14,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf;
 using Microsoft.Common.Wpf.Collections;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
@@ -117,7 +118,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task DefaultActionAsync() {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (SelectedPackage == null) {
                 return;
             }
@@ -132,7 +133,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task InstallAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (package.IsInstalled || package.IsChanging) {
                 return;
             }
@@ -159,7 +160,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UpdateAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
@@ -213,7 +214,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UninstallAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (!package.IsInstalled || package.IsChanging) {
                 return;
             }
@@ -266,7 +267,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task LoadAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (package.IsLoaded) {
                 return;
             }
@@ -286,7 +287,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task UnloadAsync(IRPackageViewModel package) {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
 
             if (!package.IsLoaded) {
                 return;
@@ -369,7 +370,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToAvailablePackagesAsync() {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (_selectedTab == SelectedTab.AvailablePackages) {
                 return;
             }
@@ -385,6 +386,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task EnsureAvailablePackagesLoadedAsync() {
+            await _coreShell.SwitchToMainThreadAsync();
+
             var availablePackagesLoaded = await _availableLock.WaitAsync();
             if (!availablePackagesLoaded) {
                 try {
@@ -417,7 +420,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToInstalledPackagesAsync() {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 return;
             }
@@ -451,7 +454,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         private async Task LoadInstalledAndLoadedPackagesAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var markUninstalledAndUnloadedTask = _coreShell.DispatchOnMainThreadAsync(MarkUninstalledAndUnloaded);
+            var markUninstalledAndUnloadedTask = MarkUninstalledAndUnloaded();
             var getInstalledPackagesTask = _packageManager.GetInstalledPackagesAsync();
             await Task.WhenAll(markUninstalledAndUnloadedTask, getInstalledPackagesTask);
 
@@ -466,7 +469,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
                 await UpdateLoadedPackages(vmInstalledPackages);
                 _installedPackages = vmInstalledPackages;
-                DispatchOnMainThread(EnsureAvailablePackagesLoadedAsync);
+
+                EnsureAvailablePackagesLoadedAsync().DoNotWait();
             } else {
                 var vmAvailablePackages = _availablePackages.ToDictionary(k => k.Name);
                 var vmInstalledPackages = new List<IRPackageViewModel>();
@@ -531,8 +535,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             _loadedPackages = vmLoadedPackages;
         }
 
-        private void MarkUninstalledAndUnloaded() {
-            _coreShell.AssertIsOnMainThread();
+        private async Task MarkUninstalledAndUnloaded() {
+            await _coreShell.SwitchToMainThreadAsync();
+
             foreach (var package in _installedPackages) {
                 package.IsInstalled = false;
                 package.IsLoaded = false;
@@ -541,7 +546,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         public async Task SwitchToLoadedPackagesAsync() {
-            _coreShell.AssertIsOnMainThread();
+            await _coreShell.SwitchToMainThreadAsync();
             if (_selectedTab == SelectedTab.LoadedPackages) {
                 return;
             }
@@ -586,13 +591,6 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (selectedPackage != null) {
                 SelectPackage(selectedPackage);
             }
-        }
-
-        private void DispatchOnMainThread(Func<Task> callback) {
-            _coreShell.DispatchOnMainThreadAsync(callback)
-                .Unwrap()
-                .SilenceException<OperationCanceledException>()
-                .DoNotWait();
         }
 
         public async Task<int> Search(string searchString, CancellationToken cancellationToken) {
