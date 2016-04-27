@@ -79,6 +79,42 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     completedTasks.Single().Result.Dispose();
                 }
             }
+
+            [Test]
+            [Category.R.Session]
+            public async Task NestedInteraction() {
+                string topLevelPrompt;
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    topLevelPrompt = inter.Prompt;
+
+                    var evalTask = _session.EvaluateAsync<string>("readline('2')", REvaluationKind.Reentrant);
+
+                    using (var inter2 = await _session.BeginInteractionAsync()) {
+                        inter2.Prompt.Should().Be("2");
+
+                        var evalTask2 = _session.EvaluateAsync<string>("readline('3')", REvaluationKind.Reentrant);
+
+                        using (var inter3 = await _session.BeginInteractionAsync()) {
+                            inter3.Prompt.Should().Be("3");
+                            inter3.RespondAsync("0 + 3\n").DoNotWait();
+                        }
+
+                        await evalTask2;
+                        evalTask2.Result.Should().Be("0 + 3");
+
+                        inter2.RespondAsync("0 + 2\n").DoNotWait();
+                    }
+
+                    await evalTask;
+                    evalTask.Result.Should().Be("0 + 2");
+
+                    await inter.RespondAsync("0 + 1");
+                }
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    inter.Prompt.Should().Be(topLevelPrompt);
+                }
+            }
         }
     }
 }
