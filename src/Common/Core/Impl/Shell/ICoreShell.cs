@@ -26,22 +26,6 @@ namespace Microsoft.Common.Core.Shell {
         void DispatchOnUIThread(Action action);
 
         /// <summary>
-        /// Async version of DispatchOnUIThread
-        /// </summary>
-        /// <param name="action">Action to execute</param>
-        /// <param name="cancellationToken">A token whose cancellation will immediately schedule the continuation on calling thread</param>
-        /// <returns></returns>
-        Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = default (CancellationToken));
-
-        /// <summary>
-        /// Async version of DispatchOnUIThread
-        /// </summary>
-        /// <param name="callback">Action to execute</param>
-        /// <param name="cancellationToken">A token whose cancellation will immediately schedule the continuation on calling thread</param>
-        /// <returns></returns>
-        Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = new CancellationToken());
-
-        /// <summary>
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>

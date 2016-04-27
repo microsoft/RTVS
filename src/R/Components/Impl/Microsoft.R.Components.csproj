@@ -98,6 +98,7 @@
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
+    <Compile Include="Extensions\CoreShellExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="Help\IHelpVisualComponent.cs" />
