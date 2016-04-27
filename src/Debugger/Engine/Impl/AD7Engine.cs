@@ -191,11 +191,12 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugEngine2.CauseBreak() {
-            ThrowIfDisposed();
-            DebugSession.BreakAsync()
-                .SilenceException<MessageTransportException>()
-                .DoNotWait();
-            return VSConstants.S_OK;
+            //ThrowIfDisposed();
+            //DebugSession.BreakAsync()
+            //    .SilenceException<MessageTransportException>()
+            //    .DoNotWait();
+            //return VSConstants.S_OK;
+            return VSConstants.E_NOTIMPL;
         }
 
         int IDebugEngine2.ContinueFromSynchronousEvent(IDebugEvent2 pEvent) {
