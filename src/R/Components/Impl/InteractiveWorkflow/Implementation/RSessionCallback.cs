@@ -21,8 +21,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
 
-        public object VsAppShell { get; private set; }
-
         public RSessionCallback(IInteractiveWindow interactiveWindow, IRSession session, IRSettings settings, ICoreShell coreShell) {
             _interactiveWindow = interactiveWindow;
             _session = session;

@@ -37,22 +37,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public async Task ViewAsync(string expression, string title) {
             var evaluation = await _evaluator.EvaluateAsync(expression, DebugEvaluationResultFields.Expression) as DebugValueEvaluationResult;
-            if(evaluation == null) {
+            if (evaluation == null) {
                 return;
             }
 
-            string functionName = evaluation.Expression as string;
+            string functionName = evaluation.Expression;
             if (string.IsNullOrEmpty(functionName)) {
                 return;
             }
 
             var session = _sessionProvider.GetInteractiveWindowRSession();
             string functionCode = null;
-            using (var e = await session.BeginEvaluationAsync()) {
-                var result = await e.EvaluateAsync(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
-                if (result.ParseStatus == RParseStatus.OK && result.Error == null && result.StringResult != null) {
-                    functionCode = result.StringResult;
-                }
+            try {
+                functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
+            } catch(RException ex) {
+                VsAppShell.Current.ShowErrorMessage(ex.Message);
             }
 
             if (!string.IsNullOrEmpty(functionCode)) {

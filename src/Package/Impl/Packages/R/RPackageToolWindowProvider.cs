@@ -10,18 +10,15 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.PackageManager;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     [Export]
     [Export(typeof(IPackageLibraryViewer))]
-    internal class RPackageToolWindowProvider: IPackageLibraryViewer {
+    internal class RPackageToolWindowProvider : IPackageLibraryViewer {
         [Import]
         private Lazy<IRInteractiveWorkflowProvider> WorkflowProvider { get; set; }
         [Import]
@@ -63,9 +60,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
         #region IPackageLibraryViewer
         public void ViewLibrary() {
-            var uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            object o = new object();
-            uiShell.PostExecCommand(RGuidList.RCmdSetGuid, (uint)RPackageCommandId.icmdShowPackagesWindow, 0, ref o);
+            CreatePackageManagerToolWindow(0).Container.Show(true);
         }
         #endregion
 
