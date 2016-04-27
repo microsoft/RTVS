@@ -7,8 +7,8 @@ using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
-    [Export(typeof(IObjectDetailsViewerProvider))]
-    public sealed class ObjectDetailsViewerProvider : IObjectDetailsViewerProvider {
+    [Export(typeof(IObjectViewer))]
+    public sealed class ObjectDetailsViewerProvider : IObjectViewer {
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private readonly IDebugObjectEvaluator _evaluator;
 

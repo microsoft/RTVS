@@ -188,6 +188,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             }
 
             public void ViewObject(string expression, string title) { }
+
+            public void ViewLibrary() { }
         }
     }
 }

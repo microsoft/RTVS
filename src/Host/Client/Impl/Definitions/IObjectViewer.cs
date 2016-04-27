@@ -4,7 +4,7 @@
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
-    public interface IObjectDetailsViewerProvider {
+    public interface IObjectViewer {
         Task ViewObjectDetails(string expression, string title);
     }
 }

@@ -275,8 +275,7 @@ namespace Microsoft.R.Host.Client.Session {
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
                         await evaluation.SetVsHelpRedirection();
-                        await evaluation.SetChangeDirectoryRedirection();
-                        await evaluation.SetViewRedirection();
+                        await evaluation.OverrideFunction("setwd", "base");
                     }
 
                     _afterHostStartedTcs.SetResult(null);
@@ -516,6 +515,11 @@ namespace Microsoft.R.Host.Client.Session {
         Task IRCallbacks.Browser(string url) {
             var callback = _callback;
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
+        }
+
+        void IRCallbacks.ViewLibrary() {
+            var callback = _callback;
+            callback?.ViewLibrary();
         }
 
         void IRCallbacks.DirectoryChanged() {

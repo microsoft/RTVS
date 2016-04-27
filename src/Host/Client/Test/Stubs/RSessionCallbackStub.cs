@@ -16,11 +16,13 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, int, CancellationToken>> ReadUserInputCalls { get; } = new List<Tuple<string, int, CancellationToken>>();
         public IList<string> CranUrlFromNameCalls { get; } = new List<string>();
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
+        public IList<int> ViewLibraryCalls { get; } = new List<int>();
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
+        public Action ViewLibraryHandler { get; set; } = () => { };
 
         public Task ShowErrorMessage(string message) {
             ShowErrorMessageCalls.Add(message);
@@ -55,6 +57,11 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public void ViewObject(string expression, string title) {
             ViewObjectCalls.Add(new Tuple<string, string>(expression, title));
             ViewObjectHandler?.Invoke(expression, title);
+        }
+
+        public void ViewLibrary() {
+            ViewLibraryCalls.Add(0);
+            ViewLibraryHandler?.Invoke();
         }
     }
 }

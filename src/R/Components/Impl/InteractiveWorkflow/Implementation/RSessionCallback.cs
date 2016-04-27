@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +19,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
+
+        public object VsAppShell { get; private set; }
 
         public RSessionCallback(IInteractiveWindow interactiveWindow, IRSession session, IRSettings settings, ICoreShell coreShell) {
             _interactiveWindow = interactiveWindow;
@@ -86,8 +86,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void ViewObject(string expression, string title) {
-            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectDetailsViewerProvider>();
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
             viewer?.ViewObjectDetails(expression, title);
+        }
+
+        public void ViewLibrary() {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IPackageLibraryViewer>();
+            viewer.ViewLibrary();
         }
     }
 }

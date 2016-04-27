@@ -107,6 +107,10 @@ namespace Microsoft.R.Host.Client {
             Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
         }
 
+        public void ViewLibrary() {
+            Console.Error.WriteLineAsync("ViewLibrary");
+        }
+
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");

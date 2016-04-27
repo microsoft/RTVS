@@ -158,13 +158,8 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRExpressionEvaluator evaluation) {
-            var script = @"utils::assignInNamespace('setwd', rtvs:::setwd, 'base')";
-            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
-        }
-
-        public static Task<REvaluationResult> SetViewRedirection(this IRExpressionEvaluator evaluation) {
-            var script = @"View <- rtvs:::view";
+        public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
+            var script = Invariant($"utils::assignInNamespace('{name}', rtvs:::{name}, '{ns}')");
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
     }

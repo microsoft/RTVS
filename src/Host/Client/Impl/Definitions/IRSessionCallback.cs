@@ -46,5 +46,10 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <returns></returns>
         void ViewObject(string expression, string title);
+
+        /// <summary>
+        /// Present package list or package manager
+        /// </summary>
+        void ViewLibrary();
     }
 }
