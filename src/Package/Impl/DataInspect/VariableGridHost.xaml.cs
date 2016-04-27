@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
