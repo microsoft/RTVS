@@ -9,6 +9,7 @@ using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Interactive.Test.Utility;
 using Microsoft.VisualStudio.R.Package.DataInspect;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.DataInspect;
 using Xunit;
 
@@ -40,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                     DoIdle(100);
 
                     var result = await hostScript.EvaluateAsync("grid.test <- matrix(1:10, 2, 5)");
-                    VariableViewModel wrapper = new VariableViewModel(result);
+                    VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.ExportProvider.GetExportedValue< IObjectDetailsViewerAggregator>());
 
                     DoIdle(2000);
 

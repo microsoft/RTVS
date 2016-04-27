@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
         [Import]
-        private IDebugObjectEvaluator Evaluator { get; set; }
+        private IDataObjectEvaluator Evaluator { get; set; }
 
         public async Task<IObjectDetailsViewer> GetViewer(string expression) {
             var preliminary = await Evaluator.EvaluateAsync(expression,

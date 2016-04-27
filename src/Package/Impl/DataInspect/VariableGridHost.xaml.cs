@@ -18,12 +18,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Control that shows two dimensional R object
     /// </summary>
     public partial class VariableGridHost : UserControl {
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+        private readonly IRSession _rSession;
         private VariableViewModel _evaluation;
-        private IRSession _rSession;
 
         public VariableGridHost() {
             InitializeComponent();
 
+            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
             _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
         }
@@ -47,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         | DebugEvaluationResultFields.Length;
 
                 var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
-                var wrapper = new VariableViewModel(result);
+                var wrapper = new VariableViewModel(result, _aggregator);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {

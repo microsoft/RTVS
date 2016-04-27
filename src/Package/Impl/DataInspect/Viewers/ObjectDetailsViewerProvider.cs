@@ -9,10 +9,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectViewer))]
     public sealed class ObjectDetailsViewerProvider : IObjectViewer {
         private readonly IObjectDetailsViewerAggregator _aggregator;
-        private readonly IDebugObjectEvaluator _evaluator;
+        private readonly IDataObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator, IDebugObjectEvaluator evaluator) {
+        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) {
             _aggregator = aggregator;
             _evaluator = evaluator;
         }

@@ -23,11 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                                                         | DebugEvaluationResultFields.Dim
                                                         | DebugEvaluationResultFields.Length;
 
-        private readonly IDebugObjectEvaluator _evaluator;
+        private readonly IDataObjectEvaluator _evaluator;
+        private readonly IObjectDetailsViewerAggregator _aggregator;
 
         [ImportingConstructor]
-        public GridViewer(IDebugObjectEvaluator evaluator) {
+        public GridViewer(IDataObjectEvaluator evaluator, IObjectDetailsViewerAggregator aggregator) {
             _evaluator = evaluator;
+            _aggregator = aggregator;
         }
 
         #region IObjectDetailsViewer
@@ -55,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
                 title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
-                pane.SetEvaluation(new VariableViewModel(evaluation), title);
+                pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
             });
         }
         #endregion

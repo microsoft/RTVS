@@ -10,8 +10,8 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
-    [Export(typeof(IDebugObjectEvaluator))]
-    public sealed class DebugObjectEvaluator : IDebugObjectEvaluator {
+    [Export(typeof(IDataObjectEvaluator))]
+    public sealed class DebugObjectEvaluator : IDataObjectEvaluator {
         private readonly IDebugSessionProvider _debugSessionProvider;
         private readonly IRSessionProvider _rSessionProvider;
         private DebugSession _debugSession;

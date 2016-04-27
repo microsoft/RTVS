@@ -20,10 +20,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class FunctionViewer : IObjectDetailsViewer {
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IDebugObjectEvaluator _evaluator;
+        private readonly IDataObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public FunctionViewer(IRSessionProvider sessionProvider, IDebugObjectEvaluator evaluator) {
+        public FunctionViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) {
             _sessionProvider = sessionProvider;
             _evaluator = evaluator;
         }

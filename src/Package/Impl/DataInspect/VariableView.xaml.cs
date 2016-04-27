@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -19,9 +18,11 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
         private readonly IRToolsSettings _settings;
-        ObservableTreeNode _rootNode;
-        IREnvironmentProvider _environmentProvider;
-        IDebugObjectEvaluator _evaluator;
+        private readonly IDataObjectEvaluator _evaluator;
+        private readonly IREnvironmentProvider _environmentProvider;
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+
+        private ObservableTreeNode _rootNode;
 
         private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
@@ -31,6 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _settings = settings;
 
             InitializeComponent();
+
+            _evaluator = VsAppShell.Current.ExportProvider.GetExportedValue<IDataObjectEvaluator>();
+            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
 
             SetRootNode(VariableViewModel.Ellipsis);
             EnvironmentComboBox.ItemsSource = _defaultEnvironments;
@@ -51,7 +55,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             if (_environmentProvider != null) {
                 _environmentProvider.EnvironmentChanged -= EnvironmentProvider_EnvironmentChanged;
-                _environmentProvider = null;
             }
         }
 
@@ -94,10 +97,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private async Task SetRootModelAsync(REnvironment env) {
-            if (_evaluator == null) {
-                _evaluator = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugObjectEvaluator>();
-            }
-
             await TaskUtilities.SwitchToBackgroundThread();
             const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                     | DebugEvaluationResultFields.Expression
@@ -108,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             DebugEvaluationResult result = await _evaluator.EvaluateAsync(GetExpression(env), fields);
             if (result != null) {
-                var wrapper = new VariableViewModel(result);
+                var wrapper = new VariableViewModel(result, _aggregator);
                 var rootNodeModel = new VariableNode(_settings, wrapper);
                 VsAppShell.Current.DispatchOnUIThread(() => _rootNode.Model = rootNodeModel);
             }

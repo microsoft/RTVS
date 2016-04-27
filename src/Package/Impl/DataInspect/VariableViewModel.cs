@@ -18,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
     public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
+        private readonly IObjectDetailsViewerAggregator _aggregator;
         private IObjectDetailsViewer _detailsViewer;
         private string _title;
 
@@ -28,8 +29,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(DebugEvaluationResult evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
+            _aggregator = aggregator;
 
             Index = index;
             var result = DebugEvaluation as DebugValueEvaluationResult;
@@ -39,20 +41,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void SetViewButtonStatus(DebugValueEvaluationResult result) {
-            var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-            _detailsViewer = aggregator.GetViewer(result);
+            _detailsViewer = _aggregator.GetViewer(result);
             _title = result.Name;
 
             CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(async (o) => await _detailsViewer.ViewAsync(result.Expression, _title), (o) => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, _title).DoNotWait(), o => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
             var tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
             CanShowOpenCsv = CanShowDetail && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
             if (CanShowOpenCsv) {
-                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
+                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
                 OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
             }
         }
@@ -99,8 +100,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, 100);
 
                 result = new List<IRSessionDataObject>();
+                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new VariableViewModel(children[i], index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter

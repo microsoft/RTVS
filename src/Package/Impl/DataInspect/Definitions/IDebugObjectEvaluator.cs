@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public interface IDebugObjectEvaluator {
+    public interface IDataObjectEvaluator {
        Task<DebugEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields);
     }
 }
