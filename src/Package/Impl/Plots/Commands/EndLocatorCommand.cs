@@ -3,20 +3,22 @@
 
 using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
-    internal sealed class CopyPlotAsBitmapCommand : PlotWindowCommand {
-        public CopyPlotAsBitmapCommand(IPlotHistory plotHistory) :
-            base(plotHistory, RPackageCommandId.icmdCopyPlotAsBitmap) {
+    internal sealed class EndLocatorCommand : PlotWindowCommand {
+        public EndLocatorCommand(IPlotHistory plotHistory) :
+            base(plotHistory, RPackageCommandId.icmdEndLocator) {
         }
 
         protected override void SetStatus() {
-            Enabled = PlotHistory.ActivePlotIndex >= 0 && !IsInLocatorMode;
+            Enabled = IsInLocatorMode;
+            Visible = Enabled;
         }
 
         protected override void Handle() {
-            PlotHistory.PlotContentProvider.CopyToClipboardAsBitmap();
+            if (PlotHistory.PlotContentProvider.Locator != null) {
+                PlotHistory.PlotContentProvider.Locator.EndLocatorMode();
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client {
         Task ShowMessage(string s, CancellationToken ct);
         Task Busy(bool which, CancellationToken ct);
         Task Plot(string filePath, CancellationToken ct);
-
+        Task<LocatorResult> Locator(CancellationToken ct);
         /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>

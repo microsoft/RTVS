@@ -68,6 +68,22 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }, ct);
         }
 
+        public async Task<LocatorResult> Locator(CancellationToken ct) {
+            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(_session);
+            var tcs = new TaskCompletionSource<LocatorResult>();
+            await _coreShell.DispatchOnMainThreadAsync(() => {
+                if (history.PlotContentProvider.Locator != null) {
+                    history.PlotContentProvider.Locator.StartLocatorMode(ct, tcs);
+                } else {
+                    tcs.SetResult(new LocatorResult());
+                }
+            });
+
+            await tcs.Task;
+            return tcs.Task.Result;
+        }
+
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
             _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {

@@ -509,6 +509,32 @@ rtvs:::graphics.ide.previousplot()
             CompareImages(actualPlotPaths, expectedPlotPaths);
         }
 
+        [Test]
+        [Category.Plots]
+        public async Task Locator() {
+            var outputFilePath = _files.LocatorResultPath;
+            var code = string.Format(@"
+plot(0:10)
+res <- locator()
+write.csv(res, {0})
+",
+                QuotedRPath(outputFilePath));
+
+            var locatorProvider = new TestLocatorResultProvider(new Point[] {
+                new Point(10, 10),
+                new Point(100, 50),
+                new Point(290, 90),
+            });
+
+            var inputs = Interactive(code);
+            var actualPlotFilePaths = (await GraphicsTestAsync(inputs, locatorProvider.Next)).ToArray();
+
+            // Locator results for the above clicked positions
+            var x = new double[] { -2.48008095952895, 1.55378525638498, 10.0697250455366 };
+            var y = new double[] { 14.4476461865435, 12.091623959219, 9.73560173189449 };
+            CheckLocatorResult(outputFilePath, x, y);
+        }
+
         private void CompareImages(string[] actualPlotPaths, string[] expectedPlotPaths) {
             actualPlotPaths.Select(f => File.ReadAllBytes(f)).ShouldBeEquivalentTo(expectedPlotPaths.Select(f => File.ReadAllBytes(f)));
         }
@@ -516,6 +542,22 @@ rtvs:::graphics.ide.previousplot()
         private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
             string json = File.ReadAllText(historyInfoFilePath).Trim();
             json.Should().Be($"[{expectedActive},{expectedCount}]");
+        }
+
+        private void CheckLocatorResult(string locatorFilePath, double[] x, double[] y) {
+            // Example result:
+            //"","x","y"
+            //"1",-2.48008095952895,14.4476461865435
+            //"2",1.55378525638498,12.091623959219
+            //"3",10.0697250455366,9.73560173189449
+            string all = File.ReadAllText(locatorFilePath);
+            string[] lines = File.ReadAllLines(locatorFilePath);
+            lines[0].Should().Be("\"\",\"x\",\"y\"");
+            x.Should().HaveSameCount(y);
+            for (int i = 0; i < x.Length; i++) {
+                var expected = $"\"{i+1}\",{x[i]},{y[i]}";
+                lines[i + 1].Should().Be(expected);
+            }
         }
 
         internal string SavePlotFile(string plotFilePath, int i) {
@@ -539,8 +581,8 @@ dev.off()
             return filePath;
         }
 
-        private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs) {
-            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot });
+        private async Task<IEnumerable<string>> GraphicsTestAsync(string[] inputs, Func<LocatorResult> locatorHandler = null) {
+            await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler });
 
             // Ensure that all plot files created by the graphics device have been deleted
             foreach (var deletedFilePath in OriginalPlotFilePaths) {
@@ -594,6 +636,28 @@ dev.off()
             // We also store the original plot file paths, so we can 
             // validate that they have been deleted when the host goes away
             OriginalPlotFilePaths.Add(filePath);
+        }
+
+        class TestLocatorResultProvider {
+            private Point[] _points;
+            private int _index;
+
+            public TestLocatorResultProvider(Point[] points) {
+                _points = points;
+            }
+
+            public LocatorResult Next() {
+                if (_index < _points.Length) {
+                    var res = new LocatorResult() {
+                        X = _points[_index].X,
+                        Y = _points[_index].Y,
+                        Clicked = true,
+                    };
+                    _index++;
+                    return res;
+                }
+                return new LocatorResult();
+            }
         }
     }
 }

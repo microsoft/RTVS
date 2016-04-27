@@ -706,4 +706,10 @@ Additional information:
   <data name="Warning_SaveInUtf8" xml:space="preserve">
     <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
   </data>
+  <data name="PlotWindowCaptionLocatorActive" xml:space="preserve">
+    <value>R Plot - Locator is Active</value>
+  </data>
+  <data name="PlotWindowStatusLocatorActive" xml:space="preserve">
+    <value>Locator is active. Click in the plot window to select points then choose End Locator.</value>
+  </data>
 </root>

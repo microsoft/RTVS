@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         protected override void SetStatus() {
-            Enabled = PlotHistory.PlotCount > 0;
+            Enabled = PlotHistory.PlotCount > 0 && !IsInLocatorMode;
         }
 
         protected override void Handle() {

@@ -284,6 +284,9 @@
       <Group guid="guidRToolsCmdSet" id="plotSubMenuClearGroup" priority="0x0500">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuLocatorGroup" priority="0x0600">
+        <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
+      </Group>
 
       <!-- Same as above, but excludes commands that are already present in Interactive Window toolbar (like Restart). -->
       <Group guid="guidRToolsCmdSet" id="sessionSubMenuRGroup" priority="0x0100">
@@ -361,6 +364,9 @@
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="plotSubMenuClearGroup" priority="0x0500">
+        <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="plotSubMenuLocatorGroup" priority="0x0600">
         <Parent guid="guidRToolsCmdSet" id="plotWindowToolBarId"/>
       </Group>
 
@@ -725,7 +731,17 @@
           <MenuText>Save As P&amp;DF</MenuText>
         </Strings>
       </Button>
-      <!-- End Plots flyout -->
+
+      <Button guid="guidRToolsCmdSet" id="icmdEndLocator" priority="0x0100" type="Button">
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>End Locator</ButtonText>
+          <MenuText>&amp;End Locator</MenuText>
+        </Strings>
+      </Button>
+
+        <!-- End Plots flyout -->
 
       <!-- Data flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100" type="Button">
@@ -1540,6 +1556,10 @@
       <Parent guid="guidRToolsCmdSet" id="plotSubMenuClearGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdEndLocator" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="plotSubMenuLocatorGroup"/>
+    </CommandPlacement>
+
     <!-- Plot window toolbar -->
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdPrevPlot" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="plotToolbarNavGroup"/>
@@ -1886,12 +1906,14 @@
 
       <IDSymbol name="icmdCopyPlotAsBitmap" value="716" />
       <IDSymbol name="icmdCopyPlotAsMetafile" value="717" />
+      <IDSymbol name="icmdEndLocator" value="718" />
 
       <IDSymbol name="plotSubMenu" value="750"/>
       <IDSymbol name="plotSubMenuFileGroup" value="751"/>
       <IDSymbol name="plotSubMenuCopyGroup" value="754"/>
       <IDSymbol name="plotSubMenuNavGroup" value="755"/>
       <IDSymbol name="plotSubMenuClearGroup" value="756"/>
+      <IDSymbol name="plotSubMenuLocatorGroup" value="757"/>
 
       <!-- Data-->
       <IDSymbol name="icmdImportDataset" value="801" />

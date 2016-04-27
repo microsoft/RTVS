@@ -11,7 +11,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
             base(plotHistory, RPackageCommandId.icmdPrevPlot) {
         }
         protected override void SetStatus() {
-            Enabled = PlotHistory.ActivePlotIndex > 0;
+            Enabled = PlotHistory.ActivePlotIndex > 0 && !IsInLocatorMode;
         }
         protected override void Handle() {
             PlotContentProvider.DoNotWait(PlotHistory.PlotContentProvider.PreviousPlotAsync());

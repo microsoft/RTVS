@@ -848,6 +848,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Plot - Locator is Active.
+        /// </summary>
+        public static string PlotWindowCaptionLocatorActive {
+            get {
+                return ResourceManager.GetString("PlotWindowCaptionLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locator is active. Click in the plot window to select points then choose End Locator..
+        /// </summary>
+        public static string PlotWindowStatusLocatorActive {
+            get {
+                return ResourceManager.GetString("PlotWindowStatusLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RDataNode {

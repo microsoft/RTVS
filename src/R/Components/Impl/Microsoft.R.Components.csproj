@@ -176,6 +176,7 @@
     <Compile Include="PackageManager\IRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="PackageManager\ViewModel\IRPackageManagerViewModel.cs" />
     <Compile Include="PackageManager\Model\RPackageVersion.cs" />
+    <Compile Include="Plots\IPlotLocator.cs" />
     <Compile Include="Plots\IPlotContentProvider.cs" />
     <Compile Include="Plots\IPlotHistory.cs" />
     <Compile Include="Plots\IPlotHistoryProvider.cs" />

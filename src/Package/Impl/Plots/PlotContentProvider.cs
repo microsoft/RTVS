@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         #region IPlotContentProvider implementation
+
+        public IPlotLocator Locator { get; set; }
 
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
@@ -284,6 +287,39 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             task.SilenceException<MessageTransportException>()
                 .DoNotWait();
         }
+
+        //public void Locator(CancellationToken ct, Action<LocatorResult> doneCallback) {
+        //    if (_locatorHandler != null) {
+        //        _locatorDoneCallback = doneCallback;
+        //        _locatorHandler(LocatorDoneCallback);
+        //    }
+
+        //    if (_locatorEndHandler != null) {
+        //        ct.Register(() => EndLocator());
+        //    }
+        //}
+
+        //private void LocatorDoneCallback(LocatorResult result) {
+        //    if (_locatorDoneCallback != null) {
+        //        _locatorDoneCallback(result);
+        //        _locatorDoneCallback = null;
+        //    }
+
+        //    _locatorEndHandler?.Invoke();
+        //}
+
+        //public void SetLocatorHandler(Action<Action<LocatorResult>> handler, Action endHandler) {
+        //    _locatorHandler = handler;
+        //    _locatorEndHandler = endHandler;
+        //}
+
+        //public void EndLocator() {
+        //    LocatorDoneCallback(new LocatorResult());
+        //}
+
+        //public bool IsInLocatorMode {
+        //    get { return _locatorDoneCallback != null; }
+        //}
     }
 
     internal static class WpfUnitsConversion {
@@ -295,6 +331,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public static Size ToPixels(Visual visual, Size wpfSize) {
             var source = PresentationSource.FromVisual(visual);
             return (Size)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
+        }
+
+        public static Point ToPixels(Visual visual, Point wpfSize) {
+            var source = PresentationSource.FromVisual(visual);
+            return (Point)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
         }
 
         public static int GetResolution(Visual visual) {
