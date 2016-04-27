@@ -34,3 +34,9 @@ library <- function(package, ...) {
     do.call(base::library, args)
   }
 }
+
+redirect_View <- function() {
+  .rtvs <- new.env()
+  .rtvs$View <- rtvs:::view
+  attach(.rtvs, warn.conflicts = FALSE)
+}

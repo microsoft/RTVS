@@ -165,11 +165,7 @@ grDevices::deviceIsInteractive('ide')
 
 
         public static Task<REvaluationResult> SetViewRedirection(this IRExpressionEvaluator evaluation) {
-            var script = @"
-.rtvs <- new.env()
-.rtvs$View <- rtvs:::view
-attach(.rtvs, warn.conflicts = FALSE)
-";
+            var script = "rtvs:::redirect_View()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
     }
