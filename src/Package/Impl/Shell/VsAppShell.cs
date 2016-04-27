@@ -17,6 +17,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -108,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
         public T GetGlobalService<T>(Type type = null) where T : class {
+            this.AssertIsOnMainThread();
             if (IsUnitTestEnvironment) {
                 System.IServiceProvider sp = RPackage.Current;
                 return sp.GetService(type ?? typeof(T)) as T;
@@ -139,20 +141,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
-        public Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = new CancellationToken()) {
-            if (MainThreadDispatcher.Thread != Thread.CurrentThread) {
-                return MainThreadDispatcher.InvokeAsync(action, DispatcherPriority.Normal, cancellationToken).Task;
-            }
-
-            action();
-            return Task.CompletedTask;
-        }
-
-        public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = new CancellationToken()) {
-            return MainThreadDispatcher.Thread != Thread.CurrentThread
-                ? MainThreadDispatcher.InvokeAsync(callback, DispatcherPriority.Normal, cancellationToken).Task
-                : Task.FromResult(callback());
-        }
 
         private Dispatcher MainThreadDispatcher { get; }
 
