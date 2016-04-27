@@ -13,7 +13,7 @@ view <- function(x, title) {
   }
 }
 
-browser <- function(url) {
+open_url <- function(url) {
   rtvs:::send_message('Browser', url)
 }
 
@@ -24,11 +24,11 @@ setwd <- function(dir) {
 }
 
 library <- function(package, ...) {
-  args <- list(...)
-  if (missing(package) && length(args) == 0) {
+  if (nargs() == 0) {
     invisible(rtvs:::send_message('library'))
   } else {
     pkgname <- as.character(substitute(package))
+    args <- list(...)
     args[['character.only']] = TRUE
     args <- c(pkgname, args)
     do.call(base::library, args)

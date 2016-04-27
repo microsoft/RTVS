@@ -153,7 +153,7 @@ grDevices::deviceIsInteractive('ide')
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
-  options(browser = rtvs:::browser)
+  options(browser = rtvs:::open_url)
 ";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
