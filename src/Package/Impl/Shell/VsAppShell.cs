@@ -17,6 +17,7 @@ using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -108,6 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="type">Service type if different from T, such as typeof(SVSUiShell)</param>
         /// <returns>Service instance of null if not found.</returns>
         public T GetGlobalService<T>(Type type = null) where T : class {
+            this.AssertIsOnMainThread();
             if (IsUnitTestEnvironment) {
                 System.IServiceProvider sp = RPackage.Current;
                 return sp.GetService(type ?? typeof(T)) as T;
