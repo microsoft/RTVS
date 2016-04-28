@@ -10,9 +10,9 @@ using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewerAggregator))]
-    public sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
+    internal sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
         [ImportMany]
-        private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
+        internal IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
         [Import]
         private IDataObjectEvaluator Evaluator { get; set; }
