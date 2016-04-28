@@ -3,12 +3,20 @@
 
 using Microsoft.R.Components.Plots;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal class PlotWindowCommand : PackageCommand {
         protected IPlotHistory PlotHistory { get; }
+
+        protected bool IsInLocatorMode {
+            get {
+                if (PlotHistory.PlotContentProvider?.Locator != null) {
+                    return PlotHistory.PlotContentProvider.Locator.IsInLocatorMode;
+                }
+                return false;
+            }
+        }
 
         public PlotWindowCommand(IPlotHistory plotHistory, int id) : 
             base(RGuidList.RCmdSetGuid, id) {

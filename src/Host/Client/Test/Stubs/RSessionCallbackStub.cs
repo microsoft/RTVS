@@ -13,6 +13,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<Tuple<string, MessageButtons>> ShowMessageCalls { get; } = new List<Tuple<string, MessageButtons>>();
         public IList<string> HelpUrlCalls { get; } = new List<string>();
         public IList<Tuple<string, CancellationToken>> PlotCalls { get; } = new List<Tuple<string, CancellationToken>>();
+        public IList<CancellationToken> LocatorCalls { get; } = new List<CancellationToken>();
         public IList<Tuple<string, int, CancellationToken>> ReadUserInputCalls { get; } = new List<Tuple<string, int, CancellationToken>>();
         public IList<string> CranUrlFromNameCalls { get; } = new List<string>();
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
@@ -20,6 +21,8 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
+        public Func<CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (ct) => Task.FromResult(LocatorResult.CreateNotClicked());
+
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
         public Action ViewLibraryHandler { get; set; } = () => { };
@@ -42,6 +45,11 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Task Plot(string filePath, CancellationToken ct) {
             PlotCalls.Add(new Tuple<string, CancellationToken>(filePath, ct));
             return Task.CompletedTask;
+        }
+
+        public Task<LocatorResult> Locator(CancellationToken ct) {
+            LocatorCalls.Add(ct);
+            return LocatorHandler != null ? LocatorHandler(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

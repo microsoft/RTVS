@@ -63,6 +63,15 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             history.PlotContentProvider.LoadFile(filePath);
         }
 
+        public async Task<LocatorResult> Locator(CancellationToken ct) {
+            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(_session);
+            if (history.PlotContentProvider.Locator != null) {
+                return await history.PlotContentProvider.Locator.StartLocatorModeAsync(ct);
+            }
+            return LocatorResult.CreateNotClicked();
+        }
+
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
             _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {

@@ -4,8 +4,13 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
@@ -19,7 +24,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Plots {
     [Guid(WindowGuid)]
-    internal class PlotWindowPane : RToolWindowPane, IVsWindowFrameNotify3 {
+    internal class PlotWindowPane : RToolWindowPane, IVsWindowFrameNotify3, IPlotLocator {
         internal const string WindowGuid = "970AD71C-2B08-4093-8EA9-10840BC726A3";
 
         // Anything below 200 pixels at fixed 96dpi is impractical, and prone to rendering errors
@@ -27,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private const int MinPixelHeight = 200;
 
         private IPlotHistory _plotHistory;
+        private TaskCompletionSource<LocatorResult> _locatorTcs;
 
         public PlotWindowPane() {
             Caption = Resources.PlotWindowCaption;
@@ -38,10 +44,12 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             var historyProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
 
             _plotHistory = historyProvider.GetPlotHistory(sessionProvider.GetInteractiveWindowRSession());
+            _plotHistory.PlotContentProvider.Locator = this;
             _plotHistory.HistoryChanged += OnPlotHistoryHistoryChanged;
 
             var presenter = new XamlPresenter(_plotHistory.PlotContentProvider);
             presenter.SizeChanged += PlotWindowPane_SizeChanged;
+
             Content = presenter;
 
             // initialize toolbar. Commands are added via package
@@ -64,6 +72,17 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             IdleTimeAction.Create(() => {
                 PlotContentProvider.DoNotWait(_plotHistory.PlotContentProvider.ResizePlotAsync(pixelWidth, pixelHeight, resolution));
             }, 100, this);
+        }
+
+        private void RootContainer_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) {
+            if (_locatorTcs != null) {
+                var rootContainer = (FrameworkElement)sender;
+                var pos = e.GetPosition(rootContainer);
+                var pixelSize = WpfUnitsConversion.ToPixels(rootContainer as Visual, pos);
+
+                var result = LocatorResult.CreateClicked((int)pixelSize.X, (int)pixelSize.Y);
+                EndLocatorMode(result);
+            }
         }
 
         private void OnPlotHistoryHistoryChanged(object sender, EventArgs e) {
@@ -99,5 +118,48 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             return VSConstants.S_OK;
         }
         #endregion
+
+        #region IPlotLocator
+        public bool IsInLocatorMode {
+            get { return _locatorTcs != null; }
+        }
+
+        public async Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
+            _locatorTcs = new TaskCompletionSource<LocatorResult>();
+            ct.Register(EndLocatorMode);
+
+            await VsAppShell.Current.SwitchToMainThreadAsync();
+            SetLocatorModeUI(true);
+
+            var task = _locatorTcs.Task;
+            return await task;
+        }
+
+        public void EndLocatorMode() {
+            EndLocatorMode(LocatorResult.CreateNotClicked());
+        }
+        #endregion
+
+        private void EndLocatorMode(LocatorResult result) {
+            var tcs = _locatorTcs;
+            _locatorTcs = null;
+            tcs?.SetResult(result);
+            VsAppShell.Current.DispatchOnUIThread(() => SetLocatorModeUI(false));
+        }
+
+        private void SetLocatorModeUI(bool locatorMode) {
+            var rootContainer = ((XamlPresenter)Content).RootContainer;
+            rootContainer.Cursor = locatorMode ? Cursors.Cross : Cursors.Arrow;
+            if (locatorMode) {
+                rootContainer.MouseLeftButtonUp += RootContainer_MouseLeftButtonUp;
+            } else {
+                rootContainer.MouseLeftButtonUp -= RootContainer_MouseLeftButtonUp;
+            }
+
+            var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            statusBar.SetText(locatorMode ? Resources.PlotWindowStatusLocatorActive : string.Empty);
+
+            this.Caption = locatorMode ? Resources.PlotWindowCaptionLocatorActive : Resources.PlotWindowCaption;
+        }
     }
 }
