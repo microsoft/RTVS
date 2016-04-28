@@ -17,10 +17,12 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class InteractionEvaluation : IAsyncLifetime {
+            private readonly TestMethodFixture _testMethodFixture;
             private readonly MethodInfo _testMethod;
             private readonly RSession _session;
 
             public InteractionEvaluation(TestMethodFixture testMethod) {
+                _testMethodFixture = testMethod;
                 _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, () => {});
             }
@@ -30,6 +32,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
                 }, null, 50000);
+
+                _testMethodFixture.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
