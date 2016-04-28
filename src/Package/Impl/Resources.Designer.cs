@@ -1553,7 +1553,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open in a Grid Viewer.
+        ///   Looks up a localized string similar to Show item details.
         /// </summary>
         public static string ShowDetailCommandTooltip {
             get {
@@ -1612,6 +1612,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurveyNewsPolicyDisabled {
             get {
                 return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fetching data....
+        /// </summary>
+        public static string TooltipPlaceholder {
+            get {
+                return ResourceManager.GetString("TooltipPlaceholder", resourceCulture);
             }
         }
         

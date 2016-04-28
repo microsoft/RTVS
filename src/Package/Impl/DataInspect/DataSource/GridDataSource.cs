@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             if (rSession == null) {
                 rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
                 if (rSession == null) {
-                    throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(EvaluationWrapper)}"));
+                    throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(VariableViewModel)}"));
                 }
             }
 

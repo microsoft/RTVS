@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -12,50 +11,64 @@ using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
-using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
     /// </summary>
-    public sealed class EvaluationWrapper : RSessionDataObject, IIndexedItem {
+    public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+        private IObjectDetailsViewer _detailsViewer;
+        private string _title;
 
-        public EvaluationWrapper() { Index = -1; }
+        public VariableViewModel() { Index = -1; }
 
         /// <summary>
-        /// Create new instance of <see cref="EvaluationWrapper"/>
+        /// Create new instance of <see cref="VariableViewModel"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public EvaluationWrapper(DebugEvaluationResult evaluation, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(DebugEvaluationResult evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
+            _aggregator = aggregator;
 
             Index = index;
+            var result = DebugEvaluation as DebugValueEvaluationResult;
+            if (result != null) {
+                SetViewButtonStatus(result);
+            }
+        }
 
-            CanShowDetail = ComputeDetailAvailability(DebugEvaluation as DebugValueEvaluationResult);
+        private void SetViewButtonStatus(DebugValueEvaluationResult result) {
+            _detailsViewer = _aggregator.GetViewer(result);
+            _title = result.Name;
+
+            CanShowDetail = _detailsViewer != null;
             if (CanShowDetail) {
-                ShowDetailCommand = new DelegateCommand(ShowVariableGridWindowPane, (o) => CanShowDetail);
+                ShowDetailCommand = new DelegateCommand(o => _detailsViewer.ViewAsync(result.Expression, _title).DoNotWait(), o => CanShowDetail);
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
-            CanShowOpenCsv = ComputeCsvAvailability(DebugEvaluation as DebugValueEvaluationResult);
+            var tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
+            CanShowOpenCsv = CanShowDetail && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
             if (CanShowOpenCsv) {
-                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, (o) => CanShowOpenCsv);
+                OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
                 OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
             }
         }
 
         #region Ellipsis 
 
-        private static Lazy<EvaluationWrapper> _ellipsis = Lazy.Create(() => {
-            var instance = new EvaluationWrapper();
+        private static Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
+            var instance = new VariableViewModel();
             instance.Name = string.Empty;
             instance.Value = Resources.VariableExplorer_Truncated;
             instance.HasChildren = false;
             return instance;
         });
 
-        public static EvaluationWrapper Ellipsis {
+        public static VariableViewModel Ellipsis {
             get { return _ellipsis.Value; }
         }
 
@@ -68,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             var valueEvaluation = DebugEvaluation as DebugValueEvaluationResult;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"{nameof(EvaluationWrapper)} result type is not {typeof(DebugValueEvaluationResult)}");
+                Debug.Assert(false, $"{nameof(VariableViewModel)} result type is not {typeof(DebugValueEvaluationResult)}");
                 return result;
             }
 
@@ -88,14 +101,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, Repr);
 
                 result = new List<IRSessionDataObject>();
+                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
                 for (int i = 0; i < children.Count; i++) {
-                    result.Add(new EvaluationWrapper(children[i], index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
+                    result.Add(new VariableViewModel(children[i], aggregator, index: i, maxChildrenCount: GetMaxChildrenCount(children[i])));
                 }
 
                 // return children can be less than value's length in some cases e.g. missing parameter
                 if (valueEvaluation.Length > result.Count
                     && (valueEvaluation.Length > MaxChildrenCount)) {
-                    result.Add(EvaluationWrapper.Ellipsis); // insert dummy child to indicate truncation in UI
+                    result.Add(VariableViewModel.Ellipsis); // insert dummy child to indicate truncation in UI
                 }
             }
 
@@ -114,45 +128,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #region Variable Grid command
 
-        public bool CanShowDetail { get; }
+        public bool CanShowDetail { get; private set; }
 
-        public ICommand ShowDetailCommand { get; }
-        public string ShowDetailCommandTooltip { get; }
+        public ICommand ShowDetailCommand { get; private set; }
+        public string ShowDetailCommandTooltip { get; private set; }
 
-        public bool CanShowOpenCsv { get; }
+        public bool CanShowOpenCsv { get; private set; }
 
-        public ICommand OpenInCsvAppCommand { get; }
-        public string OpenCsvAppCommandTooltip { get; }
-
-        private void ShowVariableGridWindowPane(object parameter) {
-            VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(0, true);
-            pane.SetEvaluation(this);
-        }
+        public ICommand OpenInCsvAppCommand { get; private set; }
+        public string OpenCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
-
-        private static string[] detailClasses = new string[] { "matrix", "data.frame", "table" };
-        private bool ComputeDetailAvailability(DebugValueEvaluationResult evaluation) {
-            if (evaluation != null && evaluation.Classes.Any(t => detailClasses.Contains(t))) {
-                if (evaluation.Dim != null && evaluation.Dim.Count == 2) {
-                    return true;
-                }
-            }
-            return false;
-        }
         #endregion
-
-        private bool ComputeCsvAvailability(DebugValueEvaluationResult evaluation) {
-            bool result = false;
-            if (evaluation != null) {
-                result = ComputeDetailAvailability(evaluation);
-                if (!result) {
-                    result = evaluation.Length > 1;
-                }
-            }
-            return result;
-        }
-    }
+     }
 }

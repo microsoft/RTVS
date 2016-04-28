@@ -4,7 +4,10 @@
 using System;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal interface IREnvironmentProvider {
-        event EventHandler<REnvironmentChangedEventArgs> EnvironmentChanged;
+    [Flags]
+    public enum ViewerCapabilities {
+        Function = 1,
+        List = 2,
+        Table = 4,
     }
 }

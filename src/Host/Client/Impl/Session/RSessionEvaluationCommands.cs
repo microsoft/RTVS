@@ -80,12 +80,12 @@ grDevices::deviceIsInteractive('ide')
             var script = Invariant($"install.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
-        
+
         public static Task InstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
             var script = Invariant($"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
-        
+
         public static Task UninstallPackage(this IRSessionInteraction interaction, string name) {
             var script = Invariant($"remove.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
@@ -115,7 +115,7 @@ grDevices::deviceIsInteractive('ide')
             var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json);
         }
-        
+
         public static Task<REvaluationResult> AvailablePackages(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Json | REvaluationKind.Reentrant);
@@ -153,19 +153,21 @@ grDevices::deviceIsInteractive('ide')
         public static Task<REvaluationResult> SetVsHelpRedirection(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
-  options(browser = function(url) { 
-      rtvs:::send_message('Browser', url) 
-  })";
+  options(browser = rtvs:::open_url)
+";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SetChangeDirectoryRedirection(this IRExpressionEvaluator evaluation) {
-            var script =
-@"utils::assignInNamespace('setwd', function(dir) {
-    old <- .Internal(setwd(dir))
-    rtvs:::send_message('setwd', dir)
-    invisible(old)
-  }, 'base')";
+        public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
+            name = name.ToRStringLiteral();
+            ns = ns.ToRStringLiteral();
+            var script = Invariant($"utils::assignInNamespace('{name}', rtvs:::{name}, '{ns}')");
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+        }
+
+
+        public static Task<REvaluationResult> SetFunctionRedirection(this IRExpressionEvaluator evaluation) {
+            var script = "rtvs:::redirect_functions()";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
     }

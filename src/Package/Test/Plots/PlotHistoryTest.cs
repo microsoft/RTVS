@@ -186,6 +186,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
             public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
                 return Task.FromResult("\n");
             }
+
+            public void ViewObject(string expression, string title) { }
+
+            public Task ViewLibrary() {
+                return Task.CompletedTask;
+            }
         }
     }
 }

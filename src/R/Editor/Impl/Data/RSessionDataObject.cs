@@ -50,7 +50,13 @@ namespace Microsoft.R.Editor.Data {
 
                 HasChildren = valueEvaluation.HasChildren;
 
-                Dimensions = valueEvaluation.Dim ?? new List<int>();
+                if (valueEvaluation.Dim != null) {
+                    Dimensions = valueEvaluation.Dim;
+                } else if(valueEvaluation.Length.HasValue) {
+                    Dimensions = new List<int>() { valueEvaluation.Length.Value, 1 };
+                } else {
+                    Dimensions = new List<int>();
+                }
             } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
                 const string PromiseValue = "<promise>";
 

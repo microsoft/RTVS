@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Editor.Data;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -18,9 +16,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #region member/ctor
 
         private readonly IRToolsSettings _settings;
-        private EvaluationWrapper _evaluation;
+        private VariableViewModel _evaluation;
 
-        public VariableNode(IRToolsSettings settings, EvaluationWrapper evaluation) {
+        public VariableNode(IRToolsSettings settings, VariableViewModel evaluation) {
             _settings = settings;
             _evaluation = evaluation;
         }
@@ -34,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 return _evaluation;
             }
             set {
-                _evaluation = (EvaluationWrapper)value;
+                _evaluation = (VariableViewModel)value;
             }
         }
 
@@ -46,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 foreach (var child in children) {
                     if ((_settings != null && _settings.ShowDotPrefixedVariables) || !child.IsHidden) {
-                        result.Add(new VariableNode(_settings, child as EvaluationWrapper));
+                        result.Add(new VariableNode(_settings, child as VariableViewModel));
                     }
                 }
             }
@@ -54,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public bool CanUpdateTo(ITreeNode node) {
-            var value = node.Content as EvaluationWrapper;
+            var value = node.Content as VariableViewModel;
             if (value != null) {
                 return _evaluation.Name == value.Name;
             }

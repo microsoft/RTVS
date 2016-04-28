@@ -302,8 +302,8 @@ namespace Microsoft.Languages.Editor.Completion {
             // typed so far. Otherwise it interferes with snippet insertion on Tab-Tab.
             if (typedCharacter == '\t') {
                 try {
-                    var viewSnapshot = TextView.TextBuffer.CurrentSnapshot;
-                    SnapshotSpan span = completionSet.ApplicableTo.GetSpan(viewSnapshot);
+                    var snapshot = completionSet.ApplicableTo.TextBuffer.CurrentSnapshot;
+                    var span = completionSet.ApplicableTo.GetSpan(snapshot);
                     if (status.Completion.InsertionText.StartsWithOrdinal(span.GetText())) {
                         return true;
                     }
