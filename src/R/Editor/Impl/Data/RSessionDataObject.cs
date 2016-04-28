@@ -41,7 +41,6 @@ namespace Microsoft.R.Editor.Data {
                 var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
 
                 Value = GetValue(valueEvaluation)?.Trim();
-                ValueDetail = valueEvaluation.GetRepresentation().Deparse;
                 TypeName = valueEvaluation.TypeName;
 
                 if (valueEvaluation.Classes != null) {
@@ -51,7 +50,13 @@ namespace Microsoft.R.Editor.Data {
 
                 HasChildren = valueEvaluation.HasChildren;
 
-                Dimensions = valueEvaluation.Dim ?? new List<int>();
+                if (valueEvaluation.Dim != null) {
+                    Dimensions = valueEvaluation.Dim;
+                } else if(valueEvaluation.Length.HasValue) {
+                    Dimensions = new List<int>() { valueEvaluation.Length.Value, 1 };
+                } else {
+                    Dimensions = new List<int>();
+                }
             } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
                 const string PromiseValue = "<promise>";
 
@@ -75,6 +80,8 @@ namespace Microsoft.R.Editor.Data {
         protected int? MaxChildrenCount { get; set; }
 
         protected int MaxReprLength { get; set; }
+
+        private string Repr => $"rtvs:::make_repr_str(max_length = {MaxReprLength})";
 
         protected DebugEvaluationResult DebugEvaluation { get; }
 
@@ -105,7 +112,6 @@ namespace Microsoft.R.Editor.Data {
                 const DebugEvaluationResultFields fields =
                     DebugEvaluationResultFields.Expression |
                     DebugEvaluationResultFields.Kind |
-                    DebugEvaluationResultFields.ReprStr |
                     DebugEvaluationResultFields.TypeName |
                     DebugEvaluationResultFields.Classes |
                     DebugEvaluationResultFields.Length |
@@ -113,7 +119,7 @@ namespace Microsoft.R.Editor.Data {
                     DebugEvaluationResultFields.AttrCount |
                     DebugEvaluationResultFields.Dim |
                     DebugEvaluationResultFields.Flags;
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, MaxReprLength);
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, Repr);
                 result = EvaluateChildren(children);
             }
 
@@ -140,7 +146,7 @@ namespace Microsoft.R.Editor.Data {
 
         private static string DataFramePrefix = "'data.frame':([^:]+):";
         private string GetValue(DebugValueEvaluationResult v) {
-            var value = v.GetRepresentation().Str;
+            var value = v.Representation;
             if (value != null) {
                 Match match = Regex.Match(value, DataFramePrefix);
                 if (match.Success) {
@@ -155,8 +161,6 @@ namespace Microsoft.R.Editor.Data {
         public string Name { get; protected set; }
 
         public string Value { get; protected set; }
-
-        public string ValueDetail { get; protected set; }
 
         public string TypeName { get; protected set; }
 

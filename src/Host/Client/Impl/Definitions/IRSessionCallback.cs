@@ -46,5 +46,16 @@ namespace Microsoft.R.Host.Client {
         /// Given CRAN mirror name returns server URL
         /// </summary>
         string CranUrlFromName(string name);
+
+        /// <summary>
+        /// Opens viewer for the given object
+        /// </summary>
+        /// <returns></returns>
+        void ViewObject(string expression, string title);
+
+        /// <summary>
+        /// Present package list or package manager
+        /// </summary>
+        Task ViewLibrary();
     }
 }

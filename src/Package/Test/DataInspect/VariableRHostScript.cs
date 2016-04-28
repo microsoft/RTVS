@@ -12,14 +12,12 @@ using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.VisualStudio.R.Package.DataInspect;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     public class VariableRHostScript : RHostScript {
-        private EvaluationWrapper _globalEnv;
+        private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         private IDebugSessionProvider _debugSessionProvider;
@@ -30,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
         }
 
-        public EvaluationWrapper GlobalEnvrionment {
+        public VariableViewModel GlobalEnvrionment {
             get {
                 return _globalEnv;
             }
@@ -48,13 +46,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                     | DebugEvaluationResultFields.Expression
                     | DebugEvaluationResultFields.TypeName
-                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
                     | DebugEvaluationResultFields.Dim
                     | DebugEvaluationResultFields.Length;
-                var result = await frame.EvaluateAsync(rScript, fields);
+                const string repr = "rtvs:::make_repr_str()";
+                var result = await frame.EvaluateAsync(rScript, fields, repr);
 
                 var globalResult = await frame.EvaluateAsync("base::environment()", fields);
-                _globalEnv = new EvaluationWrapper(globalResult);
+                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>());
 
                 return result;
             } finally {
@@ -82,12 +80,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         public static void AssertEvaluationWrapper(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
         public static void AssertEvaluationWrapper_ValueStartWith(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.Name.ShouldBeEquivalentTo(expectation.Name);
             v.Value.Should().StartWith(expectation.Value);
             v.Class.ShouldBeEquivalentTo(expectation.Class);

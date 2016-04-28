@@ -571,7 +571,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Open in Microsoft Excel or another app registered for CSV files</value>
   </data>
   <data name="ShowDetailCommandTooltip" xml:space="preserve">
-    <value>Open in a Grid Viewer</value>
+    <value>Show item details</value>
   </data>
   <data name="Settings_TriggerOnTab" xml:space="preserve">
     <value>Completion list on Tab key</value>
@@ -705,6 +705,9 @@ Additional information:
   </data>
   <data name="Warning_SaveInUtf8" xml:space="preserve">
     <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
+  </data>
+  <data name="TooltipPlaceholder" xml:space="preserve">
+    <value>Fetching data...</value>
   </data>
   <data name="PlotWindowCaptionLocatorActive" xml:space="preserve">
     <value>R Plot - Locator is Active</value>

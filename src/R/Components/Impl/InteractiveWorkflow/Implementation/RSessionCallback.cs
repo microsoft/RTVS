@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
@@ -85,6 +86,20 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// </summary>
         public string CranUrlFromName(string mirrorName) {
             return CranMirrorList.UrlFromName(mirrorName);
+        }
+
+        public void ViewObject(string expression, string title) {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            viewer?.ViewObjectDetails(expression, title);
+        }
+
+        public async Task ViewLibrary() {
+            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
+            await _coreShell.SwitchToMainThreadAsync();
+            workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(true);
         }
     }
 }

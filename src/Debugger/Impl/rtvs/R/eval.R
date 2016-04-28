@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-# Fills the provided environment 'res' with information about object 'obj', such as:
+# Fills the provided environment `res` with information about object `obj`, such as:
 # - various textual representations
 # - typeof and classes
 # - length, number of slots, number of attributes, and number of names
@@ -9,11 +9,18 @@
 # - environment name
 # - various assorted flags
 #
-# If provided, fields should be a character vector listing the fields in the output environment that
-# are desired; only those fields will be included in the output.
-describe_object <- function(obj, res, fields, repr_max_length = NA) {
+# And returns the resulting environment. If `res` is not provided, a fresh empty environment is
+# created and returned.
+#
+# If provided, `fields` should be a character vector listing the fields in the output environment
+# that are desired; only those fields will be included in the output.
+#
+# `repr` must be a function that can accept a single argument, or `NULL`. If not `NULL`, it will
+# be invoked with `obj` as an argument, and the produced value will be stored in `res$repr`.
+# If function raises an exception, it is silently ignored, and `res$repr` will not be set.
+describe_object <- function(obj, res, fields, repr = NULL) {
   if (missing(res)) {
-    res <- new.env();
+    res <- as.environment(list());
   }   
 
   field <-
@@ -23,30 +30,9 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
       function(x) x %in% fields
     }
   
-  if (field('repr')) {
-    repr <- new.env();
-    
-    if (field('repr.deparse')) {
-      repr$deparse <- paste0(collapse = '', NA_if_error(
-        if (is.na(repr_max_length)) {
-            deparse(obj)
-        } else {
-            # Force max length into range permitted by deparse
-            cutoff <- min(max(repr_max_length, 20), 500);
-            deparse(obj, width.cutoff = cutoff, nlines = 1)
-        }))
-    }
-    
-    if (field('repr.toString')) {
-      repr$toString <- NA_if_error(paste0(toString(obj), collapse = ''));
-    }
-    
-    if (field('repr.str')) {
-      repr$str <- NA_if_error(fancy_str(obj, repr_max_length, 0x100));
-    }
-  
-    res$repr <- repr;
-  }  
+  if (!is.null(repr)) {
+  	  res$repr <- NA_if_error(repr(obj))
+  }
 
   if (field('type')) {
     res$type <- force_toString(NA_if_error(typeof(obj)));
@@ -101,16 +87,22 @@ describe_object <- function(obj, res, fields, repr_max_length = NA) {
   res
 }
 
-
-# Evaluates an expression in a given environment, and produces an environment describing the result.
-# If obj is provided, then it is used as an evaluation result to describe. Otherwise, expr is parsed
+# Evaluates string `expr` in environment `env`, and produces a new environment describing the result.
+#
+# If `obj` is provided, then it is used as an evaluation result to describe. Otherwise, expr is parsed
 # and evaluated in env to produce the result.
+#
 # If evaluation fails, the error is captured, and environment describing it is produced. This is the
-# case even if obj is provided - if it is an expression, it will be delay-evaluated in a safe context.
-# If provided, fields should be a character vector listing the fields in the output environment that
+# case even if `obj` is provided - if it is an expression, it will be delay-evaluated in a safe context.
+#
+# If provided, `fields` should be a character vector listing the fields in the output environment that
 # are desired; only those fields will be included in the output (however, fields that are used to
 # distinguish between various result kinds - error/value/promise/active_binding - are always included).
-eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA) {
+#
+# `repr` must be a function that can accept a single argument, or `NULL`. If not `NULL`, it will
+# be invoked with `obj` as an argument, and the produced value will be stored in `res$repr`.
+# If function raises an exception, it is silently ignored, and `res$repr` will not be set.
+eval_and_describe <- function(expr, env, kind, fields, obj, repr = NULL) {
   res <- new.env();
   
   field <-
@@ -145,7 +137,7 @@ eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA
   });
 
   if (is.null(err)) {
-    describe_object(obj, res, fields, repr_max_length);
+    describe_object(obj, res, fields, repr);
   } else {
     res$error <- force_toString(NA_if_error(conditionMessage(err)));
   }
@@ -153,7 +145,15 @@ eval_and_describe <- function(expr, env, kind, fields, obj, repr_max_length = NA
   res
 }
 
-describe_children <- function(obj, env, fields, count = NULL, repr_max_length = NA) {
+# Retrieves and describes children of object `obj`, as if `describe_object` was called on every child.
+#
+# If `env` is provided, then `obj` should be an expressiong string, that is then evaluated in `env`
+# to produce the actual value.
+#
+# `count` specifies the maximum number of children to report. If NULL, then all children are reported.
+#
+# `fields` and `repr` are passed to `describe_object` as is.
+describe_children <- function(obj, env, fields, count = NULL, repr = NULL) {
   if (!missing(env)) {
     expr <- obj;
     obj <- safe_eval(parse(text = obj), env);
@@ -165,7 +165,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
   children <- vector("list", if (is.null(count)) 1000 else count);
   last_child <- 0;
 
-  process_env <- function(fields) {
+  process_env <- function() {
     names <- ls(obj, all.names = TRUE);
     
     if (!is.null(count)) {
@@ -215,7 +215,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
             next;
         }
 
-        value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr_max_length);
+        value <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr);
       }
       
       child <- list(value);
@@ -226,10 +226,10 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
   }
   
   if (is.environment(obj)) {
-    process_env(fields);
+    process_env();
   }
 
-  process_slots <- function(fields) {
+  process_slots <- function() {
     is_S4 <- isS4(obj);
     names <- NA_if_error(slotNames(class(obj)));
   
@@ -256,7 +256,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
         slot_expr <- paste0('methods::slot((', expr, '), ', deparse_str(name), ')', collapse = '')
       }
       
-      value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr_max_length);
+      value <- eval_and_describe(slot_expr, environment(), '@', fields, slot(obj, name), repr);
       
       child <- list(value);
       names(child) <- accessor;
@@ -267,9 +267,9 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
   
   # Not just S4 objects have slots, so run this on everything - slotNames() will always
   # do the right thing.
-  process_slots(fields);
+  process_slots();
 
-  process_items <- function(fields) {  
+  process_items <- function() {  
     n <- length(obj);
 
     names <- names(obj);
@@ -313,7 +313,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
           }
         }
         
-        value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]], repr_max_length);
+        value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]], repr);
         
         child <- list(value);
         names(child) <- accessor;
@@ -326,7 +326,7 @@ describe_children <- function(obj, env, fields, count = NULL, repr_max_length = 
   # If it is an atomic vector, a list or a language object, it might have children,
   # some of which are possibly named.
   if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
-    process_items(fields);
+    process_items();
   }
     
   # Trim the preallocated vector to the actual number of children placed in it.

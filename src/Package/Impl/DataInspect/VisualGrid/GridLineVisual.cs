@@ -15,23 +15,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         internal VisualGrid Owner { get; }
 
-        private ScrollDirection ScrollDirection {
-            get {
-                return Owner.ScrollDirection;
-            }
-        }
+        private ScrollDirection ScrollDirection  => Owner.ScrollDirection;
 
-        public double GridLineThickness { get { return 1.0; } }
+        public double GridLineThickness => 1.0;
 
-        private Brush _gridLineBrush = Brushes.Black;
-        public Brush GridLineBrush {
-            get {
-                return _gridLineBrush;
-            }
-            set {
-                _gridLineBrush = value;
-            }
-        }
+        public Brush GridLineBrush { get; set; } = Brushes.Black;
 
         public void Draw(
             GridRange range,

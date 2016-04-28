@@ -48,7 +48,6 @@
     <Compile Include="DebugBrowseEventArgs.cs" />
     <Compile Include="DebugChildAccessorKind.cs" />
     <Compile Include="DebugValueEvaluationResultFlags.cs" />
-    <Compile Include="DebugValueRepresentation.cs" />
     <Compile Include="DebugValueEvaluationResult.cs" />
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
@@ -109,11 +108,17 @@
     <EmbeddedResource Include="rtvs\R\packages.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\repr.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="rtvs\R\rtvs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>True</IncludeInVSIX>
     </None>
     <EmbeddedResource Include="rtvs\R\mirror.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="rtvs\R\overrides.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>

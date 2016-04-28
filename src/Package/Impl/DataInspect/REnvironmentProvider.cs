@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Newtonsoft.Json.Linq;
 

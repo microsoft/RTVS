@@ -275,7 +275,8 @@ namespace Microsoft.R.Host.Client.Session {
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
                         await evaluation.SetVsHelpRedirection();
-                        await evaluation.SetChangeDirectoryRedirection();
+                        await evaluation.OverrideFunction("setwd", "base");
+                        await evaluation.SetFunctionRedirection();
                     }
 
                     _afterHostStartedTcs.SetResult(null);
@@ -522,8 +523,18 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
 
+        Task IRCallbacks.ViewLibrary() {
+            var callback = _callback;
+            return callback?.ViewLibrary();
+        }
+
         void IRCallbacks.DirectoryChanged() {
             DirectoryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.ViewObject(string obj, string title) {
+            var callback = _callback;
+            callback?.ViewObject(obj, title);
         }
     }
 }

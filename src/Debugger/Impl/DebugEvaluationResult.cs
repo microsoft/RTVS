@@ -96,11 +96,11 @@ namespace Microsoft.R.Debugger {
         /// </summary>
         /// <remarks>
         /// This is used primarily to evaluate the result with a different set of <see cref="DebugEvaluationResultFields"/>,
-        /// or different <c>reprMaxLength</c>, to load additional data on demand.
+        /// or different <c>repr</c>, to load additional data on demand.
         /// </remarks>
         public Task<DebugEvaluationResult> EvaluateAsync(
             DebugEvaluationResultFields fields,
-            int? reprMaxLength = null,
+            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             if (EnvironmentExpression == null) {
@@ -109,7 +109,7 @@ namespace Microsoft.R.Debugger {
             if (Expression == null) {
                 throw new InvalidOperationException("Cannot re-evaluate an evaluation result that does not have an associated expression.");
             }
-            return Session.EvaluateAsync(EnvironmentExpression, Expression, Name, fields, reprMaxLength, cancellationToken);
+            return Session.EvaluateAsync(EnvironmentExpression, Expression, Name, fields, repr, cancellationToken);
         }
 
         public override bool Equals(object obj) =>

@@ -10,8 +10,6 @@ namespace Microsoft.R.Editor.Data {
 
         string Value { get; }
 
-        string ValueDetail { get; }
-
         string TypeName { get; }
 
         string Class { get; }

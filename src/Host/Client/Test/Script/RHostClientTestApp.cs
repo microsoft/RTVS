@@ -39,6 +39,12 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.FromResult("\n");
         }
 
+        public void ViewObject(string expression, string title) { }
+
+        public Task ViewLibrary() {
+            return Task.CompletedTask;
+        }
+
         public Task<LocatorResult> Locator(CancellationToken ct) {
             if (LocatorHandler != null) {
                 return Task.FromResult(LocatorHandler());

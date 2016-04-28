@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     internal class VsRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
-        private readonly IRPackageManagerProvider _pacakagesProvider;
+        private readonly IRPackageManagerProvider _packagesProvider;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
 
@@ -25,13 +25,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         [ImportingConstructor]
         public VsRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
-            , IRPackageManagerProvider pacakagesProvider
+            , IRPackageManagerProvider packagesProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker) {
 
             _sessionProvider = sessionProvider;
             _historyProvider = historyProvider;
-            _pacakagesProvider = pacakagesProvider;
+            _packagesProvider = packagesProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
         }
@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var shell = EditorShell.Current;
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _pacakagesProvider, _activeTextViewTracker, _debuggerModeTracker, shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

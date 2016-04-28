@@ -142,7 +142,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 const DebugEvaluationResultFields fields =
                                     DebugEvaluationResultFields.Expression |
                                     DebugEvaluationResultFields.Kind |
-                                    DebugEvaluationResultFields.ReprStr |
                                     DebugEvaluationResultFields.TypeName |
                                     DebugEvaluationResultFields.Classes |
                                     DebugEvaluationResultFields.Length |
@@ -150,7 +149,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     DebugEvaluationResultFields.AttrCount |
                                     DebugEvaluationResultFields.Dim |
                                     DebugEvaluationResultFields.Flags;
-                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment", fields);
+                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment", fields, "rtvs:::make_repr_str()");
                                 var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
                                 _topLevelVariables.Clear();

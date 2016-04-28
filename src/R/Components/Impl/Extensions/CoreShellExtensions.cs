@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Extensions {
         [Conditional("TRACE")]
         public static void AssertIsOnMainThread(this ICoreShell coreShell, [CallerMemberName] string memberName = "", [CallerFilePath] string sourceFilePath = "", [CallerLineNumber] int sourceLineNumber = 0) {
             if (coreShell.MainThread != Thread.CurrentThread) {
-                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a non-background thread."));
+                Trace.Fail(Invariant($"{memberName} at {sourceFilePath}:{sourceLineNumber} was incorrectly called from a background thread."));
             }
         }
     }

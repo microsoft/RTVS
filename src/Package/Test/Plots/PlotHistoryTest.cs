@@ -187,6 +187,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
                 return Task.FromResult("\n");
             }
 
+            public void ViewObject(string expression, string title) { }
+
+            public Task ViewLibrary() {
+                return Task.CompletedTask;
+            }
+
             public Task<LocatorResult> Locator(CancellationToken ct) {
                 throw new NotImplementedException();
             }
