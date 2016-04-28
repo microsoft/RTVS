@@ -74,6 +74,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
+        private const string Repr = "rtvs:::make_repr_str(max_length = 100)";
+
         protected override async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 
@@ -89,7 +91,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 const DebugEvaluationResultFields fields =
                     DebugEvaluationResultFields.Expression |
                     DebugEvaluationResultFields.Kind |
-                    DebugEvaluationResultFields.ReprStr |
                     DebugEvaluationResultFields.TypeName |
                     DebugEvaluationResultFields.Classes |
                     DebugEvaluationResultFields.Length |
@@ -97,7 +98,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     DebugEvaluationResultFields.AttrCount |
                     DebugEvaluationResultFields.Dim |
                     DebugEvaluationResultFields.Flags;
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, 100);
+                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, Repr);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

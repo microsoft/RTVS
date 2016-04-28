@@ -22,7 +22,10 @@ namespace Microsoft.R.Debugger {
     /// flag was specified when producing the result. All properties which were not so requested will be <see langword="null"/>.
     /// </remarks>
     public class DebugValueEvaluationResult : DebugEvaluationResult {
-        private JObject _reprObj;
+        /// <summary>
+        /// String representation of the value.
+        /// </summary>
+        public string Representation { get; }
 
         /// <summary>
         /// The kind of accessor that was used to obtain this <see cref="DebugValueEvaluationResult"/> from its parent.
@@ -117,14 +120,7 @@ namespace Microsoft.R.Debugger {
         internal DebugValueEvaluationResult(DebugSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
 
-            var repr = json["repr"];
-            if (repr != null) {
-                _reprObj = repr as JObject;
-                if (_reprObj == null) {
-                    throw new InvalidDataException(Invariant($"'repr' must be an object in:\n\n{json}"));
-                }
-            }
-
+            Representation = json.Value<string>("repr");
             TypeName = json.Value<string>("type");
             Length = json.Value<int?>("length");
             AttributeCount = json.Value<int?>("attr_count");
@@ -180,20 +176,10 @@ namespace Microsoft.R.Debugger {
         }
 
         /// <summary>
-        /// Returns a structure containing various representations of this value, as requested via <see cref="DebugEvaluationResultFields"/>
-        /// when this result was produced.
-        /// </summary>
-        public DebugValueRepresentation GetRepresentation() {
-            if (_reprObj == null) {
-                throw new InvalidOperationException("Evaluation result does not have an associated representation.");
-            }
-            return new DebugValueRepresentation(_reprObj);
-        }
-
-        /// <summary>
         /// Computes the children of this value, and returns a collection of evaluation results describing each child.
         /// See <see cref="DebugSession.EvaluateAsync"/> for the meaning of parameters.
         /// </summary>
+        /// <param name="maxCount">If not <see langword="null"/>, return at most that many children.</param>
         /// <remarks>
         /// <para>
         /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
@@ -211,8 +197,8 @@ namespace Microsoft.R.Debugger {
         /// <exception cref="RException">Raised if child retrieval fails.</exception>
         public async Task<IReadOnlyList<DebugEvaluationResult>> GetChildrenAsync(
             DebugEvaluationResultFields fields,
-            int? maxLength = null,
-            int? reprMaxLength = null,
+            int? maxCount = null,
+            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -228,7 +214,7 @@ namespace Microsoft.R.Debugger {
                 return new DebugEvaluationResult[0];
             }
 
-            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxLength}, {reprMaxLength})");
+            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxCount}, {repr})");
             var jChildren = await Session.RSession.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),
