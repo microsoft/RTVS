@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Settings;
@@ -36,21 +37,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await _evaluator.EvaluateAsync(expression, DebugEvaluationResultFields.Expression) as DebugValueEvaluationResult;
-            if (evaluation == null) {
+            DebugValueEvaluationResult evaluation = null;
+            try {
+                evaluation = await _evaluator.EvaluateAsync(expression, DebugEvaluationResultFields.Expression) as DebugValueEvaluationResult;
+            } catch (RException ex) {
+                VsAppShell.Current.ShowErrorMessage(ex.Message);
+            }
+            if (evaluation == null || string.IsNullOrEmpty(evaluation.Expression)) {
                 return;
             }
 
-            string functionName = evaluation.Expression;
-            if (string.IsNullOrEmpty(functionName)) {
-                return;
-            }
-
+            var functionName = evaluation.Expression;
             var session = _sessionProvider.GetInteractiveWindowRSession();
             string functionCode = null;
             try {
                 functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
-            } catch(RException ex) {
+            } catch (RException ex) {
                 VsAppShell.Current.ShowErrorMessage(ex.Message);
             }
 
@@ -70,13 +72,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                         sw.Write(functionCode);
                     }
 
-                    VsAppShell.Current.DispatchOnUIThread(() => {
-                        var dte = VsAppShell.Current.GetGlobalService<DTE>();
-                        dte.ItemOperations.OpenFile(tempFile);
-                        try {
-                            File.Delete(tempFile);
-                        } catch (IOException) { } catch (AccessViolationException) { }
-                    });
+                    await VsAppShell.Current.SwitchToMainThreadAsync();
+
+                    var dte = VsAppShell.Current.GetGlobalService<DTE>();
+                    dte.ItemOperations.OpenFile(tempFile);
+                    try {
+                        File.Delete(tempFile);
+                    } catch (IOException) { } catch (AccessViolationException) { }
+
                 } catch (IOException) { } catch (AccessViolationException) { }
             }
         }

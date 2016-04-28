@@ -276,8 +276,7 @@ namespace Microsoft.R.Host.Client.Session {
 
                         await evaluation.SetVsHelpRedirection();
                         await evaluation.OverrideFunction("setwd", "base");
-                        await evaluation.OverrideFunction("library", "base");
-                        await evaluation.SetViewRedirection();
+                        await evaluation.SetFunctionRedirection();
                     }
 
                     _afterHostStartedTcs.SetResult(null);

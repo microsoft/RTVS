@@ -6,7 +6,9 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Debugger;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
@@ -48,17 +50,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await _evaluator.EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
-            if (evaluation == null) {
-                return;
+            DebugValueEvaluationResult evaluation = null;
+            try {
+                evaluation = await _evaluator.EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
+            } catch (RException ex) {
+                VsAppShell.Current.ShowErrorMessage(ex.Message);
             }
+            if (evaluation != null) {
+                await VsAppShell.Current.SwitchToMainThreadAsync();
 
-            VsAppShell.Current.DispatchOnUIThread(() => {
                 var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
                 title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
                 pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
-            });
+            }
         }
         #endregion
     }

@@ -23,20 +23,16 @@ setwd <- function(dir) {
   invisible(old)
 }
 
-library <- function(package, ...) {
+redirect_functions <- function(...) {
+  attach(as.environment(
+           list(View = rtvs:::view, library = rtvs:::library)
+         ), name = ".rtvs", warn.conflicts = FALSE)
+}
+
+library <- function(...) {
   if (nargs() == 0) {
     invisible(rtvs:::send_message('library'))
   } else {
-    args <- list(...)
-    pkgname <- as.character(substitute(package))
-    args[['character.only']] = TRUE
-    args <- c(pkgname, args)
-    do.call(base::library, args)
+    base::library(...)
   }
-}
-
-redirect_View <- function() {
-  .rtvs <- new.env()
-  .rtvs$View <- rtvs:::view
-  attach(.rtvs, warn.conflicts = FALSE)
 }
