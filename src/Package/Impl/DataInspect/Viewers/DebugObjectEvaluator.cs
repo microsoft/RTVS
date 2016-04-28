@@ -16,8 +16,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const string Repr = "rtvs:::make_repr_str()";
         private readonly IDebugSessionProvider _debugSessionProvider;
         private readonly IRSessionProvider _rSessionProvider;
-        private DebugSession _debugSession;
-        private IRSession _rSession;
 
         [ImportingConstructor]
         public DebugObjectEvaluator(IRSessionProvider rSessionProvider, IDebugSessionProvider debugSessionProvider) {
@@ -28,22 +26,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public async Task<DebugEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields, string repr = Repr) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var debugSession = await GetDebugSessionAsync();
+            // Don't cache sessions since they can be disposed, expecially the debug session
+            // when host is restarts or gets re-created in tests
+            var rSession = _rSessionProvider.GetInteractiveWindowRSession();
+            var debugSession = await _debugSessionProvider.GetDebugSessionAsync(rSession);
+
             var frames = await debugSession.GetStackFramesAsync();
             if(frames == null || frames.Count == 0) {
                 throw new InvalidOperationException("Debugger frames stack is empty");
             }
             return await frames.Last().EvaluateAsync(expression, fields, repr) as DebugValueEvaluationResult;
-        }
-
-        private async Task<DebugSession> GetDebugSessionAsync() {
-            if (_debugSession == null) {
-                if (_rSession == null) {
-                    _rSession = _rSessionProvider.GetInteractiveWindowRSession();
-                }
-                _debugSession = await _debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
-            return _debugSession;
         }
     }
 }

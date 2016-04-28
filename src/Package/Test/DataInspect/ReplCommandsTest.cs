@@ -22,13 +22,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class ReplCommandsTest {
+        private readonly IRSessionProvider _sessionProvider;
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+
+        public ReplCommandsTest() {
+            _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+        }
+
         [Test]
         [Category.Variable.Explorer]
         public async Task ViewLibraryTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var cb = Substitute.For<IRSessionCallback>();
             cb.ViewLibrary().Returns(Task.CompletedTask);
-            using (var hostScript = new RHostScript(provider, cb)) {
+            using (var hostScript = new RHostScript(_sessionProvider, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("library()" + Environment.NewLine);
                 }
@@ -39,10 +46,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task ViewDataTest01() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewObject(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
-            using (var hostScript = new RHostScript(provider, cb)) {
+            using (var hostScript = new RHostScript(_sessionProvider, cb)) {
                 using (var inter = await hostScript.Session.BeginInteractionAsync()) {
                     await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
                 }
@@ -53,21 +59,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task ViewerExportTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            using (var hostScript = new RHostScript(provider)) {
-                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-                aggregator.Should().NotBeNull();
-
-                var funcViewer = await aggregator.GetViewer("lm");
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                var funcViewer = await _aggregator.GetViewer("lm");
                 funcViewer.Should().NotBeNull().And.BeOfType<FunctionViewer>();
 
-                var gridViewer = await aggregator.GetViewer("airmiles");
+                var gridViewer = await _aggregator.GetViewer("airmiles");
                 gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
-                gridViewer = await aggregator.GetViewer("mtcars");
+                gridViewer = await _aggregator.GetViewer("mtcars");
                 gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
-                gridViewer = await aggregator.GetViewer("AirPassengers");
+                gridViewer = await _aggregator.GetViewer("AirPassengers");
                 gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
 
                 gridViewer.Capabilities.Should().HaveFlag(ViewerCapabilities.List | ViewerCapabilities.Table);
@@ -77,8 +79,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public void ViewerTest02() {
-            var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-            var odv = aggregator as ObjectDetailsViewerAggregator;
+            var odv = _aggregator as ObjectDetailsViewerAggregator;
 
             var result1 = Substitute.For<IDebugValueEvaluationResult>();
             var result2 = Substitute.For<IDebugValueEvaluationResult>();
@@ -93,11 +94,21 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var viewers = new List<Lazy<IObjectDetailsViewer>>();
             viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer1));
             viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer2));
+
+            var old = odv.Viewers;
             odv.Viewers = viewers;
 
-            aggregator.GetViewer(result1).Should().Be(viewer1);
-            aggregator.GetViewer(result2).Should().Be(viewer2);
-            aggregator.GetViewer(result3).Should().BeNull();
+            IObjectDetailsViewer v1, v2, v3;
+
+            v1 = _aggregator.GetViewer(result1);
+            v2 = _aggregator.GetViewer(result2);
+            v3 = _aggregator.GetViewer(result3);
+
+            odv.Viewers = old;
+
+            v1.Should().Be(viewer1);
+            v2.Should().Be(viewer2);
+            v3.Should().BeNull();
         }
 
         [Test]
@@ -120,12 +131,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task FunctionViewerTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            using (var hostScript = new RHostScript(provider)) {
-                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-                aggregator.Should().NotBeNull();
-
-                var funcViewer = await aggregator.GetViewer("lm") as FunctionViewer;
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                var funcViewer = await _aggregator.GetViewer("lm") as FunctionViewer;
                 funcViewer.Should().NotBeNull();
 
                 funcViewer.GetFileName("lm", null).Should().Be(Path.Combine(Path.GetTempPath(), "~lm.r"));
@@ -135,15 +142,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 code.StartsWithOrdinal("function(formula, data, subset, weights, na.action").Should().BeTrue();
             }
         }
+
         [Test]
         [Category.Variable.Explorer]
         public async Task GridViewerTest() {
-            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            using (var hostScript = new RHostScript(provider)) {
-                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
-                aggregator.Should().NotBeNull();
-
-                var gridViewer = await aggregator.GetViewer("mtcars") as GridViewer;
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                var gridViewer = await _aggregator.GetViewer("mtcars") as GridViewer;
                 gridViewer.Should().NotBeNull();
 
                 var eval = Substitute.For<IDebugValueEvaluationResult>();
