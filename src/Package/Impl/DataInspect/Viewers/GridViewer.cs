@@ -5,16 +5,14 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Debugger;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
-    internal sealed class GridViewer : IObjectDetailsViewer {
+    internal sealed class GridViewer : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
         private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table" };
         private readonly static string[] _listClasses = new string[] { "list", "ts" };
@@ -25,12 +23,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                                                         | DebugEvaluationResultFields.Dim
                                                         | DebugEvaluationResultFields.Length;
 
-        private readonly IDataObjectEvaluator _evaluator;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         [ImportingConstructor]
-        public GridViewer(IDataObjectEvaluator evaluator, IObjectDetailsViewerAggregator aggregator) {
-            _evaluator = evaluator;
+        public GridViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
+            base(evaluator) {
             _aggregator = aggregator;
         }
 
@@ -50,12 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            DebugValueEvaluationResult evaluation = null;
-            try {
-                evaluation = await _evaluator.EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
-            } catch (RException ex) {
-                VsAppShell.Current.ShowErrorMessage(ex.Message);
-            }
+            var evaluation = await EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 

@@ -11,7 +11,6 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -19,14 +18,13 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
-    internal sealed class FunctionViewer : IObjectDetailsViewer {
+    internal sealed class FunctionViewer : ViewerBase, IObjectDetailsViewer {
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IDataObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public FunctionViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) {
+        public FunctionViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) :
+            base(evaluator) {
             _sessionProvider = sessionProvider;
-            _evaluator = evaluator;
         }
 
         #region IObjectDetailsViewer
@@ -37,25 +35,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            DebugValueEvaluationResult evaluation = null;
-            try {
-                evaluation = await _evaluator.EvaluateAsync(expression, DebugEvaluationResultFields.Expression) as DebugValueEvaluationResult;
-            } catch (RException ex) {
-                VsAppShell.Current.ShowErrorMessage(ex.Message);
-            }
+            var evaluation = await EvaluateAsync(expression, DebugEvaluationResultFields.Expression);
             if (evaluation == null || string.IsNullOrEmpty(evaluation.Expression)) {
                 return;
             }
 
             var functionName = evaluation.Expression;
             var session = _sessionProvider.GetInteractiveWindowRSession();
-            string functionCode = null;
-            try {
-                functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
-            } catch (RException ex) {
-                VsAppShell.Current.ShowErrorMessage(ex.Message);
-            }
 
+            string functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 functionCode = formatter.Format(functionCode);

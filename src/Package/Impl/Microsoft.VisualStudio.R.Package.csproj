@@ -90,6 +90,7 @@
     <Compile Include="DataInspect\Viewers\GridViewer.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
+    <Compile Include="DataInspect\Viewers\ViewerBase.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
