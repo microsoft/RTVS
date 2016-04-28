@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core;
@@ -19,6 +20,7 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class FunctionViewer : ViewerBase, IObjectDetailsViewer {
+        private readonly static string[] _classes = new string[] { "function", "formula" };
         private readonly IRSessionProvider _sessionProvider;
 
         [ImportingConstructor]
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
         public bool CanView(IDebugValueEvaluationResult evaluation) {
-            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
+            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes.Any(t => _classes.Contains(t));
         }
 
         public async Task ViewAsync(string expression, string title) {

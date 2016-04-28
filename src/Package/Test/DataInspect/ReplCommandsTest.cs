@@ -159,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 eval.Dim.Count.Returns(0);
                 gridViewer.CanView(eval).Should().BeFalse();
 
-                foreach (var c in new string[] { "matrix", "data.frame", "table" }) {
+                foreach (var c in new string[] { "matrix", "data.frame", "table", "array" }) {
                     eval.Classes.Returns(new List<string>() { c });
                     eval.Dim.Count.Returns(3);
                     gridViewer.CanView(eval).Should().BeFalse();

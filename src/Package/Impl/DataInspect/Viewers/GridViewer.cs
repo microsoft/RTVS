@@ -16,6 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const int _toolWindowIdBase = 100;
         private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table", "array" };
         private readonly static string[] _listClasses = new string[] { "list", "ts" };
+        private readonly static string[] _excludedClasses = new string[] { "expression", "function" };
         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
                                                         | DebugEvaluationResultFields.Expression
                                                         | DebugEvaluationResultFields.TypeName
@@ -35,13 +36,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public bool CanView(IDebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
+                if (evaluation.Classes.Any(t => _excludedClasses.Contains(t))) {
+                    return false;
+                }
+
                 if (evaluation.Classes.Any(t => _tableClasses.Contains(t))) {
-                    return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2 && evaluation.Length > 1;
+                    return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2 &&
+                          (!evaluation.Length.HasValue || evaluation.Length > 1);
                 } else if (evaluation.Classes.Any(t => _listClasses.Contains(t))) {
                     return evaluation.Dim == null && evaluation.Classes.Count == 1;
                 } else if (evaluation.Dim != null && evaluation.Dim.Count > 2) {
                     return false;
                 }
+
                 return evaluation.Length > 1;
             }
             return false;
