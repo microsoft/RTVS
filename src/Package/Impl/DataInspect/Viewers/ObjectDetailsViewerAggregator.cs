@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return null;
         }
 
-        public IObjectDetailsViewer GetViewer(DebugValueEvaluationResult result) {
+        public IObjectDetailsViewer GetViewer(IDebugValueEvaluationResult result) {
             Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));
             return lazyViewer?.Value;
         }

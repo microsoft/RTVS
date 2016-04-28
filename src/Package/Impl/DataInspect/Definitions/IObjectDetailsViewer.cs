@@ -8,7 +8,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewer {
         ViewerCapabilities Capabilities { get; }
 
-        bool CanView(DebugValueEvaluationResult evaluation);
+        bool CanView(IDebugValueEvaluationResult evaluation);
 
         Task ViewAsync(string expression, string title);
     }

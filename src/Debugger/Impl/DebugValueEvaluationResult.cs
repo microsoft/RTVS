@@ -21,7 +21,9 @@ namespace Microsoft.R.Debugger {
     /// Note that most properties of the object will only have a meaningful value if the corresponding <see cref="DebugEvaluationResultFields"/>
     /// flag was specified when producing the result. All properties which were not so requested will be <see langword="null"/>.
     /// </remarks>
-    public class DebugValueEvaluationResult : DebugEvaluationResult {
+    public class DebugValueEvaluationResult : DebugEvaluationResult, IDebugValueEvaluationResult {
+
+        #region IDebugValueEvaluationResult
         /// <summary>
         /// String representation of the value.
         /// </summary>
@@ -71,6 +73,7 @@ namespace Microsoft.R.Debugger {
         /// Various miscellaneous flags describing this value.
         /// </summary>
         public DebugValueEvaluationResultFlags Flags { get; }
+        #endregion
 
         /// <seealso cref="DebugValueEvaluationResultFlags.Atomic"/>
         public bool IsAtomic => Flags.HasFlag(DebugValueEvaluationResultFlags.Atomic);

@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
 
-        public bool CanView(DebugValueEvaluationResult evaluation) {
+        public bool CanView(IDebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
                 if (evaluation.Classes.Any(t => _tableClasses.Contains(t))) {
                     return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2;

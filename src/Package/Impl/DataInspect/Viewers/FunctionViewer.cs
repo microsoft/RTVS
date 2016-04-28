@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
-        public bool CanView(DebugValueEvaluationResult evaluation) {
+        public bool CanView(IDebugValueEvaluationResult evaluation) {
             return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 

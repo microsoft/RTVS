@@ -6,7 +6,7 @@ using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewerAggregator {
-        IObjectDetailsViewer GetViewer(DebugValueEvaluationResult result);
+        IObjectDetailsViewer GetViewer(IDebugValueEvaluationResult result);
         Task<IObjectDetailsViewer> GetViewer(string expression);
     }
 }

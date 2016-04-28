@@ -2,9 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
+using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -65,7 +68,52 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 gridViewer = await aggregator.GetViewer("AirPassengers");
                 gridViewer.Should().NotBeNull().And.BeOfType<GridViewer>();
+
+                gridViewer.Capabilities.Should().HaveFlag(ViewerCapabilities.List | ViewerCapabilities.Table);
             }
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public void ViewerTest02() {
+            var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+            var odv = aggregator as ObjectDetailsViewerAggregator;
+
+            var result1 = Substitute.For<IDebugValueEvaluationResult>();
+            var result2 = Substitute.For<IDebugValueEvaluationResult>();
+            var result3 = Substitute.For<IDebugValueEvaluationResult>();
+
+            var viewer1 = Substitute.For<IObjectDetailsViewer>();
+            viewer1.CanView(result1).Returns(true);
+
+            var viewer2 = Substitute.For<IObjectDetailsViewer>();
+            viewer2.CanView(result2).Returns(true);
+
+            var viewers = new List<Lazy<IObjectDetailsViewer>>();
+            viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer1));
+            viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer2));
+            odv.Viewers = viewers;
+
+            aggregator.GetViewer(result1).Should().Be(viewer1);
+            aggregator.GetViewer(result2).Should().Be(viewer2);
+            aggregator.GetViewer(result3).Should().BeNull();
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task ViewerTest03() {
+            var viewer = Substitute.For<IObjectDetailsViewer>();
+            viewer.ViewAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
+
+            var evaluator = Substitute.For<IDataObjectEvaluator>();
+
+            var aggregator = Substitute.For<IObjectDetailsViewerAggregator>();
+            aggregator.GetViewer(Arg.Any<string>()).Returns(viewer);
+
+            var provider = new ObjectDetailsViewerProvider(aggregator, evaluator);
+            await provider.ViewObjectDetails("mtcars", null);
+
+            await viewer.Received().ViewAsync("mtcars", null);
         }
     }
 }
