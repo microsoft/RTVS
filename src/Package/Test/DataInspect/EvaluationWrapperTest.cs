@@ -524,13 +524,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         object[,] functionTestData = new object[,] {
-            { "x <- lm;", new VariableExpectation() { Name = "x", Value = "lm", TypeName = "function", Class = "closure", HasChildren = false, CanShowDetail = true } },
+            {   "x <- lm;",
+                new VariableExpectation() {
+                Name = "x",
+                Value = "function (formula, data, subset, weights, na.action, method = \"qr\", model = TRUE,",
+                TypeName = "closure",
+                Class = "function",
+                HasChildren = false,
+                CanShowDetail = true
+                }
+            },
         };
 
         [Test]
         [Category.Variable.Explorer]
         public Task FunctionTest() {
-            return RunTest(arrayTestData);
+            return RunTest(functionTestData);
         }
 
         private static async Task RunTest(object[,] testData) {

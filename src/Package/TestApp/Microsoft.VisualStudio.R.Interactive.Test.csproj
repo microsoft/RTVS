@@ -203,6 +203,7 @@
     <None Include="Files\VariableExplorer01.tree" />
     <None Include="Files\VariableExplorer02.tree" />
     <None Include="Files\VariableExplorer03.tree" />
+    <None Include="Files\VariableExplorer04.tree" />
     <None Include="Files\VariableGrid02.tree" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
