@@ -229,11 +229,25 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task MatrixOneRowColumnTest() {
-            var script1 = "matrix.singlerow <- matrix(1:3, nrow =1);";
-            var expectation1 = new VariableExpectation() { Name = "matrix.singlerow", Value = "int [1, 1:3] 1 2 3", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var script1 = "matrix.singlerow <- matrix(1:3, nrow=1);";
+            var expectation1 = new VariableExpectation() {
+                Name = "matrix.singlerow",
+                Value = "int [1, 1:3] 1 2 3",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             var script2 = "matrix.singlecolumn <- matrix(1:3, ncol=1);";
-            var expectation2 = new VariableExpectation() { Name = "matrix.singlecolumn", Value = "int [1:3, 1] 1 2 3", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var expectation2 = new VariableExpectation() {
+                Name = "matrix.singlecolumn",
+                Value = "int [1:3, 1] 1 2 3",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(

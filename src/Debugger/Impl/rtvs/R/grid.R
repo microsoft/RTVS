@@ -26,10 +26,10 @@ grid.data <- function(x, rows, cols) {
   onedim <- ((length(rows) == 1) || (length(cols) == 1));
   if (onedim || is.matrix(x)) {
     if (onedim) {
-      if(is(x, 'vector') || is.ts(x)) {
+      if(length(cols) == 1) {
         data <- grid.format(x[rows]);
       } else {
-        data <- grid.format(x[rows, cols]);
+        data <- grid.format(x[cols]);
       }
     } else {
       data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
