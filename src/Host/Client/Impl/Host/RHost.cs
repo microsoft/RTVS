@@ -414,7 +414,7 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 break;
 
-                            case "Browser":
+                            case "open_url":
                                 await _callbacks.Browser(message.GetString(0, "help_url"));
                                 break;
 

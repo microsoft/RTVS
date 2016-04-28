@@ -14,7 +14,7 @@ view <- function(x, title) {
 }
 
 open_url <- function(url) {
-  rtvs:::send_message('Browser', url)
+  rtvs:::send_message('open_url', url)
 }
 
 setwd <- function(dir) {

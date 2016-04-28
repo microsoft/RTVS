@@ -159,6 +159,8 @@ grDevices::deviceIsInteractive('ide')
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
+            name = name.ToRStringLiteral();
+            ns = ns.ToRStringLiteral();
             var script = Invariant($"utils::assignInNamespace('{name}', rtvs:::{name}, '{ns}')");
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }

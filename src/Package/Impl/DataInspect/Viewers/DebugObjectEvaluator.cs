@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
             var debugSession = await GetDebugSessionAsync();
             var frames = await debugSession.GetStackFramesAsync();
-
+            if(frames == null || frames.Count == 0) {
+                throw new InvalidOperationException("Debugger frames stack is empty");
+            }
             return await frames.Last().EvaluateAsync(expression, fields) as DebugValueEvaluationResult;
         }
 
