@@ -510,7 +510,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         Task<LocatorResult> IRCallbacks.Locator(CancellationToken ct) {
             var callback = _callback;
-            return callback != null ? callback.Locator(ct) : Task.FromResult(new LocatorResult());
+            return callback != null ? callback.Locator(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
         }
 
         /// <summary>

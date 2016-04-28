@@ -21,7 +21,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
-        public Func<CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (ct) => Task.FromResult(new LocatorResult());
+        public Func<CancellationToken, Task<LocatorResult>> LocatorHandler { get; set; } = (ct) => Task.FromResult(LocatorResult.CreateNotClicked());
 
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
@@ -49,7 +49,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
 
         public Task<LocatorResult> Locator(CancellationToken ct) {
             LocatorCalls.Add(ct);
-            return LocatorHandler != null ? LocatorHandler(ct) : Task.FromResult(new LocatorResult());
+            return LocatorHandler != null ? LocatorHandler(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

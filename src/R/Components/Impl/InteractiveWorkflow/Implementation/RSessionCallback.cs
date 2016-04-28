@@ -69,7 +69,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (history.PlotContentProvider.Locator != null) {
                 return await history.PlotContentProvider.Locator.StartLocatorModeAsync(ct);
             }
-            return new LocatorResult();
+            return LocatorResult.CreateNotClicked();
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

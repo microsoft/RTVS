@@ -648,15 +648,11 @@ dev.off()
 
             public LocatorResult Next() {
                 if (_index < _points.Length) {
-                    var res = new LocatorResult() {
-                        X = _points[_index].X,
-                        Y = _points[_index].Y,
-                        Clicked = true,
-                    };
+                    var res = LocatorResult.CreateClicked(_points[_index].X, _points[_index].Y);
                     _index++;
                     return res;
                 }
-                return new LocatorResult();
+                return LocatorResult.CreateNotClicked();
             }
         }
     }

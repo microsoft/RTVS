@@ -80,12 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 var pos = e.GetPosition(rootContainer);
                 var pixelSize = WpfUnitsConversion.ToPixels(rootContainer as Visual, pos);
 
-                var result = new LocatorResult() {
-                    X = (int)pixelSize.X,
-                    Y = (int)pixelSize.Y,
-                    Clicked = true,
-                };
-
+                var result = LocatorResult.CreateClicked((int)pixelSize.X, (int)pixelSize.Y);
                 EndLocatorMode(result);
             }
         }
@@ -137,12 +132,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             SetLocatorModeUI(true);
 
             var task = _locatorTcs.Task;
-            await task;
-            return task.Result;
+            return await task;
         }
 
         public void EndLocatorMode() {
-            EndLocatorMode(new LocatorResult());
+            EndLocatorMode(LocatorResult.CreateNotClicked());
         }
         #endregion
 
