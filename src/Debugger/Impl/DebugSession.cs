@@ -200,10 +200,10 @@ namespace Microsoft.R.Debugger {
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
-            int? reprMaxLength,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            EvaluateAsync("base::.GlobalEnv", expression, null, fields, reprMaxLength, cancellationToken);
+            EvaluateAsync("base::.GlobalEnv", expression, null, fields, repr, cancellationToken);
 
         /// <summary>
         /// Evaluates an R expresion in the specified environment, and returns an object describing the result.
@@ -214,20 +214,28 @@ namespace Microsoft.R.Debugger {
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="name"><see cref="DebugEvaluationResult.Name"/> of the returned evaluation result.</param>
         /// <param name="fields">Specifies which <see cref="DebugEvaluationResult"/> properties should be present in the result.</param>
-        /// <param name="reprMaxLength">
-        /// If not <see langword="null"/>, trims representation (as returned by <see cref="DebugValueEvaluationResult.GetRepresentation"/>)
-        /// of the resulting value to the specified length.
+        /// <param name="repr">
+        /// An R expression that must evaluate to a function that takes an R value as its sole argument, and returns the
+        /// string representation of that argument as a single-element character vector. The representation is stored in
+        /// <see cref="DebugValueEvaluationResult.GetRepresentation"/> property of the produced result. If this argument
+        /// is <see langword="null"/>, no representation is computed, and <see cref="DebugValueEvaluationResult.GetRepresentation"/>
+        /// will also be <see langword="null"/>.
         /// </param>
         /// <remarks>
+        /// <para>
         /// If expression fails to evaluate, this method does <em>not</em> raise <see cref="RException"/>. Instead, an instance
         /// of <see cref="DebugErrorEvaluationResult"/> describing the error is returned.
+        /// </para>
+        /// <para>
+        /// Use <c>rtvs:::make_repr_deparse</c> or <c>rtvs:::make_repr_str</c> to provide <paramref name="repr"/>.
+        /// </para>
         /// </remarks>
         public async Task<DebugEvaluationResult> EvaluateAsync(
             string environmentExpression,
             string expression,
             string name,
             DebugEvaluationResultFields fields,
-            int? reprMaxLength = null,
+            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             ThrowIfDisposed();
@@ -242,7 +250,7 @@ namespace Microsoft.R.Debugger {
             await InitializeAsync(cancellationToken);
 
             environmentExpression = environmentExpression ?? "NULL";
-            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {fields.ToRVector()},, {reprMaxLength})");
+            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {fields.ToRVector()},, {repr})");
             var result = await RSession.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
             return DebugEvaluationResult.Parse(this, environmentExpression, name, result);
         }

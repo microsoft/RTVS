@@ -121,10 +121,10 @@ namespace Microsoft.R.Debugger {
             string expression,
             string name,
             DebugEvaluationResultFields fields,
-            int? reprMaxLength = null,
+            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            Session.EvaluateAsync(EnvironmentExpression, expression, name, fields, reprMaxLength, cancellationToken);
+            Session.EvaluateAsync(EnvironmentExpression, expression, name, fields, repr, cancellationToken);
 
         /// <summary>
         /// Same as <see cref="EvaluateAsync(string, DebugEvaluationResultFields, int?, CancellationToken) "/>,
@@ -133,10 +133,10 @@ namespace Microsoft.R.Debugger {
         public Task<DebugEvaluationResult> EvaluateAsync(
             string expression,
             DebugEvaluationResultFields fields,
-            int? reprMaxLength = null,
+            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            EvaluateAsync(expression, null, fields, reprMaxLength, cancellationToken);
+            EvaluateAsync(expression, null, fields, repr, cancellationToken);
 
         /// <summary>
         /// Produces an evaluation result describing this frame's environment. Its <see cref="DebugValueEvaluationResult.GetChildrenAsync"/>

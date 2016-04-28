@@ -13,14 +13,12 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
-        internal const int ChildrenMaxLength = 100;
-        internal const int ReprMaxLength = 100;
+        internal const int ChildrenMaxCount = 100;
+        internal const string Repr = "rtvs:::make_repr_deparse(max_length = 100)";
 
         internal const DebugEvaluationResultFields PrefetchedFields =
             DebugEvaluationResultFields.Expression |
             DebugEvaluationResultFields.Kind |
-            DebugEvaluationResultFields.Repr |
-            DebugEvaluationResultFields.ReprDeparse |
             DebugEvaluationResultFields.TypeName |
             DebugEvaluationResultFields.Classes |
             DebugEvaluationResultFields.Length |
@@ -53,7 +51,7 @@ namespace Microsoft.R.Debugger.Engine {
             IsFrameEnvironment = isFrameEnvironment;
 
             _children = Lazy.Create(CreateChildren);
-            _reprToString = Lazy.Create(CreateReprToString);
+            _reprToString = Lazy.Create(GetReprToString);
         }
 
         private IReadOnlyList<DebugEvaluationResult> CreateChildren() =>
@@ -63,7 +61,7 @@ namespace Microsoft.R.Debugger.Engine {
                     return new DebugEvaluationResult[0];
                 }
 
-                var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxLength, ReprMaxLength, ct);
+                var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxCount, Repr, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {
@@ -73,9 +71,9 @@ namespace Microsoft.R.Debugger.Engine {
                 return children;
             });
 
-        private string CreateReprToString() {
-            var ev = TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.EvaluateAsync(DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprToString, cancellationToken: ct));
-            return (ev as DebugValueEvaluationResult)?.GetRepresentation().ToString;
+        private string GetReprToString() {
+            var code = $"rtvs:::repr_toString(eval(quote({EvaluationResult.Expression}), envir = {EvaluationResult.EnvironmentExpression}))";
+            return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.DebugSession.RSession.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
@@ -91,7 +89,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (valueResult != null) {
                 if (valueResult.HasAttributes == true) {
                     string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, ReprMaxLength, ct));
+                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, Repr, ct));
                     if (!(attrResult is DebugErrorEvaluationResult)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { attrInfo }.Concat(infos);
@@ -100,7 +98,7 @@ namespace Microsoft.R.Debugger.Engine {
 
                 if (valueResult.Flags.HasFlag(DebugValueEvaluationResultFlags.HasParentEnvironment)) {
                     string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
-                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(parentExpr, "parent.env()", PrefetchedFields, ReprMaxLength, ct));
+                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(parentExpr, "parent.env()", PrefetchedFields, Repr, ct));
                     if (!(parentResult is DebugErrorEvaluationResult)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { parentInfo }.Concat(infos);
@@ -315,7 +313,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
                 if (valueResult != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.GetRepresentation().Deparse.ToUnicodeQuotes();
+                    dpi.bstrValue = valueResult.Representation.ToUnicodeQuotes();
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (promiseResult != null) {
                     dpi.bstrValue = promiseResult.Code;
@@ -345,7 +343,7 @@ namespace Microsoft.R.Debugger.Engine {
                     switch (valueResult.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
-                            if (valueResult.GetRepresentation().Deparse == "TRUE") {
+                            if (valueResult.Representation == "TRUE") {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN_TRUE;
                             }
                             break;

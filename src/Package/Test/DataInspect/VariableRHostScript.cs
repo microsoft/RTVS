@@ -48,12 +48,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                     | DebugEvaluationResultFields.Expression
                     | DebugEvaluationResultFields.TypeName
-                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
                     | DebugEvaluationResultFields.Dim
                     | DebugEvaluationResultFields.Length;
-                var result = await frame.EvaluateAsync(rScript, fields);
-
-                var globalResult = await frame.EvaluateAsync("base::environment()", fields);
+                const string repr = "rtvs:::make_repr_str()";
+                var result = await frame.EvaluateAsync(rScript, fields, repr);
+                var globalResult = await frame.EvaluateAsync("base::environment()", fields, repr);
                 _globalEnv = new EvaluationWrapper(globalResult);
 
                 return result;
