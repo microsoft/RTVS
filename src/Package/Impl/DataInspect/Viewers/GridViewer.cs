@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class GridViewer : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
-        private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table" };
+        private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table", "array" };
         private readonly static string[] _listClasses = new string[] { "list", "ts" };
         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
                                                         | DebugEvaluationResultFields.Expression
@@ -36,9 +36,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public bool CanView(IDebugValueEvaluationResult evaluation) {
             if (evaluation != null) {
                 if (evaluation.Classes.Any(t => _tableClasses.Contains(t))) {
-                    return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2;
+                    return evaluation.Dim != null && evaluation.Dim.Count > 0 && evaluation.Dim.Count <= 2 && evaluation.Length > 1;
                 } else if (evaluation.Classes.Any(t => _listClasses.Contains(t))) {
                     return evaluation.Dim == null && evaluation.Classes.Count == 1;
+                } else if (evaluation.Dim != null && evaluation.Dim.Count > 2) {
+                    return false;
                 }
                 return evaluation.Length > 1;
             }

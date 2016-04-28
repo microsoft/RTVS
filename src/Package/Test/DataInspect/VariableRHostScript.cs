@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 const string repr = "rtvs:::make_repr_str()";
                 var result = await frame.EvaluateAsync(rScript, fields, repr);
 
-                var globalResult = await frame.EvaluateAsync("base::environment()", fields);
+                var globalResult = await frame.EvaluateAsync("base::environment()", fields, repr);
                 _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>());
 
                 return result;
