@@ -59,9 +59,10 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             ViewObjectHandler?.Invoke(expression, title);
         }
 
-        public void ViewLibrary() {
+        public Task ViewLibrary() {
             ViewLibraryCalls.Add(0);
             ViewLibraryHandler?.Invoke();
+            return Task.CompletedTask;
         }
     }
 }

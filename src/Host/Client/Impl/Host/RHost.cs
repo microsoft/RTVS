@@ -402,7 +402,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "library":
-                                _callbacks.ViewLibrary();
+                                await _callbacks.ViewLibrary();
                                 break;
 
                             case "View":

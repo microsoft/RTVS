@@ -50,6 +50,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Present package list or package manager
         /// </summary>
-        void ViewLibrary();
+        Task ViewLibrary();
     }
 }

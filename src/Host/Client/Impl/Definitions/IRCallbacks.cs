@@ -45,7 +45,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Invoked in response of parameter-less library call
         /// </summary>
-        void ViewLibrary();
+        Task ViewLibrary();
 
         /// <summary>
         /// Called when working directory has changed in R.

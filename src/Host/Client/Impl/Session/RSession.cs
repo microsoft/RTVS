@@ -519,9 +519,9 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
 
-        void IRCallbacks.ViewLibrary() {
+        Task IRCallbacks.ViewLibrary() {
             var callback = _callback;
-            callback?.ViewLibrary();
+            return callback?.ViewLibrary();
         }
 
         void IRCallbacks.DirectoryChanged() {

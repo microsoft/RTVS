@@ -27,8 +27,8 @@ library <- function(package, ...) {
   if (nargs() == 0) {
     invisible(rtvs:::send_message('library'))
   } else {
-    pkgname <- as.character(substitute(package))
     args <- list(...)
+    pkgname <- as.character(substitute(package))
     args[['character.only']] = TRUE
     args <- c(pkgname, args)
     do.call(base::library, args)

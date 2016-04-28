@@ -40,6 +40,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public void ViewObject(string expression, string title) { }
 
-        public void ViewLibrary() { }
+        public Task ViewLibrary() {
+            return Task.CompletedTask;
+        }
     }
 }

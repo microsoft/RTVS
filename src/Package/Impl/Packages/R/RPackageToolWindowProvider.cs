@@ -17,8 +17,7 @@ using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     [Export]
-    [Export(typeof(IPackageLibraryViewer))]
-    internal class RPackageToolWindowProvider : IPackageLibraryViewer {
+    internal class RPackageToolWindowProvider {
         [Import]
         private Lazy<IRInteractiveWorkflowProvider> WorkflowProvider { get; set; }
         [Import]
@@ -57,12 +56,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public ToolWindowPane CreateToolWindow(Type toolWindowType, int id) {
             return CreateContainer(toolWindowType.GUID, id) as ToolWindowPane;
         }
-
-        #region IPackageLibraryViewer
-        public void ViewLibrary() {
-            CreatePackageManagerToolWindow(0).Container.Show(true);
-        }
-        #endregion
 
         private IVisualComponentContainer<IVisualComponent> CreateContainer(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
