@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.R.Package.Repl;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IDataObjectEvaluator))]
     public sealed class DebugObjectEvaluator : IDataObjectEvaluator {
+        private const string Repr = "rtvs:::make_repr_str()";
         private readonly IDebugSessionProvider _debugSessionProvider;
         private readonly IRSessionProvider _rSessionProvider;
         private DebugSession _debugSession;
@@ -24,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             _debugSessionProvider = debugSessionProvider;
         }
 
-        public async Task<DebugEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields) {
+        public async Task<DebugEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields, string repr = Repr) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var debugSession = await GetDebugSessionAsync();
@@ -32,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             if(frames == null || frames.Count == 0) {
                 throw new InvalidOperationException("Debugger frames stack is empty");
             }
-            return await frames.Last().EvaluateAsync(expression, fields) as DebugValueEvaluationResult;
+            return await frames.Last().EvaluateAsync(expression, fields, repr) as DebugValueEvaluationResult;
         }
 
         private async Task<DebugSession> GetDebugSessionAsync() {

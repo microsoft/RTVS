@@ -1679,10 +1679,10 @@
     </CommandPlacement>
 
     <!-- Variable Explorer toolbar -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0100">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="variableDataGroup"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0200">
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="variableDataGroup"/>
     </CommandPlacement>
   </CommandPlacements>

@@ -17,6 +17,7 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
+        private const string Repr = "rtvs:::make_repr_str()";
         private readonly IRToolsSettings _settings;
         private readonly IDataObjectEvaluator _evaluator;
         private readonly IREnvironmentProvider _environmentProvider;
@@ -101,11 +102,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
                     | DebugEvaluationResultFields.Expression
                     | DebugEvaluationResultFields.TypeName
-                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
                     | DebugEvaluationResultFields.Dim
                     | DebugEvaluationResultFields.Length;
 
-            DebugEvaluationResult result = await _evaluator.EvaluateAsync(GetExpression(env), fields);
+            DebugEvaluationResult result = await _evaluator.EvaluateAsync(GetExpression(env), fields, Repr);
             if (result != null) {
                 var wrapper = new VariableViewModel(result, _aggregator);
                 var rootNodeModel = new VariableNode(_settings, wrapper);

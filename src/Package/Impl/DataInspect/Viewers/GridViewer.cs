@@ -19,7 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
                                                         | DebugEvaluationResultFields.Expression
                                                         | DebugEvaluationResultFields.TypeName
-                                                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
                                                         | DebugEvaluationResultFields.Dim
                                                         | DebugEvaluationResultFields.Length;
 
@@ -47,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, _fields) as DebugValueEvaluationResult;
+            var evaluation = await EvaluateAsync(expression, _fields, "rtvs:::make_repr_str()") as DebugValueEvaluationResult;
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 

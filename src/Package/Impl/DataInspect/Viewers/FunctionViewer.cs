@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         }
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, DebugEvaluationResultFields.Expression);
+            var evaluation = await EvaluateAsync(expression, DebugEvaluationResultFields.Expression, null);
             if (evaluation == null || string.IsNullOrEmpty(evaluation.Expression)) {
                 return;
             }

@@ -19,7 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         public async Task<IObjectDetailsViewer> GetViewer(string expression) {
             var preliminary = await Evaluator.EvaluateAsync(expression,
-                                DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim | DebugEvaluationResultFields.Length)
+                                DebugEvaluationResultFields.Classes | DebugEvaluationResultFields.Dim | DebugEvaluationResultFields.Length,
+                                null)
                                 as DebugValueEvaluationResult;
             if (preliminary != null) {
                 return GetViewer(preliminary);

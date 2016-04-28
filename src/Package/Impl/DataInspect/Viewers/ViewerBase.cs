@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
              Evaluator = evaluator;
         }
 
-        protected async Task<DebugValueEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields) {
-            var result = await Evaluator.EvaluateAsync(expression, fields);
+        protected async Task<DebugValueEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields, string repr) {
+            var result = await Evaluator.EvaluateAsync(expression, fields, repr);
             var error = result as DebugErrorEvaluationResult;
             if (error != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
