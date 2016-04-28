@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
@@ -114,6 +115,79 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             await provider.ViewObjectDetails("mtcars", null);
 
             await viewer.Received().ViewAsync("mtcars", null);
+        }
+
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task FunctionViewerTest() {
+            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (var hostScript = new RHostScript(provider)) {
+                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+                aggregator.Should().NotBeNull();
+
+                var funcViewer = await aggregator.GetViewer("lm") as FunctionViewer;
+                funcViewer.Should().NotBeNull();
+
+                funcViewer.GetFileName("lm", null).Should().Be(Path.Combine(Path.GetTempPath(), "~lm.r"));
+                funcViewer.GetFileName("lm", "abc").Should().Be(Path.Combine(Path.GetTempPath(), "~abc.r"));
+
+                var code = await funcViewer.GetFunctionCode("lm");
+                code.StartsWithOrdinal("function(formula, data, subset, weights, na.action").Should().BeTrue();
+            }
+        }
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task GridViewerTest() {
+            var provider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (var hostScript = new RHostScript(provider)) {
+                var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+                aggregator.Should().NotBeNull();
+
+                var gridViewer = await aggregator.GetViewer("mtcars") as GridViewer;
+                gridViewer.Should().NotBeNull();
+
+                var eval = Substitute.For<IDebugValueEvaluationResult>();
+                eval.Classes.Returns(new List<string>() { "foo" });
+
+                gridViewer.CanView(null).Should().BeFalse();
+                gridViewer.CanView(eval).Should().BeFalse();
+
+                eval.Dim.Count.Returns(0);
+                gridViewer.CanView(eval).Should().BeFalse();
+
+                foreach (var c in new string[] { "matrix", "data.frame", "table" }) {
+                    eval.Classes.Returns(new List<string>() { c });
+                    eval.Dim.Count.Returns(3);
+                    gridViewer.CanView(eval).Should().BeFalse();
+                    eval.Dim.Count.Returns(2);
+                    gridViewer.CanView(eval).Should().BeTrue();
+                    eval.Dim.Count.Returns(1);
+                    gridViewer.CanView(eval).Should().BeTrue();
+                    eval.Dim.Count.Returns(0);
+                    gridViewer.CanView(eval).Should().BeFalse();
+                }
+
+                eval.Dim.Returns((IReadOnlyList<int>)null);
+                foreach (var c in new string[] { "list", "ts" }) {
+                    eval.Classes.Returns(new List<string>() { c });
+                    gridViewer.CanView(eval).Should().BeTrue();
+                }
+
+                eval.Dim.Returns((IReadOnlyList<int>)null);
+                foreach (var c in new string[] { "a", "b" }) {
+                    eval.Classes.Returns(new List<string>() { c });
+                    gridViewer.CanView(eval).Should().BeFalse();
+                }
+
+                eval.Classes.Returns(new List<string>() { "foo", "bar" });
+                gridViewer.CanView(eval).Should().BeFalse();
+
+                eval.Classes.Returns(new List<string>() { "blah" });
+                eval.Length.Returns(1);
+                gridViewer.CanView(eval).Should().BeFalse();
+                eval.Length.Returns(2);
+                gridViewer.CanView(eval).Should().BeTrue();
+            }
         }
     }
 }
