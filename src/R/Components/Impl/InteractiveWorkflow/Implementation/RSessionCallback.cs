@@ -65,17 +65,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<LocatorResult> Locator(CancellationToken ct) {
             var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
             var history = historyProvider.GetPlotHistory(_session);
-            var tcs = new TaskCompletionSource<LocatorResult>();
-            _coreShell.DispatchOnUIThread(() => {
-                if (history.PlotContentProvider.Locator != null) {
-                    history.PlotContentProvider.Locator.StartLocatorMode(ct, tcs);
-                } else {
-                    tcs.SetResult(new LocatorResult());
-                }
-            });
-
-            await tcs.Task;
-            return tcs.Task.Result;
+            if (history.PlotContentProvider.Locator != null) {
+                return await history.PlotContentProvider.Locator.StartLocatorModeAsync(ct);
+            }
+            return new LocatorResult();
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

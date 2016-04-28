@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
@@ -48,7 +49,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
             var presenter = new XamlPresenter(_plotHistory.PlotContentProvider);
             presenter.SizeChanged += PlotWindowPane_SizeChanged;
-            presenter.RootContainer.MouseLeftButtonUp += RootContainer_MouseLeftButtonUp;
 
             Content = presenter;
 
@@ -56,11 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // so they appear correctly in the top level menu as well 
             // as on the plot window toolbar
             this.ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.plotWindowToolBarId);
-        }
-
-        private static void SetStatusText(string text) {
-            var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-            statusBar.SetText(text);
         }
 
         private void PlotWindowPane_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
@@ -134,21 +129,16 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             get { return _locatorTcs != null; }
         }
 
-        public void StartLocatorMode(CancellationToken ct, TaskCompletionSource<LocatorResult> tcs) {
-            _locatorTcs = tcs;
-            ct.Register(() => EndLocatorMode());
+        public async Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct) {
+            _locatorTcs = new TaskCompletionSource<LocatorResult>();
+            ct.Register(EndLocatorMode);
 
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                var rootContainer = ((XamlPresenter)Content).RootContainer;
-                rootContainer.Cursor = Cursors.Cross;
+            await VsAppShell.Current.SwitchToMainThreadAsync();
+            SetLocatorModeUI(true);
 
-                ((IVsWindowFrame)Frame).Show();
-                IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-                shell.UpdateCommandUI(0);
-
-                this.Caption = Resources.PlotWindowCaptionLocatorActive;
-                SetStatusText(Resources.PlotWindowStatusLocatorActive);
-            });
+            var task = _locatorTcs.Task;
+            await task;
+            return task.Result;
         }
 
         public void EndLocatorMode() {
@@ -157,16 +147,25 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         #endregion
 
         private void EndLocatorMode(LocatorResult result) {
-            var callback = _locatorTcs;
+            var tcs = _locatorTcs;
             _locatorTcs = null;
-            callback?.SetResult(result);
+            tcs?.SetResult(result);
+            VsAppShell.Current.DispatchOnUIThread(() => SetLocatorModeUI(false));
+        }
 
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                this.Caption = Resources.PlotWindowCaption;
-                SetStatusText(String.Empty);
-                var rootContainer = ((XamlPresenter)Content).RootContainer;
-                rootContainer.Cursor = Cursors.Arrow;
-            });
+        private void SetLocatorModeUI(bool locatorMode) {
+            var rootContainer = ((XamlPresenter)Content).RootContainer;
+            rootContainer.Cursor = locatorMode ? Cursors.Cross : Cursors.Arrow;
+            if (locatorMode) {
+                rootContainer.MouseLeftButtonUp += RootContainer_MouseLeftButtonUp;
+            } else {
+                rootContainer.MouseLeftButtonUp -= RootContainer_MouseLeftButtonUp;
+            }
+
+            var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+            statusBar.SetText(locatorMode ? Resources.PlotWindowStatusLocatorActive : string.Empty);
+
+            this.Caption = locatorMode ? Resources.PlotWindowCaptionLocatorActive : Resources.PlotWindowCaption;
         }
     }
 }

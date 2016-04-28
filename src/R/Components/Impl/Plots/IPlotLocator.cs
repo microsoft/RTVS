@@ -8,7 +8,7 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots {
     public interface IPlotLocator {
-        void StartLocatorMode(CancellationToken ct, TaskCompletionSource<LocatorResult> tcs);
+        Task<LocatorResult> StartLocatorModeAsync(CancellationToken ct);
 
         void EndLocatorMode();
 
