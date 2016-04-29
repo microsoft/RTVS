@@ -84,41 +84,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
-        public void ViewerTest02() {
-            var odv = _aggregator as ObjectDetailsViewerAggregator;
-
-            var result1 = Substitute.For<IDebugValueEvaluationResult>();
-            var result2 = Substitute.For<IDebugValueEvaluationResult>();
-            var result3 = Substitute.For<IDebugValueEvaluationResult>();
-
-            var viewer1 = Substitute.For<IObjectDetailsViewer>();
-            viewer1.CanView(result1).Returns(true);
-
-            var viewer2 = Substitute.For<IObjectDetailsViewer>();
-            viewer2.CanView(result2).Returns(true);
-
-            var viewers = new List<Lazy<IObjectDetailsViewer>>();
-            viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer1));
-            viewers.Add(new Lazy<IObjectDetailsViewer>(() => viewer2));
-
-            var old = odv.Viewers;
-            odv.Viewers = viewers;
-
-            IObjectDetailsViewer v1, v2, v3;
-
-            v1 = _aggregator.GetViewer(result1);
-            v2 = _aggregator.GetViewer(result2);
-            v3 = _aggregator.GetViewer(result3);
-
-            odv.Viewers = old;
-
-            v1.Should().Be(viewer1);
-            v2.Should().Be(viewer2);
-            v3.Should().BeNull();
-        }
-
-        [Test]
-        [Category.Variable.Explorer]
         public async Task ViewerTest03() {
             var viewer = Substitute.For<IObjectDetailsViewer>();
             viewer.ViewAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);

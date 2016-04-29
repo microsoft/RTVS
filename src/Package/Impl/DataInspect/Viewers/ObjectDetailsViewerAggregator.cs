@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewerAggregator))]
     internal sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
         [ImportMany]
-        internal IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
+        private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
         [Import]
         private IDataObjectEvaluator Evaluator { get; set; }
