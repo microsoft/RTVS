@@ -12,9 +12,9 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
     public class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, IRSession rSession = null) {
+        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange) {
             await TaskUtilities.SwitchToBackgroundThread();
-            rSession = rSession ?? VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            var rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
  
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
