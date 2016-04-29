@@ -1724,6 +1724,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all variables?.
+        /// </summary>
+        public static string Warning_DeleteAllVariables {
+            get {
+                return ResourceManager.GetString("Warning_DeleteAllVariables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?.
         /// </summary>
         public static string Warning_RStudioKeyboardShortcuts {

@@ -142,6 +142,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void RootTreeGrid_PreviewKeyUp(object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter) {
                 HandleDefaultAction();
+            } else if(e.Key == Key.Delete || e.Key == Key.Back) {
+                DeleteCurrentVariable();
             }
         }
 
@@ -151,6 +153,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (ew != null && ew.CanShowDetail) {
                 ew.ShowDetailCommand.Execute(ew);
             }
+        }
+
+        private void DeleteCurrentVariable() {
+            var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
+            var ew = node?.Model?.Content as VariableViewModel;
+            ew?.Delete();
         }
     }
 }

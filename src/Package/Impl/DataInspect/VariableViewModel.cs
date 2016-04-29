@@ -9,9 +9,12 @@ using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -127,7 +130,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         #region Variable Grid command
-
         public bool CanShowDetail { get; private set; }
 
         public ICommand ShowDetailCommand { get; private set; }
@@ -141,6 +143,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
+
+        /// <summary>
+        /// Deletes variable represented by this mode
+        /// </summary>
+        public void Delete() {
+            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var session = sessionProvider.GetInteractiveWindowRSession();
+            session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating).DoNotWait();
+        }
         #endregion
-     }
+    }
 }

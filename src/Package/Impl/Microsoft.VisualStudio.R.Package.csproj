@@ -56,6 +56,9 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\DeleteVariableCommand.cs" />
+    <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
+    <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
       <DependentUpon>EnterUrl.xaml</DependentUpon>
     </Compile>
@@ -335,8 +338,8 @@
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
-    <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
-    <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
+    <Compile Include="DataInspect\Commands\ImportDataSetTextFileCommand.cs" />
+    <Compile Include="DataInspect\Commands\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

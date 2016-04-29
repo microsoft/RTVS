@@ -8,21 +8,10 @@ using Microsoft.VisualStudio.R.Package.DataInspect.DataImport;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Data {
-    internal sealed class ImportDataSetTextFileCommand : PackageCommand {
-
-        public ImportDataSetTextFileCommand(IRSession rSession) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
-
-            if (rSession == null) {
-                throw new ArgumentNullException("rSession");
-            }
-
-            RSession = rSession;
-        }
-
-        protected override void SetStatus() {
-            Enabled = RSession.IsHostRunning;
+namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
+    internal sealed class ImportDataSetTextFileCommand : SessionCommand {
+        public ImportDataSetTextFileCommand(IRSession session) :
+            base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
         }
 
         protected override void Handle() {
@@ -34,7 +23,5 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Data {
                 dlg.ShowModal();
             }
         }
-
-        private IRSession RSession { get; }
     }
 }
