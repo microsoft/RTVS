@@ -125,7 +125,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Variable.Explorer]
         public async Task Matrix10x100Test() {
             var script = "matrix.10x100 <-matrix(1:1000, 10, 100)";
-            var expectation = new VariableExpectation() { Name = "matrix.10x100", Value = "int [1:10, 1:100] 1 2 3 4 5 6 7 8 9 10 ...", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var expectation = new VariableExpectation() {
+                Name = "matrix.10x100",
+                Value = "int [1:10, 1:100] 1 2 3 4 5 6 7 8 9 10 ...",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(

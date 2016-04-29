@@ -23,21 +23,26 @@ grid.data <- function(x, rows, cols) {
   }
 
   # get values for column/row names and data
-  onedim <- ((length(rows) == 1) || (length(cols) == 1));
-  if (onedim || is.matrix(x)) {
-    if (onedim) {
+  if (length(rows) == 1 || length(cols) == 1) {
+    # one-dimension objects
+    if(is(x, 'vector') || is.ts(x)) {
       if(length(cols) == 1) {
         data <- grid.format(x[rows]);
       } else {
         data <- grid.format(x[cols]);
       }
     } else {
-      data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
+      data <- grid.format(x[rows, cols]);
     }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
+  } else if(is.matrix(x)) {
+    rn <- row.names(x)[rows];
+    cn <- colnames(x)[cols];
+    data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
   } else {
-    x.df <- as.data.frame(x)[rows, cols]
+    # data frames
+    x.df <- as.data.frame(x)[rows, cols];
     data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);

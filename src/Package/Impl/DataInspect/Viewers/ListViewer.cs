@@ -7,19 +7,16 @@ using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
-    internal sealed class TableViewer : GridViewerBase {
-        private readonly static string[] _tableClasses = new string[] { "matrix", "data.frame", "table", "array" };
+    internal sealed class ListViewer : GridViewerBase {
+        private readonly static string[] _classes = new string[] { "list" };
 
         [ImportingConstructor]
-        public TableViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
+        public ListViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :
             base(aggregator, evaluator) { }
 
         #region IObjectDetailsViewer
         public override bool CanView(IDebugValueEvaluationResult evaluation) {
-            if (evaluation != null && evaluation.Classes.Any(t => _tableClasses.Contains(t))) {
-                return evaluation.Dim != null && evaluation.Dim.Count == 2;
-            }
-            return false;
+            return evaluation != null && evaluation.Classes.Any(t => _classes.Contains(t));
         }
         #endregion
     }
