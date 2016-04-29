@@ -196,7 +196,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 viewer.Should().NotBeNull();
 
                 var eval = Substitute.For<IDebugValueEvaluationResult>();
-                eval.Classes.Returns(new List<string>() { "foo" });
+                eval.Classes.Returns(new List<string>() { "environment" });
 
                 viewer.CanView(null).Should().BeFalse();
                 viewer.CanView(eval).Should().BeFalse();

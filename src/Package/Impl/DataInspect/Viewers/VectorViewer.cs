@@ -8,8 +8,7 @@ using Microsoft.R.Debugger;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class VectorViewer : GridViewerBase {
-        private readonly static string[] _excludedClasses = new string[] { "expression", "function", "factor" };
-
+        private readonly static string[] _excludedClasses = new string[] { "expression", "function", "factor", "environment" };
 
         [ImportingConstructor]
         public VectorViewer(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) :

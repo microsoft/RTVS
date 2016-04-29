@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Actions.Logging;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -13,14 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
     public class GridDataSource {
         public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, IRSession rSession = null) {
             await TaskUtilities.SwitchToBackgroundThread();
-
-            if (rSession == null) {
-                rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
-                if (rSession == null) {
-                    throw new InvalidOperationException(Invariant($"{nameof(IRSessionProvider)} failed to return RSession for {nameof(VariableViewModel)}"));
-                }
-            }
-
+            rSession = rSession ?? VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+ 
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
 
@@ -29,7 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 result = await evaluator.EvaluateAsync($"rtvs:::grid.data({expression}, {rows}, {columns})", REvaluationKind.Json);
 
                 if (!result.HasValue || result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
-                    throw new InvalidOperationException($"Grid data evaluation failed{Environment.NewLine} {result}");
+                    // No reason to crash, just log it
+                    var message = Invariant($"Grid data evaluation failed{Environment.NewLine} {result}");
+                    GeneralLog.Write(message);
+                    return null;
                 }
                 return result.Value.JsonResult.ToObject<GridData>();
             }
