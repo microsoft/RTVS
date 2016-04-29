@@ -24,6 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private IObjectDetailsViewer _detailsViewer;
         private string _title;
+        private bool _deleted;
 
         public VariableViewModel() { Index = -1; }
 
@@ -148,9 +149,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// Deletes variable represented by this mode
         /// </summary>
         public void Delete() {
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var session = sessionProvider.GetInteractiveWindowRSession();
-            session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating).DoNotWait();
+            if (!_deleted) {
+                _deleted = true;
+                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var session = sessionProvider.GetInteractiveWindowRSession();
+                session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating).DoNotWait();
+            }
         }
         #endregion
     }
