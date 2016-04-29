@@ -750,7 +750,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdDeleteVariable" priority="0x0100" type="Button">
+      <!--<Button guid="guidRToolsCmdSet" id="icmdDeleteVariable" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenuEditGroup"/>
         <Icon guid="ImageCatalogGuid" id="DeleteClause"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -760,7 +760,7 @@
           <MenuText>&amp;Delete Variable</MenuText>
           <CommandName>Delete Variable</CommandName>
         </Strings>
-      </Button>
+      </Button>-->
 
       <Button guid="guidRToolsCmdSet" id="icmdDeleteAllVariables" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenuEditGroup"/>
@@ -1919,7 +1919,7 @@
       <IDSymbol name="icmdImportDataset" value="801" />
       <IDSymbol name="icmdImportDatasetUrl" value="802" />
       <IDSymbol name="icmdImportDatasetTextFile" value="803" />
-      <IDSymbol name="icmdDeleteVariable" value="804" />
+      <!--<IDSymbol name="icmdDeleteVariable" value="804" />-->
       <IDSymbol name="icmdDeleteAllVariables" value="805" />
 
       <!-- Window management-->

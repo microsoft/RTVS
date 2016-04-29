@@ -77,7 +77,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
                 new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
-                new DeleteVariableCommand(interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
 
                 new InstallPackagesCommand(),
