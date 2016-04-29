@@ -116,81 +116,77 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Variable.Explorer]
-        public async Task TableViewerTest() {
-            using (var hostScript = new RHostScript(_sessionProvider)) {
-                var gridViewer = await _aggregator.GetViewer("mtcars") as TableViewer;
-                gridViewer.Should().NotBeNull();
+        public void TableViewerTest() {
+            var e = Substitute.For<IDataObjectEvaluator>();
+            var viewer = new TableViewer(_aggregator, e);
+ 
+            var eval = Substitute.For<IDebugValueEvaluationResult>();
+            eval.Classes.Returns(new List<string>() { "foo" });
 
-                var eval = Substitute.For<IDebugValueEvaluationResult>();
-                eval.Classes.Returns(new List<string>() { "foo" });
+            viewer.CanView(null).Should().BeFalse();
+            viewer.CanView(eval).Should().BeFalse();
 
-                gridViewer.CanView(null).Should().BeFalse();
-                gridViewer.CanView(eval).Should().BeFalse();
+            eval.Dim.Count.Returns(0);
+            viewer.CanView(eval).Should().BeFalse();
 
+            foreach (var c in new string[] { "matrix", "data.frame", "table", "array" }) {
+                eval.Classes.Returns(new List<string>() { c });
+                eval.Dim.Count.Returns(3);
+                viewer.CanView(eval).Should().BeFalse();
+                eval.Dim.Count.Returns(2);
+                viewer.CanView(eval).Should().BeTrue();
+                eval.Dim.Count.Returns(1);
+                viewer.CanView(eval).Should().BeFalse();
                 eval.Dim.Count.Returns(0);
-                gridViewer.CanView(eval).Should().BeFalse();
-
-                foreach (var c in new string[] { "matrix", "data.frame", "table", "array" }) {
-                    eval.Classes.Returns(new List<string>() { c });
-                    eval.Dim.Count.Returns(3);
-                    gridViewer.CanView(eval).Should().BeFalse();
-                    eval.Dim.Count.Returns(2);
-                    gridViewer.CanView(eval).Should().BeTrue();
-                    eval.Dim.Count.Returns(1);
-                    gridViewer.CanView(eval).Should().BeFalse();
-                    eval.Dim.Count.Returns(0);
-                    gridViewer.CanView(eval).Should().BeFalse();
-                }
-
-                eval.Dim.Returns((IReadOnlyList<int>)null);
-                foreach (var c in new string[] { "a", "b" }) {
-                    eval.Classes.Returns(new List<string>() { c });
-                    gridViewer.CanView(eval).Should().BeFalse();
-                }
-
-                eval.Classes.Returns(new List<string>() { "foo", "bar" });
-                gridViewer.CanView(eval).Should().BeFalse();
+                viewer.CanView(eval).Should().BeFalse();
             }
+
+            eval.Dim.Returns((IReadOnlyList<int>)null);
+            foreach (var c in new string[] { "a", "b" }) {
+                eval.Classes.Returns(new List<string>() { c });
+                viewer.CanView(eval).Should().BeFalse();
+            }
+
+            eval.Classes.Returns(new List<string>() { "foo", "bar" });
+            viewer.CanView(eval).Should().BeFalse();
         }
 
         [Test]
         [Category.Variable.Explorer]
-        public async Task Viewer1DTest() {
-            using (var hostScript = new RHostScript(_sessionProvider)) {
-                var viewer = await _aggregator.GetViewer("airmiles") as Viewer1D;
-                viewer.Should().NotBeNull();
+        public void Viewer1DTest() {
+            var e = Substitute.For<IDataObjectEvaluator>();
+            var viewer = new Viewer1D(_aggregator, e);
 
-                var eval = Substitute.For<IDebugValueEvaluationResult>();
-                eval.Classes.Returns(new List<string>() { "environment" });
+            var eval = Substitute.For<IDebugValueEvaluationResult>();
+            eval.Classes.Returns(new List<string>() { "environment" });
 
-                viewer.CanView(null).Should().BeFalse();
+            viewer.CanView(null).Should().BeFalse();
+            viewer.CanView(eval).Should().BeFalse();
+
+            eval.Dim.Count.Returns(0);
+            viewer.CanView(eval).Should().BeFalse();
+
+            eval.Length.Returns(2);
+            foreach (var c in new string[] { "ts", "array" }) {
+                eval.Classes.Returns(new List<string>() { c });
+                eval.Dim.Count.Returns(2);
                 viewer.CanView(eval).Should().BeFalse();
-
+                eval.Dim.Count.Returns(1);
+                viewer.CanView(eval).Should().BeTrue();
                 eval.Dim.Count.Returns(0);
                 viewer.CanView(eval).Should().BeFalse();
+            }
 
-                eval.Length.Returns(2);
-                foreach (var c in new string[] { "ts", "array" }) {
-                    eval.Classes.Returns(new List<string>() { c });
-                    eval.Dim.Count.Returns(2);
-                    viewer.CanView(eval).Should().BeFalse();
-                    eval.Dim.Count.Returns(1);
-                    viewer.CanView(eval).Should().BeTrue();
-                    eval.Dim.Count.Returns(0);
-                    viewer.CanView(eval).Should().BeFalse();
-                }
+            eval.Dim.Returns((IReadOnlyList<int>)null);
+            foreach (var c in new string[] { "ts", "array" }) {
+                eval.Classes.Returns(new List<string>() { c });
+                viewer.CanView(eval).Should().BeTrue();
+            }
 
-                eval.Dim.Returns((IReadOnlyList<int>)null);
-                foreach (var c in new string[] { "ts", "array" }) {
-                    eval.Classes.Returns(new List<string>() { c });
-                    viewer.CanView(eval).Should().BeTrue();
-                }
-
-                eval.Dim.Returns((IReadOnlyList<int>)null);
-                foreach (var c in new string[] { "a", "b" }) {
-                    eval.Classes.Returns(new List<string>() { c });
-                    viewer.CanView(eval).Should().BeFalse();
-                }
+            eval.Dim.Returns((IReadOnlyList<int>)null);
+            foreach (var c in new string[] { "a", "b" }) {
+                eval.Classes.Returns(new List<string>() { c });
+                viewer.CanView(eval).Should().BeFalse();
             }
         }
     }
