@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
@@ -172,6 +174,61 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                 var list = session.SelectedCompletionSet.Completions.ToList();
                 var item = list.FirstOrDefault(x => x.DisplayText == "ItemTemplates");
+                item.Should().NotBeNull();
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionFilesUserFolder() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (new RHostScript(provider)) {
+                    var myDocs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    var testFolder = Path.Combine(myDocs, "_rtvs_test_");
+                    if (!Directory.Exists(testFolder)) {
+                        Directory.CreateDirectory(testFolder);
+                    }
+
+                    script.DoIdle(100);
+                    script.Type("x <- \"~/");
+                    script.DoIdle(1000);
+                    script.Type("{TAB}");
+                    script.DoIdle(500);
+
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+                    script.DoIdle(200);
+
+                    var list = session.SelectedCompletionSet.Completions.ToList();
+                    var item = list.FirstOrDefault(x => x.DisplayText == "_rtvs_test_");
+                    item.Should().NotBeNull();
+
+                    if (Directory.Exists(testFolder)) {
+                        Directory.Delete(testFolder);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void R_CompletionFilesAbsolute() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
+
+                script.DoIdle(100);
+                script.Type(Invariant($"x <- \"{root[0]}:/"));
+                script.DoIdle(1000);
+                script.Type("{TAB}");
+                script.DoIdle(100);
+
+                var session = script.GetCompletionSession();
+                session.Should().NotBeNull();
+                script.DoIdle(200);
+
+                var list = session.SelectedCompletionSet.Completions.ToList();
+                var item = list.FirstOrDefault(x => x.DisplayText == "Windows");
                 item.Should().NotBeNull();
             }
         }
