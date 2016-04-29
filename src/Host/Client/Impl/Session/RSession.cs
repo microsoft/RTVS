@@ -508,6 +508,11 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.Plot(filePath, ct) : Task.CompletedTask;
         }
 
+        Task<LocatorResult> IRCallbacks.Locator(CancellationToken ct) {
+            var callback = _callback;
+            return callback != null ? callback.Locator(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+        }
+
         /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>

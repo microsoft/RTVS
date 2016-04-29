@@ -53,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdExportPlotAsPdf = 714;
         public const int icmdCopyPlotAsBitmap = 716;
         public const int icmdCopyPlotAsMetafile = 717;
+        public const int icmdEndLocator = 718;
 
         // Data
         public const int icmdImportDataset = 801;

@@ -32,6 +32,12 @@ namespace Microsoft.R.Host.Client {
         Task Plot(string filePath, CancellationToken ct);
 
         /// <summary>
+        /// Set locator mode in the plot window
+        /// </summary>
+        /// <returns>Location where the user clicked.</returns>
+        Task<LocatorResult> Locator(CancellationToken ct);
+
+        /// <summary>
         /// Requests user input from UI
         /// </summary>
         Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct);

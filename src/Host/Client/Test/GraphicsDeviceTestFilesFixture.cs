@@ -9,6 +9,7 @@ namespace Microsoft.R.Host.Client.Test {
     [AssemblyFixture]
     [ExcludeFromCodeCoverage]
     public class GraphicsDeviceTestFilesFixture : DeployFilesFixture {
+        public string LocatorResultPath { get; }
         public string HistoryInfoResultPath { get; }
         public string ClearPlotsResultPath { get; }
         public string RemovePlotFirstResultPath { get; }
@@ -30,6 +31,7 @@ namespace Microsoft.R.Host.Client.Test {
             Directory.CreateDirectory(ActualFolderPath);
 
             // Path to files that are generated when tests are executed
+            LocatorResultPath = Path.Combine(ActualFolderPath, "LocatorResult.json");
             HistoryInfoResultPath = Path.Combine(ActualFolderPath, "HistoryInfoResult.json");
             ClearPlotsResultPath = Path.Combine(ActualFolderPath, "ClearPlotsResult.json");
             RemovePlotFirstResultPath = Path.Combine(ActualFolderPath, "RemovePlotFirstResult.json");

@@ -140,5 +140,10 @@ namespace Microsoft.R.Host.Client {
                 }
             }
         }
+
+        public async Task<LocatorResult> Locator(CancellationToken ct) {
+            await Console.Error.WriteLineAsync("Locator called.");
+            return LocatorResult.CreateNotClicked();
+        }
     }
 }

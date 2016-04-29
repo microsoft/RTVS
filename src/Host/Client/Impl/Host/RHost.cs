@@ -414,6 +414,12 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 break;
 
+                            case "Locator":
+                                var locatorResult = await _callbacks.Locator(ct);
+                                ct.ThrowIfCancellationRequested();
+                                await RespondAsync(message, ct, locatorResult.Clicked, locatorResult.X, locatorResult.Y);
+                                break;
+
                             case "open_url":
                                 await _callbacks.Browser(message.GetString(0, "help_url"));
                                 break;

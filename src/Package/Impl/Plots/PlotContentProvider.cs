@@ -47,6 +47,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         #region IPlotContentProvider implementation
 
+        public IPlotLocator Locator { get; set; }
+
         public event EventHandler<PlotChangedEventArgs> PlotChanged;
 
         public void LoadFile(string fileName) {
@@ -295,6 +297,11 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         public static Size ToPixels(Visual visual, Size wpfSize) {
             var source = PresentationSource.FromVisual(visual);
             return (Size)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
+        }
+
+        public static Point ToPixels(Visual visual, Point wpfSize) {
+            var source = PresentationSource.FromVisual(visual);
+            return (Point)source.CompositionTarget.TransformToDevice.Transform((Vector)wpfSize);
         }
 
         public static int GetResolution(Visual visual) {

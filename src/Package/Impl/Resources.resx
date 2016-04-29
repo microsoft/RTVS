@@ -709,6 +709,12 @@ Additional information:
   <data name="TooltipPlaceholder" xml:space="preserve">
     <value>Fetching data...</value>
   </data>
+  <data name="PlotWindowCaptionLocatorActive" xml:space="preserve">
+    <value>R Plot - Locator is Active</value>
+  </data>
+  <data name="PlotWindowStatusLocatorActive" xml:space="preserve">
+    <value>Locator is active. Click in the plot window to select points then choose End Locator.</value>
+  </data>
   <data name="Warning_DeleteAllVariables" xml:space="preserve">
     <value>Are you sure you want to remove all variables?</value>
   </data>

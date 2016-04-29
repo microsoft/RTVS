@@ -102,6 +102,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new HistoryPreviousPlotCommand(plotHistory),
                 new ClearPlotsCommand(plotHistory),
                 new RemovePlotCommand(plotHistory),
+                new EndLocatorCommand(plotHistory),
             };
         }
     }
