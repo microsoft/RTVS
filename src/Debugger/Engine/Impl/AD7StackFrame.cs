@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
@@ -14,13 +15,13 @@ namespace Microsoft.R.Debugger.Engine {
         private Lazy<AD7Property> _property;
 
         public AD7Engine Engine { get; }
-        public DebugStackFrame StackFrame { get; }
+        public IRStackFrame StackFrame { get; }
 
-        public AD7StackFrame(AD7Engine engine, DebugStackFrame stackFrame) {
+        public AD7StackFrame(AD7Engine engine, IRStackFrame stackFrame) {
             Engine = engine;
             StackFrame = stackFrame;
 
-            _property = Lazy.Create(() => new AD7Property(this, TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.GetEnvironmentAsync(cancellationToken: ct)), isFrameEnvironment: true));
+            _property = Lazy.Create(() => new AD7Property(this, TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.DescribeEnvironmentAsync(cancellationToken: ct)), isFrameEnvironment: true));
         }
 
         int IDebugStackFrame2.EnumProperties(enum_DEBUGPROP_INFO_FLAGS dwFields, uint nRadix, ref Guid guidFilter, uint dwTimeout, out uint pcelt, out IEnumDebugPropertyInfo2 ppEnum) {

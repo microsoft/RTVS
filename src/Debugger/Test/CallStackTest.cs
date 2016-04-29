@@ -7,14 +7,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Match;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.R.Debugger.Test.Match;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.UnitTests.Core.FluentAssertions;
+using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Debugger.Test {
@@ -45,8 +45,8 @@ namespace Microsoft.R.Debugger.Test {
         [Test]
         [Category.R.Debugger]
         public async Task CallStack() {
-            using (var debugSession = new DebugSession(_session)) {
-                const string code1 =
+            var tracer = await _session.TraceExecutionAsync();
+            const string code1 =
 @"f <- function(n) {
      if (n > 0) {
         g(n - 1)
@@ -55,7 +55,7 @@ namespace Microsoft.R.Debugger.Test {
      }
   }";
 
-                const string code2 =
+            const string code2 =
 @"g <- function(n) {
      if (n > 0) {
         f(n - 1)
@@ -64,32 +64,31 @@ namespace Microsoft.R.Debugger.Test {
      }
   }";
 
-                using (var sf1 = new SourceFile(code1))
-                using (var sf2 = new SourceFile(code2)) {
-                    await debugSession.EnableBreakpointsAsync(true);
+            using (var sf1 = new SourceFile(code1))
+            using (var sf2 = new SourceFile(code2)) {
+                await tracer.EnableBreakpointsAsync(true);
 
-                    await sf1.Source(_session);
-                    await sf2.Source(_session);
+                await sf1.Source(_session);
+                await sf2.Source(_session);
 
-                    var bp = await debugSession.CreateBreakpointAsync(sf1, 5);
-                    var bpHit = new BreakpointHitDetector(bp);
+                var bp = await tracer.CreateBreakpointAsync(sf1, 5);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    using (var inter = await _session.BeginInteractionAsync()) {
-                        await inter.RespondAsync("f(4)\n");
-                    }
-                    await bpHit.ShouldBeHitAtNextPromptAsync();
-
-                    var stackFrames = await debugSession.GetStackFramesAsync();
-                    stackFrames.Should().Equal(new MatchDebugStackFrames {
-                        { (string)null, null, "f(4)", "<environment: R_GlobalEnv>" },
-                        { sf1, 3, "g(n - 1)", null },
-                        { sf2, 3, "f(n - 1)", null },
-                        { sf1, 3, "g(n - 1)", null },
-                        { sf2, 3, "f(n - 1)", null },
-                        { sf1, 5, MatchAny<string>.Instance, null },
-                    });
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("f(4)\n");
                 }
+                await bpHit.ShouldBeHitAtNextPromptAsync();
+
+                await _session.ShouldHaveTracebackAsync(new TracebackBuilder {
+                    { null, null, "f(4)", "<environment: R_GlobalEnv>" },
+                    { sf1, 3, "g(n - 1)", null },
+                    { sf2, 3, "f(n - 1)", null },
+                    { sf1, 3, "g(n - 1)", null },
+                    { sf2, 3, "f(n - 1)", null },
+                    { sf1, 5, TracebackBuilder.Any, null }
+                });
             }
+
         }
 
         [CompositeTest]
@@ -97,22 +96,18 @@ namespace Microsoft.R.Debugger.Test {
         [InlineData(false)]
         [InlineData(true)]
         public async Task HideSourceFrames(bool debug) {
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile("0")) { 
-                    await debugSession.EnableBreakpointsAsync(true);
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile("0")) {
+                await tracer.EnableBreakpointsAsync(true);
 
-                    var bp = await debugSession.CreateBreakpointAsync(sf, 1);
-                    var bpHit = new BreakpointHitDetector(bp);
+                var bp = await tracer.CreateBreakpointAsync(sf, 1);
+                var bpHit = new BreakpointHitDetector(bp);
 
-                    await sf.Source(_session, debug);
-                    await bpHit.ShouldBeHitAtNextPromptAsync();
+                await sf.Source(_session, debug);
+                await bpHit.ShouldBeHitAtNextPromptAsync();
 
-                    var stackFrames = await debugSession.GetStackFramesAsync();
-                    stackFrames.Should().Equal(new[] {
-                        new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, true)
-                    });
-                }
+                var frame = (await _session.TracebackAsync()).Single();
+                frame.IsGlobal.Should().BeTrue();
             }
         }
 
@@ -120,42 +115,51 @@ namespace Microsoft.R.Debugger.Test {
         [Category.R.Debugger]
         public async Task EnvironmentNames() {
             const string code =
-@"f <- function() eval(quote(browser()), .GlobalEnv)
+    @"f <- function() eval(quote(browser()), .GlobalEnv)
   g <- function(f) eval(as.call(list(f)), getNamespace('utils'))
   h <- function() eval(as.call(list(g, f)), as.environment('package:utils'))
   h()";
 
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile(code)) {
-                    await sf.Source(_session);
-                    await debugSession.NextPromptShouldBeBrowseAsync();
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await sf.Source(_session);
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                    var funcFrame = new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, false)
-                            .Matching(x => x.EnvironmentName, null);
+                var funcFrame = Substitute.For<IRStackFrame>();
+                funcFrame.IsGlobal.Returns(false);
+                funcFrame.EnvironmentName.Returns((string)null);
 
-                    var stackFrames = await debugSession.GetStackFramesAsync();
-                    stackFrames.Should().Equal(new[] {
-                        new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, true)
-                            .Matching(x => x.EnvironmentName, "<environment: R_GlobalEnv>"),
-                        funcFrame, // h
-                        funcFrame, // eval
-                        new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, false)
-                            .Matching(x => x.EnvironmentName, "<environment: package:utils>"),
-                        funcFrame, // g
-                        funcFrame, // eval
-                        new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, false)
-                            .Matching(x => x.EnvironmentName, "<environment: namespace:utils>"),
-                        funcFrame, // f
-                        funcFrame, // eval
-                        new MatchMembers<DebugStackFrame>()
-                            .Matching(x => x.IsGlobal, true)
-                            .Matching(x => x.EnvironmentName, "<environment: R_GlobalEnv>"),
-                    });
-                }
+                var globalEnv = Substitute.For<IRStackFrame>();
+                globalEnv.IsGlobal.Returns(true);
+                globalEnv.EnvironmentName.Returns("<environment: R_GlobalEnv>");
+
+                var packageUtils = Substitute.For<IRStackFrame>();
+                packageUtils.IsGlobal.Returns(false);
+                packageUtils.EnvironmentName.Returns("<environment: package:utils>");
+
+                var namespaceUtils = Substitute.For<IRStackFrame>();
+                namespaceUtils.IsGlobal.Returns(false);
+                namespaceUtils.EnvironmentName.Returns("<environment: namespace:utils>");
+
+                var expectedFrames = new[] {
+                    globalEnv,
+                    funcFrame, // h
+                    funcFrame, // eval
+                    packageUtils,
+                    funcFrame, // g
+                    funcFrame, // eval
+                    namespaceUtils,
+                    funcFrame, // f
+                    funcFrame, // eval
+                    globalEnv
+                };
+
+                var actualFrames = await _session.TracebackAsync();
+
+                actualFrames.ShouldAllBeEquivalentTo(expectedFrames, options => options
+                    .Including(frame => frame.IsGlobal)
+                    .Including(frame => frame.EnvironmentName)
+                    .WithStrictOrdering());
             }
         }
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
@@ -31,12 +32,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
-        public bool CanView(IDebugValueEvaluationResult evaluation) {
-            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes.Any(t => _classes.Contains(t));
+        public bool CanView(IRValueInfo evaluation) {
+            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
         }
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, DebugEvaluationResultFields.Expression, null);
+            var evaluation = await EvaluateAsync(expression, RValueProperties.Expression, null);
             if (evaluation == null || string.IsNullOrEmpty(evaluation.Expression)) {
                 return;
             }

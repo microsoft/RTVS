@@ -3,6 +3,7 @@
 
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 
@@ -14,16 +15,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
              Evaluator = evaluator;
         }
 
-        protected async Task<DebugValueEvaluationResult> EvaluateAsync(string expression, DebugEvaluationResultFields fields, string repr) {
+        protected async Task<IRValueInfo> EvaluateAsync(string expression, RValueProperties fields, string repr) {
             var result = await Evaluator.EvaluateAsync(expression, fields, repr);
-            var error = result as DebugErrorEvaluationResult;
+            var error = result as IRErrorInfo;
             if (error != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
                 VsAppShell.Current.ShowErrorMessage(error.ErrorText);
                 return null;
             }
 
-            return result as DebugValueEvaluationResult;
+            return result as IRValueInfo;
         }
     }
 }

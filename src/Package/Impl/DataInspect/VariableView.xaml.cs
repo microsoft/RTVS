@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -17,7 +18,6 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
-        private const string Repr = "rtvs:::make_repr_str()";
         private readonly IRToolsSettings _settings;
         private readonly IDataObjectEvaluator _evaluator;
         private readonly IREnvironmentProvider _environmentProvider;
@@ -99,13 +99,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task SetRootModelAsync(REnvironment env) {
             await TaskUtilities.SwitchToBackgroundThread();
-            const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                    | DebugEvaluationResultFields.Expression
-                    | DebugEvaluationResultFields.TypeName
-                    | DebugEvaluationResultFields.Dim
-                    | DebugEvaluationResultFields.Length;
+            const RValueProperties fields = RValueProperties.Classes
+                    | RValueProperties.Expression
+                    | RValueProperties.TypeName
+                    | RValueProperties.Dim
+                    | RValueProperties.Length;
 
-            DebugEvaluationResult result = await _evaluator.EvaluateAsync(GetExpression(env), fields, Repr);
+            var result = await _evaluator.EvaluateAsync(GetExpression(env), fields, RValueRepresentations.Str());
             if (result != null) {
                 var wrapper = new VariableViewModel(result, _aggregator);
                 var rootNodeModel = new VariableNode(_settings, wrapper);

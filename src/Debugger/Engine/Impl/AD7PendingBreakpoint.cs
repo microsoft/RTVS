@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
@@ -57,7 +58,7 @@ namespace Microsoft.R.Debugger.Engine {
             TEXT_POSITION start, end;
             GetLocation(out fileName, out lineNumber, out start, out end);
 
-            _boundBreakpoint = new AD7BoundBreakpoint(this, new DebugSourceLocation(fileName, lineNumber), _state);
+            _boundBreakpoint = new AD7BoundBreakpoint(this, new RSourceLocation(fileName, lineNumber), _state);
             return VSConstants.S_OK;
         }
 

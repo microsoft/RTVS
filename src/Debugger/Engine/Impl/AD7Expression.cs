@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
@@ -34,7 +35,7 @@ namespace Microsoft.R.Debugger.Engine {
             _cts = new CancellationTokenSource();
             Task.Run(async () => {
                 try {
-                    var res = await StackFrame.StackFrame.EvaluateAsync(_expression, AD7Property.PrefetchedFields, AD7Property.Repr);
+                    var res = await StackFrame.StackFrame.EvaluateAndDescribeAsync(_expression, AD7Property.PrefetchedFields, AD7Property.Repr);
                     _cts.Token.ThrowIfCancellationRequested();
                     var prop = new AD7Property(StackFrame, res);
                     StackFrame.Engine.Send(new AD7ExpressionEvaluationCompleteEvent(this, prop), AD7ExpressionEvaluationCompleteEvent.IID);
@@ -48,7 +49,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugExpression2.EvaluateSync(enum_EVALFLAGS dwFlags, uint dwTimeout, IDebugEventCallback2 pExprCallback, out IDebugProperty2 ppResult) {
-            var res = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(_expression, AD7Property.PrefetchedFields, AD7Property.Repr, ct));
+            var res = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAndDescribeAsync(_expression, AD7Property.PrefetchedFields, AD7Property.Repr, ct));
             ppResult = new AD7Property(StackFrame, res);
             return VSConstants.S_OK;
         }

@@ -1,0 +1,59 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
+using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
+using Microsoft.R.DataInspection;
+using Newtonsoft.Json.Linq;
+using static System.FormattableString;
+
+namespace Microsoft.R.StackTracing {
+    internal sealed class RStackFrame : IRStackFrame {
+
+        public IRSession Session { get; }
+
+        public int Index { get; }
+
+        public string EnvironmentExpression => Invariant($"base::sys.frame({Index})");
+
+        public string EnvironmentName { get; }
+
+        public IRStackFrame CallingFrame { get; }
+
+        public string FileName { get; }
+
+        public int? LineNumber { get; }
+
+        public string Call { get; }
+
+        public bool IsGlobal => EnvironmentName == "<environment: R_GlobalEnv>";
+
+        internal RStackFrame(IRSession session, int index, RStackFrame callingFrame, JObject jFrame) {
+            Session = session;
+            Index = index;
+            CallingFrame = callingFrame;
+
+            FileName = jFrame.Value<string>("filename");
+            LineNumber = jFrame.Value<int?>("line_number");
+            Call = jFrame.Value<string>("call");
+            EnvironmentName = jFrame.Value<string>("env_name");
+        }
+
+        public Task<IREvaluationInfo> DescribeEnvironmentAsync(RValueProperties properties, CancellationToken cancellationToken = default(CancellationToken)) {
+            properties |= RValueProperties.Expression | RValueProperties.Length | RValueProperties.AttrCount | RValueProperties.Flags;
+            return this.EvaluateAndDescribeAsync("base::environment()", properties: properties, cancellationToken: cancellationToken);
+        }
+
+        public override string ToString() =>
+            Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString(CultureInfo.InvariantCulture) ?? "<null>")}");
+
+        public override bool Equals(object obj) =>
+            base.Equals(obj) || (obj as IEquatable<RStackFrame>)?.Equals(this) == true;
+
+        public override int GetHashCode() =>
+            base.GetHashCode();
+    }
+}

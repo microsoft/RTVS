@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -11,11 +12,11 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
-         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
-                                                        | DebugEvaluationResultFields.Expression
-                                                        | DebugEvaluationResultFields.TypeName
-                                                        | DebugEvaluationResultFields.Dim
-                                                        | DebugEvaluationResultFields.Length;
+         private const RValueProperties _fields = RValueProperties.Classes
+                                                | RValueProperties.Expression
+                                                | RValueProperties.TypeName
+                                                | RValueProperties.Dim
+                                                | RValueProperties.Length;
 
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
@@ -27,10 +28,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
 
-        abstract public bool CanView(IDebugValueEvaluationResult evaluation);
+        abstract public bool CanView(IRValueInfo evaluation);
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, _fields, "rtvs:::make_repr_str()") as DebugValueEvaluationResult;
+            var evaluation = await EvaluateAsync(expression, _fields, RValueRepresentations.Str()) as IRValueInfo;
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 

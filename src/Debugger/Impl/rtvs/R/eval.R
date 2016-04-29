@@ -288,44 +288,46 @@ describe_children <- function(obj, env, fields, count = NULL, repr = NULL) {
         count <<- count - n;
       }
   
-      for (i in 1:n) {
-        # Start with the assumption that this is an unnamed item, accessed by position.
-        accessor <- paste0('[[', as.double(i), ']]', collapse = '');
-        kind <- '[[';
-  
-        # If it has a name, it is a named item - but only if that name is unique, or
-        # if this item corresponds to the first mention of that name - i.e. if we have
-        # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
-        # is effectively unnamed, because there's no way to address it by name.
-        name <- tryCatch({
-            names[[i]]
-        }, error = function(e) {
-            NULL
-        });
-        name <- force_toString(name);
-        if (name != '' && match(name, names, -1) == i) {
-          kind <- '$';
-          # Named items can be accessed with '$' in lists, but other types require brackets.
-          if (is.list(obj)) {
-            accessor <- paste0('$', symbol_token(name), collapse = '');
-          } else {
-            accessor <- paste0('[[', deparse_str(name), ']]', collapse = '');
+      if (n >= 1) {
+        for (i in 1:n) {
+          # Start with the assumption that this is an unnamed item, accessed by position.
+          accessor <- paste0('[[', as.double(i), ']]', collapse = '');
+          kind <- '[[';
+
+          # If it has a name, it is a named item - but only if that name is unique, or
+          # if this item corresponds to the first mention of that name - i.e. if we have
+          # c(1,2,3), and names() is c('x','y','x'), then c[[1]] is named 'x', but c[[3]]
+          # is effectively unnamed, because there's no way to address it by name.
+          name <- tryCatch({
+              names[[i]]
+          }, error = function(e) {
+              NULL
+          });
+          name <- force_toString(name);
+          if (name != '' && match(name, names, -1) == i) {
+            kind <- '$';
+            # Named items can be accessed with '$' in lists, but other types require brackets.
+            if (is.list(obj)) {
+              accessor <- paste0('$', symbol_token(name), collapse = '');
+            } else {
+              accessor <- paste0('[[', deparse_str(name), ']]', collapse = '');
+            }
           }
+      
+          value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]], repr);
+      
+          child <- list(value);
+          names(child) <- accessor;
+          last_child <<- last_child + 1;
+          children[[last_child]] <<- child;
         }
-        
-        value <- eval_and_describe(paste0(expr, accessor, collapse = ''), environment(), kind, fields, obj[[i]], repr);
-        
-        child <- list(value);
-        names(child) <- accessor;
-        last_child <<- last_child + 1;
-        children[[last_child]] <<- child;
       }
     }
   }
   
   # If it is an atomic vector, a list or a language object, it might have children,
   # some of which are possibly named.
-  if (is.atomic(obj) || is.list(obj) || is.language(obj)) {
+  if (is.atomic(obj) || is.list(obj) || (is.language(obj) && !is.symbol(obj))) {
     process_items();
   }
     

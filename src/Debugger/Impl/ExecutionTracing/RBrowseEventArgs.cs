@@ -5,26 +5,28 @@ using System;
 using System.Collections.Generic;
 using Microsoft.R.Host.Client;
 
-namespace Microsoft.R.Debugger {
-    /// <seealso cref="DebugSession.Browse"/>
-    public class DebugBrowseEventArgs : EventArgs {
+namespace Microsoft.R.ExecutionTracing {
+    /// <seealso cref="IRExecutionTracer.Browse"/>
+    public class RBrowseEventArgs : EventArgs {
         /// <summary>
         /// R context for the Browse> prompt.
         /// </summary>
         public IRSessionContext Context { get; }
+
         /// <summary>
         /// Whether this Browse> prompt signifies the completion of a stepping operation.
         /// </summary>
-        public bool IsStepCompleted { get; }
+        public bool HasStepCompleted { get; }
+        
         /// <summary>
         /// Breakpoints that were hit at this Browse> prompt.
         /// </summary>
-        public IReadOnlyCollection<DebugBreakpoint> BreakpointsHit { get; }
+        public IReadOnlyCollection<IRBreakpoint> BreakpointsHit { get; }
 
-        public DebugBrowseEventArgs(IRSessionContext context, bool isStepCompleted, IReadOnlyCollection<DebugBreakpoint> breakpointsHit) {
+        public RBrowseEventArgs(IRSessionContext context, bool isStepCompleted, IReadOnlyCollection<IRBreakpoint> breakpointsHit) {
             Context = context;
-            IsStepCompleted = isStepCompleted;
-            BreakpointsHit = breakpointsHit ?? new DebugBreakpoint[0];
+            HasStepCompleted = isStepCompleted;
+            BreakpointsHit = breakpointsHit ?? new IRBreakpoint[0];
         }
     }
 }
