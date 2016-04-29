@@ -282,8 +282,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public GridRange ComputeDataViewport(Rect visualViewport) {
-            int columnStart = xIndex(visualViewport.X);
-            int rowStart = yIndex(visualViewport.Y);
+            int columnStart = Math.Max(0, xIndex(visualViewport.X));
+            int rowStart = Math.Max(0, yIndex(visualViewport.Y));
 
             Debug.Assert(HorizontalComputedOffset >= _xPositions[columnStart]);
             Debug.Assert(VerticalComputedOffset >= _yPositions[rowStart]);

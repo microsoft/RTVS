@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         };
 
         object[,] formulaTestData = new object[,] {
-            { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula' length 3 y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = false } },
+            { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula' length 3 y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = true } },
         };
 
         object[,] expressionTestData = new object[,] {
@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         };
 
         object[,] listTestData = new object[,] {
-            { "list.length1 <- list(c(1, 2, 3))", new VariableExpectation() { Name = "list.length1", Value = "List of 1", TypeName = "list", Class = "list", HasChildren = true, CanShowDetail = false } },
+            { "list.length1 <- list(c(1, 2, 3))", new VariableExpectation() { Name = "list.length1", Value = "List of 1", TypeName = "list", Class = "list", HasChildren = true, CanShowDetail = true } },
         };
 
         object[,] activeBindingTestData = new object[,] {
@@ -125,7 +125,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Variable.Explorer]
         public async Task Matrix10x100Test() {
             var script = "matrix.10x100 <-matrix(1:1000, 10, 100)";
-            var expectation = new VariableExpectation() { Name = "matrix.10x100", Value = "int [1:10, 1:100] 1 2 3 4 5 6 7 8 9 10 ...", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var expectation = new VariableExpectation() {
+                Name = "matrix.10x100",
+                Value = "int [1:10, 1:100] 1 2 3 4 5 6 7 8 9 10 ...",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
@@ -229,11 +236,25 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public async Task MatrixOneRowColumnTest() {
-            var script1 = "matrix.singlerow <- matrix(1:3, nrow =1);";
-            var expectation1 = new VariableExpectation() { Name = "matrix.singlerow", Value = "int [1, 1:3] 1 2 3", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var script1 = "matrix.singlerow <- matrix(1:3, nrow=1);";
+            var expectation1 = new VariableExpectation() {
+                Name = "matrix.singlerow",
+                Value = "int [1, 1:3] 1 2 3",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             var script2 = "matrix.singlecolumn <- matrix(1:3, ncol=1);";
-            var expectation2 = new VariableExpectation() { Name = "matrix.singlecolumn", Value = "int [1:3, 1] 1 2 3", TypeName = "integer", Class = "matrix", HasChildren = true, CanShowDetail = true };
+            var expectation2 = new VariableExpectation() {
+                Name = "matrix.singlecolumn",
+                Value = "int [1:3, 1] 1 2 3",
+                TypeName = "integer",
+                Class = "matrix",
+                HasChildren = true,
+                CanShowDetail = true
+            };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(
@@ -498,7 +519,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         object[,] arrayTestData = new object[,] {
             { "array.empty <- array();", new VariableExpectation() { Name = "array.empty", Value = "NA", TypeName = "logical", Class = "array", HasChildren = false, CanShowDetail = false } },
-            { "array.10 <- array(1:10);", new VariableExpectation() { Name = "array.10", Value = "int [1:10(1d)] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "array", HasChildren = true, CanShowDetail = false } },
+            { "array.10 <- array(1:10);", new VariableExpectation() { Name = "array.10", Value = "int [1:10(1d)] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "array", HasChildren = true, CanShowDetail = true } },
             { "array.2x2 <- array(c('z', 'y', 'x', 'w'), dim = c(2, 2));", new VariableExpectation() { Name = "array.2x2", Value = "chr [1:2, 1:2] \"z\" \"y\" \"x\" \"w\"", TypeName = "character", Class = "matrix", HasChildren = true, CanShowDetail = true } },
             { "array.2x3x4 <- array(as.double(101:124), dim=c(2,3,4));", new VariableExpectation() { Name = "array.2x3x4", Value = "num [1:2, 1:3, 1:4] 101 102 103 104 105 106 107 108 109 110 ...", TypeName = "double", Class = "array", HasChildren = true, CanShowDetail = false } },
         };
@@ -507,6 +528,25 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Variable.Explorer]
         public Task ArrayTest() {
             return RunTest(arrayTestData);
+        }
+
+        object[,] functionTestData = new object[,] {
+            {   "x <- lm;",
+                new VariableExpectation() {
+                Name = "x",
+                Value = "function (formula, data, subset, weights, na.action, method = \"qr\", model = TRUE,",
+                TypeName = "closure",
+                Class = "function",
+                HasChildren = false,
+                CanShowDetail = true
+                }
+            },
+        };
+
+        [Test]
+        [Category.Variable.Explorer]
+        public Task FunctionTest() {
+            return RunTest(functionTestData);
         }
 
         private static async Task RunTest(object[,] testData) {

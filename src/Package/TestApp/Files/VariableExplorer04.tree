@@ -1743,7 +1743,7 @@
                                                                                         <VisualTreeProperty Name="Margin" Value="0,0,0,0" />
                                                                                         <VisualTreeProperty Name="HorizontalAlignment" Value="Stretch" />
                                                                                         <VisualTreeProperty Name="VerticalAlignment" Value="Center" />
-                                                                                        <VisualTreeProperty Name="ToolTip" Value="int [1:10] 1 2 3 4 5 6 7 8 9 10" />
+                                                                                        <VisualTreeProperty Name="ToolTip" Value="function (formula, data, subset, weights, na.action, method = &quot;qr&quot;, model = TRUE," />
                                                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
@@ -1787,7 +1787,7 @@
                                                                                             <VisualTreeProperty Name="VerticalAlignment" Value="Stretch" />
                                                                                             <VisualTreeProperty Name="ToolTip" Value="null" />
                                                                                             <VisualTreeProperty Name="ContextMenu" Value="null" />
-                                                                                            <VisualTreeProperty Name="Visibility" Value="Visible" />
+                                                                                            <VisualTreeProperty Name="Visibility" Value="Hidden" />
                                                                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                                                             <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                                                             <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -1965,7 +1965,7 @@
                                                                                         <VisualTreeProperty Name="Margin" Value="0,0,0,0" />
                                                                                         <VisualTreeProperty Name="HorizontalAlignment" Value="Stretch" />
                                                                                         <VisualTreeProperty Name="VerticalAlignment" Value="Center" />
-                                                                                        <VisualTreeProperty Name="ToolTip" Value="int [1:10] 1 2 3 4 5 6 7 8 9 10" />
+                                                                                        <VisualTreeProperty Name="ToolTip" Value="function (formula, data, subset, weights, na.action, method = &quot;qr&quot;, model = TRUE," />
                                                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
@@ -1979,7 +1979,7 @@
                                                                                         <VisualTreeObject>
                                                                                           <Name>TextBlock</Name>
                                                                                           <Properties>
-                                                                                            <VisualTreeProperty Name="Text" Value="int [1:10] 1 2 3 4 5 6 7 8 9 10" />
+                                                                                            <VisualTreeProperty Name="Text" Value="function (formula, data, subset, weights, na.action, method = &quot;qr&quot;, model = TRUE," />
                                                                                             <VisualTreeProperty Name="Padding" Value="2,0,0,0" />
                                                                                             <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                                                             <VisualTreeProperty Name="DataContext" Value="Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode" />
@@ -2096,7 +2096,7 @@
                                                                                                 <VisualTreeProperty Name="VerticalAlignment" Value="Center" />
                                                                                                 <VisualTreeProperty Name="ToolTip" Value="null" />
                                                                                                 <VisualTreeProperty Name="ContextMenu" Value="null" />
-                                                                                                <VisualTreeProperty Name="Visibility" Value="Visible" />
+                                                                                                <VisualTreeProperty Name="Visibility" Value="Collapsed" />
                                                                                                 <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                                                                 <VisualTreeProperty Name="IsVirtualizing" Value="True" />
                                                                                                 <VisualTreeProperty Name="HorizontalScrollBarVisibility" Value="Disabled" />
@@ -2248,7 +2248,7 @@
                                                                                     <VisualTreeObject>
                                                                                       <Name>TextBlock</Name>
                                                                                       <Properties>
-                                                                                        <VisualTreeProperty Name="Text" Value="integer" />
+                                                                                        <VisualTreeProperty Name="Text" Value="function" />
                                                                                         <VisualTreeProperty Name="Padding" Value="2,0,0,0" />
                                                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                                                         <VisualTreeProperty Name="DataContext" Value="Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode" />
@@ -2256,7 +2256,7 @@
                                                                                         <VisualTreeProperty Name="Margin" Value="0,0,0,0" />
                                                                                         <VisualTreeProperty Name="HorizontalAlignment" Value="Stretch" />
                                                                                         <VisualTreeProperty Name="VerticalAlignment" Value="Center" />
-                                                                                        <VisualTreeProperty Name="ToolTip" Value="int [1:10] 1 2 3 4 5 6 7 8 9 10" />
+                                                                                        <VisualTreeProperty Name="ToolTip" Value="function (formula, data, subset, weights, na.action, method = &quot;qr&quot;, model = TRUE," />
                                                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />
@@ -2362,7 +2362,7 @@
                                                                                     <VisualTreeObject>
                                                                                       <Name>TextBlock</Name>
                                                                                       <Properties>
-                                                                                        <VisualTreeProperty Name="Text" Value="integer" />
+                                                                                        <VisualTreeProperty Name="Text" Value="closure" />
                                                                                         <VisualTreeProperty Name="Padding" Value="2,0,0,0" />
                                                                                         <VisualTreeProperty Name="TextAlignment" Value="Left" />
                                                                                         <VisualTreeProperty Name="DataContext" Value="Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode" />
@@ -2370,7 +2370,7 @@
                                                                                         <VisualTreeProperty Name="Margin" Value="0,0,0,0" />
                                                                                         <VisualTreeProperty Name="HorizontalAlignment" Value="Stretch" />
                                                                                         <VisualTreeProperty Name="VerticalAlignment" Value="Center" />
-                                                                                        <VisualTreeProperty Name="ToolTip" Value="int [1:10] 1 2 3 4 5 6 7 8 9 10" />
+                                                                                        <VisualTreeProperty Name="ToolTip" Value="function (formula, data, subset, weights, na.action, method = &quot;qr&quot;, model = TRUE," />
                                                                                         <VisualTreeProperty Name="ContextMenu" Value="null" />
                                                                                         <VisualTreeProperty Name="Visibility" Value="Visible" />
                                                                                         <VisualTreeProperty Name="IsVirtualizing" Value="True" />

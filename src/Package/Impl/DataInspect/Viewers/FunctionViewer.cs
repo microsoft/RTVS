@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.Common.Core;
@@ -19,6 +20,7 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class FunctionViewer : ViewerBase, IObjectDetailsViewer {
+        private readonly static string[] _classes = new string[] { "function", "formula" };
         private readonly IRSessionProvider _sessionProvider;
 
         [ImportingConstructor]
@@ -30,8 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
-        public bool CanView(DebugValueEvaluationResult evaluation) {
-            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
+        public bool CanView(IDebugValueEvaluationResult evaluation) {
+            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes.Any(t => _classes.Contains(t));
         }
 
         public async Task ViewAsync(string expression, string title) {
@@ -43,14 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             var functionName = evaluation.Expression;
             var session = _sessionProvider.GetInteractiveWindowRSession();
 
-            string functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
+            string functionCode = await GetFunctionCode(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
-                var formatter = new RFormatter(REditorSettings.FormatOptions);
-                functionCode = formatter.Format(functionCode);
 
-                string name = (!string.IsNullOrEmpty(title) && title.IndexOfAny(Path.GetInvalidFileNameChars()) < 0) ? title : functionName;
-                string fileName = "~" + name;
-                string tempFile = Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
+                string tempFile = GetFileName(functionName, title);
                 try {
                     if (File.Exists(tempFile)) {
                         File.Delete(tempFile);
@@ -72,5 +70,22 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
         }
         #endregion
+
+        internal async Task<string> GetFunctionCode(string functionName) {
+            var session = _sessionProvider.GetInteractiveWindowRSession();
+
+            string functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
+            if (!string.IsNullOrEmpty(functionCode)) {
+                var formatter = new RFormatter(REditorSettings.FormatOptions);
+                functionCode = formatter.Format(functionCode);
+            }
+            return functionCode;
+        }
+
+        internal string GetFileName(string functionName, string title) {
+            string name = (!string.IsNullOrEmpty(title) && title.IndexOfAny(Path.GetInvalidFileNameChars()) < 0) ? title : functionName;
+            string fileName = "~" + name;
+            return Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
+        }
     }
 }

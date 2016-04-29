@@ -51,6 +51,8 @@
     <Compile Include="DebugValueEvaluationResult.cs" />
     <Compile Include="DebugSession.cs" />
     <Compile Include="DebugEvaluationResult.cs" />
+    <Compile Include="Definitions\IDebugValueEvaluationResult.cs" />
+    <Compile Include="Definitions\IDebugEvaluationResult.cs" />
     <Compile Include="IDebugSessionProvider.cs" />
     <Compile Include="DebugStackFrame.cs" />
     <Compile Include="RDebugSessionProvider.cs" />

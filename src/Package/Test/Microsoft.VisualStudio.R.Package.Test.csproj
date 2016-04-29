@@ -307,6 +307,7 @@
   <ItemGroup>
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
+    <Compile Include="DataInspect\ReplCommandsTest.cs" />
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\REnvironmentProviderTest.cs" />
     <Compile Include="DataInspect\VariableExpectation.cs" />

@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Grid(GridRange range, IList<T> list) {
             if (list.Count != range.Rows.Count * range.Columns.Count) {
-                throw new ArgumentException("Number of initializing data doesn't match with grid's dimensions");
+                throw new ArgumentException("Length of the initialization vector doesn't match grid dimensions");
             }
 
             Range = range;

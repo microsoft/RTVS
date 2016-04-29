@@ -24,7 +24,8 @@ namespace Microsoft.R.Debugger {
     /// this result in its original context. If the context is no longer available (for example, it was a stack frame that is no
     /// longer there), the results are undefined. 
     /// </remarks>
-    public abstract class DebugEvaluationResult {
+    public abstract class DebugEvaluationResult : IDebugEvaluationResult {
+        #region IDebugEvaluationResult
         public DebugSession Session { get; }
 
         /// <summary>
@@ -46,6 +47,7 @@ namespace Microsoft.R.Debugger {
         /// and is primarily useful in that scenario. See the documentation of that method for more information.
         /// </para>
         public string Name { get; }
+        #endregion
 
         internal DebugEvaluationResult(DebugSession session, string environmentExpression, string expression, string name) {
             Session = session;

@@ -10,7 +10,7 @@ using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewerAggregator))]
-    public sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
+    internal sealed class ObjectDetailsViewerAggregator : IObjectDetailsViewerAggregator {
         [ImportMany]
         private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             return null;
         }
 
-        public IObjectDetailsViewer GetViewer(DebugValueEvaluationResult result) {
+        public IObjectDetailsViewer GetViewer(IDebugValueEvaluationResult result) {
             Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));
             return lazyViewer?.Value;
         }
