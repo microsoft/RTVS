@@ -148,13 +148,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Deletes variable represented by this mode
         /// </summary>
-        public void Delete() {
+        public Task DeleteAsync() {
             if (!_deleted) {
                 _deleted = true;
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
-                session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating).DoNotWait();
+                return session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating);
             }
+            return Task.CompletedTask;
         }
         #endregion
     }
