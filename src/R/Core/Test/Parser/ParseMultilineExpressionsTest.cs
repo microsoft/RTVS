@@ -55,7 +55,7 @@ namespace Microsoft.R.Core.Test.Parser {
         TokenNode  [for [0...3)]
         TokenNode  [( [7...8)]
         EnumerableExpression  [8...18)
-            TokenNode  [x [8...9)]
+            Variable  [x]
             TokenNode  [in [12...14)]
             Expression  [y]
                 Variable  [y]

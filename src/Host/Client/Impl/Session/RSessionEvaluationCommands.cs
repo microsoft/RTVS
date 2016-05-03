@@ -12,13 +12,13 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public static async Task<string> GetRUserDirectory(this IRExpressionEvaluator evaluation) {
-            var result = await evaluation.EvaluateAsync("Sys.getenv('R_USER')", REvaluationKind.Normal);
-            return result.StringResult.Replace('/', '\\');
+            var result = await evaluation.EvaluateAsync<string>("Sys.getenv('R_USER')", REvaluationKind.Json);
+            return result.Replace('/', '\\');
         }
 
         public static async Task<string> GetWorkingDirectory(this IRExpressionEvaluator evaluation) {
-            var result = await evaluation.EvaluateAsync("getwd()", REvaluationKind.Normal);
-            return result.StringResult.Replace('/', '\\');
+            var result = await evaluation.EvaluateAsync<string>("getwd()", REvaluationKind.Json);
+            return result.Replace('/', '\\');
         }
 
         public static Task SetWorkingDirectory(this IRExpressionEvaluator evaluation, string path) {

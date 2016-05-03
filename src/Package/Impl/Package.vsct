@@ -268,7 +268,10 @@
         <Parent guid="guidRToolsCmdSet" id="packagesSubMenu"/>
       </Group>
 
-      <Group guid="guidRToolsCmdSet" id="dataSubMenuGroup" priority="0x0000">
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuImportGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
 
@@ -412,11 +415,6 @@
       <Group guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x300" />
       <Group guid="guidRToolsCmdSet" id="projectAddItemContextMenuGroup" priority="0x310" />
       <Group guid="guidRToolsCmdSet" id="projectCmdPromptContextMenuGroup" priority="0x320" />
-
-      <!-- Variable Window toolbar -->
-      <Group guid="guidRToolsCmdSet" id="variableDataGroup" priority="0x0100">
-        <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
-      </Group>
 
     </Groups>
 
@@ -745,7 +743,7 @@
 
       <!-- Data flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="dataSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuImportGroup"/>
         <Icon guid="ImageCatalogGuid" id="WebFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -757,7 +755,7 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0200" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="dataSubMenuGroup"/>
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuImportGroup"/>
         <Icon guid="ImageCatalogGuid" id="DatabaseFile"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -765,6 +763,30 @@
           <ButtonText>Import From Text File...</ButtonText>
           <MenuText>Import From &amp;Text File...</MenuText>
           <CommandName>Import Dataset From Text File</CommandName>
+        </Strings>
+      </Button>
+
+      <!--<Button guid="guidRToolsCmdSet" id="icmdDeleteVariable" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuEditGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DeleteClause"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Delete Variable</ButtonText>
+          <MenuText>&amp;Delete Variable</MenuText>
+          <CommandName>Delete Variable</CommandName>
+        </Strings>
+      </Button>-->
+
+      <Button guid="guidRToolsCmdSet" id="icmdDeleteAllVariables" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuEditGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DeleteVariables"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Delete All Variables</ButtonText>
+          <MenuText>Delete &amp;All Variables</MenuText>
+          <CommandName>Delete All Variables</CommandName>
         </Strings>
       </Button>
       <!-- End Data flyout -->
@@ -1699,11 +1721,11 @@
     </CommandPlacement>
 
     <!-- Variable Explorer toolbar -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
-      <Parent guid="guidRToolsCmdSet" id="variableDataGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuImportGroup" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
     </CommandPlacement>
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetTextFile" priority="0x0200">
-      <Parent guid="guidRToolsCmdSet" id="variableDataGroup"/>
+    <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
     </CommandPlacement>
   </CommandPlacements>
 
@@ -1759,7 +1781,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="REditor" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="InteractiveWindow" key1="8" mod1="CONTROL"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
-    
+
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" editor="SolutionExplorer" key1="H" mod1="CONTROL ALT"/>
@@ -1919,6 +1941,8 @@
       <IDSymbol name="icmdImportDataset" value="801" />
       <IDSymbol name="icmdImportDatasetUrl" value="802" />
       <IDSymbol name="icmdImportDatasetTextFile" value="803" />
+      <!--<IDSymbol name="icmdDeleteVariable" value="804" />-->
+      <IDSymbol name="icmdDeleteAllVariables" value="805" />
 
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
@@ -2019,6 +2043,8 @@
       <IDSymbol name="windowsSubMenuGroup2" value="0x2311"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
+      <IDSymbol name="dataSubMenuEditGroup" value="0x2341"/>
+      <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
       <IDSymbol name="publishSubMenuGroup" value="0x2350"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>

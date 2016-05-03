@@ -4,14 +4,18 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Data;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -21,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private readonly IObjectDetailsViewerAggregator _aggregator;
         private IObjectDetailsViewer _detailsViewer;
         private string _title;
+        private bool _deleted;
 
         public VariableViewModel() { Index = -1; }
 
@@ -127,7 +132,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         #endregion
 
         #region Variable Grid command
-
         public bool CanShowDetail { get; private set; }
 
         public ICommand ShowDetailCommand { get; private set; }
@@ -141,6 +145,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
         }
+
+        /// <summary>
+        /// Deletes variable represented by this mode
+        /// </summary>
+        public Task DeleteAsync() {
+            if (!_deleted) {
+                _deleted = true;
+                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var session = sessionProvider.GetInteractiveWindowRSession();
+                try {
+                    return session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating);
+                } catch (RException ex) {
+                    VsAppShell.Current.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                } catch (MessageTransportException) { }
+            }
+            return Task.CompletedTask;
+        }
         #endregion
-     }
+    }
 }

@@ -5,11 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Imaging;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
 
@@ -21,10 +25,26 @@ namespace Microsoft.R.Editor.Completion.Providers {
         [Import(AllowDefault = true)]
         private IImagesProvider ImagesProvider { get; set; }
 
+        [Import]
+        private IRSessionProvider SessionProvider { get; set; }
+
+        private Task<string> _userDirectoryFetchingTask;
         private string _directory;
+        private string _cachedUserDirectory;
+
         public FilesCompletionProvider(string directoryCandidate) {
+            if(directoryCandidate == null) {
+                throw new ArgumentNullException(nameof(directoryCandidate));
+            }
+
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             _directory = ExtractDirectory(directoryCandidate);
+
+            if (_directory.StartsWithOrdinal("~\\")) {
+                _directory = _directory.Substring(2);
+                var session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                _userDirectoryFetchingTask = session.GetRUserDirectoryAsync();
+            }
         }
 
         #region IRCompletionListProvider
@@ -33,18 +53,24 @@ namespace Microsoft.R.Editor.Completion.Providers {
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
-            string currentDir = RToolsSettings.Current.WorkingDirectory;
             string directory = null;
+            string userDirectory = null;
+
+            if (_userDirectoryFetchingTask != null) {
+                _userDirectoryFetchingTask.Wait(500);
+                userDirectory = _userDirectoryFetchingTask.IsCompleted ? _userDirectoryFetchingTask.Result : null;
+                userDirectory = userDirectory ?? _cachedUserDirectory;
+            }
 
             try {
-                string dir = Path.Combine(currentDir, _directory);
-                if (Directory.Exists(dir)) {
-                    directory = dir;
+                if (!string.IsNullOrEmpty(userDirectory)) {
+                    _cachedUserDirectory = userDirectory;
+                    directory = Path.Combine(userDirectory, _directory);
+                } else {
+                    directory = Path.Combine(RToolsSettings.Current.WorkingDirectory, _directory);
                 }
-            } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (ArgumentException) { }
 
-            if (directory != null) {
-                try {
+                if (Directory.Exists(directory)) {
                     foreach (string dir in Directory.GetDirectories(directory)) {
                         DirectoryInfo di = new DirectoryInfo(dir);
                         if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
@@ -61,22 +87,21 @@ namespace Microsoft.R.Editor.Completion.Providers {
                             completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
                         }
                     }
-                } catch (IOException) { } catch (UnauthorizedAccessException) { }
-            }
+                }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
             return completions;
         }
         #endregion
 
         private string ExtractDirectory(string directory) {
-            if(directory.Length == 0) {
-                return string.Empty;
-            }
-            if (directory[0] == '\"' || directory[0] == '\'') {
-                directory = directory.Substring(1);
-            }
-            if (directory[directory.Length - 1] == '\"' || directory[directory.Length - 1] == '\'') {
-                directory = directory.Substring(0, directory.Length - 1);
+            if (directory.Length > 0) {
+                if (directory[0] == '\"' || directory[0] == '\'') {
+                    directory = directory.Substring(1);
+                }
+                if (directory[directory.Length - 1] == '\"' || directory[directory.Length - 1] == '\'') {
+                    directory = directory.Substring(0, directory.Length - 1);
+                }
             }
             return directory.Replace('/', '\\');
         }
