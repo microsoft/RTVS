@@ -37,8 +37,7 @@ library <- function(...) {
   }
 }
 
-show_file <- function (files, header, title, delete.file) 
-{
+show_file <- function (files, header, title, delete.file) {
   cFiles <- length(files)
   for (i in cFiles) {
     if ((i > length(header)) || !nzchar(header[[i]])) {
