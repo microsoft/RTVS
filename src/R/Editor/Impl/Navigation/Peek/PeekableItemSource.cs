@@ -31,9 +31,15 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                 if (definitionNode != null) {
                     ITextDocument textDocument = _textBuffer.GetTextDocument();
                     if (textDocument != null) {
-                        peekableItems.Add(new PeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory));
+                        peekableItems.Add(new UserDefinedPeekItem(textDocument.FilePath, definitionNode, itemName, _peekResultFactory));
                     }
-                }
+                } else {
+                    // Not found. Try internal functions
+                    IPeekableItem item =  new InternalFunctionPeekItem(itemName, _peekResultFactory);
+                    if(item != null) {
+                        peekableItems.Add(item);
+                    }
+                 }
             }
         }
 

@@ -141,9 +141,12 @@
     <Compile Include="Navigation\CodeNavigator.cs" />
     <Compile Include="Navigation\Commands\PeekDefinitionCommand.cs" />
     <Compile Include="Navigation\Commands\GoToDefinitionCommand.cs" />
-    <Compile Include="Navigation\Peek\PeekItem.cs" />
+    <Compile Include="Navigation\Peek\PeekItemBase.cs" />
+    <Compile Include="Navigation\Peek\InternalFunctionPeekItem.cs" />
+    <Compile Include="Navigation\Peek\InternalFunctionPeekResultSource.cs" />
+    <Compile Include="Navigation\Peek\UserDefinedPeekItem.cs" />
     <Compile Include="Navigation\Peek\PeekableItemSource.cs" />
-    <Compile Include="Navigation\Peek\PeekResultSource.cs" />
+    <Compile Include="Navigation\Peek\UserDefinedItemPeekResultSource.cs" />
     <Compile Include="Navigation\Peek\PeekableItemSourceProvider.cs" />
     <Compile Include="Navigation\Text\RTextSelector.cs" />
     <Compile Include="Navigation\Text\TextStructureNavigator.cs" />
@@ -269,6 +272,7 @@
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

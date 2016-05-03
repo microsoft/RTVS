@@ -2,16 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Navigation.Peek {
-    internal sealed class PeekItem : IPeekableItem {
-        public PeekItem(string fileName, IAstNode definitionNode, string name, IPeekResultFactory peekResultFactory) {
-            DefinitionNode = definitionNode;
+    internal abstract class PeekItemBase : IPeekableItem {
+        public PeekItemBase(string name, IPeekResultFactory peekResultFactory) {
             PeekResultFactory = peekResultFactory;
             DisplayName = name;
-            FileName = fileName;
         }
 
         public string DisplayName { get; }
@@ -20,12 +17,8 @@ namespace Microsoft.R.Editor.Navigation.Peek {
             get { yield return PredefinedPeekRelationships.Definitions; }
         }
 
-        public IPeekResultSource GetOrCreateResultSource(string relationshipName) {
-            return new PeekResultSource(this);
-        }
+        public abstract IPeekResultSource GetOrCreateResultSource(string relationshipName);
 
         internal IPeekResultFactory PeekResultFactory { get; }
-        internal IAstNode DefinitionNode { get; }
-        internal string FileName { get; }
     }
 }

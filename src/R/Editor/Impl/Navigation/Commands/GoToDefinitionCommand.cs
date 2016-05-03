@@ -2,9 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -23,11 +26,16 @@ namespace Microsoft.R.Editor.Navigation.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            var viewPoint = CodeNavigator.FindCurrentItemDefinition(TextView, _textBuffer);
+            string itemName;
+            var viewPoint = CodeNavigator.FindCurrentItemDefinition(TextView, _textBuffer, out itemName);
             if (viewPoint.HasValue) {
                 TextView.Caret.MoveTo(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, viewPoint.Value));
                 TextView.Caret.EnsureVisible();
                 return CommandResult.Executed;
+            } else {
+                // Try View(item) in case this is internal function
+                var viewer = EditorShell.Current.ExportProvider.GetExportedValue<IObjectViewer>();
+                viewer.ViewObjectDetails(itemName, itemName).DoNotWait();
             }
             return CommandResult.NotSupported;
         }

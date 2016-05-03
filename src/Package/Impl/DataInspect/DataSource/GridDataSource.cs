@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
