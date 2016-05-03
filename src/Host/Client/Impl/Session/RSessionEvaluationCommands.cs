@@ -150,10 +150,11 @@ grDevices::deviceIsInteractive('ide')
             await evaluation.EvaluateAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"), REvaluationKind.Mutating);
         }
 
-        public static Task<REvaluationResult> SetVsHelpRedirection(this IRExpressionEvaluator evaluation) {
+        public static Task<REvaluationResult> SetROptions(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
   options(browser = rtvs:::open_url)
+  options(pager = rtvs:::show_file)
 ";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }

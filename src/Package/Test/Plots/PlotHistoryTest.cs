@@ -193,6 +193,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
                 return Task.CompletedTask;
             }
 
+            public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+                return Task.CompletedTask;
+            }
+
             public Task<LocatorResult> Locator(CancellationToken ct) {
                 throw new NotImplementedException();
             }

@@ -405,6 +405,14 @@ namespace Microsoft.R.Host.Client {
                                 await _callbacks.ViewLibrary();
                                 break;
 
+                            case "show_file":
+                                message.ExpectArguments(3);
+                                await _callbacks.ShowFile(
+                                    message.GetString(0, "file"),
+                                    message.GetString(1, "tabName"),
+                                    message.GetBoolean(2, "delete.file"));
+                                break;
+
                             case "View":
                                 message.ExpectArguments(2);
                                 _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"));

@@ -45,6 +45,10 @@ namespace Microsoft.R.Host.Client.Test.Script {
             return Task.CompletedTask;
         }
 
+        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+            return Task.CompletedTask;
+        }
+
         public Task<LocatorResult> Locator(CancellationToken ct) {
             if (LocatorHandler != null) {
                 return Task.FromResult(LocatorHandler());

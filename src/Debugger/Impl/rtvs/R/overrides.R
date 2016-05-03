@@ -36,3 +36,16 @@ library <- function(...) {
     base::library(...)
   }
 }
+
+show_file <- function (files, header, title, delete.file) 
+{
+  cFiles <- length(files)
+  for (i in cFiles) {
+    if ((i > length(header)) || !nzchar(header[[i]])) {
+      tabName <- title
+    } else {
+      tabName <- header[[i]]
+    }
+    invisible(rtvs:::send_message('show_file', files[[i]], tabName, delete.file))
+  }
+}

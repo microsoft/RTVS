@@ -101,5 +101,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             await _coreShell.SwitchToMainThreadAsync();
             workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(true);
         }
+
+        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            return viewer?.ViewFile(fileName, tabName, deleteFile);
+        }
     }
 }

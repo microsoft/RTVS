@@ -274,7 +274,7 @@ namespace Microsoft.R.Host.Client.Session {
                         string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
-                        await evaluation.SetVsHelpRedirection();
+                        await evaluation.SetROptions();
                         await evaluation.OverrideFunction("setwd", "base");
                         await evaluation.SetFunctionRedirection();
                     }
@@ -526,6 +526,11 @@ namespace Microsoft.R.Host.Client.Session {
         Task IRCallbacks.ViewLibrary() {
             var callback = _callback;
             return callback?.ViewLibrary();
+        }
+
+        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile) {
+            var callback = _callback;
+            return callback?.ViewFile(fileName, tabName, deleteFile);
         }
 
         void IRCallbacks.DirectoryChanged() {

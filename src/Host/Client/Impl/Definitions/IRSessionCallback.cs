@@ -57,5 +57,10 @@ namespace Microsoft.R.Host.Client {
         /// Present package list or package manager
         /// </summary>
         Task ViewLibrary();
+
+        /// <summary>
+        /// Presents file content
+        /// </summary>
+        Task ViewFile(string fileName, string tabName, bool deleteFile);
     }
 }

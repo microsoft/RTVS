@@ -18,6 +18,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public IList<string> CranUrlFromNameCalls { get; } = new List<string>();
         public IList<Tuple<string, string>> ViewObjectCalls { get; } = new List<Tuple<string, string>>();
         public IList<int> ViewLibraryCalls { get; } = new List<int>();
+        public IList<Tuple<string, string, bool>> ShowFileCalls { get; } = new List<Tuple<string, string, bool>>();
 
         public Func<string, MessageButtons, Task<MessageButtons>> ShowMessageCallsHandler { get; set; } = (m, b) => Task.FromResult(MessageButtons.OK);
         public Func<string, int, CancellationToken, Task<string>> ReadUserInputHandler { get; set; } = (m, l, ct) => Task.FromResult("\n");
@@ -26,6 +27,7 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Func<string, string> CranUrlFromNameHandler { get; set; } = s => "https://cran.rstudio.com";
         public Func<string, string, Task> ViewObjectHandler { get; set; } = (x, t) => Task.CompletedTask;
         public Action ViewLibraryHandler { get; set; } = () => { };
+        public Func<string, string, bool, Task> ShowFileHandler { get; set; } = (f, t, d) => Task.CompletedTask;
 
         public Task ShowErrorMessage(string message) {
             ShowErrorMessageCalls.Add(message);
@@ -70,6 +72,12 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
         public Task ViewLibrary() {
             ViewLibraryCalls.Add(0);
             ViewLibraryHandler?.Invoke();
+            return Task.CompletedTask;
+        }
+
+        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+            ShowFileCalls.Add(new Tuple<string, string, bool>(fileName, tabName, deleteFile));
+            ShowFileHandler?.Invoke(fileName, tabName, deleteFile);
             return Task.CompletedTask;
         }
     }

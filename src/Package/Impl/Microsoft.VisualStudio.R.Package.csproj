@@ -88,6 +88,7 @@
     <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />
+    <Compile Include="DataInspect\Viewers\FileViewer.cs" />
     <Compile Include="DataInspect\Viewers\FunctionViewer.cs" />
     <Compile Include="DataInspect\Viewers\Viewer1D.cs" />
     <Compile Include="DataInspect\Viewers\VectorViewer.cs" />
