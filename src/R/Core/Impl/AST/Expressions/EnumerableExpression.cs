@@ -4,6 +4,7 @@
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions.Definitions;
+using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
@@ -17,7 +18,7 @@ namespace Microsoft.R.Core.AST.Expressions {
         /// <summary>
         /// Name of variable in 'for(variable_name in ...)'
         /// </summary>
-        public TokenNode VariableName { get; private set; }
+        public IVariable Variable { get; private set; }
 
         /// <summary>
         /// Token of the 'in' operator
@@ -34,8 +35,14 @@ namespace Microsoft.R.Core.AST.Expressions {
             TokenStream<RToken> tokens = context.Tokens;
 
             if (tokens.CurrentToken.IsVariableKind()) {
-                this.VariableName = new TokenNode();
-                this.VariableName.Parse(context, this);
+                var v = new Variable();
+                v.Parse(context, this);
+
+                // Variables don't set parent since during complex
+                // exression parsing parent is determined by the
+                // expression parser based on precedence and grouping.
+                v.Parent = this; 
+                this.Variable = v;
 
                 if (tokens.CurrentToken.IsKeywordText(context.TextProvider, "in")) {
                     this.InOperator = new TokenNode();

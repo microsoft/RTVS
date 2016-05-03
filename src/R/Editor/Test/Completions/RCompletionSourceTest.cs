@@ -239,6 +239,23 @@ bbb123 = 1
         }
 
         [Test]
+        public void UserVariables03() {
+            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var content = 
+@"x123 <- 1
+for(x456 in 1:10) x";
+
+            GetCompletions(content, 0, content.Length, completionSets);
+
+            completionSets.Should().ContainSingle();
+            completionSets[0].Filter();
+
+            completionSets[0].Completions.Should().NotBeEmpty()
+                .And.Contain(c => c.DisplayText == "x123")
+                .And.Contain(c => c.DisplayText == "x456");
+        }
+
+        [Test]
         public void UserFunctions01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
             GetCompletions("aaaa <- function(a,b,c)\r\na", 25, completionSets);
