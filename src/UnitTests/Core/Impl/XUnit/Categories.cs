@@ -78,29 +78,29 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             [ExcludeFromCodeCoverage]
             public class AutoFormatAttribute : CategoryAttribute {
-                public AutoFormatAttribute() : base("R.AutoFormat") {}
+                public AutoFormatAttribute() : base("R.AutoFormat") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class BraceMatchAttribute : CategoryAttribute {
-                public BraceMatchAttribute() : base("R.BraceMatch") {}
+                public BraceMatchAttribute() : base("R.BraceMatch") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class ClassifierAttribute : CategoryAttribute {
-                public ClassifierAttribute() : base("R.Classifier") {}
+                public ClassifierAttribute() : base("R.Classifier") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class CommentingAttribute : CategoryAttribute {
-                public CommentingAttribute() : base("R.Commenting") {}
+                public CommentingAttribute() : base("R.Commenting") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class CompletionAttribute : CategoryAttribute {
-                public CompletionAttribute() : base("R.Completion") {}
+                public CompletionAttribute() : base("R.Completion") { }
             }
-            
+
             [ExcludeFromCodeCoverage]
             public class DebuggerAttribute : CategoryAttribute {
                 public DebuggerAttribute() : base("R.Debugger") { }
@@ -148,22 +148,22 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             [ExcludeFromCodeCoverage]
             public class SessionAttribute : CategoryAttribute {
-                public SessionAttribute() : base("R.Session") {}
+                public SessionAttribute() : base("R.Session") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {
-                public SettingsAttribute() : base("R.Settings") {}
+                public SettingsAttribute() : base("R.Settings") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SignaturesAttribute : CategoryAttribute {
-                public SignaturesAttribute() : base("R.Signatures") {}
+                public SignaturesAttribute() : base("R.Signatures") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SmartIndentAttribute : CategoryAttribute {
-                public SmartIndentAttribute() : base("R.SmartIndent") {}
+                public SmartIndentAttribute() : base("R.SmartIndent") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -204,8 +204,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public static class Variable {
             [ExcludeFromCodeCoverage]
             public class ExplorerAttribute : CategoryAttribute {
-                public ExplorerAttribute() : base("Variable.Explorer") {}
+                public ExplorerAttribute() : base("Variable.Explorer") { }
             }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class ViewersAttribute : CategoryAttribute {
+            public ViewersAttribute() : base("Viewers") { }
         }
     }
 }
