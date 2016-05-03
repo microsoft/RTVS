@@ -158,7 +158,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private Task DeleteCurrentVariableAsync() {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
             var ew = node?.Model?.Content as VariableViewModel;
-            return ew?.DeleteAsync();
+            return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
         }
     }
 }
