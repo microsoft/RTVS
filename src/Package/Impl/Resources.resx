@@ -718,4 +718,7 @@ Additional information:
   <data name="Warning_DeleteAllVariables" xml:space="preserve">
     <value>Are you sure you want to remove all variables?</value>
   </data>
+  <data name="Error_UnableToDeleteVariable" xml:space="preserve">
+    <value>Cannot delete variable(s). Exception {0}</value>
+  </data>
 </root>
