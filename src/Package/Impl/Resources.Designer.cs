@@ -367,6 +367,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
+        /// </summary>
+        public static string Error_UnableToDeleteVariable {
+            get {
+                return ResourceManager.GetString("Error_UnableToDeleteVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R..
         /// </summary>
         public static string Error_UnableToFindR {

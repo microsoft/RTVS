@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
@@ -148,13 +149,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Deletes variable represented by this mode
         /// </summary>
-        public void Delete() {
+        public Task DeleteAsync() {
             if (!_deleted) {
                 _deleted = true;
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
-                session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating).DoNotWait();
+                try {
+                    return session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating);
+                } catch (RException ex) {
+                    VsAppShell.Current.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                } catch (MessageTransportException) { }
             }
+            return Task.CompletedTask;
         }
         #endregion
     }

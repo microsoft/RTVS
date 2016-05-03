@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                     case VSConstants.VSStd2KCmdID.TAB:
                         if (_expansionClient.IsEditingExpansion()) {
-                            if(IsPossiblefilePathCompletion()) {
+                            if(IsPossibleFilePathCompletion()) {
                                 return CommandResult.NotSupported;
                             }
                             hr = _expansionClient.GoToNextExpansionField();
@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
         #endregion
 
-        private bool IsPossiblefilePathCompletion() {
+        private bool IsPossibleFilePathCompletion() {
             if (!_textView.Caret.InVirtualSpace) {
                 var pos = _textView.Caret.Position.BufferPosition.Position;
                 var snapshot = _textView.TextBuffer.CurrentSnapshot;

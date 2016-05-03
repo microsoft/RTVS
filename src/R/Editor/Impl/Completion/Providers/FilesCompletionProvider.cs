@@ -33,6 +33,10 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private string _cachedUserDirectory;
 
         public FilesCompletionProvider(string directoryCandidate) {
+            if(directoryCandidate == null) {
+                throw new ArgumentNullException(nameof(directoryCandidate));
+            }
+
             EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
             _directory = ExtractDirectory(directoryCandidate);
 

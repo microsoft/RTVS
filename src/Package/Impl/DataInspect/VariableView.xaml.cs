@@ -143,7 +143,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (e.Key == Key.Enter) {
                 HandleDefaultAction();
             } else if(e.Key == Key.Delete || e.Key == Key.Back) {
-                DeleteCurrentVariable();
+                DeleteCurrentVariableAsync().DoNotWait();
             }
         }
 
@@ -155,10 +155,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void DeleteCurrentVariable() {
+        private Task DeleteCurrentVariableAsync() {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
             var ew = node?.Model?.Content as VariableViewModel;
-            ew?.Delete();
+            return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
         }
     }
 }
