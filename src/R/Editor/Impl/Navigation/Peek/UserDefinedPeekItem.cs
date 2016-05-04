@@ -5,6 +5,9 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Navigation.Peek {
+    /// <summary>
+    /// Peekable item for user-defined functions and variables
+    /// </summary>
     internal sealed class UserDefinedPeekItem : PeekItemBase {
         public UserDefinedPeekItem(string fileName, IAstNode definitionNode, string name, IPeekResultFactory peekResultFactory) :
             base(name, peekResultFactory) {

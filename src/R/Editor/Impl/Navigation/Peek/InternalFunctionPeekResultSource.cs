@@ -22,6 +22,8 @@ namespace Microsoft.R.Editor.Navigation.Peek {
 
         public InternalFunctionPeekResultSource(InternalFunctionPeekItem peekItem, string functionName) {
             _peekItem = peekItem;
+            // Start asynchronous function fetching so by the time FindResults 
+            // is called the task may be already completed or close to that.
             LookupTask = FindFunctionAsync(functionName);
         }
 
@@ -33,7 +35,9 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                 return;
             }
 
-            LookupTask.Wait(1500);
+            // If task is still running, wait a bit, but not too long.
+
+            LookupTask.Wait(2000);
             if (LookupTask.IsCompleted) {
                 resultCollection.Add(LookupTask.Result);
             } else if(_exception != null) {
