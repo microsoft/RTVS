@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             CanShowOpenCsv = CanShowDetail && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
-                OpenCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
+                OpenInCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
             }
         }
 
@@ -140,7 +140,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool CanShowOpenCsv { get; private set; }
 
         public ICommand OpenInCsvAppCommand { get; private set; }
-        public string OpenCsvAppCommandTooltip { get; private set; }
+        public string OpenInCsvAppCommandTooltip { get; private set; }
 
         private void OpenInCsvApp(object parameter) {
             CsvAppFileIO.OpenDataCsvApp(DebugEvaluation).DoNotWait();
