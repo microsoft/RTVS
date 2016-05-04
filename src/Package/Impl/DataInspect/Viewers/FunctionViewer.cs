@@ -11,6 +11,7 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
@@ -70,8 +71,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
         internal async Task<string> GetFunctionCode(string functionName) {
             var session = _sessionProvider.GetInteractiveWindowRSession();
+            string functionCode = null;
+            try {
+                functionCode = await session.GetFunctionCodeAsync(functionName);
+            } catch (RException) { } catch (MessageTransportException) { }
 
-            string functionCode = await session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);
                 functionCode = formatter.Format(functionCode);

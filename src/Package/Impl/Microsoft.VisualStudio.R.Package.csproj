@@ -249,7 +249,6 @@
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
     <Compile Include="Repl\VsRInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />

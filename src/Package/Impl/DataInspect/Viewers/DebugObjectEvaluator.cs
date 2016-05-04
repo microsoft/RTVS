@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IDataObjectEvaluator))]
