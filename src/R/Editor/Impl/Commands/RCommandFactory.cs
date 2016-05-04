@@ -11,6 +11,7 @@ using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Selection;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -19,6 +20,13 @@ namespace Microsoft.R.Editor.Commands {
     [Export(typeof(ICommandFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class RCommandFactory : ICommandFactory {
+        private readonly IObjectViewer _objectViewer;
+
+        [ImportingConstructor]
+        public RCommandFactory(IObjectViewer objectViewer) {
+            _objectViewer = objectViewer;
+        }
+
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             return new ICommand[] {
                 new GotoBraceCommand(textView, textBuffer),
@@ -30,7 +38,7 @@ namespace Microsoft.R.Editor.Commands {
                 new SelectWordCommand(textView, textBuffer),
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
-                new GoToDefinitionCommand(textView, textBuffer),
+                new GoToDefinitionCommand(textView, textBuffer, _objectViewer),
                 new PeekDefinitionCommand(textView, textBuffer),
                 new InsertRoxygenBlockCommand(textView, textBuffer)
             };
