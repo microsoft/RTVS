@@ -92,6 +92,7 @@
     <Compile Include="Definitions\RException.cs" />
     <Compile Include="Host\RHost.cs" />
     <Compile Include="Definitions\ROutputEventArgs.cs" />
+    <Compile Include="Session\InteractiveWindowRSessionHelper.cs" />
     <Compile Include="Session\RSession.cs" />
     <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />

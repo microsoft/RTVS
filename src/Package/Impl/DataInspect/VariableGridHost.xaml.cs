@@ -10,7 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {

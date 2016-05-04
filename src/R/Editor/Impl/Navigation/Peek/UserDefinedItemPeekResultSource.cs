@@ -7,10 +7,11 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Navigation.Peek {
-    internal sealed class PeekResultSource : IPeekResultSource {
-        private readonly PeekItem _peekItem;
 
-        public PeekResultSource(PeekItem peekItem) {
+    internal sealed class UserDefinedItemPeekResultSource : IPeekResultSource {
+        private readonly UserDefinedPeekItem _peekItem;
+
+        public UserDefinedItemPeekResultSource(UserDefinedPeekItem peekItem) {
             _peekItem = peekItem;
         }
 
