@@ -57,8 +57,7 @@ namespace Microsoft.R.Debugger.Test {
             var stackFrames = (await _session.TracebackAsync()).ToArray();
             stackFrames.Should().NotBeEmpty();
 
-            var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-            var children = await frame.DescribeChildrenAsync(RValueProperties.Expression | RValueProperties.Length, RValueRepresentations.Deparse());
+            var children = await stackFrames.Last().DescribeChildrenAsync(RValueProperties.Expression | RValueProperties.Length, RValueRepresentations.Deparse());
             var parent = children.Should().Contain(er => er.Name == "`123`")
                 .Which.Should().BeAssignableTo<IRValueInfo>().Which;
             parent.Expression.Should().Be("`123`");
@@ -89,8 +88,8 @@ namespace Microsoft.R.Debugger.Test {
 
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
+                var frame = stackFrames.Last();
 
-                var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
                 var children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRPromiseInfo>()
@@ -125,8 +124,7 @@ namespace Microsoft.R.Debugger.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-                var children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
+                var children = await stackFrames.Last().DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "x")
                     .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
             }
@@ -153,8 +151,7 @@ namespace Microsoft.R.Debugger.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-                var children = (await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse()));
+                var children = (await stackFrames.Last().DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse()));
                 var d = children.Should().ContainSingle(er => er.Name == "d")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;

@@ -47,10 +47,11 @@ namespace Microsoft.R.Debugger.Test {
             }
         }
 
-        public static async Task ShouldHaveTracebackAsync(this IRSession session, TracebackBuilder builder) {
+        public static async Task<IRStackFrame[]> ShouldHaveTracebackAsync(this IRSession session, TracebackBuilder builder) {
             var expected = builder.ToArray();
             var actual = (await session.TracebackAsync()).ToArray();
             actual.ShouldBeEquivalentTo(expected, options => builder.Configure(options));
+            return actual;
         }
 
         public static async Task ShouldBeAtAsync(this IRSession session, string fileName, int lineNumber) {

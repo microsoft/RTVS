@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -108,6 +110,66 @@ namespace Microsoft.R.DataInspection {
 
             Debug.Assert(info is IRValueInfo);
             return (IRValueInfo)info;
+        }
+
+        /// <summary>
+        /// Computes the children of the object represented by the given expression, and returns a collection of
+        /// evaluation objects describing each child.
+        /// See <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> for the meaning of other parameters.
+        /// </summary>
+        /// <param name="maxCount">If not <see langword="null"/>, return at most that many children.</param>
+        /// <remarks>
+        /// <para>
+        /// The resulting collection has an item for every child. If the child could be retrieved, and represents
+        /// a value, the corresponding item is an <see cref="IRValueInfo"/> instance. If the child represents
+        /// a promise, the promise is not forced, and the item is an <see cref="IRPromiseInfo"/> instance. If the
+        /// child represents an active binding, the binding is not evaluated to retrieve the value, and the item is
+        /// an <see cref="IRActiveBindingInfo"/> instance. If the child could not be retrieved, the item is an
+        /// <see cref="IRErrorInfo"/> instance describing the error that prevented its retrieval.
+        /// </para>
+        /// <para>
+        /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
+        /// Otherwise, the order is undefined. If an object has both ordered and unordered children (e.g. it is a vector
+        /// with slots), then it is guaranteed that each group is reported as a contiguous sequence within the returned
+        /// collection, and order is honored within each group; but groups themselves are not ordered relative to each other.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="RException">
+        /// Raised if the operation fails as a whole (note that if only specific children cannot be retrieved, those
+        /// children are represented by <see cref="IRErrorInfo"/> instances in the returned collection instead).
+        /// </exception>
+        public static async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+            this IRSession session,
+            string environmentExpression,
+            string expression,
+            RValueProperties properties,
+            string repr,
+            int? maxCount = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var call = Invariant($"rtvs:::describe_children({expression.ToRStringLiteral()}, {environmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
+            var jChildren = await session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
+            Trace.Assert(
+                jChildren.Children().All(t => t is JObject),
+                Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
+
+            var children = new List<REvaluationInfo>();
+            foreach (var child in jChildren) {
+                var childObject = (JObject)child;
+                Trace.Assert(
+                    childObject.Count == 1,
+                    Invariant($"rtvs:::describe_children(): each object is expected contain one object\n\n"));
+                foreach (var kv in childObject) {
+                    var name = kv.Key;
+                    var jEvalResult = (JObject)kv.Value;
+                    var evalResult = REvaluationInfo.Parse(session, environmentExpression, name, jEvalResult);
+                    children.Add(evalResult);
+                }
+            }
+
+            return children;
         }
     }
 }

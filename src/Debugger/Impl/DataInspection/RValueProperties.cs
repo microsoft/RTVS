@@ -11,9 +11,7 @@ using static System.FormattableString;
 namespace Microsoft.R.DataInspection {
     /// <summary>
     /// Used to specify properties of <see cref="IRValueInfo"/> to fill when evaluating expressions using
-    /// <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/>,
-    /// <see cref="RStackFrameExtensions.EvaluateAndDescribeAsync"/>,
-    /// or <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/>.
+    /// <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> and its various wrappers.
     /// </summary>
     [Flags]
     public enum RValueProperties : ulong {

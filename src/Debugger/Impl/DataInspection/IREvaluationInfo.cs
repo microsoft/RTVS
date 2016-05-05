@@ -3,14 +3,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
-using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
@@ -55,71 +51,17 @@ namespace Microsoft.R.DataInspection {
 
     public static class REvaluationInfoExtensions {
         /// <summary>
-        /// Computes the children of this value, and returns a collection of evaluation objects describing each child.
-        /// See <see cref="IRExecutionTracer.EvaluateAsync"/> for the meaning of parameters.
+        /// Like <see cref="RSessionExtensions.DescribeChildrenAsync"/>, but returns children of the object described
+        /// by the provided evaluation info.
         /// </summary>
-        /// <param name="maxCount">If not <see langword="null"/>, return at most that many children.</param>
-        /// <remarks>
-        /// <para>
-        /// The resulting collection has an item for every child. If the child could be retrieved, and represents
-        /// a value, the corresponding item is an <see cref="IRValueInfo"/> instance. If the child represents
-        /// a promise, the promise is not forced, and the item is an <see cref="IRPromiseInfo"/> instance. If the
-        /// child represents an active binding, the binding is not evaluated to retrieve the value, and the item is
-        /// an <see cref="IRActiveBindingInfo"/> instance. If the child could not be retrieved, the item is an
-        /// <see cref="IRErrorInfo"/> instance describing the error that prevented its retrieval.
-        /// </para>
-        /// <para>
-        /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
-        /// Otherwise, the order is undefined. If an object has both ordered and unordered children (e.g. it is a vector
-        /// with slots), then it is guaranteed that each group is reported as a contiguous sequence within the returned
-        /// collection, and order is honored within each group; but groups themselves are not ordered relative to each other.
-        /// </para>
-        /// <para>
-        /// This method does not respect snapshot semantics - that is, it will re-evaluate the expression that produced
-        /// its value, and will obtain the most current list of children, rather than the ones that were there when
-        /// the result was originally produced. If the context in which this result was produced is no longer available
-        /// (e.g. if it was a stack frame that has since went away), the results are undefined.
-        /// </para>
-        /// </remarks>
-        /// <exception cref="RException">Raised if child retrieval fails.</exception>
-        public static async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+        public static Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
             this IREvaluationInfo info,
             RValueProperties properties,
             string repr,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            if (info.EnvironmentExpression == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated environment expression.");
-            }
-            if (info.Expression == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
-            }
-
-            var call = Invariant($"rtvs:::describe_children({info.Expression.ToRStringLiteral()}, {info.EnvironmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
-            var jChildren = await info.Session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
-            Trace.Assert(
-                jChildren.Children().All(t => t is JObject),
-                Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
-
-            var children = new List<REvaluationInfo>();
-            foreach (var child in jChildren) {
-                var childObject = (JObject)child;
-                Trace.Assert(
-                    childObject.Count == 1,
-                    Invariant($"rtvs:::describe_children(): each object is expected contain one object\n\n"));
-                foreach (var kv in childObject) {
-                    var name = kv.Key;
-                    var jEvalResult = (JObject)kv.Value;
-                    var evalResult = REvaluationInfo.Parse(info.Session, info.EnvironmentExpression, name, jEvalResult);
-                    children.Add(evalResult);
-                }
-            }
-
-            return children;
-        }
+        ) =>
+            info.Session.DescribeChildrenAsync(info.EnvironmentExpression, info.Expression, properties, repr, maxCount, cancellationToken);
 
         /// <summary>
         /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the

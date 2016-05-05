@@ -1,15 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 using Microsoft.R.DataInspection;
-using Newtonsoft.Json.Linq;
-using static System.FormattableString;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.StackTracing {
     /// <summary>
@@ -79,6 +75,24 @@ namespace Microsoft.R.StackTracing {
     }
 
     public static class RStackFrameExtensions {
+
+        /// <summary>
+        /// Like <see cref="RSessionExtensions.DescribeChildrenAsync"/>, but returns children of this environment.
+        /// </summary>
+        /// <remarks>
+        /// If this method is called on a stale frame (i.e if call stack has changed since the <see cref="RSessionExtensions.TracebackAsync"/>
+        /// call that produced this frame), the result is undefined - the method can throw <see cref="RException"/>, or produce meaningless
+        /// output.
+        /// </remarks>
+        public static Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+            this IRStackFrame frame,
+            RValueProperties properties,
+            string repr,
+            int? maxCount = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            frame.Session.DescribeChildrenAsync(frame.EnvironmentExpression, "base::environment()", properties, repr, maxCount, cancellationToken);
+
         /// <summary>
         /// Produces an object describing this frame's environment. <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/>
         /// method can then be used to retrieve the variables in the frame.

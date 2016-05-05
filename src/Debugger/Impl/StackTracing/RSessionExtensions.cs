@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
-using static System.FormattableString;
 
 namespace Microsoft.R.StackTracing {
     public static class RSessionExtensions {
@@ -23,7 +21,7 @@ namespace Microsoft.R.StackTracing {
         /// </param>
         /// <remarks>
         /// This method has snapshot semantics for the frames and their properties - that is, the returned collection is not going to change as code runs.
-        /// However, calling various methods on the returned <see cref="IRStackFrame"/> objects, such as <see cref="RStackFrameExtensions.DescribeEnvironmentAsync"/>,
+        /// However, calling various methods on the returned <see cref="IRStackFrame"/> objects, such as <see cref="RStackFrameExtensions.DescribeChildrenAsync"/>,
         /// will fetch fresh data, possibly from altogether different frames if the call stack has changed. Thus, it is inadvisable to retain the returned
         /// stack and use it at a later point - it should always be obtained anew at the point where it is used. 
         /// </remarks>

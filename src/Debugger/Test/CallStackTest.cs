@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -88,7 +89,28 @@ namespace Microsoft.R.Debugger.Test {
                     { sf1, 5, TracebackBuilder.Any, null }
                 });
             }
+        }
 
+        [Test]
+        [Category.R.Debugger]
+        public async Task FrameChildren() {
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile("x <- 1; y <- 2; browser()")) {
+                await sf.Source(_session);
+                await _session.NextPromptShouldBeBrowseAsync();
+
+                var frame = (await _session.TracebackAsync()).Last();
+                var frameChildren = await frame.DescribeChildrenAsync(RValueProperties.None, null);
+
+                var frameEnv = await frame.DescribeEnvironmentAsync();
+                var frameEnvChildren = await frameEnv.DescribeChildrenAsync(RValueProperties.None, null);
+
+                frameEnv.Length.Should().Be(2);
+                frameChildren.Should().HaveCount(2);
+                frameChildren.Should().Contain(info => info.Name == "x");
+                frameChildren.Should().Contain(info => info.Name == "y");
+                frameChildren.ShouldAllBeEquivalentTo(frameEnvChildren, options => options.WithStrictOrdering());
+            }
         }
 
         [CompositeTest]
