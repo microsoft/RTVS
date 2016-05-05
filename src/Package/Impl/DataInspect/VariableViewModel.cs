@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -93,17 +94,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties fields =
-                    REvaluationResultProperties.ExpressionProperty |
-                    REvaluationResultProperties.AccessorKindProperty |
-                    REvaluationResultProperties.TypeNameProperty |
-                    REvaluationResultProperties.ClassesProperty |
-                    REvaluationResultProperties.LengthProperty |
-                    REvaluationResultProperties.SlotCountProperty |
-                    REvaluationResultProperties.AttributeCountProperty |
-                    REvaluationResultProperties.DimProperty |
-                    REvaluationResultProperties.FlagsProperty;
-                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(fields, Repr, MaxChildrenCount);
+                const REvaluationResultProperties properties =
+                    ExpressionProperty |
+                    AccessorKindProperty |
+                    TypeNameProperty |
+                    ClassesProperty |
+                    LengthProperty |
+                    SlotCountProperty |
+                    AttributeCountProperty |
+                    DimProperty |
+                    FlagsProperty;
+                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

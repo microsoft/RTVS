@@ -14,6 +14,7 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
@@ -98,13 +99,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task SetRootModelAsync(REnvironment env) {
             await TaskUtilities.SwitchToBackgroundThread();
-            const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
-                    | REvaluationResultProperties.ExpressionProperty
-                    | REvaluationResultProperties.TypeNameProperty
-                    | REvaluationResultProperties.DimProperty
-                    | REvaluationResultProperties.LengthProperty;
+            const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-            var result = await _evaluator.EvaluateAsync(GetExpression(env), fields, RValueRepresentations.Str());
+            var result = await _evaluator.EvaluateAsync(GetExpression(env), properties, RValueRepresentations.Str());
             if (result != null) {
                 var wrapper = new VariableViewModel(result, _aggregator);
                 var rootNodeModel = new VariableNode(_settings, wrapper);

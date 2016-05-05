@@ -16,6 +16,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -136,17 +137,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
                     if (globalStackFrame != null) {
-                        const REvaluationResultProperties fields =
-                            REvaluationResultProperties.ExpressionProperty |
-                            REvaluationResultProperties.AccessorKindProperty |
-                            REvaluationResultProperties.TypeNameProperty |
-                            REvaluationResultProperties.ClassesProperty |
-                            REvaluationResultProperties.LengthProperty |
-                            REvaluationResultProperties.SlotCountProperty |
-                            REvaluationResultProperties.AttributeCountProperty |
-                            REvaluationResultProperties.DimProperty |
-                            REvaluationResultProperties.FlagsProperty;
-                        var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", fields, RValueRepresentations.Str());
+                        const REvaluationResultProperties properties =
+                            ExpressionProperty |
+                            AccessorKindProperty |
+                            TypeNameProperty |
+                            ClassesProperty |
+                            LengthProperty |
+                            SlotCountProperty |
+                            AttributeCountProperty |
+                            DimProperty |
+                            FlagsProperty;
+                        var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
                         var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.StackTracing {
     /// <summary>
@@ -117,7 +118,7 @@ namespace Microsoft.R.StackTracing {
             REvaluationResultProperties properties,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            properties |= REvaluationResultProperties.ExpressionProperty | REvaluationResultProperties.LengthProperty | REvaluationResultProperties.AttributeCountProperty | REvaluationResultProperties.FlagsProperty;
+            properties |= ExpressionProperty | LengthProperty | AttributeCountProperty | FlagsProperty;
             return frame.EvaluateAndDescribeAsync("base::environment()", properties, null, cancellationToken);
         }
 

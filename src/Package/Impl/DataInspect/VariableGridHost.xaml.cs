@@ -12,6 +12,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -39,13 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task EvaluateAsync() {
             try {
                 await TaskUtilities.SwitchToBackgroundThread();
-                const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
-                        | REvaluationResultProperties.ExpressionProperty
-                        | REvaluationResultProperties.TypeNameProperty
-                        | REvaluationResultProperties.DimProperty
-                        | REvaluationResultProperties.LengthProperty;
+                const REvaluationResultProperties properties = ClassesProperty| ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-                var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, fields, null);
+                var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
                 var wrapper = new VariableViewModel(result, _aggregator);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));

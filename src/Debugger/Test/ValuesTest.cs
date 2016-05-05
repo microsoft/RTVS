@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +20,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
@@ -57,12 +57,12 @@ namespace Microsoft.R.Debugger.Test {
             var stackFrames = (await _session.TracebackAsync()).ToArray();
             stackFrames.Should().NotBeEmpty();
 
-            var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.ExpressionProperty | REvaluationResultProperties.LengthProperty, RValueRepresentations.Deparse());
+            var children = await stackFrames.Last().DescribeChildrenAsync(ExpressionProperty | LengthProperty, RValueRepresentations.Deparse());
             var parent = children.Should().Contain(er => er.Name == "`123`")
                 .Which.Should().BeAssignableTo<IRValueInfo>().Which;
             parent.Expression.Should().Be("`123`");
 
-            children = await parent.DescribeChildrenAsync(REvaluationResultProperties.ExpressionProperty, RValueRepresentations.Deparse());
+            children = await parent.DescribeChildrenAsync(ExpressionProperty, RValueRepresentations.Deparse());
             children.Should().Contain(er => er.Name == "$`name with spaces`")
                 .Which.Should().BeAssignableTo<IRValueInfo>()
                 .Which.Expression.Should().Be("`123`$`name with spaces`");

@@ -14,6 +14,7 @@ using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
@@ -38,14 +39,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var frames = await Session.TracebackAsync();
                 var frame = frames.FirstOrDefault(f => f.Index == 0);
 
-                const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
-                    | REvaluationResultProperties.ExpressionProperty
-                    | REvaluationResultProperties.TypeNameProperty
-                    | REvaluationResultProperties.DimProperty
-                    | REvaluationResultProperties.LengthProperty;
-                var result = await frame.TryEvaluateAndDescribeAsync(rScript, fields, RValueRepresentations.Str());
+                const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty| LengthProperty;
+                var result = await frame.TryEvaluateAndDescribeAsync(rScript, properties, RValueRepresentations.Str());
 
-                var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", fields, RValueRepresentations.Str());
+                var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", properties, RValueRepresentations.Str());
                 _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>());
 
                 return result;

@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.R.DataInspection;
 using Microsoft.R.StackTracing;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.DataInspection {
     /// <summary>
@@ -44,16 +45,16 @@ namespace Microsoft.R.DataInspection {
 
     internal static class REvaluationResultPropertiesExtensions {
         private static readonly Dictionary<REvaluationResultProperties, string> _mapping = new Dictionary<REvaluationResultProperties, string> {
-            [REvaluationResultProperties.ExpressionProperty] = "expression",
-            [REvaluationResultProperties.AccessorKindProperty] = "kind",
-            [REvaluationResultProperties.TypeNameProperty] = "type",
-            [REvaluationResultProperties.ClassesProperty] = "classes",
-            [REvaluationResultProperties.LengthProperty] = "length",
-            [REvaluationResultProperties.SlotCountProperty] = "slot_count",
-            [REvaluationResultProperties.AttributeCountProperty] = "attr_count",
-            [REvaluationResultProperties.NameCountProperty] = "name_count",
-            [REvaluationResultProperties.DimProperty] = "dim",
-            [REvaluationResultProperties.FlagsProperty] = "flags",
+            [ExpressionProperty] = "expression",
+            [AccessorKindProperty] = "kind",
+            [TypeNameProperty] = "type",
+            [ClassesProperty] = "classes",
+            [LengthProperty] = "length",
+            [SlotCountProperty] = "slot_count",
+            [AttributeCountProperty] = "attr_count",
+            [NameCountProperty] = "name_count",
+            [DimProperty] = "dim",
+            [FlagsProperty] = "flags",
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {

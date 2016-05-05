@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Editor.Data {
     /// <summary>
@@ -107,17 +108,17 @@ namespace Microsoft.R.Editor.Data {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties fields =
-                    REvaluationResultProperties.ExpressionProperty |
-                    REvaluationResultProperties.AccessorKindProperty |
-                    REvaluationResultProperties.TypeNameProperty |
-                    REvaluationResultProperties.ClassesProperty |
-                    REvaluationResultProperties.LengthProperty |
-                    REvaluationResultProperties.SlotCountProperty |
-                    REvaluationResultProperties.AttributeCountProperty |
-                    REvaluationResultProperties.DimProperty |
-                    REvaluationResultProperties.FlagsProperty;
-                var children = await valueEvaluation.DescribeChildrenAsync(fields, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
+                const REvaluationResultProperties properties =
+                    ExpressionProperty |
+                    AccessorKindProperty |
+                    TypeNameProperty |
+                    ClassesProperty |
+                    LengthProperty |
+                    SlotCountProperty |
+                    AttributeCountProperty |
+                    DimProperty |
+                    FlagsProperty;
+                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
 

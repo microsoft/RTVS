@@ -7,15 +7,13 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
-         private const REvaluationResultProperties _fields = REvaluationResultProperties.ClassesProperty
-                                                | REvaluationResultProperties.ExpressionProperty
-                                                | REvaluationResultProperties.TypeNameProperty
-                                                | REvaluationResultProperties.DimProperty
-                                                | REvaluationResultProperties.LengthProperty;
+         private const REvaluationResultProperties _properties =
+            ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
@@ -30,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         abstract public bool CanView(IRValueInfo evaluation);
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, _fields, RValueRepresentations.Str()) as IRValueInfo;
+            var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str()) as IRValueInfo;
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 
