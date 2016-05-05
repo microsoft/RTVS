@@ -103,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     RValueProperties.AttrCount |
                     RValueProperties.Dim |
                     RValueProperties.Flags;
-                IReadOnlyList<IREvaluationInfo> children = await valueEvaluation.DescribeChildrenAsync(fields, MaxChildrenCount, Repr);
+                IReadOnlyList<IREvaluationInfo> children = await valueEvaluation.DescribeChildrenAsync(fields, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

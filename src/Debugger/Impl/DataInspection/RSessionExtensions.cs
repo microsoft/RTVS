@@ -55,7 +55,7 @@ namespace Microsoft.R.DataInspection {
             string expression,
             string name,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             if (environmentExpression == null) {
@@ -96,7 +96,7 @@ namespace Microsoft.R.DataInspection {
             string expression,
             string name,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             var info = await session.TryEvaluateAndDescribeAsync(environmentExpression, expression, name, properties, repr, cancellationToken);

@@ -85,8 +85,8 @@ namespace Microsoft.R.DataInspection {
         public static async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
             this IREvaluationInfo info,
             RValueProperties properties,
+            string repr,
             int? maxCount = null,
-            string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();

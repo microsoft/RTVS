@@ -117,7 +117,7 @@ namespace Microsoft.R.Editor.Data {
                     RValueProperties.AttrCount |
                     RValueProperties.Dim |
                     RValueProperties.Flags;
-                var children = await valueEvaluation.DescribeChildrenAsync(fields, MaxChildrenCount, RValueRepresentations.Str(MaxReprLength));
+                var children = await valueEvaluation.DescribeChildrenAsync(fields, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
 

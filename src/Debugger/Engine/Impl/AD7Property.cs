@@ -63,7 +63,7 @@ namespace Microsoft.R.Debugger.Engine {
                     return new IREvaluationInfo[0];
                 }
 
-                var children = await valueResult.DescribeChildrenAsync(PrefetchedFields, ChildrenMaxCount, Repr, ct);
+                var children = await valueResult.DescribeChildrenAsync(PrefetchedFields, Repr, ChildrenMaxCount, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {

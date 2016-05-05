@@ -104,7 +104,7 @@ namespace Microsoft.R.StackTracing {
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             properties |= RValueProperties.Expression | RValueProperties.Length | RValueProperties.AttrCount | RValueProperties.Flags;
-            return frame.EvaluateAndDescribeAsync("base::environment()", properties: properties, cancellationToken: cancellationToken);
+            return frame.EvaluateAndDescribeAsync("base::environment()", properties, null, cancellationToken);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Microsoft.R.StackTracing {
             string expression,
             string name,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
             frame.Session.TryEvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
@@ -137,7 +137,7 @@ namespace Microsoft.R.StackTracing {
             this IRStackFrame frame,
             string expression,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
             frame.TryEvaluateAndDescribeAsync(expression, null, properties, repr, cancellationToken);
@@ -151,7 +151,7 @@ namespace Microsoft.R.StackTracing {
             string expression,
             string name,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
             frame.Session.EvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
@@ -164,7 +164,7 @@ namespace Microsoft.R.StackTracing {
             this IRStackFrame frame,
             string expression,
             RValueProperties properties,
-            string repr = null,
+            string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
             frame.EvaluateAndDescribeAsync(expression, null, properties, repr, cancellationToken);

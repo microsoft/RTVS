@@ -58,12 +58,12 @@ namespace Microsoft.R.Debugger.Test {
             stackFrames.Should().NotBeEmpty();
 
             var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-            var children = await frame.DescribeChildrenAsync(RValueProperties.Expression | RValueProperties.Length, null, RValueRepresentations.Deparse());
+            var children = await frame.DescribeChildrenAsync(RValueProperties.Expression | RValueProperties.Length, RValueRepresentations.Deparse());
             var parent = children.Should().Contain(er => er.Name == "`123`")
                 .Which.Should().BeAssignableTo<IRValueInfo>().Which;
             parent.Expression.Should().Be("`123`");
 
-            children = await parent.DescribeChildrenAsync(RValueProperties.Expression, null, RValueRepresentations.Deparse());
+            children = await parent.DescribeChildrenAsync(RValueProperties.Expression, RValueRepresentations.Deparse());
             children.Should().Contain(er => er.Name == "$`name with spaces`")
                 .Which.Should().BeAssignableTo<IRValueInfo>()
                 .Which.Expression.Should().Be("`123`$`name with spaces`");
@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger.Test {
                 stackFrames.Should().NotBeEmpty();
 
                 var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-                var children = await frame.DescribeChildrenAsync(RValueProperties.None, null, RValueRepresentations.Deparse());
+                var children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be("1 + 2");
@@ -99,7 +99,7 @@ namespace Microsoft.R.Debugger.Test {
                 await tracer.ContinueAsync();
                 await _session.NextPromptShouldBeBrowseAsync();
 
-                children = await frame.DescribeChildrenAsync(RValueProperties.None, null, RValueRepresentations.Deparse());
+                children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which.Representation.Should().Be("3");
@@ -126,7 +126,7 @@ namespace Microsoft.R.Debugger.Test {
                 stackFrames.Should().NotBeEmpty();
 
                 var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-                var children = await frame.DescribeChildrenAsync(RValueProperties.None, null, RValueRepresentations.Deparse());
+                var children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "x")
                     .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
             }
@@ -154,7 +154,7 @@ namespace Microsoft.R.Debugger.Test {
                 stackFrames.Should().NotBeEmpty();
 
                 var frame = (await stackFrames.Last().DescribeEnvironmentAsync()).Should().BeAssignableTo<IRValueInfo>().Which;
-                var children = (await frame.DescribeChildrenAsync(RValueProperties.None, null, RValueRepresentations.Deparse()));
+                var children = (await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse()));
                 var d = children.Should().ContainSingle(er => er.Name == "d")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;
@@ -410,14 +410,14 @@ namespace Microsoft.R.Debugger.Test {
 
             await _session.ExecuteAsync("PARENT <- {" + row.Expression + "}");
 
-            var res = (await frame.TryEvaluateAndDescribeAsync("PARENT", AllFields))
+            var res = (await frame.TryEvaluateAndDescribeAsync("PARENT", AllFields, null))
                 .Should().BeAssignableTo<IRValueInfo>().Which;
             res.Length.Should().Be(row.Length);
             res.NameCount.Should().Be(row.NameCount);
             res.AttributeCount.Should().Be(row.AttrCount);
             res.SlotCount.Should().Be(row.SlotCount);
 
-            var actualChildren = (await res.DescribeChildrenAsync(AllFields, null, RValueRepresentations.Deparse()))
+            var actualChildren = (await res.DescribeChildrenAsync(AllFields, RValueRepresentations.Deparse()))
                 .Cast<IRValueInfo>()
                 .ToArray();
             res.HasChildren.Should().Be(children.Any());
