@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Commands {
         private readonly IObjectViewer _objectViewer;
 
         [ImportingConstructor]
-        public RCommandFactory(IObjectViewer objectViewer) {
+        public RCommandFactory([Import(AllowDefault = true)] IObjectViewer objectViewer) {
             _objectViewer = objectViewer;
         }
 
