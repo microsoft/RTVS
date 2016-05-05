@@ -48,6 +48,11 @@ namespace Microsoft.R.Host.Client {
         Task ViewLibrary();
 
         /// <summary>
+        /// Invoked when R calls 'pager'
+        /// </summary>
+        Task ShowFile(string fileName, string tabName, bool deleteFile);
+
+        /// <summary>
         /// Called when working directory has changed in R.
         /// </summary>
         void DirectoryChanged();

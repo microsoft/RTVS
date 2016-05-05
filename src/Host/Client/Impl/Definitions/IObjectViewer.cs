@@ -6,5 +6,6 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Host.Client {
     public interface IObjectViewer {
         Task ViewObjectDetails(string expression, string title);
+        Task ViewFile(string fileName, string tabName, bool deleteFile);
     }
 }

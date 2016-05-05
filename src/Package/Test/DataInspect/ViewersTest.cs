@@ -21,17 +21,17 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
-    public class ReplCommandsTest {
+    public class ViewersTest {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
-        public ReplCommandsTest() {
+        public ViewersTest() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public async Task ViewLibraryTest() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.ViewLibrary().Returns(Task.CompletedTask);
@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public async Task ViewDataTest01() {
             var cb = Substitute.For<IRSessionCallback>();
             cb.When(x => x.ViewObject(Arg.Any<string>(), Arg.Any<string>())).Do(x => { });
@@ -57,7 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public async Task ViewerExportTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
                 var funcViewer = await _aggregator.GetViewer("lm");
@@ -83,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public async Task ViewerTest03() {
             var viewer = Substitute.For<IObjectDetailsViewer>();
             viewer.ViewAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public async Task FunctionViewerTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
                 var funcViewer = await _aggregator.GetViewer("lm") as FunctionViewer;
@@ -115,7 +115,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public void TableViewerTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new TableViewer(_aggregator, e);
@@ -152,7 +152,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         [Test]
-        [Category.Variable.Explorer]
+        [Category.Viewers]
         public void Viewer1DTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new Viewer1D(_aggregator, e);
@@ -188,6 +188,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 eval.Classes.Returns(new List<string>() { c });
                 viewer.CanView(eval).Should().BeFalse();
             }
+        }
+
+        [Test]
+        [Category.Viewers]
+        public async Task ViewDataTest02() {
+            var cb = Substitute.For<IRSessionCallback>();
+            cb.When(x => x.ViewFile(Arg.Any<string>(), "R data sets", true)).Do(x => { });
+            using (var hostScript = new RHostScript(_sessionProvider, cb)) {
+                using (var inter = await hostScript.Session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("data()" + Environment.NewLine);
+                }
+            }
+            await cb.Received().ViewFile(Arg.Any<string>(), "R data sets", true);
         }
     }
 }

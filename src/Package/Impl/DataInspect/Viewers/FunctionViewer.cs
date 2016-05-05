@@ -6,8 +6,6 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using EnvDTE;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Debugger;
@@ -61,8 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
                     await VsAppShell.Current.SwitchToMainThreadAsync();
 
-                    var dte = VsAppShell.Current.GetGlobalService<DTE>();
-                    dte.ItemOperations.OpenFile(tempFile);
+                    FileViewer.ViewFile(tempFile, functionName);
                     try {
                         File.Delete(tempFile);
                     } catch (IOException) { } catch (AccessViolationException) { }

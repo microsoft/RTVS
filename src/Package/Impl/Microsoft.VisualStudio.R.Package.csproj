@@ -88,6 +88,7 @@
     <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
     <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />
+    <Compile Include="DataInspect\Viewers\FileViewer.cs" />
     <Compile Include="DataInspect\Viewers\FunctionViewer.cs" />
     <Compile Include="DataInspect\Viewers\Viewer1D.cs" />
     <Compile Include="DataInspect\Viewers\VectorViewer.cs" />
@@ -183,6 +184,7 @@
     <Compile Include="Packages\R\RProjLanguageService.cs" />
     <Compile Include="Packages\R\RProjEditorFactory.cs" />
     <Compile Include="Plots\Commands\EndLocatorCommand.cs" />
+    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
@@ -304,7 +306,6 @@
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
-    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
