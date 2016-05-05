@@ -9,7 +9,7 @@ using static System.FormattableString;
 namespace Microsoft.R.DataInspection {
     /// <summary>
     /// Used to specify properties of <see cref="IRValueInfo"/> to fill when evaluating expressions using
-    /// <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/>, <see cref="IRStackFrame.EvaluateAndDescribeAsync"/>,
+    /// <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/>, <see cref="IRStackFrame.EvaluateAndDescribeAsync"/>,
     /// or <see cref="IREvaluationInfo.DescribeChildrenAsync"/>.
     /// </summary>
     [Flags]
@@ -44,8 +44,8 @@ namespace Microsoft.R.DataInspection {
             [RValueProperties.Flags] = "flags",
         };
 
-        public static string ToRVector(this RValueProperties fields) {
-            var fieldNames = _mapping.Where(kv => fields.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
+        public static string ToRVector(this RValueProperties properties) {
+            var fieldNames = _mapping.Where(kv => properties.HasFlag(kv.Key)).Select(kv => "'" + kv.Value + "'");
             return Invariant($"base::c({string.Join(", ", fieldNames)})");
         }
     }

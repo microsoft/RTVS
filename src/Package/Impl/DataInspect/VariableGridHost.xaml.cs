@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         | RValueProperties.Dim
                         | RValueProperties.Length;
 
-                var result = await _rSession.EvaluateAndDescribeAsync(_evaluation.Expression, fields);
+                var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, fields, null);
                 var wrapper = new VariableViewModel(result, _aggregator);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));

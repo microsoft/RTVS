@@ -209,7 +209,7 @@ namespace Microsoft.R.Debugger.Test {
                 (repr, result) => new { Repr = repr, Result = result });
 
             foreach (var rr in rrs) {
-                (await _session.EvaluateAndDescribeAsync(expr, RValueProperties.None, rr.Repr))
+                (await _session.TryEvaluateAndDescribeAsync(expr, RValueProperties.None, rr.Repr))
                     .Should().BeAssignableTo<IRValueInfo>().Which
                     .Representation.Should().Be(rr.Result);
             }

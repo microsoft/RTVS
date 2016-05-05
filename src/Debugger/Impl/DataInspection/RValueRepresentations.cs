@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.DataInspection {
-    /// <seealso cref="RSessionExtensions.EvaluateAndDescribeAsync"/>
+    /// <seealso cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/>
     /// <seealso cref="RValueInfo.Representation"/>
     public static class RValueRepresentations {
         /// <summary>
         /// Returns an R expression that evaluates to a function that is suitable for use as the <c>repr</c> argument
-        /// when invoking <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/> and its wrappers. The representation
+        /// when invoking <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> and its wrappers. The representation
         /// produced by that function is the same as R function <c>toString()</c>, except that result is concatenated
         /// to form a single string.
         /// </summary>
@@ -19,7 +19,7 @@ namespace Microsoft.R.DataInspection {
 
         /// <summary>
         /// Returns an R expression that evaluates to a function that is suitable for use as the <c>repr</c> argument
-        /// when invoking <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/> and its wrappers. The representation
+        /// when invoking <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> and its wrappers. The representation
         /// produced by that function is the same as R function <c>deparse()</c>, except that result is concatenated
         /// to form a single string, and optionally truncated.
         /// </summary>
@@ -33,7 +33,7 @@ namespace Microsoft.R.DataInspection {
 
         /// <summary>
         /// Returns an R expression that evaluates to a function that is suitable for use as the <c>repr</c> argument
-        /// when invoking <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/> and its wrappers. The representation
+        /// when invoking <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> and its wrappers. The representation
         /// produced by that function is the same as R function <c>str()</c>, except that result is returned as a single
         /// string instead of being printed.
         /// </summary>

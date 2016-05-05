@@ -57,11 +57,19 @@ namespace Microsoft.R.DataInspection {
         Task SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken));
 
         /// <summary>
-        /// Computes the children of this value, and returns a collection of evaluation results describing each child.
+        /// Computes the children of this value, and returns a collection of evaluation objects describing each child.
         /// See <see cref="IRExecutionTracer.EvaluateAsync"/> for the meaning of parameters.
         /// </summary>
         /// <param name="maxCount">If not <see langword="null"/>, return at most that many children.</param>
         /// <remarks>
+        /// <para>
+        /// The resulting collection has an item for every child. If the child could be retrieved, and represents
+        /// a value, the corresponding item is an <see cref="IRValueInfo"/> instance. If the child represents
+        /// a promise, the promise is not forced, and the item is an <see cref="IRPromiseInfo"/> instance. If the
+        /// child represents an active binding, the binding is not evaluated to retrieve the value, and the item is
+        /// an <see cref="IRActiveBindingInfo"/> instance. If the child could not be retrieved, the item is an
+        /// <see cref="IRErrorInfo"/> instance describing the error that prevented its retrieval.
+        /// </para>
         /// <para>
         /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
         /// Otherwise, the order is undefined. If an object has both ordered and unordered children (e.g. it is a vector
@@ -77,7 +85,7 @@ namespace Microsoft.R.DataInspection {
         /// </remarks>
         /// <exception cref="RException">Raised if child retrieval fails.</exception>
         Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
-            RValueProperties fields,
+            RValueProperties properties,
             int? maxCount = null,
             string repr = null,
             CancellationToken cancellationToken = default(CancellationToken));

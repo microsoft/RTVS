@@ -115,7 +115,7 @@ namespace Microsoft.R.StackTracing {
             string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            frame.Session.EvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
+            frame.Session.TryEvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
 
         /// <summary>
         /// Same as <see cref="EvaluateAndDescribeAsync(string, RValueProperties, int?, CancellationToken) "/>,

@@ -58,7 +58,7 @@ namespace Microsoft.R.DataInspection {
         }
 
         public async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
-            RValueProperties fields,
+            RValueProperties properties,
             int? maxCount = null,
             string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
@@ -72,7 +72,7 @@ namespace Microsoft.R.DataInspection {
                 throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
             }
 
-            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {fields.ToRVector()}, {maxCount}, {repr})");
+            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
             var jChildren = await Session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -12,29 +13,17 @@ using static System.FormattableString;
 namespace Microsoft.R.DataInspection {
     public static class RSessionExtensions {
         /// <summary>
-        /// Like <see cref="EvaluateAndDescribeAsync(string, RValueProperties, int?, CancellationToken)"/>, with no limit on
-        /// representation length.
-        /// </summary>
-        public static Task<IREvaluationInfo> EvaluateAndDescribeAsync(
-            this IRSession session,
-            string expression,
-            RValueProperties fields,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) =>
-            session.EvaluateAndDescribeAsync(expression, fields, null, cancellationToken);
-
-        /// <summary>
-        /// Like <see cref="EvaluateAndDescribeAsync(string, string, string, RValueProperties, int?, CancellationToken)"/>,
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, RValueProperties, string, CancellationToken)"/>,
         /// but evaluates in the global environment (<c>.GlobalEnv</c>), and the result is not named.
         /// </summary>
-        public static Task<IREvaluationInfo> EvaluateAndDescribeAsync(
+        public static Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
             this IRSession session,
             string expression,
-            RValueProperties fields,
+            RValueProperties properties,
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            session.EvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, fields, repr, cancellationToken);
+            session.TryEvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, properties, repr, cancellationToken);
 
         /// <summary>
         /// Evaluates an R expresion in the specified environment, and returns an object describing the result.
@@ -44,7 +33,7 @@ namespace Microsoft.R.DataInspection {
         /// </param>
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="name"><see cref="IREvaluationInfo.Name"/> of the returned evaluation result.</param>
-        /// <param name="fields">Specifies which <see cref="IREvaluationInfo"/> properties should be present in the result.</param>
+        /// <param name="properties">Specifies which <see cref="IREvaluationInfo"/> properties should be present in the result.</param>
         /// <param name="repr">
         /// An R expression that must evaluate to a function that takes an R value as its sole argument, and returns the
         /// string representation of that argument as a single-element character vector. The representation is stored in
@@ -55,17 +44,17 @@ namespace Microsoft.R.DataInspection {
         /// for standard R functions such as <c>deparse()</c> or <c>str()</c>.
         /// </param>
         /// <remarks>
-        /// <para>
-        /// If expression fails to evaluate, this method does not raise <see cref="RException"/>. Instead, an instance
-        /// of <see cref="IRErrorInfo"/> describing the error is returned.
-        /// </para>
-        /// </remarks>
-        public static async Task<IREvaluationInfo> EvaluateAndDescribeAsync(
+        /// <returns>
+        /// If evaluation succeeded, an instance of <see cref="IRValueInfo"/> describing the resulting value.
+        /// If evaluation failed with an error, an instance of <see cref="IRErrorInfo"/> describing the error.
+        /// This method never returns <see cref="IRActiveBindingInfo"/> or <see cref="IRPromiseInfo"/>.
+        /// </returns>
+        public static async Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
             this IRSession session,
             string environmentExpression,
             string expression,
             string name,
-            RValueProperties fields,
+            RValueProperties properties,
             string repr = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
@@ -79,9 +68,46 @@ namespace Microsoft.R.DataInspection {
             await TaskUtilities.SwitchToBackgroundThread();
 
             environmentExpression = environmentExpression ?? "NULL";
-            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {fields.ToRVector()},, {repr})");
+            var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {properties.ToRVector()},, {repr})");
             var result = await session.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
             return REvaluationInfo.Parse(session, environmentExpression, name, result);
+        }
+
+        /// <summary>
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, RValueProperties, string, CancellationToken)"/>,
+        /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
+        /// </summary>
+        public static Task<IRValueInfo> EvaluateAndDescribeAsync(
+            this IRSession session,
+            string expression,
+            RValueProperties properties,
+            string repr,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            session.EvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, properties, repr, cancellationToken);
+
+        /// <summary>
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, RValueProperties, string, CancellationToken)"/>,
+        /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
+        /// </summary>
+        public static async Task<IRValueInfo> EvaluateAndDescribeAsync(
+            this IRSession session,
+            string environmentExpression,
+            string expression,
+            string name,
+            RValueProperties properties,
+            string repr = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            var info = await session.TryEvaluateAndDescribeAsync(environmentExpression, expression, name, properties, repr, cancellationToken);
+
+            var error = info as IRErrorInfo;
+            if (error != null) {
+                throw new RException(error.ErrorText);
+            }
+
+            Debug.Assert(error is IRValueInfo);
+            return (IRValueInfo)error;
         }
     }
 }
