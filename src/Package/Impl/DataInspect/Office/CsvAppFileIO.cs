@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         private const string _variableNameReplacement = "variable";
         private static int _busy;
 
-        public static async Task OpenDataCsvApp(IREvaluationInfo result) {
+        public static async Task OpenDataCsvApp(IREvaluationResultInfo result) {
             await VsAppShell.Current.SwitchToMainThreadAsync();
 
             if (Interlocked.Exchange(ref _busy, 1) > 0) {
@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationInfo result, IRSession session, string rfile, string file) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string rfile, string file) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             using (var e = await session.BeginEvaluationAsync()) {

@@ -31,18 +31,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
-        public async Task<IREvaluationInfo> EvaluateAsync(string rScript) {
+        public async Task<IREvaluationResultInfo> EvaluateAsync(string rScript) {
             // One eval at a time
             await _sem.WaitAsync();
             try {
                 var frames = await Session.TracebackAsync();
                 var frame = frames.FirstOrDefault(f => f.Index == 0);
 
-                const RValueProperties fields = RValueProperties.Classes
-                    | RValueProperties.Expression
-                    | RValueProperties.TypeName
-                    | RValueProperties.Dim
-                    | RValueProperties.Length;
+                const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
+                    | REvaluationResultProperties.ExpressionProperty
+                    | REvaluationResultProperties.TypeNameProperty
+                    | REvaluationResultProperties.DimProperty
+                    | REvaluationResultProperties.LengthProperty;
                 var result = await frame.TryEvaluateAndDescribeAsync(rScript, fields, RValueRepresentations.Str());
 
                 var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", fields, RValueRepresentations.Str());

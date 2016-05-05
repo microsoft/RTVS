@@ -25,7 +25,7 @@ using Xunit.Abstractions;
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
-        private const RValueProperties AllFields = unchecked((RValueProperties)~0);
+        private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
 
         private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
@@ -57,12 +57,12 @@ namespace Microsoft.R.Debugger.Test {
             var stackFrames = (await _session.TracebackAsync()).ToArray();
             stackFrames.Should().NotBeEmpty();
 
-            var children = await stackFrames.Last().DescribeChildrenAsync(RValueProperties.Expression | RValueProperties.Length, RValueRepresentations.Deparse());
+            var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.ExpressionProperty | REvaluationResultProperties.LengthProperty, RValueRepresentations.Deparse());
             var parent = children.Should().Contain(er => er.Name == "`123`")
                 .Which.Should().BeAssignableTo<IRValueInfo>().Which;
             parent.Expression.Should().Be("`123`");
 
-            children = await parent.DescribeChildrenAsync(RValueProperties.Expression, RValueRepresentations.Deparse());
+            children = await parent.DescribeChildrenAsync(REvaluationResultProperties.ExpressionProperty, RValueRepresentations.Deparse());
             children.Should().Contain(er => er.Name == "$`name with spaces`")
                 .Which.Should().BeAssignableTo<IRValueInfo>()
                 .Which.Expression.Should().Be("`123`$`name with spaces`");
@@ -90,7 +90,7 @@ namespace Microsoft.R.Debugger.Test {
                 stackFrames.Should().NotBeEmpty();
                 var frame = stackFrames.Last();
 
-                var children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
+                var children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be("1 + 2");
@@ -98,7 +98,7 @@ namespace Microsoft.R.Debugger.Test {
                 await tracer.ContinueAsync();
                 await _session.NextPromptShouldBeBrowseAsync();
 
-                children = await frame.DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
+                children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which.Representation.Should().Be("3");
@@ -124,7 +124,7 @@ namespace Microsoft.R.Debugger.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var children = await stackFrames.Last().DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse());
+                var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "x")
                     .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
             }
@@ -151,7 +151,7 @@ namespace Microsoft.R.Debugger.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var children = (await stackFrames.Last().DescribeChildrenAsync(RValueProperties.None, RValueRepresentations.Deparse()));
+                var children = (await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse()));
                 var d = children.Should().ContainSingle(er => er.Name == "d")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;
@@ -206,7 +206,7 @@ namespace Microsoft.R.Debugger.Test {
                 (repr, result) => new { Repr = repr, Result = result });
 
             foreach (var rr in rrs) {
-                (await _session.TryEvaluateAndDescribeAsync(expr, RValueProperties.None, rr.Repr))
+                (await _session.TryEvaluateAndDescribeAsync(expr, REvaluationResultProperties.None, rr.Repr))
                     .Should().BeAssignableTo<IRValueInfo>().Which
                     .Representation.Should().Be(rr.Result);
             }

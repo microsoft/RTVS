@@ -100,10 +100,10 @@ namespace Microsoft.R.Debugger.Test {
                 await _session.NextPromptShouldBeBrowseAsync();
 
                 var frame = (await _session.TracebackAsync()).Last();
-                var frameChildren = await frame.DescribeChildrenAsync(RValueProperties.None, null);
+                var frameChildren = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, null);
 
                 var frameEnv = await frame.DescribeEnvironmentAsync();
-                var frameEnvChildren = await frameEnv.DescribeChildrenAsync(RValueProperties.None, null);
+                var frameEnvChildren = await frameEnv.DescribeChildrenAsync(REvaluationResultProperties.None, null);
 
                 frameEnv.Length.Should().Be(2);
                 frameChildren.Should().HaveCount(2);

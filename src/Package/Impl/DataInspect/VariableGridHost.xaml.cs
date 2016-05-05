@@ -39,11 +39,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task EvaluateAsync() {
             try {
                 await TaskUtilities.SwitchToBackgroundThread();
-                const RValueProperties fields = RValueProperties.Classes
-                        | RValueProperties.Expression
-                        | RValueProperties.TypeName
-                        | RValueProperties.Dim
-                        | RValueProperties.Length;
+                const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
+                        | REvaluationResultProperties.ExpressionProperty
+                        | REvaluationResultProperties.TypeNameProperty
+                        | REvaluationResultProperties.DimProperty
+                        | REvaluationResultProperties.LengthProperty;
 
                 var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, fields, null);
                 var wrapper = new VariableViewModel(result, _aggregator);

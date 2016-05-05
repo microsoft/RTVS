@@ -34,7 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(IREvaluationInfo evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
             _aggregator = aggregator;
 
@@ -93,17 +93,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const RValueProperties fields =
-                    RValueProperties.Expression |
-                    RValueProperties.Kind |
-                    RValueProperties.TypeName |
-                    RValueProperties.Classes |
-                    RValueProperties.Length |
-                    RValueProperties.SlotCount |
-                    RValueProperties.AttrCount |
-                    RValueProperties.Dim |
-                    RValueProperties.Flags;
-                IReadOnlyList<IREvaluationInfo> children = await valueEvaluation.DescribeChildrenAsync(fields, Repr, MaxChildrenCount);
+                const REvaluationResultProperties fields =
+                    REvaluationResultProperties.ExpressionProperty |
+                    REvaluationResultProperties.AccessorKindProperty |
+                    REvaluationResultProperties.TypeNameProperty |
+                    REvaluationResultProperties.ClassesProperty |
+                    REvaluationResultProperties.LengthProperty |
+                    REvaluationResultProperties.SlotCountProperty |
+                    REvaluationResultProperties.AttributeCountProperty |
+                    REvaluationResultProperties.DimProperty |
+                    REvaluationResultProperties.FlagsProperty;
+                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(fields, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

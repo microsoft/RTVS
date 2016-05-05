@@ -5,7 +5,7 @@ using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
-    internal sealed class RErrorInfo : REvaluationInfo, IRErrorInfo {
+    internal sealed class RErrorInfo : REvaluationResultInfo, IRErrorInfo {
         public string ErrorText { get; }
 
         internal RErrorInfo(IRSession session, string environmentExpression, string expression, string name, string errorText)

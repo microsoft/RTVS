@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
-    internal abstract class REvaluationInfo : IREvaluationInfo {
+    internal abstract class REvaluationResultInfo : IREvaluationResultInfo {
         public IRSession Session { get; }
 
         public string EnvironmentExpression { get; }
@@ -22,14 +22,14 @@ namespace Microsoft.R.DataInspection {
 
         public string Name { get; }
 
-        internal REvaluationInfo(IRSession session, string environmentExpression, string expression, string name) {
+        internal REvaluationResultInfo(IRSession session, string environmentExpression, string expression, string name) {
             Session = session;
             EnvironmentExpression = environmentExpression;
             Expression = expression;
             Name = name;
         }
 
-        internal static REvaluationInfo Parse(IRSession session, string environmentExpression, string name, JObject json) {
+        internal static REvaluationResultInfo Parse(IRSession session, string environmentExpression, string name, JObject json) {
             var expression = json.Value<string>("expression");
 
             var errorText = json.Value<string>("error");

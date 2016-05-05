@@ -11,11 +11,11 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
-         private const RValueProperties _fields = RValueProperties.Classes
-                                                | RValueProperties.Expression
-                                                | RValueProperties.TypeName
-                                                | RValueProperties.Dim
-                                                | RValueProperties.Length;
+         private const REvaluationResultProperties _fields = REvaluationResultProperties.ClassesProperty
+                                                | REvaluationResultProperties.ExpressionProperty
+                                                | REvaluationResultProperties.TypeNameProperty
+                                                | REvaluationResultProperties.DimProperty
+                                                | REvaluationResultProperties.LengthProperty;
 
         private readonly IObjectDetailsViewerAggregator _aggregator;
 

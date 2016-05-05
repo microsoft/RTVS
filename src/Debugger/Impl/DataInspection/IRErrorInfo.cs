@@ -5,7 +5,7 @@ namespace Microsoft.R.DataInspection {
     /// <summary>
     /// Describes the result of evaluating an expression that is an error. 
     /// </summary>
-    public interface IRErrorInfo : IREvaluationInfo {
+    public interface IRErrorInfo : IREvaluationResultInfo {
         string ErrorText { get; }
     }
 }

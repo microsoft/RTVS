@@ -39,13 +39,13 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DataInspection\IREvaluationInfo.cs" />
+    <Compile Include="DataInspection\IREvaluationResultInfo.cs" />
     <Compile Include="DataInspection\IRValueInfo.cs" />
     <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
     <Compile Include="DataInspection\IRPromiseInfo.cs" />
     <Compile Include="DataInspection\IRErrorInfo.cs" />
     <Compile Include="DataInspection\RValueRepresentations.cs" />
-    <Compile Include="DataInspection\RValueProperties.cs" />
+    <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="ExecutionTracing\IRBreakpoint.cs" />
     <Compile Include="ExecutionTracing\IRExecutionTracer.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
@@ -61,7 +61,7 @@
     <Compile Include="DataInspection\RValueInfo.cs" />
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
-    <Compile Include="DataInspection\REvaluationInfo.cs" />
+    <Compile Include="DataInspection\REvaluationResultInfo.cs" />
     <Compile Include="StackTracing\IRStackFrame.cs" />
     <Compile Include="StackTracing\RStackFrame.cs" />
   </ItemGroup>

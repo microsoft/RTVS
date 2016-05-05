@@ -5,7 +5,7 @@ namespace Microsoft.R.DataInspection {
     /// <summary>
     /// Describes the result of evaluating an expression that is an unevaluated promise. 
     /// </summary>
-    public interface IRPromiseInfo : IREvaluationInfo {
+    public interface IRPromiseInfo : IREvaluationResultInfo {
         /// <summary>
         /// Expression that this promise was created from.
         /// </summary>

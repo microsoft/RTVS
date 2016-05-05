@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
-    internal sealed class RValueInfo : REvaluationInfo, IRValueInfo {
+    internal sealed class RValueInfo : REvaluationResultInfo, IRValueInfo {
         public string Representation { get; }
 
         public RChildAccessorKind AccessorKind { get; }

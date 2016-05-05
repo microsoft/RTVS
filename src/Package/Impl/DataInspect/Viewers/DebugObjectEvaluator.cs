@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             _rSessionProvider = rSessionProvider;
         }
 
-        public async Task<IREvaluationInfo> EvaluateAsync(string expression, RValueProperties fields, string repr = null) {
+        public async Task<IREvaluationResultInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr = null) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             repr = repr ?? RValueRepresentations.Str();

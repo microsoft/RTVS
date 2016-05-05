@@ -15,13 +15,13 @@ using static System.FormattableString;
 namespace Microsoft.R.DataInspection {
     public static class RSessionExtensions {
         /// <summary>
-        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, RValueProperties, string, CancellationToken)"/>,
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, REvaluationResultProperties, string, CancellationToken)"/>,
         /// but evaluates in the global environment (<c>.GlobalEnv</c>), and the result is not named.
         /// </summary>
-        public static Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
+        public static Task<IREvaluationResultInfo> TryEvaluateAndDescribeAsync(
             this IRSession session,
             string expression,
-            RValueProperties properties,
+            REvaluationResultProperties properties,
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
@@ -34,8 +34,8 @@ namespace Microsoft.R.DataInspection {
         /// R expression designating the environment in which <paramref name="expression"/> will be evaluated.
         /// </param>
         /// <param name="expression">Expression to evaluate.</param>
-        /// <param name="name"><see cref="IREvaluationInfo.Name"/> of the returned evaluation result.</param>
-        /// <param name="properties">Specifies which <see cref="IREvaluationInfo"/> properties should be present in the result.</param>
+        /// <param name="name"><see cref="IREvaluationResultInfo.Name"/> of the returned evaluation result.</param>
+        /// <param name="properties">Specifies which <see cref="IREvaluationResultInfo"/> properties should be present in the result.</param>
         /// <param name="repr">
         /// An R expression that must evaluate to a function that takes an R value as its sole argument, and returns the
         /// string representation of that argument as a single-element character vector. The representation is stored in
@@ -51,12 +51,12 @@ namespace Microsoft.R.DataInspection {
         /// If evaluation failed with an error, an instance of <see cref="IRErrorInfo"/> describing the error.
         /// This method never returns <see cref="IRActiveBindingInfo"/> or <see cref="IRPromiseInfo"/>.
         /// </returns>
-        public static async Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
+        public static async Task<IREvaluationResultInfo> TryEvaluateAndDescribeAsync(
             this IRSession session,
             string environmentExpression,
             string expression,
             string name,
-            RValueProperties properties,
+            REvaluationResultProperties properties,
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
@@ -72,24 +72,24 @@ namespace Microsoft.R.DataInspection {
             environmentExpression = environmentExpression ?? "NULL";
             var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {properties.ToRVector()},, {repr})");
             var result = await session.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
-            return REvaluationInfo.Parse(session, environmentExpression, name, result);
+            return REvaluationResultInfo.Parse(session, environmentExpression, name, result);
         }
 
         /// <summary>
-        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, RValueProperties, string, CancellationToken)"/>,
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, REvaluationResultProperties, string, CancellationToken)"/>,
         /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
         /// </summary>
         public static Task<IRValueInfo> EvaluateAndDescribeAsync(
             this IRSession session,
             string expression,
-            RValueProperties properties,
+            REvaluationResultProperties properties,
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
             session.EvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, properties, repr, cancellationToken);
 
         /// <summary>
-        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, RValueProperties, string, CancellationToken)"/>,
+        /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, REvaluationResultProperties, string, CancellationToken)"/>,
         /// but throws <see cref="RException"/> if result is an <see cref="IRErrorInfo"/>.
         /// </summary>
         public static async Task<IRValueInfo> EvaluateAndDescribeAsync(
@@ -97,7 +97,7 @@ namespace Microsoft.R.DataInspection {
             string environmentExpression,
             string expression,
             string name,
-            RValueProperties properties,
+            REvaluationResultProperties properties,
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
@@ -138,11 +138,11 @@ namespace Microsoft.R.DataInspection {
         /// Raised if the operation fails as a whole (note that if only specific children cannot be retrieved, those
         /// children are represented by <see cref="IRErrorInfo"/> instances in the returned collection instead).
         /// </exception>
-        public static async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+        public static async Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(
             this IRSession session,
             string environmentExpression,
             string expression,
-            RValueProperties properties,
+            REvaluationResultProperties properties,
             string repr,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
@@ -155,7 +155,7 @@ namespace Microsoft.R.DataInspection {
                 jChildren.Children().All(t => t is JObject),
                 Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
 
-            var children = new List<REvaluationInfo>();
+            var children = new List<REvaluationResultInfo>();
             foreach (var child in jChildren) {
                 var childObject = (JObject)child;
                 Trace.Assert(
@@ -164,7 +164,7 @@ namespace Microsoft.R.DataInspection {
                 foreach (var kv in childObject) {
                     var name = kv.Key;
                     var jEvalResult = (JObject)kv.Value;
-                    var evalResult = REvaluationInfo.Parse(session, environmentExpression, name, jEvalResult);
+                    var evalResult = REvaluationResultInfo.Parse(session, environmentExpression, name, jEvalResult);
                     children.Add(evalResult);
                 }
             }

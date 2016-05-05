@@ -136,16 +136,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
                     if (globalStackFrame != null) {
-                        const RValueProperties fields =
-                            RValueProperties.Expression |
-                            RValueProperties.Kind |
-                            RValueProperties.TypeName |
-                            RValueProperties.Classes |
-                            RValueProperties.Length |
-                            RValueProperties.SlotCount |
-                            RValueProperties.AttrCount |
-                            RValueProperties.Dim |
-                            RValueProperties.Flags;
+                        const REvaluationResultProperties fields =
+                            REvaluationResultProperties.ExpressionProperty |
+                            REvaluationResultProperties.AccessorKindProperty |
+                            REvaluationResultProperties.TypeNameProperty |
+                            REvaluationResultProperties.ClassesProperty |
+                            REvaluationResultProperties.LengthProperty |
+                            REvaluationResultProperties.SlotCountProperty |
+                            REvaluationResultProperties.AttributeCountProperty |
+                            REvaluationResultProperties.DimProperty |
+                            REvaluationResultProperties.FlagsProperty;
                         var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", fields, RValueRepresentations.Str());
                         var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 

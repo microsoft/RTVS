@@ -8,10 +8,10 @@ namespace Microsoft.R.DataInspection {
     /// Describes the result of evaluating an expression that produced a value that is not a promise or an active binding. 
     /// </summary>
     /// <remarks>
-    /// Note that most properties of the object will only have a meaningful value if the corresponding <see cref="RValueProperties"/>
+    /// Note that most properties of the object will only have a meaningful value if the corresponding <see cref="REvaluationResultProperties"/>
     /// flag was specified when producing the result. All properties which were not so requested will be <see langword="null"/>.
     /// </remarks>
-    public interface IRValueInfo : IREvaluationInfo {
+    public interface IRValueInfo : IREvaluationResultInfo {
         /// <summary>
         /// String representation of the value.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Microsoft.R.DataInspection {
         /// List of classes of the value, as computed by <c>classes(...)</c>.
         /// </summary>
         /// <remarks>
-        /// If <see cref="RValueProperties.Classes"/> was not specified, this property will be
+        /// If <see cref="REvaluationResultProperties.ClassesProperty"/> was not specified, this property will be
         /// <see langword="null"/>, rather than an empty collection.
         /// </remarks>
         IReadOnlyList<string> Classes { get; }
@@ -60,7 +60,7 @@ namespace Microsoft.R.DataInspection {
         /// Dimensions that this value has, as computed by <c>dim(...)</c>.
         /// </summary>
         /// <remarks>
-        /// If <see cref="RValueProperties.Dim"/> was not specified, this property will be
+        /// If <see cref="REvaluationResultProperties.DimProperty"/> was not specified, this property will be
         /// <see langword="null"/>, rather than an empty collection.
         /// </remarks>
         IReadOnlyList<int> Dim { get; }
@@ -71,7 +71,7 @@ namespace Microsoft.R.DataInspection {
         RValueFlags Flags { get; }
 
         /// <summary>
-        /// <see langword="true"/> if <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/> will return any items,
+        /// <see langword="true"/> if <see cref="REvaluationResultInfoExtensions.DescribeChildrenAsync"/> will return any items,
         /// otherwise <see langword="false"/>.
         /// </summary>
         bool HasChildren { get; }

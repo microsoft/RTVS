@@ -10,7 +10,7 @@ using Microsoft.R.DataInspection;
 
 namespace Microsoft.R.Debugger.Engine {
     public interface IDebugGridViewProvider {
-        bool CanShowDataGrid(IREvaluationInfo evaluationResult);
-        void ShowDataGrid(IREvaluationInfo evaluationResult);
+        bool CanShowDataGrid(IREvaluationResultInfo evaluationResult);
+        void ShowDataGrid(IREvaluationResultInfo evaluationResult);
     }
 }

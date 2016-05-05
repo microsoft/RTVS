@@ -4,7 +4,7 @@
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.DataInspection {
-    internal sealed class RActiveBindingInfo : REvaluationInfo, IRActiveBindingInfo {
+    internal sealed class RActiveBindingInfo : REvaluationResultInfo, IRActiveBindingInfo {
         internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name)
             : base(session, environmentExpression, expression, name) {
         }

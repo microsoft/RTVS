@@ -25,7 +25,7 @@ namespace Microsoft.R.DataInspection {
     /// this result in its original context. If the context is no longer available (for example, it was a stack frame that is no
     /// longer there), the results are undefined. 
     /// </remarks>
-    public interface IREvaluationInfo {
+    public interface IREvaluationResultInfo {
         IRSession Session { get; }
 
         /// <summary>
@@ -49,14 +49,14 @@ namespace Microsoft.R.DataInspection {
         string Name { get; }
     }
 
-    public static class REvaluationInfoExtensions {
+    public static class REvaluationResultInfoExtensions {
         /// <summary>
         /// Like <see cref="RSessionExtensions.DescribeChildrenAsync"/>, but returns children of the object described
         /// by the provided evaluation info.
         /// </summary>
-        public static Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
-            this IREvaluationInfo info,
-            RValueProperties properties,
+        public static Task<IReadOnlyList<IREvaluationResultInfo>> DescribeChildrenAsync(
+            this IREvaluationResultInfo info,
+            REvaluationResultProperties properties,
             string repr,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
@@ -71,9 +71,9 @@ namespace Microsoft.R.DataInspection {
         /// <returns>
         /// A task that is completed once the assignment completes. Failure to assign is reported as exception on the task.
         /// </returns>
-        public static Task AssignAsync(this IREvaluationInfo info, string value, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static Task AssignAsync(this IREvaluationResultInfo info, string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(info.Expression)) {
-                throw new InvalidOperationException(Invariant($"{nameof(AssignAsync)} is not supported for this {nameof(REvaluationInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
+                throw new InvalidOperationException(Invariant($"{nameof(AssignAsync)} is not supported for this {nameof(REvaluationResultInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
             }
             return info.Session.ExecuteAsync($"{info.Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
         }
@@ -88,7 +88,7 @@ namespace Microsoft.R.DataInspection {
         /// an <see cref="IRPromiseInfo"/>.
         /// </remarks>
         /// <exception cref="RException">Evaluation of the expression produced an error.</exception>
-        public static Task<IRValueInfo> GetValueAsync(this IREvaluationInfo info, RValueProperties properties, string repr, CancellationToken cancellationToken = default(CancellationToken)) =>
+        public static Task<IRValueInfo> GetValueAsync(this IREvaluationResultInfo info, REvaluationResultProperties properties, string repr, CancellationToken cancellationToken = default(CancellationToken)) =>
             info.Session.EvaluateAndDescribeAsync(info.EnvironmentExpression, info.Expression, info.Name, properties, repr, cancellationToken);
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
-    internal sealed class RPromiseInfo : REvaluationInfo, IRPromiseInfo {
+    internal sealed class RPromiseInfo : REvaluationResultInfo, IRPromiseInfo {
         public string Code { get; }
 
         internal RPromiseInfo(IRSession session, string environmentExpression, string expression, string name, string code)

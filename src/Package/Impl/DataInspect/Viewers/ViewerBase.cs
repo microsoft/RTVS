@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
              Evaluator = evaluator;
         }
 
-        protected async Task<IRValueInfo> EvaluateAsync(string expression, RValueProperties fields, string repr) {
+        protected async Task<IRValueInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr) {
             var result = await Evaluator.EvaluateAsync(expression, fields, repr);
             var error = result as IRErrorInfo;
             if (error != null) {

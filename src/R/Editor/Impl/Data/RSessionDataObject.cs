@@ -32,7 +32,7 @@ namespace Microsoft.R.Editor.Data {
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        public RSessionDataObject(IREvaluationInfo evaluation, int? maxChildrenCount = null) : this() {
+        public RSessionDataObject(IREvaluationResultInfo evaluation, int? maxChildrenCount = null) : this() {
             DebugEvaluation = evaluation;
 
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
@@ -81,7 +81,7 @@ namespace Microsoft.R.Editor.Data {
 
         protected int MaxReprLength { get; set; }
 
-        protected IREvaluationInfo DebugEvaluation { get; }
+        protected IREvaluationResultInfo DebugEvaluation { get; }
 
         public Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsync() {
             if (_getChildrenTask == null) {
@@ -107,16 +107,16 @@ namespace Microsoft.R.Editor.Data {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const RValueProperties fields =
-                    RValueProperties.Expression |
-                    RValueProperties.Kind |
-                    RValueProperties.TypeName |
-                    RValueProperties.Classes |
-                    RValueProperties.Length |
-                    RValueProperties.SlotCount |
-                    RValueProperties.AttrCount |
-                    RValueProperties.Dim |
-                    RValueProperties.Flags;
+                const REvaluationResultProperties fields =
+                    REvaluationResultProperties.ExpressionProperty |
+                    REvaluationResultProperties.AccessorKindProperty |
+                    REvaluationResultProperties.TypeNameProperty |
+                    REvaluationResultProperties.ClassesProperty |
+                    REvaluationResultProperties.LengthProperty |
+                    REvaluationResultProperties.SlotCountProperty |
+                    REvaluationResultProperties.AttributeCountProperty |
+                    REvaluationResultProperties.DimProperty |
+                    REvaluationResultProperties.FlagsProperty;
                 var children = await valueEvaluation.DescribeChildrenAsync(fields, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
@@ -124,7 +124,7 @@ namespace Microsoft.R.Editor.Data {
             return result;
         }
 
-        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationInfo> children) {
+        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
                 result.Add(new RSessionDataObject(children[i], GetMaxChildrenCount(children[i])));
@@ -132,7 +132,7 @@ namespace Microsoft.R.Editor.Data {
             return result;
         }
 
-        protected int? GetMaxChildrenCount(IREvaluationInfo parent) {
+        protected int? GetMaxChildrenCount(IREvaluationResultInfo parent) {
             var value = parent as IRValueInfo;
             if (value != null) {
                 if (value.Classes.Contains("data.frame")) {

@@ -12,41 +12,42 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
         internal const int ChildrenMaxCount = 100;
         internal static readonly string Repr = RValueRepresentations.Deparse(100);
 
-        internal const RValueProperties PrefetchedFields =
-            RValueProperties.Expression |
-            RValueProperties.Kind |
-            RValueProperties.TypeName |
-            RValueProperties.Classes |
-            RValueProperties.Length |
-            RValueProperties.SlotCount |
-            RValueProperties.AttrCount |
-            RValueProperties.Dim |
-            RValueProperties.Flags;
+        internal const REvaluationResultProperties PrefetchedProperties =
+            ExpressionProperty |
+            AccessorKindProperty |
+            TypeNameProperty |
+            ClassesProperty |
+            LengthProperty |
+            SlotCountProperty |
+            AttributeCountProperty |
+            DimProperty |
+            FlagsProperty;
 
         private IDebugProperty2 IDebugProperty2 => this;
         private IDebugProperty3 IDebugProperty3 => this;
 
-        private Lazy<IReadOnlyList<IREvaluationInfo>> _children;
+        private Lazy<IReadOnlyList<IREvaluationResultInfo>> _children;
         private Lazy<string> _reprToString;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
-        public IREvaluationInfo EvaluationResult { get; }
+        public IREvaluationResultInfo EvaluationResult { get; }
         public bool IsSynthetic { get; }
         public bool IsFrameEnvironment { get; }
 
-        public AD7Property(AD7Property parent, IREvaluationInfo result, bool isSynthetic = false)
+        public AD7Property(AD7Property parent, IREvaluationResultInfo result, bool isSynthetic = false)
             : this(parent.StackFrame, result, isSynthetic, false) {
             Parent = parent;
         }
 
-        public AD7Property(AD7StackFrame stackFrame, IREvaluationInfo result, bool isSynthetic = false, bool isFrameEnvironment = false) {
+        public AD7Property(AD7StackFrame stackFrame, IREvaluationResultInfo result, bool isSynthetic = false, bool isFrameEnvironment = false) {
             StackFrame = stackFrame;
             EvaluationResult = result;
             IsSynthetic = isSynthetic;
@@ -56,14 +57,14 @@ namespace Microsoft.R.Debugger.Engine {
             _reprToString = Lazy.Create(GetReprToString);
         }
 
-        private IReadOnlyList<IREvaluationInfo> CreateChildren() =>
+        private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>
             TaskExtensions.RunSynchronouslyOnUIThread(async ct => {
                 var valueResult = EvaluationResult as IRValueInfo;
                 if (valueResult == null) {
-                    return new IREvaluationInfo[0];
+                    return new IREvaluationResultInfo[0];
                 }
 
-                var children = await valueResult.DescribeChildrenAsync(PrefetchedFields, Repr, ChildrenMaxCount, ct);
+                var children = await valueResult.DescribeChildrenAsync(PrefetchedProperties, Repr, ChildrenMaxCount, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {
@@ -79,7 +80,7 @@ namespace Microsoft.R.Debugger.Engine {
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            IEnumerable<IREvaluationInfo> children = _children.Value;
+            IEnumerable<IREvaluationResultInfo> children = _children.Value;
 
             if (!RToolsSettings.Current.ShowDotPrefixedVariables) {
                 children = children.Where(v => v.Name != null && !v.Name.StartsWithOrdinal("."));
@@ -91,7 +92,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (valueResult != null) {
                 if (valueResult.HasAttributes() == true) {
                     string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedFields, Repr, ct));
+                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedProperties, Repr, ct));
                     if (!(attrResult is IRErrorInfo)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { attrInfo }.Concat(infos);
@@ -100,7 +101,7 @@ namespace Microsoft.R.Debugger.Engine {
 
                 if (valueResult.Flags.HasFlag(RValueFlags.HasParentEnvironment)) {
                     string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
-                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedFields, Repr, ct));
+                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedProperties, Repr, ct));
                     if (!(parentResult is IRErrorInfo)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { parentInfo }.Concat(infos);

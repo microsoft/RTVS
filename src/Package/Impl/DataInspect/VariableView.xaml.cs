@@ -98,11 +98,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private async Task SetRootModelAsync(REnvironment env) {
             await TaskUtilities.SwitchToBackgroundThread();
-            const RValueProperties fields = RValueProperties.Classes
-                    | RValueProperties.Expression
-                    | RValueProperties.TypeName
-                    | RValueProperties.Dim
-                    | RValueProperties.Length;
+            const REvaluationResultProperties fields = REvaluationResultProperties.ClassesProperty
+                    | REvaluationResultProperties.ExpressionProperty
+                    | REvaluationResultProperties.TypeNameProperty
+                    | REvaluationResultProperties.DimProperty
+                    | REvaluationResultProperties.LengthProperty;
 
             var result = await _evaluator.EvaluateAsync(GetExpression(env), fields, RValueRepresentations.Str());
             if (result != null) {
