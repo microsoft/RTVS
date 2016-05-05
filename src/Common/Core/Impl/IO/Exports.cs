@@ -2,12 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-
-    [AppliesTo("RTools")]
+namespace Microsoft.Common.Core.IO {
     internal sealed class Export {
 
         [Export(typeof(IFileSystem))]

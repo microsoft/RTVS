@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Navigation.Commands {
                 TextView.Caret.EnsureVisible();
             } else {
                 // Try View(item) in case this is internal function
-                _objectViewer.ViewObjectDetails(itemName, itemName).DoNotWait();
+                _objectViewer?.ViewObjectDetails(itemName, itemName).DoNotWait();
             }
             return CommandResult.Executed;
         }
