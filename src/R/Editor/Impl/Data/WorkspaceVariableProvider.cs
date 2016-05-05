@@ -146,7 +146,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             RValueProperties.AttrCount |
                             RValueProperties.Dim |
                             RValueProperties.Flags;
-                        var evaluation = await globalStackFrame.EvaluateAndDescribeAsync("base::environment()", "Global Environment", fields, RValueRepresentations.Str());
+                        var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", fields, RValueRepresentations.Str());
                         var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
                         _topLevelVariables.Clear();

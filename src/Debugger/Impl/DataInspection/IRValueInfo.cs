@@ -71,14 +71,13 @@ namespace Microsoft.R.DataInspection {
         RValueFlags Flags { get; }
 
         /// <summary>
-        /// <see langword="true"/> if <see cref="IREvaluationInfo.DescribeChildrenAsync"/> is known to return any items,
+        /// <see langword="true"/> if <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/> will return any items,
         /// otherwise <see langword="false"/>.
         /// </summary>
         bool HasChildren { get; }
     }
 
     public static class RValueInfoExtensions {
-
         /// <seealso cref="RValueFlags.Atomic"/>
         public static bool IsAtomic(this IRValueInfo info) =>
             info.Flags.HasFlag(RValueFlags.Atomic);

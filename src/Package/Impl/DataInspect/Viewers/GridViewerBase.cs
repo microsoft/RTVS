@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 

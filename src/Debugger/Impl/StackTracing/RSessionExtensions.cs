@@ -23,7 +23,7 @@ namespace Microsoft.R.StackTracing {
         /// </param>
         /// <remarks>
         /// This method has snapshot semantics for the frames and their properties - that is, the returned collection is not going to change as code runs.
-        /// However, calling various methods on the returned <see cref="IRStackFrame"/> objects, such as <see cref="IRStackFrame.DescribeEnvironmentAsync"/>,
+        /// However, calling various methods on the returned <see cref="IRStackFrame"/> objects, such as <see cref="RStackFrameExtensions.DescribeEnvironmentAsync"/>,
         /// will fetch fresh data, possibly from altogether different frames if the call stack has changed. Thus, it is inadvisable to retain the returned
         /// stack and use it at a later point - it should always be obtained anew at the point where it is used. 
         /// </remarks>

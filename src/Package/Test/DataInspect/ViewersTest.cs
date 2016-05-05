@@ -116,6 +116,17 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Viewers]
+        public async Task FormulaViewerTest() {
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                string formula = "1 ~ 2";
+                var funcViewer = await _aggregator.GetViewer(formula) as FunctionViewer;
+                var code = await funcViewer.GetFunctionCode(formula);
+                code.StartsWithOrdinal(formula).Should().BeTrue();
+            }
+        }
+
+        [Test]
+        [Category.Viewers]
         public void TableViewerTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new TableViewer(_aggregator, e);

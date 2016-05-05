@@ -4,7 +4,6 @@
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]

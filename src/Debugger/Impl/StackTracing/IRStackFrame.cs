@@ -16,7 +16,7 @@ namespace Microsoft.R.StackTracing {
     /// Describes an R stack frame.
     /// </summary>
     /// <remarks>
-    /// Properties of this class represent the state of the frame as it was at the point <seealso cref="RSessionExtensions.TracebackAsync"/>
+    /// Properties of this class represent the state of the frame as it was at the point <see cref="RSessionExtensions.TracebackAsync"/>
     /// was called, and do not necessarily correspond to the current state if it has changed since then.
     /// </remarks>
     public interface IRStackFrame {
@@ -76,14 +76,16 @@ namespace Microsoft.R.StackTracing {
         /// Whether this frame's environment is <c>.GlobalEnv</c>.
         /// </summary>
         bool IsGlobal { get; }
+    }
 
+    public static class RStackFrameExtensions {
         /// <summary>
-        /// Produces an object describing this frame's environment. Its <see cref="IREvaluationInfo.DescribeChildrenAsync"/>
+        /// Produces an object describing this frame's environment. <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/>
         /// method can then be used to retrieve the variables in the frame.
         /// </summary>
         /// <param name="properties">
         /// Which properties of the returned object should be provided. Note that it should include at least the following flags
-        /// argument value in order for <see cref="IREvaluationInfo.DescribeChildrenAsync"/> to be working. 
+        /// argument value in order for <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/> to be working. 
         /// </param>
         /// <remarks>
         /// <para>
@@ -96,18 +98,28 @@ namespace Microsoft.R.StackTracing {
         /// call that produced this frame), the result is undefined, and can be an error result, or contain unrelated data.
         /// </para>
         /// </remarks>
-        Task<IREvaluationInfo> DescribeEnvironmentAsync(RValueProperties properties, CancellationToken cancellationToken = default(CancellationToken));
-    }
+        public static Task<IRValueInfo> DescribeEnvironmentAsync(
+            this IRStackFrame frame,
+            RValueProperties properties,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            properties |= RValueProperties.Expression | RValueProperties.Length | RValueProperties.AttrCount | RValueProperties.Flags;
+            return frame.EvaluateAndDescribeAsync("base::environment()", properties: properties, cancellationToken: cancellationToken);
+        }
 
-    public static class RStackFrameExtensions {
-        public static Task<IREvaluationInfo> DescribeEnvironmentAsync(this IRStackFrame frame, CancellationToken cancellationToken = default(CancellationToken)) =>
+        /// <summary>
+        /// Same as <see cref="DescribeEnvironmentAsync(IRStackFrame, RValueProperties, CancellationToken)"/>,
+        /// but the only <c>properties</c> that are fetched are those that are necessary to invoke
+        /// <see cref="REvaluationInfoExtensions.DescribeChildrenAsync"/> on the returned value.
+        /// </summary>
+        public static Task<IRValueInfo> DescribeEnvironmentAsync(this IRStackFrame frame, CancellationToken cancellationToken = default(CancellationToken)) =>
             frame.DescribeEnvironmentAsync(RValueProperties.None, cancellationToken);
 
         /// <summary>
-        /// Same as <see cref="Microsoft.R.DataInspection.RSessionExtensions.EvaluateAndDescribeAsync(string, string, string, RValueProperties, int?, CancellationToken)"/>,
+        /// Same as <see cref="Microsoft.R.DataInspection.RSessionExtensions.TryEvaluateAndDescribeAsync(string, string, string, RValueProperties, int?, CancellationToken)"/>,
         /// but passes <see cref="EnvironmentExpression"/> of this frame as <c>environmentExpression</c> argument,
         /// </summary>
-        public static Task<IREvaluationInfo> EvaluateAndDescribeAsync(
+        public static Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
             this IRStackFrame frame,
             string expression,
             string name,
@@ -118,10 +130,37 @@ namespace Microsoft.R.StackTracing {
             frame.Session.TryEvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
 
         /// <summary>
-        /// Same as <see cref="EvaluateAndDescribeAsync(string, RValueProperties, int?, CancellationToken) "/>,
+        /// Same as <see cref="TryEvaluateAndDescribeAsync(IRStackFrame, string, string, RValueProperties, string, CancellationToken)"/>,
         /// but uses <see langword="null"/> for <c>name</c>.
         /// </summary>
-        public static Task<IREvaluationInfo> EvaluateAndDescribeAsync(
+        public static Task<IREvaluationInfo> TryEvaluateAndDescribeAsync(
+            this IRStackFrame frame,
+            string expression,
+            RValueProperties properties,
+            string repr = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            frame.TryEvaluateAndDescribeAsync(expression, null, properties, repr, cancellationToken);
+
+        /// <summary>
+        /// Same as <see cref="Microsoft.R.DataInspection.RSessionExtensions.EvaluateAndDescribeAsync(string, string, string, RValueProperties, int?, CancellationToken)"/>,
+        /// but passes <see cref="EnvironmentExpression"/> of this frame as <c>environmentExpression</c> argument,
+        /// </summary>
+        public static Task<IRValueInfo> EvaluateAndDescribeAsync(
+            this IRStackFrame frame,
+            string expression,
+            string name,
+            RValueProperties properties,
+            string repr = null,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) =>
+            frame.Session.EvaluateAndDescribeAsync(frame.EnvironmentExpression, expression, name, properties, repr, cancellationToken);
+
+        /// <summary>
+        /// Same as <see cref="EvaluateAndDescribeAsync(IRStackFrame, string, string, RValueProperties, string, CancellationToken)"/>,
+        /// but uses <see langword="null"/> for <c>name</c>.
+        /// </summary>
+        public static Task<IRValueInfo> EvaluateAndDescribeAsync(
             this IRStackFrame frame,
             string expression,
             RValueProperties properties,

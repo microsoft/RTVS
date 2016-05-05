@@ -106,8 +106,8 @@ namespace Microsoft.R.DataInspection {
                 throw new RException(error.ErrorText);
             }
 
-            Debug.Assert(error is IRValueInfo);
-            return (IRValueInfo)error;
+            Debug.Assert(info is IRValueInfo);
+            return (IRValueInfo)info;
         }
     }
 }

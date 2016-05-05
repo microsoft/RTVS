@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;

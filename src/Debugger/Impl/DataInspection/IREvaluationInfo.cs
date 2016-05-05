@@ -1,11 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
+using Microsoft.Common.Core;
 using Microsoft.R.ExecutionTracing;
+using Microsoft.R.Host.Client;
+using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.DataInspection {
     /// <summary>
@@ -45,17 +51,9 @@ namespace Microsoft.R.DataInspection {
         /// and is primarily useful in that scenario. See the documentation of that method for more information.
         /// </para>
         string Name { get; }
+    }
 
-        /// <summary>
-        /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the
-        /// left side of R operator <c>&lt;-</c>, such as a variable), assigns the specified value to that target.
-        /// </summary>
-        /// <param name="value">Value to assign. Must be a valid R expression.</param>
-        /// <returns>
-        /// A task that is completed once the assignment completes. Failure to assign is reported as exception on the task.
-        /// </returns>
-        Task SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken));
-
+    public static class REvaluationInfoExtensions {
         /// <summary>
         /// Computes the children of this value, and returns a collection of evaluation objects describing each child.
         /// See <see cref="IRExecutionTracer.EvaluateAsync"/> for the meaning of parameters.
@@ -84,10 +82,58 @@ namespace Microsoft.R.DataInspection {
         /// </para>
         /// </remarks>
         /// <exception cref="RException">Raised if child retrieval fails.</exception>
-        Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+        public static async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
+            this IREvaluationInfo info,
             RValueProperties properties,
             int? maxCount = null,
             string repr = null,
-            CancellationToken cancellationToken = default(CancellationToken));
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            if (info.EnvironmentExpression == null) {
+                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated environment expression.");
+            }
+            if (info.Expression == null) {
+                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
+            }
+
+            var call = Invariant($"rtvs:::describe_children({info.Expression.ToRStringLiteral()}, {info.EnvironmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
+            var jChildren = await info.Session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
+            Trace.Assert(
+                jChildren.Children().All(t => t is JObject),
+                Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
+
+            var children = new List<REvaluationInfo>();
+            foreach (var child in jChildren) {
+                var childObject = (JObject)child;
+                Trace.Assert(
+                    childObject.Count == 1,
+                    Invariant($"rtvs:::describe_children(): each object is expected contain one object\n\n"));
+                foreach (var kv in childObject) {
+                    var name = kv.Key;
+                    var jEvalResult = (JObject)kv.Value;
+                    var evalResult = REvaluationInfo.Parse(info.Session, info.EnvironmentExpression, name, jEvalResult);
+                    children.Add(evalResult);
+                }
+            }
+
+            return children;
+        }
+
+        /// <summary>
+        /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the
+        /// left side of R operator <c>&lt;-</c>, such as a variable), assigns the specified value to that target.
+        /// </summary>
+        /// <param name="value">Value to assign. Must be a valid R expression.</param>
+        /// <returns>
+        /// A task that is completed once the assignment completes. Failure to assign is reported as exception on the task.
+        /// </returns>
+        public static Task SetValueAsync(this IREvaluationInfo info, string value, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (string.IsNullOrEmpty(info.Expression)) {
+                throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(REvaluationInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
+            }
+            return info.Session.ExecuteAsync($"{info.Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
+        }
     }
 }

@@ -3,7 +3,6 @@
 
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewer {

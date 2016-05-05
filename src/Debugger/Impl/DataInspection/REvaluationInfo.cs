@@ -49,56 +49,5 @@ namespace Microsoft.R.DataInspection {
 
             return new RValueInfo(session, environmentExpression, expression, name, json);
         }
-
-        public Task SetValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken)) {
-            if (string.IsNullOrEmpty(Expression)) {
-                throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(REvaluationInfo)} because it doesn't have an associated {nameof(Expression)}."));
-            }
-            return Session.ExecuteAsync($"{Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
-        }
-
-        public async Task<IReadOnlyList<IREvaluationInfo>> DescribeChildrenAsync(
-            RValueProperties properties,
-            int? maxCount = null,
-            string repr = null,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            if (EnvironmentExpression == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated environment expression.");
-            }
-            if (Expression == null) {
-                throw new InvalidOperationException("Cannot retrieve children of an evaluation result that does not have an associated expression.");
-            }
-
-            var call = Invariant($"rtvs:::describe_children({Expression.ToRStringLiteral()}, {EnvironmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
-            var jChildren = await Session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
-            Trace.Assert(
-                jChildren.Children().All(t => t is JObject),
-                Invariant($"rtvs:::describe_children(): object of objects expected.\n\n{jChildren}"));
-
-            var children = new List<REvaluationInfo>();
-            foreach (var child in jChildren) {
-                var childObject = (JObject)child;
-                Trace.Assert(
-                    childObject.Count == 1,
-                    Invariant($"rtvs:::describe_children(): each object is expected contain one object\n\n"));
-                foreach (var kv in childObject) {
-                    var name = kv.Key;
-                    var jEvalResult = (JObject)kv.Value;
-                    var evalResult = Parse(Session, EnvironmentExpression, name, jEvalResult);
-                    children.Add(evalResult);
-                }
-            }
-
-            return children;
-        }
-
-        public override bool Equals(object obj) =>
-            base.Equals(obj) || (obj as IEquatable<REvaluationInfo>)?.Equals(this) == true;
-
-        public override int GetHashCode() =>
-            base.GetHashCode();
     }
 }

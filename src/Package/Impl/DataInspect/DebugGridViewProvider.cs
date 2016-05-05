@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.Engine;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {

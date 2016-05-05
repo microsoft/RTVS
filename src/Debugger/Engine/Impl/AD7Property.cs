@@ -91,7 +91,7 @@ namespace Microsoft.R.Debugger.Engine {
             if (valueResult != null) {
                 if (valueResult.HasAttributes() == true) {
                     string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedFields, Repr, ct));
+                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedFields, Repr, ct));
                     if (!(attrResult is IRErrorInfo)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { attrInfo }.Concat(infos);
@@ -100,7 +100,7 @@ namespace Microsoft.R.Debugger.Engine {
 
                 if (valueResult.Flags.HasFlag(RValueFlags.HasParentEnvironment)) {
                     string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
-                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedFields, Repr, ct));
+                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedFields, Repr, ct));
                     if (!(parentResult is IRErrorInfo)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { parentInfo }.Concat(infos);

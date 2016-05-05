@@ -42,18 +42,7 @@ namespace Microsoft.R.StackTracing {
             EnvironmentName = jFrame.Value<string>("env_name");
         }
 
-        public Task<IREvaluationInfo> DescribeEnvironmentAsync(RValueProperties properties, CancellationToken cancellationToken = default(CancellationToken)) {
-            properties |= RValueProperties.Expression | RValueProperties.Length | RValueProperties.AttrCount | RValueProperties.Flags;
-            return this.EvaluateAndDescribeAsync("base::environment()", properties: properties, cancellationToken: cancellationToken);
-        }
-
         public override string ToString() =>
             Invariant($"{EnvironmentName ?? Call ?? "<null>"} at {FileName ?? "<null>"}:{(LineNumber?.ToString(CultureInfo.InvariantCulture) ?? "<null>")}");
-
-        public override bool Equals(object obj) =>
-            base.Equals(obj) || (obj as IEquatable<RStackFrame>)?.Equals(this) == true;
-
-        public override int GetHashCode() =>
-            base.GetHashCode();
     }
 }

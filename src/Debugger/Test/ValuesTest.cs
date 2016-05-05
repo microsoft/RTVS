@@ -410,7 +410,7 @@ namespace Microsoft.R.Debugger.Test {
 
             await _session.ExecuteAsync("PARENT <- {" + row.Expression + "}");
 
-            var res = (await frame.EvaluateAndDescribeAsync("PARENT", AllFields))
+            var res = (await frame.TryEvaluateAndDescribeAsync("PARENT", AllFields))
                 .Should().BeAssignableTo<IRValueInfo>().Which;
             res.Length.Should().Be(row.Length);
             res.NameCount.Should().Be(row.NameCount);

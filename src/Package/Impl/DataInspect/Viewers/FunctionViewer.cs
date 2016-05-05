@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -33,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
         public bool CanView(IRValueInfo evaluation) {
-            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes[0].EqualsOrdinal("function");
+            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes.Any(t => _classes.Contains(t));
         }
 
         public async Task ViewAsync(string expression, string title) {
