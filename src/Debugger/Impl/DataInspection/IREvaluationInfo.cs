@@ -129,11 +129,24 @@ namespace Microsoft.R.DataInspection {
         /// <returns>
         /// A task that is completed once the assignment completes. Failure to assign is reported as exception on the task.
         /// </returns>
-        public static Task SetValueAsync(this IREvaluationInfo info, string value, CancellationToken cancellationToken = default(CancellationToken)) {
+        public static Task AssignAsync(this IREvaluationInfo info, string value, CancellationToken cancellationToken = default(CancellationToken)) {
             if (string.IsNullOrEmpty(info.Expression)) {
-                throw new InvalidOperationException(Invariant($"{nameof(SetValueAsync)} is not supported for this {nameof(REvaluationInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
+                throw new InvalidOperationException(Invariant($"{nameof(AssignAsync)} is not supported for this {nameof(REvaluationInfo)} because it doesn't have an associated {nameof(info.Expression)}."));
             }
             return info.Session.ExecuteAsync($"{info.Expression} <- {value}", REvaluationKind.Mutating, cancellationToken);
         }
+
+        /// <summary>
+        /// Re-evaluates the expression that was used to create this evaluation object in its original context,
+        /// but with a new representation function and properties.
+        /// </summary>
+        /// <remarks>
+        /// Evaluating an expression always produces a regular value, never a promise or an active binding. Thus,
+        /// this method can be used to compute the current value of an <see cref="IRActiveBindingInfo"/>, or force
+        /// an <see cref="IRPromiseInfo"/>.
+        /// </remarks>
+        /// <exception cref="RException">Evaluation of the expression produced an error.</exception>
+        public static Task<IRValueInfo> GetValueAsync(this IREvaluationInfo info, RValueProperties properties, string repr, CancellationToken cancellationToken = default(CancellationToken)) =>
+            info.Session.EvaluateAndDescribeAsync(info.EnvironmentExpression, info.Expression, info.Name, properties, repr, cancellationToken);
     }
 }

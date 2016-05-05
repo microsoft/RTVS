@@ -263,7 +263,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             // TODO: dwRadix
             try {
-                TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.SetValueAsync(pszValue, ct));
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.AssignAsync(pszValue, ct));
             } catch (RException ex) { 
                 errorString = ex.Message;
                 return VSConstants.E_FAIL;
