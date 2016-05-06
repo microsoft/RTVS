@@ -16,10 +16,15 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class SendToReplCommand : ViewCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private string _leadingArgument;
+        private string _closingArgument;
 
-        public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow) :
+        public SendToReplCommand(ITextView textView, IRInteractiveWorkflow interactiveWorkflow, string leadingArgument = "", string closingArgument = "") :
             base(textView, new CommandId(RGuidList.RCmdSetGuid, (int)RPackageCommandId.icmdSendToRepl), false) { 
             _interactiveWorkflow = interactiveWorkflow;
+            _leadingArgument = leadingArgument;
+            _closingArgument = closingArgument;
+
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -46,7 +51,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             window.Container.Show(false);
-            _interactiveWorkflow.Operations.EnqueueExpression(text, true);
+            if (text.Trim().Length > 0)
+            {
+                _interactiveWorkflow.Operations.EnqueueExpression(_leadingArgument + text + _closingArgument, true);
+            } else {
+                _interactiveWorkflow.Operations.EnqueueExpression(text, true);
+            }
+
 
             var targetLine = line;
             while (targetLine.LineNumber < snapshot.LineCount - 1) {

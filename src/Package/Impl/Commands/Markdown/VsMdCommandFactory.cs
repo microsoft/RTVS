@@ -43,6 +43,10 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
                 new PreviewPdfCommand(textView),
                 new PreviewWordCommand(textView),
                 new SendToReplCommand(textView, workflow),
+                new SendToReplObjectSummary(textView, workflow),
+                new SendToReplObjectHead(textView, workflow),
+                new SendToReplObjectNames(textView, workflow),
+                new SendToReplObjectDim(textView, workflow),
                 new ClearReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
             };

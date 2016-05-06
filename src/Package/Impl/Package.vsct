@@ -211,6 +211,9 @@
       <Group guid="guidRToolsCmdSet" id="rToolbarReplGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
       </Group>
+      <Group guid="guidRToolsCmdSet" id="rToolbarObjectsGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
+      </Group>
       <Group guid="guidRToolsCmdSet" id="rToolbarShinyGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="rToolbar"/>
       </Group>
@@ -227,6 +230,9 @@
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="groupRContextFormat" priority="0x0850">
+        <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+      </Group>
+      <Group guid="guidRToolsCmdSet" id="groupRContextObject" priority="0x0890">
         <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
       </Group>
       <Group guid="guidRToolsCmdSet" id="groupRContextHelp" priority="0x0880">
@@ -430,6 +436,54 @@
           <ButtonText>Execute In Interactive</ButtonText>
           <MenuText>E&amp;xecute In Interactive</MenuText>
           <CommandName>ExecuteInInteractive</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdObjectSummary" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="SummaryView"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Object Summary</ButtonText>
+          <MenuText>Show Object Summary</MenuText>
+          <CommandName>ShowObjectSummary</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdObjectHead" priority="0x0200" type="Button">
+        <Icon guid="ImageCatalogGuid" id="HeadingFive"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Object Head</ButtonText>
+          <MenuText>Show Object Head</MenuText>
+          <CommandName>ShowObjectHead</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdObjectDim" priority="0x0300" type="Button">
+        <Icon guid="ImageCatalogGuid" id="RulerMeasure"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Object Dim</ButtonText>
+          <MenuText>Show Object Dim</MenuText>
+          <CommandName>ShowObjectDim</CommandName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdObjectNames" priority="0x0400" type="Button">
+        <Icon guid="ImageCatalogGuid" id="ColumnLabels"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Show Object Names</ButtonText>
+          <MenuText>Show Object Names</MenuText>
+          <CommandName>ShowObjectNames</CommandName>
         </Strings>
       </Button>
 
@@ -1449,6 +1503,18 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectSummary" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarObjectsGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectHead" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarObjectsGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectDim" priority="0x300">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarObjectsGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectNames" priority="0x400">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarObjectsGroup"/>
+    </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="rToolbarDataGroup"/>
     </CommandPlacement>
@@ -1481,6 +1547,23 @@
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <!-- Object group -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectSummary" priority="0x100">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextObject"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectHead" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextObject"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectDim" priority="0x300">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextObject"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdObjectNames" priority="0x400">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextObject"/>
     </CommandPlacement>
 
     <!-- Snippets group -->
@@ -1735,6 +1818,26 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL" />
 
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectSummary" editor="guidRToolsCmdSet" key1="S" mod1="CONTROL" key2="S" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectSummary" editor="REditor" key1="S" mod1="CONTROL" key2="S" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectSummary" editor="guidMdEditor" key1="S" mod1="CONTROL" key2="S" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectSummary" editor="InteractiveWindow" key1="S" mod1="CONTROL" key2="S" mod2="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectHead" editor="guidRToolsCmdSet" key1="H" mod1="CONTROL" key2="H" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectHead" editor="REditor" key1="H" mod1="CONTROL" key2="H" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectHead" editor="guidMdEditor" key1="H" mod1="CONTROL" key2="H" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectHead" editor="InteractiveWindow" key1="H" mod1="CONTROL" key2="H" mod2="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectNames" editor="guidRToolsCmdSet" key1="N" mod1="CONTROL" key2="N" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectNames" editor="REditor" key1="N" mod1="CONTROL" key2="N" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectNames" editor="guidMdEditor" key1="N" mod1="CONTROL" key2="N" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectNames" editor="InteractiveWindow" key1="N" mod1="CONTROL" key2="N" mod2="CONTROL" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectDim" editor="guidRToolsCmdSet" key1="D" mod1="CONTROL" key2="D" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectDim" editor="REditor" key1="D" mod1="CONTROL" key2="D" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectDim" editor="guidMdEditor" key1="D" mod1="CONTROL" key2="D" mod2="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdObjectDim" editor="InteractiveWindow" key1="D" mod1="CONTROL" key2="D" mod2="CONTROL" />
+
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="REditor" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidMdEditor" key1="L" mod1="CONTROL" />
@@ -1865,6 +1968,7 @@
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
       <IDSymbol name="groupRContextRepl" value="122" />
       <IDSymbol name="groupRContextHelp" value="124"/>
+      <IDSymbol name="groupRContextObject" value="126"/>
       <!-- R debugger Autos/Locals/Watch context menu group. -->
       <IDSymbol name="groupRContextDebugger" value="125"/>
 
@@ -1897,6 +2001,12 @@
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
       <IDSymbol name="icmdClearRepl" value="517" />
+
+      <!-- Objects-->
+      <IDSymbol name="icmdObjectSummary" value="531" />
+      <IDSymbol name="icmdObjectHead" value="532" />
+      <IDSymbol name="icmdObjectDim" value="533" />
+      <IDSymbol name="icmdObjectNames" value="534" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2029,6 +2139,7 @@
       <IDSymbol name="rToolbarDataGroup" value="0x0021" />
       <IDSymbol name="rToolbarShinyGroup" value="0x0022" />
       <IDSymbol name="rToolbarMarkdownGroup" value="0x0023" />
+      <IDSymbol name="rToolbarObjectsGroup" value="0x0024" />
       <IDSymbol name="mainMenuGroup" value="0x0100"/>
       <IDSymbol name="TopLevelMenu" value="0x2100" />
       <IDSymbol name="sessionSubMenu" value="0x2110"/>

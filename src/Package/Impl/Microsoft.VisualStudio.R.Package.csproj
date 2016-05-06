@@ -185,6 +185,7 @@
     <Compile Include="Packages\R\RProjEditorFactory.cs" />
     <Compile Include="Plots\Commands\EndLocatorCommand.cs" />
     <Compile Include="ProjectSystem\Exports.cs" />
+    <Compile Include="Repl\Commands\ObjectCommands.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
