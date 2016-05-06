@@ -11,7 +11,7 @@ namespace Microsoft.Html.Core.Parser.Tokens {
     /// <summary>
     /// Token representing element or attribute name (prefix:name sequence)
     /// </summary>
-    public class NameToken : IHtmlToken, ICloneable {
+    public class NameToken : IHtmlToken {
         public static NameToken Create(int prefixStart, int prefixLength, int colonPos, int nameStart, int nameLength) {
             if (prefixLength > 0 || colonPos >= 0)
                 return new NameTokenWithPrefix(prefixStart, prefixLength, colonPos, nameStart, nameLength);
@@ -90,10 +90,6 @@ namespace Microsoft.Html.Core.Parser.Tokens {
 
         public bool IsValid() {
             return Length > 0;
-        }
-
-        public object Clone() {
-            return this.MemberwiseClone();
         }
 
         #region IToken<HtmlTokenType> Members

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Html.Core.Parser;
 using Microsoft.Html.Core.Tree.Builder;
-using Microsoft.Html.Core.Tree.Keys;
 using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.Languages.Core.Text;
 
@@ -43,11 +42,6 @@ namespace Microsoft.Html.Core.Tree {
         /// Collection of ranges representing HTML comments.
         /// </summary>
         public CommentCollection CommentCollection { get; set; }
-
-        /// <summary>
-        /// A collection of keys to all elements in the tree
-        /// </summary>
-        public ElementKeys Keys { get; private set; }
 
         /// <summary>
         /// A service that helps determine if &lt;script> block contains
@@ -114,7 +108,6 @@ namespace Microsoft.Html.Core.Tree {
 
             // Create root node last when all fields are intialized
             RootNode = new RootNode(this);
-            Keys = new ElementKeys(this);
         }
         #endregion
 
@@ -134,7 +127,6 @@ namespace Microsoft.Html.Core.Tree {
             HtmlParser parser = new HtmlParser(ParsingMode, ScriptTypeResolution, ScriptOrStyleTagNameService);
             HtmlTreeBuilder builder = new HtmlTreeBuilder(parser, this);
             parser.Parse(Text, range);
-            Keys.Rebuild();
 
             DocType = parser.DocType;
             ParsingMode = parser.ParsingMode;
@@ -204,34 +196,5 @@ namespace Microsoft.Html.Core.Tree {
             RootNode.ShiftStartingFrom(start, offset);
             CommentCollection.ReflectTextChange(start, oldLength, newLength);
         }
-
-        #region Key operations
-        /// <summary>
-        /// Checks if particular element is still in the tree. Method is thread-safe.
-        /// However, if large range of text has been deleted, key may briefly still
-        /// in the collection. If you intend to use element ranges from a background
-        /// thread make sure be working against appropriate text buffer snapshot.
-        /// </summary>
-        /// <param name="key">Element key</param>
-        /// <returns>True if element exists.</returns>
-        public bool ContainsElement(int key) {
-            if (key == 0)
-                return true; // Tree always contains root element
-
-            return Keys[key] != null;
-        }
-
-        /// <summary>
-        /// Retrieves element node by its key. Must only be called if caller has tree read lock.
-        /// Element node may become invalid during next tree update unless caller is holding 
-        /// a read lock or caller is on the application main thread.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public ElementNode GetElement(int key) {
-            return Keys[key];
-        }
-
-        #endregion
     }
 }

@@ -173,20 +173,6 @@ namespace Microsoft.Html.Core.Parser.Tokens {
 
         #endregion
 
-        public object Clone() {
-            var clone = this.MemberwiseClone() as AttributeToken;
-
-            if (this.NameToken != null)
-                clone.NameToken = ((ICloneable)this.NameToken).Clone() as IHtmlToken;
-
-            clone.EqualsSign = this.EqualsSign;
-
-            if (this.ValueToken != null)
-                clone.ValueToken = ((ICloneable)this.ValueToken).Clone() as IHtmlAttributeValueToken;
-
-            return clone;
-        }
-
         [ExcludeFromCodeCoverage]
         public override string ToString() {
             if (NameToken != null && ValueToken != null) {

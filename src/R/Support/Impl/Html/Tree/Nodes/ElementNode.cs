@@ -46,47 +46,12 @@ namespace Microsoft.Html.Core.Tree.Nodes {
         public virtual ReadOnlyCollection<ElementNode> Children { get; internal set; }
 
         /// <summary>Element attribute nodes</summary>
-        public ReadOnlyCollection<AttributeNode> Attributes { get { return StartTag.Attributes; } }
-
-        /// <summary>Element parent in the linked (master) document. Typically used in master/content
-        /// page scenario when content page element parent is not the document root but
-        /// rather element in the parent master page tree</summary>
-        public ElementNode MasterParent { get; internal set; }
-
-        /// <summary>
-        /// Element unique key. Helps track elements in the tree as they come and go.
-        /// For example, validation thread uses this to see if element it is about
-        /// to validate is still in the tree or if it is already gone (deleted).
-        /// </summary>
-        public int Key { get; set; }
-
-        /// <summary>
-        /// Collection of orphaned end tags that reside within element inner range
-        /// </summary>
-        public ReadOnlyTextRangeCollection<TagNode> OrphanedEndTags {
-            get {
-                if (OrphanedEndTagsCollection != null)
-                    return new ReadOnlyTextRangeCollection<TagNode>(OrphanedEndTagsCollection);
-
-                return new ReadOnlyTextRangeCollection<TagNode>(_emptyEndTagCollection);
-            }
-        }
-
-        /// <summary>
-        /// True if some of the node children were removed as a result
-        /// of destructive editing. Used in incremental tree updates.
-        /// </summary>
-        internal bool ChildrenInvalidated { get; set; }
+        public ReadOnlyCollection<AttributeNode> Attributes => StartTag.Attributes;
 
         // Stores 'max' position in the text buffer when element is not closed. Typically 'max'
         // is the text buffer length and it is the point where element start, end tag or element
         // content virtually ends when tag is not closed yet.
         protected int VirtualEnd { get; set; }
-
-        /// <summary>
-        /// True if element has ASP.NET runat="server" attribute
-        /// </summary>
-        private bool _hasRunatServerAttribute = false;
 
         /// <summary>
         /// Collection of orphaned end tags that appear in the element inner range.
@@ -326,7 +291,7 @@ namespace Microsoft.Html.Core.Tree.Nodes {
                     return HtmlPositionType.InEndTag;
             }
 
-            if (this.IsScriptBlock() && !this.IsMarkupScriptBlock())
+            if (this.IsScriptBlock())
                 return HtmlPositionType.InScriptBlock;
 
             if (this.IsStyleBlock())
@@ -615,51 +580,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             return isScript;
         }
 
-        /// <summary>
-        /// Determines if script block contains markup rather than code.
-        /// </summary>
-        public bool IsMarkupScriptBlock() {
-            if (IsScriptBlock() && !IsRunatServer()) {
-                var tree = this.Root.Tree;
-                if (tree != null) {
-                    var typeAttribute = GetAttribute("type", this.Root.Tree.IgnoreCase);
-                    if (typeAttribute != null && typeAttribute.HasValue()) {
-                        return tree.ScriptTypeResolution.IsScriptContentMarkup(typeAttribute.Value);
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines if script block is a JavaScript block.
-        /// </summary>
-        public bool IsJavaScriptBlock() {
-            if (IsClientScriptBlock()) {
-                var tree = this.Root.Tree;
-                if (tree != null) {
-                    var typeAttribute = GetAttribute("type", tree.IgnoreCase);
-                    if (typeAttribute != null && typeAttribute.HasValue()) {
-                        return tree.ScriptTypeResolution.IsScriptContentJavaScript(typeAttribute.Value);
-                    } else {
-                        // Script blocks with no "type" attribute or with no value for that attribute will
-                        // be classified as JavaScript
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines if script block contains client script code.
-        /// </summary>
-        public bool IsClientScriptBlock() {
-            return IsScriptBlock() && !IsRunatServer() && !IsMarkupScriptBlock();
-        }
-
         /// <summary>Determines if element is a style block</summary>
         public bool IsStyleBlock() {
             if (Root.ParsingMode == ParsingMode.Xml)
@@ -670,37 +590,9 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             return String.Compare(Name, "style", comparison) == 0;
         }
 
-        /// <summary>Determines if element has runat="server" attribute</summary>
-        public bool IsRunatServer() {
-            return _hasRunatServerAttribute;
-        }
-
-        /// <summary>Determines if element is an ASP.NET control</summary>
-        public bool IsAspNetControl() {
-            if (Root.ParsingMode == ParsingMode.Xml)
-                return false;
-
-            return GetAttribute("id", ignoreCase: true) != null && this.IsRunatServer();
-        }
-
         /// <summary>Determines if element is a DOCTYPE element</summary>
         public bool IsDocType() {
             return !HasPrefix() && String.Compare(Name, "!doctype", StringComparison.OrdinalIgnoreCase) == 0;
-        }
-
-        /// <summary>Determines if element is an XML Processing Instruction</summary>
-        public bool IsXmlPi() {
-            return !HasPrefix() && String.Compare(Name, "?xml", StringComparison.Ordinal) == 0;
-        }
-
-        public string Id {
-            get {
-                var idAttribute = GetAttribute("id", Root.Tree.IgnoreCase);
-                if (idAttribute != null && idAttribute.HasValue())
-                    return idAttribute.Value;
-
-                return String.Empty;
-            }
         }
         #endregion
 
@@ -762,10 +654,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             }
         }
 
-        public void RemoveAllChildren() {
-            Children = ElementNode.EmptyCollection;
-        }
-
         /// <summary>
         /// Locates element attribute by name using string comparison as 
         /// specified by tree the element is in.
@@ -786,15 +674,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             int foundIndex = GetAttributeIndex(attributeName, ignoreCase);
 
             return foundIndex >= 0 ? Attributes[foundIndex] : null;
-        }
-
-        /// <summary>
-        /// Locates element attribute by name
-        /// </summary>
-        /// <param name="attributeName">Fully qualified attribute name</param>
-        /// <returns>index of attribute if found, else -1</returns>
-        public int GetAttributeIndex(string attributeName) {
-            return GetAttributeIndex(attributeName, this.Root.IgnoreCase);
         }
 
         /// <summary>
@@ -838,99 +717,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Returns next element sibling or null if element is the last child or element is a root node
-        /// </summary>
-        public ElementNode NextSibling {
-            get {
-                if (!(this is RootNode)) {
-                    for (int i = 0; i < Parent.Children.Count; i++) {
-                        if (Parent.Children[i] == this)
-                            return i == Parent.Children.Count - 1 ? null : Parent.Children[i + 1];
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Returns previous element sibling or null if element is the first child or element is a root node
-        /// </summary>
-        public ElementNode PreviousSibling {
-            get {
-                if (!(this is RootNode)) {
-                    for (int i = 0; i < Parent.Children.Count; i++) {
-                        if (Parent.Children[i] == this)
-                            return i == 0 ? null : Parent.Children[i - 1];
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Clones tre node with or without children. Clone does not have positioning information. 
-        /// Primary use of the close is HTML validation that runs in a background thread and only
-        /// needs data like element name or attribute value.
-        /// </summary>
-        /// <param name="parent">Parent element to use. Must also be a clone.</param>
-        /// <param name="cloneChildren">True if method should recurse into children nodes and clone them as well.</param>
-        /// <returns>Element clone. Clone contains textual data but no positioning information.</returns>
-        public virtual ElementNode Clone(ElementNode parent, bool cloneChildren) {
-            var clone = base.Clone() as ElementNode;
-
-            clone.Parent = parent;
-
-            if (cloneChildren && Children.Count > 0) {
-                var children = new ElementNode[cloneChildren ? Children.Count : 0];
-                for (int i = 0; i < children.Length; i++) {
-                    children[i] = Children[i].Clone(clone, cloneChildren) as ElementNode;
-                }
-
-                clone.Children = new ReadOnlyCollection<ElementNode>(children);
-            } else {
-                clone.Children = ElementNode.EmptyCollection;
-            }
-
-            clone.StartTag = StartTag.Clone() as TagNode;
-
-            if (clone.EndTag != null)
-                clone.EndTag = EndTag.Clone() as TagNode;
-
-            clone.Properties = Properties;
-
-            return clone;
-        }
-
-        /// <summary>
-        /// Compares element qualified name to the provided one using
-        /// string comparion rules as specified by the containing tree.
-        /// </summary>
-        public bool IsElement(string name) {
-            return QualifiedName.Equals(name, this.Root.StringComparison);
-        }
-
-        /// <summary>
-        /// Clones element without its children
-        /// </summary>
-        /// <param name="parent">Parent element to use. Must also be a clone.</param>
-        /// <returns>Element clone. Clone contains textual data but no positioning information.</returns>
-        public ElementNode CloneSingle(ElementNode parent) {
-            return Clone(parent, false);
-        }
-
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "cloneChildren")]
-        [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ElementNode")]
-        public override object Clone() {
-            throw new NotImplementedException("Call ElementNode.Clone(ElementNode parent, bool cloneChildren) instead");
-        }
-
-        internal void ClearOrphanedEndTags() {
-            OrphanedEndTagsCollection = null;
         }
 
         [ExcludeFromCodeCoverage]

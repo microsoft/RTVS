@@ -5,7 +5,7 @@ using System;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Html.Core.Parser.Tokens {
-    public class HtmlToken : BaseHtmlToken {
+    public sealed class HtmlToken : BaseHtmlToken {
         private readonly bool _isWellFormed;
         private readonly HtmlTokenType _tokenType;
 
@@ -47,7 +47,7 @@ namespace Microsoft.Html.Core.Parser.Tokens {
     /// <summary>
     /// HTML parse token. Implements IToken interface.
     /// </summary>
-    public abstract class BaseHtmlToken : IHtmlToken, ICloneable, IExpandableTextRange {
+    public abstract class BaseHtmlToken : IHtmlToken, IExpandableTextRange {
         public abstract bool IsWellFormed { get; }
 
         private int _start;
@@ -56,10 +56,6 @@ namespace Microsoft.Html.Core.Parser.Tokens {
         public BaseHtmlToken(int start, int length) {
             _start = start;
             _end = start + length;
-        }
-
-        public virtual object Clone() {
-            return this.MemberwiseClone();
         }
 
         #region IToken<HtmlTokenType> Members

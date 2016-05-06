@@ -7,10 +7,10 @@ using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Html.Core.Tree.Builder {
-    internal class HtmlClosureProvider {
+    internal sealed class HtmlClosureProvider {
         // URI to provider map
-        Dictionary<string, IHtmlClosureProvider> _providers = new Dictionary<string, IHtmlClosureProvider>(StringComparer.Ordinal);
-        DefaultHtmlClosureProvider _defaultProvider = new DefaultHtmlClosureProvider();
+        private readonly Dictionary<string, IHtmlClosureProvider> _providers = new Dictionary<string, IHtmlClosureProvider>(StringComparer.Ordinal);
+        private readonly DefaultHtmlClosureProvider _defaultProvider = new DefaultHtmlClosureProvider();
 
         /// <summary>
         /// Registers closure provides for a particular element prefix (namespace)

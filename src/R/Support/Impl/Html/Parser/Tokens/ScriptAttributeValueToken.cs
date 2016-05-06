@@ -7,6 +7,6 @@ namespace Microsoft.Html.Core.Parser.Tokens {
             base(token, openQuote, closeQuote) {
         }
 
-        public override bool IsScript { get { return true; } }
+        public override bool IsScript => true;
     }
 }

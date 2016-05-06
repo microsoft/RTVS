@@ -149,27 +149,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             return false;
         }
 
-        public override object Clone() {
-            var clone = base.Clone() as TagNode;
-
-            clone.NameToken = ((ICloneable)NameToken).Clone() as NameToken;
-
-            if (Attributes != null) {
-                if (Attributes.Count == 0) {
-                    clone.Attributes = AttributeNode.EmptyCollection;
-                } else {
-                    var attributes = new AttributeNode[Attributes.Count];
-                    for (int i = 0; i < Attributes.Count; i++) {
-                        attributes[i] = this.Attributes[i].Clone() as AttributeNode;
-                    }
-
-                    clone.Attributes = new ReadOnlyCollection<AttributeNode>(attributes);
-                }
-            }
-
-            return clone;
-        }
-
         [ExcludeFromCodeCoverage]
         public override string ToString() {
             return String.Format(

@@ -17,12 +17,5 @@ namespace Microsoft.Html.Core.Parser.Tokens {
         public override HtmlTokenType TokenType => _tokenType;
         public override char OpenQuote  => _openQuote;
         public override char CloseQuote  => _closeQuote;
-
-        #region ICloneable
-        public override object Clone() {
-            ComplexAttributeValueToken clone = base.Clone() as ComplexAttributeValueToken;
-            return clone;
-        }
-        #endregion
     }
 }

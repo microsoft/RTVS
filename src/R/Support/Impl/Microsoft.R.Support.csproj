@@ -104,7 +104,6 @@
     <Compile Include="Html\Parser\DocTypeCollection.cs" />
     <Compile Include="Html\Parser\Events\Events.cs" />
     <Compile Include="Html\Parser\Fragments\CommentCollection.cs" />
-    <Compile Include="Html\Parser\Fragments\CommentSeparatorInfo.cs" />
     <Compile Include="Html\Parser\Fragments\SensitiveFragmentCollection.cs" />
     <Compile Include="Html\Parser\HtmlParser.cs" />
     <Compile Include="Html\Parser\HtmlParser_AttributeState.cs" />
@@ -116,7 +115,6 @@
     <Compile Include="Html\Parser\HtmlParser_StartTagState.cs" />
     <Compile Include="Html\Parser\HtmlParser_StyleState.cs" />
     <Compile Include="Html\Parser\HtmlParser_TextState.cs" />
-    <Compile Include="Html\Parser\ParserState.cs" />
     <Compile Include="Html\Parser\ParsingMode.cs" />
     <Compile Include="Html\Parser\Tokens\AttributeToken.cs" />
     <Compile Include="Html\Parser\Tokens\AttributeValueToken.cs" />
@@ -142,17 +140,10 @@
     <Compile Include="Html\Tree\Definitions\IHtmlClosureProviderTextRange.cs" />
     <Compile Include="Html\Tree\Definitions\IHtmlScriptOrStyleTagNamesService.cs" />
     <Compile Include="Html\Tree\Definitions\IHtmlScriptTypeResolutionService.cs" />
-    <Compile Include="Html\Tree\Definitions\QualifiedName.cs" />
-    <Compile Include="Html\Tree\Events\Events.cs" />
-    <Compile Include="Html\Tree\Extensions\ElementExtensions.cs" />
-    <Compile Include="Html\Tree\Extensions\Whitespace.cs" />
     <Compile Include="Html\Tree\HtmlTree.cs" />
-    <Compile Include="Html\Tree\Keys\KeyGenerator.cs" />
-    <Compile Include="Html\Tree\Keys\Keys.cs" />
     <Compile Include="Html\Tree\Nodes\AttributeNode.cs" />
     <Compile Include="Html\Tree\Nodes\AttributeNodeWithPrefix.cs" />
     <Compile Include="Html\Tree\Nodes\ElementNode.cs" />
-    <Compile Include="Html\Tree\Nodes\NodeCollection.cs" />
     <Compile Include="Html\Tree\Nodes\RootNode.cs" />
     <Compile Include="Html\Tree\Nodes\TagNode.cs" />
     <Compile Include="Html\Tree\Nodes\TagNodeWithPrefix.cs" />

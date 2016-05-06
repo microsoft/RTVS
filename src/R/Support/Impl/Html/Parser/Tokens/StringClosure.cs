@@ -47,7 +47,7 @@ namespace Microsoft.Html.Core.Parser.Tokens {
     /// or &lt;a b="c="d" &gt;
     /// </summary>
     internal class StringClosure {
-        private HtmlCharStream _cs;
+        private readonly HtmlCharStream _cs;
 
         public StringClosure(HtmlCharStream cs) {
             _cs = cs;

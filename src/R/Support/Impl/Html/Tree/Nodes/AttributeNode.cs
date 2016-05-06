@@ -14,7 +14,7 @@ namespace Microsoft.Html.Core.Tree.Nodes {
     /// HTML tree node that represents an attribute
     /// </summary>
     public class AttributeNode : TreeNode {
-        string _name;
+        private string _name;
         internal static ReadOnlyCollection<AttributeNode> EmptyCollection = new ReadOnlyCollection<AttributeNode>(new AttributeNode[0]);
 
         public static AttributeNode Create(ElementNode parent, AttributeToken token) {
@@ -50,19 +50,18 @@ namespace Microsoft.Html.Core.Tree.Nodes {
         /// <summary>
         /// Attribute value token
         /// </summary>
-        public IHtmlAttributeValueToken ValueToken { get { return AttributeToken.ValueToken; } }
-
-        public override string Name { get { return _name; } }
+        public IHtmlAttributeValueToken ValueToken => AttributeToken.ValueToken;
+        public override string Name => _name;
 
         /// <summary>
         /// Node prefix
         /// </summary>
-        public override string Prefix { get { return String.Empty; } }
+        public override string Prefix => string.Empty;
 
         /// <summary>
         /// Node fully qialified name (prefix:name)
         /// </summary>
-        public override string QualifiedName { get { return Name; } }
+        public override string QualifiedName => Name;
 
         /// <summary>
         /// Attribute value with quotes
@@ -305,13 +304,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
                 QuotedValue = String.Empty;
                 Value = String.Empty;
             }
-        }
-
-        public override object Clone() {
-            var clone = base.Clone() as AttributeNode;
-            clone.AttributeToken = AttributeToken.Clone() as AttributeToken;
-
-            return clone;
         }
 
         [ExcludeFromCodeCoverage]

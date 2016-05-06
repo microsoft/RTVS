@@ -72,8 +72,9 @@ namespace Microsoft.Html.Core.Parser.Tokens {
     // XML does not allow < in attribute values, even when quoted.
 
     internal class HtmlTokenizer {
-        HtmlCharStream _cs;
-        StringClosure _stringClosure;
+        private readonly HtmlCharStream _cs;
+        private readonly StringClosure _stringClosure;
+
         public HtmlTokenizer(HtmlCharStream cs) {
             _cs = cs;
             _stringClosure = new StringClosure(cs);

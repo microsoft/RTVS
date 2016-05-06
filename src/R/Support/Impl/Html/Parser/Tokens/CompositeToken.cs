@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Languages.Core.Text;
@@ -14,7 +13,7 @@ namespace Microsoft.Html.Core.Parser.Tokens {
     /// also represents HTML comment and consists of opening &lt;!--, inner text
     /// and closing -->
     /// </summary>
-    public abstract class CompositeToken : TextRangeCollection<IHtmlToken>, IHtmlToken, ICloneable {
+    public abstract class CompositeToken : TextRangeCollection<IHtmlToken>, IHtmlToken {
         protected CompositeToken()
             : this(new IHtmlToken[0]) {
         }
@@ -22,20 +21,6 @@ namespace Microsoft.Html.Core.Parser.Tokens {
         protected CompositeToken(IHtmlToken[] tokens)
             : base(tokens) {
         }
-
-        #region ICloneable
-        public object Clone() {
-            var clone = this.MemberwiseClone() as CompositeToken;
-            var clonedTokens = new IHtmlToken[this.Count];
-
-            for (int i = 0; i < this.Count; i++) {
-                var tokenClone = ((ICloneable)this[i]).Clone() as IHtmlToken;
-                clonedTokens[i] = tokenClone;
-            }
-
-            return clone;
-        }
-        #endregion
 
         public override bool Contains(int position) {
             if (Count > 0 && !this[Count - 1].IsWellFormed && position == this[Count - 1].End)

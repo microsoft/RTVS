@@ -26,25 +26,17 @@ namespace Microsoft.Html.Core.Parser.Tokens {
         /// <summary>
         /// Opening quote characher or null character if attribute value is not quoted.
         /// </summary>
-        public virtual char OpenQuote {
-            get {
-                return '"';
-            }
-        }
+        public virtual char OpenQuote => '"';
 
         /// <summary>
         /// Closing quote characher or null character if attribute value has no closing quote.
         /// </summary>
-        public virtual char CloseQuote {
-            get {
-                return '"';
-            }
-        }
+        public virtual char CloseQuote => '"';
 
         /// <summary>
         /// True of attribute value is client script.
         /// </summary>
-        public virtual bool IsScript { get { return false; } }
+        public virtual bool IsScript => false;
 
         public virtual ReadOnlyTextRangeCollection<IHtmlToken> Tokens {
             get {

@@ -13,7 +13,6 @@ using Microsoft.Languages.Core.Text;
 namespace Microsoft.Html.Core.Tree.Nodes {
     public sealed class RootNode : ElementNode {
         private HtmlTree _owner;
-        private ITextProvider _clonedProvider;
         private StringComparison _stringComparison;
 
         public RootNode(HtmlTree owner)
@@ -22,24 +21,11 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             Children = ElementNode.EmptyCollection;
         }
 
-        public override ITextProvider TextProvider {
-            get {
-                if (Tree != null)
-                    return Tree.Text;
-                else if (_clonedProvider != null)
-                    return _clonedProvider;
-                else
-                    return null;
-            }
-        }
-
-        public HtmlTree Tree { get { return _owner; } }
-
-        public override RootNode Root { get { return this; } }
-
-        public override bool IsRoot { get { return true; } }
-
-        public ParsingMode ParsingMode { get { return Tree != null ? Tree.ParsingMode : ParsingMode.Html; } }
+        public override ITextProvider TextProvider => Tree?.Text;
+        public HtmlTree Tree => _owner;
+        public override RootNode Root => this;
+        public override bool IsRoot => true;
+        public ParsingMode ParsingMode => Tree != null ? Tree.ParsingMode : ParsingMode.Html;
 
         private DocType? _docType;
         public DocType DocType {
@@ -62,33 +48,17 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             }
         }
 
-        public override string Name {
-            get { return String.Empty; }
-        }
+        public override string Name => string.Empty;
+        public override string QualifiedName => string.Empty;
+        public override string Prefix => string.Empty;
+        public override int Start => 0;
+        public override int End => _owner.Text.Length;
 
-        public override string QualifiedName {
-            get { return String.Empty; }
-        }
-
-        public override string Prefix {
-            get { return String.Empty; }
-        }
-
-        public override int Start { get { return 0; } }
-
-        public override int End {
-            get { return _owner.Text.Length; }
-        }
-
-        public override ITextRange NameRange { get { return TextRange.EmptyRange; } }
-
-        public override ITextRange InnerRange { get { return TextRange.FromBounds(Start, End); } }
-
-        public override ITextRange OuterRange { get { return TextRange.FromBounds(Start, End); } }
-
-        public override ITextRange PrefixRange { get { return TextRange.EmptyRange; } }
-
-        public StringComparison StringComparison { get { return Tree != null ? Tree.StringComparison : _stringComparison; } }
+        public override ITextRange NameRange => TextRange.EmptyRange;
+        public override ITextRange InnerRange => TextRange.FromBounds(Start, End);
+        public override ITextRange OuterRange => TextRange.FromBounds(Start, End);
+        public override ITextRange PrefixRange => TextRange.EmptyRange;
+        public StringComparison StringComparison => Tree != null ? Tree.StringComparison : _stringComparison;
 
         public IEqualityComparer<string> StringComparer {
             get {
@@ -164,55 +134,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             if (OrphanedEndTagsCollection != null)
                 OrphanedEndTagsCollection.ShiftStartingFrom(start, offset);
         }
-
-        /// <summary>
-        /// Finds two elements that surround given text range
-        /// </summary>
-        /// <param name="start">Range start</param>
-        /// <param name="length">Range length</param>
-        /// <param name="startNode">Element that precedes the range or null if there is none</param>
-        /// <param name="startPositionType">Type of position in the start element</param>
-        /// <param name="endNode">Element that follows the range or null if there is none</param>
-        /// <param name="endPositionType">Type of position in the end element</param>
-        /// <returns>Element that encloses the range or root node</returns>
-        public ElementNode GetElementsEnclosingRange(
-                                int start, int length,
-                                out ElementNode startNode, out HtmlPositionType startPositionType,
-                                out ElementNode endNode, out HtmlPositionType endPositionType) {
-            int end = start + length;
-
-            AttributeNode att1;
-            startPositionType = GetPositionElement(start, out startNode, out att1);
-            if (start != end) {
-                AttributeNode att2;
-                endPositionType = GetPositionElement(end, out endNode, out att2);
-            } else {
-                endNode = startNode;
-                endPositionType = startPositionType;
-            }
-
-            if (startNode == endNode)
-                return startNode;
-
-            return this;
-        }
-
-        public override ElementNode Clone(ElementNode parent, bool cloneChildren) {
-            var clone = base.Clone(null, cloneChildren) as RootNode;
-
-            for (int i = 0; i < clone.Children.Count; i++) {
-                clone.Children[i].Parent = clone;
-            }
-
-            clone._clonedProvider = clone._owner.Text;
-            clone._stringComparison = clone._owner.StringComparison;
-
-            clone._owner = null; // clones don't have trees
-            clone.DocType = DocType;
-
-            return clone;
-        }
-
 
         [ExcludeFromCodeCoverage]
         public override string ToString() {

@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Html.Core.Parser;
 using Microsoft.Html.Core.Parser.Tokens;
-using Microsoft.Html.Core.Tree.Keys;
 using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.Languages.Core.Text;
 
@@ -128,7 +127,6 @@ namespace Microsoft.Html.Core.Tree.Builder {
             var parentRecord = _elementStack.Count > 0 ? _elementStack.Peek() : _rootNodeRecord;
 
             ElementNode element = new ElementNode(parentRecord.Element, e.OpenAngleBracketPosition, e.NameToken, _tree.Text.Length);
-            element.Key = KeyGenerator.GetNextKey();
 
             parentRecord.Children.Add(element);
             _currentElementRecord = new ElementRecord(element);

@@ -7,7 +7,7 @@ using System.Globalization;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Html.Core.Tree.Nodes {
-    public abstract class TreeNode : ITextRange, ICloneable {
+    public abstract class TreeNode : ITextRange {
         /// <summary>
         /// Node name
         /// </summary>
@@ -90,18 +90,6 @@ namespace Microsoft.Html.Core.Tree.Nodes {
         [ExcludeFromCodeCoverage]
         public override string ToString() {
             return String.Format(CultureInfo.CurrentCulture, "<{0}  [{1}...{2}", QualifiedName, Start, End);
-        }
-
-        /// <summary>
-        /// Clones tre node with or without children. Clone does not have positioning information. 
-        /// Primary use of the close is HTML validation that runs in a background thread and only
-        /// needs data like element name or attribute value.
-        /// </summary>
-        /// <param name="parent">Parent element to use. Must also be a clone.</param>
-        /// <param name="cloneChildren">True if method should recurse into children nodes and clone them as well.</param>
-        /// <returns></returns>
-        public virtual object Clone() {
-            return this.MemberwiseClone();
         }
     }
 }
