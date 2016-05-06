@@ -22,7 +22,7 @@ namespace Microsoft.R.Core.Test.DataTips {
     [ExcludeFromCodeCoverage]
     public class DataTipTest {
         [CompositeTest]
-        [Category.R.Debugger]
+        [Category.R.DataInspection]
         [MemberData(nameof(Everywhere), "NULL")]
         [MemberData(nameof(Everywhere), "NA")]
         [MemberData(nameof(Everywhere), "42")]

@@ -145,10 +145,6 @@
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Impl\Microsoft.R.Debugger.csproj">
-      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
-      <Name>Microsoft.R.Debugger</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
