@@ -13,7 +13,6 @@ using Microsoft.Languages.Core.Text;
 namespace Microsoft.Html.Core.Tree.Nodes {
     public sealed class RootNode : ElementNode {
         private HtmlTree _owner;
-        private StringComparison _stringComparison;
 
         public RootNode(HtmlTree owner)
             : base(null, 0, NameToken.Create(0, 0), owner.Text.Length) {
@@ -58,7 +57,7 @@ namespace Microsoft.Html.Core.Tree.Nodes {
         public override ITextRange InnerRange => TextRange.FromBounds(Start, End);
         public override ITextRange OuterRange => TextRange.FromBounds(Start, End);
         public override ITextRange PrefixRange => TextRange.EmptyRange;
-        public StringComparison StringComparison => Tree != null ? Tree.StringComparison : _stringComparison;
+        public StringComparison StringComparison => Tree != null ? Tree.StringComparison : StringComparison.OrdinalIgnoreCase;
 
         public IEqualityComparer<string> StringComparer {
             get {
@@ -72,7 +71,7 @@ namespace Microsoft.Html.Core.Tree.Nodes {
             }
         }
 
-        public bool IgnoreCase { get { return Tree != null ? Tree.IgnoreCase : _stringComparison == StringComparison.OrdinalIgnoreCase; } }
+        public bool IgnoreCase { get { return Tree != null ? Tree.IgnoreCase : true; } }
 
         public string GetText(int start, int length) {
             if (Tree != null)

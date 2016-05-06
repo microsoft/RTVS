@@ -4,10 +4,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.R.Support.Test.Utility {
+namespace Microsoft.Html.Core.Test.Utility {
     [ExcludeFromCodeCoverage]
     [AssemblyFixture]
-    public class SupportTestFilesSetup : DeployFilesFixture {
-        public SupportTestFilesSetup() : base(@"R\Support\Test\RD\Files", "Files") {}
+    public class HtmlTestFilesFixture : DeployFilesFixture {
+        public HtmlTestFilesFixture() : base(@"R\Support\Test\Html\Files", "Files") {}
     }
 }

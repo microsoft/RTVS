@@ -113,7 +113,7 @@ namespace Microsoft.Html.Core.Parser {
         /// <param name="text">String to parse</param>
         public void Parse(string text) {
             TextStream ts = new TextStream(text);
-            Parse(ts, null);
+            Parse(ts);
         }
 
         /// <summary>
