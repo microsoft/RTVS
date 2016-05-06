@@ -114,7 +114,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             VsWpfOverrides.Apply();
             CranMirrorList.Download();
-            VerifyWebToolsInstalled();
 
             RtvsTelemetry.Initialize();
 
@@ -193,16 +192,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override WindowPane CreateToolWindow(Type toolWindowType, int id) {
             var toolWindowFactory = VsAppShell.Current.ExportProvider.GetExportedValue<RPackageToolWindowProvider>();
             return toolWindowFactory.CreateToolWindow(toolWindowType, id) ?? base.CreateToolWindow(toolWindowType, id);
-        }
-
-        private void VerifyWebToolsInstalled() {
-            Guid htmlEditorPackage = new Guid("CF49EC7D-92B1-4BBD-9254-9CC13978E82E");
-            var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
-            int installed;
-            int hr = shell.IsPackageInstalled(ref htmlEditorPackage, out installed);
-            if (hr != VSConstants.S_OK || installed == 0) {
-                VsAppShell.Current.ShowErrorMessage(Package.Resources.Error_NoWebTools);
-            }
         }
 
         private bool IsCommandLineMode() {
