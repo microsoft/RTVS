@@ -1,8 +1,0 @@
-Package: rtvs
-Title: R Tools for Visual Studio support package
-Version: 1.0.0.0
-Authors@R: person("Microsoft Corporation", "", email = "rtvshelp@microsoft.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.2.2)
-License: MIT
-LazyData: true
