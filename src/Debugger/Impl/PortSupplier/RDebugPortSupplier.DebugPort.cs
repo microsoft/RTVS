@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace Microsoft.R.Debugger.Engine.PortSupplier {
+namespace Microsoft.R.Debugger.PortSupplier {
     partial class RDebugPortSupplier {
         internal class DebugPort : IDebugPort2 {
             private readonly RDebugPortSupplier _supplier;

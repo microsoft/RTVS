@@ -4,7 +4,7 @@
 using System;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7Module : IDebugModule2, IDebugModule3 {
         int IDebugModule3.GetInfo(enum_MODULE_INFO_FIELDS dwFields, MODULE_INFO[] pinfo) {
             throw new NotImplementedException();

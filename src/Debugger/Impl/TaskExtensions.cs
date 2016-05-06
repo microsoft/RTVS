@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal static class TaskExtensions {
         private static readonly Lazy<IVsThreadedWaitDialogFactory> _twdf = new Lazy<IVsThreadedWaitDialogFactory>(() => {
             var twdf = (IVsThreadedWaitDialogFactory)Package.GetGlobalService(typeof(SVsThreadedWaitDialogFactory));

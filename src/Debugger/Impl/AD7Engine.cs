@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Debugger.Engine.PortSupplier;
+using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     [ComVisible(true)]
     [Guid(DebuggerGuids.DebugEngineCLSIDString)]
     public sealed class AD7Engine : IDebugEngine2, IDebugEngineLaunch2, IDebugProgram3, IDebugSymbolSettings100 {

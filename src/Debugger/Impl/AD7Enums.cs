@@ -4,7 +4,7 @@
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal class AD7Enum<T, I> where I : class {
         readonly T[] m_data;
         uint m_position;

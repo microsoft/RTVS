@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     [ComVisible(true)]
     [Guid(DebuggerGuids.CustomViewerString)]
     public class AD7CustomViewer : IDebugCustomViewer {

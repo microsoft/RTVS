@@ -6,7 +6,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7MemoryAddress : IDebugCodeContext2, IDebugCodeContext100 {
         private IDebugMemoryContext2 IDebugMemoryContext2 => this;
         private IDebugCodeContext2 IDebugCodeContext2 => this;

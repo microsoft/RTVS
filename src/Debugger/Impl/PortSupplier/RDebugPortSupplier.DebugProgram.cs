@@ -6,7 +6,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine.PortSupplier {
+namespace Microsoft.R.Debugger.PortSupplier {
     partial class RDebugPortSupplier {
         internal class DebugProgram : IDebugProgram2 {
 

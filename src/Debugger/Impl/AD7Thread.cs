@@ -12,7 +12,7 @@ using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7Thread : IDebugThread2, IDebugThread100, IDisposable {
         private Lazy<IReadOnlyList<IRStackFrame>> _stackFrames;
 

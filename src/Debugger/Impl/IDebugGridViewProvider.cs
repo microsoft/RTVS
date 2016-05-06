@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.R.DataInspection;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     public interface IDebugGridViewProvider {
         bool CanShowDataGrid(IREvaluationResultInfo evaluationResult);
         void ShowDataGrid(IREvaluationResultInfo evaluationResult);

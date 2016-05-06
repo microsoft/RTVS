@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine.PortSupplier {
+namespace Microsoft.R.Debugger.PortSupplier {
     [ComVisible(true)]
     [Guid("B8164EAC-B742-4AF3-A61E-49101E4ED117")]
     public class RDebugPortPicker : IDebugPortPicker {

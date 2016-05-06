@@ -1082,9 +1082,9 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj">
+    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
       <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
-      <Name>Microsoft.R.Debugger.Engine</Name>
+      <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{E09D3BDA-2E6B-47B5-87AC-B6FC2D33DFAB}</Project>

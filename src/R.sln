@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.VisualStudio.Shel
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Actions", "R\Actions\Impl\Microsoft.R.Actions.csproj", "{B68D4AD2-2DC2-473E-AB06-408172C4FB92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger.Engine", "Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj", "{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Debugger", "Debugger\Impl\Microsoft.R.Debugger.csproj", "{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}"
 EndProject
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "SetupBundle", "SetupBundle\SetupBundle.wixproj", "{D9FF939A-A53E-4316-A909-FE8B9D254C38}"
 EndProject

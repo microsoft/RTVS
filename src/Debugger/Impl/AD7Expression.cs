@@ -9,7 +9,7 @@ using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal class AD7Expression : IDebugExpression2 {
         private readonly string _expression;
         private CancellationTokenSource _cts;

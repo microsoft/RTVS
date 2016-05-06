@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     public static class DebuggerGuids {
         public const string VendorGuidString = "994B45C4-E6E9-11D2-903F-00C04FA302A1";
         public static readonly Guid VendorGuid = new Guid(VendorGuidString);

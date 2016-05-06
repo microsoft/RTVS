@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7BreakpointResolution : IDebugBreakpointResolution2 {
         public AD7BoundBreakpoint BoundBreakpoint { get; }
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     public static class DTEDebuggerExtensions {
         /// <summary>
         /// Forces debugger to refresh its variable views (Locals, Autos etc) by re-querying the debug engine.

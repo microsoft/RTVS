@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7Property : IDebugProperty3 {
         internal const int ChildrenMaxCount = 100;
         internal static readonly string Repr = RValueRepresentations.Deparse(100);

@@ -10,7 +10,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7BoundBreakpoint : IDebugBoundBreakpoint2 {
         private enum_BP_STATE _state;
         public AD7PendingBreakpoint PendingBreakpoint { get; }

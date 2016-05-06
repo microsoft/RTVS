@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7Document : IDebugDocument2, IDebugDocumentText2 {
         int IDebugDocument2.GetDocumentClassId(out Guid pclsid) {
             throw new NotImplementedException();

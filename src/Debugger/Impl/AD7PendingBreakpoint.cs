@@ -9,7 +9,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7PendingBreakpoint : IDebugPendingBreakpoint2 {
         private readonly IDebugBreakpointRequest2 _request;
         private BP_REQUEST_INFO _requestInfo;

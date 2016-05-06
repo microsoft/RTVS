@@ -7,7 +7,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
 
-namespace Microsoft.R.Debugger.Engine.PortSupplier {
+namespace Microsoft.R.Debugger.PortSupplier {
     partial class RDebugPortSupplier {
         // VS debugger really doesn't like process ID 0, but sessions can have such an ID.
         // So for the debugger, provide fake IDs that are incremented by this amount so that we never get zero.

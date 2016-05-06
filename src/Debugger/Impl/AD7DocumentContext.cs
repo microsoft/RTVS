@@ -6,7 +6,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
-namespace Microsoft.R.Debugger.Engine {
+namespace Microsoft.R.Debugger {
     internal sealed class AD7DocumentContext : IDebugDocumentContext2 {
         public string FileName { get; }
 
