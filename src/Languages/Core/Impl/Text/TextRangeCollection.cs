@@ -68,7 +68,9 @@ namespace Microsoft.Languages.Core.Text {
         /// <summary>
         /// Sorted list of comment tokens in the document.
         /// </summary>
-        public IList<T> Items { get { return _items; } }
+        public IList<T> Items {
+            get { return _items; }
+        }
 
         /// <summary>
         /// Retrieves Nth item in the collection

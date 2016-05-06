@@ -212,5 +212,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public class ViewersAttribute : CategoryAttribute {
             public ViewersAttribute() : base("Viewers") { }
         }
+
+        [ExcludeFromCodeCoverage]
+        public class HtmlAttribute : CategoryAttribute {
+            public HtmlAttribute() : base("Html") { }
+        }
     }
 }
