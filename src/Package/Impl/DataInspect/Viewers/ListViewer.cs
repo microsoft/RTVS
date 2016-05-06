@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Linq;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             base(aggregator, evaluator) { }
 
         #region IObjectDetailsViewer
-        public override bool CanView(IDebugValueEvaluationResult evaluation) {
+        public override bool CanView(IRValueInfo evaluation) {
             return evaluation != null && evaluation.Classes.Any(t => _classes.Contains(t));
         }
         #endregion

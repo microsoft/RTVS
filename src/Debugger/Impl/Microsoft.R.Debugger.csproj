@@ -39,23 +39,31 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DebugEvaluationResultFields.cs" />
-    <Compile Include="DebugSourceLocation.cs" />
-    <Compile Include="DebugBreakpoint.cs" />
-    <Compile Include="DebugErrorEvaluationResult.cs" />
-    <Compile Include="DebugActiveBindingEvaluationResult.cs" />
-    <Compile Include="DebugPromiseEvaluationResult.cs" />
-    <Compile Include="DebugBrowseEventArgs.cs" />
-    <Compile Include="DebugChildAccessorKind.cs" />
-    <Compile Include="DebugValueEvaluationResultFlags.cs" />
-    <Compile Include="DebugValueEvaluationResult.cs" />
-    <Compile Include="DebugSession.cs" />
-    <Compile Include="DebugEvaluationResult.cs" />
-    <Compile Include="Definitions\IDebugValueEvaluationResult.cs" />
-    <Compile Include="Definitions\IDebugEvaluationResult.cs" />
-    <Compile Include="IDebugSessionProvider.cs" />
-    <Compile Include="DebugStackFrame.cs" />
-    <Compile Include="RDebugSessionProvider.cs" />
+    <Compile Include="DataInspection\IREvaluationResultInfo.cs" />
+    <Compile Include="DataInspection\IRValueInfo.cs" />
+    <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
+    <Compile Include="DataInspection\IRPromiseInfo.cs" />
+    <Compile Include="DataInspection\IRErrorInfo.cs" />
+    <Compile Include="DataInspection\RValueRepresentations.cs" />
+    <Compile Include="DataInspection\REvaluationResultProperties.cs" />
+    <Compile Include="ExecutionTracing\IRBreakpoint.cs" />
+    <Compile Include="ExecutionTracing\IRExecutionTracer.cs" />
+    <Compile Include="ExecutionTracing\RSourceLocation.cs" />
+    <Compile Include="ExecutionTracing\RBreakpoint.cs" />
+    <Compile Include="DataInspection\RErrorInfo.cs" />
+    <Compile Include="DataInspection\RActiveBindingInfo.cs" />
+    <Compile Include="DataInspection\RPromiseInfo.cs" />
+    <Compile Include="ExecutionTracing\RBrowseEventArgs.cs" />
+    <Compile Include="DataInspection\RChildAccessorKind.cs" />
+    <Compile Include="StackTracing\RSessionExtensions.cs" />
+    <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="DataInspection\RValueFlags.cs" />
+    <Compile Include="DataInspection\RValueInfo.cs" />
+    <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
+    <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
+    <Compile Include="DataInspection\REvaluationResultInfo.cs" />
+    <Compile Include="StackTracing\IRStackFrame.cs" />
+    <Compile Include="StackTracing\RStackFrame.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">

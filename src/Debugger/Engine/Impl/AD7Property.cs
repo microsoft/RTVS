@@ -5,46 +5,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Property : IDebugProperty3 {
         internal const int ChildrenMaxCount = 100;
-        internal const string Repr = "rtvs:::make_repr_deparse(max_length = 100)";
+        internal static readonly string Repr = RValueRepresentations.Deparse(100);
 
-        internal const DebugEvaluationResultFields PrefetchedFields =
-            DebugEvaluationResultFields.Expression |
-            DebugEvaluationResultFields.Kind |
-            DebugEvaluationResultFields.TypeName |
-            DebugEvaluationResultFields.Classes |
-            DebugEvaluationResultFields.Length |
-            DebugEvaluationResultFields.SlotCount |
-            DebugEvaluationResultFields.AttrCount |
-            DebugEvaluationResultFields.Dim |
-            DebugEvaluationResultFields.Flags;
+        internal const REvaluationResultProperties PrefetchedProperties =
+            ExpressionProperty |
+            AccessorKindProperty |
+            TypeNameProperty |
+            ClassesProperty |
+            LengthProperty |
+            SlotCountProperty |
+            AttributeCountProperty |
+            DimProperty |
+            FlagsProperty;
 
         private IDebugProperty2 IDebugProperty2 => this;
         private IDebugProperty3 IDebugProperty3 => this;
 
-        private Lazy<IReadOnlyList<DebugEvaluationResult>> _children;
+        private Lazy<IReadOnlyList<IREvaluationResultInfo>> _children;
         private Lazy<string> _reprToString;
 
         public AD7Property Parent { get; }
         public AD7StackFrame StackFrame { get; }
-        public DebugEvaluationResult EvaluationResult { get; }
+        public IREvaluationResultInfo EvaluationResult { get; }
         public bool IsSynthetic { get; }
         public bool IsFrameEnvironment { get; }
 
-        public AD7Property(AD7Property parent, DebugEvaluationResult result, bool isSynthetic = false)
+        public AD7Property(AD7Property parent, IREvaluationResultInfo result, bool isSynthetic = false)
             : this(parent.StackFrame, result, isSynthetic, false) {
             Parent = parent;
         }
 
-        public AD7Property(AD7StackFrame stackFrame, DebugEvaluationResult result, bool isSynthetic = false, bool isFrameEnvironment = false) {
+        public AD7Property(AD7StackFrame stackFrame, IREvaluationResultInfo result, bool isSynthetic = false, bool isFrameEnvironment = false) {
             StackFrame = stackFrame;
             EvaluationResult = result;
             IsSynthetic = isSynthetic;
@@ -54,14 +57,14 @@ namespace Microsoft.R.Debugger.Engine {
             _reprToString = Lazy.Create(GetReprToString);
         }
 
-        private IReadOnlyList<DebugEvaluationResult> CreateChildren() =>
+        private IReadOnlyList<IREvaluationResultInfo> CreateChildren() =>
             TaskExtensions.RunSynchronouslyOnUIThread(async ct => {
-                var valueResult = EvaluationResult as DebugValueEvaluationResult;
+                var valueResult = EvaluationResult as IRValueInfo;
                 if (valueResult == null) {
-                    return new DebugEvaluationResult[0];
+                    return new IREvaluationResultInfo[0];
                 }
 
-                var children = await valueResult.GetChildrenAsync(PrefetchedFields, ChildrenMaxCount, Repr, ct);
+                var children = await valueResult.DescribeChildrenAsync(PrefetchedProperties, Repr, ChildrenMaxCount, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {
@@ -73,11 +76,11 @@ namespace Microsoft.R.Debugger.Engine {
 
         private string GetReprToString() {
             var code = $"rtvs:::repr_toString(eval(quote({EvaluationResult.Expression}), envir = {EvaluationResult.EnvironmentExpression}))";
-            return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.DebugSession.RSession.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
+            return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.DebugSession.Session.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {
-            IEnumerable<DebugEvaluationResult> children = _children.Value;
+            IEnumerable<IREvaluationResultInfo> children = _children.Value;
 
             if (!RToolsSettings.Current.ShowDotPrefixedVariables) {
                 children = children.Where(v => v.Name != null && !v.Name.StartsWithOrdinal("."));
@@ -85,21 +88,21 @@ namespace Microsoft.R.Debugger.Engine {
 
             var infos = children.Select(v => new AD7Property(this, v).GetDebugPropertyInfo(dwRadix, dwFields));
 
-            var valueResult = EvaluationResult as DebugValueEvaluationResult;
+            var valueResult = EvaluationResult as IRValueInfo;
             if (valueResult != null) {
-                if (valueResult.HasAttributes == true) {
+                if (valueResult.HasAttributes() == true) {
                     string attrExpr = Invariant($"base::attributes({valueResult.Expression})");
-                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(attrExpr, "attributes()", PrefetchedFields, Repr, ct));
-                    if (!(attrResult is DebugErrorEvaluationResult)) {
+                    var attrResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(attrExpr, "attributes()", PrefetchedProperties, Repr, ct));
+                    if (!(attrResult is IRErrorInfo)) {
                         var attrInfo = new AD7Property(this, attrResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { attrInfo }.Concat(infos);
                     }
                 }
 
-                if (valueResult.Flags.HasFlag(DebugValueEvaluationResultFlags.HasParentEnvironment)) {
+                if (valueResult.Flags.HasFlag(RValueFlags.HasParentEnvironment)) {
                     string parentExpr = Invariant($"base::parent.env({valueResult.Expression})");
-                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.EvaluateAsync(parentExpr, "parent.env()", PrefetchedFields, Repr, ct));
-                    if (!(parentResult is DebugErrorEvaluationResult)) {
+                    var parentResult = TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.StackFrame.TryEvaluateAndDescribeAsync(parentExpr, "parent.env()", PrefetchedProperties, Repr, ct));
+                    if (!(parentResult is IRErrorInfo)) {
                         var parentInfo = new AD7Property(this, parentResult, isSynthetic: true).GetDebugPropertyInfo(dwRadix, dwFields);
                         infos = new[] { parentInfo }.Concat(infos);
                     }
@@ -261,7 +264,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             // TODO: dwRadix
             try {
-                TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.SetValueAsync(pszValue, ct));
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => EvaluationResult.AssignAsync(pszValue, ct));
             } catch (RException ex) { 
                 errorString = ex.Message;
                 return VSConstants.E_FAIL;
@@ -277,9 +280,9 @@ namespace Microsoft.R.Debugger.Engine {
             dpi.pProperty = this;
             dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_PROP;
 
-            var valueResult = EvaluationResult as DebugValueEvaluationResult;
-            var errorResult = EvaluationResult as DebugErrorEvaluationResult;
-            var promiseResult = EvaluationResult as DebugPromiseEvaluationResult;
+            var valueInfo = EvaluationResult as IRValueInfo;
+            var errorInfo = EvaluationResult as IRErrorInfo;
+            var promiseInfo = EvaluationResult as IRPromiseInfo;
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_FULLNAME)) {
                 dpi.bstrFullName = EvaluationResult.Expression;
@@ -295,31 +298,31 @@ namespace Microsoft.R.Debugger.Engine {
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE)) {
-                if (valueResult != null) {
-                    dpi.bstrType = valueResult.TypeName;
-                    if (valueResult.Classes != null && valueResult.Classes.Count > 0) {
-                        dpi.bstrType += " (" + string.Join(", ", valueResult.Classes) + ")";
+                if (valueInfo != null) {
+                    dpi.bstrType = valueInfo.TypeName;
+                    if (valueInfo.Classes != null && valueInfo.Classes.Count > 0) {
+                        dpi.bstrType += " (" + string.Join(", ", valueInfo.Classes) + ")";
                     }
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
-                } else if (promiseResult != null) {
+                } else if (promiseInfo != null) {
                     dpi.bstrType = "<promise>";
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
-                } else if (EvaluationResult is DebugActiveBindingEvaluationResult) {
+                } else if (EvaluationResult is IRActiveBindingInfo) {
                     dpi.bstrType = "<active binding>";
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
                 }
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
-                if (valueResult != null) {
+                if (valueInfo != null) {
                     // TODO: handle radix
-                    dpi.bstrValue = valueResult.Representation.ToUnicodeQuotes();
+                    dpi.bstrValue = valueInfo.Representation.ToUnicodeQuotes();
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
-                } else if (promiseResult != null) {
-                    dpi.bstrValue = promiseResult.Code;
+                } else if (promiseInfo != null) {
+                    dpi.bstrValue = promiseInfo.Code;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
-                } else if (errorResult != null) {
-                    dpi.bstrValue = errorResult.ErrorText;
+                } else if (errorInfo != null) {
+                    dpi.bstrValue = errorInfo.ErrorText;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 }
             }
@@ -335,15 +338,15 @@ namespace Microsoft.R.Debugger.Engine {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_CUSTOM_VIEWER;
                 }
 
-                if (valueResult?.HasChildren == true || valueResult?.HasAttributes == true) {
+                if (valueInfo?.HasChildren == true || valueInfo?.HasAttributes() == true) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_OBJ_IS_EXPANDABLE;
                 }
 
-                if (valueResult != null) {
-                    switch (valueResult.TypeName) {
+                if (valueInfo != null) {
+                    switch (valueInfo.TypeName) {
                         case "logical":
                             dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN;
-                            if (valueResult.Representation == "TRUE") {
+                            if (valueInfo.Representation == "TRUE") {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_BOOLEAN_TRUE;
                             }
                             break;
@@ -352,16 +355,16 @@ namespace Microsoft.R.Debugger.Engine {
                             break;
                         case "character":
                         case "symbol":
-                            if (valueResult.Length == 1) {
+                            if (valueInfo.Length == 1) {
                                 dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_RAW_STRING;
                             }
                             break;
                     }
-                } else if (errorResult != null) {
+                } else if (errorInfo != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_ERROR;
-                } else if (promiseResult != null) {
+                } else if (promiseInfo != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_SIDE_EFFECT;
-                } else if (EvaluationResult is DebugActiveBindingEvaluationResult) {
+                } else if (EvaluationResult is IRActiveBindingInfo) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_PROPERTY;
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_SIDE_EFFECT;
                 }

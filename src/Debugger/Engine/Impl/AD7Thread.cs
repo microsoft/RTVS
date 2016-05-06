@@ -8,24 +8,25 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
+using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace Microsoft.R.Debugger.Engine {
     internal sealed class AD7Thread : IDebugThread2, IDebugThread100, IDisposable {
-        private Lazy<IReadOnlyList<DebugStackFrame>> _stackFrames;
+        private Lazy<IReadOnlyList<IRStackFrame>> _stackFrames;
 
         public AD7Engine Engine { get; set; }
 
         public AD7Thread(AD7Engine engine) {
             Debug.Assert(engine.DebugSession != null);
             Engine = engine;
-            Engine.DebugSession.RSession.BeforeRequest += RSession_BeforeRequest;
+            Engine.DebugSession.Session.BeforeRequest += RSession_BeforeRequest;
             ResetStackFrames();
         }
 
         public void Dispose() {
-            Engine.DebugSession.RSession.BeforeRequest -= RSession_BeforeRequest;
+            Engine.DebugSession.Session.BeforeRequest -= RSession_BeforeRequest;
             Engine = null;
         }
 
@@ -158,8 +159,8 @@ namespace Microsoft.R.Debugger.Engine {
 
         private void ResetStackFrames() {
             _stackFrames = Lazy.Create(() =>
-                (IReadOnlyList<DebugStackFrame>)
-                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.GetStackFramesAsync(cancellationToken: ct))
+                (IReadOnlyList<IRStackFrame>)
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.Session.TracebackAsync(cancellationToken: ct))
                 .Reverse()
                 .ToArray());
         }

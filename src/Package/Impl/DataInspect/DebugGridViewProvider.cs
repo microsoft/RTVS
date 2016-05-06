@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Debugger.Engine;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -16,12 +16,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _aggregator = aggregator;
         }
 
-        public bool CanShowDataGrid(DebugEvaluationResult evaluationResult) {
+        public bool CanShowDataGrid(IREvaluationResultInfo evaluationResult) {
             var wrapper = new VariableViewModel(evaluationResult, _aggregator);
             return wrapper.CanShowDetail;
         }
 
-        public void ShowDataGrid(DebugEvaluationResult evaluationResult) {
+        public void ShowDataGrid(IREvaluationResultInfo evaluationResult) {
             var wrapper = new VariableViewModel(evaluationResult, _aggregator);
             if (!wrapper.CanShowDetail) {
                 throw new InvalidOperationException("Cannot show data grid on evaluation result " + evaluationResult);

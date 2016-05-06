@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
+using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Utilities;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -131,35 +133,29 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IRSessionProvider>();
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 if (session.IsHostRunning) {
-                    var debugSessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IDebugSessionProvider>();
-                    if (debugSessionProvider != null) {
-                        var debugSession = await debugSessionProvider.GetDebugSessionAsync(Session);
-                        if (debugSession != null) {
-                            var stackFrames = await debugSession.GetStackFramesAsync();
+                    var stackFrames = await session.TracebackAsync();
 
-                            var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
-                            if (globalStackFrame != null) {
-                                const DebugEvaluationResultFields fields =
-                                    DebugEvaluationResultFields.Expression |
-                                    DebugEvaluationResultFields.Kind |
-                                    DebugEvaluationResultFields.TypeName |
-                                    DebugEvaluationResultFields.Classes |
-                                    DebugEvaluationResultFields.Length |
-                                    DebugEvaluationResultFields.SlotCount |
-                                    DebugEvaluationResultFields.AttrCount |
-                                    DebugEvaluationResultFields.Dim |
-                                    DebugEvaluationResultFields.Flags;
-                                DebugEvaluationResult evaluation = await globalStackFrame.EvaluateAsync("base::environment()", "Global Environment", fields, "rtvs:::make_repr_str()");
-                                var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
+                    var globalStackFrame = stackFrames.FirstOrDefault(s => s.IsGlobal);
+                    if (globalStackFrame != null) {
+                        const REvaluationResultProperties properties =
+                            ExpressionProperty |
+                            AccessorKindProperty |
+                            TypeNameProperty |
+                            ClassesProperty |
+                            LengthProperty |
+                            SlotCountProperty |
+                            AttributeCountProperty |
+                            DimProperty |
+                            FlagsProperty;
+                        var evaluation = await globalStackFrame.TryEvaluateAndDescribeAsync("base::environment()", "Global Environment", properties, RValueRepresentations.Str());
+                        var e = new RSessionDataObject(evaluation);  // root level doesn't truncate children and return every variables
 
-                                _topLevelVariables.Clear();
+                        _topLevelVariables.Clear();
 
-                                var children = await e.GetChildrenAsync();
-                                if (children != null) {
-                                    foreach (var x in children) {
-                                        _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
-                                    }
-                                }
+                        var children = await e.GetChildrenAsync();
+                        if (children != null) {
+                            foreach (var x in children) {
+                                _topLevelVariables[x.Name] = x; // TODO: BUGBUG: this doesn't address removed variables
                             }
                         }
                     }

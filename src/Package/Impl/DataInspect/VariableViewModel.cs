@@ -8,7 +8,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -16,10 +16,11 @@ using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
-    /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
+    /// Model for variable tree grid, that provides UI customization of <see cref="REvaluationInfo"/>
     /// </summary>
     public sealed class VariableViewModel : RSessionDataObject, IIndexedItem {
         private readonly IObjectDetailsViewerAggregator _aggregator;
@@ -34,18 +35,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
         /// <param name="truncateChildren">true to truncate children returned by GetChildrenAsync</param>
-        public VariableViewModel(DebugEvaluationResult evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
+        public VariableViewModel(IREvaluationResultInfo evaluation, IObjectDetailsViewerAggregator aggregator, int index = -1, int? maxChildrenCount = null) :
             base(evaluation, maxChildrenCount) {
             _aggregator = aggregator;
 
             Index = index;
-            var result = DebugEvaluation as DebugValueEvaluationResult;
+            var result = DebugEvaluation as IRValueInfo;
             if (result != null) {
                 SetViewButtonStatus(result);
             }
         }
 
-        private void SetViewButtonStatus(DebugValueEvaluationResult result) {
+        private void SetViewButtonStatus(IRValueInfo result) {
             _detailsViewer = _aggregator.GetViewer(result);
             _title = result.Name;
 
@@ -79,31 +80,31 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        private const string Repr = "rtvs:::make_repr_str(max_length = 100)";
+        private static readonly string Repr = RValueRepresentations.Str(100);
 
         protected override async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 
-            var valueEvaluation = DebugEvaluation as DebugValueEvaluationResult;
+            var valueEvaluation = DebugEvaluation as IRValueInfo;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"{nameof(VariableViewModel)} result type is not {typeof(DebugValueEvaluationResult)}");
+                Debug.Assert(false, $"{nameof(VariableViewModel)} result type is not {typeof(IRValueInfo)}");
                 return result;
             }
 
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const DebugEvaluationResultFields fields =
-                    DebugEvaluationResultFields.Expression |
-                    DebugEvaluationResultFields.Kind |
-                    DebugEvaluationResultFields.TypeName |
-                    DebugEvaluationResultFields.Classes |
-                    DebugEvaluationResultFields.Length |
-                    DebugEvaluationResultFields.SlotCount |
-                    DebugEvaluationResultFields.AttrCount |
-                    DebugEvaluationResultFields.Dim |
-                    DebugEvaluationResultFields.Flags;
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, Repr);
+                const REvaluationResultProperties properties =
+                    ExpressionProperty |
+                    AccessorKindProperty |
+                    TypeNameProperty |
+                    ClassesProperty |
+                    LengthProperty |
+                    SlotCountProperty |
+                    AttributeCountProperty |
+                    DimProperty |
+                    FlagsProperty;
+                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

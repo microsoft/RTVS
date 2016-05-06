@@ -4,18 +4,16 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     internal abstract class GridViewerBase : ViewerBase, IObjectDetailsViewer {
         private const int _toolWindowIdBase = 100;
-         private const DebugEvaluationResultFields _fields = DebugEvaluationResultFields.Classes
-                                                        | DebugEvaluationResultFields.Expression
-                                                        | DebugEvaluationResultFields.TypeName
-                                                        | DebugEvaluationResultFields.Dim
-                                                        | DebugEvaluationResultFields.Length;
+         private const REvaluationResultProperties _properties =
+            ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
@@ -27,10 +25,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #region IObjectDetailsViewer
         public ViewerCapabilities Capabilities => ViewerCapabilities.List | ViewerCapabilities.Table;
 
-        abstract public bool CanView(IDebugValueEvaluationResult evaluation);
+        abstract public bool CanView(IRValueInfo evaluation);
 
         public async Task ViewAsync(string expression, string title) {
-            var evaluation = await EvaluateAsync(expression, _fields, "rtvs:::make_repr_str()") as DebugValueEvaluationResult;
+            var evaluation = await EvaluateAsync(expression, _properties, RValueRepresentations.Str()) as IRValueInfo;
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 

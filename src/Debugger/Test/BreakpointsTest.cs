@@ -8,11 +8,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
-using Microsoft.R.Debugger.Test.Match;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -49,27 +48,27 @@ namespace Microsoft.R.Debugger.Test {
   y <- 2
   z <- 3";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                var bp1Loc = new DebugSourceLocation(sf.FilePath, 1);
-                var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
+                var bp1Loc = new RSourceLocation(sf.FilePath, 1);
+                var bp1 = await tracer.CreateBreakpointAsync(bp1Loc);
 
                 bp1.Location.Should().Be(bp1Loc);
-                bp1.Session.Should().Be(debugSession);
+                bp1.Tracer.Should().Be(tracer);
 
-                debugSession.Breakpoints.Count.Should().Be(1);
+                tracer.Breakpoints.Count.Should().Be(1);
 
-                var bp2Loc = new DebugSourceLocation(sf.FilePath, 3);
-                var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
+                var bp2Loc = new RSourceLocation(sf.FilePath, 3);
+                var bp2 = await tracer.CreateBreakpointAsync(bp2Loc);
 
                 bp2.Location.Should().Be(bp2Loc);
-                bp2.Session.Should().Be(debugSession);
+                bp2.Tracer.Should().Be(tracer);
 
-                debugSession.Breakpoints.Count.Should().Be(2);
+                tracer.Breakpoints.Count.Should().Be(2);
 
                 await bp1.DeleteAsync();
-                debugSession.Breakpoints.Count.Should().Be(1);
-                debugSession.Breakpoints.First().Should().BeSameAs(bp2);
+                tracer.Breakpoints.Count.Should().Be(1);
+                tracer.Breakpoints.First().Should().BeSameAs(bp2);
             }
 
         }
@@ -82,11 +81,11 @@ namespace Microsoft.R.Debugger.Test {
   y <- 2
   z <- 3";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
+                var bp = await tracer.CreateBreakpointAsync(new RSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 await sf.Source(_session);
@@ -103,11 +102,11 @@ namespace Microsoft.R.Debugger.Test {
   }
   f()";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
+                var bp = await tracer.CreateBreakpointAsync(new RSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 await sf.Source(_session);
@@ -123,12 +122,12 @@ namespace Microsoft.R.Debugger.Test {
     0
   }";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
                 await sf.Source(_session);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
+                var bp = await tracer.CreateBreakpointAsync(new RSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -147,12 +146,12 @@ namespace Microsoft.R.Debugger.Test {
     0
   }";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
                 await sf.Source(_session);
 
-                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
+                var bp = await tracer.CreateBreakpointAsync(new RSourceLocation(sf.FilePath, 2));
                 var bpHit = new BreakpointHitDetector(bp);
 
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -162,7 +161,7 @@ namespace Microsoft.R.Debugger.Test {
                 await bpHit.ShouldBeHitAtNextPromptAsync();
 
                 await bp.DeleteAsync();
-                await debugSession.ContinueAsync();
+                await tracer.ContinueAsync();
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("f()\n");
@@ -182,10 +181,10 @@ namespace Microsoft.R.Debugger.Test {
     NULL
   }";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                var bp = await debugSession.CreateBreakpointAsync(new DebugSourceLocation(sf.FilePath, 2));
-                debugSession.Breakpoints.Count.Should().Be(1);
+                var bp = await tracer.CreateBreakpointAsync(new RSourceLocation(sf.FilePath, 2));
+                tracer.Breakpoints.Count.Should().Be(1);
 
                 await sf.Source(_session);
 
@@ -201,16 +200,16 @@ namespace Microsoft.R.Debugger.Test {
     1
   }";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
                 await sf.Source(_session);
 
-                var bp1 = await debugSession.CreateBreakpointAsync(sf, 1);
-                var bp2 = await debugSession.CreateBreakpointAsync(sf, 1);
+                var bp1 = await tracer.CreateBreakpointAsync(sf, 1);
+                var bp2 = await tracer.CreateBreakpointAsync(sf, 1);
 
                 bp1.Should().BeSameAs(bp2);
-                debugSession.Breakpoints.Should().HaveCount(1);
+                tracer.Breakpoints.Should().HaveCount(1);
 
                 var bp1Hit = new BreakpointHitDetector(bp1);
                 var bp2Hit = new BreakpointHitDetector(bp2);
@@ -223,10 +222,10 @@ namespace Microsoft.R.Debugger.Test {
                 bp2Hit.WasHit.Should().BeTrue();
 
                 await bp1.DeleteAsync();
-                debugSession.Breakpoints.Should().HaveCount(1);
-                debugSession.Breakpoints.Should().Contain(bp2);
+                tracer.Breakpoints.Should().HaveCount(1);
+                tracer.Breakpoints.Should().Contain(bp2);
 
-                await debugSession.ContinueAsync();
+                await tracer.ContinueAsync();
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("f()\n");
@@ -235,9 +234,9 @@ namespace Microsoft.R.Debugger.Test {
                 await bp2Hit.ShouldBeHitAtNextPromptAsync();
 
                 await bp2.DeleteAsync();
-                debugSession.Breakpoints.Should().HaveCount(0);
+                tracer.Breakpoints.Should().HaveCount(0);
 
-                await debugSession.ContinueAsync();
+                await tracer.ContinueAsync();
 
                 using (var inter = await _session.BeginInteractionAsync()) {
                     await inter.RespondAsync("f()\n");
@@ -252,20 +251,20 @@ namespace Microsoft.R.Debugger.Test {
         [Test]
         [Category.R.Debugger]
         public async Task BreakpointsInDifferentFiles() {
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf1 = new SourceFile("1"))
             using (var sf2 = new SourceFile($"eval(parse({sf1.FilePath.ToRStringLiteral()}))")) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
-                var bp1Loc = new DebugSourceLocation(sf1.FilePath, 1);
-                var bp1 = await debugSession.CreateBreakpointAsync(bp1Loc);
+                var bp1Loc = new RSourceLocation(sf1.FilePath, 1);
+                var bp1 = await tracer.CreateBreakpointAsync(bp1Loc);
                 bp1.Location.Should().Be(bp1Loc);
 
-                var bp2Loc = new DebugSourceLocation(sf2.FilePath, 1);
-                var bp2 = await debugSession.CreateBreakpointAsync(bp2Loc);
+                var bp2Loc = new RSourceLocation(sf2.FilePath, 1);
+                var bp2 = await tracer.CreateBreakpointAsync(bp2Loc);
                 bp2.Location.Should().Be(bp2Loc);
 
-                debugSession.Breakpoints.Should().HaveCount(2);
+                tracer.Breakpoints.Should().HaveCount(2);
 
                 var bp1Hit = new BreakpointHitDetector(bp1);
                 var bp2Hit = new BreakpointHitDetector(bp2);
@@ -276,7 +275,7 @@ namespace Microsoft.R.Debugger.Test {
                 bp1Hit.WasHit.Should().BeFalse();
 
                 bp2Hit.Reset();
-                await debugSession.ContinueAsync();
+                await tracer.ContinueAsync();
 
                 await bp1Hit.ShouldBeHitAtNextPromptAsync();
                 bp2Hit.WasHit.Should().BeFalse();
@@ -293,21 +292,19 @@ namespace Microsoft.R.Debugger.Test {
   }
   while (TRUE) f()";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
                 await sf.Source(_session);
-                await debugSession.NextPromptShouldBeBrowseAsync();
-                await debugSession.ContinueAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
+                await tracer.ContinueAsync();
                 await Task.Delay(100);
 
-                var bp = await debugSession.CreateBreakpointAsync(sf, 3);
+                var bp = await tracer.CreateBreakpointAsync(sf, 3);
 
-                await debugSession.NextPromptShouldBeBrowseAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
-                    { bp.Location }
-                });
+                await _session.NextPromptShouldBeBrowseAsync();
+                await _session.ShouldBeAtAsync(bp.Location);
             }
         }
 
@@ -323,27 +320,26 @@ namespace Microsoft.R.Debugger.Test {
   b <- FALSE;
   while (TRUE) if (b) f()";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
                 await sf.Source(_session);
-                await debugSession.NextPromptShouldBeBrowseAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                var bp = await debugSession.CreateBreakpointAsync(sf, 3);
+                var bp = await tracer.CreateBreakpointAsync(sf, 3);
                 int hitCount = 0;
                 bp.BreakpointHit += delegate { ++hitCount; };
 
-                await debugSession.ContinueAsync();
+                await tracer.ContinueAsync();
                 await Task.Delay(100);
 
                 await bp.DeleteAsync();
                 await _session.EvaluateAsync("b <- TRUE", REvaluationKind.Mutating);
 
-                await debugSession.NextPromptShouldBeBrowseAsync();
-                (await debugSession.GetStackFramesAsync()).Should().HaveTail(new MatchDebugStackFrames {
-                    { sf, 4 }
-                });
+                await _session.NextPromptShouldBeBrowseAsync();
+
+                await _session.ShouldBeAtAsync(sf.FilePath, 4);
                 hitCount.Should().Be(0);
             }
         }
@@ -351,16 +347,15 @@ namespace Microsoft.R.Debugger.Test {
         [Test]
         [Category.R.Debugger]
         public async Task BrowseOnNewPrompt() {
-            using (var debugSession = new DebugSession(_session)) {
-                var browseTask = EventTaskSources.DebugSession.Browse.Create(debugSession);
+            var tracer = await _session.TraceExecutionAsync();
+            var browseTask = EventTaskSources.IRExecutionTracer.Browse.Create(tracer);
 
-                using (var inter = await _session.BeginInteractionAsync()) {
-                    await inter.RespondAsync("browser()\n");
-                }
-
-                await debugSession.NextPromptShouldBeBrowseAsync();
-                await browseTask;
+            using (var inter = await _session.BeginInteractionAsync()) {
+                await inter.RespondAsync("browser()\n");
             }
+
+            await _session.NextPromptShouldBeBrowseAsync();
+            await browseTask;
         }
 
         [Test]
@@ -374,10 +369,8 @@ namespace Microsoft.R.Debugger.Test {
                 inter.Contexts.IsBrowser().Should().BeTrue();
             }
 
-            using (var debugSession = new DebugSession(_session)) {
-                await debugSession.InitializeAsync();
-                await EventTaskSources.DebugSession.Browse.Create(debugSession);
-            }
+            var tracer = await _session.TraceExecutionAsync();
+            await EventTaskSources.IRExecutionTracer.Browse.Create(tracer);
         }
     }
 }

@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.R.DataInspection;
 
 namespace Microsoft.R.Debugger.Engine {
     public interface IDebugGridViewProvider {
-        bool CanShowDataGrid(DebugEvaluationResult evaluationResult);
-        void ShowDataGrid(DebugEvaluationResult evaluationResult);
+        bool CanShowDataGrid(IREvaluationResultInfo evaluationResult);
+        void ShowDataGrid(IREvaluationResultInfo evaluationResult);
     }
 }

@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -116,11 +116,22 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Viewers]
+        public async Task FormulaViewerTest() {
+            using (var hostScript = new RHostScript(_sessionProvider)) {
+                string formula = "1 ~ 2";
+                var funcViewer = await _aggregator.GetViewer(formula) as FunctionViewer;
+                var code = await funcViewer.GetFunctionCode(formula);
+                code.StartsWithOrdinal(formula).Should().BeTrue();
+            }
+        }
+
+        [Test]
+        [Category.Viewers]
         public void TableViewerTest() {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new TableViewer(_aggregator, e);
  
-            var eval = Substitute.For<IDebugValueEvaluationResult>();
+            var eval = Substitute.For<IRValueInfo>();
             eval.Classes.Returns(new List<string>() { "foo" });
 
             viewer.CanView(null).Should().BeFalse();
@@ -157,7 +168,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var e = Substitute.For<IDataObjectEvaluator>();
             var viewer = new Viewer1D(_aggregator, e);
 
-            var eval = Substitute.For<IDebugValueEvaluationResult>();
+            var eval = Substitute.For<IRValueInfo>();
             eval.Classes.Returns(new List<string>() { "environment" });
 
             viewer.CanView(null).Should().BeFalse();

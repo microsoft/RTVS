@@ -2,11 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public interface IObjectDetailsViewerAggregator {
-        IObjectDetailsViewer GetViewer(IDebugValueEvaluationResult result);
+        IObjectDetailsViewer GetViewer(IRValueInfo result);
         Task<IObjectDetailsViewer> GetViewer(string expression);
     }
 }

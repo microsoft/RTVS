@@ -3,10 +3,10 @@
 
 using System;
 
-namespace Microsoft.R.Debugger {
-    /// <seealso cref="DebugValueEvaluationResult.Flags"/>.
+namespace Microsoft.R.DataInspection {
+    /// <seealso cref="IRValueInfo.Flags"/>.
     [Flags]
-    public enum DebugValueEvaluationResultFlags {
+    public enum RValueFlags {
         None,
         /// <summary>
         /// Whether <c>is.atomic()</c> is true for this value.

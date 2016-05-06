@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -42,29 +43,27 @@ namespace Microsoft.R.Debugger.Test {
         [Test]
         [Category.R.Debugger]
         public async Task InteractDuringBrowse() {
-            using (var debugSession = new DebugSession(_session)) {
-                using (var sf = new SourceFile("x <- 'old'; browser()")) {
-                    var browse = new TaskCompletionSource<bool>();
-                    debugSession.Browse += (s, e) => {
-                        browse.TrySetResult(true);
-                    };
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile("x <- 'old'; browser()")) {
+                var browse = new TaskCompletionSource<bool>();
+                tracer.Browse += (s, e) => {
+                    browse.TrySetResult(true);
+                };
 
-                    await sf.Source(_session);
-                    await browse.Task;
+                await sf.Source(_session);
+                await browse.Task;
 
-                    using (var inter = await _session.BeginInteractionAsync()) {
-                        await inter.RespondAsync("x <- 'new'\n");
-                    }
-
-                    REvaluationResult x;
-                    using (var eval = await _session.BeginEvaluationAsync()) {
-                        x = await eval.EvaluateAsync("x", REvaluationKind.Normal);
-                    }
-
-                    x.StringResult.Should().Be("new");
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    await inter.RespondAsync("x <- 'new'\n");
                 }
-            }
 
+                REvaluationResult x;
+                using (var eval = await _session.BeginEvaluationAsync()) {
+                    x = await eval.EvaluateAsync("x", REvaluationKind.Normal);
+                }
+
+                x.StringResult.Should().Be("new");
+            }
         }
     }
 }

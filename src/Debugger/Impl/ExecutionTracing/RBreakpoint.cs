@@ -10,19 +10,20 @@ using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
-namespace Microsoft.R.Debugger {
-    /// <summary>
-    /// A breakpoint in R code.
-    /// </summary>
-    public sealed class DebugBreakpoint {
-        public DebugSession Session { get; }
-        public DebugSourceLocation Location { get; }
+namespace Microsoft.R.ExecutionTracing {
+    internal sealed class RBreakpoint : IRBreakpoint {
+        private readonly RExecutionTracer _tracer;
+
+        public IRExecutionTracer Tracer => _tracer;
+
+        public RSourceLocation Location { get; }
+
         internal int UseCount { get; private set; }
 
         public event EventHandler BreakpointHit;
 
-        internal DebugBreakpoint(DebugSession session, DebugSourceLocation location) {
-            Session = session;
+        internal RBreakpoint(RExecutionTracer tracer, RSourceLocation location) {
+            _tracer = tracer;
             Location = location;
         }
 
@@ -39,20 +40,20 @@ namespace Microsoft.R.Debugger {
 
         internal async Task ReapplyBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
+            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
             // TODO: mark breakpoint as invalid if this fails.
         }
 
         internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Session.RSession.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
+            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
             ++UseCount;
         }
 
         public async Task DeleteAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             Trace.Assert(UseCount > 0);
             await TaskUtilities.SwitchToBackgroundThread();
-            await Session.InitializeAsync(cancellationToken);
+            await _tracer.InitializeAsync(cancellationToken);
 
             string fileName = null;
             try {
@@ -62,11 +63,11 @@ namespace Microsoft.R.Debugger {
             }
 
             if (--UseCount == 0) {
-                Session.RemoveBreakpoint(this);
+                _tracer.RemoveBreakpoint(this);
 
                 var code = $"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})";
                 try {
-                    await Session.RSession.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
+                    await Tracer.Session.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
                 } catch (RException ex) {
                     throw new InvalidOperationException(ex.Message, ex);
                 }

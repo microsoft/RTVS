@@ -4,13 +4,14 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.ExecutionTracing;
 
 namespace Microsoft.R.Debugger.Test {
     public class BreakpointHitDetector {
-        public DebugBreakpoint Breakpoint { get; }
+        public IRBreakpoint Breakpoint { get; }
         public bool WasHit { get; private set; }
 
-        public BreakpointHitDetector(DebugBreakpoint bp) {
+        public BreakpointHitDetector(IRBreakpoint bp) {
             Breakpoint = bp;
             Breakpoint.BreakpointHit += Breakpoint_BreakpointHit;
         }
@@ -25,7 +26,7 @@ namespace Microsoft.R.Debugger.Test {
         }
 
         public async Task ShouldBeHitAtNextPromptAsync() {
-            await Breakpoint.Session.NextPromptShouldBeBrowseAsync();
+            await Breakpoint.Tracer.Session.NextPromptShouldBeBrowseAsync();
             Breakpoint.BreakpointHit -= Breakpoint_BreakpointHit;
             WasHit.Should().BeTrue("Breakpoint must be hit at the next prompt.");
         }

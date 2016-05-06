@@ -3,29 +3,29 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Match;
 using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.DataInspection;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Debugger.Test {
     [ExcludeFromCodeCoverage]
     public class ValuesTest : IAsyncLifetime {
-        private const DebugEvaluationResultFields AllFields = unchecked((DebugEvaluationResultFields)~0);
-        private const string ReprDeparse = "rtvs:::make_repr_deparse()";
-        private const string ReprStr = "rtvs:::make_repr_str()";
-        private const string ReprToString = "rtvs:::repr_toString";
+        private const REvaluationResultProperties AllFields = unchecked((REvaluationResultProperties)~0);
 
         private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
@@ -52,22 +52,20 @@ namespace Microsoft.R.Debugger.Test {
         [Test]
         [Category.R.Debugger]
         public async Task BacktickNames() {
-            using (var debugSession = new DebugSession(_session)) {
-                await _session.EvaluateAsync("`123` <- list(`name with spaces` = 42)", REvaluationKind.Mutating);
-                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
-                stackFrames.Should().NotBeEmpty();
+            var tracer = await _session.TraceExecutionAsync();
+            await _session.EvaluateAsync("`123` <- list(`name with spaces` = 42)", REvaluationKind.Mutating);
+            var stackFrames = (await _session.TracebackAsync()).ToArray();
+            stackFrames.Should().NotBeEmpty();
 
-                var frame = (await stackFrames.Last().GetEnvironmentAsync()).Should().BeOfType<DebugValueEvaluationResult>().Which;
-                var children = await frame.GetChildrenAsync(DebugEvaluationResultFields.Expression | DebugEvaluationResultFields.Length, null, ReprDeparse);
-                var parent = children.Should().Contain(er => er.Name == "`123`")
-                    .Which.Should().BeOfType<DebugValueEvaluationResult>().Which;
-                parent.Expression.Should().Be("`123`");
+            var children = await stackFrames.Last().DescribeChildrenAsync(ExpressionProperty | LengthProperty, RValueRepresentations.Deparse());
+            var parent = children.Should().Contain(er => er.Name == "`123`")
+                .Which.Should().BeAssignableTo<IRValueInfo>().Which;
+            parent.Expression.Should().Be("`123`");
 
-                children = await parent.GetChildrenAsync(DebugEvaluationResultFields.Expression, null, ReprDeparse);
-                children.Should().Contain(er => er.Name == "$`name with spaces`")
-                    .Which.Should().BeOfType<DebugValueEvaluationResult>()
-                    .Which.Expression.Should().Be("`123`$`name with spaces`");
-            }
+            children = await parent.DescribeChildrenAsync(ExpressionProperty, RValueRepresentations.Deparse());
+            children.Should().Contain(er => er.Name == "$`name with spaces`")
+                .Which.Should().BeAssignableTo<IRValueInfo>()
+                .Which.Expression.Should().Be("`123`$`name with spaces`");
         }
 
         [Test]
@@ -81,28 +79,28 @@ namespace Microsoft.R.Debugger.Test {
   }
   f(1 + 2)";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
                 await sf.Source(_session);
-                await debugSession.NextPromptShouldBeBrowseAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
+                var frame = stackFrames.Last();
 
-                var frame = (await stackFrames.Last().GetEnvironmentAsync()).Should().BeOfType<DebugValueEvaluationResult>().Which;
-                var children = await frame.GetChildrenAsync(DebugEvaluationResultFields.None, null, ReprDeparse);
+                var children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
-                    .Which.Should().BeOfType<DebugPromiseEvaluationResult>()
+                    .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be("1 + 2");
 
-                await debugSession.ContinueAsync();
-                await debugSession.NextPromptShouldBeBrowseAsync();
+                await tracer.ContinueAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                children = await frame.GetChildrenAsync(DebugEvaluationResultFields.None, null, ReprDeparse);
+                children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "p")
-                    .Which.Should().BeOfType<DebugValueEvaluationResult>()
+                    .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which.Representation.Should().Be("3");
             }
         }
@@ -116,20 +114,19 @@ namespace Microsoft.R.Debugger.Test {
   browser();
 ";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
                 await sf.Source(_session);
-                await debugSession.NextPromptShouldBeBrowseAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var frame = (await stackFrames.Last().GetEnvironmentAsync()).Should().BeOfType<DebugValueEvaluationResult>().Which;
-                var children = await frame.GetChildrenAsync(DebugEvaluationResultFields.None, null, ReprDeparse);
+                var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "x")
-                    .Which.Should().BeOfType<DebugActiveBindingEvaluationResult>();
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
             }
         }
 
@@ -144,24 +141,23 @@ namespace Microsoft.R.Debugger.Test {
   x <- quote({{{}}})
   eval(substitute(f(P, x), list(P = x)))";
 
-            using (var debugSession = new DebugSession(_session))
+            var tracer = await _session.TraceExecutionAsync();
             using (var sf = new SourceFile(code)) {
-                await debugSession.EnableBreakpointsAsync(true);
+                await tracer.EnableBreakpointsAsync(true);
 
                 await sf.Source(_session);
-                await debugSession.NextPromptShouldBeBrowseAsync();
+                await _session.NextPromptShouldBeBrowseAsync();
 
-                var stackFrames = (await debugSession.GetStackFramesAsync()).ToArray();
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var frame = (await stackFrames.Last().GetEnvironmentAsync()).Should().BeOfType<DebugValueEvaluationResult>().Which;
-                var children = (await frame.GetChildrenAsync(DebugEvaluationResultFields.None, null, ReprDeparse));
+                var children = (await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse()));
                 var d = children.Should().ContainSingle(er => er.Name == "d")
-                    .Which.Should().BeOfType<DebugValueEvaluationResult>()
+                    .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;
 
                 var p = children.Should().ContainSingle(er => er.Name == "p")
-                    .Which.Should().BeOfType<DebugPromiseEvaluationResult>()
+                    .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be(d.Representation);
             }
         }
@@ -206,15 +202,13 @@ namespace Microsoft.R.Debugger.Test {
         [InlineData(@"sQuote(dQuote('x'))", @"""‘“x”’""", @"""‘“x”’""", "‘“x”’")]
         [InlineData(@"quote(sym)", @"sym", @"sym", "sym")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
-            var rrs = new[] { ReprDeparse, ReprStr, ReprToString }.Zip(new[] { deparse, str, toString },
+            var rrs = new[] { RValueRepresentations.Deparse(), RValueRepresentations.Str(), RValueRepresentations.ToString }.Zip(new[] { deparse, str, toString },
                 (repr, result) => new { Repr = repr, Result = result });
 
-            using (var debugSession = new DebugSession(_session)) {
-                foreach (var rr in rrs) {
-                    var res = (await debugSession.EvaluateAsync(expr, DebugEvaluationResultFields.None, rr.Repr))
-                        .Should().BeAssignableTo<DebugValueEvaluationResult>().Which;
-                    res.Representation.Should().Be(rr.Result);
-                }
+            foreach (var rr in rrs) {
+                (await _session.TryEvaluateAndDescribeAsync(expr, REvaluationResultProperties.None, rr.Repr))
+                    .Should().BeAssignableTo<IRValueInfo>().Which
+                    .Representation.Should().Be(rr.Result);
             }
         }
 
@@ -401,33 +395,39 @@ namespace Microsoft.R.Debugger.Test {
         [Category.R.Debugger]
         [MemberData(nameof(ChildrenData))]
         public async Task Children(ChildrenDataRow row) {
-            var children = row.Children.Select(childRow =>
-                MatchAny<DebugEvaluationResult>.ThatMatches(
-                    new MatchMembers<DebugValueEvaluationResult>()
-                        .Matching(er => er.Name, (string)childRow[0])
-                        .Matching(er => er.Expression, (string)childRow[1])
-                        .Matching(er => er.Representation, (string)childRow[2])));
+            var children = row.Children.Select(childRow => {
+                var child = Substitute.For<IRValueInfo>();
+                child.Name.Returns((string)childRow[0]);
+                child.Expression.Returns((string)childRow[1]);
+                child.Representation.Returns((string)childRow[2]);
+                return child;
+            }).ToArray();
 
-            using (var debugSession = new DebugSession(_session)) {
-                var frame = (await debugSession.GetStackFramesAsync()).Single();
+            var frame = (await _session.TracebackAsync()).Single();
 
-                await _session.ExecuteAsync("PARENT <- {" + row.Expression + "}");
+            await _session.ExecuteAsync("PARENT <- {" + row.Expression + "}");
 
-                var res = (await frame.EvaluateAsync("PARENT", AllFields))
-                    .Should().BeOfType<DebugValueEvaluationResult>().Which;
-                res.Length.Should().Be(row.Length);
-                res.NameCount.Should().Be(row.NameCount);
-                res.AttributeCount.Should().Be(row.AttrCount);
-                res.SlotCount.Should().Be(row.SlotCount);
+            var res = (await frame.TryEvaluateAndDescribeAsync("PARENT", AllFields, null))
+                .Should().BeAssignableTo<IRValueInfo>().Which;
+            res.Length.Should().Be(row.Length);
+            res.NameCount.Should().Be(row.NameCount);
+            res.AttributeCount.Should().Be(row.AttrCount);
+            res.SlotCount.Should().Be(row.SlotCount);
 
-                var actualChildren = await res.GetChildrenAsync(AllFields, null, ReprDeparse);
-                res.HasChildren.Should().Be(children.Any());
+            var actualChildren = (await res.DescribeChildrenAsync(AllFields, RValueRepresentations.Deparse()))
+                .Cast<IRValueInfo>()
+                .ToArray();
+            res.HasChildren.Should().Be(children.Any());
 
-                if (row.Sorted) {
-                    actualChildren = actualChildren.OrderBy(er => er.Name).ToArray();
-                }
-                actualChildren.Should().Equal(children);
+            if (row.Sorted) {
+                actualChildren = actualChildren.OrderBy(er => er.Name).ToArray();
             }
+
+            actualChildren.ShouldAllBeEquivalentTo(children, options => options
+                .Including(child => child.Name)
+                .Including(child => child.Expression)
+                .Including(child => child.Representation)
+                .WithStrictOrdering());
         }
     }
 }

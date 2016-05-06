@@ -8,10 +8,11 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
@@ -39,15 +40,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task EvaluateAsync() {
             try {
                 await TaskUtilities.SwitchToBackgroundThread();
-                var debugSession = await VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>().GetDebugSessionAsync(_rSession);
+                const REvaluationResultProperties properties = ClassesProperty| ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                        | DebugEvaluationResultFields.Expression
-                        | DebugEvaluationResultFields.TypeName
-                        | DebugEvaluationResultFields.Dim
-                        | DebugEvaluationResultFields.Length;
-
-                var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
+                var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
                 var wrapper = new VariableViewModel(result, _aggregator);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));

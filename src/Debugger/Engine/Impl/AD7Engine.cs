@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Debugger.Engine.PortSupplier;
+using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -30,20 +31,17 @@ namespace Microsoft.R.Debugger.Engine {
         private Guid _programId;
         private bool _firstContinue = true;
         private bool? _sentContinue = null;
-        private volatile DebugBrowseEventArgs _currentBrowseEventArgs;
+        private volatile RBrowseEventArgs _currentBrowseEventArgs;
         private readonly object _browseLock = new object();
 
         internal bool IsDisposed { get; private set; }
         internal bool IsConnected { get; private set; }
         internal bool IsProgramDestroyed { get; private set; }
-        internal DebugSession DebugSession { get; private set; }
+        internal IRExecutionTracer DebugSession { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
         [Import]
         private IRSessionProvider RSessionProvider { get; set; }
-
-        [Import]
-        private IDebugSessionProvider DebugSessionProvider { get; set; }
 
         [Import]
         internal IDebugGridViewProvider GridViewProvider { get; set; }
@@ -62,10 +60,10 @@ namespace Microsoft.R.Debugger.Engine {
                 return;
             }
 
-            var rSession = DebugSession.RSession;
+            var rSession = DebugSession.Session;
             DebugSession.Browse -= Session_Browse;
-            DebugSession.RSession.AfterRequest -= RSession_AfterRequest;
-            DebugSession.RSession.Disconnected -= RSession_Disconnected;
+            DebugSession.Session.AfterRequest -= RSession_AfterRequest;
+            DebugSession.Session.Disconnected -= RSession_Disconnected;
 
             _events = null;
             _program = null;
@@ -75,7 +73,6 @@ namespace Microsoft.R.Debugger.Engine {
 
             DebugSession = null;
             RSessionProvider = null;
-            DebugSessionProvider = null;
 
             IsDisposed = true;
 
@@ -107,7 +104,7 @@ namespace Microsoft.R.Debugger.Engine {
             using (inter) {
                 // Check if this is still the same prompt as the last Browse prompt that we've seen.
                 // If it isn't, then session has moved on already, and there's nothing for us to exit.
-                DebugBrowseEventArgs currentBrowseDebugEventArgs;
+                RBrowseEventArgs currentBrowseDebugEventArgs;
                 lock (_browseLock) {
                     currentBrowseDebugEventArgs = _currentBrowseEventArgs;
                 }
@@ -158,7 +155,7 @@ namespace Microsoft.R.Debugger.Engine {
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSessionProvider.GetDebugSessionAsync(_program.Session, ct));
+            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => _program.Session.TraceExecutionAsync(ct));
             MainThread = new AD7Thread(this);
             IsConnected = true;
 
@@ -177,8 +174,8 @@ namespace Microsoft.R.Debugger.Engine {
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
             // Also, AfterRequest must be registered before Browse, so that we never get in a situation where we get
             // Browse but not AfterRequest that follows it because of a race between raising and registration.
-            DebugSession.RSession.AfterRequest += RSession_AfterRequest;
-            DebugSession.RSession.Disconnected += RSession_Disconnected;
+            DebugSession.Session.AfterRequest += RSession_AfterRequest;
+            DebugSession.Session.Disconnected += RSession_Disconnected;
 
             // If we're already at the Browse prompt, registering the handler will result in its immediate invocation.
             // We want to handle that fully before we process any following AfterRequest event to avoid concurrency issues
@@ -568,7 +565,7 @@ namespace Microsoft.R.Debugger.Engine {
             return VSConstants.S_OK;
         }
 
-        private void Session_Browse(object sender, DebugBrowseEventArgs e) {
+        private void Session_Browse(object sender, RBrowseEventArgs e) {
             lock (_browseLock) {
                 _currentBrowseEventArgs = e;
                 _sentContinue = false;
@@ -576,7 +573,7 @@ namespace Microsoft.R.Debugger.Engine {
 
             // If we hit a breakpoint or completed a step, we have already reported the stop from the corresponding handlers.
             // Otherwise, this is just a random Browse prompt, so raise a dummy breakpoint event with no breakpoints to stop.
-            if (e.BreakpointsHit.Count == 0 && !e.IsStepCompleted) {
+            if (e.BreakpointsHit.Count == 0 && !e.HasStepCompleted) {
                 var bps = new AD7BoundBreakpointEnum(new IDebugBoundBreakpoint2[0]);
                 var evt = new AD7BreakpointEvent(bps);
                 Send(evt, AD7BreakpointEvent.IID);
