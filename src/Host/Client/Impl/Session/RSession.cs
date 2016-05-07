@@ -274,6 +274,7 @@ namespace Microsoft.R.Host.Client.Session {
                         string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
+                        await evaluation.SetLocale();
                         await evaluation.SetROptions();
                         await evaluation.OverrideFunction("setwd", "base");
                         await evaluation.SetFunctionRedirection();

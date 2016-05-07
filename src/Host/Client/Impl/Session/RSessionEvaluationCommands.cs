@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using static System.FormattableString;
 
@@ -157,6 +158,16 @@ grDevices::deviceIsInteractive('ide')
   options(pager = rtvs:::show_file)
 ";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+        }
+
+        public static Task SetLocale(this IRExpressionEvaluator evaluation) {
+            var oemcp = System.Console.OutputEncoding.CodePage;
+            var lcid = NativeMethods.GetUserDefaultLCID();
+            //NativeMethods.CPINFOEX cpInfo;
+            //NativeMethods.GetCPInfoEx(oemCP, 0, out cpInfo);
+            //var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cpInfo.CodePageName}.{cpInfo.CodePage}')");
+            //return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+            return Task.CompletedTask;
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {

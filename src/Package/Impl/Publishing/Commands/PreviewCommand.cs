@@ -10,18 +10,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.Commands;
-using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
@@ -29,12 +26,15 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
     internal abstract class PreviewCommand : ViewCommand {
-        private RCommand _lastCommand;
+        private Task _lastCommandTask;
         private string _outputFilePath;
-        private Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
+        private readonly Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler> _flavorHandlers = new Dictionary<MarkdownFlavor, IMarkdownFlavorPublishHandler>();
+        protected readonly IRInteractiveWorkflowProvider _workflowProvider;
 
-        public PreviewCommand(ITextView textView, int id)
+        public PreviewCommand(ITextView textView, int id, IRInteractiveWorkflowProvider workflowProvider)
             : base(textView, new CommandId[] { new CommandId(MdPackageCommandId.MdCmdSetGuid, id) }, false) {
+            _workflowProvider = workflowProvider;
+
             IEnumerable<Lazy<IMarkdownFlavorPublishHandler>> handlers = VsAppShell.Current.ExportProvider.GetExports<IMarkdownFlavorPublishHandler>();
             foreach (var h in handlers) {
                 _flavorHandlers[h.Value.Flavor] = h.Value;
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 return CommandStatus.Invisible;
             }
 
-            if (_lastCommand == null || _lastCommand.Task.IsCompleted) {
+            if (_lastCommandTask == null || _lastCommandTask.IsCompleted) {
                 return CommandStatus.SupportedAndEnabled;
             }
 
@@ -86,7 +86,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 try {
                     File.Delete(_outputFilePath);
                 } catch (IOException ex) {
-                    PublishLog.Current.WriteFormatAsync(MessageCategory.Error, Resources.Error_CannotDeleteFile, _outputFilePath, ex.Message);
+                    VsAppShell.Current.ShowErrorMessage(ex.Message);
                     return CommandResult.Executed;
                 }
 
@@ -94,29 +94,31 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 string outputFilePath = _outputFilePath.Replace('\\', '/');
 
                 string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format, tb.GetEncoding());
-
-                _lastCommand = RCommand.ExecuteRExpressionAsync(arguments, PublishLog.Current, RToolsSettings.Current.RBasePath);
-                _lastCommand.Task.ContinueWith((Task t) => LaunchViewer(t));
+                var session = _workflowProvider.GetOrCreate().RSession;
+                _lastCommandTask = Task.Run(async () => {
+                    using (var inter = await session.BeginEvaluationAsync()) {
+                        await inter.EvaluateAsync(arguments, REvaluationKind.Json);
+                    }
+                }).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;
         }
 
-        private void LaunchViewer(Task task) {
+        private void LaunchViewer() {
             if (!string.IsNullOrEmpty(_outputFilePath)) {
                 if (File.Exists(_outputFilePath)) {
                     Process.Start(_outputFilePath);
-                } else {
-                    PublishLog.Current.WriteLineAsync(MessageCategory.Error, Resources.Error_MarkdownConversionFailed);
                 }
             }
+            _lastCommandTask = null;
         }
 
         private bool TaskAvailable() {
-            if (_lastCommand == null) {
+            if (_lastCommandTask == null) {
                 return true;
             }
 
-            switch (_lastCommand.Task.Status) {
+            switch (_lastCommandTask.Status) {
                 case TaskStatus.Canceled:
                 case TaskStatus.Faulted:
                 case TaskStatus.RanToCompletion:
@@ -144,7 +146,6 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     return true;
                 }
             }
-
             return false;
         }
     }
