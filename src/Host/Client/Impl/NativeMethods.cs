@@ -17,27 +17,7 @@ namespace Microsoft.R.Host.Client {
         [DllImport("kernel32.dll")]
         public static extern uint GetUserDefaultLCID();
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
-        public static extern bool GetCPInfoEx(uint codePage, uint dwFlags, out CPINFOEX lpCPInfoEx);
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct CPINFOEX {
-            [MarshalAs(UnmanagedType.U4)]
-            public int MaxCharSize;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_DEFAULTCHAR)]
-            public byte[] DefaultChar;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_LEADBYTES)]
-            public byte[] LeadBytes;
-
-            public char UnicodeDefaultChar;
-
-            [MarshalAs(UnmanagedType.U4)]
-            public int CodePage;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = MAX_PATH)]
-            public byte[] CodePageName;
-        }
+        [DllImport("kernel32.dll")]
+        public static extern uint GetSystemDefaultLCID();
     }
 }

@@ -160,14 +160,15 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
-        public static Task SetLocale(this IRExpressionEvaluator evaluation) {
-            var oemcp = System.Console.OutputEncoding.CodePage;
-            var lcid = NativeMethods.GetUserDefaultLCID();
-            //NativeMethods.CPINFOEX cpInfo;
-            //NativeMethods.GetCPInfoEx(oemCP, 0, out cpInfo);
-            //var script = Invariant($"Sys.setlocale('LC_CTYPE', '{cpInfo.CodePageName}.{cpInfo.CodePage}')");
-            //return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
-            return Task.CompletedTask;
+        public static Task SetLocale(this IRExpressionEvaluator evaluation, string localeName) {
+            if(string.IsNullOrEmpty(localeName)) {
+                var lcid = NativeMethods.GetSystemDefaultLCID();
+                var culture = CultureInfo.GetCultures(CultureTypes.InstalledWin32Cultures).FirstOrDefault(x => x.LCID == lcid);
+                var index = culture.DisplayName.IndexOfAny(new char[] { ',', ' ' });
+                localeName = index >= 0 ? culture.DisplayName.Substring(0, index).TrimEnd() : culture.DisplayName;
+            }
+            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{localeName}')");
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {

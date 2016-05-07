@@ -311,6 +311,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror,
+                Locale = RToolsSettings.Current.RLocale
             }, new RHostClientTestApp(), 50000);
             return workflow;
         }

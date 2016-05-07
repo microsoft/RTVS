@@ -94,27 +94,28 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public bool ShowDotPrefixedVariables { get; set; }
 
-        public SurveyNewsPolicy SurveyNewsCheck
-        {
+        public SurveyNewsPolicy SurveyNewsCheck {
             get { return SurveyNewsPolicy.Disabled; }
             set { }
         }
 
-        public DateTime SurveyNewsLastCheck
-        {
+        public DateTime SurveyNewsLastCheck {
             get { return DateTime.MinValue; }
             set { }
         }
 
-        public string SurveyNewsFeedUrl
-        {
+        public string SurveyNewsFeedUrl {
             get { return string.Empty; }
             set { }
         }
 
-        public string SurveyNewsIndexUrl
-        {
+        public string SurveyNewsIndexUrl {
             get { return string.Empty; }
+            set { }
+        }
+
+        public string RLocale {
+            get { return null; }
             set { }
         }
     }

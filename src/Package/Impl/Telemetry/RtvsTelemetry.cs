@@ -99,6 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     _telemetryService.ReportEvent(TelemetryArea.Configuration, SettingEvents.Settings,
                             new {
                                 Cran = RToolsSettings.Current.CranMirror,
+                                Locale = RToolsSettings.Current.RLocale,
                                 LoadRData = RToolsSettings.Current.LoadRDataOnProjectLoad,
                                 SaveRData = RToolsSettings.Current.SaveRDataOnProjectUnload,
                                 RCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,

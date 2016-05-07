@@ -40,5 +40,10 @@ namespace Microsoft.R.Components.Settings {
         /// to the external default Web browser.
         /// </summary>
         HelpBrowserType HelpBrowserType { get; set; }
+
+        /// <summary>
+        /// R locale (LC_CTYPE)
+        /// </summary>
+        string RLocale { get; set; }
     }
 }

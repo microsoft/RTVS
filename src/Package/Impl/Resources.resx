@@ -718,4 +718,16 @@ Additional information:
   <data name="Error_UnableToDeleteVariable" xml:space="preserve">
     <value>Cannot delete variable(s). Exception {0}</value>
   </data>
+  <data name="Settings_DefaultValue" xml:space="preserve">
+    <value>(OS Default)</value>
+  </data>
+  <data name="Settings_REngineCategory" xml:space="preserve">
+    <value>R Engine</value>
+  </data>
+  <data name="Settings_RLocale" xml:space="preserve">
+    <value>Locale</value>
+  </data>
+  <data name="Settings_RLocale_Description" xml:space="preserve">
+    <value>Default locale in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE).</value>
+  </data>
 </root>

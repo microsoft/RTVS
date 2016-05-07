@@ -25,7 +25,8 @@ namespace Microsoft.R.Host.Client.Test.Script {
                 Name = "RHostScript",
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
-                CranMirrorName = RToolsSettings.Current.CranMirror
+                CranMirrorName = RToolsSettings.Current.CranMirror,
+                Locale = RToolsSettings.Current.RLocale
             }, clientApp ?? new RHostClientTestApp(), 50000).Wait();
         }
 
