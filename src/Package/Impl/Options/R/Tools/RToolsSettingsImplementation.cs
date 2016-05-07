@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 _cranMirror = value;
                 // Setting mirror reques running code in R host
                 // which async and cannot be done correctly here.
-                IdleTimeAction.Create(async () => await SetMirrorToSession(), 20, _cranMirror);
+                IdleTimeAction.Create(async () => await SetMirrorToSession(), 20, _cranMirror ?? (object)this.GetType());
             }
         }
 
@@ -73,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _locale; }
             set {
                 _locale = value;
-                IdleTimeAction.Create(async () => await SetSessionLocale(), 20, _locale);
+                IdleTimeAction.Create(async () => await SetSessionLocale(), 20, _locale ?? (object)typeof(CultureInfo));
             }
         }
 
