@@ -349,15 +349,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
-        /// </summary>
-        public static string Error_NoWebTools {
-            get {
-                return ResourceManager.GetString("Error_NoWebTools", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
         public static string Error_PackageMissing {

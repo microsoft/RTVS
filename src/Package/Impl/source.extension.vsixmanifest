@@ -16,7 +16,7 @@
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Core.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Actions.dll" />
-    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.Engine.dll" />
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Debugger.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Wpf.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.VisualStudio.ImageCatalog.dll" />

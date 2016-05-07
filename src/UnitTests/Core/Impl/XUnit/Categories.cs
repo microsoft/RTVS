@@ -102,8 +102,8 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
-            public class DebuggerAttribute : CategoryAttribute {
-                public DebuggerAttribute() : base("R.Debugger") { }
+            public class DataInspectionAttribute : CategoryAttribute {
+                public DataInspectionAttribute() : base("R.DataInspection") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -114,6 +114,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class EditorTreeAttribute : CategoryAttribute {
                 public EditorTreeAttribute() : base("R.EditorTree") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class ExecutionTracingAttribute : CategoryAttribute {
+                public ExecutionTracingAttribute() : base("R.ExecutionTracing") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -147,6 +152,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class RtvsPackageAttribute : CategoryAttribute {
+                public RtvsPackageAttribute() : base("R.RtvsPackage") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class SessionAttribute : CategoryAttribute {
                 public SessionAttribute() : base("R.Session") { }
             }
@@ -164,6 +174,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class SmartIndentAttribute : CategoryAttribute {
                 public SmartIndentAttribute() : base("R.SmartIndent") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class StackTracingAttribute : CategoryAttribute {
+                public StackTracingAttribute() : base("R.StackTracing") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -211,6 +226,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         [ExcludeFromCodeCoverage]
         public class ViewersAttribute : CategoryAttribute {
             public ViewersAttribute() : base("Viewers") { }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class HtmlAttribute : CategoryAttribute {
+            public HtmlAttribute() : base("Html") { }
         }
     }
 }

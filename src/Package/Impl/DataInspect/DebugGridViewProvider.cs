@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Debugger.Engine;
+using Microsoft.R.Debugger;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IDebugGridViewProvider))]
