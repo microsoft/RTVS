@@ -89,13 +89,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
         }
 
-        [AppliesTo("RTools")]
+        [AppliesTo(Constants.RtvsProjectCapability)]
 #if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
 #else
-        [ProjectAutoLoad(
-            startAfter: ProjectLoadCheckpoint.AfterLoadInitialConfiguration,
-            completeBy: ProjectLoadCheckpoint.ProjectInitialCapabilitiesEstablished)]
+        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
+                         completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
+                         RequiresUIThread = false)]
 #endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
