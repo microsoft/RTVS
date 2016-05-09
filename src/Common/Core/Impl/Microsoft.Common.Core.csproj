@@ -38,7 +38,6 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Extensions\CultureExtensions.cs" />
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
