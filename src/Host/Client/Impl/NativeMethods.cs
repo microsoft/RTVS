@@ -13,6 +13,6 @@ namespace Microsoft.R.Host.Client {
         public static extern int GetShortPathName(string lpszLongPath, StringBuilder lpszShortPath, int cchBuffer);
 
         [DllImport("kernel32.dll")]
-        public static extern uint GetSystemDefaultLCID();
+        public static extern int GetSystemDefaultLCID();
     }
 }

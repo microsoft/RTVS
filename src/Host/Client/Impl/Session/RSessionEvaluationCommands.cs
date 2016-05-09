@@ -4,6 +4,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -163,12 +164,13 @@ grDevices::deviceIsInteractive('ide')
         public static Task SetLocale(this IRExpressionEvaluator evaluation, string localeName) {
             if(string.IsNullOrEmpty(localeName)) {
                 var lcid = NativeMethods.GetSystemDefaultLCID();
-                var culture = CultureInfo.GetCultures(CultureTypes.InstalledWin32Cultures).FirstOrDefault(x => x.LCID == lcid);
-                var index = culture.DisplayName.IndexOfAny(new char[] { ',', ' ' });
-                localeName = index >= 0 ? culture.DisplayName.Substring(0, index).TrimEnd() : culture.DisplayName;
+                localeName = CultureExtensions.LanguageNameFromLCID(lcid);
             }
-            var script = Invariant($"Sys.setlocale('LC_CTYPE', '{localeName}')");
-            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+            if (!string.IsNullOrEmpty(localeName)) {
+                var script = Invariant($"Sys.setlocale('LC_CTYPE', '{localeName}')");
+                return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+            }
+            return Task.CompletedTask;
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {

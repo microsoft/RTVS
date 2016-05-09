@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 // Save the file
                 var tb = TextView.TextBuffer;
                 if (!tb.CanBeSavedInCurrentEncoding()) {
-                    if(MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
+                    if (MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                         return CommandResult.Executed;
                     }
                     tb.Save(new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
@@ -95,11 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
                 string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format, tb.GetEncoding());
                 var session = _workflowProvider.GetOrCreate().RSession;
-                _lastCommandTask = Task.Run(async () => {
-                    using (var inter = await session.BeginEvaluationAsync()) {
-                        await inter.EvaluateAsync(arguments, REvaluationKind.Json);
-                    }
-                }).ContinueWith(t => LaunchViewer());
+                _lastCommandTask = session.EvaluateAsync(arguments, REvaluationKind.Json).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;
         }

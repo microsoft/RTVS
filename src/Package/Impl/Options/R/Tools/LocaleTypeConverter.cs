@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class LocaleTypeConverter : TypeConverter {
@@ -15,17 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             var cultureList = new List<string>() { null };
-
-            IEnumerable<CultureInfo> cultures = CultureInfo.GetCultures(CultureTypes.InstalledWin32Cultures);
-            IEnumerable<string> names = cultures.Select((c) => {
-                var index = c.DisplayName.IndexOfAny(new char[] { ',', ' ' });
-                return index >= 0 ? c.DisplayName.Substring(0, index).Trim() : c.DisplayName;
-            })
-            .Where(x => x.IndexOf(' ') < 0)
-            .Distinct()
-            .OrderBy(x => x);
-
-            cultureList.AddRange(names);
+            cultureList.AddRange(CultureExtensions.GetLanguageNames());
             return new StandardValuesCollection(cultureList);
         }
 
