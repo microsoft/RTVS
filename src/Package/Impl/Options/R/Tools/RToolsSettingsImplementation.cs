@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private const int MaxDirectoryEntries = 8;
         private string _cranMirror;
         private string _workingDirectory;
+        private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
 
         /// <summary>
@@ -62,9 +64,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _cranMirror; }
             set {
                 _cranMirror = value;
-                // Setting mirror reques running code in R host
-                // which async and cannot be done correctly here.
-                IdleTimeAction.Create(async () => await SetMirrorToSession(), 20, typeof(RToolsSettingsImplementation));
+                SetMirrorToSession().DoNotWait();
+            }
+        }
+
+        public int RCodePage {
+            get { return _codePage; }
+            set {
+                _codePage = value;
+                SetSessionCodePage().DoNotWait();
             }
         }
 
@@ -97,7 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public DateTime SurveyNewsLastCheck { get; set; }
         public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
         public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
-
+ 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
@@ -117,6 +125,20 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                         await eval.SetVsCranSelection(mirrorUrl);
                     }
                 } catch(OperationCanceledException) { }
+            }
+        }
+
+        private async Task SetSessionCodePage() {
+            IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var sessions = sessionProvider.GetSessions();
+            var cp = RToolsSettings.Current.RCodePage;
+ 
+            foreach (var s in sessions.Where(s => s.IsHostRunning)) {
+                try {
+                    using (var eval = await s.BeginEvaluationAsync()) {
+                        await eval.SetCodePage(cp);
+                    }
+                } catch (OperationCanceledException) { }
             }
         }
 

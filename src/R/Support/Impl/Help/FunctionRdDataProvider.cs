@@ -65,7 +65,8 @@ namespace Microsoft.R.Host.Client.Signatures {
                     await _session.StartHostAsync(new RHostStartupInfo {
                         Name = "RdData",
                         RBasePath = RToolsSettings.Current.RBasePath,
-                        CranMirrorName = RToolsSettings.Current.CranMirror
+                        CranMirrorName = RToolsSettings.Current.CranMirror,
+                        CodePage = RToolsSettings.Current.RCodePage
                     }, null, timeout);
                 }
             } finally {

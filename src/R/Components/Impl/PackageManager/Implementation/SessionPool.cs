@@ -86,7 +86,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = "PkgMgr " + g.ToString(),
                     RBasePath = _settings.RBasePath,
-                    CranMirrorName = _settings.CranMirror
+                    CranMirrorName = _settings.CranMirror,
+                    CodePage = _settings.RCodePage
                 }, null, HostStartTimeout);
             }
             return session;

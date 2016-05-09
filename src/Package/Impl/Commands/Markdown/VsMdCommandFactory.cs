@@ -39,9 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             }
 
             return new ICommand[] {
-                new PreviewHtmlCommand(textView),
-                new PreviewPdfCommand(textView),
-                new PreviewWordCommand(textView),
+                new PreviewHtmlCommand(textView, _workflowProvider),
+                new PreviewPdfCommand(textView, _workflowProvider),
+                new PreviewWordCommand(textView, _workflowProvider),
                 new SendToReplCommand(textView, workflow),
                 new ClearReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)

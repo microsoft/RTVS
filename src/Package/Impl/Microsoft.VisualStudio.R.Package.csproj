@@ -171,6 +171,7 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
@@ -288,7 +289,6 @@
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
-    <Compile Include="Publishing\PublishLog.cs" />
     <Compile Include="Logging\PackagesInstallLog.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
