@@ -255,10 +255,8 @@ namespace Microsoft.R.Host.Client {
             REvaluationResult result;
             if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
                 result = new REvaluationResult(error, parseStatus);
-            } else if (request.Kind.HasFlag(REvaluationKind.Json)) {
-                result = new REvaluationResult(response[2], error, parseStatus);
             } else {
-                result = new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
+                result = new REvaluationResult(response[2], error, parseStatus);
             }
             request.CompletionSource.SetResult(result);
         }

@@ -25,9 +25,6 @@ namespace Microsoft.R.Host.Client {
                 if (kind.HasFlag(REvaluationKind.Cancelable)) {
                     nameBuilder.Append('/');
                 }
-                if (kind.HasFlag(REvaluationKind.Json)) {
-                    nameBuilder.Append('j');
-                }
                 if (kind.HasFlag(REvaluationKind.BaseEnv)) {
                     nameBuilder.Append('B');
                 }

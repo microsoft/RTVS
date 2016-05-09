@@ -62,12 +62,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
 
             using (var evaluation = await _session.BeginEvaluationAsync()) {
-                var result = await evaluation.LoadWorkspace(rDataNode.FilePath);
-
-                if (result.Error != null) {
+                try {
+                    await evaluation.LoadWorkspace(rDataNode.FilePath);
+                } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
-                        rDataNode.FilePath, result.Error);
+                        rDataNode.FilePath, ex.Message);
                     VsAppShell.Current.ShowErrorMessage(message);
+                } catch (OperationCanceledException) {
                 }
             }
 

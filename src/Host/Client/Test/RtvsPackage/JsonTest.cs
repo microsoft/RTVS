@@ -77,10 +77,10 @@ namespace Microsoft.R.RtvsPackage.Test {
             }
 
             using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
+                var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
                 res.Error.Should().BeNullOrEmpty();
-                res.JsonResult.Should().NotBeNull();
-                var actualJson = JsonConvert.SerializeObject(res.JsonResult).ToUnicodeQuotes();
+                res.Result.Should().NotBeNull();
+                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
             }
         }

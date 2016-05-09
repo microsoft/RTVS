@@ -40,9 +40,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
-                        using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.Mutating);
-                        }
+                        await hostScript.Session.ExecuteAsync("x <- c(1:10)");
                     }).Wait();
 
                     DoIdle(2000);
@@ -60,9 +58,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
-                        using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- lm", REvaluationKind.Mutating);
-                        }
+                        await hostScript.Session.ExecuteAsync("x <- lm");
                     }).Wait();
 
                     DoIdle(2000);

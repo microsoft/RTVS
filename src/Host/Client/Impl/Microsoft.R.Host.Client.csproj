@@ -104,7 +104,7 @@
     <Compile Include="Definitions\IRSessionInteraction.cs" />
     <Compile Include="Host\RHostTimeoutException.cs" />
     <Compile Include="Host\RHostBinaryMissingException.cs" />
-    <Compile Include="OutputType.cs" />
+    <Compile Include="Definitions\OutputType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Host\RHost.Message.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
@@ -142,6 +142,9 @@
     <None Include="rtvs\NAMESPACE">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>True</IncludeInVSIX>
+    </None>
+    <None Include="rtvs\R\help.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="rtvs\R\breakpoints.R">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

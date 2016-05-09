@@ -30,17 +30,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task GetEnvironmentAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            REvaluationResult result;
+            JArray result = null;
             using (var evaluation = await _rSession.BeginEvaluationAsync()) {
-                result = await evaluation.EvaluateAsync("rtvs:::getEnvironments(sys.frame(sys.nframe()))", REvaluationKind.Json);
+                try {
+                    result = await evaluation.EvaluateAsync<JArray>("rtvs:::getEnvironments(sys.frame(sys.nframe()))", REvaluationKind.Normal);
+                } catch (RException) {
+                }
             }
 
-            Debug.Assert(result.JsonResult != null);
-
             var envs = new List<REnvironment>();
-            var jarray = result.JsonResult as JArray;
-            if (jarray != null) {
-                foreach (var jsonItem in jarray) {
+            if (result != null) {
+                foreach (var jsonItem in result) {
                     envs.Add(new REnvironment(jsonItem));
                 }
             }
@@ -51,9 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private void OnEnvironmentChanged(REnvironmentChangedEventArgs args) {
-            if (EnvironmentChanged != null) {
-                EnvironmentChanged(this, args);
-            }
+            EnvironmentChanged?.Invoke(this, args);
         }
 
         #region IREnvironmentProvider
