@@ -8,14 +8,9 @@ using System.Text;
 namespace Microsoft.R.Host.Client {
     internal static class NativeMethods {
         public const int MAX_PATH = 260;
-        private const int MAX_DEFAULTCHAR = 2;
-        private const int MAX_LEADBYTES = 12;
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern int GetShortPathName(string lpszLongPath, StringBuilder lpszShortPath, int cchBuffer);
-
-        [DllImport("kernel32.dll")]
-        public static extern uint GetUserDefaultLCID();
 
         [DllImport("kernel32.dll")]
         public static extern uint GetSystemDefaultLCID();
