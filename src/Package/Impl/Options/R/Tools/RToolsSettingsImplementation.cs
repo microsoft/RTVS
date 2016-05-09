@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private const int MaxDirectoryEntries = 8;
         private string _cranMirror;
         private string _workingDirectory;
-        private string _locale;
+        private int _codePage;
         private bool _showPackageManagerDisclaimer = true;
 
         /// <summary>
@@ -64,17 +64,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return _cranMirror; }
             set {
                 _cranMirror = value;
-                // Setting mirror reques running code in R host
-                // which async and cannot be done correctly here.
-                IdleTimeAction.Create(async () => await SetMirrorToSession(), 20, _cranMirror ?? (object)this.GetType());
+                SetMirrorToSession().DoNotWait();
             }
         }
 
-        public string RLocale {
-            get { return _locale; }
+        public int RCodePage {
+            get { return _codePage; }
             set {
-                _locale = value;
-                IdleTimeAction.Create(async () => await SetSessionLocale(), 20, _locale ?? (object)typeof(CultureInfo));
+                _codePage = value;
+                SetSessionCodePage().DoNotWait();
             }
         }
 
@@ -130,15 +128,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        private async Task SetSessionLocale() {
+        private async Task SetSessionCodePage() {
             IRSessionProvider sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
             var sessions = sessionProvider.GetSessions();
-            string locale = RToolsSettings.Current.RLocale;
+            var cp = RToolsSettings.Current.RCodePage;
  
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
                 try {
                     using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetLocale(locale);
+                        await eval.SetCodePage(cp);
                     }
                 } catch (OperationCanceledException) { }
             }

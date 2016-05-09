@@ -48,7 +48,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         RBasePath = _settings.RBasePath,
                         RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
-                        Locale = _settings.RLocale,
+                        CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory
                     }, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }

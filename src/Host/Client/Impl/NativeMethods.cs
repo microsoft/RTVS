@@ -14,5 +14,8 @@ namespace Microsoft.R.Host.Client {
 
         [DllImport("kernel32.dll")]
         public static extern int GetSystemDefaultLCID();
+
+        [DllImport("kernel32.dll")]
+        public static extern int GetOEMCP();
     }
 }

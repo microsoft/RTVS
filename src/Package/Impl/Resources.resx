@@ -724,10 +724,10 @@ Additional information:
   <data name="Settings_REngineCategory" xml:space="preserve">
     <value>R Engine</value>
   </data>
-  <data name="Settings_RLocale" xml:space="preserve">
-    <value>Locale</value>
+  <data name="Settings_RCodePage" xml:space="preserve">
+    <value>Code page</value>
   </data>
-  <data name="Settings_RLocale_Description" xml:space="preserve">
-    <value>Default locale in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE).</value>
+  <data name="Settings_RCodePage_Description" xml:space="preserve">
+    <value>Default code page in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE).</value>
   </data>
 </root>

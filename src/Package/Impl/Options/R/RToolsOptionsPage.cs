@@ -107,13 +107,13 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory("Settings_REngineCategory")]
-        [CustomLocDisplayName("Settings_RLocale")]
-        [LocDescription("Settings_RLocale_Description")]
-        [TypeConverter(typeof(LocaleTypeConverter))]
-        [DefaultValue(null)]
-        public string RLocale {
-            get { return RToolsSettings.Current.RLocale; }
-            set { RToolsSettings.Current.RLocale = value; }
+        [CustomLocDisplayName("Settings_RCodePage")]
+        [LocDescription("Settings_RCodePage_Description")]
+        [TypeConverter(typeof(EncodingTypeConverter))]
+        [DefaultValue(0)]
+        public int RCodePage {
+            get { return RToolsSettings.Current.RCodePage; }
+            set { RToolsSettings.Current.RCodePage = value; }
         }
 
 

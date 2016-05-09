@@ -14,6 +14,6 @@ namespace Microsoft.R.Components.Test.Stubs {
         public string WorkingDirectory { get; set; }
         public bool ShowPackageManagerDisclaimer { get; set; }
         public HelpBrowserType HelpBrowserType { get; set; }
-        public string RLocale { get; set; }
+        public int RCodePage { get; set; }
     }
 }

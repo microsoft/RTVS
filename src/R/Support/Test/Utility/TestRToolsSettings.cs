@@ -114,8 +114,8 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public string RLocale {
-            get { return null; }
+        public int RCodePage {
+            get { return 1252; }
             set { }
         }
     }

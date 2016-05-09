@@ -66,7 +66,7 @@ namespace Microsoft.R.Host.Client.Signatures {
                         Name = "RdData",
                         RBasePath = RToolsSettings.Current.RBasePath,
                         CranMirrorName = RToolsSettings.Current.CranMirror,
-                        Locale = RToolsSettings.Current.RLocale
+                        CodePage = RToolsSettings.Current.RCodePage
                     }, null, timeout);
                 }
             } finally {

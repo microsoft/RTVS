@@ -161,16 +161,12 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
-        public static Task SetLocale(this IRExpressionEvaluator evaluation, string localeName) {
-            if(string.IsNullOrEmpty(localeName)) {
-                var lcid = NativeMethods.GetSystemDefaultLCID();
-                localeName = CultureExtensions.LanguageNameFromLCID(lcid);
+        public static Task SetCodePage(this IRExpressionEvaluator evaluation, int codePage) {
+            if (codePage == 0) {
+                codePage = NativeMethods.GetOEMCP();
             }
-            if (!string.IsNullOrEmpty(localeName)) {
-                var script = Invariant($"Sys.setlocale('LC_CTYPE', '{localeName}')");
-                return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
-            }
-            return Task.CompletedTask;
+            var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
+            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {

@@ -42,8 +42,8 @@ namespace Microsoft.R.Components.Settings {
         HelpBrowserType HelpBrowserType { get; set; }
 
         /// <summary>
-        /// R locale (LC_CTYPE)
+        /// R code page (LC_CTYPE)
         /// </summary>
-        string RLocale { get; set; }
+        int RCodePage { get; set; }
     }
 }

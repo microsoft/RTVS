@@ -1186,7 +1186,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to (OS Default).
         /// </summary>
-        public static string Settings_DefaultValue {
+        public static string Settings_OsDefaultEncoding {
             get {
                 return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
             }
@@ -1355,6 +1355,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code page.
+        /// </summary>
+        public static string Settings_RCodePage {
+            get {
+                return ResourceManager.GetString("Settings_RCodePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default code page in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE)..
+        /// </summary>
+        public static string Settings_RCodePage_Description {
+            get {
+                return ResourceManager.GetString("Settings_RCodePage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R command line arguments.
         /// </summary>
         public static string Settings_RCommandLineArguments {
@@ -1405,24 +1423,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_ReplSyntaxCheck_Description {
             get {
                 return ResourceManager.GetString("Settings_ReplSyntaxCheck_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Locale.
-        /// </summary>
-        public static string Settings_RLocale {
-            get {
-                return ResourceManager.GetString("Settings_RLocale", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Default locale in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE)..
-        /// </summary>
-        public static string Settings_RLocale_Description {
-            get {
-                return ResourceManager.GetString("Settings_RLocale_Description", resourceCulture);
             }
         }
         

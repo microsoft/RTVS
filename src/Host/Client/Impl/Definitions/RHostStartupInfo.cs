@@ -9,6 +9,6 @@ namespace Microsoft.R.Host.Client {
         public string RHostCommandLineArguments { get; set; }
         public string CranMirrorName { get; set; }
         public string WorkingDirectory { get; set; }
-        public string Locale { get; set; }
+        public int CodePage { get; set; }
     }
 }

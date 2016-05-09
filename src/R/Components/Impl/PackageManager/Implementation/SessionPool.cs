@@ -87,7 +87,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                     Name = "PkgMgr " + g.ToString(),
                     RBasePath = _settings.RBasePath,
                     CranMirrorName = _settings.CranMirror,
-                    Locale = _settings.RLocale
+                    CodePage = _settings.RCodePage
                 }, null, HostStartTimeout);
             }
             return session;
