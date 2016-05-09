@@ -86,16 +86,18 @@ namespace Microsoft.R.RtvsPackage.Test {
         }
 
         [CompositeTest]
-        [Category.R.Debugger]
-        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}")]
-        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}")]
-        public async Task SerializeLatin(string expr, string json) {
+        [Category.R.RtvsPackage]
+        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}", 1252)]
+        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}", 1252)]
+        [InlineData("list('«Юникод»' = 0)", @"{""«Юникод»"":0}", 1251)]
+        [InlineData("as.environment(list('«Юникод»' = 0))", @"{""«Юникод»"":0}", 1251)]
+        public async Task SerializeWithEncoding(string expr, string json, int codepage) {
             if (json == SameAsInput) {
                 json = expr;
             }
 
             using (var eval = await _session.BeginEvaluationAsync()) {
-                await eval.SetCodePage(1252);
+                await eval.SetCodePage(codepage); 
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
                 res.JsonResult.Should().NotBeNull();
@@ -105,7 +107,6 @@ namespace Microsoft.R.RtvsPackage.Test {
         }
 
         [CompositeTest]
-      
         [Category.R.RtvsPackage]
         [InlineData("NaN")]
         [InlineData("+Inf")]
