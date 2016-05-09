@@ -148,8 +148,12 @@ namespace Microsoft.R.ExecutionTracing {
 
             // Evaluation will not end until after Browse> is responded to, but this method must indicate completion
             // as soon as the prompt appears. So don't wait for this, but wait for the prompt instead.
+            // If evaluation is canceled (e.g. because user does Cancel All), ExecuteAsync will throw RException -
+            // suppress that.
             Session.ExecuteAsync("browser()", REvaluationKind.Reentrant, cancellationToken)
-                .SilenceException<MessageTransportException>().DoNotWait();
+                .SilenceException<RException>()
+                .SilenceException<MessageTransportException>()
+                .DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.
             using (var inter = await Session.BeginInteractionAsync(true, cancellationToken)) { }
