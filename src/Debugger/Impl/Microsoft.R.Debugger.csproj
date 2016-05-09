@@ -5,7 +5,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{17E155BF-351C-4253-B9B1-36EEEA35FE3C}</ProjectGuid>
+    <ProjectGuid>{6D62DF0D-D9C3-49A7-A693-ACD0691BA69D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.R.Debugger</RootNamespace>
@@ -24,46 +24,105 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.OLE.Interop.7.10.6070\lib\Microsoft.VisualStudio.OLE.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Immutable.11.0.11.0.50727\lib\net45\Microsoft.VisualStudio.Shell.Immutable.11.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.14.0, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Immutable.14.0.14.1.24720\lib\net45\Microsoft.VisualStudio.Shell.Immutable.14.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.7.10.6071\lib\Microsoft.VisualStudio.Shell.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.10.0.10.0.30319\lib\Microsoft.VisualStudio.Shell.Interop.10.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.11.0, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.11.0.11.0.61030\lib\Microsoft.VisualStudio.Shell.Interop.11.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Shell.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.Shell.Interop.8.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop, Version=7.1.40304.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.TextManager.Interop.7.10.6070\lib\Microsoft.VisualStudio.TextManager.Interop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.TextManager.Interop.8.0.8.0.50727\lib\Microsoft.VisualStudio.TextManager.Interop.8.0.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Threading, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Threading.14.1.114\lib\net45\Microsoft.VisualStudio.Threading.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Validation, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.Validation.14.1.111\lib\net45\Microsoft.VisualStudio.Validation.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.VisualStudio.ComponentModelHost, Version=$(VSTarget).0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.VisualStudio.Debugger.Interop.10.0" />
+    <Reference Include="Microsoft.VisualStudio.Debugger.Interop.11.0" />
+    <Reference Include="Microsoft.VisualStudio.Debugger.InteropA, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.VisualStudio.Shell.14.0">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="DataInspection\IREvaluationResultInfo.cs" />
-    <Compile Include="DataInspection\IRValueInfo.cs" />
-    <Compile Include="DataInspection\IRActiveBindingInfo.cs" />
-    <Compile Include="DataInspection\IRPromiseInfo.cs" />
-    <Compile Include="DataInspection\IRErrorInfo.cs" />
-    <Compile Include="DataInspection\RValueRepresentations.cs" />
-    <Compile Include="DataInspection\REvaluationResultProperties.cs" />
-    <Compile Include="ExecutionTracing\IRBreakpoint.cs" />
-    <Compile Include="ExecutionTracing\IRExecutionTracer.cs" />
-    <Compile Include="ExecutionTracing\RSourceLocation.cs" />
-    <Compile Include="ExecutionTracing\RBreakpoint.cs" />
-    <Compile Include="DataInspection\RErrorInfo.cs" />
-    <Compile Include="DataInspection\RActiveBindingInfo.cs" />
-    <Compile Include="DataInspection\RPromiseInfo.cs" />
-    <Compile Include="ExecutionTracing\RBrowseEventArgs.cs" />
-    <Compile Include="DataInspection\RChildAccessorKind.cs" />
-    <Compile Include="StackTracing\RSessionExtensions.cs" />
-    <Compile Include="DataInspection\RSessionExtensions.cs" />
-    <Compile Include="DataInspection\RValueFlags.cs" />
-    <Compile Include="DataInspection\RValueInfo.cs" />
-    <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
-    <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
-    <Compile Include="DataInspection\REvaluationResultInfo.cs" />
-    <Compile Include="StackTracing\IRStackFrame.cs" />
-    <Compile Include="StackTracing\RStackFrame.cs" />
+    <Compile Include="AD7BoundBreakpoint.cs" />
+    <Compile Include="AD7BreakpointResolution.cs" />
+    <Compile Include="AD7CustomViewer.cs" />
+    <Compile Include="AD7Document.cs" />
+    <Compile Include="AD7DocumentContext.cs" />
+    <Compile Include="AD7Engine.cs" />
+    <Compile Include="AD7Enums.cs" />
+    <Compile Include="AD7Events.cs" />
+    <Compile Include="AD7MemoryAddress.cs" />
+    <Compile Include="AD7Module.cs" />
+    <Compile Include="AD7PendingBreakpoint.cs" />
+    <Compile Include="AD7Property.cs" />
+    <Compile Include="AD7StackFrame.cs" />
+    <Compile Include="AD7Thread.cs" />
+    <Compile Include="DebuggerConstants.cs" />
+    <Compile Include="DebuggerGuids.cs" />
+    <Compile Include="DTEDebuggerExtensions.cs" />
+    <Compile Include="IDebugGridViewProvider.cs" />
+    <Compile Include="PortSupplier\RDebugPortPicker.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugPort.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugProcess.cs" />
+    <Compile Include="PortSupplier\RDebugPortSupplier.DebugProgram.cs" />
+    <Compile Include="AD7Expression.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TaskExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -74,70 +133,35 @@
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>
       <Name>Microsoft.R.Host.Client</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="rtvs\R\util.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
+      <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
+      <Name>Microsoft.R.Components</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\R\Support\Impl\Microsoft.R.Support.csproj">
+      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
+      <Name>Microsoft.R.Support</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <EmbeddedResource Include="rtvs\R\eval.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\breakpoints.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\traceback.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <None Include="rtvs\DESCRIPTION">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <None Include="rtvs\NAMESPACE">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <EmbeddedResource Include="rtvs\R\grid.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\graphics.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\completions.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\packages.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\repr.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <None Include="rtvs\R\rtvs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <IncludeInVSIX>True</IncludeInVSIX>
-    </None>
-    <EmbeddedResource Include="rtvs\R\mirror.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="rtvs\R\overrides.R">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\R.Build.Version.targets" />
