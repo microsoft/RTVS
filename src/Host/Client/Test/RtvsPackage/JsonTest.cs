@@ -67,11 +67,9 @@ namespace Microsoft.R.RtvsPackage.Test {
         [InlineData("structure(list(), names = ''[FALSE])", "{}")]
         [InlineData("list(n = 0, s = 's', u = NULL)", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
-        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}")]
         [InlineData("as.environment(list())", "{}")]
         [InlineData("as.environment(list(n = 0, s = 's', u = NULL))", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
-        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}")]
         [InlineData("list(as.environment(list(l = list())))", @"[{""l"":[]}]")]
         public async Task Serialize(string expr, string json) {
             if (json == SameAsInput) {
@@ -79,6 +77,27 @@ namespace Microsoft.R.RtvsPackage.Test {
             }
 
             using (var eval = await _session.BeginEvaluationAsync()) {
+                var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
+                res.Error.Should().BeNullOrEmpty();
+                res.JsonResult.Should().NotBeNull();
+                var actualJson = JsonConvert.SerializeObject(res.JsonResult).ToUnicodeQuotes();
+                actualJson.Should().Be(json);
+            }
+        }
+
+        [CompositeTest]
+        [Category.R.RtvsPackage]
+        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}", 1252)]
+        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}", 1252)]
+        [InlineData("list('«Юникод»' = 0)", @"{""«Юникод»"":0}", 1251)]
+        [InlineData("as.environment(list('«Юникод»' = 0))", @"{""«Юникод»"":0}", 1251)]
+        public async Task SerializeWithEncoding(string expr, string json, int codepage) {
+            if (json == SameAsInput) {
+                json = expr;
+            }
+
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                await eval.SetCodePage(codepage); 
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
                 res.JsonResult.Should().NotBeNull();

@@ -34,14 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.CranMirror = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_RCommandLineArguments")]
-        [LocDescription("Settings_RCommandLineArguments_Description")]
-        public string RCommandLineArguments {
-            get { return RToolsSettings.Current.RCommandLineArguments; }
-            set { RToolsSettings.Current.RCommandLineArguments = value; }
-        }
-
         [LocCategory("Settings_WorkspaceCategory")]
         [CustomLocDisplayName("Settings_LoadRDataOnProjectLoad")]
         [LocDescription("Settings_LoadRDataOnProjectLoad_Description")]
@@ -89,7 +81,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.MultilineHistorySelection = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_REngineCategory")]
+        [CustomLocDisplayName("Settings_RCommandLineArguments")]
+        [LocDescription("Settings_RCommandLineArguments_Description")]
+        public string RCommandLineArguments {
+            get { return RToolsSettings.Current.RCommandLineArguments; }
+            set { RToolsSettings.Current.RCommandLineArguments = value; }
+        }
+
+        [LocCategory("Settings_REngineCategory")]
         [CustomLocDisplayName("Settings_RBasePath")]
         [LocDescription("Settings_RBasePath_Description")]
         [Editor(typeof(ChooseRFolderUIEditor), typeof(UITypeEditor))]
@@ -106,15 +106,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
-        [CustomLocDisplayName("Settings_HelpBrowser")]
-        [LocDescription("Settings_HelpBrowser_Description")]
-        [TypeConverter(typeof(HelpBrowserTypeConverter))]
-        [DefaultValue(HelpBrowserType.Automatic)]
-        public HelpBrowserType HelpBrowser {
-            get { return RToolsSettings.Current.HelpBrowserType; }
-            set { RToolsSettings.Current.HelpBrowserType = value; }
+        [LocCategory("Settings_REngineCategory")]
+        [CustomLocDisplayName("Settings_RCodePage")]
+        [LocDescription("Settings_RCodePage_Description")]
+        [TypeConverter(typeof(EncodingTypeConverter))]
+        [DefaultValue(0)]
+        public int RCodePage {
+            get { return RToolsSettings.Current.RCodePage; }
+            set { RToolsSettings.Current.RCodePage = value; }
         }
+
 
         [LocCategory("Settings_DebuggingCategory")]
         [CustomLocDisplayName("Settings_ShowDotPrefixedVariables")]
@@ -126,12 +127,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory("Settings_GeneralCategory")]
+        [CustomLocDisplayName("Settings_HelpBrowser")]
+        [LocDescription("Settings_HelpBrowser_Description")]
+        [TypeConverter(typeof(HelpBrowserTypeConverter))]
+        [DefaultValue(HelpBrowserType.Automatic)]
+        public HelpBrowserType HelpBrowser {
+            get { return RToolsSettings.Current.HelpBrowserType; }
+            set { RToolsSettings.Current.HelpBrowserType = value; }
+        }
+
+        [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_SurveyNewsCheck")]
         [LocDescription("Settings_SurveyNewsCheck_Description")]
         [TypeConverter(typeof(SurveyNewsPolicyTypeConverter))]
         [DefaultValue(SurveyNewsPolicy.CheckOnceWeek)]
-        public SurveyNewsPolicy SurveyNewsCheck
-        {
+        public SurveyNewsPolicy SurveyNewsCheck {
             get { return RToolsSettings.Current.SurveyNewsCheck; }
             set { RToolsSettings.Current.SurveyNewsCheck = value; }
         }
@@ -143,8 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         /// when an R project is opened.
         /// </summary>
         [Browsable(false)]
-        public DateTime SurveyNewsLastCheck
-        {
+        public DateTime SurveyNewsLastCheck {
             get { return RToolsSettings.Current.SurveyNewsLastCheck; }
             set { RToolsSettings.Current.SurveyNewsLastCheck = value; }
         }
@@ -160,7 +169,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             get { return RToolsSettings.Current.SurveyNewsIndexUrl; }
             set { RToolsSettings.Current.SurveyNewsIndexUrl = value; }
         }
-        
+
         [Browsable(false)]
         [DefaultValue(true)]
         public bool ShowPackageManagerDisclaimer {

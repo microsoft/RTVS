@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -157,6 +159,14 @@ grDevices::deviceIsInteractive('ide')
   options(pager = rtvs:::show_file)
 ";
             return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+        }
+
+        public static Task SetCodePage(this IRExpressionEvaluator evaluation, int codePage) {
+            if (codePage == 0) {
+                codePage = NativeMethods.GetOEMCP();
+            }
+            var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
+            return evaluation.ExecuteAsync(script);
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
