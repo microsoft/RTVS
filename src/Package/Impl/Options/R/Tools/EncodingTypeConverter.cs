@@ -11,6 +11,15 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class EncodingTypeConverter : TypeConverter {
+        private static readonly int[] _unicodePages = new int[] {
+            Encoding.UTF7.CodePage ,
+            Encoding.UTF8.CodePage,
+            Encoding.Unicode.CodePage,
+            Encoding.UTF32.CodePage,
+            Encoding.BigEndianUnicode.CodePage,
+            12001 // Big Endian UTF32
+        };
+
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) {
             return true;
         }
@@ -20,12 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
             var codePages = Encoding.GetEncodings()
                                     .OrderBy(e => e.DisplayName)
                                     .Select(e => e.CodePage)
-                                    .Where(cp => cp != Encoding.UTF7.CodePage &&
-                                                 cp != Encoding.UTF8.CodePage &&
-                                                 cp != Encoding.Unicode.CodePage &&
-                                                 cp != Encoding.UTF32.CodePage &&
-                                                 cp != Encoding.BigEndianUnicode.CodePage &&
-                                                 cp != 12001);
+                                    .Except(_unicodePages);
             codePageList.AddRange(codePages);
             return new StandardValuesCollection(codePageList);
         }

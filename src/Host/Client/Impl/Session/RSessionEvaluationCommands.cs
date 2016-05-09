@@ -166,7 +166,7 @@ grDevices::deviceIsInteractive('ide')
                 codePage = NativeMethods.GetOEMCP();
             }
             var script = Invariant($"Sys.setlocale('LC_CTYPE', '.{codePage}')");
-            return evaluation.EvaluateAsync(script, REvaluationKind.Mutating);
+            return evaluation.ExecuteAsync(script);
         }
 
         public static Task<REvaluationResult> OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
