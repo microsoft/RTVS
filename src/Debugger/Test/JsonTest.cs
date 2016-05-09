@@ -68,11 +68,9 @@ namespace Microsoft.R.Debugger.Test {
         [InlineData("structure(list(), names = ''[FALSE])", "{}")]
         [InlineData("list(n = 0, s = 's', u = NULL)", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("list(n = 0, na = NA)", @"{""n"":0}")]
-        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}")]
         [InlineData("as.environment(list())", "{}")]
         [InlineData("as.environment(list(n = 0, s = 's', u = NULL))", @"{""n"":0,""s"":""s"",""u"":null}")]
         [InlineData("as.environment(list(n = 0, na = NA))", @"{""n"":0}")]
-        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}")]
         [InlineData("list(as.environment(list(l = list())))", @"[{""l"":[]}]")]
         public async Task Serialize(string expr, string json) {
             if (json == SameAsInput) {
@@ -80,6 +78,25 @@ namespace Microsoft.R.Debugger.Test {
             }
 
             using (var eval = await _session.BeginEvaluationAsync()) {
+                var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
+                res.Error.Should().BeNullOrEmpty();
+                res.JsonResult.Should().NotBeNull();
+                var actualJson = JsonConvert.SerializeObject(res.JsonResult).ToUnicodeQuotes();
+                actualJson.Should().Be(json);
+            }
+        }
+
+        [CompositeTest]
+        [Category.R.Debugger]
+        [InlineData("list('Ûñïçôdè' = 0)", @"{""Ûñïçôdè"":0}")]
+        [InlineData("as.environment(list('Ûñïçôdè' = 0))", @"{""Ûñïçôdè"":0}")]
+        public async Task SerializeLatin(string expr, string json) {
+            if (json == SameAsInput) {
+                json = expr;
+            }
+
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                await eval.SetCodePage(1252);
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Json);
                 res.Error.Should().BeNullOrEmpty();
                 res.JsonResult.Should().NotBeNull();
