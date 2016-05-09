@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [ExportCommandGroup("60481700-078B-11D1-AAF8-00A0C9055A90")]
-    [AppliesTo("RTools")]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class OpenRDataVsUiHierarchyWindowCommandGroupHandler : OpenRDataCommandGroupHandler {
         [ImportingConstructor]
         public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
