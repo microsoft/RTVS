@@ -37,6 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAttachToRInteractive = 516;
         public const int icmdClearRepl = 517;
 
+        // Object
+        public const int icmdObjectSummary = 531;
+        public const int icmdObjectHead = 532;
+        public const int icmdObjectDim = 533;
+        public const int icmdObjectNames = 534;
+
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
 
