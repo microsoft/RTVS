@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// </summary>
         public static void FormatNode(ITextView textView, ITextBuffer textBuffer, IAstNode node, int limit = -1) {
             if (node != null) {
-                if (limit < node.Start) {
+                if (limit >= 0 && limit < node.Start) {
                     throw new ArgumentException(nameof(limit));
                 }
                 ITextRange range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
