@@ -123,6 +123,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Editor {
             set { REditorSettings.AutoFormat = value; }
         }
 
+        [LocCategory("Settings_FormattingCategory")]
+        [CustomLocDisplayName("Settings_FormatScope")]
+        [LocDescription("Settings_FormatScope_Description")]
+        [TypeConverter(typeof(OnOffTypeConverter))]
+        [DefaultValue(true)]
+        public bool FormatScope {
+            get { return REditorSettings.FormatScope; }
+            set { REditorSettings.FormatScope = value; }
+        }
+
         [LocCategory("Settings_ReplCategory")]
         [CustomLocDisplayName("Settings_ReplSyntaxCheck")]
         [LocDescription("Settings_ReplSyntaxCheck_Description")]

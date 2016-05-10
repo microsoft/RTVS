@@ -115,7 +115,7 @@ namespace Microsoft.R.Editor.Formatting {
                 int indent = SmartIndenter.GetSmartIndent(line, ast, originalIndentSizeInSpaces);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
-                    int currentIndentSize = line.Length - line.GetText().TrimStart().Length;
+                    int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), options.TabSize);
                     indent = Math.Max(0, indent - currentIndentSize);
                     if (indent > 0) {
                         string indentString = IndentBuilder.GetIndentString(indent, options.IndentType, options.TabSize);

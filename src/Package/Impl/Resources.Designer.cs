@@ -1186,7 +1186,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to (OS Default).
         /// </summary>
-        public static string Settings_OsDefaultEncoding {
+        public static string Settings_DefaultValue {
             get {
                 return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
             }
@@ -1225,6 +1225,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_FormatOnPaste_Description {
             get {
                 return ResourceManager.GetString("Settings_FormatOnPaste_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format scope on }.
+        /// </summary>
+        public static string Settings_FormatScope {
+            get {
+                return ResourceManager.GetString("Settings_FormatScope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Format scope after closing curly brace was typed.
+        /// </summary>
+        public static string Settings_FormatScope_Description {
+            get {
+                return ResourceManager.GetString("Settings_FormatScope_Description", resourceCulture);
             }
         }
         

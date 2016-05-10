@@ -730,4 +730,10 @@ Additional information:
   <data name="Settings_RCodePage_Description" xml:space="preserve">
     <value>Default code page in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE).</value>
   </data>
+  <data name="Settings_FormatScope" xml:space="preserve">
+    <value>Format scope on }</value>
+  </data>
+  <data name="Settings_FormatScope_Description" xml:space="preserve">
+    <value>Format scope after closing curly brace was typed</value>
+  </data>
 </root>

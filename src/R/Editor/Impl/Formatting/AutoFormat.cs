@@ -26,6 +26,10 @@ namespace Microsoft.R.Editor.Formatting {
                 return;
             }
 
+            if (!REditorSettings.FormatScope && typedChar == '}') {
+                return;
+            }
+
             SnapshotPoint? rPoint = GetCaretPointInBuffer(textView);
             if (!rPoint.HasValue) {
                 return;
