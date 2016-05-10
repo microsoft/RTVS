@@ -42,6 +42,20 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine startLine = snapshot.GetLineFromPosition(start);
             ITextSnapshotLine endLine = snapshot.GetLineFromPosition(end);
 
+            // In case of formatting of multiline expressions formatter needs
+            // to know the entire expression since otherwise it may not correctly
+            // preserve user indentation. Consider 'x >% y' which is a plain statement
+            // and needs to be indented at regular scope level vs
+            //
+            //      a %>% b %>%
+            //          x %>% y
+            //
+            // where user indentation of 'x %>% y' must be preserved. We don't have
+            // complete information here since expression may not be syntactically
+            // correct and hence AST may not have correct information and besides,
+            // the AST is damaged at this point. As a workaround, we will check 
+            // if the previous line ends with an operator current line starts with 
+            // an operator.
             formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
             return FormatRangeExact(textView, textBuffer, formatRange, options);
         }
