@@ -3,66 +3,96 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
+using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class REnvironmentProvider : IREnvironmentProvider, IDisposable {
+    internal class REnvironmentProvider : IREnvironmentProvider {
+        private static readonly string[] _hiddenEnvironments = { "Autoloads", "rtvs::graphics::ide", ".rtvs" };
+        private static readonly IReadOnlyList<REnvironment> _errorEnvironments = new[] { REnvironment.Error };
+
         private IRSession _rSession;
+        private IREnvironment _selectedEnvironment;
+        private IReadOnlyList<IREnvironment> _environments;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public REnvironmentProvider(IRSession session) {
             _rSession = session;
             _rSession.Mutated += RSession_Mutated;
+        }
 
-            GetEnvironmentAsync().DoNotWait();
+        public void Dispose() {
+            if (_rSession != null) {
+                _rSession.Mutated -= RSession_Mutated;
+                _rSession = null;
+            }
+        }
+
+        public IReadOnlyList<IREnvironment> Environments {
+            get { return _environments; }
+            set {
+                if (_environments != value) {
+                    var oldSelection = _selectedEnvironment;
+
+                    _environments = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Environments)));
+
+                    IREnvironment newSelection = null;
+                    if (oldSelection != null) {
+                        newSelection = _environments?.FirstOrDefault(env => env.Name == oldSelection.Name);
+                    }
+                    SelectedEnvironment = newSelection ?? _environments.FirstOrDefault();
+                }
+            }
+        }
+
+        public IREnvironment SelectedEnvironment {
+            get { return _selectedEnvironment; }
+            set {
+                if (value != _selectedEnvironment) {
+                    _selectedEnvironment = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedEnvironment)));
+                }
+            }
+        }
+
+        public async Task RefreshEnvironmentsAsync() {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            var envs = new List<REnvironment>();
+            bool success = false;
+            try {
+                var traceback = (await _rSession.TracebackAsync())
+                    .Skip(1) // skip global - it's in the search path already
+                    .Select(frame => new REnvironment(frame))
+                    .Reverse();
+                if (traceback.Any()) {
+                    envs.AddRange(traceback);
+                    envs.Add(null);
+                }
+
+                var searchPath = (await _rSession.EvaluateAsync<string[]>("as.list(search())", REvaluationKind.BaseEnv))
+                    .Except(_hiddenEnvironments)
+                    .Select(name => new REnvironment(name));
+                envs.AddRange(searchPath);
+
+                success = true;
+            } catch (RException) {
+            } catch (MessageTransportException) {
+            } catch (OperationCanceledException) {
+            }
+
+            VsAppShell.Current.DispatchOnUIThread(() => Environments = success ? envs : _errorEnvironments);
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {
-            if (EnvironmentChanged != null) {
-                GetEnvironmentAsync().DoNotWait();
-            }
-        }
-
-        private async Task GetEnvironmentAsync() {
-            await TaskUtilities.SwitchToBackgroundThread();
-
-            JArray result = null;
-            using (var evaluation = await _rSession.BeginEvaluationAsync()) {
-                try {
-                    result = await evaluation.EvaluateAsync<JArray>("rtvs:::getEnvironments(sys.frame(sys.nframe()))", REvaluationKind.Normal);
-                } catch (RException) {
-                }
-            }
-
-            var envs = new List<REnvironment>();
-            if (result != null) {
-                foreach (var jsonItem in result) {
-                    envs.Add(new REnvironment(jsonItem));
-                }
-            }
-
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                OnEnvironmentChanged(new REnvironmentChangedEventArgs(envs));
-            });
-        }
-
-        private void OnEnvironmentChanged(REnvironmentChangedEventArgs args) {
-            EnvironmentChanged?.Invoke(this, args);
-        }
-
-        #region IREnvironmentProvider
-
-        public event EventHandler<REnvironmentChangedEventArgs> EnvironmentChanged;
-
-        #endregion
-
-        public void Dispose() {
-            _rSession.Mutated -= RSession_Mutated;
-            _rSession = null;
+            RefreshEnvironmentsAsync().DoNotWait();
         }
     }
 }

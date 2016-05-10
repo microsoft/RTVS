@@ -199,18 +199,45 @@ namespace Microsoft.R.DataInspection.Test {
         [InlineData("''", "\"\"", "\"\"", "")]
         [InlineData(@"'abc'", @"""abc""", @"""abc""", "abc")]
         [InlineData(@"'\'\""\n\r\t\b\a\f\v\\\001'", @"""'\""\n\r\t\b\a\f\v\\\001""", @"""'\""\n\r\t\b\a\f\v\\\001""", "'\"\n\r\t\b\a\f\v\\\x01")]
-        //[InlineData(@"'\u2260'", @"""≠""", @"""≠""", "≠")]
-        [InlineData(@"sQuote(dQuote('x'))", @"""‘“x”’""", @"""‘“x”’""", "‘“x”’")]
         [InlineData(@"quote(sym)", @"sym", @"sym", "sym")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
-            var rrs = new[] { RValueRepresentations.Deparse(), RValueRepresentations.Str(), RValueRepresentations.ToString }.Zip(new[] { deparse, str, toString },
-                (repr, result) => new { Repr = repr, Result = result });
+            string actualDeparse = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Deparse())).Representation;
+            string actualStr = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Str())).Representation;
+            string actualToString = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.ToString)).Representation;
 
-            foreach (var rr in rrs) {
-                (await _session.TryEvaluateAndDescribeAsync(expr, REvaluationResultProperties.None, rr.Repr))
-                    .Should().BeAssignableTo<IRValueInfo>().Which
-                    .Representation.Should().Be(rr.Result);
-            }
+            actualDeparse.Should().Be(deparse);
+            actualStr.Should().Be(str);
+            actualToString.Should().Be(toString);
+        }
+
+        [CompositeTest]
+        [Category.R.DataInspection]
+        [InlineData(@"sQuote(dQuote('x'))", @"""'\""x\""'""", @"""‘“x”’""", "‘“x”’", 1252)]
+        [InlineData("'Ûñïçôdè' ", @"""Unicode""", @"""Ûñïçôdè""", @"Ûñïçôdè", 1252)]
+        [InlineData(@"'\u2260'", @"""<U+2260>""", @"""<U+2260>""""| __truncated__", "≠", 1252)]
+        public Task RepresentationWithEncoding(string expr, string deparse, string str, string toString, int codepage) {
+            _session.SetCodePage(codepage);
+            return Representation(expr, deparse, str, toString);
+        }
+
+        [Test]
+        [Category.R.DataInspection]
+        public async Task DeparseLimit() {
+            string expr = "as.double(1:100)";
+            string fullRepr = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Deparse())).Representation;
+            string expectedRepr = fullRepr.Substring(0, 53); 
+            (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Deparse(50)))
+                .Representation.Should().Be(expectedRepr);
+        }
+
+        [Test]
+        [Category.R.DataInspection]
+        public async Task StrLimit() {
+            string expr = "as.double(1:100)";
+            string fullRepr = (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Str())).Representation;
+            string expectedRepr = fullRepr.Substring(0, 7) + "!!!";
+            (await _session.EvaluateAndDescribeAsync(expr, None, RValueRepresentations.Str(10, null, "!!!")))
+                .Representation.Should().Be(expectedRepr);
         }
 
         private const string Postfix = "<POSTFIX>";

@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.R.Host.Client;
+
 namespace Microsoft.R.DataInspection {
     /// <seealso cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/>
     /// <seealso cref="RValueInfo.Representation"/>
@@ -57,6 +59,6 @@ namespace Microsoft.R.DataInspection {
         /// will produce <c>"num 42"</c>, the function produced by this helper will return <c>"42"</c>.
         /// </remarks>
         public static string Str(int? maxLength = null, int? expectedLength = null, string overflowSuffix = null) =>
-            $"rtvs:::make_repr_str({maxLength}, {expectedLength}, {overflowSuffix})";
+            $"rtvs:::make_repr_str({maxLength}, {expectedLength}, {overflowSuffix.ToRStringLiteral()})";
     }
 }

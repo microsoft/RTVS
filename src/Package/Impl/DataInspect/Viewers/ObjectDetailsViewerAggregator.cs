@@ -14,20 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         [ImportMany]
         private IEnumerable<Lazy<IObjectDetailsViewer>> Viewers { get; set; }
 
-        [Import]
-        private IDataObjectEvaluator Evaluator { get; set; }
-
-        public async Task<IObjectDetailsViewer> GetViewer(string expression) {
-            var preliminary = await Evaluator.EvaluateAsync(expression,
-                                REvaluationResultProperties.ClassesProperty | REvaluationResultProperties.DimProperty | REvaluationResultProperties.LengthProperty,
-                                null)
-                                as IRValueInfo;
-            if (preliminary != null) {
-                return GetViewer(preliminary);
-            }
-            return null;
-        }
-
         public IObjectDetailsViewer GetViewer(IRValueInfo result) {
             Lazy<IObjectDetailsViewer> lazyViewer = Viewers.FirstOrDefault(x => x.Value.CanView(result));
             return lazyViewer?.Value;

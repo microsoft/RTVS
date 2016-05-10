@@ -59,11 +59,9 @@ namespace Microsoft.R.Editor.Data {
                     Dimensions = new List<int>();
                 }
             } else if (DebugEvaluation is IRPromiseInfo) {
-                const string PromiseValue = "<promise>";
-
-                Value = PromiseValue;
-                TypeName = PromiseValue;
-                Class = PromiseValue;
+                var promiseInfo = (IRPromiseInfo)DebugEvaluation;
+                Value = promiseInfo.Code;
+                Class = TypeName = "<promise>";
             } else if (DebugEvaluation is IRActiveBindingInfo) {
                 const string ActiveBindingValue = "<active binding>";
                 var activeBinding = (IRActiveBindingInfo)DebugEvaluation;

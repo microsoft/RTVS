@@ -2,9 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal interface IREnvironmentProvider {
-        event EventHandler<REnvironmentChangedEventArgs> EnvironmentChanged;
+    internal interface IREnvironmentProvider : IDisposable, INotifyPropertyChanged {
+        IReadOnlyList<IREnvironment> Environments { get; }
+        IREnvironment SelectedEnvironment { get; }
+        Task RefreshEnvironmentsAsync();
     }
 }

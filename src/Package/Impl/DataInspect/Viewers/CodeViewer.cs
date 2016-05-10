@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
@@ -12,18 +12,16 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
-using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
-    internal sealed class FunctionViewer : ViewerBase, IObjectDetailsViewer {
-        private readonly static string[] _classes = new string[] { "function", "formula" };
+    internal sealed class CodeViewer : ViewerBase, IObjectDetailsViewer {
+        private readonly static HashSet<string> _types = new HashSet<string> { "closure", "language" };
         private readonly IRSessionProvider _sessionProvider;
 
         [ImportingConstructor]
-        public FunctionViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) :
+        public CodeViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) :
             base(evaluator) {
             _sessionProvider = sessionProvider;
         }
@@ -32,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         public ViewerCapabilities Capabilities => ViewerCapabilities.Function;
 
         public bool CanView(IRValueInfo evaluation) {
-            return evaluation != null && evaluation.Classes.Count == 1 && evaluation.Classes.Any(t => _classes.Contains(t));
+            return _types.Contains(evaluation?.TypeName);
         }
 
         public async Task ViewAsync(string expression, string title) {
