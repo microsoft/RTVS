@@ -153,17 +153,38 @@ namespace Microsoft.R.Editor.Formatting {
             // Go up line by line, tokenize each line
             // and check if it starts or ends with an operator
             int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
-            var tokenizer = new RTokenizer();
+            var tokenizer = new RTokenizer(separateComments: true);
+            IReadOnlyTextRangeCollection<RToken> tokens = null;
+
             for (int i = lineNum; i >= 0; i--) {
-                var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                var text = line.GetText();
-                var tokens = tokenizer.Tokenize(text);
-                if (tokens.Count > 0) {
-                    if(tokens[0].TokenType != RTokenType.Operator &&
-                       tokens[tokens.Count - 1].TokenType != RTokenType.Operator) {
-                        break;
+                if (tokens == null) {
+                    var text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                    tokens = tokenizer.Tokenize(text);
+                }
+
+                if (tokens.Count == 0) {
+                    tokens = null;
+                    continue;
+                }
+
+                if (tokens[0].TokenType == RTokenType.Operator) {
+                    // Current line starts with an operator so we consider
+                    // it to be a continuation of the previous line
+                    position = tokens[0].Start;
+                    tokens = null;
+                    continue;
+                }
+
+                // Check if previous line ends with an operator
+                if (i > 0) {
+                    var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i - 1);
+                    var text = line.GetText();
+                    tokens = tokenizer.Tokenize(text);
+                    if (tokens.Count > 0 && tokens[tokens.Count - 1].TokenType == RTokenType.Operator) {
+                        position = tokens[0].Start;
+                        continue;
                     }
-                    position = line.Start;
+                    break;
                 }
             }
             return position;
