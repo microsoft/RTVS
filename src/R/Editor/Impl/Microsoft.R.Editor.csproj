@@ -127,6 +127,7 @@
     <Compile Include="Document\DocumentFactory.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
+    <Compile Include="Extensions\DocumentExtensions.cs" />
     <Compile Include="Extensions\AstRootExtensions.cs" />
     <Compile Include="Extensions\FunctionDefinitionExtensions.cs" />
     <Compile Include="Formatting\AutoFormat.cs" />

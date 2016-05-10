@@ -21,6 +21,7 @@ namespace Microsoft.R.Core.Formatting {
         private TextBuilder _tb;
         private TokenStream<RToken> _tokens;
         private ITextProvider _textProvider;
+        private int _singleLineScopeEnd = -1;
 
         private Stack<FormattingScope> _formattingScopes = new Stack<FormattingScope>();
         private Stack<RTokenType> _openBraces = new Stack<RTokenType>();
@@ -114,12 +115,17 @@ namespace Microsoft.R.Core.Formatting {
 
             // If scope is empty, make it { } unless there is a line break already in it
             if (_tokens.NextToken.TokenType == RTokenType.CloseCurlyBrace &&
-                 IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
+                _textProvider.IsWhiteSpaceOnlyRange(_tokens.CurrentToken.End, _tokens.NextToken.Start)) {
                 AppendToken(leadingSpace: _tokens.PreviousToken.TokenType == RTokenType.CloseBrace, trailingSpace: true);
                 AppendToken(leadingSpace: false, trailingSpace: false);
                 return;
             } else {
-                if (_options.BracesOnNewLine) {
+
+                if (_singleLineScopeEnd < 0) {
+                    _singleLineScopeEnd = GetSingleLineScopeEnd();
+                }
+
+                if (_singleLineScopeEnd < 0 && _options.BracesOnNewLine) {
                     _tb.SoftLineBreak();
                 } else if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
                     _tb.AppendSpace();
@@ -128,16 +134,22 @@ namespace Microsoft.R.Core.Formatting {
 
             AppendToken(leadingSpace: false, trailingSpace: false);
 
-            _tb.SoftLineBreak();
-            _tb.NewIndentLevel();
+            if (_singleLineScopeEnd < 0) {
+                _tb.SoftLineBreak();
+                _tb.NewIndentLevel();
+            }
         }
 
         private void CloseFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
-            _tb.SoftLineBreak();
-            _tb.CloseIndentLevel();
-            _tb.SoftIndent();
+            if (_singleLineScopeEnd < 0) {
+                _tb.SoftLineBreak();
+                _tb.CloseIndentLevel();
+                _tb.SoftIndent();
+            }
+
+            var leadingSpace = _singleLineScopeEnd >= 0 && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
             if (_formattingScopes.Count > 1) {
                 if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
@@ -146,7 +158,7 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
 
-            AppendToken(leadingSpace: false, trailingSpace: false);
+            AppendToken(leadingSpace: leadingSpace, trailingSpace: false);
 
             if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
                 // We insert line break after } unless next token is comma 
@@ -154,10 +166,14 @@ namespace Microsoft.R.Core.Formatting {
                 // (last parameter in a function or indexer) or it is followed by 'else'
                 // so 'else' does not get separated from 'if'.
                 if (!KeepCurlyAndElseTogether()) {
-                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                    if (_singleLineScopeEnd < 0 && !IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
                         _tb.SoftLineBreak();
                     }
                 }
+            }
+
+            if (_tokens.CurrentToken.Start >= _singleLineScopeEnd) {
+                _singleLineScopeEnd = -1;
             }
         }
 
@@ -465,7 +481,7 @@ namespace Microsoft.R.Core.Formatting {
                     case RTokenType.CloseCurlyBrace:
                         // Close all braces until the nearest curly
                         while (_openBraces.Count > 0) {
-                            if(_openBraces.Peek() == RTokenType.OpenCurlyBrace) {
+                            if (_openBraces.Peek() == RTokenType.OpenCurlyBrace) {
                                 break;
                             }
                             _openBraces.Pop();
@@ -724,20 +740,27 @@ namespace Microsoft.R.Core.Formatting {
             _tokens = new TokenStream<RToken>(tokens, RToken.EndOfStreamToken);
         }
 
-        private bool IsWhiteSpaceOnlyRange(int start, int end) {
-            if (end < start) {
-                end = _textProvider.Length;
+        private int GetSingleLineScopeEnd() {
+            int start = _tokens.CurrentToken.Start;
+            int position = _tokens.Position;
+
+            var braceCounter = new TokenBraceCounter<RToken>(new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace), new RTokenTypeComparer());
+            braceCounter.CountBrace(_tokens.CurrentToken);
+
+            while (braceCounter.Count > 0 && !_tokens.IsEndOfStream()) {
+                braceCounter.CountBrace(_tokens.CurrentToken);
+                _tokens.MoveToNextToken();
             }
+
+            int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
+            _tokens.Position = position;
+
             for (int i = start; i < end; i++) {
-                char ch = _textProvider[i];
-                if (!char.IsWhiteSpace(ch)) {
-                    return false;
-                }
-                if (ch.IsLineBreak()) {
-                    return false;
+                if (CharExtensions.IsLineBreak(_textProvider[i])) {
+                    return -1;
                 }
             }
-            return true;
+            return end;
         }
     }
 }

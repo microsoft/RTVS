@@ -13,16 +13,18 @@ namespace Microsoft.R.Core.Test.Formatting {
     [Category.R.Formatting]
     public class FormatFunctionTest {
         [CompositeTest]
-        [InlineData("function(a,b) {return(a+b)}", "function(a, b) {\n  return(a + b)\n}")]
+        [InlineData("function(a,b) {\nreturn(a+b)}", "function(a, b) {\n  return(a + b)\n}")]
+        [InlineData("function(a,b) {return(a+b)}", "function(a, b) { return(a + b) }")]
+        [InlineData("function(a,b) {{return(a+b)}}", "function(a, b) {{ return(a + b) }}")]
         [InlineData("function(a,b) a+b", "function(a, b) a + b")]
-        public void Formatter_FormatFunction(string original, string expected) {
+        public void FormatFunction(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
-        public void Formatter_FormatFunctionAlignArguments() {
+        public void FormatFunctionAlignArguments() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
             options.TabSize = 2;
@@ -79,14 +81,15 @@ namespace Microsoft.R.Core.Test.Formatting {
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void Formatter_FormatFunctionNoSpaceAfterComma() {
+        [CompositeTest]
+        [InlineData("function(a, b) {return(a+b)}", "function(a,b) { return(a + b) }")]
+        [InlineData("function(a, b) {return(a+b)\n}", "function(a,b) {\n  return(a + b)\n}")]
+        public void FormatFunctionNoSpaceAfterComma(string original, string expected) {
             RFormatOptions options = new RFormatOptions();
             options.SpaceAfterComma = false;
 
             RFormatter f = new RFormatter(options);
-            string actual = f.Format("function(a, b) {return(a+b)}");
-            string expected = "function(a,b) {\n  return(a + b)\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
     }

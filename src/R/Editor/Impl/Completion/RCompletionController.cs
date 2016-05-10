@@ -12,8 +12,8 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
@@ -200,8 +200,7 @@ namespace Microsoft.R.Editor.Completion {
                 if (position.HasValue) {
                     int pos = position.Value;
                     var doc = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
-                    int index = doc.EditorTree.AstRoot.Comments.GetItemContaining(pos);
-                    if (index < 0) {
+                    if (!doc.IsPositionInComment(pos)) {
                         if (pos > 0 && pos <= position.Value.Snapshot.Length) {
                             bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
                             bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;

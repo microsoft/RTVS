@@ -385,5 +385,23 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 actual.Should().Be(expected);
             }
         }
+
+        [Test]
+        [Category.Interactive]
+        public void R_AutoFormatFuncionDefinition04() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                string text = "function(){return(1)}";
+
+                script.Type(text);
+                script.DoIdle(300);
+                script.Enter();
+
+                string actual = script.EditorText;
+                string expected = 
+@"function() { return(1) }
+";
+                actual.Should().Be(expected);
+            }
+        }
     }
 }
