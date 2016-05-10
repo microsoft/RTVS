@@ -10,27 +10,18 @@ using Xunit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
+    [Category.R.Formatting]
     public class FormatFunctionTest {
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunction() {
+        [CompositeTest]
+        [InlineData("function(a,b) {return(a+b)}", "function(a, b) {\n  return(a + b)\n}")]
+        [InlineData("function(a,b) a+b", "function(a, b) a + b")]
+        public void Formatter_FormatFunction(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) {return(a+b)}");
-            string expected = "function(a, b) {\n  return(a + b)\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatInlineFunction() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) a+b");
-            string expected = @"function(a, b) a + b";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
         public void Formatter_FormatFunctionAlignArguments() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
@@ -45,7 +36,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [Category.R.Formatting]
         [InlineData("x <- func(a,{return(b)})", "x <- func(a, {\n  return(b)\n})")]
         [InlineData("x<-func({return(b)})", "x <- func({\n  return(b)\n})")]
         public void FunctionInlineScope(string original, string expected) {
@@ -55,7 +45,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [Category.R.Formatting]
         [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, {\n  if (TRUE) {\n    x\n  } else {\n    y\n  }\n})")]
         [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
         [InlineData("x <- func(a,{\nif(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
@@ -69,7 +58,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
         public void FormatFunctionInlineIf02() {
             RFormatter f = new RFormatter();
 
@@ -92,7 +80,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
         public void Formatter_FormatFunctionNoSpaceAfterComma() {
             RFormatOptions options = new RFormatOptions();
             options.SpaceAfterComma = false;

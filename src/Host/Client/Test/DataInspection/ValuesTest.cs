@@ -200,11 +200,12 @@ namespace Microsoft.R.DataInspection.Test {
         [InlineData(@"'abc'", @"""abc""", @"""abc""", "abc")]
         [InlineData(@"'\'\""\n\r\t\b\a\f\v\\\001'", @"""'\""\n\r\t\b\a\f\v\\\001""", @"""'\""\n\r\t\b\a\f\v\\\001""", "'\"\n\r\t\b\a\f\v\\\x01")]
         //[InlineData(@"'\u2260'", @"""≠""", @"""≠""", "≠")]
-        [InlineData(@"sQuote(dQuote('x'))", @"""‘“x”’""", @"""‘“x”’""", "‘“x”’")]
         [InlineData(@"quote(sym)", @"sym", @"sym", "sym")]
         public async Task Representation(string expr, string deparse, string str, string toString) {
             var rrs = new[] { RValueRepresentations.Deparse(), RValueRepresentations.Str(), RValueRepresentations.ToString }.Zip(new[] { deparse, str, toString },
                 (repr, result) => new { Repr = repr, Result = result });
+
+            await _session.SetCodePage(1252);
 
             foreach (var rr in rrs) {
                 (await _session.TryEvaluateAndDescribeAsync(expr, REvaluationResultProperties.None, rr.Repr))

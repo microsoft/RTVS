@@ -120,6 +120,7 @@
     <Compile Include="DataTips\DataTipTest.cs" />
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
+    <Compile Include="Formatting\FormatMultilineTest.cs" />
     <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />

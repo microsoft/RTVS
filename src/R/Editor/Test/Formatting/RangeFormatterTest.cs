@@ -224,5 +224,39 @@ if (z < ncx)
 
             actual.Should().Be(expected);
         }
+
+        [Test]
+        public void FormatMultiline01() {
+            string original =
+@"x %>%y %>%
+    z %>%a";
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(
+                                  original.IndexOf("z"), original.IndexOf("a") + 1), new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected =
+@"x %>% y %>%
+    z %>% a";
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void FormatMultiline02() {
+            string original =
+@"((x %>%y)
+    %>% z %>%a)";
+            AstRoot ast;
+            ITextView textView = TextViewTest.MakeTextView(original, out ast);
+
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(
+                                  original.IndexOf("%>% z"), original.IndexOf("a") + 2), new RFormatOptions());
+            string actual = textView.TextBuffer.CurrentSnapshot.GetText();
+            string expected =
+@"((x %>% y)
+    %>% z %>% a)";
+            actual.Should().Be(expected);
+        }
     }
 }

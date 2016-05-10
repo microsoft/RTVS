@@ -404,7 +404,12 @@ namespace Microsoft.R.Core.Formatting {
             } else if (IsOperatorWithoutSpaces(text)) {
                 AppendToken(leadingSpace: false, trailingSpace: false);
             } else {
-                AppendToken(leadingSpace: true, trailingSpace: true);
+                if (_tb.IsAtNewLine && _tb.Length > 0) {
+                    AppendTextBeforeToken(preserveUserIndent: true);
+                    AppendToken(leadingSpace: false, trailingSpace: true);
+                } else {
+                    AppendToken(leadingSpace: true, trailingSpace: true);
+                }
             }
         }
 
@@ -597,12 +602,12 @@ namespace Microsoft.R.Core.Formatting {
             return false;
         }
 
-        private void AppendTextBeforeToken() {
+        private void AppendTextBeforeToken(bool preserveUserIndent = false) {
             int start = _tokens.Position > 0 ? _tokens.PreviousToken.End : 0;
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
-            if (string.IsNullOrWhiteSpace(text)) {
+            if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
                 // Append any user-entered whitespace. We preserve 
                 // line breaks but trim unnecessary spaces such as 
                 // on empty lines. We must, however, preserve 
@@ -611,7 +616,6 @@ namespace Microsoft.R.Core.Formatting {
 
                 // We preserve user indentation of last token was 
                 // open brace, square bracket, comma or an operator
-                bool preserveUserIndent = false;
                 if (_tokens.Position > 0) {
                     switch (_tokens.PreviousToken.TokenType) {
                         case RTokenType.OpenBrace:

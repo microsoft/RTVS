@@ -57,6 +57,7 @@ namespace Microsoft.R.Editor.Formatting {
             // if the previous line ends with an operator current line starts with 
             // an operator.
             int startPosition = FindStartOfExpression(textBuffer, startLine.Start);
+
             formatRange = TextRange.FromBounds(startPosition, endLine.End);
             return FormatRangeExact(textView, textBuffer, formatRange, options);
         }
@@ -154,39 +155,24 @@ namespace Microsoft.R.Editor.Formatting {
             // and check if it starts or ends with an operator
             int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
             var tokenizer = new RTokenizer(separateComments: true);
-            IReadOnlyTextRangeCollection<RToken> tokens = null;
 
-            for (int i = lineNum; i >= 0; i--) {
-                if (tokens == null) {
-                    var text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
-                    tokens = tokenizer.Tokenize(text);
-                }
+            var text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum).GetText();
+            var tokens = tokenizer.Tokenize(text);
+            bool nextLineStartsWithOperator = tokens.Count > 0 && tokens[0].TokenType == RTokenType.Operator;
 
-                if (tokens.Count == 0) {
-                    tokens = null;
-                    continue;
-                }
+            for (int i = lineNum - 1; i >= 0; i--) {
+                text = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i).GetText();
+                tokens = tokenizer.Tokenize(text);
 
-                if (tokens[0].TokenType == RTokenType.Operator) {
-                    // Current line starts with an operator so we consider
-                    // it to be a continuation of the previous line
-                    position = tokens[0].Start;
-                    tokens = null;
-                    continue;
-                }
-
-                // Check if previous line ends with an operator
-                if (i > 0) {
-                    var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i - 1);
-                    var text = line.GetText();
-                    tokens = tokenizer.Tokenize(text);
-                    if (tokens.Count > 0 && tokens[tokens.Count - 1].TokenType == RTokenType.Operator) {
-                        position = tokens[0].Start;
-                        continue;
+                if (tokens.Count > 0) {
+                    if (!nextLineStartsWithOperator && tokens[tokens.Count - 1].TokenType != RTokenType.Operator) {
+                        break;
                     }
-                    break;
+                    position = tokens[0].Start;
+                    nextLineStartsWithOperator = tokens[0].TokenType == RTokenType.Operator;
                 }
             }
+
             return position;
         }
     }
