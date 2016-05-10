@@ -332,6 +332,10 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
+      <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
+      <Name>Microsoft.UnitTests.References.15.0</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.VisualStudio.R.Package.csproj">
       <Project>{26035fe3-25ab-45ec-bb45-7fd0b6c1d545}</Project>
       <Name>Microsoft.VisualStudio.R.Package</Name>

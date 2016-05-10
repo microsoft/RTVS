@@ -12,10 +12,10 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
@@ -306,11 +306,12 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         private async Task<IRInteractiveWorkflow> CreateWorkflowAsync() {
             var workflow = _workflowProvider.GetOrCreate();
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
             await workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RToolsSettings.Current.RBasePath,
-                RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
-                CranMirrorName = RToolsSettings.Current.CranMirror,
+                RBasePath = settings.RBasePath,
+                RHostCommandLineArguments = settings.RCommandLineArguments,
+                CranMirrorName = settings.CranMirror,
             }, new RHostClientTestApp(), 50000);
             return workflow;
         }

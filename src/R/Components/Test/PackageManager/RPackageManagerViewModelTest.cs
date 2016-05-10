@@ -8,9 +8,9 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.PackageManager.ViewModel;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
@@ -33,11 +33,12 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         public async Task InitializeAsync() {
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RToolsSettings.Current.RBasePath,
-                RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
-                CranMirrorName = RToolsSettings.Current.CranMirror,
+                RBasePath = settings.RBasePath,
+                RHostCommandLineArguments = settings.RCommandLineArguments,
+                CranMirrorName = settings.CranMirror,
             }, null, 50000);
 
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {

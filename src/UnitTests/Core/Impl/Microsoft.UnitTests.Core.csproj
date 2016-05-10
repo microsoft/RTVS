@@ -128,6 +128,7 @@
     <Compile Include="Threading\UIThreadHelper.cs" />
     <Compile Include="Threading\UIThreadTools.cs" />
     <Compile Include="UI\ContainerHost.cs" />
+    <Compile Include="XUnit\AssemblyLoaderAttribute.cs" />
     <Compile Include="XUnit\AssemblyRunner.cs" />
     <Compile Include="XUnit\BeforeCtorAfterDisposeAttribute.cs" />
     <Compile Include="XUnit\Categories.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesParameters.cs" />
     <Compile Include="XUnit\TestFramework.cs" />
+    <Compile Include="XUnit\TestFrameworkDiscoverer.cs" />
     <Compile Include="XUnit\TestFrameworkExecutor.cs" />
     <Compile Include="XUnit\TestFrameworkOverrideAttribute.cs" />
     <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />

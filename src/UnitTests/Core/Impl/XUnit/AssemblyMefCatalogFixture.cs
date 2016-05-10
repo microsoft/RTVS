@@ -17,38 +17,45 @@ using static System.FormattableString;
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     public abstract class AssemblyMefCatalogFixture : MefCatalogFixture {
-        private readonly Dictionary<string, string> _knownProductAssemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, string> _knownVsAssemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         private string _idePath;
+        private string _binDirectoryPath;
 
         protected override ComposablePartCatalog CreateCatalog() {
             _idePath = GetDevEnvIdePath();
+            _binDirectoryPath = Path.GetDirectoryName(GetType().Assembly.GetAssemblyPath());
 
-            EnumerateAssemblies(_knownProductAssemblyPaths, Path.GetDirectoryName(GetType().Assembly.GetAssemblyPath()));
             EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"PrivateAssemblies\"));
             EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"CommonExtensions\"));
 
-            var aggregateCatalog = new AggregateCatalog();
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
             try {
-                var nugetAssemblies = GetNugetAssemblies().ToList();
-                if (nugetAssemblies.Any()) {
-                    FindInCurrentAssemblyFolder(nugetAssemblies, aggregateCatalog);
+                var aggregateCatalog = new AggregateCatalog();
+
+                foreach (var loadedAssembly in GetLoadedAssemblies()) {
+                    aggregateCatalog.Catalogs.Add(new AssemblyCatalog(GetLoadedAssembly(loadedAssembly)));
                 }
 
                 foreach (var assemblyName in GetBinDirectoryAssemblies()) {
-                    LoadAssembly(assemblyName, _knownProductAssemblyPaths, aggregateCatalog);
+                    aggregateCatalog.Catalogs.Add(new AssemblyCatalog(LoadBinDirectoryAssembly(assemblyName)));
                 }
 
+                AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
                 foreach (var assemblyName in GetVsAssemblies()) {
-                    LoadAssembly(assemblyName, _knownVsAssemblyPaths, aggregateCatalog);
+                    aggregateCatalog.Catalogs.Add(new AssemblyCatalog(LoadVsAssembly(assemblyName)));
                 }
 
                 ValidateCatalog(aggregateCatalog);
                 return aggregateCatalog;
             } finally {
                 AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+                AppDomain.CurrentDomain.AssemblyLoad -= CurrentDomain_AssemblyLoad;
             }
+        }
+
+        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args) {
+            
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
@@ -57,26 +64,9 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected virtual IEnumerable<string> GetBinDirectoryAssemblies() => Enumerable.Empty<string>();
-        protected virtual IEnumerable<string> GetNugetAssemblies() => Enumerable.Empty<string>();
+        protected virtual IEnumerable<string> GetLoadedAssemblies() => Enumerable.Empty<string>();
         protected virtual IEnumerable<string> GetVsAssemblies() => Enumerable.Empty<string>();
 
-        private List<string> FindInCurrentAssemblyFolder(IEnumerable<string> assemblyNames, AggregateCatalog catalog) {
-            var directory = Path.GetDirectoryName(GetType().Assembly.GetAssemblyPath());
-            var unresolved = new List<string>();
-
-            foreach (var assemblyName in assemblyNames) {
-                var path = Path.Combine(directory, assemblyName);
-                try {
-                    var assembly = Assembly.LoadFrom(path);
-                    catalog.Catalogs.Add(new AssemblyCatalog(assembly));
-                } catch (IOException) {
-                    unresolved.Add(assemblyName);
-                }
-            }
-
-            return unresolved;
-        }
-        
         private static void EnumerateAssemblies(Dictionary<string, string> assemblyPaths, string directory) {
             foreach (var path in Directory.EnumerateFiles(directory, "*.dll", SearchOption.AllDirectories)) {
                 var name = Path.GetFileName(path);
@@ -86,14 +76,21 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
         }
 
-        private static void LoadAssembly(string assemblyFile, Dictionary<string, string> knownAssemblyPaths, AggregateCatalog catalog) {
-            string assemblyPath;
-            if (!knownAssemblyPaths.TryGetValue(assemblyFile, out assemblyPath)) {
-                throw new FileNotFoundException(assemblyFile);
+        private Assembly GetLoadedAssembly(string loadedAssembly) {
+            if (Path.GetExtension(loadedAssembly).EqualsIgnoreCase(".dll")) {
+                loadedAssembly = Path.GetFileNameWithoutExtension(loadedAssembly);
             }
 
-            var assembly = Assembly.LoadFrom(assemblyPath);
-            catalog.Catalogs.Add(new AssemblyCatalog(assembly));
+            return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.EqualsIgnoreCase(loadedAssembly));
+        }
+
+        private Assembly LoadBinDirectoryAssembly(string assemblyFile) {
+            var path = Path.Combine(_binDirectoryPath, assemblyFile);
+            if (!Path.GetExtension(path).EqualsOrdinal(".dll")) {
+                path += ".dll";
+            }
+
+            return Assembly.LoadFrom(path);
         }
 
         private Assembly LoadVsAssembly(string assemblyFile) {
