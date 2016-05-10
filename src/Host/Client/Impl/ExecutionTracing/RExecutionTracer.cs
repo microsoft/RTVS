@@ -96,7 +96,7 @@ namespace Microsoft.R.ExecutionTracing {
                 foreach (var bp in _breakpoints.Values) {
                     await bp.ReapplyBreakpointAsync(cancellationToken);
                 }
-                await Session.ExecuteAsync("rtvs:::reapply_breakpoints()", REvaluationKind.Mutating); // TODO: mark all breakpoints as invalid if this fails.
+                await Session.ExecuteAsync("rtvs:::reapply_breakpoints()"); // TODO: mark all breakpoints as invalid if this fails.
 
                 // Attach might happen when session is already at the Browse prompt, in which case we have
                 // missed the corresponding BeginRequest event, but we want to raise Browse anyway. So
@@ -218,7 +218,7 @@ namespace Microsoft.R.ExecutionTracing {
         public async Task EnableBreakpointsAsync(bool enable, CancellationToken cancellationToken = default(CancellationToken)) {
             ThrowIfDisposed();
             await TaskUtilities.SwitchToBackgroundThread();
-            await Session.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})", REvaluationKind.Mutating);
+            await Session.ExecuteAsync($"rtvs:::enable_breakpoints({(enable ? "TRUE" : "FALSE")})");
         }
 
         public async Task<IRBreakpoint> CreateBreakpointAsync(RSourceLocation location, CancellationToken cancellationToken = default(CancellationToken)) {

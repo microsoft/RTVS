@@ -170,14 +170,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 return new PlotHistoryInfo();
             }
 
-            REvaluationResult result;
-            using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                result = await eval.PlotHistoryInfo();
-            }
-
-            return new PlotHistoryInfo(
-                (int)result.JsonResult[0].ToObject(typeof(int)),
-                (int)result.JsonResult[1].ToObject(typeof(int)));
+            var result = await _rSession.PlotHistoryInfo();
+            return new PlotHistoryInfo(result[0], result[1]);
         }
 
         public async System.Threading.Tasks.Task ClearAllAsync() {
@@ -283,7 +277,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             // Errors like invalid graphics state which go to the REPL stderr will come back
             // in an Microsoft.R.Host.Client.RException, and we don't need to do anything with them,
             // as the user can see them in the REPL.
-            task.SilenceException<MessageTransportException>()
+            task.SilenceException<MessageTransportException>().SilenceException<RException>()
                 .DoNotWait();
         }
     }

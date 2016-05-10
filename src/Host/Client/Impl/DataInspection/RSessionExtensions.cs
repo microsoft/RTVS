@@ -71,7 +71,7 @@ namespace Microsoft.R.DataInspection {
 
             environmentExpression = environmentExpression ?? "NULL";
             var code = Invariant($"rtvs:::eval_and_describe({expression.ToRStringLiteral()}, ({environmentExpression}),, {properties.ToRVector()},, {repr})");
-            var result = await session.EvaluateAsync<JObject>(code, REvaluationKind.Json, cancellationToken);
+            var result = await session.EvaluateAsync<JObject>(code, REvaluationKind.Normal, cancellationToken);
             return REvaluationResultInfo.Parse(session, environmentExpression, name, result);
         }
 

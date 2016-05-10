@@ -156,7 +156,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
                 try {
-                    return session.EvaluateAsync(Invariant($"rm({Name})"), REvaluationKind.Mutating);
+                    return session.ExecuteAsync(Invariant($"rm({Name})"));
                 } catch (RException ex) {
                     VsAppShell.Current.ShowErrorMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));

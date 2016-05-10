@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
 
                 string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format, tb.GetEncoding());
                 var session = _workflowProvider.GetOrCreate().RSession;
-                _lastCommandTask = session.EvaluateAsync(arguments, REvaluationKind.Json).ContinueWith(t => LaunchViewer());
+                _lastCommandTask = session.ExecuteAsync(arguments).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;
         }

@@ -32,7 +32,7 @@ namespace Microsoft.R.StackTracing {
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var jFrames = await session.EvaluateAsync<JArray>("rtvs:::describe_traceback()", REvaluationKind.Json, cancellationToken);
+            var jFrames = await session.EvaluateAsync<JArray>("rtvs:::describe_traceback()", REvaluationKind.Normal, cancellationToken);
             Trace.Assert(jFrames.All(t => t is JObject), "rtvs:::describe_traceback(): array of objects expected.\n\n" + jFrames);
 
             var stackFrames = new List<RStackFrame>();

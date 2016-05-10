@@ -40,13 +40,13 @@ namespace Microsoft.R.ExecutionTracing {
 
         internal async Task ReapplyBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(false), REvaluationKind.Mutating, cancellationToken);
+            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(false), cancellationToken);
             // TODO: mark breakpoint as invalid if this fails.
         }
 
         internal async Task SetBreakpointAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             TaskUtilities.AssertIsOnBackgroundThread();
-            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(true), REvaluationKind.Mutating, cancellationToken);
+            await Tracer.Session.ExecuteAsync(GetAddBreakpointExpression(true), cancellationToken);
             ++UseCount;
         }
 
@@ -67,7 +67,7 @@ namespace Microsoft.R.ExecutionTracing {
 
                 var code = $"rtvs:::remove_breakpoint({fileName.ToRStringLiteral()}, {Location.LineNumber})";
                 try {
-                    await Tracer.Session.ExecuteAsync(code, REvaluationKind.Mutating, cancellationToken);
+                    await Tracer.Session.ExecuteAsync(code, cancellationToken);
                 } catch (RException ex) {
                     throw new InvalidOperationException(ex.Message, ex);
                 }

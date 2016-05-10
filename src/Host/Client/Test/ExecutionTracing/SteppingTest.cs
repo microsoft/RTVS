@@ -68,7 +68,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
                 frame.FileName.Should().Be(sf.FilePath);
                 frame.LineNumber.Should().BeInRange(3, 5);
 
-                await _session.EvaluateAsync("x <- -42", REvaluationKind.Mutating);
+                await _session.ExecuteAsync("x <- -42");
                 await tracer.ContinueAsync();
 
                 await _session.NextPromptShouldBeBrowseAsync();

@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
                 return;
             }
             try {
-                RSession.EvaluateAsync("rm(list = ls(all = TRUE))", REvaluationKind.Mutating).DoNotWait();
+                RSession.ExecuteAsync("rm(list = ls(all = TRUE))").DoNotWait();
             } catch(RException ex) {
                 VsAppShell.Current.ShowErrorMessage(
                     string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));

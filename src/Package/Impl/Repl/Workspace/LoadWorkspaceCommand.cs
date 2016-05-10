@@ -54,12 +54,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private async Task LoadWorkspace(IRSession session, string file) {
             REvaluationResult result;
             using (var evaluation = await session.BeginEvaluationAsync()) {
-                result = await evaluation.LoadWorkspace(file);
-            }
-
-            if (result.Error != null) {
-                var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, file, result.Error);
-                VsAppShell.Current.ShowErrorMessage(message);
+                try {
+                    await evaluation.LoadWorkspace(file);
+                } catch (RException ex) {
+                    var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, file, ex.Message);
+                    VsAppShell.Current.ShowErrorMessage(message);
+                } catch (OperationCanceledException) {
+                }
             }
         }
     }
