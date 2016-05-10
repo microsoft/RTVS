@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Formatting {
         /// <summary>
         /// Formats statement that the caret is at
         /// </summary>
-        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer, int caretOffset = 0) {
+        public static void FormatCurrentStatement(ITextView textView, ITextBuffer textBuffer, bool limitAtCaret = false, int caretOffset = 0) {
             SnapshotPoint? caretPoint = REditorDocument.MapCaretPositionFromView(textView);
             if (!caretPoint.HasValue) {
                 return;
@@ -33,16 +33,20 @@ namespace Microsoft.R.Editor.Formatting {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
                 AstRoot ast = document.EditorTree.AstRoot;
                 IAstNode node = ast.GetNodeOfTypeFromPosition<IStatement>(Math.Max(0, caretPoint.Value + caretOffset)) as IAstNode;
-                FormatNode(textView, textBuffer, node);
+                FormatNode(textView, textBuffer, node, limit: caretPoint.Value);
             }
         }
 
         /// <summary>
         /// Formats specific AST node 
         /// </summary>
-        public static void FormatNode(ITextView textView, ITextBuffer textBuffer, IAstNode node) {
+        public static void FormatNode(ITextView textView, ITextBuffer textBuffer, IAstNode node, int limit = -1) {
             if (node != null) {
-                UndoableFormatRange(textView, textBuffer, node);
+                if (limit < node.Start) {
+                    throw new ArgumentException(nameof(limit));
+                }
+                ITextRange range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
+                UndoableFormatRange(textView, textBuffer, range);
             }
         }
 

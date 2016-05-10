@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Formatting {
                     FormatOperations.FormatCurrentLine(textView, subjectBuffer);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, -1);
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, limitAtCaret: true, caretOffset: -1);
             }
         }
 
