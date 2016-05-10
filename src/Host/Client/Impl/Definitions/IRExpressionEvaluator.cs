@@ -20,14 +20,9 @@ namespace Microsoft.R.Host.Client {
         /// or <see cref="REvaluationKind.EmptyEnv"/> can be used to designate a different environment. Evaluation is neither
         /// cancelable nor reentrant by default.
         /// </para>
-        /// <para>
-        /// If <see cref="REvaluationKind.Json"/> is not specified, the result of evaluation is converted to a character vector
-        /// by means of <c>Rf_asChar</c>, and the first element of that vector is returned in <see cref="REvaluationResult.StringResult"/>.
-        /// </para>
-        /// <para>
-        /// If <see cref="REvaluationKind.Json"/> is specified, the result of evaluation is serialized to JSON, as if 
-        /// <c>rtvs:::toJSON</c> was invoked on it. If serialization fails, it is a fatal error, and the host process will be
-        /// terminated. If it succeeds, the resulting JSON is returned in <see cref="REvaluationResult.Result"/>.
+        /// The result of evaluation is serialized to JSON, as if <c>rtvs:::toJSON</c> was invoked on it. If serialization fails,
+        /// it is a fatal error, and the host process will be terminated. If it succeeds, the resulting JSON is returned in
+        /// <see cref="REvaluationResult.Result"/>.
         /// </para>
         /// <para>
         /// If evaluation fails, <see cref="REvaluationResult.ParseStatus"/> and/or <see cref="REvaluationResult.Error"/> will
