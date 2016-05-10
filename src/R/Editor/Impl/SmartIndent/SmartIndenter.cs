@@ -266,7 +266,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                 // the beginning of the statement.
                 if (scopeStatement.Scope.CloseCurlyBrace != null) {
                     int endOfScopeLine = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(scopeStatement.Scope.CloseCurlyBrace.Start);
-                    if (endOfScopeLine == line.LineNumber) {
+                    if (endOfScopeLine <= line.LineNumber) {
                         return OuterIndentSizeFromNode(textBuffer, scopeStatement, REditorSettings.FormatOptions);
                     }
                 }
