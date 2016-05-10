@@ -1337,6 +1337,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (OS Default).
+        /// </summary>
+        public static string Settings_OsDefaultEncoding {
+            get {
+                return ResourceManager.GetString("Settings_OsDefaultEncoding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Match partially typed argument names.
         /// </summary>
         public static string Settings_PartialArgumentNameMatch {

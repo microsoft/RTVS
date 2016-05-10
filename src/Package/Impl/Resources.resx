@@ -736,4 +736,7 @@ Additional information:
   <data name="Settings_FormatScope_Description" xml:space="preserve">
     <value>Format scope after closing curly brace was typed</value>
   </data>
+  <data name="Settings_OsDefaultEncoding" xml:space="preserve">
+    <value>(OS Default)</value>
+  </data>
 </root>
