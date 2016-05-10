@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, 
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer,
                                       ITextRange formatRange, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int start = formatRange.Start;
@@ -56,7 +56,8 @@ namespace Microsoft.R.Editor.Formatting {
             // the AST is damaged at this point. As a workaround, we will check 
             // if the previous line ends with an operator current line starts with 
             // an operator.
-            formatRange = TextRange.FromBounds(startLine.Start, endLine.End);
+            int startPosition = FindStartOfExpression(textBuffer, startLine.Start);
+            formatRange = TextRange.FromBounds(startPosition, endLine.End);
             return FormatRangeExact(textView, textBuffer, formatRange, options);
         }
 
@@ -115,8 +116,8 @@ namespace Microsoft.R.Editor.Formatting {
         /// Appends indentation to each line so formatted text appears properly 
         /// indented inside the host document (script block in HTML page).
         /// </summary>
-        private static void IndentLines(ITextView textView, ITextBuffer textBuffer, 
-                                        ITextRange range, AstRoot ast, 
+        private static void IndentLines(ITextView textView, ITextBuffer textBuffer,
+                                        ITextRange range, AstRoot ast,
                                         RFormatOptions options, int originalIndentSizeInSpaces) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
@@ -143,6 +144,29 @@ namespace Microsoft.R.Editor.Formatting {
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Given position in the buffer tries to detemine start of the expression.
+        /// </summary>
+        private static int FindStartOfExpression(ITextBuffer textBuffer, int position) {
+            // Go up line by line, tokenize each line
+            // and check if it starts or ends with an operator
+            int lineNum = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(position);
+            var tokenizer = new RTokenizer();
+            for (int i = lineNum; i >= 0; i--) {
+                var line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
+                var text = line.GetText();
+                var tokens = tokenizer.Tokenize(text);
+                if (tokens.Count > 0) {
+                    if(tokens[0].TokenType != RTokenType.Operator &&
+                       tokens[tokens.Count - 1].TokenType != RTokenType.Operator) {
+                        break;
+                    }
+                    position = line.Start;
+                }
+            }
+            return position;
         }
     }
 }
