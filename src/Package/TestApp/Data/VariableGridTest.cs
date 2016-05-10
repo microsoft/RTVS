@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
     [ExcludeFromCodeCoverage]
+    [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
     public class VariableGridTest : InteractiveTest {
         private readonly TestFilesFixture _files;
@@ -24,17 +25,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         }
 
         [Test]
-        [Category.Interactive]
-        public void VariableGrid_ConstructorTest01() {
-            using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                var actual = VisualTreeObject.Create(script.Control);
-                ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer01");
-            }
-        }
-
-        [Test]
-        [Category.Interactive]
-        public async Task VariableGrid_ConstructorTest02() {
+        public async Task VariableGrid_ConstructorTest() {
             VisualTreeObject actual = null;
             using (var hostScript = new VariableRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
