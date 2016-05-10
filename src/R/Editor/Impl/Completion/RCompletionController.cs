@@ -199,17 +199,21 @@ namespace Microsoft.R.Editor.Completion {
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
-                    if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
-                        bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
-                        if (!showCompletion) {
-                            var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
-                            string directory;
-                            showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
-                        }
-                        if (showCompletion) {
-                            ShowCompletion(autoShownCompletion: false);
-                            return true; // eat the character
+                    var doc = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                    int index = doc.EditorTree.AstRoot.Comments.GetItemContaining(pos);
+                    if (index < 0) {
+                        if (pos > 0 && pos <= position.Value.Snapshot.Length) {
+                            bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
+                            bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
+                            if (!showCompletion) {
+                                var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                                string directory;
+                                showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
+                            }
+                            if (showCompletion) {
+                                ShowCompletion(autoShownCompletion: false);
+                                return true; // eat the character
+                            }
                         }
                     }
                 }
