@@ -62,6 +62,8 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
+    <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
       <DependentUpon>EnterUrl.xaml</DependentUpon>
     </Compile>
@@ -77,8 +79,12 @@
     <Compile Include="DataInspect\DataSource\ListToRange.cs" />
     <Compile Include="DataInspect\DebugGridViewProvider.cs" />
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
+    <Compile Include="DataInspect\Definitions\IDebugObjectEvaluator.cs" />
+    <Compile Include="DataInspect\Definitions\IObjectDetailsViewer.cs" />
+    <Compile Include="DataInspect\Definitions\IObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
     <Compile Include="DataInspect\DataSource\GridRange.cs" />
+    <Compile Include="DataInspect\Definitions\ViewerCapabilities.cs" />
     <Compile Include="DataInspect\Office\CsvAppFileIO.cs" />
     <Compile Include="DataInspect\REnvironment.cs" />
     <Compile Include="DataInspect\REnvironmentChangedEventArgs.cs" />
@@ -87,6 +93,17 @@
     <Compile Include="DataInspect\GridHeader.cs" />
     <Compile Include="DataInspect\GridDataProvider.cs" />
     <Compile Include="DataInspect\TreeGrid\TreeGrid.cs" />
+    <Compile Include="DataInspect\Viewers\DebugObjectEvaluator.cs" />
+    <Compile Include="DataInspect\Viewers\FileViewer.cs" />
+    <Compile Include="DataInspect\Viewers\FunctionViewer.cs" />
+    <Compile Include="DataInspect\Viewers\Viewer1D.cs" />
+    <Compile Include="DataInspect\Viewers\VectorViewer.cs" />
+    <Compile Include="DataInspect\Viewers\ListViewer.cs" />
+    <Compile Include="DataInspect\Viewers\GridViewerBase.cs" />
+    <Compile Include="DataInspect\Viewers\GridViewer.cs" />
+    <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
+    <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
+    <Compile Include="DataInspect\Viewers\ViewerBase.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
@@ -123,7 +140,7 @@
     <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
-    <Compile Include="DataInspect\EvaluationWrapper.cs" />
+    <Compile Include="DataInspect\VariableViewModel.cs" />
     <Compile Include="DataInspect\MultiplyConverter.cs" />
     <Compile Include="DataInspect\VariableGridHost.xaml.cs">
       <DependentUpon>VariableGridHost.xaml</DependentUpon>
@@ -160,6 +177,7 @@
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
     <Compile Include="History\HistoryWindowPane.cs" />
@@ -175,6 +193,8 @@
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
+    <Compile Include="Plots\Commands\EndLocatorCommand.cs" />
+    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
@@ -240,7 +260,6 @@
     <Compile Include="Repl\Debugger\DebuggerWrappedCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommand.cs" />
     <Compile Include="Repl\VsRInteractiveWindowComponentContainerFactory.cs" />
-    <Compile Include="Repl\InteractiveWindowRSessionHelper.cs" />
     <Compile Include="Repl\ReplClassificationTypes.cs" />
     <Compile Include="Repl\ReplPromptTagger.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
@@ -279,7 +298,6 @@
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
     <Compile Include="Publishing\Commands\PreviewCommand.cs" />
     <Compile Include="Publishing\Definitions\PublishFormat.cs" />
-    <Compile Include="Publishing\PublishLog.cs" />
     <Compile Include="Logging\PackagesInstallLog.cs" />
     <Compile Include="Packages\Markdown\MdEditorFactory.cs" />
     <Compile Include="Packages\Markdown\MdLanguageService.cs" />
@@ -297,7 +315,6 @@
     </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
-    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
     <Compile Include="ProjectSystem\RProjectFactory.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
@@ -330,8 +347,8 @@
     <Compile Include="Repl\Workspace\LoadWorkspaceCommand.cs" />
     <Compile Include="Repl\Workspace\InterruptRCommand.cs" />
     <Compile Include="Repl\Workspace\SaveWorkspaceCommand.cs" />
-    <Compile Include="Repl\Data\ImportDataSetTextFileCommand.cs" />
-    <Compile Include="Repl\Data\ImportDataSetUrlCommand.cs" />
+    <Compile Include="DataInspect\Commands\ImportDataSetTextFileCommand.cs" />
+    <Compile Include="DataInspect\Commands\ImportDataSetUrlCommand.cs" />
     <Compile Include="Repl\Commands\SendToReplCommand.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -1102,12 +1119,8 @@
       <Project>{9de5e0b5-c8bd-482c-85c3-b8e20f08453b}</Project>
       <Name>Microsoft.Common.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Debugger\Engine\Impl\Microsoft.R.Debugger.Engine.csproj">
-      <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
-      <Name>Microsoft.R.Debugger.Engine</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
-      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
+      <Project>{6d62df0d-d9c3-49a7-a693-acd0691ba69d}</Project>
       <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">

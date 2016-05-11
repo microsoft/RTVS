@@ -349,20 +349,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click &apos;Uninstall Program&apos;, locate Visual Studio, right click and choose &apos;Change&apos;. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation..
-        /// </summary>
-        public static string Error_NoWebTools {
-            get {
-                return ResourceManager.GetString("Error_NoWebTools", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This operation requires package {0} which is not installed or has been removed. .
         /// </summary>
         public static string Error_PackageMissing {
             get {
                 return ResourceManager.GetString("Error_PackageMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
+        /// </summary>
+        public static string Error_UnableToDeleteVariable {
+            get {
+                return ResourceManager.GetString("Error_UnableToDeleteVariable", resourceCulture);
             }
         }
         
@@ -848,6 +848,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Plot - Locator is Active.
+        /// </summary>
+        public static string PlotWindowCaptionLocatorActive {
+            get {
+                return ResourceManager.GetString("PlotWindowCaptionLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locator is active. Click in the plot window to select points then choose End Locator..
+        /// </summary>
+        public static string PlotWindowStatusLocatorActive {
+            get {
+                return ResourceManager.GetString("PlotWindowStatusLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RDataNode {
@@ -1166,6 +1184,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (OS Default).
+        /// </summary>
+        public static string Settings_OsDefaultEncoding {
+            get {
+                return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show syntax errors.
         /// </summary>
         public static string Settings_EnableSyntaxCheck {
@@ -1328,6 +1355,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Code page.
+        /// </summary>
+        public static string Settings_RCodePage {
+            get {
+                return ResourceManager.GetString("Settings_RCodePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default code page in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE)..
+        /// </summary>
+        public static string Settings_RCodePage_Description {
+            get {
+                return ResourceManager.GetString("Settings_RCodePage_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R command line arguments.
         /// </summary>
         public static string Settings_RCommandLineArguments {
@@ -1342,6 +1387,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_RCommandLineArguments_Description {
             get {
                 return ResourceManager.GetString("Settings_RCommandLineArguments_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Engine.
+        /// </summary>
+        public static string Settings_REngineCategory {
+            get {
+                return ResourceManager.GetString("Settings_REngineCategory", resourceCulture);
             }
         }
         
@@ -1553,7 +1607,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open in a Grid Viewer.
+        ///   Looks up a localized string similar to Show item details.
         /// </summary>
         public static string ShowDetailCommandTooltip {
             get {
@@ -1612,6 +1666,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SurveyNewsPolicyDisabled {
             get {
                 return ResourceManager.GetString("SurveyNewsPolicyDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fetching data....
+        /// </summary>
+        public static string TooltipPlaceholder {
+            get {
+                return ResourceManager.GetString("TooltipPlaceholder", resourceCulture);
             }
         }
         
@@ -1711,6 +1774,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableWindowCaption {
             get {
                 return ResourceManager.GetString("VariableWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all variables?.
+        /// </summary>
+        public static string Warning_DeleteAllVariables {
+            get {
+                return ResourceManager.GetString("Warning_DeleteAllVariables", resourceCulture);
             }
         }
         

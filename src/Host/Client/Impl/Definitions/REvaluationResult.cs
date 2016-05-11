@@ -24,22 +24,12 @@ namespace Microsoft.R.Host.Client {
 
     public struct REvaluationResult {
         /// <summary>
-        /// Result of evaluation, if expression was evaluated without <see cref="REvaluationKind.Json"/>.
-        /// Otherwise, <see langword="null"/>.
-        /// </summary>
-        /// <remarks>
-        /// Computed by applying <c>Rf_asChar</c> to the immediate result of evaluation, and taking the first
-        /// element of the resulting character vector.
-        /// </remarks>
-        public string StringResult { get; }
-        /// <summary>
-        /// Result of evaluation, if expression was evaluated with <see cref="REvaluationKind.Json"/>.
-        /// Otherwise, <see langword="null"/>.
+        /// Result of evaluation.
         /// </summary>
         /// <remarks>
         /// Computed by serializing the immediate result of evaluation, as if by <c>rtvs:::toJSON</c>.
         /// </remarks>
-        public JToken JsonResult { get; }
+        public JToken Result { get; }
         /// <summary>
         /// If evaluation failed because of an R runtime error, text of the error message.
         /// Otherwise, <see langword="null"/>.
@@ -55,22 +45,16 @@ namespace Microsoft.R.Host.Client {
         public REvaluationResult(string error, RParseStatus parseStatus) {
             Error = error;
             ParseStatus = parseStatus;
-            StringResult = null;
-            JsonResult = null;
-        }
-
-        public REvaluationResult(string result, string error, RParseStatus parseStatus)
-            : this(error, parseStatus) {
-            StringResult = result;
+            Result = null;
         }
 
         public REvaluationResult(JToken result, string error, RParseStatus parseStatus)
             : this(error, parseStatus) {
-            JsonResult = result;
+            Result = result;
         }
 
         public override string ToString() {
-            var sb = new StringBuilder((StringResult ?? JsonResult ?? "").ToString());
+            var sb = new StringBuilder((Result ?? "").ToString());
             if (ParseStatus != RParseStatus.OK) {
                 sb.AppendFormat(CultureInfo.InvariantCulture, "; {0}", ParseStatus);
             }

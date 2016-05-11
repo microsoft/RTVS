@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal class REnvironmentChangedEventArgs : EventArgs {
         public REnvironmentChangedEventArgs(IReadOnlyList<REnvironment> environments) {
-            Environments = environments;
+            Environments = environments.Where(x => !x.Name.EqualsOrdinal(".rtvs")).ToList();
         }
 
         public IReadOnlyList<REnvironment> Environments { get; }

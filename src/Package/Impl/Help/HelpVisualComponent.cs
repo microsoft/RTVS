@@ -12,19 +12,19 @@ using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Settings;
+using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Help;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.View;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
-using Microsoft.R.Components.Controller;
-using Microsoft.R.Components.View;
 using ContentControl = System.Windows.Controls.ContentControl;
-using Microsoft.Languages.Editor.Tasks;
-using Microsoft.R.Components.Help;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     internal sealed class HelpVisualComponent : IHelpVisualComponent {

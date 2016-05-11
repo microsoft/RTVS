@@ -274,8 +274,10 @@ namespace Microsoft.R.Host.Client.Session {
                         string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
                         await evaluation.SetVsCranSelection(mirrorUrl);
 
-                        await evaluation.SetVsHelpRedirection();
-                        await evaluation.SetChangeDirectoryRedirection();
+                        await evaluation.SetCodePage(startupInfo.CodePage);
+                        await evaluation.SetROptions();
+                        await evaluation.OverrideFunction("setwd", "base");
+                        await evaluation.SetFunctionRedirection();
                     }
 
                     _afterHostStartedTcs.SetResult(null);
@@ -289,13 +291,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
             var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
-            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"), REvaluationKind.Normal);
-
-            if (res.ParseStatus != RParseStatus.OK) {
-                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
-            } else if (res.Error != null) {
-                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
-            }
+            await eval.ExecuteAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
         }
 
         public void FlushLog() {
@@ -507,6 +503,11 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.Plot(filePath, ct) : Task.CompletedTask;
         }
 
+        Task<LocatorResult> IRCallbacks.Locator(CancellationToken ct) {
+            var callback = _callback;
+            return callback != null ? callback.Locator(ct) : Task.FromResult(LocatorResult.CreateNotClicked());
+        }
+
         /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>
@@ -517,8 +518,23 @@ namespace Microsoft.R.Host.Client.Session {
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
 
+        Task IRCallbacks.ViewLibrary() {
+            var callback = _callback;
+            return callback?.ViewLibrary();
+        }
+
+        Task IRCallbacks.ShowFile(string fileName, string tabName, bool deleteFile) {
+            var callback = _callback;
+            return callback?.ViewFile(fileName, tabName, deleteFile);
+        }
+
         void IRCallbacks.DirectoryChanged() {
             DirectoryChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        void IRCallbacks.ViewObject(string obj, string title) {
+            var callback = _callback;
+            callback?.ViewObject(obj, title);
         }
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -178,25 +179,29 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
-
-            if (_fileSystem.DirectoryExists(_projectDirectory)) {
-                if (_toolsSettings.AlwaysSaveHistory) {
-                    _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
-                }
-
-                var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
-                var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
-                if (_session.IsHostRunning) {
-                    Task.Run(async () => {
-                        using (var evaluation = await _session.BeginEvaluationAsync()) {
-                            if (saveDefaultWorkspace) {
-                                await evaluation.SaveWorkspace(rdataPath);
-                            }
-                            await evaluation.SetDefaultWorkingDirectory();
-                        }
-                    }).DoNotWait();
-                }
+            
+            if (!_fileSystem.DirectoryExists(_projectDirectory)) {
+                return;
             }
+
+            if (_toolsSettings.AlwaysSaveHistory) {
+                _history.TrySaveToFile(Path.Combine(_projectDirectory, DefaultRHistoryName));
+            }
+
+            var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
+            var saveDefaultWorkspace = await GetSaveDefaultWorkspace(rdataPath);
+            if (!_session.IsHostRunning) {
+                return;
+            }
+
+            Task.Run(async () => {
+                using (var evaluation = await _session.BeginEvaluationAsync()) {
+                    if (saveDefaultWorkspace) {
+                        await evaluation.SaveWorkspace(rdataPath);
+                    }
+                    await evaluation.SetDefaultWorkingDirectory();
+                }
+            }).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
         }
 
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {

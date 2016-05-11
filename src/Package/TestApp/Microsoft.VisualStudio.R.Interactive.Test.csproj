@@ -191,6 +191,7 @@
     <None Include="Files\VariableExplorer01.tree" />
     <None Include="Files\VariableExplorer02.tree" />
     <None Include="Files\VariableExplorer03.tree" />
+    <None Include="Files\VariableExplorer04.tree" />
     <None Include="Files\VariableGrid02.tree" />
     <None Include="packages.config" />
     <AppDesigner Include="Properties\" />
@@ -206,10 +207,6 @@
     <ProjectReference Include="..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Debugger\Impl\Microsoft.R.Debugger.csproj">
-      <Project>{17e155bf-351c-4253-b9b1-36eeea35fe3c}</Project>
-      <Name>Microsoft.R.Debugger</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Host\Client\Impl\Microsoft.R.Host.Client.csproj">
       <Project>{e09d3bda-2e6b-47b5-87ac-b6fc2d33dfab}</Project>

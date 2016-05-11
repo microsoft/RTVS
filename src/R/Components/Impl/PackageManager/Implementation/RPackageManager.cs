@@ -120,12 +120,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             try {
-                var result = await _interactiveWorkflow.RSession.LoadedPackages();
-                CheckEvaluationResult(result);
-
-                return ((JArray)result.JsonResult)
-                    .Select(p => (string)((JValue)p).Value)
-                    .ToArray();
+                var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackages());
+                return result.Select(p => (string)((JValue)p).Value).ToArray();
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
@@ -137,12 +133,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             try {
-                var result = await _interactiveWorkflow.RSession.LibraryPaths();
-                CheckEvaluationResult(result);
-
-                return ((JArray)result.JsonResult)
-                    .Select(p => (string)((JValue)p).Value)
-                    .ToArray();
+                var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPaths());
+                return result.Select(p => (string)((JValue)p).Value).ToArray();
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
@@ -177,7 +169,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             return null;
         }
 
-        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<REvaluationResult>> queryFunc) {
+        private async Task<IReadOnlyList<RPackage>> GetPackagesAsync(Func<IRExpressionEvaluator, Task<JArray>> queryFunc) {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
@@ -187,12 +179,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                     await EvalRepositoriesAsync(sessionToken.Session, await DeparseRepositoriesAsync());
                     await EvalLibrariesAsync(sessionToken.Session, await DeparseLibrariesAsync());
 
-                    var result = await queryFunc(sessionToken.Session);
-                    CheckEvaluationResult(result);
-
-                    return ((JArray)result.JsonResult)
-                        .Select(p => p.ToObject<RPackage>())
-                        .ToList().AsReadOnly();
+                    var result = await WrapRException(queryFunc(sessionToken.Session));
+                    return result.Select(p => p.ToObject<RPackage>()).ToList().AsReadOnly();
                 }
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
@@ -202,45 +190,45 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         private async Task EvalRepositoriesAsync(IRSession session, string deparsedRepositories) {
             var code = string.Format("options(repos=eval(parse(text={0})))", deparsedRepositories.ToRStringLiteral());
             using (var eval = await session.BeginEvaluationAsync()) {
-                var result = await eval.EvaluateAsync(code, REvaluationKind.Normal);
-                CheckEvaluationResult(result);
+                await WrapRException(eval.ExecuteAsync(code));
             }
         }
 
         private async Task EvalLibrariesAsync(IRSession session, string deparsedLibraries) {
             var code = string.Format(".libPaths(eval(parse(text={0})))", deparsedLibraries.ToRStringLiteral());
             using (var eval = await session.BeginEvaluationAsync()) {
-                var result = await eval.EvaluateAsync(code, REvaluationKind.Normal);
-                CheckEvaluationResult(result);
+                await WrapRException(eval.ExecuteAsync(code));
             }
         }
 
         private async Task<string> DeparseRepositoriesAsync() {
-            var result = await _interactiveWorkflow.RSession.EvaluateAsync("rtvs:::deparse_str(getOption('repos'))", REvaluationKind.Normal);
-            CheckEvaluationResult(result);
-            return result.StringResult;
+            return await WrapRException(_interactiveWorkflow.RSession.EvaluateAsync<string>("rtvs:::deparse_str(getOption('repos'))", REvaluationKind.Normal));
         }
 
         private async Task<string> DeparseLibrariesAsync() {
-            var result = await _interactiveWorkflow.RSession.EvaluateAsync("rtvs:::deparse_str(.libPaths())", REvaluationKind.Normal);
-            CheckEvaluationResult(result);
-            return result.StringResult;
-        }
-
-        private void CheckEvaluationResult(REvaluationResult result) {
-            if (result.ParseStatus != RParseStatus.OK) {
-                throw new RPackageManagerException(Resources.PackageManager_EvalParseError, new InvalidOperationException(result.ToString()));
-            }
-
-            if (result.Error != null) {
-                throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, result.Error), new InvalidOperationException(result.ToString()));
-            }
+            return await WrapRException(_interactiveWorkflow.RSession.EvaluateAsync<string>("rtvs:::deparse_str(.libPaths())", REvaluationKind.Normal));
         }
 
         public void Dispose() {
             VisualComponent.Dispose();
             _sessionPool.Dispose();
             _dispose();
+        }
+
+        private async Task WrapRException(Task task) {
+            try {
+                await task;
+            } catch (RException ex) {
+                throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, ex.Message), ex);
+            }
+        }
+
+        private async Task<T> WrapRException<T>(Task<T> task) {
+            try {
+                return await task;
+            } catch (RException ex) {
+                throw new RPackageManagerException(string.Format(CultureInfo.InvariantCulture, Resources.PackageManager_EvalError, ex.Message), ex);
+            }
         }
     }
 }

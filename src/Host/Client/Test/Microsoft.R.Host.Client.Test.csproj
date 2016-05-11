@@ -38,6 +38,14 @@
       <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.5.0\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\NugetPackages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
@@ -68,8 +76,13 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="BreakpointHitDetector.cs" />
+    <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
+    <Compile Include="StackTracing\CallStackTest.cs" />
+    <Compile Include="ExecutionTracing\DebugReplTest.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="GraphicsDeviceTestFilesFixture.cs" />
+    <Compile Include="RtvsPackage\JsonTest.cs" />
     <Compile Include="Mocks\RContextMock.cs" />
     <Compile Include="Mocks\RSessionEvaluationMock.cs" />
     <Compile Include="Mocks\RSessionInteractionMock.cs" />
@@ -78,6 +91,7 @@
     <Compile Include="PdfComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IdeGraphicsDeviceTest.cs" />
+    <Compile Include="RSessionExtensions.cs" />
     <Compile Include="RStringExtensionsTest.cs" />
     <Compile Include="Script\RHostClientTestApp.cs" />
     <Compile Include="Session\RSessionProviderTest.cs" />
@@ -86,7 +100,11 @@
     <Compile Include="Session\RSessionTest.CancelAll.cs" />
     <Compile Include="Session\RSessionTest.InteractionEvaluation.cs" />
     <Compile Include="Session\RSessionTest.ReadInput.cs" />
+    <Compile Include="SourceFile.cs" />
+    <Compile Include="ExecutionTracing\SteppingTest.cs" />
     <Compile Include="Stubs\RSessionCallbackStub.cs" />
+    <Compile Include="TracebackBuilder.cs" />
+    <Compile Include="DataInspection\ValuesTest.cs" />
     <Compile Include="XamlGraphicsDeviceTest.cs" />
   </ItemGroup>
   <ItemGroup>

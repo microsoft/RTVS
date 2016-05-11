@@ -112,9 +112,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
-                _session.ScheduleEvaluation(async e => {
-                    await e.SetWorkingDirectory(newDirectory);
-                });
+                _session.SetWorkingDirectory(newDirectory)
+                    .SilenceException<RException>()
+                    .SilenceException<MessageTransportException>()
+                    .DoNotWait();
             }
 
             return Task.CompletedTask;
@@ -139,6 +140,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal string GetFriendlyDirectoryName(string directory) {
             if (!string.IsNullOrEmpty(UserDirectory)) {
+                if(directory.EndsWithOrdinal("\\") && !directory.EndsWithOrdinal(":\\")) {
+                    directory = directory.Substring(0, directory.Length - 1);
+                }
                 if (directory.StartsWithIgnoreCase(UserDirectory)) {
                     var relativePath = PathHelper.MakeRelative(UserDirectory, directory);
                     if (relativePath.Length > 0) {

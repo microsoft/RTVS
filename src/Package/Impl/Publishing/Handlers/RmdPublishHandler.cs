@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             string outputFile = Path.GetFileName(outputFilePath);
             string outputFolder = Path.GetDirectoryName(outputFilePath).Replace('\\', '/');
             // Run rmarkdown::render
-            return Invariant($"\"rmarkdown::render('{inputFile}', output_format='{format}', output_file='{outputFile}',  output_dir='{outputFolder}', encoding='cp{encoding.CodePage}')\"");
+            return Invariant($"rmarkdown::render('{inputFile}', output_format='{format}', output_file='{outputFile}',  output_dir='{outputFolder}', encoding='cp{encoding.CodePage}')");
         }
 
         private string GetDocumentTypeString(PublishFormat publishFormat) {

@@ -190,7 +190,8 @@ namespace Microsoft.R.Support.RD.Parser {
                         NamedArgument nameArg = arg as NamedArgument;
                         if (nameArg != null) {
                             argName = context.TextProvider.GetText(nameArg.NameRange);
-                            argDefaultValue = RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue));
+                            argDefaultValue = nameArg.DefaultValue != null ? 
+                                 RdText.CleanRawRdText(context.TextProvider.GetText(nameArg.DefaultValue)) : string.Empty;
                         } else {
                             MissingArgument missingArg = arg as MissingArgument;
                             if (missingArg != null) {

@@ -4,9 +4,10 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
@@ -31,48 +32,51 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays error message in the host-specific UI
         /// </summary>
-        public Task ShowErrorMessage(string message) {
-            return _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(message));
-        }
+        public Task ShowErrorMessage(string message) => _coreShell.ShowErrorMessageAsync(message);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI
         /// </summary>
-        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) {
-            return _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowMessage(message, buttons));
-        }
-
+        public Task<MessageButtons> ShowMessage(string message, MessageButtons buttons) => _coreShell.ShowMessageAsync(message, buttons);
+            
         /// <summary>
         /// Displays R help URL in a browser on in the host app-provided window
         /// </summary>
-        public Task ShowHelp(string url) {
-            return _coreShell.DispatchOnMainThreadAsync(() => {
-                if (_settings.HelpBrowserType == HelpBrowserType.External) {
-                    Process.Start(url);
-                } else {
-                    var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
-                    container.Show(false);
-                    container.Component.Navigate(url);
-                }
-            });
+        public async Task ShowHelp(string url) {
+            await _coreShell.SwitchToMainThreadAsync();
+            if (_settings.HelpBrowserType == HelpBrowserType.External) {
+                Process.Start(url);
+            } else {
+                var container = _coreShell.ExportProvider.GetExportedValue<IHelpVisualComponentContainerFactory>().GetOrCreate();
+                container.Show(false);
+                container.Component.Navigate(url);
+            }
         }
 
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public Task Plot(string filePath, CancellationToken ct) {
-            return _coreShell.DispatchOnMainThreadAsync(() => {
-                var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
-                var history = historyProvider.GetPlotHistory(_session);
-                history.PlotContentProvider.LoadFile(filePath);
-            }, ct);
+        public async Task Plot(string filePath, CancellationToken ct) {
+            await _coreShell.SwitchToMainThreadAsync();
+            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(_session);
+            history.PlotContentProvider.LoadFile(filePath);
+        }
+
+        public async Task<LocatorResult> Locator(CancellationToken ct) {
+            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
+            var history = historyProvider.GetPlotHistory(_session);
+            if (history.PlotContentProvider.Locator != null) {
+                return await history.PlotContentProvider.Locator.StartLocatorModeAsync(ct);
+            }
+            return LocatorResult.CreateNotClicked();
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
             _coreShell.DispatchOnUIThread(() => _interactiveWindow.Write(prompt));
             return Task.Run(() => {
                 using (var reader = _interactiveWindow.ReadStandardInput()) {
-                    return Task.FromResult(reader.ReadToEnd());
+                    return reader != null ? Task.FromResult(reader.ReadToEnd()) : Task.FromResult("\n");
                 }
             }, ct);
         }
@@ -82,6 +86,25 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// </summary>
         public string CranUrlFromName(string mirrorName) {
             return CranMirrorList.UrlFromName(mirrorName);
+        }
+
+        public void ViewObject(string expression, string title) {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            viewer?.ViewObjectDetails(expression, title);
+        }
+
+        public async Task ViewLibrary() {
+            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
+            await _coreShell.SwitchToMainThreadAsync();
+            workflow.Packages.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(true);
+        }
+
+        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+            var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
+            return viewer?.ViewFile(fileName, tabName, deleteFile);
         }
     }
 }

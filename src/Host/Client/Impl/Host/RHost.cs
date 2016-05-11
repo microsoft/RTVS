@@ -255,10 +255,8 @@ namespace Microsoft.R.Host.Client {
             REvaluationResult result;
             if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
                 result = new REvaluationResult(error, parseStatus);
-            } else if (request.Kind.HasFlag(REvaluationKind.Json)) {
-                result = new REvaluationResult(response[2], error, parseStatus);
             } else {
-                result = new REvaluationResult(response.GetString(2, "value", allowNull: true), error, parseStatus);
+                result = new REvaluationResult(response[2], error, parseStatus);
             }
             request.CompletionSource.SetResult(result);
         }
@@ -401,11 +399,34 @@ namespace Microsoft.R.Host.Client {
                                 _callbacks.DirectoryChanged();
                                 break;
 
+                            case "library":
+                                await _callbacks.ViewLibrary();
+                                break;
+
+                            case "show_file":
+                                message.ExpectArguments(3);
+                                await _callbacks.ShowFile(
+                                    message.GetString(0, "file"),
+                                    message.GetString(1, "tabName"),
+                                    message.GetBoolean(2, "delete.file"));
+                                break;
+
+                            case "View":
+                                message.ExpectArguments(2);
+                                _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"));
+                                break;
+
                             case "Plot":
                                 await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
                                 break;
 
-                            case "Browser":
+                            case "Locator":
+                                var locatorResult = await _callbacks.Locator(ct);
+                                ct.ThrowIfCancellationRequested();
+                                await RespondAsync(message, ct, locatorResult.Clicked, locatorResult.X, locatorResult.Y);
+                                break;
+
+                            case "open_url":
                                 await _callbacks.Browser(message.GetString(0, "help_url"));
                                 break;
 

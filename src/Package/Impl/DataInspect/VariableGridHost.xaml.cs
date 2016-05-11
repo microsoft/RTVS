@@ -7,23 +7,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Debugger;
+using Microsoft.R.Components.Extensions;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Control that shows two dimensional R object
     /// </summary>
     public partial class VariableGridHost : UserControl {
-        private EvaluationWrapper _evaluation;
-        private IRSession _rSession;
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+        private readonly IRSession _rSession;
+        private VariableViewModel _evaluation;
 
         public VariableGridHost() {
             InitializeComponent();
 
+            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
             _rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _rSession.Mutated += RSession_Mutated;
         }
@@ -37,18 +40,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private async Task EvaluateAsync() {
             try {
                 await TaskUtilities.SwitchToBackgroundThread();
-                var debugSession = await VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>().GetDebugSessionAsync(_rSession);
+                const REvaluationResultProperties properties = ClassesProperty| ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                        | DebugEvaluationResultFields.Expression
-                        | DebugEvaluationResultFields.TypeName
-                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
-                        | DebugEvaluationResultFields.Dim
-                        | DebugEvaluationResultFields.Length;
-
-                var result = await debugSession.EvaluateAsync(_evaluation.Expression, fields);
-
-                var wrapper = new EvaluationWrapper(result);
+                var result = await _rSession.TryEvaluateAndDescribeAsync(_evaluation.Expression, properties, null);
+                var wrapper = new VariableViewModel(result, _aggregator);
 
                 VsAppShell.Current.DispatchOnUIThread(() => SetEvaluation(wrapper));
             } catch (Exception ex) {
@@ -56,47 +51,37 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        internal void SetEvaluation(EvaluationWrapper wrapper) {
+        internal void SetEvaluation(VariableViewModel wrapper) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
                 // the variable should have been removed
-                SetError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        Package.Resources.VariableGrid_Missing,
-                        wrapper.Expression));
-            } else if (wrapper.Dimensions.Count != 2) {
-                // the same evaluation changed to non-matrix
-                SetError(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        Package.Resources.VariableGrid_NotTwoDimension,
-                        wrapper.Expression));
+                SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
             } else if (_evaluation == null
                 || (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1])) {
                 // matrix size changed. Reset the evaluation
                 ClearError();
-
                 VariableGrid.Initialize(new GridDataProvider(wrapper));
-
                 _evaluation = wrapper;
             } else {
                 ClearError();
-
                 // size stays same. Refresh
                 VariableGrid.Refresh();
             }
         }
 
         private void SetError(string text) {
+            VsAppShell.Current.AssertIsOnMainThread();
+
             ErrorTextBlock.Text = text;
             ErrorTextBlock.Visibility = Visibility.Visible;
-
             VariableGrid.Visibility = Visibility.Collapsed;
         }
 
         private void ClearError() {
-            ErrorTextBlock.Visibility = Visibility.Collapsed;
+            VsAppShell.Current.AssertIsOnMainThread();
 
+            ErrorTextBlock.Visibility = Visibility.Collapsed;
             VariableGrid.Visibility = Visibility.Visible;
         }
     }

@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Editor.Data {
     /// <summary>
-    /// Model for variable tree grid, that provides UI customization of <see cref="DebugEvaluationResult"/>
+    /// Model for variable tree grid, that provides UI customization of <see cref="REvaluationInfo"/>
     /// </summary>
     public class RSessionDataObject : IRSessionDataObject {
         private static readonly char[] NameTrimChars = new char[] { '$' };
@@ -32,16 +33,15 @@ namespace Microsoft.R.Editor.Data {
         /// Create new instance of <see cref="DataEvaluation"/>
         /// </summary>
         /// <param name="evaluation">R session's evaluation result</param>
-        public RSessionDataObject(DebugEvaluationResult evaluation, int? maxChildrenCount = null) : this() {
+        public RSessionDataObject(IREvaluationResultInfo evaluation, int? maxChildrenCount = null) : this() {
             DebugEvaluation = evaluation;
 
             Name = DebugEvaluation.Name?.TrimStart(NameTrimChars);
 
-            if (DebugEvaluation is DebugValueEvaluationResult) {
-                var valueEvaluation = (DebugValueEvaluationResult)DebugEvaluation;
+            if (DebugEvaluation is IRValueInfo) {
+                var valueEvaluation = (IRValueInfo)DebugEvaluation;
 
                 Value = GetValue(valueEvaluation)?.Trim();
-                ValueDetail = valueEvaluation.GetRepresentation().Deparse;
                 TypeName = valueEvaluation.TypeName;
 
                 if (valueEvaluation.Classes != null) {
@@ -51,16 +51,22 @@ namespace Microsoft.R.Editor.Data {
 
                 HasChildren = valueEvaluation.HasChildren;
 
-                Dimensions = valueEvaluation.Dim ?? new List<int>();
-            } else if (DebugEvaluation is DebugPromiseEvaluationResult) {
+                if (valueEvaluation.Dim != null) {
+                    Dimensions = valueEvaluation.Dim;
+                } else if(valueEvaluation.Length.HasValue) {
+                    Dimensions = new List<int>() { valueEvaluation.Length.Value, 1 };
+                } else {
+                    Dimensions = new List<int>();
+                }
+            } else if (DebugEvaluation is IRPromiseInfo) {
                 const string PromiseValue = "<promise>";
 
                 Value = PromiseValue;
                 TypeName = PromiseValue;
                 Class = PromiseValue;
-            } else if (DebugEvaluation is DebugActiveBindingEvaluationResult) {
+            } else if (DebugEvaluation is IRActiveBindingInfo) {
                 const string ActiveBindingValue = "<active binding>";
-                var activeBinding = (DebugActiveBindingEvaluationResult)DebugEvaluation;
+                var activeBinding = (IRActiveBindingInfo)DebugEvaluation;
 
                 Value = ActiveBindingValue;
                 TypeName = ActiveBindingValue;
@@ -76,7 +82,7 @@ namespace Microsoft.R.Editor.Data {
 
         protected int MaxReprLength { get; set; }
 
-        protected DebugEvaluationResult DebugEvaluation { get; }
+        protected IREvaluationResultInfo DebugEvaluation { get; }
 
         public Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsync() {
             if (_getChildrenTask == null) {
@@ -93,34 +99,33 @@ namespace Microsoft.R.Editor.Data {
         protected virtual async Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsyncInternal() {
             List<IRSessionDataObject> result = null;
 
-            var valueEvaluation = DebugEvaluation as DebugValueEvaluationResult;
+            var valueEvaluation = DebugEvaluation as IRValueInfo;
             if (valueEvaluation == null) {
-                Debug.Assert(false, $"{nameof(RSessionDataObject)} result type is not {typeof(DebugValueEvaluationResult)}");
+                Debug.Assert(false, $"{nameof(RSessionDataObject)} result type is not {nameof(IRValueInfo)}");
                 return result;
             }
 
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const DebugEvaluationResultFields fields =
-                    DebugEvaluationResultFields.Expression |
-                    DebugEvaluationResultFields.Kind |
-                    DebugEvaluationResultFields.ReprStr |
-                    DebugEvaluationResultFields.TypeName |
-                    DebugEvaluationResultFields.Classes |
-                    DebugEvaluationResultFields.Length |
-                    DebugEvaluationResultFields.SlotCount |
-                    DebugEvaluationResultFields.AttrCount |
-                    DebugEvaluationResultFields.Dim |
-                    DebugEvaluationResultFields.Flags;
-                IReadOnlyList<DebugEvaluationResult> children = await valueEvaluation.GetChildrenAsync(fields, MaxChildrenCount, MaxReprLength);
+                const REvaluationResultProperties properties =
+                    ExpressionProperty |
+                    AccessorKindProperty |
+                    TypeNameProperty |
+                    ClassesProperty |
+                    LengthProperty |
+                    SlotCountProperty |
+                    AttributeCountProperty |
+                    DimProperty |
+                    FlagsProperty;
+                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
 
             return result;
         }
 
-        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<DebugEvaluationResult> children) {
+        protected virtual List<IRSessionDataObject> EvaluateChildren(IReadOnlyList<IREvaluationResultInfo> children) {
             var result = new List<IRSessionDataObject>();
             for (int i = 0; i < children.Count; i++) {
                 result.Add(new RSessionDataObject(children[i], GetMaxChildrenCount(children[i])));
@@ -128,8 +133,8 @@ namespace Microsoft.R.Editor.Data {
             return result;
         }
 
-        protected int? GetMaxChildrenCount(DebugEvaluationResult parent) {
-            var value = parent as DebugValueEvaluationResult;
+        protected int? GetMaxChildrenCount(IREvaluationResultInfo parent) {
+            var value = parent as IRValueInfo;
             if (value != null) {
                 if (value.Classes.Contains("data.frame")) {
                     return null;
@@ -139,8 +144,8 @@ namespace Microsoft.R.Editor.Data {
         }
 
         private static string DataFramePrefix = "'data.frame':([^:]+):";
-        private string GetValue(DebugValueEvaluationResult v) {
-            var value = v.GetRepresentation().Str;
+        private string GetValue(IRValueInfo v) {
+            var value = v.Representation;
             if (value != null) {
                 Match match = Regex.Match(value, DataFramePrefix);
                 if (match.Success) {
@@ -155,8 +160,6 @@ namespace Microsoft.R.Editor.Data {
         public string Name { get; protected set; }
 
         public string Value { get; protected set; }
-
-        public string ValueDetail { get; protected set; }
 
         public string TypeName { get; protected set; }
 

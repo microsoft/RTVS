@@ -571,7 +571,7 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
     <value>Open in Microsoft Excel or another app registered for CSV files</value>
   </data>
   <data name="ShowDetailCommandTooltip" xml:space="preserve">
-    <value>Open in a Grid Viewer</value>
+    <value>Show item details</value>
   </data>
   <data name="Settings_TriggerOnTab" xml:space="preserve">
     <value>Completion list on Tab key</value>
@@ -581,9 +581,6 @@ Supported formats are: jpg/jpeg, png, tif/tiff, bmp.</value>
   </data>
   <data name="SendMailFallbackMessage" xml:space="preserve">
     <value>We will now try to open your email client with a pre-created feedback email. If the email client does not open, please send an email message to rtvsuserfeedback@microsoft.com with the following information:</value>
-  </data>
-  <data name="Error_NoWebTools" xml:space="preserve">
-    <value>R Tools require Web Development Tools component which is not installed. Please go to Control Panel, click 'Uninstall Program', locate Visual Studio, right click and choose 'Change'. Set Web Development Tools checkbox to on and click Next to update your Visual Studio installation.</value>
   </data>
   <data name="VariableGrid_Missing" xml:space="preserve">
     <value>object {0} is missing.</value>
@@ -705,5 +702,32 @@ Additional information:
   </data>
   <data name="Warning_SaveInUtf8" xml:space="preserve">
     <value>Current file cannot be saved in the current encoding. Do you want to save file in UTF-8 and continue?</value>
+  </data>
+  <data name="TooltipPlaceholder" xml:space="preserve">
+    <value>Fetching data...</value>
+  </data>
+  <data name="PlotWindowCaptionLocatorActive" xml:space="preserve">
+    <value>R Plot - Locator is Active</value>
+  </data>
+  <data name="PlotWindowStatusLocatorActive" xml:space="preserve">
+    <value>Locator is active. Click in the plot window to select points then choose End Locator.</value>
+  </data>
+  <data name="Warning_DeleteAllVariables" xml:space="preserve">
+    <value>Are you sure you want to remove all variables?</value>
+  </data>
+  <data name="Error_UnableToDeleteVariable" xml:space="preserve">
+    <value>Cannot delete variable(s). Exception {0}</value>
+  </data>
+  <data name="Settings_DefaultValue" xml:space="preserve">
+    <value>(OS Default)</value>
+  </data>
+  <data name="Settings_REngineCategory" xml:space="preserve">
+    <value>R Engine</value>
+  </data>
+  <data name="Settings_RCodePage" xml:space="preserve">
+    <value>Code page</value>
+  </data>
+  <data name="Settings_RCodePage_Description" xml:space="preserve">
+    <value>Default code page in R. Affects conversion of characters from Windows Unicode to R and back. Same as in Sys.setlocale(LC_CTYPE).</value>
   </data>
 </root>

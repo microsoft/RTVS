@@ -4,27 +4,26 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings.Definitions;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public partial class VariableView : UserControl, IDisposable {
         private readonly IRToolsSettings _settings;
-        ObservableTreeNode _rootNode;
-        IREnvironmentProvider _environmentProvider;
-        IRSession _rSession;
-        DebugSession _debugSession;
+        private readonly IDataObjectEvaluator _evaluator;
+        private readonly IREnvironmentProvider _environmentProvider;
+        private readonly IObjectDetailsViewerAggregator _aggregator;
+
+        private ObservableTreeNode _rootNode;
 
         private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
@@ -35,7 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             InitializeComponent();
 
-            SetRootNode(EvaluationWrapper.Ellipsis);
+            _evaluator = VsAppShell.Current.ExportProvider.GetExportedValue<IDataObjectEvaluator>();
+            _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
+
+            SetRootNode(VariableViewModel.Ellipsis);
             EnvironmentComboBox.ItemsSource = _defaultEnvironments;
             EnvironmentComboBox.SelectedIndex = 0;
 
@@ -43,9 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
             var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _rSession = sessionProvider.GetInteractiveWindowRSession();
+            var rSession = sessionProvider.GetInteractiveWindowRSession();
 
-            _environmentProvider = new REnvironmentProvider(_rSession);
+            _environmentProvider = new REnvironmentProvider(rSession);
             _environmentProvider.EnvironmentChanged += EnvironmentProvider_EnvironmentChanged;
         }
 
@@ -54,7 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             if (_environmentProvider != null) {
                 _environmentProvider.EnvironmentChanged -= EnvironmentProvider_EnvironmentChanged;
-                _environmentProvider = null;
             }
         }
 
@@ -96,45 +97,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private async Task<DebugSession> GetDebugSessionAsync() {
-            if (_debugSession != null) {
-                return _debugSession;
-            }
-
-            var debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
-            if (_debugSession == null) {
-                Debug.Assert(_rSession != null);
-                _debugSession = await debugSessionProvider.GetDebugSessionAsync(_rSession);
-            }
-
-            return _debugSession;
-        }
-
         private async Task SetRootModelAsync(REnvironment env) {
             await TaskUtilities.SwitchToBackgroundThread();
+            const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty | LengthProperty;
 
-            var debugSession = await GetDebugSessionAsync();
-            var frames = await debugSession.GetStackFramesAsync();
-            var frame = frames.FirstOrDefault(f => f.Index == 0);
-
-            if (frame != null) {
-                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                        | DebugEvaluationResultFields.Expression
-                        | DebugEvaluationResultFields.TypeName
-                        | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
-                        | DebugEvaluationResultFields.Dim
-                        | DebugEvaluationResultFields.Length;
-                DebugEvaluationResult result = await frame.EvaluateAsync(
-                    GetExpression(env),
-                    fields);
-
-                var wrapper = new EvaluationWrapper(result);
+            var result = await _evaluator.EvaluateAsync(GetExpression(env), properties, RValueRepresentations.Str());
+            if (result != null) {
+                var wrapper = new VariableViewModel(result, _aggregator);
                 var rootNodeModel = new VariableNode(_settings, wrapper);
-
-                VsAppShell.Current.DispatchOnUIThread(
-                    () => {
-                        _rootNode.Model = rootNodeModel;
-                    });
+                VsAppShell.Current.DispatchOnUIThread(() => _rootNode.Model = rootNodeModel);
             }
         }
 
@@ -146,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private void SetRootNode(EvaluationWrapper evaluation) {
+        private void SetRootNode(VariableViewModel evaluation) {
             _rootNode = new ObservableTreeNode(
                 new VariableNode(_settings, evaluation),
                 Comparer<ITreeNode>.Create(Comparison));
@@ -160,22 +131,30 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return VariableNode.Comparison((VariableNode)left, (VariableNode)right, SortDirection);
         }
 
-        private void RootTreeGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void GridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             HandleDefaultAction();
         }
 
         private void RootTreeGrid_PreviewKeyUp(object sender, KeyEventArgs e) {
-            if(e.Key == Key.Enter) {
+            if (e.Key == Key.Enter) {
                 HandleDefaultAction();
+            } else if(e.Key == Key.Delete || e.Key == Key.Back) {
+                DeleteCurrentVariableAsync().DoNotWait();
             }
         }
 
         private void HandleDefaultAction() {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
-            var ew = node?.Model?.Content as EvaluationWrapper;
-            if(ew != null && ew.CanShowDetail) {
+            var ew = node?.Model?.Content as VariableViewModel;
+            if (ew != null && ew.CanShowDetail) {
                 ew.ShowDetailCommand.Execute(ew);
             }
+        }
+
+        private Task DeleteCurrentVariableAsync() {
+            var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
+            var ew = node?.Model?.Content as VariableViewModel;
+            return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
         }
     }
 }

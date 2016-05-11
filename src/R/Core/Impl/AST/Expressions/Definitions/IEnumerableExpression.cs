@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST.Variables;
 
 namespace Microsoft.R.Core.AST.Expressions.Definitions {
     /// <summary>
@@ -11,9 +12,9 @@ namespace Microsoft.R.Core.AST.Expressions.Definitions {
     /// </summary>
     public interface IEnumerableExpression : IAstNode {
         /// <summary>
-        /// Name of variable in 'for(variable_name in ...)'
+        /// Variable in 'for(variable_name in ...)'
         /// </summary>
-        TokenNode VariableName { get; }
+        IVariable Variable { get; }
 
         /// <summary>
         /// Token of the 'in' operator

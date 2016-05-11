@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         protected override void SetStatus() {
-            Enabled = PlotHistory.ActivePlotIndex >= 0 && PlotHistory.ActivePlotIndex < PlotHistory.PlotCount - 1;
+            Enabled = PlotHistory.ActivePlotIndex >= 0 && PlotHistory.ActivePlotIndex < PlotHistory.PlotCount - 1 && !IsInLocatorMode;
         }
 
         protected override void Handle() {

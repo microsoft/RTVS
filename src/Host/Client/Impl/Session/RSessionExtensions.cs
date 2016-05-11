@@ -6,34 +6,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionExtensions {
-
-        /// <summary>
-        /// Schedules function in evaluation queue without waiting. 
-        /// </summary>
-        /// <param name="session">R Session</param>
-        /// <param name="function">Function to scheduel</param>
-        public static void ScheduleEvaluation(this IRSession session, Func<IRSessionEvaluation, Task> function) {
-            session.GetScheduleEvaluationTask(function).DoNotWait();
-        }
-
-        private static async Task GetScheduleEvaluationTask(this IRSession session, Func<IRSessionEvaluation, Task> function) {
-            await TaskUtilities.SwitchToBackgroundThread();
-            using (var evaluation = await session.BeginEvaluationAsync()) {
-                await function(evaluation);
-            } 
-        }
-
         public static async Task<string> GetRWorkingDirectoryAsync(this IRSession session) {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    using (var evaluation = await session.BeginEvaluationAsync()) {
-                        return await evaluation.GetWorkingDirectory();
-                    }
-                } catch (OperationCanceledException) { }
+                    return await session.GetWorkingDirectory();
+                } catch (RException) {
+                } catch (OperationCanceledException) {
+                }
             }
             return null;
         }
@@ -42,9 +26,8 @@ namespace Microsoft.R.Host.Client.Session {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    using (var evaluation = await session.BeginEvaluationAsync()) {
-                        return await evaluation.GetRUserDirectory();
-                    }
+                    return await session.GetRUserDirectory();
+                } catch (RException) {
                 } catch (OperationCanceledException) { }
             }
             return null;
@@ -57,7 +40,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public static async Task<IEnumerable<string>> MakeRelativeToRUserDirectoryAsync(this IRSession session, IEnumerable<string> names) {
             var userDirectory = await session.GetRUserDirectoryAsync();
-            return names.Select(n => MakeRelativeToUserDirectory(n, userDirectory)); 
+            return names.Select(n => MakeRelativeToUserDirectory(n, userDirectory));
         }
 
         private static string MakeRelativeToUserDirectory(string name, string userDirectory) {
@@ -72,6 +55,10 @@ namespace Microsoft.R.Host.Client.Session {
                 return name.Replace('\\', '/');
             }
             return name;
+        }
+
+        public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName) {
+            return session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
         }
     }
 }

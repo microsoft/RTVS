@@ -17,10 +17,12 @@ using Xunit;
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class InteractionEvaluation : IAsyncLifetime {
+            private readonly TestMethodFixture _testMethodFixture;
             private readonly MethodInfo _testMethod;
             private readonly RSession _session;
 
             public InteractionEvaluation(TestMethodFixture testMethod) {
+                _testMethodFixture = testMethod;
                 _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, () => {});
             }
@@ -30,6 +32,8 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     Name = _testMethod.Name,
                     RBasePath = RUtilities.FindExistingRBasePath()
                 }, null, 50000);
+
+                _testMethodFixture.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
@@ -77,6 +81,42 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     runningTasks.Split(t => t.Status == TaskStatus.RanToCompletion, out completedTasks, out runningTasks);
                     completedTasks.Should().ContainSingle();
                     completedTasks.Single().Result.Dispose();
+                }
+            }
+
+            [Test]
+            [Category.R.Session]
+            public async Task NestedInteraction() {
+                string topLevelPrompt;
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    topLevelPrompt = inter.Prompt;
+
+                    var evalTask = _session.EvaluateAsync<string>("readline('2')", REvaluationKind.Reentrant);
+
+                    using (var inter2 = await _session.BeginInteractionAsync()) {
+                        inter2.Prompt.Should().Be("2");
+
+                        var evalTask2 = _session.EvaluateAsync<string>("readline('3')", REvaluationKind.Reentrant);
+
+                        using (var inter3 = await _session.BeginInteractionAsync()) {
+                            inter3.Prompt.Should().Be("3");
+                            inter3.RespondAsync("0 + 3\n").DoNotWait();
+                        }
+
+                        await evalTask2;
+                        evalTask2.Result.Should().Be("0 + 3");
+
+                        inter2.RespondAsync("0 + 2\n").DoNotWait();
+                    }
+
+                    await evalTask;
+                    evalTask.Result.Should().Be("0 + 2");
+
+                    await inter.RespondAsync("0 + 1");
+                }
+
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    inter.Prompt.Should().Be(topLevelPrompt);
                 }
             }
         }

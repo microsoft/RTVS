@@ -123,7 +123,7 @@ RightOperandExpected Token [19...20)
         TokenNode  [for [0...3)]
         TokenNode  [( [3...4)]
         EnumerableExpression  [4...10)
-            TokenNode  [x [4...5)]
+            Variable  [x]
             TokenNode  [in [6...8)]
             Expression  [y]
                 Variable  [y]

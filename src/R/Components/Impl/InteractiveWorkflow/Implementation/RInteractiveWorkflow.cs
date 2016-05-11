@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
@@ -91,12 +92,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
-            // Right now only one instance of interactive window is allowed
-            if (ActiveWindow != null) {
-                throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
-            }
-
             _coreShell.AssertIsOnMainThread();
+
+            if (ActiveWindow != null) {
+                // Right now only one instance of interactive window is allowed
+                if (instanceId != 0) {
+                    throw new InvalidOperationException("Right now only one instance of interactive window is allowed");
+                }
+
+                return ActiveWindow;
+            }
 
             var evaluator = RInstallationHelper.VerifyRIsInstalled(_coreShell, _settings.RBasePath)
                 ? new RInteractiveEvaluator(RSession, History, _coreShell, _settings)

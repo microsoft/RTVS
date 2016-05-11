@@ -2,15 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
+using NSubstitute;
 
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
@@ -24,7 +27,7 @@ x <- function(a) { }
 z <- 1
 x()
 ";
-            RunGotoDefTest(content, 3, 0, content.IndexOf("x <-"));
+            RunGotoDefTestUserDefinedItem(content, 3, 0, content.IndexOf("x <-"));
         }
 
         [Test]
@@ -37,7 +40,7 @@ if(TRUE) {
     if(FALSE)
         x()
 }";
-            RunGotoDefTest(content, 5, 8, content.IndexOf("x <-"));
+            RunGotoDefTestUserDefinedItem(content, 5, 8, content.IndexOf("x <-"));
         }
 
         [Test]
@@ -49,7 +52,7 @@ if(TRUE) {
     if(FALSE)
         z
 }";
-            RunGotoDefTest(content, 4, 8, 2);
+            RunGotoDefTestUserDefinedItem(content, 4, 8, 2);
         }
 
         [Test]
@@ -62,7 +65,7 @@ if(TRUE) {
     if(FALSE)
         z
 }";
-            RunGotoDefTest(content, 5, 8, content.IndexOf("z <- 3"));
+            RunGotoDefTestUserDefinedItem(content, 5, 8, content.IndexOf("z <- 3"));
         }
 
         [Test]
@@ -75,7 +78,7 @@ if(TRUE) {
     if(FALSE)
         z
 }";
-            RunGotoDefTest(content, 3, 9, content.IndexOf("a, b"));
+            RunGotoDefTestUserDefinedItem(content, 3, 9, content.IndexOf("a, b"));
         }
 
         [Test]
@@ -88,7 +91,7 @@ if(TRUE) {
     if(FALSE)
         z
 }}";
-            RunGotoDefTest(content, 5, 8, content.IndexOf("z,"));
+            RunGotoDefTestUserDefinedItem(content, 5, 8, content.IndexOf("z,"));
         }
 
         [Test]
@@ -101,26 +104,45 @@ if(TRUE) {
     if(FALSE)
         z
 }}";
-            RunGotoDefTest(content, 5, 8, content.IndexOf("z ="));
+            RunGotoDefTestUserDefinedItem(content, 5, 8, content.IndexOf("z ="));
         }
 
-        private void RunGotoDefTest(string content, int startLineNumber, int startColumn, int finalCaretPosition) {
-            var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var line = tb.CurrentSnapshot.GetLineFromLineNumber(startLineNumber);
-            RunGotoDefTest(content, line.Start + startColumn, finalCaretPosition);
+        [Test]
+        public void GoToDefInternalFunction() {
+            string content = @"lm()";
+            RunGotoDefTestInternalItem(content, 0, 1, "lm");
         }
 
-        private void RunGotoDefTest(string content, int startCaretPosition, int finalCaretPosition) {
-            var document = new EditorDocumentMock(content);
-            var tv = new TextViewMock(document.TextBuffer);
-            tv.Caret.MoveTo(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, startCaretPosition));
 
-            var cmd = new GoToDefinitionCommand(tv, document.TextBuffer);
+        private void RunGotoDefTestInternalItem(string content, int startLineNumber, int startColumn, string itemName) {
+            TextViewMock tv = SetupTextView(content, startLineNumber, startColumn);
+
+            var viewer = Substitute.For<IObjectViewer>();
+            viewer.ViewObjectDetails(itemName, itemName).Returns(Task.CompletedTask);
+            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, viewer);
+
+            var o = new object();
+            var result = cmd.Invoke(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.GotoDefn, null, ref o);
+            result.Should().Be(CommandResult.Executed);
+            viewer.Received().ViewObjectDetails(itemName, itemName);
+        }
+
+        private void RunGotoDefTestUserDefinedItem(string content, int startLineNumber, int startColumn, int finalCaretPosition) {
+            TextViewMock tv = SetupTextView(content, startLineNumber, startColumn);
+            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, Substitute.For<IObjectViewer>());
 
             var o = new object();
             var result = cmd.Invoke(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.GotoDefn, null, ref o);
             result.Should().Be(CommandResult.Executed);
             tv.Caret.Position.BufferPosition.Position.Should().Be(finalCaretPosition);
+        }
+
+        private TextViewMock SetupTextView(string content, int startLineNumber, int startColumn) {
+            var document = new EditorDocumentMock(content);
+            var tv = new TextViewMock(document.TextBuffer);
+            var line = document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(startLineNumber);
+            tv.Caret.MoveTo(new SnapshotPoint(tv.TextBuffer.CurrentSnapshot, line.Start + startColumn));
+            return tv;
         }
     }
 }
