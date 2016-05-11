@@ -48,6 +48,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("if (x > 1)\n", 1, 4)]
         [InlineData("x <- function(a) {\n  if(TRUE)\n\n}", 2, 6)]
         [InlineData("function(a) { a }\n", 1, 0)]
+        [InlineData("x <- func(\n    z = list(\n", 2, 8)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n", 3, 12)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 8)]
         public void Scope(string content, int lineNum, int expectedIndent) {
             int? indent = GetSmartIndent(content, lineNum);
             indent.Should().HaveValue().And.Be(expectedIndent);

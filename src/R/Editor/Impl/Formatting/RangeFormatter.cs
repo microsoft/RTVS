@@ -123,12 +123,13 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             ITextSnapshotLine firstLine = snapshot.GetLineFromPosition(range.Start);
             ITextSnapshotLine lastLine = snapshot.GetLineFromPosition(range.End);
+
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
 
             for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache
                 ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                int indent = SmartIndenter.GetSmartIndent(line, ast, originalIndentSizeInSpaces);
+                int indent = SmartIndenter.GetSmartIndent(line, ast, formatting: true);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
                     int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), options.TabSize);

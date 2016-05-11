@@ -173,8 +173,8 @@ namespace Microsoft.R.Core.Formatting {
                 //  c) Next token is by 'else' (so 'else' does not get separated from 'if') or
                 //  d) We are in a single-line scope sequence like if() {{ }}
                 if (!KeepCurlyAndElseTogether()) {
-                    if (singleLineScopeJustClosed && 
-                        !IsClosingToken(_tokens.CurrentToken) && 
+                    if (singleLineScopeJustClosed &&
+                        !IsClosingToken(_tokens.CurrentToken) &&
                         !IsInArguments()) {
                         SoftLineBreak();
                     }
@@ -304,9 +304,9 @@ namespace Microsoft.R.Core.Formatting {
                 // Regular { } scope so just handle it normally
                 AppendScopeContent(stopAtLineBreak: false);
 
-                if (keyword == "if" && 
-                    _tokens.CurrentToken.IsKeywordText(_textProvider, "else") && 
-                    !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position-1)) {
+                if (keyword == "if" &&
+                    _tokens.CurrentToken.IsKeywordText(_textProvider, "else") &&
+                    !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
                     // if (FALSE) {
                     //   x <- 1
                     // } else
@@ -717,18 +717,14 @@ namespace Microsoft.R.Core.Formatting {
                 return true;
             }
 
-            if (IsClosingToken(_tokens.CurrentToken)) {
-                return false;
-            }
-
+            // We position curly braces according to formatting options
+            // hence whitespace before { doesn't matter
             if (_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace) {
                 return false;
             }
 
-            if (_tokens.PreviousToken.TokenType == RTokenType.Comma) {
-                if (_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
-                    return true; // respect user indentation with line breaks
-                }
+            // If user added like break before command, ), ] or ]] leave it alone.
+            if (IsClosingToken(_tokens.CurrentToken) && !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
                 return false;
             }
 

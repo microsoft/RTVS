@@ -100,9 +100,12 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// </summary>
         /// <param name="line">Line to find the indent for</param>
         /// <param name="ast">Optional AST</param>
-        /// <param name="originalIndentSizeInSpaces">Original user indentation in spaces</param>
+        /// <param name="formatting">
+        /// Indicates if current call is from formatter or 
+        /// from the core editor for indentation when user typed Enter.
+        /// </param>
         /// <returns>Level of indent in spaces</returns>
-        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, int originalIndentSizeInSpaces = -1) {
+        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, bool formatting = false) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
 
@@ -142,45 +145,20 @@ namespace Microsoft.R.Editor.SmartIndent {
             // since function definition is a scope-defining statement.
             // Examples: 'call(a,\n<Enter>' or 'x <- function(a,<Enter>'
             if (prevLine.Length > 0) {
-                var fc = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
+                var fc1 = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
+                var fc2 = ast.GetNodeOfTypeFromPosition<IFunction>(line.Start);
+                var fc = fc2 ?? fc1;
                 if (fc != null && fc.Arguments != null && fc.OpenBrace != null) {
                     if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
-                        // We only want to indent here if position is in arguments
-                        // and not in the function scope.
+                        // We only want to indent here if position is in arguments and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            // Behavior depends on which line are we at. The challenge is in the second line \
-                            // of the function arguments. Examples:
-                            //
-                            //  x <- function(a, b, c<ENTER>
-                            //                |
-                            //  x <- function(a, b,
-                            //           c, d<ENTER>
-                            //           |
-                            //
-                            // Indentation depends if this is new empty line, then default is to align with the
-                            // first arguments. However, if user decided not to align arguments this way, then
-                            // thirs line of arguments aligns with the second line. Difficulties come during
-                            // formatting: we don't know what was the original indent when automatic formatter
-                            // is asking about indent of the second line of function arguments.
-
-                            var fcPrevLine = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.Start);
-                            if (fcPrevLine == fc && fc.OpenBrace.End < prevLine.Start) {
-                                // Previous line stat belongs to the same function and list of arguments.
-                                // this means we are at the third line of arguments. Make indent based
-                                // on the previous line then.
-                                return GetBlockIndent(line);
-                            } else {
-                                // Second line. Need to figure out if we should align arguments
-                                // by the first one or respect current user indentation. In the smart
-                                // idndet case (i.e. when user hits Enter and the line is empty) we align
-                                // arguments by the first argument. In the auto-format case we keep existing
-                                // indentation as set by the user.
-                                if (originalIndentSizeInSpaces < 0 || string.IsNullOrWhiteSpace(line.GetText())) {
-                                    return GetBlockIndent(line) + REditorSettings.IndentSize;
-                                } else {
-                                    return originalIndentSizeInSpaces;
-                                }
+                            // Indent one level deeper from the function definition line.
+                            var fcLine = line.Snapshot.GetLineFromPosition(fc.Start);
+                            int fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), REditorSettings.TabSize);
+                            if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? line.Start: line.End)) {
+                                fcIndentSize += REditorSettings.IndentSize;
                             }
+                            return fcIndentSize;
                         }
                     }
                 }
