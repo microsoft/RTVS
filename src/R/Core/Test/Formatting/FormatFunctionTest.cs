@@ -70,14 +70,9 @@ namespace Microsoft.R.Core.Test.Formatting {
             string expected =
 "x <- func(a, {\n" +
 "  if (TRUE)\n" +
-"    if (FALSE) {\n" +
-"      x <- 1\n" +
-"    } else\n" +
-"      x <- 2\n" +
+"    if (FALSE) { x <- 1 } else x <- 2\n" +
 "  else\n" +
-"    if (z) x <- 1 else {\n" +
-"      5\n" +
-"    }\n" +
+"    if (z) x <- 1 else { 5 }\n" +
 "})";
 
             actual.Should().Be(expected);

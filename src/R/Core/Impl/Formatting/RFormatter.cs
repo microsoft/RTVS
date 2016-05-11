@@ -300,11 +300,16 @@ namespace Microsoft.R.Core.Formatting {
                 // Regular { } scope so just handle it normally
                 AppendScopeContent(stopAtLineBreak: false);
 
-                if (keyword == "if" && _tokens.CurrentToken.IsKeywordText(_textProvider, "else")) {
+                if (keyword == "if" && 
+                    _tokens.CurrentToken.IsKeywordText(_textProvider, "else") && 
+                    !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position-1)) {
                     // if (FALSE) {
                     //   x <- 1
                     // } else
-                    // i.e. keep 'else' at the same line.
+                    // i.e. keep 'else' at the same line except when user did add line break as in
+                    // if (...) { 1 }
+                    // else { 2 }
+
                     if (!_options.BracesOnNewLine && _tokens.PreviousToken.TokenType == RTokenType.CloseCurlyBrace) {
                         while (_tb.LastCharacter.IsLineBreak()) {
                             // Undo line break
@@ -760,11 +765,10 @@ namespace Microsoft.R.Core.Formatting {
 
             var braceCounter = new TokenBraceCounter<RToken>(new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace), new RTokenTypeComparer());
             braceCounter.CountBrace(_tokens.CurrentToken);
-            _tokens.MoveToNextToken();
 
             while (braceCounter.Count > 0 && !_tokens.IsEndOfStream()) {
-                braceCounter.CountBrace(_tokens.CurrentToken);
                 _tokens.MoveToNextToken();
+                braceCounter.CountBrace(_tokens.CurrentToken);
             }
 
             int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
