@@ -176,7 +176,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                                 // arguments by the first argument. In the auto-format case we keep existing
                                 // indentation as set by the user.
                                 if (originalIndentSizeInSpaces < 0 || string.IsNullOrWhiteSpace(line.GetText())) {
-                                    return GetFirstArgumentIndent(textBuffer.CurrentSnapshot, fc);
+                                    return GetBlockIndent(line) + REditorSettings.IndentSize;
                                 } else {
                                     return originalIndentSizeInSpaces;
                                 }
