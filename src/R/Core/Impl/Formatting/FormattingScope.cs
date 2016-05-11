@@ -21,6 +21,8 @@ namespace Microsoft.R.Core.Formatting {
 
         public int SuppressLineBreakCount { get; set; }
 
+        public bool SingleLineScope { get; set; }
+
         /// <summary>
         /// Control block defining keywords indented in this scope
         /// </summary>

@@ -149,7 +149,7 @@ namespace Microsoft.R.Core.Formatting {
                 _tb.SoftIndent();
             }
 
-            var leadingSpace = _singleLineScopeEnd >= 0 && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
+            var leadingSpace = SingleLineScope && _tokens.PreviousToken.TokenType != RTokenType.CloseCurlyBrace;
 
             if (_formattingScopes.Count > 1) {
                 if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
@@ -160,8 +160,10 @@ namespace Microsoft.R.Core.Formatting {
 
             AppendToken(leadingSpace: leadingSpace, trailingSpace: false);
 
+            bool singleLineScopeJustClosed = false;
             if (_tokens.CurrentToken.Start >= _singleLineScopeEnd) {
                 _singleLineScopeEnd = -1;
+                singleLineScopeJustClosed = true;
             }
 
             if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
@@ -171,7 +173,9 @@ namespace Microsoft.R.Core.Formatting {
                 //  c) Next token is by 'else' (so 'else' does not get separated from 'if') or
                 //  d) We are in a single-line scope sequence like if() {{ }}
                 if (!KeepCurlyAndElseTogether()) {
-                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                    if (singleLineScopeJustClosed && 
+                        !IsClosingToken(_tokens.CurrentToken) && 
+                        !IsInArguments()) {
                         SoftLineBreak();
                     }
                 }
@@ -771,7 +775,7 @@ namespace Microsoft.R.Core.Formatting {
                 braceCounter.CountBrace(_tokens.CurrentToken);
             }
 
-            int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.Start;
+            int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.End;
             _tokens.Position = position;
 
             for (int i = start; i < end; i++) {
