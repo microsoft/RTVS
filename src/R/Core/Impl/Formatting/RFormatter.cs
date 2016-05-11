@@ -85,7 +85,7 @@ namespace Microsoft.R.Core.Formatting {
 
                 case RTokenType.Semicolon:
                     AppendToken(leadingSpace: false, trailingSpace: true);
-                    _tb.SoftLineBreak();
+                    SoftLineBreak();
                     break;
 
                 case RTokenType.Operator:
@@ -125,8 +125,8 @@ namespace Microsoft.R.Core.Formatting {
                     _singleLineScopeEnd = GetSingleLineScopeEnd();
                 }
 
-                if (_singleLineScopeEnd < 0 && _options.BracesOnNewLine) {
-                    _tb.SoftLineBreak();
+                if (_options.BracesOnNewLine && !SingleLineScope) {
+                    SoftLineBreak();
                 } else if (!IsOpenBraceToken(_tokens.PreviousToken.TokenType)) {
                     _tb.AppendSpace();
                 }
@@ -134,7 +134,7 @@ namespace Microsoft.R.Core.Formatting {
 
             AppendToken(leadingSpace: false, trailingSpace: false);
 
-            if (_singleLineScopeEnd < 0) {
+            if (!SingleLineScope) {
                 _tb.SoftLineBreak();
                 _tb.NewIndentLevel();
             }
@@ -143,7 +143,7 @@ namespace Microsoft.R.Core.Formatting {
         private void CloseFormattingScope() {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.CloseCurlyBrace);
 
-            if (_singleLineScopeEnd < 0) {
+            if (!SingleLineScope) {
                 _tb.SoftLineBreak();
                 _tb.CloseIndentLevel();
                 _tb.SoftIndent();
@@ -160,20 +160,21 @@ namespace Microsoft.R.Core.Formatting {
 
             AppendToken(leadingSpace: leadingSpace, trailingSpace: false);
 
-            if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
-                // We insert line break after } unless next token is comma 
-                // (scope is in the argument list) or a closing brace 
-                // (last parameter in a function or indexer) or it is followed by 'else'
-                // so 'else' does not get separated from 'if'.
-                if (!KeepCurlyAndElseTogether()) {
-                    if (_singleLineScopeEnd < 0 && !IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
-                        _tb.SoftLineBreak();
-                    }
-                }
-            }
-
             if (_tokens.CurrentToken.Start >= _singleLineScopeEnd) {
                 _singleLineScopeEnd = -1;
+            }
+
+            if (SuppressLineBreakCount == 0 && !_tokens.IsEndOfStream()) {
+                // We insert line break after } unless 
+                //  a) Next token is comma (scope is in the argument list) or 
+                //  b) Next token is a closing brace (last parameter in a function or indexer) or 
+                //  c) Next token is by 'else' (so 'else' does not get separated from 'if') or
+                //  d) We are in a single-line scope sequence like if() {{ }}
+                if (!KeepCurlyAndElseTogether()) {
+                    if (!IsClosingToken(_tokens.CurrentToken) && !IsInArguments()) {
+                        SoftLineBreak();
+                    }
+                }
             }
         }
 
@@ -189,6 +190,13 @@ namespace Microsoft.R.Core.Formatting {
             while (!_tokens.IsEndOfStream()) {
                 if (ShouldAppendTextBeforeToken()) {
                     AppendTextBeforeToken();
+
+                    // If scope is simple (no curly braces) then stopAtLineBreak is true.
+                    // If there is a line break before start of the simple scope content
+                    // as in 'if(true)\nx<-1' we need to add indent
+                    if (stopAtLineBreak && _tb.IsAtNewLine) {
+                        _tb.AppendPreformattedText(IndentBuilder.GetIndentString(_options.IndentSize, _options.IndentType, _options.TabSize));
+                    }
                 }
 
                 AppendNextToken();
@@ -349,10 +357,16 @@ namespace Microsoft.R.Core.Formatting {
             // if user put it there  'else if' remains on one line
             // if user didn't then add line break between them.
 
-            if (IsInArguments() ||
-                (keyword == "else" && _tokens.CurrentToken.IsKeywordText(_textProvider, "if") &&
-                !_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1))) {
+            if (IsInArguments()) {
                 addLineBreak = false;
+            } else if (!_tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1)) {
+                if (keyword.EqualsOrdinal("else") && _tokens.CurrentToken.IsKeywordText(_textProvider, "if")) {
+                    addLineBreak = false;
+                } else if ((keyword.EqualsOrdinal("if") || keyword.EqualsOrdinal("else") || keyword.EqualsOrdinal("repeat")) &&
+                           _tokens.CurrentToken.TokenType != RTokenType.OpenCurlyBrace) {
+                    // Preserve single-line conditionals like 'if (true) x <- 1'
+                    addLineBreak = false;
+                }
             }
 
             if (addLineBreak) {
@@ -746,6 +760,7 @@ namespace Microsoft.R.Core.Formatting {
 
             var braceCounter = new TokenBraceCounter<RToken>(new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace), new RTokenTypeComparer());
             braceCounter.CountBrace(_tokens.CurrentToken);
+            _tokens.MoveToNextToken();
 
             while (braceCounter.Count > 0 && !_tokens.IsEndOfStream()) {
                 braceCounter.CountBrace(_tokens.CurrentToken);
@@ -761,6 +776,14 @@ namespace Microsoft.R.Core.Formatting {
                 }
             }
             return end;
+        }
+
+        private bool SingleLineScope => _singleLineScopeEnd >= 0;
+
+        private void SoftLineBreak() {
+            if (!SingleLineScope) {
+                _tb.SoftLineBreak();
+            }
         }
     }
 }

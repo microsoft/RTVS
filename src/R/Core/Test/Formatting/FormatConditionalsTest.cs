@@ -6,29 +6,36 @@ using FluentAssertions;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Core.Formatting;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
     public class FormatConditionalsTest {
-        [Test]
-        public void FormatConditionalTest01() {
+        [CompositeTest]
+        [InlineData("if(true){if(false){}}", "if (true) { if (false) { }}")]
+        [InlineData("if(true){\nif(false){}}", "if (true) {\n  if (false) { }\n}")]
+        public void ConditionalTest(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("if(true){if(false){}}");
-            string expected = "if (true) {\n  if (false) { }\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void FormatConditionalTest02() {
+        [CompositeTest]
+        [InlineData("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}", "if (a == a + ((b + c) / x)) { if (func(a, b, c + 2, x = 2, ...)) { }}")]
+        [InlineData("if(a == a+((b+c)/x)){\nif(func(a,b, c+2, x=2, ...)){}}", "if (a == a + ((b + c) / x)) {\n  if (func(a, b, c + 2, x = 2, ...)) { }\n}")]
+        public void ConditionalTest02(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
-            string expected = "if (a == a + ((b + c) / x)) {\n  if (func(a, b, c + 2, x = 2, ...)) { }\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void FormatConditionalTest03() {
+        [CompositeTest]
+        [InlineData("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}", 
+                    "if (a == a + ((b + c) / x)) { if (func(a, b, c + 2, x = 2, ...)) { }}")]
+        [InlineData("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}\n}",
+                    "if (a == a + ((b + c) / x))\n{\n\tif (func(a, b, c + 2, x = 2, ...)) { }\n}")]
+        public void ConditionalTest03(string original, string expected) {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
             options.IndentSize = 2;
@@ -36,98 +43,59 @@ namespace Microsoft.R.Core.Test.Formatting {
             options.TabSize = 2;
 
             RFormatter f = new RFormatter(options);
-            string actual = f.Format("if(a == a+((b+c)/x)){if(func(a,b, c+2, x=2, ...)){}}");
-            string expected = "if (a == a + ((b + c) / x))\n{\n\tif (func(a, b, c + 2, x = 2, ...)) { }\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void FormatConditionalTest04() {
+        [CompositeTest]
+        [InlineData("if(TRUE) { 1 } else {2} x<-1", "if (TRUE) { 1 } else { 2 }\nx <- 1")]
+        [InlineData("if(TRUE) {\n1 } else {2} x<-1", "if (TRUE)\n{\n  1\n} else { 2 }\nx <- 1")]
+        [InlineData("if(TRUE) {\n1 } else {2\n} x<-1", "if (TRUE)\n{\n  1\n} else\n{\n  2\n}\nx <- 1")]
+        public void ConditionalTest04(string original, string expected) {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
 
             RFormatter f = new RFormatter(options);
-            string actual = f.Format("if(TRUE) { 1 } else {2} x<-1");
-            string expected = "if (TRUE)\n{\n  1\n} else\n{\n  2\n}\nx <- 1";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
-        public void FormatConditionalTest05() {
+        public void ConditionalTest05() {
             RFormatOptions options = new RFormatOptions();
             options.BracesOnNewLine = true;
 
             RFormatter f = new RFormatter(options);
             string actual = f.Format("if(TRUE) { 1 } else if(FALSE) {2} else {3} x<-1");
-            string expected = "if (TRUE)\n{\n  1\n} else if (FALSE)\n{\n  2\n} else\n{\n  3\n}\nx <- 1";
+            string expected = "if (TRUE) { 1 } else if (FALSE) { 2 } else { 3 }\nx <- 1";
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void FormatNoCurlyConditionalTest01() {
+        [CompositeTest]
+        [InlineData("if(true) x<-2", "if (true) x <- 2")]
+        [InlineData("if(true)\nx<-2", "if (true)\n  x <- 2")]
+        [InlineData("if(true) x<-2 else x<-1", "if (true) x <- 2 else x <- 1")]
+        [InlineData("if(true)\nx<-2 else x<-1", "if (true)\n  x <- 2 else x <- 1")]
+        [InlineData("if(true) if(false)   x<-2", "if (true) if (false) x <- 2")]
+        [InlineData("if(true) if(false)   x<-2 else {1}", "if (true) if (false) x <- 2 else { 1 }")]
+        [InlineData("if(true) if(false)   x<-2 else {1\n}", "if (true) if (false) x <- 2 else {\n  1\n}")]
+        [InlineData("if(true) repeat { x <-1; next;} else z", "if (true) repeat { x <- 1; next; } else z")]
+        [InlineData("if(true) repeat { x <-1; \nnext;} else z", "if (true) repeat {\n  x <- 1;\n  next;\n} else z")]
+        [InlineData("if(true) if(false) {  x<-2 } else 1", "if (true) if (false) { x <- 2 } else 1")]
+        [InlineData("if(true)\n if(false) {  x<-2 } else 1", "if (true)\n  if (false) { x <- 2 } else 1")]
+        [InlineData("if(true)\n if(false) {  x<-2\n } else \n1", "if (true)\n  if (false) {\n    x <- 2\n  } else\n    1")]
+        public void FormatNoCurlyConditionalTest(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) x<-2");
-            string expected = "if (true)\n  x <- 2";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
-        [Test]
-        public void FormatNoCurlyConditionalTest02() {
+        [CompositeTest]
+        [InlineData("repeat x<-2", "repeat x <- 2")]
+        [InlineData("repeat\nx<-2", "repeat\n  x <- 2")]
+        public void NoCurlyRepeatTest(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) x<-2 else x<-1");
-            string expected = "if (true) x <- 2 else x <- 1";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        public void FormatNoCurlyConditionalTest03() {
-            RFormatOptions options = new RFormatOptions();
-            options.IndentType = IndentType.Tabs;
-
-            RFormatter f = new RFormatter(options);
-            string actual = f.Format("if(true)    x<-2");
-            string expected = "if (true)\n\tx <- 2";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        public void FormatNoCurlyConditionalTest04() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) if(false)   x<-2");
-            string expected = "if (true)\n  if (false)\n    x <- 2";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void FormatNoCurlyConditionalTest05() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) if(false)   x<-2 else {1}");
-            string expected = "if (true)\n  if (false) x <- 2 else {\n    1\n  }";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        public void FormatNoCurlyConditionalTest06() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) repeat { x <-1; next;} else z");
-            string expected = "if (true)\n  repeat {\n    x <- 1;\n    next;\n  } else\n  z";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        public void FormatNoCurlyConditionalTest07() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("if(true) if(false) {  x<-2 } else 1");
-            string expected = "if (true)\n  if (false) {\n    x <- 2\n  } else\n    1";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        public void FormatNoCurlyRepeatTest01() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("repeat x<-2");
-            string expected = "repeat\n  x <- 2";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 

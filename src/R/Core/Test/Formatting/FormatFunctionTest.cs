@@ -38,8 +38,10 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [InlineData("x <- func(a,{return(b)})", "x <- func(a, {\n  return(b)\n})")]
-        [InlineData("x<-func({return(b)})", "x <- func({\n  return(b)\n})")]
+        [InlineData("x <- func(a,{return(b)})", "x <- func(a, { return(b) })")]
+        [InlineData("x <- func(a,{return(b)\n})", "x <- func(a, {\n  return(b)\n})")]
+        [InlineData("x<-func({return(b)})", "x <- func({ return(b) })")]
+        [InlineData("x<-func({\nreturn(b)})", "x <- func({\n  return(b)\n})")]
         public void FunctionInlineScope(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);
@@ -47,11 +49,11 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, {\n  if (TRUE) {\n    x\n  } else {\n    y\n  }\n})")]
-        [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
+        [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, { if (TRUE) { x } else { y }})")]
+        [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, { if (TRUE) 1 else 2 })")]
         [InlineData("x <- func(a,{\nif(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
-        [InlineData("x <- func(a,{\nif(TRUE) {1} else {2}})", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
-        [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
+        [InlineData("x <- func(a,{\nif(TRUE) {1} else {2}})", "x <- func(a, {\n  if (TRUE) { 1 } else { 2 }\n})")]
+        [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) { 1 }\n  else { 2 }\n})")]
         [InlineData("x <- func(a,\n   {\n      if(TRUE) 1 else 2\n   })", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
         public void FunctionInlineIf(string original, string expected) {
             RFormatter f = new RFormatter();

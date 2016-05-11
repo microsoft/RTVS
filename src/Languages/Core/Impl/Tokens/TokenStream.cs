@@ -16,10 +16,9 @@ namespace Microsoft.Languages.Core.Tokens {
     /// </summary>
     /// <typeparam name="T">Type of token. Tokens must implement ITextRange.</typeparam>
     public sealed class TokenStream<T> : IEnumerable<T> where T : ITextRange {
-        private IReadOnlyTextRangeCollection<T> _tokens;
+        private readonly IReadOnlyTextRangeCollection<T> _tokens;
+        private readonly T _endOfStreamToken;
         private int _index;
-        private T _endOfStreamToken;
-        private T _currentToken;
         private bool _isEndOfStream;
 
         public TokenStream(IReadOnlyTextRangeCollection<T> tokens, T endOfStreamToken) {
@@ -31,15 +30,13 @@ namespace Microsoft.Languages.Core.Tokens {
             _tokens = tokens;
             _endOfStreamToken = endOfStreamToken;
             _isEndOfStream = tokens.Length == 0;
-            _currentToken = _isEndOfStream ? _endOfStreamToken : _tokens[0];
+            CurrentToken = _isEndOfStream ? _endOfStreamToken : _tokens[0];
         }
 
         /// <summary>
         /// Number of tokens in the stream
         /// </summary>
-        public int Length {
-            get { return _tokens.Count; }
-        }
+        public int Length  => _tokens.Count;
 
         /// <summary>
         /// Gets or sets position (index of the current token) in the stream.
@@ -64,7 +61,7 @@ namespace Microsoft.Languages.Core.Tokens {
             }
 
             _isEndOfStream = _index >= _tokens.Count;
-            _currentToken = _isEndOfStream ? _endOfStreamToken : _tokens[_index];
+            CurrentToken = _isEndOfStream ? _endOfStreamToken : _tokens[_index];
         }
 
         /// <summary>
@@ -72,23 +69,17 @@ namespace Microsoft.Languages.Core.Tokens {
         /// if current position is at the end of the stream
         /// or before the beginning of the stream.
         /// </summary>
-        public T CurrentToken {
-            get { return _currentToken; }
-        }
+        public T CurrentToken { get; private set; }
 
         /// <summary>
         /// Next available token or end of stream token if none.
         /// </summary>
-        public T NextToken {
-            get { return LookAhead(1); }
-        }
+        public T NextToken  => LookAhead(1);
 
         /// <summary>
         /// Previous token or end of stream token if no previous token exists.
         /// </summary>
-        public T PreviousToken {
-            get { return LookAhead(-1); }
-        }
+        public T PreviousToken  => LookAhead(-1);
 
         /// <summary>
         /// Token 'count' tokens ahead or end of stream token
@@ -132,8 +123,8 @@ namespace Microsoft.Languages.Core.Tokens {
         public T MoveToNextToken() {
             if (_index < _tokens.Count - 1) {
                 _index++;
-                _currentToken = _tokens[_index];
-                return _currentToken;
+                CurrentToken = _tokens[_index];
+                return CurrentToken;
             }
 
             return Advance(1);
