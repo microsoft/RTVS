@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.VisualStudio.R.Package.DataInspect.Definitions {
+namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal interface IREnvironmentProvider {
         event EventHandler<REnvironmentChangedEventArgs> EnvironmentChanged;
     }

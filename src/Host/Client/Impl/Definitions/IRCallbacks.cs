@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client {
         Task ShowMessage(string s, CancellationToken ct);
         Task Busy(bool which, CancellationToken ct);
         Task Plot(string filePath, CancellationToken ct);
-
+        Task<LocatorResult> Locator(CancellationToken ct);
         /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>
@@ -42,6 +42,25 @@ namespace Microsoft.R.Host.Client {
         /// <returns></returns>
         Task Browser(string url);
 
+        /// <summary>
+        /// Invoked in response of parameter-less library call
+        /// </summary>
+        Task ViewLibrary();
+
+        /// <summary>
+        /// Invoked when R calls 'pager'
+        /// </summary>
+        Task ShowFile(string fileName, string tabName, bool deleteFile);
+
+        /// <summary>
+        /// Called when working directory has changed in R.
+        /// </summary>
         void DirectoryChanged();
+
+        /// <summary>
+        /// Called when used invoked View(obj) in R.
+        /// </summary>
+        /// <returns></returns>
+        void ViewObject(string expression, string title);
     }
 }

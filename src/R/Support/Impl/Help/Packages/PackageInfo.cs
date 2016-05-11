@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Html.Core.Tree;
 using Microsoft.Html.Core.Tree.Nodes;
+using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
@@ -128,7 +129,7 @@ namespace Microsoft.R.Support.Help.Packages {
             } catch (IOException) { }
 
             if (!string.IsNullOrEmpty(content)) {
-                HtmlTree tree = new HtmlTree(new Microsoft.Web.Core.Text.TextStream(content));
+                HtmlTree tree = new HtmlTree(new TextStream(content));
                 tree.Build();
 
                 FunctionSearch functionSearch = new FunctionSearch(functions);

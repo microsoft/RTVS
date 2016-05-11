@@ -3,12 +3,17 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -21,41 +26,37 @@ namespace Microsoft.R.Editor.Test.Navigation {
     public class RPeekableItemSourceTest {
         [Test]
         public void PeekFunction01() {
-            List<IPeekableItem> items = new List<IPeekableItem>();
             string content =
 @"
 x <- function(a) { }
 z <- 1
 x()";
-            RunPeekTest(content, 3, 0, "x");
+            RunUserItemPeekTest(content, 3, 0, "x");
         }
 
         [Test]
         public void PeekFunction02() {
-            List<IPeekableItem> items = new List<IPeekableItem>();
             string content =
 @"
 func1 <- function(a) { }
 z <- 1
 func1()";
-            RunPeekTest(content, 3, 0, "func1", new TextRange(content.Length - 7, 5));
+            RunUserItemPeekTest(content, 3, 0, "func1", new TextRange(content.Length - 7, 5));
         }
 
         [Test]
         public void PeekVariable01() {
-            List<IPeekableItem> items = new List<IPeekableItem>();
             string content =
 @"
 x <- function(a) { }
 z <- 1
 x()
 z";
-            RunPeekTest(content, 4, 0, "z");
+            RunUserItemPeekTest(content, 4, 0, "z");
         }
 
         [Test]
         public void PeekArgument01() {
-            List<IPeekableItem> items = new List<IPeekableItem>();
             string content =
 @"
 x <- function(a) {
@@ -63,10 +64,51 @@ x <- function(a) {
     x()
     a
 }";
-            RunPeekTest(content, 4, 4, "a");
+            RunUserItemPeekTest(content, 4, 4, "a");
         }
 
-        private void RunPeekTest(string content, int line, int column, string name, ITextRange selection = null) {
+        [Test]
+        public void PeekInternalFunction01() {
+            var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            using (new RHostScript(provider)) {
+                string content = @"lm()";
+                RunInternalItemPeekTest(content, 0, 1, "lm");
+            }
+        }
+
+        private void RunUserItemPeekTest(string content, int line, int column, string name, ITextRange selection = null) {
+            var coll = RunPeekTest(content, line, column, name, selection);
+
+            coll[0].DisplayInfo.Title.Should().Be("file.r");
+            coll[0].DisplayInfo.Label.Should().Be(name);
+            coll[0].DisplayInfo.TitleTooltip.Should().Be(@"C:\file.r");
+        }
+
+        private void RunInternalItemPeekTest(string content, int line, int column, string name, ITextRange selection = null) {
+            var coll = RunPeekTest(content, line, column, name, selection);
+
+            coll[0].DisplayInfo.Title.Should().Be(name);
+            coll[0].DisplayInfo.Label.Should().Be(name);
+            coll[0].DisplayInfo.TitleTooltip.Should().Be(name);
+
+            coll[0].DisplayInfo.Should().NotBeNull();
+
+            var dpr = coll[0] as IDocumentPeekResult;
+            dpr.Should().NotBeNull();
+            dpr.FilePath.Should().NotBeNull();
+
+            Path.GetExtension(dpr.FilePath).Should().Be(".r");
+            dpr.FilePath.StartsWithOrdinal(Path.GetTempPath()).Should().BeTrue();
+            File.Exists(dpr.FilePath).Should().BeTrue();
+
+            var fi = new FileInfo(dpr.FilePath);
+            fi.Length.Should().BeGreaterThan(0);
+
+            var text = File.ReadAllText(dpr.FilePath);
+            text.StartsWithIgnoreCase("function(formula, data, subset, weights, na.action, method").Should().BeTrue();
+        }
+
+        private IPeekResultCollection RunPeekTest(string content, int line, int column, string name, ITextRange selection = null) {
             List<IPeekableItem> items = new List<IPeekableItem>();
 
             GetPeekableItems(content, line, column, items, selection);
@@ -78,17 +120,11 @@ x <- function(a) {
             source.Should().NotBeNull();
 
             var coll = new PeekResultCollectionMock();
-            int count = 0;
             var cb = Substitute.For<IFindPeekResultsCallback>();
-            cb.When(x => x.ReportProgress(Arg.Any<int>())).Do(x => count += (int)x[0]);
             source.FindResults(PredefinedPeekRelationships.Definitions.Name, coll, default(CancellationToken), cb);
 
-            count.Should().Be(1);
             coll.Should().HaveCount(1);
-
-            coll[0].DisplayInfo.Title.Should().Be("file.r");
-            coll[0].DisplayInfo.Label.Should().Be(name);
-            coll[0].DisplayInfo.TitleTooltip.Should().Be(@"C:\file.r");
+            return coll;
         }
 
         private void GetPeekableItems(string content, int lineNumber, int column, IList<IPeekableItem> items, ITextRange selection = null) {

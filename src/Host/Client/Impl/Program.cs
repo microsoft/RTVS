@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
     class Program : IRCallbacks {
@@ -102,6 +103,18 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync("Directory changed.");
         }
 
+        public void ViewObject(string x, string title) {
+            Console.Error.WriteLineAsync(Invariant($"ViewObject({title}): {x}"));
+        }
+
+        public async Task ViewLibrary() {
+            await Console.Error.WriteLineAsync("ViewLibrary");
+        }
+
+        public async Task ShowFile(string fileName, string tabName, bool deleteFile) {
+            await Console.Error.WriteAsync(Invariant($"ShowFile({fileName}, {tabName}, {deleteFile})"));
+        }
+
         private async Task<string> ReadLineAsync(string prompt, CancellationToken ct) {
             while (true) {
                 await Console.Out.WriteAsync($"|{_nesting}| {prompt}");
@@ -130,6 +143,11 @@ namespace Microsoft.R.Host.Client {
                     --_nesting;
                 }
             }
+        }
+
+        public async Task<LocatorResult> Locator(CancellationToken ct) {
+            await Console.Error.WriteLineAsync("Locator called.");
+            return LocatorResult.CreateNotClicked();
         }
     }
 }

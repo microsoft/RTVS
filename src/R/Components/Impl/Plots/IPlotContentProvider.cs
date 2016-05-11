@@ -20,6 +20,8 @@ namespace Microsoft.R.Components.Plots {
         /// <param name="filePath">path to a file</param>
         void LoadFile(string filePath);
 
+        IPlotLocator Locator { get; set; }
+
         /// <summary>
         /// Export plot as an image.
         /// </summary>

@@ -256,6 +256,27 @@ namespace Microsoft.Languages.Core.Text {
             return (character >= '0' && character <= '9');
         }
 
+        /// <summary>
+        /// Determines if current character is an ANSI letter
+        /// </summary>
+        public bool IsAnsiLetter() {
+            return IsAnsiLetter(_currentChar);
+        }
+
+        /// <summary>
+        /// Determines if current character is an ANSI letter
+        /// </summary>
+        public static bool IsAnsiLetter(char character) {
+            return (character >= 'A' && character <= 'Z') || (character >= 'a' && character <= 'z');
+        }
+
+        /// <summary>
+        /// Determines if current character starts a string (i.e. current character is a single or double quote).
+        /// </summary>
+        public bool IsAtString() {
+            return (_currentChar == '\'' || _currentChar == '\"');
+        }
+
         [ExcludeFromCodeCoverage]
         [DebuggerStepThrough]
         public override string ToString() {

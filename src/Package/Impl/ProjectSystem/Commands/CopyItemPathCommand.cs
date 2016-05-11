@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -23,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class CopyItemPathCommand : IAsyncCommandGroupHandler {
-        private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 
         [ImportingConstructor]
         public CopyItemPathCommand(IRInteractiveWorkflowProvider interactiveWorkflowProvider) {
@@ -38,19 +39,20 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public async Task<bool> TryHandleCommandAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            if (commandId == RPackageCommandId.icmdCopyItemPath) {
-                var path = nodes.GetSingleNodePath();
-                var directory = await _interactiveWorkflowProvider.GetOrCreate().RSession.MakeRelativeToRUserDirectoryAsync(path);
-                if (!string.IsNullOrEmpty(directory)) {
-                    await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                        try {
-                            Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\""));
-                        } catch (ExternalException) { }
-                    });
-                }
-                return true;
+            VsAppShell.Current.AssertIsOnMainThread();
+            if (commandId != RPackageCommandId.icmdCopyItemPath) {
+                return false;
             }
-            return false;
+
+            var path = nodes.GetSingleNodePath();
+            var directory = await _interactiveWorkflowProvider.GetOrCreate().RSession.MakeRelativeToRUserDirectoryAsync(path);
+            if (!string.IsNullOrEmpty(directory)) {
+                try {
+                    Clipboard.SetData(DataFormats.UnicodeText, Invariant($"\"{directory}\""));
+                } catch (ExternalException) { }
+            }
+
+            return true;
         }
     }
 }

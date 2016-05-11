@@ -25,6 +25,7 @@ using Xunit;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
+using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Repl {
     [ExcludeFromCodeCoverage]
@@ -48,12 +49,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             CreateTestNodeSetPair(filePath, out nodes1, out nodes2);
 
             var cmd = new CopyItemPathCommand(_interactiveWorkflowProvider);
-            await CheckSingleNodeCommandStatusAsync(cmd, RPackageCommandId.icmdCopyItemPath, nodes1, nodes2);
+            await InUI(() => CheckSingleNodeCommandStatusAsync(cmd, RPackageCommandId.icmdCopyItemPath, nodes1, nodes2));
 
-            await VsAppShell.Current.DispatchOnMainThreadAsync(() => {
-                var contents = Clipboard.GetText();
-                contents.Should().Be("\"" + filePath + "\"");
-            });
+            var contents = await InUI(() => Clipboard.GetText());
+            contents.Should().Be("\"" + filePath + "\"");
 
             VsRHostScript.DoIdle(500);
         }

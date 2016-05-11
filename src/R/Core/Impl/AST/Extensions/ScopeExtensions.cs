@@ -10,6 +10,7 @@ using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Statements.Loops;
 using Microsoft.R.Core.AST.Variables;
 
 namespace Microsoft.R.Core.AST {
@@ -79,6 +80,13 @@ namespace Microsoft.R.Core.AST {
                             }
                         }
                     }
+                }
+
+                var forStatement = scope.Parent as For;
+                var enumExpression = forStatement?.EnumerableExpression;
+                var variable = enumExpression?.Variable;
+                if (variable != null) {
+                    yield return variable;
                 }
             }
 

@@ -9,9 +9,9 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Navigation {
     internal static class CodeNavigator {
-        public static SnapshotPoint? FindCurrentItemDefinition(ITextView textView, ITextBuffer textBuffer) {
+        public static SnapshotPoint? FindCurrentItemDefinition(ITextView textView, ITextBuffer textBuffer, out string itemName) {
             Span span;
-            string itemName = textView.GetIdentifierUnderCaret(out span);
+            itemName = textView.GetIdentifierUnderCaret(out span);
             if (!string.IsNullOrEmpty(itemName)) {
                  var position = REditorDocument.MapCaretPositionFromView(textView);
                 if (position.HasValue) {

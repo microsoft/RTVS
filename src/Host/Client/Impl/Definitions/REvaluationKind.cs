@@ -12,13 +12,6 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         Reentrant = 1 << 1,
         /// <summary>
-        /// Indicates that the result of this evaluation is a value that should be serialized to JSON.
-        /// When this flag is set, <see cref="REvaluationResult.StringResult"/> will be null, but
-        /// <see cref="REvaluationResult.JsonResult"/> will contain the value after it has been deserialized.
-        /// </summary>
-        /// <seealso cref="RExpressionEvaluatorExtensions.EvaluateAsync{T}"/>
-        Json = 1 << 2,
-        /// <summary>
         /// Indicates that this expression should be evaluated in the base environment (<c>baseenv()</c>).
         /// Not compatible with <see cref="EmptyEnv"/>.
         /// </summary>
@@ -46,7 +39,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Do not retrieve the result of this expression. The returned <see cref="REvaluationResult"/> will
         /// only be used for error reporting, and both <see cref="REvaluationResult.StringResult"/> and
-        /// <see cref="REvaluationResult.JsonResult"/> will be <see langword="null"/> upon successful evaluation.
+        /// <see cref="REvaluationResult.Result"/> will be <see langword="null"/> upon successful evaluation.
         /// </summary>
         /// <remarks>
         /// Used when expression is evaluated solely for its side effects.

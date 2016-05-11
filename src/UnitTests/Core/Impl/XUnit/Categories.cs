@@ -78,32 +78,32 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             [ExcludeFromCodeCoverage]
             public class AutoFormatAttribute : CategoryAttribute {
-                public AutoFormatAttribute() : base("R.AutoFormat") {}
+                public AutoFormatAttribute() : base("R.AutoFormat") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class BraceMatchAttribute : CategoryAttribute {
-                public BraceMatchAttribute() : base("R.BraceMatch") {}
+                public BraceMatchAttribute() : base("R.BraceMatch") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class ClassifierAttribute : CategoryAttribute {
-                public ClassifierAttribute() : base("R.Classifier") {}
+                public ClassifierAttribute() : base("R.Classifier") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class CommentingAttribute : CategoryAttribute {
-                public CommentingAttribute() : base("R.Commenting") {}
+                public CommentingAttribute() : base("R.Commenting") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class CompletionAttribute : CategoryAttribute {
-                public CompletionAttribute() : base("R.Completion") {}
+                public CompletionAttribute() : base("R.Completion") { }
             }
-            
+
             [ExcludeFromCodeCoverage]
-            public class DebuggerAttribute : CategoryAttribute {
-                public DebuggerAttribute() : base("R.Debugger") { }
+            public class DataInspectionAttribute : CategoryAttribute {
+                public DataInspectionAttribute() : base("R.DataInspection") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -114,6 +114,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class EditorTreeAttribute : CategoryAttribute {
                 public EditorTreeAttribute() : base("R.EditorTree") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class ExecutionTracingAttribute : CategoryAttribute {
+                public ExecutionTracingAttribute() : base("R.ExecutionTracing") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -147,23 +152,33 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class RtvsPackageAttribute : CategoryAttribute {
+                public RtvsPackageAttribute() : base("R.RtvsPackage") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class SessionAttribute : CategoryAttribute {
-                public SessionAttribute() : base("R.Session") {}
+                public SessionAttribute() : base("R.Session") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SettingsAttribute : CategoryAttribute {
-                public SettingsAttribute() : base("R.Settings") {}
+                public SettingsAttribute() : base("R.Settings") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SignaturesAttribute : CategoryAttribute {
-                public SignaturesAttribute() : base("R.Signatures") {}
+                public SignaturesAttribute() : base("R.Signatures") { }
             }
 
             [ExcludeFromCodeCoverage]
             public class SmartIndentAttribute : CategoryAttribute {
-                public SmartIndentAttribute() : base("R.SmartIndent") {}
+                public SmartIndentAttribute() : base("R.SmartIndent") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class StackTracingAttribute : CategoryAttribute {
+                public StackTracingAttribute() : base("R.StackTracing") { }
             }
 
             [ExcludeFromCodeCoverage]
@@ -204,8 +219,18 @@ namespace Microsoft.UnitTests.Core.XUnit {
         public static class Variable {
             [ExcludeFromCodeCoverage]
             public class ExplorerAttribute : CategoryAttribute {
-                public ExplorerAttribute() : base("Variable.Explorer") {}
+                public ExplorerAttribute() : base("Variable.Explorer") { }
             }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class ViewersAttribute : CategoryAttribute {
+            public ViewersAttribute() : base("Viewers") { }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class HtmlAttribute : CategoryAttribute {
+            public HtmlAttribute() : base("Html") { }
         }
     }
 }

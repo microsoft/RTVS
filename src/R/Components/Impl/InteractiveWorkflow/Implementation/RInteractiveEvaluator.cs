@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Parser;
@@ -47,12 +48,13 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         RBasePath = _settings.RBasePath,
                         RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
+                        CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory
                     }, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {
-                await _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(Resources.Error_Microsoft_R_Host_Missing));
+                await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
             } catch (Exception) {
                 return ExecutionResult.Failure;
@@ -131,7 +133,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
                 return ExecutionResult.Failure;
             } catch (Exception ex) {
-                await _coreShell.DispatchOnMainThreadAsync(() => _coreShell.ShowErrorMessage(ex.ToString()));
+                await _coreShell.ShowErrorMessageAsync(ex.ToString());
                 return ExecutionResult.Failure;
             } finally {
                 History.AddToHistory(text);

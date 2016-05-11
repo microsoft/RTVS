@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -53,14 +52,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         private async Task SaveWorkspace(string file) {
-            REvaluationResult result;
             using (var evaluation = await _rSession.BeginEvaluationAsync()) {
-                result = await evaluation.SaveWorkspace(file);
-            }
-
-            if (result.Error != null) {
-                var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, result.Error);
-                VsAppShell.Current.ShowErrorMessage(message);
+                try {
+                    await evaluation.SaveWorkspace(file);
+                } catch (RException ex) {
+                    var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
+                    VsAppShell.Current.ShowErrorMessage(message);
+                } catch (OperationCanceledException) {
+                }
             }
         }
     }

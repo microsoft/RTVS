@@ -7,54 +7,43 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Debugger;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.DataInspect;
-using Microsoft.VisualStudio.R.Package.DataInspect.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Test.Utility;
+using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [ExcludeFromCodeCoverage]
     public class VariableRHostScript : RHostScript {
-        private EvaluationWrapper _globalEnv;
+        private VariableViewModel _globalEnv;
         private SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
-
-        private IDebugSessionProvider _debugSessionProvider;
 
         public VariableRHostScript() :
             base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>()) {
-
-            _debugSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IDebugSessionProvider>();
         }
 
-        public EvaluationWrapper GlobalEnvrionment {
+        public VariableViewModel GlobalEnvrionment {
             get {
                 return _globalEnv;
             }
         }
 
-        public async Task<DebugEvaluationResult> EvaluateAsync(string rScript) {
+        public async Task<IREvaluationResultInfo> EvaluateAsync(string rScript) {
             // One eval at a time
             await _sem.WaitAsync();
             try {
-                var debugSession = await _debugSessionProvider.GetDebugSessionAsync(Session);
-
-                var frames = await debugSession.GetStackFramesAsync();
+                var frames = await Session.TracebackAsync();
                 var frame = frames.FirstOrDefault(f => f.Index == 0);
 
-                const DebugEvaluationResultFields fields = DebugEvaluationResultFields.Classes
-                    | DebugEvaluationResultFields.Expression
-                    | DebugEvaluationResultFields.TypeName
-                    | (DebugEvaluationResultFields.Repr | DebugEvaluationResultFields.ReprStr)
-                    | DebugEvaluationResultFields.Dim
-                    | DebugEvaluationResultFields.Length;
-                var result = await frame.EvaluateAsync(rScript, fields);
+                const REvaluationResultProperties properties = ClassesProperty | ExpressionProperty | TypeNameProperty | DimProperty| LengthProperty;
+                var result = await frame.TryEvaluateAndDescribeAsync(rScript, properties, RValueRepresentations.Str());
 
-                var globalResult = await frame.EvaluateAsync("base::environment()", fields);
-                _globalEnv = new EvaluationWrapper(globalResult);
+                var globalResult = await frame.TryEvaluateAndDescribeAsync("base::environment()", properties, RValueRepresentations.Str());
+                _globalEnv = new VariableViewModel(globalResult, VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>());
 
                 return result;
             } finally {
@@ -82,12 +71,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         }
 
         public static void AssertEvaluationWrapper(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.ShouldBeEquivalentTo(expectation, o => o.ExcludingMissingMembers());
         }
 
         public static void AssertEvaluationWrapper_ValueStartWith(IRSessionDataObject rdo, VariableExpectation expectation) {
-            var v = (EvaluationWrapper)rdo;
+            var v = (VariableViewModel)rdo;
             v.Name.ShouldBeEquivalentTo(expectation.Name);
             v.Value.Should().StartWith(expectation.Value);
             v.Class.ShouldBeEquivalentTo(expectation.Class);

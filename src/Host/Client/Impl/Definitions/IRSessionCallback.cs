@@ -32,6 +32,12 @@ namespace Microsoft.R.Host.Client {
         Task Plot(string filePath, CancellationToken ct);
 
         /// <summary>
+        /// Set locator mode in the plot window
+        /// </summary>
+        /// <returns>Location where the user clicked.</returns>
+        Task<LocatorResult> Locator(CancellationToken ct);
+
+        /// <summary>
         /// Requests user input from UI
         /// </summary>
         Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct);
@@ -40,5 +46,21 @@ namespace Microsoft.R.Host.Client {
         /// Given CRAN mirror name returns server URL
         /// </summary>
         string CranUrlFromName(string name);
+
+        /// <summary>
+        /// Opens viewer for the given object
+        /// </summary>
+        /// <returns></returns>
+        void ViewObject(string expression, string title);
+
+        /// <summary>
+        /// Present package list or package manager
+        /// </summary>
+        Task ViewLibrary();
+
+        /// <summary>
+        /// Presents file content
+        /// </summary>
+        Task ViewFile(string fileName, string tabName, bool deleteFile);
     }
 }

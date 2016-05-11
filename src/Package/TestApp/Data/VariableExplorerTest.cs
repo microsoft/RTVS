@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Test.Controls;
@@ -24,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VariableExplorer_ConstructorTest02() {
+        public void ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     var actual = VisualTreeObject.Create(script.Control);
@@ -35,15 +34,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void VariableExplorer_SimpleDataTest() {
+        public void SimpleDataTest() {
             VisualTreeObject actual = null;
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
                     Task.Run(async () => {
-                        using (var eval = await hostScript.Session.BeginEvaluationAsync()) {
-                            await eval.EvaluateAsync("x <- c(1:10)", REvaluationKind.Mutating);
-                        }
+                        await hostScript.Session.ExecuteAsync("x <- c(1:10)");
                     }).Wait();
 
                     DoIdle(2000);
@@ -51,6 +48,24 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 }
             }
             ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer03");
+        }
+
+        [Test]
+        [Category.Interactive]
+        public void SimpleFunctionTest() {
+            VisualTreeObject actual = null;
+            using (var hostScript = new VsRHostScript()) {
+                using (var script = new ControlTestScript(typeof(VariableView))) {
+                    DoIdle(100);
+                    Task.Run(async () => {
+                        await hostScript.Session.ExecuteAsync("x <- lm");
+                    }).Wait();
+
+                    DoIdle(2000);
+                    actual = VisualTreeObject.Create(script.Control);
+                }
+            }
+            ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer04");
         }
     }
 }

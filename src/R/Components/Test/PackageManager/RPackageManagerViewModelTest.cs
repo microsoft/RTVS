@@ -39,6 +39,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 RBasePath = settings.RBasePath,
                 RHostCommandLineArguments = settings.RCommandLineArguments,
                 CranMirrorName = settings.CranMirror,
+                CodePage = settings.RCodePage,
             }, null, 50000);
 
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {

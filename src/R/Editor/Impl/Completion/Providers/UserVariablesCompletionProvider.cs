@@ -7,6 +7,7 @@ using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -29,7 +30,10 @@ namespace Microsoft.R.Editor.Completion.Providers {
             ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
 
             var ast = context.AstRoot;
-            var scope = ast.GetNodeOfTypeFromPosition<IScope>(context.Position);
+            // First try simple scope like in 'for(x in 1:10) x|'
+            IScope scope = ast.GetNodeOfTypeFromPosition<SimpleScope>(context.Position, includeEnd: true);
+            // If not found, look for the regular scope
+            scope = scope ?? ast.GetNodeOfTypeFromPosition<IScope>(context.Position);
 
             var variables = scope.GetApplicableVariables(context.Position);
             foreach (var v in variables) {

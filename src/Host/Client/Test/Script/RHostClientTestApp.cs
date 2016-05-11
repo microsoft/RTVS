@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRSessionCallback {
+        public Func<LocatorResult> LocatorHandler { get; set; }
         public Action<string> PlotHandler { get; set; }
 
         public virtual string CranUrlFromName(string name) {
@@ -36,6 +37,23 @@ namespace Microsoft.R.Host.Client.Test.Script {
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {
             return Task.FromResult("\n");
+        }
+
+        public void ViewObject(string expression, string title) { }
+
+        public Task ViewLibrary() {
+            return Task.CompletedTask;
+        }
+
+        public Task ViewFile(string fileName, string tabName, bool deleteFile) {
+            return Task.CompletedTask;
+        }
+
+        public Task<LocatorResult> Locator(CancellationToken ct) {
+            if (LocatorHandler != null) {
+                return Task.FromResult(LocatorHandler());
+            }
+            throw new NotImplementedException();
         }
     }
 }

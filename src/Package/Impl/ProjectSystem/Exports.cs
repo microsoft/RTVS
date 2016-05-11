@@ -3,9 +3,12 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
-using Microsoft.VisualStudio.ProjectSystem;
+
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {

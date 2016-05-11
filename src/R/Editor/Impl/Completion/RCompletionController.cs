@@ -409,11 +409,9 @@ namespace Microsoft.R.Editor.Completion {
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
-                    REvaluationResult result = await eval.EvaluateAsync(expression, REvaluationKind.Normal);
-                    if (result.ParseStatus == RParseStatus.OK &&
-                        !string.IsNullOrEmpty(result.StringResult) &&
-                         (result.StringResult == "T" || result.StringResult == "TRUE")) {
-                        return true;
+                    try {
+                        return await eval.EvaluateAsync<bool>(expression, REvaluationKind.Normal);
+                    } catch (RException) {
                     }
                 }
             }

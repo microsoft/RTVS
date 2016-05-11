@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -66,6 +67,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                     case VSConstants.VSStd2KCmdID.TAB:
                         if (_expansionClient.IsEditingExpansion()) {
+                            if(IsPossibleFilePathCompletion()) {
+                                return CommandResult.NotSupported;
+                            }
                             hr = _expansionClient.GoToNextExpansionField();
                         } else {
                             bool snippetInserted = false;
@@ -112,6 +116,18 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
         }
         #endregion
+
+        private bool IsPossibleFilePathCompletion() {
+            if (!_textView.Caret.InVirtualSpace) {
+                var pos = _textView.Caret.Position.BufferPosition.Position;
+                var snapshot = _textView.TextBuffer.CurrentSnapshot;
+                if (pos > 0 && pos < snapshot.Length - 1) {
+                    var text = _textView.TextBuffer.CurrentSnapshot.GetText(Span.FromBounds(pos - 1, pos + 1));
+                    return text.EqualsOrdinal("/\"");
+                }
+            }
+            return false;
+        }
 
         private bool ShouldIgnoreStatementCompletionCommand() {
             return IsStatementCompletionWindowActive(_expansionClient.TextView);

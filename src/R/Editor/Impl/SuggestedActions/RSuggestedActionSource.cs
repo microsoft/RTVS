@@ -30,7 +30,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
             _textView = textView;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
             _suggestedActionProviders = suggestedActionProviders;
-            _document = REditorDocument.FromTextBuffer(_textBuffer);
+            _document = REditorDocument.TryFromTextBuffer(_textBuffer);
             ServiceManager.AddService(this, _textView);
         }
 
@@ -68,9 +68,9 @@ namespace Microsoft.R.Editor.SuggestedActions {
             int caretPosition = _textView.Caret.Position.BufferPosition;
             SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
             if (bufferPoint.HasValue) {
-                AstRoot ast = _document.EditorTree.AstRoot;
+                AstRoot ast = _document?.EditorTree.AstRoot;
                 int bufferPosition = bufferPoint.Value.Position;
-                _lastNode = ast.GetNodeOfTypeFromPosition<TokenNode>(bufferPosition);
+                _lastNode = ast?.GetNodeOfTypeFromPosition<TokenNode>(bufferPosition);
                 if (_lastNode != null) {
                     foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
                         if (actionProvider.HasSuggestedActions(_textView, _textBuffer, bufferPosition)) {

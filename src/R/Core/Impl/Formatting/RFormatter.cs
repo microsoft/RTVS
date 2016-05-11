@@ -459,7 +459,10 @@ namespace Microsoft.R.Core.Formatting {
 
                     case RTokenType.CloseCurlyBrace:
                         // Close all braces until the nearest curly
-                        while (_openBraces.Peek() != RTokenType.OpenCurlyBrace && _openBraces.Count > 0) {
+                        while (_openBraces.Count > 0) {
+                            if(_openBraces.Peek() == RTokenType.OpenCurlyBrace) {
+                                break;
+                            }
                             _openBraces.Pop();
                         }
 
