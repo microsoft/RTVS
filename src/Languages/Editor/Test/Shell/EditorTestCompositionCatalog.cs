@@ -163,11 +163,18 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         private static void AddAssembliesToCatalog(IEnumerable<string> assemblyNames, string basePath, AggregateCatalog aggregateCatalog) {
             foreach (string asmName in assemblyNames) {
-                string asmPath = Path.Combine(basePath, asmName);
-                var assembly = Assembly.LoadFrom(asmPath);
+                var assembly = GetLoadedAssembly(asmName) ?? Assembly.LoadFrom(Path.Combine(basePath, asmName));
                 var catalog = new AssemblyCatalog(assembly);
                 aggregateCatalog.Catalogs.Add(catalog);
             }
+        }
+
+        private static Assembly GetLoadedAssembly(string assemblyName) {
+            if (Path.GetExtension(assemblyName).EqualsIgnoreCase(".dll")) {
+                assemblyName = Path.GetFileNameWithoutExtension(assemblyName);
+            }
+
+            return AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name.EqualsIgnoreCase(assemblyName));
         }
 
         private static void AddAssemblyToCatalog(string assemblyLoc, string assemblyName, AggregateCatalog aggregateCatalog) {
