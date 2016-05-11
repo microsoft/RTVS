@@ -15,17 +15,8 @@ using Microsoft.VisualStudio.Shell.Mocks;
 namespace Microsoft.VisualStudio.R.Package.Test.Utility {
     [ExcludeFromCodeCoverage]
     public sealed class VsRHostScript : RHostScript {
-        public VsRHostScript(IRSessionCallback clientApp = null) : 
-            base(GetExportedValue(), clientApp) {
-        }
-
-        private static IRSessionProvider GetExportedValue() {
-            try {
-                var mock = new VsEditorAdaptersFactoryServiceMock();
-                return VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            } catch (Exception) {
-                throw;
-            }
+        public VsRHostScript(IRSessionCallback clientApp = null) :
+            base(VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>(), clientApp) {
         }
 
         public static void DoIdle(int ms) {

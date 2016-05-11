@@ -28,7 +28,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
             EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"PrivateAssemblies\"));
             EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"CommonExtensions\"));
 
-            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
             try {
                 var aggregateCatalog = new AggregateCatalog();
 
@@ -50,12 +49,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 return aggregateCatalog;
             } finally {
                 AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-                AppDomain.CurrentDomain.AssemblyLoad -= CurrentDomain_AssemblyLoad;
             }
-        }
-
-        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args) {
-            
         }
 
         private Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
