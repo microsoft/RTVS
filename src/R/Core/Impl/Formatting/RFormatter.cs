@@ -39,7 +39,7 @@ namespace Microsoft.R.Core.Formatting {
             _options = options;
             _indentBuilder = new IndentBuilder(_options.IndentType, _options.IndentSize, _options.TabSize);
             _tb = new TextBuilder(_indentBuilder);
-            _formattingScopes.Push(new FormattingScope(_indentBuilder));
+            _formattingScopes.Push(new FormattingScope());
         }
 
         /// <summary>
@@ -107,10 +107,8 @@ namespace Microsoft.R.Core.Formatting {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
             if (IsInArguments()) {
-                FormattingScope formattingScope = new FormattingScope(_indentBuilder);
-                if (formattingScope.Open(_textProvider, _tokens, _options)) {
-                    _formattingScopes.Push(formattingScope);
-                }
+                FormattingScope formattingScope = new FormattingScope(_tb, _tokens, _options);
+                _formattingScopes.Push(formattingScope);
             }
 
             // If scope is empty, make it { } unless there is a line break already in it
@@ -154,7 +152,7 @@ namespace Microsoft.R.Core.Formatting {
             if (_formattingScopes.Count > 1) {
                 if (_formattingScopes.Peek().CloseBracePosition == _tokens.Position) {
                     FormattingScope scope = _formattingScopes.Pop();
-                    scope.Close();
+                    scope.Dispose();
                 }
             }
 
@@ -236,9 +234,7 @@ namespace Microsoft.R.Core.Formatting {
             AppendToken(leadingSpace: LeadingSpaceNeeded(), trailingSpace: trailingSpace);
 
             if (controlBlock) {
-                _formattingScopes.Peek().Keywords.Add(keyword);
-                // Keyword defines optional condition
-                // and possibly new '{ }' scope
+                // Keyword defines optional condition and possibly new '{ }' scope
                 AppendControlBlock(keyword);
             }
         }
@@ -670,6 +666,19 @@ namespace Microsoft.R.Core.Formatting {
                             preserveUserIndent = _openBraces.Count > 0 && _openBraces.Peek() != RTokenType.OpenCurlyBrace;
                             break;
                     }
+
+                    if (!preserveUserIndent) {
+                        switch (_tokens.CurrentToken.TokenType) {
+                            case RTokenType.CloseBrace:
+                            case RTokenType.CloseSquareBracket:
+                            case RTokenType.CloseDoubleSquareBracket:
+                            case RTokenType.Comma:
+                            case RTokenType.Operator:
+                            case RTokenType.Comment:
+                                preserveUserIndent = _tokens.IsLineBreakAfter(_textProvider, _tokens.Position - 1);
+                                break;
+                        }
+                    }
                 }
 
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
@@ -760,25 +769,19 @@ namespace Microsoft.R.Core.Formatting {
         }
 
         private int GetSingleLineScopeEnd() {
-            int start = _tokens.CurrentToken.Start;
-            int position = _tokens.Position;
+            int closeBraceIndex = TokenBraceCounter<RToken>.GetMatchingBrace(
+                      _tokens,
+                      new RToken(RTokenType.OpenCurlyBrace),
+                      new RToken(RTokenType.CloseCurlyBrace),
+                      new RTokenTypeComparer());
 
-            var braceCounter = new TokenBraceCounter<RToken>(new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace), new RTokenTypeComparer());
-            braceCounter.CountBrace(_tokens.CurrentToken);
-
-            while (braceCounter.Count > 0 && !_tokens.IsEndOfStream()) {
-                _tokens.MoveToNextToken();
-                braceCounter.CountBrace(_tokens.CurrentToken);
-            }
-
-            int end = _tokens.IsEndOfStream() ? _textProvider.Length : _tokens.CurrentToken.End;
-            _tokens.Position = position;
-
-            for (int i = start; i < end; i++) {
+            int end = closeBraceIndex < 0 ? _textProvider.Length : _tokens[closeBraceIndex].End;
+            for (int i = _tokens.CurrentToken.End; i < end; i++) {
                 if (CharExtensions.IsLineBreak(_textProvider[i])) {
                     return -1;
                 }
             }
+
             return end;
         }
 

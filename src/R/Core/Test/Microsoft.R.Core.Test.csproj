@@ -91,6 +91,8 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="Files\Formatting\AllEqual.r" />
+    <None Include="Files\Formatting\args.r" />
+    <None Include="Files\Formatting\args.r.formatted" />
     <None Include="Files\Parser\Check.r" />
     <None Include="Files\Formatting\ifelse.r" />
     <None Include="Files\Formatting\ifelse.r.formatted" />

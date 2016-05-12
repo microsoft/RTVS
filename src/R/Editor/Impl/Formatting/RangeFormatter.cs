@@ -129,7 +129,7 @@ namespace Microsoft.R.Editor.Formatting {
             for (int i = firstLine.LineNumber; i <= lastLine.LineNumber; i++) {
                 // Snapshot is updated after each insertion so do not cache
                 ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromLineNumber(i);
-                int indent = SmartIndenter.GetSmartIndent(line, ast, formatting: true);
+                int indent = SmartIndenter.GetSmartIndent(line, ast, originalIndentSizeInSpaces, formatting: true);
                 if (indent > 0 && line.Length > 0 && line.Start >= range.Start) {
                     // Check current indentation and correct for the difference
                     int currentIndentSize = IndentBuilder.TextIndentInSpaces(line.GetText(), options.TabSize);

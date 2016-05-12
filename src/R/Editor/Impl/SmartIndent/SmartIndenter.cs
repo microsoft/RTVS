@@ -105,7 +105,8 @@ namespace Microsoft.R.Editor.SmartIndent {
         /// from the core editor for indentation when user typed Enter.
         /// </param>
         /// <returns>Level of indent in spaces</returns>
-        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, bool formatting = false) {
+        public static int GetSmartIndent(ITextSnapshotLine line, AstRoot ast = null, 
+                                         int originalIndentSizeInSpaces = -1, bool formatting = false) {
             ITextBuffer textBuffer = line.Snapshot.TextBuffer;
             ITextSnapshotLine prevLine = null;
 
@@ -152,13 +153,21 @@ namespace Microsoft.R.Editor.SmartIndent {
                     if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
                         // We only want to indent here if position is in arguments and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            // Indent one level deeper from the function definition line.
-                            var fcLine = line.Snapshot.GetLineFromPosition(fc.Start);
-                            int fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), REditorSettings.TabSize);
-                            if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? line.Start: line.End)) {
-                                fcIndentSize += REditorSettings.IndentSize;
+                            if (line.Length == 0) {
+                                // Indent one level deeper from the function definition line.
+                                var fcLine = line.Snapshot.GetLineFromPosition(fc.Start);
+                                if (fcLine.LineNumber == prevLine.LineNumber) {
+                                    int fcIndentSize = IndentBuilder.TextIndentInSpaces(fcLine.GetText(), REditorSettings.TabSize);
+                                    if (fc.CloseBrace == null || fc.CloseBrace.End >= (formatting ? line.Start : line.End)) {
+                                        fcIndentSize += REditorSettings.IndentSize;
+                                    }
+                                    return fcIndentSize;
+                                } else {
+                                    return GetBlockIndent(line);
+                                }
+                            } else {
+                                return originalIndentSizeInSpaces;
                             }
-                            return fcIndentSize;
                         }
                     }
                 }
