@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                 _control.DetachViewModel();
                 return;
             } else {
-                //viewModel can be non-null when the configuration is chaged. 
+                //viewModel can be non-null when the configuration is changed. 
                 if (_control == null) {
                     _control = CreatePropertyPageControl();
                 }
