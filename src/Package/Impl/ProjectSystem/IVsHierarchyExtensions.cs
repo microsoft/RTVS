@@ -1,8 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -11,7 +13,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Returns EnvDTE.Project object for the hierarchy
         /// </summary>
         public static EnvDTE.Project GetDTEProject(this IVsHierarchy hierarchy) {
-            //UIThreadHelper.VerifyOnUIThread();
+            VsAppShell.Current.AssertIsOnMainThread();
             object extObject;
             if (ErrorHandler.Succeeded(hierarchy.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out extObject))) {
                 return extObject as EnvDTE.Project;
@@ -23,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Convenient way to get to the UnconfiguredProject from the hierarchy
         /// </summary>
         public static UnconfiguredProject GetUnconfiguredProject(this IVsHierarchy hierarchy) {
-            //UIThreadHelper.VerifyOnUIThread();
+            VsAppShell.Current.AssertIsOnMainThread();
             IVsBrowseObjectContext context = hierarchy as IVsBrowseObjectContext;
             if (context == null) {
                 EnvDTE.Project dteProject = hierarchy.GetDTEProject();
