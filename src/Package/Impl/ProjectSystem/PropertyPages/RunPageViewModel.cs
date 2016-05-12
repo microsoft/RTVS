@@ -8,9 +8,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
     internal class RunPageViewModel : PropertyPageViewModel {
+        private IRProjectProperties[] _configuredProjectsProperties;
         private string _startupFile;
         private string _commandLineArgs;
         private bool? _resetReplOnRun;
+
+        public RunPageViewModel(IRProjectProperties[] configuredProjectsProperties) {
+            _configuredProjectsProperties = configuredProjectsProperties;
+        }
 
         public string StartupFile {
             get { return _startupFile; }
@@ -42,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             try {
                 PushIgnoreEvents();
 
-                foreach (var props in ConfiguredProjectsProperties) {
+                foreach (var props in _configuredProjectsProperties) {
                     if (ResetReplOnRun.HasValue) {
                         await props.SetResetReplOnRunAsync(ResetReplOnRun.Value);
                     }
@@ -69,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private async Task<string> GetPropertyValueForSelectedConfigurationsAsync(Func<IRProjectProperties, Task<string>> getter) {
             var all = new HashSet<string>();
 
-            foreach (var props in ConfiguredProjectsProperties) {
+            foreach (var props in _configuredProjectsProperties) {
                 all.Add(await getter(props));
             }
 
@@ -83,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private async Task<bool?> GetPropertyValueForSelectedConfigurationsAsync(Func<IRProjectProperties, Task<bool>> getter) {
             var all = new HashSet<bool>();
 
-            foreach (var props in ConfiguredProjectsProperties) {
+            foreach (var props in _configuredProjectsProperties) {
                 all.Add(await getter(props));
             }
 

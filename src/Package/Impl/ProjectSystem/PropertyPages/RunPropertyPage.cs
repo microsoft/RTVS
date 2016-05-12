@@ -13,6 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         protected override PropertyPageControl CreatePropertyPageControl() => new RunPageControl();
 
-        protected override PropertyPageViewModel CreatePropertyPageViewModel() => new RunPageViewModel();
+        protected override PropertyPageViewModel CreatePropertyPageViewModel() => new RunPageViewModel(ConfiguredProperties);
     }
 }

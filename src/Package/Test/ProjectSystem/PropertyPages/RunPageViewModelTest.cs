@@ -19,10 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var debugConfigProps = new TestProjectProperties(false, "script.R", "-debug");
 
             // Prepare the view model
-            var vm = new RunPageViewModel();
-            vm.ConfiguredProjectsProperties = new IRProjectProperties[] {
-                debugConfigProps
-            };
+            var vm = new RunPageViewModel(new IRProjectProperties[] { debugConfigProps });
 
             // Initialize the view model from the model
             await vm.Initialize();
@@ -58,11 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var releaseConfigProps = new TestProjectProperties(true, "script.R", "-release");
 
             // Prepare the view model
-            var vm = new RunPageViewModel();
-            vm.ConfiguredProjectsProperties = new IRProjectProperties[] {
-                debugConfigProps,
-                releaseConfigProps,
-            };
+            var vm = new RunPageViewModel(new IRProjectProperties[] { debugConfigProps, releaseConfigProps });
 
             // Initialize the view model from the model
             await vm.Initialize();
@@ -99,11 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var releaseConfigProps = new TestProjectProperties(true, "release.R", "-option");
 
             // Prepare the view model
-            var vm = new RunPageViewModel();
-            vm.ConfiguredProjectsProperties = new IRProjectProperties[] {
-                debugConfigProps,
-                releaseConfigProps,
-            };
+            var vm = new RunPageViewModel(new IRProjectProperties[] { debugConfigProps, releaseConfigProps });
 
             // Initialize the view model from the model
             await vm.Initialize();

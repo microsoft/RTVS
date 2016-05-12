@@ -24,14 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         /// </summary>
         internal static readonly bool? DifferentBoolOptions = null;
 
-        public UnconfiguredProject UnconfiguredProject { get; set; }
-
         public PropertyPageControl ParentControl { get; set; }
-
-        /// <summary>
-        /// The project properties for the currently selected project configurations.
-        /// </summary>
-        public IRProjectProperties[] ConfiguredProjectsProperties { get; set; }
 
         /// <summary>
         /// Since calls to ignore events can be nested, a downstream call could change the outer 

@@ -32,8 +32,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
 
             _viewModel = CreatePropertyPageViewModel();
-            _viewModel.UnconfiguredProject = UnconfiguredProject;
-            _viewModel.ConfiguredProjectsProperties = ConfiguredProperties;
 
             await _viewModel.Initialize();
 
