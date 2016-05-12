@@ -146,7 +146,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
 
-                string expected = "x <- function(a,\r\n              b)\r\n{\r\n    a\r\n}";
+                string expected = "x <- function(a,\r\n    b)\r\n{\r\n    a\r\n}";
                 string actual = script.EditorText;
                 actual.Should().Be(expected);
             }
@@ -240,7 +240,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.Type("zzzz(a=1,{ENTER}");
                 script.DoIdle(300);
                 script.Type("b=2");
-                string expected = "zzzz(a = 1,\r\n     b=2)";
+                string expected = "zzzz(a = 1,\r\n    b=2)";
 
                 string actual = script.EditorText;
                 actual.Should().Be(expected);
