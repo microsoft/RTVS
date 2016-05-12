@@ -32,9 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             public const int S_OK = 0x00000000;
         }
 
-        internal UnconfiguredProject UnconfiguredProject { get; set; }
-        public ProjectProperties[] ConfiguredProperties { get; set; }
-        internal IThreadHandling ThreadHandling { get; set; }
+        protected UnconfiguredProject UnconfiguredProject { get; set; }
+        protected ProjectProperties[] ConfiguredProperties { get; set; }
+        private IThreadHandling ThreadHandling { get; set; }
 
         protected abstract string PropertyPageName { get; }
 
@@ -202,7 +202,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                 return VSConstants.E_POINTER;
             }
 
-            System.Windows.Forms.Message m = System.Windows.Forms.Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
+            Message m = Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
             bool used = false;
 
             // Preprocessing should be passed to the control whose handle the message refers to.
