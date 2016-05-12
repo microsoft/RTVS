@@ -1,5 +1,5 @@
 ﻿x <- setRefClass(
-    "text",
+     "text",
     a = list(
         y = function(a,b, c) {
 		2

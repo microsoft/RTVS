@@ -287,8 +287,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
                 string expected =
 "x <- function(x,\r\n" +
-"              y,\r\n" +
-"              wt = NULL)\r\n";
+"    y,\r\n" +
+"    wt = NULL)\r\n";
                 actual.Should().Be(expected);
             }
         }
@@ -305,7 +305,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
                 string expected =
 "x <- function(x, y,\r\n" +
-"              wt = NULL)\r\n";
+"    wt = NULL)\r\n";
                 actual.Should().Be(expected);
             }
         }
@@ -325,7 +325,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
                 string expected =
 "x <- function(x, y,\r\n" +
-"              wt = NULL) {\r\n" +
+"    wt = NULL) {\r\n" +
 "    a\r\n" +
 "}";
                 actual.Should().Be(expected);
@@ -348,7 +348,7 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string expected =
 "library(abind)\r\n" +
 "x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,\r\n" +
-"              yname = NULL) {\r\n" +
+"    yname = NULL) {\r\n" +
 "    abind(a, )\r\n" +
 "}";
                 actual.Should().Be(expected);
@@ -367,10 +367,6 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 script.DoIdle(300);
 
                 script.Backspace();
-                script.Backspace();
-                script.Backspace();
-                script.Backspace();
-
                 script.DoIdle(300);
                 script.Type(text2);
                 script.Enter();
@@ -380,8 +376,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
                 string actual = script.EditorText;
                 string expected =
 "x <- function(x, y,\r\n" +
-"          a, b,\r\n" +
-"          c, d)";
+"   a, b,\r\n" +
+"   c, d)";
                 actual.Should().Be(expected);
             }
         }

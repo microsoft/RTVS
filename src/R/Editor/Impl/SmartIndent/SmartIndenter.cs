@@ -153,7 +153,7 @@ namespace Microsoft.R.Editor.SmartIndent {
                     if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {
                         // We only want to indent here if position is in arguments and not in the function scope.
                         if (line.Start >= fc.OpenBrace.End && !(fc.CloseBrace != null && line.Start >= fc.CloseBrace.End)) {
-                            if (line.Length == 0) {
+                            if (originalIndentSizeInSpaces < 0) {
                                 // Indent one level deeper from the function definition line.
                                 var fcLine = line.Snapshot.GetLineFromPosition(fc.Start);
                                 if (fcLine.LineNumber == prevLine.LineNumber) {
