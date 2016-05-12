@@ -439,6 +439,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Type text to search for in R Help.
+        /// </summary>
+        public static string HelpSearchTooltip {
+            get {
+                return ResourceManager.GetString("HelpSearchTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type search term.
+        /// </summary>
+        public static string HelpSearchWatermark {
+            get {
+                return ResourceManager.GetString("HelpSearchWatermark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Help.
         /// </summary>
         public static string HelpWindowCaption {

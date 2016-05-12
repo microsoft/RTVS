@@ -739,4 +739,10 @@ Additional information:
   <data name="Settings_OsDefaultEncoding" xml:space="preserve">
     <value>(OS Default)</value>
   </data>
+  <data name="HelpSearchTooltip" xml:space="preserve">
+    <value>Type text to search for in R Help</value>
+  </data>
+  <data name="HelpSearchWatermark" xml:space="preserve">
+    <value>Type search term</value>
+  </data>
 </root>
