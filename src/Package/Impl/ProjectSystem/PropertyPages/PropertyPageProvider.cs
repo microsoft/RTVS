@@ -23,9 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         public Task<IReadOnlyCollection<IPageMetadata>> GetPagesAsync() {
-            return Task.Run<IReadOnlyCollection<IPageMetadata>>(
-                () => PropertyPages.Select(p => p.Value).ToList().AsReadOnly()
-            );
+            return Task.FromResult((IReadOnlyCollection<IPageMetadata>)PropertyPages.Select(p => p.Value).ToList().AsReadOnly());
         }
 
         // Only here to ensure one instance per project
