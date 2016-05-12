@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Copyright, Microsoft Corporation, All rights reserved.-->
+<Rule Name="ConfigurationRun" DisplayName="Run" PageTemplate="generic" Description="Run" xmlns="http://schemas.microsoft.com/build/2009/properties">
+    <Rule.Categories>
+        <Category Name="Run" DisplayName="Run" />
+    </Rule.Categories>
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" />
+    </Rule.DataSource>
+
+    <BoolProperty Name="ResetReplOnRun" DisplayName="Reset R Interactive on Run" Description="Resets the R Interactive session when project is run." Visible="True">
+        <BoolProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </BoolProperty.DataSource>
+    </BoolProperty>
+
+    <StringProperty Name="StartupFile" DisplayName="Startup file" Description="Relative path to the file to source when the project is run." Visible="True">
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </StringProperty.DataSource>
+    </StringProperty>
+
+    <StringProperty Name="CommandLineArgs" DisplayName="Command line arguments" Description="Command line arguments to pass to the startup file when project is run." Visible="True">
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </StringProperty.DataSource>
+    </StringProperty>
+</Rule>

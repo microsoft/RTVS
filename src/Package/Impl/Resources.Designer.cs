@@ -866,6 +866,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;different options&gt;.
+        /// </summary>
+        public static string PropertyPageDifferentOptions {
+            get {
+                return ResourceManager.GetString("PropertyPageDifferentOptions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap RDataNode {
@@ -948,6 +957,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string RPromptClassification {
             get {
                 return ResourceManager.GetString("RPromptClassification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Run.
+        /// </summary>
+        public static string RunPropertyPageTitle {
+            get {
+                return ResourceManager.GetString("RunPropertyPageTitle", resourceCulture);
             }
         }
         
@@ -1186,7 +1204,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to (OS Default).
         /// </summary>
-        public static string Settings_OsDefaultEncoding {
+        public static string Settings_DefaultValue {
             get {
                 return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
             }
