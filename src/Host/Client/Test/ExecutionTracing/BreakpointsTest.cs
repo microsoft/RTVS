@@ -335,7 +335,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
                 await Task.Delay(100);
 
                 await bp.DeleteAsync();
-                await _session.EvaluateAsync("b <- TRUE", REvaluationKind.Mutating);
+                await _session.ExecuteAsync("b <- TRUE");
 
                 await _session.NextPromptShouldBeBrowseAsync();
 

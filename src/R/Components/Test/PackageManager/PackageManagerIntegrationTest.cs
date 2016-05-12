@@ -290,7 +290,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
                 var evalResult = await eval.EvaluateAsync(code, REvaluationKind.Normal);
                 if (expectedResult != null) {
-                    evalResult.StringResult.Trim().Should().Be(expectedResult.Trim());
+                    evalResult.Result.ToObject<string>().Trim().Should().Be(expectedResult.Trim());
                 }
                 if (expectedError != null) {
                     evalResult.Error.Trim().Should().Be(expectedError.Trim());

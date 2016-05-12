@@ -108,9 +108,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
-                _session.ScheduleEvaluation(async e => {
-                    await e.SetWorkingDirectory(newDirectory);
-                });
+                _session.SetWorkingDirectory(newDirectory)
+                    .SilenceException<RException>()
+                    .SilenceException<MessageTransportException>()
+                    .DoNotWait();
             }
 
             return Task.CompletedTask;

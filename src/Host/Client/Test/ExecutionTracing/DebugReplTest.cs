@@ -57,12 +57,12 @@ namespace Microsoft.R.ExecutionTracing.Test {
                     await inter.RespondAsync("x <- 'new'\n");
                 }
 
-                REvaluationResult x;
+                string x;
                 using (var eval = await _session.BeginEvaluationAsync()) {
-                    x = await eval.EvaluateAsync("x", REvaluationKind.Normal);
+                    x = await eval.EvaluateAsync<string>("x", REvaluationKind.Normal);
                 }
 
-                x.StringResult.Should().Be("new");
+                x.Should().Be("new");
             }
         }
     }

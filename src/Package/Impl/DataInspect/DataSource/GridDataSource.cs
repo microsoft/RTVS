@@ -19,17 +19,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
 
-            REvaluationResult? result = null;
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
-                result = await evaluator.EvaluateAsync($"rtvs:::grid.data({expression}, {rows}, {columns})", REvaluationKind.Json);
-
-                if (!result.HasValue || result.Value.ParseStatus != RParseStatus.OK || result.Value.Error != null) {
-                    // No reason to crash, just log it
-                    var message = Invariant($"Grid data evaluation failed{Environment.NewLine} {result}");
+                try {
+                    return await evaluator.EvaluateAsync<GridData>($"rtvs:::grid.data({expression}, {rows}, {columns})", REvaluationKind.Normal);
+                } catch (RException ex) {
+                    var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
                     GeneralLog.Write(message);
                     return null;
                 }
-                return result.Value.JsonResult.ToObject<GridData>();
             }
         }
     }

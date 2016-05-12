@@ -111,12 +111,10 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
-        public void R_LoadedPackageFunctionCompletion() {
+        public async Task R_LoadedPackageFunctionCompletion() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 using (new RHostScript(provider)) {
-                    REvaluationResult result;
-
                     script.Type("c");
                     script.DoIdle(200);
                     var session = script.GetCompletionSession();
@@ -130,9 +128,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     var rSession = provider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                     rSession.Should().NotBeNull();
 
-                    using (var eval = rSession.BeginEvaluationAsync().Result) {
-                        result = eval.EvaluateAsync("library('tools')", REvaluationKind.Mutating).Result;
-                    }
+                    await rSession.ExecuteAsync("library('tools')");
 
                     script.DoIdle(1000);
 

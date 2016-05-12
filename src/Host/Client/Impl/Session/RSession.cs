@@ -291,13 +291,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private static async Task LoadRtvsPackage(IRSessionEvaluation eval) {
             var libPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetAssemblyPath());
-            var res = await eval.EvaluateAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"), REvaluationKind.Normal);
-
-            if (res.ParseStatus != RParseStatus.OK) {
-                throw new InvalidDataException("Failed to parse loadNamespace('rtvs'): " + res.ParseStatus);
-            } else if (res.Error != null) {
-                throw new InvalidDataException("Failed to execute loadNamespace('rtvs'): " + res.Error);
-            }
+            await eval.ExecuteAsync(Invariant($"base::loadNamespace('rtvs', lib.loc = {libPath.ToRStringLiteral()})"));
         }
 
         public void FlushLog() {

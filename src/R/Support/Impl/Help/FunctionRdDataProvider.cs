@@ -35,10 +35,13 @@ namespace Microsoft.R.Host.Client.Signatures {
                 await CreateSessionAsync();
                 using (var eval = await _session.BeginEvaluationAsync()) {
                     string command = GetCommandText(functionName, packageName);
-                    REvaluationResult result = await eval.EvaluateAsync(command, REvaluationKind.Normal);
-                    if (result.ParseStatus == RParseStatus.OK && result.StringResult != null && result.StringResult.Length > 2) {
-                        rdDataAvailableCallback(result.StringResult);
+                    string rd;
+                    try {
+                        rd = await eval.EvaluateAsync<string>(command, REvaluationKind.Normal);
+                    } catch (RException) {
+                        return;
                     }
+                    rdDataAvailableCallback(rd);
                 }
             });
         }

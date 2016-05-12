@@ -54,7 +54,7 @@ namespace Microsoft.R.DataInspection.Test {
         [Category.R.DataInspection]
         public async Task BacktickNames() {
             var tracer = await _session.TraceExecutionAsync();
-            await _session.EvaluateAsync("`123` <- list(`name with spaces` = 42)", REvaluationKind.Mutating);
+            await _session.ExecuteAsync("`123` <- list(`name with spaces` = 42)");
             var stackFrames = (await _session.TracebackAsync()).ToArray();
             stackFrames.Should().NotBeEmpty();
 
