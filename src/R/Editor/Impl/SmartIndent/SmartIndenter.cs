@@ -148,6 +148,8 @@ namespace Microsoft.R.Editor.SmartIndent {
             if (prevLine.Length > 0) {
                 var fc1 = ast.GetNodeOfTypeFromPosition<IFunction>(prevLine.End - 1);
                 var fc2 = ast.GetNodeOfTypeFromPosition<IFunction>(line.Start);
+                // Pick narrowest function. This happens when function definition appears
+                // inside the argument list such as list(a = function(...)).
                 var fc = fc2 ?? fc1;
                 if (fc != null && fc.Arguments != null && fc.OpenBrace != null) {
                     if (fc.CloseBrace == null || fc.CloseBrace.End > prevLine.End) {

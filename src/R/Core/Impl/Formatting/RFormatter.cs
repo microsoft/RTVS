@@ -107,6 +107,8 @@ namespace Microsoft.R.Core.Formatting {
             Debug.Assert(_tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
             if (IsInArguments()) {
+                // Inside argument lists indentation rules are different
+                // so open new set of options and indentation
                 FormattingScope formattingScope = new FormattingScope(_tb, _tokens, _options);
                 _formattingScopes.Push(formattingScope);
             }
@@ -118,7 +120,10 @@ namespace Microsoft.R.Core.Formatting {
                 AppendToken(leadingSpace: false, trailingSpace: false);
                 return;
             } else {
-
+                // Determine if the scope is a single line like if(TRUE) { 1 } and keep it 
+                // on a single line unless there are line breaks in it. Continue without 
+                // breaks until the scope ends. Includes multiple nested scopes such as {{{ 1 }}}. 
+                // We continue on the outer scope boundaries.
                 if (_singleLineScopeEnd < 0) {
                     _singleLineScopeEnd = GetSingleLineScopeEnd();
                 }
@@ -643,11 +648,10 @@ namespace Microsoft.R.Core.Formatting {
 
             string text = _textProvider.GetText(TextRange.FromBounds(start, end));
             if (!preserveUserIndent && string.IsNullOrWhiteSpace(text)) {
-                // Append any user-entered whitespace. We preserve 
-                // line breaks but trim unnecessary spaces such as 
-                // on empty lines. We must, however, preserve 
-                // user indentation in long argument lists and
-                // in expresions split into multiple lines.
+                // Append any user-entered whitespace. We preserve line breaks but trim 
+                // unnecessary spaces such as on empty lines. We must, however, preserve 
+                // user indentation in long argument lists and in expresions split 
+                // into multiple lines.
 
                 // We preserve user indentation of last token was 
                 // open brace, square bracket, comma or an operator
@@ -667,6 +671,8 @@ namespace Microsoft.R.Core.Formatting {
                             break;
                     }
 
+                    // Also preserve indent before the tokens below. This matter in long lists 
+                    // of arguments in functions or indexers and also before comments.
                     if (!preserveUserIndent) {
                         switch (_tokens.CurrentToken.TokenType) {
                             case RTokenType.CloseBrace:
@@ -681,9 +687,12 @@ namespace Microsoft.R.Core.Formatting {
                     }
                 }
 
+                // Preserve line breaks user has entered.
                 _tb.CopyPrecedingLineBreaks(_textProvider, end);
 
                 if (preserveUserIndent) {
+                    // Construct indentation line based on the size of the user indent
+                    // but using tabs or spaces per formatting options.
                     int lastLineBreakIndex = text.LastIndexOfAny(CharExtensions.LineBreakChars);
                     if (lastLineBreakIndex >= 0) {
                         text = text.Substring(lastLineBreakIndex + 1);
