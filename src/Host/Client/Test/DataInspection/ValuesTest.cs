@@ -212,12 +212,13 @@ namespace Microsoft.R.DataInspection.Test {
 
         [CompositeTest]
         [Category.R.DataInspection]
-        [InlineData(@"sQuote(dQuote('x'))", @"""'\""x\""'""", @"""‘“x”’""", "‘“x”’", 1252)]
-        [InlineData("'Ûñïçôdè' ", @"""Unicode""", @"""Ûñïçôdè""", @"Ûñïçôdè", 1252)]
+        [InlineData(@"sQuote(dQuote('x'))", @"""‘“x”’""", @"""‘“x”’""", "‘“x”’", 1252)]
         [InlineData(@"'\u2260'", @"""<U+2260>""", @"""<U+2260>""""| __truncated__", "≠", 1252)]
-        public Task RepresentationWithEncoding(string expr, string deparse, string str, string toString, int codepage) {
-            _session.SetCodePage(codepage);
-            return Representation(expr, deparse, str, toString);
+        [InlineData("'Ûñïçôdè' ", @"""Ûñïçôdè""", @"""Ûñïçôdè""", @"Ûñïçôdè", 1252)]
+        [InlineData("'Ûñïçôdè' ", @"""Unicode""", @"""Unicode""", @"Unicode", 1251)]
+        public async Task RepresentationWithEncoding(string expr, string deparse, string str, string toString, int codepage) {
+            await _session.SetCodePage(codepage);
+            await Representation(expr, deparse, str, toString);
         }
 
         [Test]
