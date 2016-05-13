@@ -1202,6 +1202,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="DownloadLog"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Source R Script with Echo</ButtonText>
+          <MenuText>Source R Script with &amp;Echo</MenuText>
+          <CommandName>Source R Script with Echo</CommandName>
+        </Strings>
+      </Button>
+
       <!-- Context menu -->
       <Button guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="StatusHelpOutline"/>
@@ -1249,6 +1262,18 @@
         <Strings>
           <ButtonText>&amp;Source Selected File(s)</ButtonText>
           <LocCanonicalName>SourceSelectedFiles</LocCanonicalName>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" priority="0x0105" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DownloadLog"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Source Selected File(s) with &amp;Echo</ButtonText>
+          <LocCanonicalName>SourceSelectedFilesWithEcho</LocCanonicalName>
         </Strings>
       </Button>
 
@@ -1449,6 +1474,9 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x205">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
+    </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="rToolbarDataGroup"/>
     </CommandPlacement>
@@ -1480,6 +1508,10 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x205">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -1629,6 +1661,10 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x415">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -1783,6 +1819,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" editor="SolutionExplorer" key1="E" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" editor="SolutionExplorer" key1="H" mod1="CONTROL ALT"/>
 
@@ -1806,6 +1843,12 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="InteractiveWindow" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="SolutionExplorer" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="guidRToolsCmdSet" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="REditor" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="SolutionExplorer" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
 
@@ -1897,6 +1940,7 @@
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
       <IDSymbol name="icmdClearRepl" value="517" />
+      <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2015,6 +2059,7 @@
       <IDSymbol name="icmdAddRMarkdown" value="1505" />
       <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
+      <IDSymbol name="icmdSourceSelectedFilesWithEcho" value="1508"/>
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>

@@ -161,24 +161,28 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return InteractiveWindow.Operations.ResetAsync();
         }
 
-        public void SourceFiles(IEnumerable<string> files) {
+        public void SourceFiles(IEnumerable<string> files, bool echo) {
             Task.Run(async () => {
                 var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
                 _coreShell.DispatchOnUIThread(() => {
                     foreach (var name in shortNames) {
-                        EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({name.ToRStringLiteral()})", addNewLine: true);
+                        EnqueueExpression(GetSourceExpression(name, echo), addNewLine: true);
                     }
                 });
             });
         }
 
-        public void SourceFile(string file) {
+        public void SourceFile(string file, bool echo) {
             Task.Run(async () => {
                 file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
                 _coreShell.DispatchOnUIThread(() => {
-                    ExecuteExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()})");
+                    ExecuteExpression(GetSourceExpression(file, echo));
                 });
             });
+        }
+
+        private string GetSourceExpression(string file, bool echo) {
+            return $"{(_debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()}{(echo ? ", echo=TRUE" : "")})";
         }
 
         public void TryRunShinyApp () {
