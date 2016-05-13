@@ -1,0 +1,14 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "Microsoft.Tpl.Dataflow": "4.5.24",
+    "Newtonsoft.Json": "8.0.3",
+    "WebSocketSharp": "1.0.3-rc9"
+  },
+  "frameworks": {
+    "net46": { }
+  },
+  "runtimes": {
+    "win": { }
+  }
+}

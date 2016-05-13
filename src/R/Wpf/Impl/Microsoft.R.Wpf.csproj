@@ -61,7 +61,7 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="CommonResources.xaml">
