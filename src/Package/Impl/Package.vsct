@@ -1265,6 +1265,18 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" priority="0x0105" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DownloadLog"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Source Selected File(s) with &amp;Echo</ButtonText>
+          <LocCanonicalName>SourceSelectedFilesWithEcho</LocCanonicalName>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" priority="0x0200" type="Button">
         <Parent guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup"/>
         <Icon guid="ImageCatalogGuid" id="MoveToFolder"/>
@@ -1807,6 +1819,7 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdShowVariableExplorerWindow" editor="SolutionExplorer" key1="8" mod1="CONTROL"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFiles" editor="SolutionExplorer" key1="G" mod1="CONTROL ALT"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceSelectedFilesWithEcho" editor="SolutionExplorer" key1="E" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyItemPath" editor="SolutionExplorer" key1="P" mod1="CONTROL ALT"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryHere" editor="SolutionExplorer" key1="H" mod1="CONTROL ALT"/>
 
@@ -2046,6 +2059,7 @@
       <IDSymbol name="icmdAddRMarkdown" value="1505" />
       <IDSymbol name="icmdOpenCmdPromptHere" value = "1506" />
       <IDSymbol name="icmdOpenAdminCmdPromptHere" value = "1507" />
+      <IDSymbol name="icmdSourceSelectedFilesWithEcho" value="1508"/>
 
       <!-- Shiny -->
       <IDSymbol name="icmdRunShinyApp" value="1601"/>

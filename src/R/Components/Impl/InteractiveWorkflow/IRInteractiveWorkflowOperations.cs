@@ -32,7 +32,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         void ClearPendingInputs();
         Task<ExecutionResult> ResetAsync();
 
-        void SourceFiles(IEnumerable<string> files);
+        void SourceFiles(IEnumerable<string> files, bool echo);
 
         void SourceFile(string file, bool echo);
 
