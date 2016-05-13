@@ -25,7 +25,7 @@ namespace Microsoft.R.DataInspection {
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            session.TryEvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, properties, repr, cancellationToken);
+            session.TryEvaluateAndDescribeAsync(REnvironments.GlobalEnv, expression, null, properties, repr, cancellationToken);
 
         /// <summary>
         /// Evaluates an R expresion in the specified environment, and returns an object describing the result.
@@ -86,7 +86,7 @@ namespace Microsoft.R.DataInspection {
             string repr,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            session.EvaluateAndDescribeAsync("base::.GlobalEnv", expression, null, properties, repr, cancellationToken);
+            session.EvaluateAndDescribeAsync(REnvironments.GlobalEnv, expression, null, properties, repr, cancellationToken);
 
         /// <summary>
         /// Like <see cref="TryEvaluateAndDescribeAsync(IRSession, string, string, string, REvaluationResultProperties, string, CancellationToken)"/>,

@@ -110,7 +110,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return CanceledBeginInteractionTask;
             }
 
-            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts, cancellationToken);
+            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, cancellationToken);
             _pendingRequestSources.Post(requestSource);
 
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
@@ -387,7 +387,7 @@ namespace Microsoft.R.Host.Client.Session {
             TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
             Interlocked.Exchange(ref _currentRequestSource, requestSource);
 
-            requestSource.Request(prompt, len, requestTcs);
+            requestSource.Request(_contexts, prompt, len, requestTcs);
             ct.Register(delegate { requestTcs.TrySetCanceled(); });
 
             string response = await requestTcs.Task;

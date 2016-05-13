@@ -23,10 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class ViewersTest {
         private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSession _session;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         public ViewersTest() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
         }
 
@@ -60,22 +62,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Category.Viewers]
         public async Task ViewerExportTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
-                var funcViewer = await _aggregator.GetViewer("lm");
-                funcViewer.Should().NotBeNull().And.BeOfType<FunctionViewer>();
+                var session = hostScript.Session;
 
-                var gridViewer = await _aggregator.GetViewer("airmiles");
+                var funcViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "lm");
+                funcViewer.Should().NotBeNull().And.BeOfType<CodeViewer>();
+
+                var gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "airmiles");
                 gridViewer.Should().NotBeNull().And.BeOfType<Viewer1D>();
 
-                gridViewer = await _aggregator.GetViewer("mtcars");
+                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "mtcars");
                 gridViewer.Should().NotBeNull().And.BeOfType<TableViewer>();
 
-                gridViewer = await _aggregator.GetViewer("AirPassengers");
+                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "AirPassengers");
                 gridViewer.Should().NotBeNull().And.BeOfType<Viewer1D>();
 
-                gridViewer = await _aggregator.GetViewer("list(c(1:10))");
+                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "list(c(1:10))");
                 gridViewer.Should().NotBeNull().And.BeOfType<ListViewer>();
 
-                gridViewer = await _aggregator.GetViewer("c(1:10)");
+                gridViewer = await _aggregator.GetViewer(session, REnvironments.GlobalEnv, "c(1:10)");
                 gridViewer.Should().NotBeNull().And.BeOfType<VectorViewer>();
 
                 gridViewer.Capabilities.Should().HaveFlag(ViewerCapabilities.List | ViewerCapabilities.Table);
@@ -84,26 +88,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
         [Test]
         [Category.Viewers]
-        public async Task ViewerTest03() {
-            var viewer = Substitute.For<IObjectDetailsViewer>();
-            viewer.ViewAsync(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.CompletedTask);
-
-            var evaluator = Substitute.For<IDataObjectEvaluator>();
-
-            var aggregator = Substitute.For<IObjectDetailsViewerAggregator>();
-            aggregator.GetViewer(Arg.Any<string>()).Returns(viewer);
-
-            var provider = new ObjectDetailsViewerProvider(aggregator, evaluator);
-            await provider.ViewObjectDetails("mtcars", null);
-
-            await viewer.Received().ViewAsync("mtcars", null);
-        }
-
-        [Test]
-        [Category.Viewers]
         public async Task FunctionViewerTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
-                var funcViewer = await _aggregator.GetViewer("lm") as FunctionViewer;
+                var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, "lm") as CodeViewer;
                 funcViewer.Should().NotBeNull();
 
                 funcViewer.GetFileName("lm", null).Should().Be(Path.Combine(Path.GetTempPath(), "~lm.r"));
@@ -119,7 +106,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         public async Task FormulaViewerTest() {
             using (var hostScript = new RHostScript(_sessionProvider)) {
                 string formula = "1 ~ 2";
-                var funcViewer = await _aggregator.GetViewer(formula) as FunctionViewer;
+
+                var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, formula) as CodeViewer;
+                funcViewer.Should().NotBeNull();
+
                 var code = await funcViewer.GetFunctionCode(formula);
                 code.StartsWithOrdinal(formula).Should().BeTrue();
             }

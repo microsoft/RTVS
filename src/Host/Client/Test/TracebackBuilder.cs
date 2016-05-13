@@ -15,7 +15,7 @@ namespace Microsoft.R.Host.Client.Test {
             public static implicit operator string (AnyType any) => "<ANY>";
             public static implicit operator int (AnyType any) => -1;
         }
-        public static readonly AnyType Any;
+        public static readonly AnyType Any = default(AnyType);
 
         private readonly List<IRStackFrame> _frames = new List<IRStackFrame>();
         private Func<EquivalencyAssertionOptions<IRStackFrame[]>, EquivalencyAssertionOptions<IRStackFrame[]>> _config = options => options;

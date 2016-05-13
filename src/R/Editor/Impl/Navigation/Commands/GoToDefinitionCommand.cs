@@ -6,6 +6,8 @@ using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -14,12 +16,14 @@ namespace Microsoft.R.Editor.Navigation.Commands {
     public sealed class GoToDefinitionCommand : ViewCommand {
         private readonly ITextBuffer _textBuffer;
         private readonly IObjectViewer _objectViewer;
+        private readonly IRSession _session;
 
-        public GoToDefinitionCommand(ITextView textView, ITextBuffer textBuffer, IObjectViewer objectViewer) :
+        public GoToDefinitionCommand(ITextView textView, ITextBuffer textBuffer, IObjectViewer objectViewer, IRSession session) :
            base(textView, new CommandId(typeof(VSConstants.VSStd97CmdID).GUID,
                 (int)VSConstants.VSStd97CmdID.GotoDefn), needCheckout: false) {
             _textBuffer = textBuffer;
             _objectViewer = objectViewer;
+            _session = session;
         }
 
         public override CommandStatus Status(Guid group, int id) {
@@ -34,7 +38,7 @@ namespace Microsoft.R.Editor.Navigation.Commands {
                 TextView.Caret.EnsureVisible();
             } else {
                 // Try View(item) in case this is internal function
-                _objectViewer?.ViewObjectDetails(itemName, itemName).DoNotWait();
+                _objectViewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, itemName, itemName).DoNotWait();
             }
             return CommandResult.Executed;
         }

@@ -69,6 +69,7 @@
     <Compile Include="DataInspection\REvaluationResultProperties.cs" />
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
+    <Compile Include="Definitions\REnvironments.cs" />
     <Compile Include="DataInspection\RValueFlags.cs" />
     <Compile Include="DataInspection\RValueInfo.cs" />
     <Compile Include="DataInspection\RValueRepresentations.cs" />

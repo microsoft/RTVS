@@ -64,8 +64,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        #region Ellipsis 
-
         private static Lazy<VariableViewModel> _ellipsis = Lazy.Create(() => {
             var instance = new VariableViewModel();
             instance.Name = string.Empty;
@@ -78,7 +76,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get { return _ellipsis.Value; }
         }
 
-        #endregion
+        public static VariableViewModel Error(string text) {
+            var instance = new VariableViewModel();
+            instance.Name = string.Empty;
+            instance.Value = text;
+            instance.HasChildren = false;
+            return instance;
+        }
 
         private static readonly string Repr = RValueRepresentations.Str(100);
 

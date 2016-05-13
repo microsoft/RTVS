@@ -1770,6 +1770,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error retrieving environment list.
+        /// </summary>
+        public static string VariableExplorer_ErrorEnvironment {
+            get {
+                return ResourceManager.GetString("VariableExplorer_ErrorEnvironment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string VariableExplorer_NameHeader {
