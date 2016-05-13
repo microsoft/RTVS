@@ -739,4 +739,7 @@ Additional information:
   <data name="Settings_OsDefaultEncoding" xml:space="preserve">
     <value>(OS Default)</value>
   </data>
+  <data name="VariableExplorer_ErrorEnvironment" xml:space="preserve">
+    <value>Error retrieving environment list</value>
+  </data>
 </root>

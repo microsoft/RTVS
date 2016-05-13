@@ -19,6 +19,8 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter NullIsFalse { get; } = LambdaConverter.Create<object>(x => x != null);
         public static IValueConverter TrueIsCollapsed { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter FalseIsCollapsed { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter TrueIsHidden { get; } = LambdaConverter.Create<bool>(x => x ? Visibility.Hidden : Visibility.Visible);
+        public static IValueConverter FalseIsHidden { get; } = LambdaConverter.Create<bool>(x => !x ? Visibility.Hidden : Visibility.Visible);
         public static IValueConverter Not { get; } = LambdaConverter.Create<bool>(x => !x);
         public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullIsVisible { get; } = LambdaConverter.Create<object>(x => x != null ? Visibility.Collapsed : Visibility.Visible);

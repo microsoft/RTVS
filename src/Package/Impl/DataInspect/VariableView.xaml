@@ -10,7 +10,9 @@
              xmlns:imagecatalog="clr-namespace:Microsoft.VisualStudio.Imaging;assembly=Microsoft.VisualStudio.ImageCatalog"
              xmlns:vsui="clr-namespace:Microsoft.VisualStudio.PlatformUI;assembly=Microsoft.VisualStudio.Shell.14.0"
              xmlns:core="clr-namespace:System;assembly=mscorlib"
+             xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             wpf:LambdaProperties.ImportedNamespaces="Microsoft.VisualStudio.Imaging"
              mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
              img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
@@ -26,15 +28,31 @@
             </ResourceDictionary.MergedDictionaries>
 
             <local:MultiplyConverter x:Key="MultiplyConverter" />
-            <local:BooleanToVisibilityConverter x:Key="HidingBoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Hidden" />
-            <local:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Collapsed" />
+
+            <wpf:Lambda x:Key="REnvironmentKindConverter">
+                (REnvironmentKind kind) => {
+                    switch (kind) {
+                        case REnvironmentKind.Global:
+                            return KnownMonikers.GlobalVariable;
+                        case REnvironmentKind.Function:
+                            return KnownMonikers.MethodPublic;
+                        case REnvironmentKind.Package:
+                            return KnownMonikers.Package;
+                        case REnvironmentKind.Error:
+                            return KnownMonikers.StatusInvalid;
+                        default:
+                            return KnownMonikers.ObjectPublic;
+                    }
+                }
+            </wpf:Lambda>
+
             <core:Double x:Key="ExpanderToggleSize">16</core:Double>
 
             <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
                 <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Width" Value="{StaticResource ExpanderToggleSize}"/>
                 <Setter Property="Height" Value="{StaticResource ExpanderToggleSize}"/>
-                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource HidingBoolToVisibilityConverter}}" />
+                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={x:Static rwpf:Converters.FalseIsHidden}}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -88,7 +106,7 @@
                     <TextBlock Grid.Column="2" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" />
                 </Grid>
             </DataTemplate>
-
+            
             <DataTemplate x:Key="ValueCellTemplate">
                 <Grid Height="{Binding Path=RowHeight, ElementName=RootTreeGrid, Converter={x:Static rwpf:Converters.Scale155}}"
                       VerticalAlignment="Center"  ToolTip="{Binding Model.Content.Value}">
@@ -96,47 +114,40 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Padding="2,0,0,0"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="1">
-                        <Button
-                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
+                    <TextBlock Text="{Binding Model.Content.Value}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="0" Padding="2,0,2,0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2,0,0,0" Grid.Column="1">
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type Button}">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="BorderBrush"
+                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
+                                        <Setter Property="Background"
+                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBrushKey}}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Resources>
+                        <StackPanel.Visibility>
+                            <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsNotCollapsed}">
+                                <Binding Path="Model.Content.CanShowDetail"/>
+                                <Binding Path="Model.Content.CanShowOpenCsv"/>
+                            </MultiBinding>
+                        </StackPanel.Visibility>
+                        <Button 
+                            Visibility="{Binding Model.Content.CanShowDetail, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
-                            Height="18" VerticalAlignment="Center">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
-                                        Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
-                                        BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
-                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
-                                            <Setter TargetName="Border" Property="BorderBrush"
-                                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
+                            VerticalAlignment="Center">
+                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
                         </Button>
                         <Button
-                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
-                            Height="18" VerticalAlignment="Center">
-                            <Button.Template>
-                                <ControlTemplate>
-                                    <Border x:Name="Border"  CornerRadius="3" BorderThickness="1"
-                                        Background="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundBrushKey}}"
-                                        BorderBrush="{DynamicResource {x:Static vsui:EnvironmentColors.GridLineBrushKey}}">
-                                        <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
-                                    </Border>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
-                                            <Setter TargetName="Border" Property="BorderBrush"
-                                                Value="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowButtonHoverActiveBorderBrushKey}}" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
+                            VerticalAlignment="Center">
+                            <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -146,7 +157,7 @@
                 <TextBlock Text="{Binding Model.Content.Class}" ToolTip="{Binding Model.Content.Value}"
                            VerticalAlignment="Center" Padding="2,0,0,0"/>
             </DataTemplate>
-            
+
             <DataTemplate x:Key="TypeNameCellTemplate">
                 <TextBlock Text="{Binding Model.Content.TypeName}" ToolTip="{Binding Model.Content.Value}"
                            VerticalAlignment="Center" Padding="2,0,0,0"/>
@@ -160,12 +171,35 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="EnvironmentComboBox" SelectionChanged="EnvironmentComboBox_SelectionChanged" Margin="4">
+        <ComboBox x:Name="EnvironmentComboBox"
+                  Margin="4"
+                  ItemsSource="{Binding Environments}"
+                  SelectedItem="{Binding SelectedEnvironment}"
+                  SelectionChanged="EnvironmentComboBox_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}" />
+                    <StackPanel Orientation="Horizontal">
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={StaticResource REnvironmentKindConverter}}"/>
+                        <TextBlock Text="{Binding Name}" Margin="4,0,0,0" />
+                    </StackPanel>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
+            <ComboBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ComboBoxItem}" BasedOn="{StaticResource {x:Type ComboBoxItem}}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Name}" Value="{x:Null}">
+                            <Setter Property="IsEnabled" Value="False"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                                        <Separator HorizontalAlignment="Stretch"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ComboBox.ItemContainerStyle>
         </ComboBox>
 
         <local:TreeGrid x:Name="RootTreeGrid" Grid.Row="1"

@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public InteractionEvaluation(TestMethodFixture testMethod) {
                 _testMethodFixture = testMethod;
                 _testMethod = testMethod.MethodInfo;
-                _session = new RSession(0, () => {});
+                _session = new RSession(0, () => { });
             }
 
             public async Task InitializeAsync() {
@@ -57,17 +57,17 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 }
             }
 
-            [Test(Skip="https://github.com/Microsoft/RTVS/issues/1193")]
+            [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1193")]
             [Category.R.Session]
             public async Task OneResponsePerInteraction() {
                 using (var interaction = await _session.BeginInteractionAsync()) {
-// ReSharper disable once AccessToDisposedClosure
+                    // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => interaction.RespondAsync("1+1");
                     f.ShouldNotThrow();
                     f.ShouldThrow<InvalidOperationException>();
                 }
             }
-            
+
             [Test]
             [Category.R.Session]
             public async Task ExclusiveEvaluation() {
@@ -118,6 +118,24 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 using (var inter = await _session.BeginInteractionAsync()) {
                     inter.Prompt.Should().Be(topLevelPrompt);
                 }
+            }
+
+            [Test]
+            [Category.R.Session]
+            public async Task InteractionContexts() {
+                Task<IRSessionInteraction> interTask;
+                using (var inter = await _session.BeginInteractionAsync()) {
+                    inter.Contexts.IsBrowser().Should().BeFalse();
+
+                    // Request a new interaction before finishing this one, so that request gets queued. 
+                    interTask = _session.BeginInteractionAsync();
+
+                    // Trigger a Browse> prompt, which will have different contexts.
+                    await inter.RespondAsync("browser()\n");
+                }
+
+                // Check that task queued before the new prompt has the appropriate contexts for that prompt.
+                (await interTask).Contexts.IsBrowser().Should().BeTrue();
             }
         }
     }

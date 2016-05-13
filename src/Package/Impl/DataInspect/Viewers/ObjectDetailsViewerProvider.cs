@@ -14,16 +14,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectViewer))]
     public sealed class ObjectDetailsViewerProvider : IObjectViewer {
         private readonly IObjectDetailsViewerAggregator _aggregator;
-        private readonly IDataObjectEvaluator _evaluator;
 
         [ImportingConstructor]
-        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator, IDataObjectEvaluator evaluator) {
+        public ObjectDetailsViewerProvider(IObjectDetailsViewerAggregator aggregator) {
             _aggregator = aggregator;
-            _evaluator = evaluator;
         }
 
-        public async Task ViewObjectDetails(string expression, string title) {
-            var viewer = await _aggregator.GetViewer(expression);
+        public async Task ViewObjectDetails(IRSession session, string environmentExpression, string expression, string title) {
+            var viewer = await _aggregator.GetViewer(session, environmentExpression, expression);
             if (viewer != null) {
                 await viewer?.ViewAsync(expression, title);
             }

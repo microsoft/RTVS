@@ -53,7 +53,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         private async Task SaveWorkspace(string file) {
-            REvaluationResult result;
             using (var evaluation = await _rSession.BeginEvaluationAsync()) {
                 try {
                     await evaluation.SaveWorkspace(file);

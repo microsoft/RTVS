@@ -52,7 +52,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         }
 
         private async Task LoadWorkspace(IRSession session, string file) {
-            REvaluationResult result;
             using (var evaluation = await session.BeginEvaluationAsync()) {
                 try {
                     await evaluation.LoadWorkspace(file);
