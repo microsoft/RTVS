@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal interface IREnvironmentProvider : IDisposable, INotifyPropertyChanged {
-        IReadOnlyList<IREnvironment> Environments { get; }
+        ObservableCollection<IREnvironment> Environments { get; }
         IREnvironment SelectedEnvironment { get; }
         Task RefreshEnvironmentsAsync();
     }

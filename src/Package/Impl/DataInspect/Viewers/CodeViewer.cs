@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Formatting;
@@ -17,7 +18,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class CodeViewer : ViewerBase, IObjectDetailsViewer {
-        private readonly static HashSet<string> _types = new HashSet<string> { "closure", "language" };
+        private readonly static string[] _types = { "closure", "language" };
         private readonly IRSessionProvider _sessionProvider;
 
         [ImportingConstructor]

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.DataInspection {
+namespace Microsoft.R.Host.Client {
     /// <summary>
     /// Expressions for various common R environments, suitable for use as <c>environmentExpression</c> argument
     /// when calling <see cref="RSessionExtensions.EvaluateAndDescribeAsync"/>.

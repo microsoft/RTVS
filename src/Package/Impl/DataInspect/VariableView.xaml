@@ -12,6 +12,7 @@
              xmlns:core="clr-namespace:System;assembly=mscorlib"
              xmlns:wpf="clr-namespace:Microsoft.Common.Wpf;assembly=Microsoft.R.Common.Wpf"
              xmlns:rwpf="clr-namespace:Microsoft.R.Wpf;assembly=Microsoft.R.Wpf"
+             wpf:LambdaProperties.ImportedNamespaces="Microsoft.VisualStudio.Imaging"
              mc:Ignorable="d" x:Name="Self"
              d:DesignHeight="300" d:DesignWidth="300"
              img:ImageThemingUtilities.ImageBackgroundColor="{DynamicResource {x:Static vsui:EnvironmentColors.ToolWindowBackgroundColorKey}}"
@@ -27,15 +28,31 @@
             </ResourceDictionary.MergedDictionaries>
 
             <local:MultiplyConverter x:Key="MultiplyConverter" />
-            <local:BooleanToVisibilityConverter x:Key="HidingBoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Hidden" />
-            <local:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" ValueForTrue="Visible" ValueForFalse="Collapsed" />
+
+            <wpf:Lambda x:Key="REnvironmentKindConverter">
+                (REnvironmentKind kind) => {
+                    switch (kind) {
+                        case REnvironmentKind.Global:
+                            return KnownMonikers.GlobalVariable;
+                        case REnvironmentKind.Function:
+                            return KnownMonikers.MethodPublic;
+                        case REnvironmentKind.Package:
+                            return KnownMonikers.Package;
+                        case REnvironmentKind.Error:
+                            return KnownMonikers.StatusInvalid;
+                        default:
+                            return KnownMonikers.ObjectPublic;
+                    }
+                }
+            </wpf:Lambda>
+
             <core:Double x:Key="ExpanderToggleSize">16</core:Double>
 
             <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
                 <Setter Property="Focusable" Value="False"/>
                 <Setter Property="Width" Value="{StaticResource ExpanderToggleSize}"/>
                 <Setter Property="Height" Value="{StaticResource ExpanderToggleSize}"/>
-                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource HidingBoolToVisibilityConverter}}" />
+                <Setter Property="Visibility" Value="{Binding HasChildren, Converter={x:Static rwpf:Converters.FalseIsHidden}}" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -115,19 +132,19 @@
                             </Style>
                         </StackPanel.Resources>
                         <StackPanel.Visibility>
-                            <MultiBinding Converter="{wpf:Lambda '(x, y) => x || y ? Visibility.Visible : Visibility.Collapsed'}">
+                            <MultiBinding Converter="{x:Static rwpf:Converters.AnyIsNotCollapsed}">
                                 <Binding Path="Model.Content.CanShowDetail"/>
                                 <Binding Path="Model.Content.CanShowOpenCsv"/>
                             </MultiBinding>
                         </StackPanel.Visibility>
                         <Button 
-                            Visibility="{Binding Model.Content.CanShowDetail, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Model.Content.CanShowDetail, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.ShowDetailCommand}" ToolTip="{Binding Model.Content.ShowDetailCommandTooltip}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.Zoom}"/>
                         </Button>
                         <Button
-                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Visibility="{Binding Model.Content.CanShowOpenCsv, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}"
                             Command="{Binding Model.Content.OpenInCsvAppCommand}" ToolTip="{Binding Model.Content.OpenInCsvAppCommandTooltip}"
                             VerticalAlignment="Center">
                             <imaging:CrispImage Width="16" Height="16" Moniker="{x:Static imagecatalog:KnownMonikers.OfficeExcel2013}"/>
@@ -162,27 +179,7 @@
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <imaging:CrispImage Width="16" Height="16">
-                            <imaging:CrispImage.Style>
-                                <Style TargetType="{x:Type imaging:CrispImage}">
-                                    <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.ObjectPublic}"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Kind}" Value="Global">
-                                            <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.GlobalVariable}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Kind}" Value="Function">
-                                            <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.MethodPublic}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Kind}" Value="Package">
-                                            <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.Package}"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding Kind}" Value="Error">
-                                            <Setter Property="Moniker" Value="{x:Static imagecatalog:KnownMonikers.StatusInvalid}"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </imaging:CrispImage.Style>
-                        </imaging:CrispImage>
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={StaticResource REnvironmentKindConverter}}"/>
                         <TextBlock Text="{Binding Name}" Margin="4,0,0,0" />
                     </StackPanel>
                 </DataTemplate>

@@ -3,24 +3,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Wpf.Collections;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal class REnvironmentProvider : IREnvironmentProvider {
+    internal class REnvironmentProvider : BindableBase, IREnvironmentProvider {
         private static readonly string[] _hiddenEnvironments = { "Autoloads", "rtvs::graphics::ide", ".rtvs" };
         private static readonly IReadOnlyList<REnvironment> _errorEnvironments = new[] { REnvironment.Error };
 
         private IRSession _rSession;
         private IREnvironment _selectedEnvironment;
-        private IReadOnlyList<IREnvironment> _environments;
-
-        public event PropertyChangedEventHandler PropertyChanged;
+        private BatchObservableCollection<IREnvironment> _environments = new BatchObservableCollection<IREnvironment>();
 
         public REnvironmentProvider(IRSession session) {
             _rSession = session;
@@ -34,31 +34,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        public IReadOnlyList<IREnvironment> Environments {
-            get { return _environments; }
-            set {
-                if (_environments != value) {
-                    var oldSelection = _selectedEnvironment;
-
-                    _environments = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Environments)));
-
-                    IREnvironment newSelection = null;
-                    if (oldSelection != null) {
-                        newSelection = _environments?.FirstOrDefault(env => env.Name == oldSelection.Name);
-                    }
-                    SelectedEnvironment = newSelection ?? _environments.FirstOrDefault();
-                }
-            }
-        }
+        public ObservableCollection<IREnvironment> Environments => _environments;
 
         public IREnvironment SelectedEnvironment {
             get { return _selectedEnvironment; }
             set {
-                if (value != _selectedEnvironment) {
-                    _selectedEnvironment = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedEnvironment)));
-                }
+                SetProperty(ref _selectedEnvironment, value);
             }
         }
 
@@ -88,7 +69,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } catch (OperationCanceledException) {
             }
 
-            VsAppShell.Current.DispatchOnUIThread(() => Environments = success ? envs : _errorEnvironments);
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                var oldSelection = _selectedEnvironment;
+                _environments.ReplaceWith(success ? envs : _errorEnvironments);
+
+                IREnvironment newSelection = null;
+                if (oldSelection != null) {
+                    newSelection = _environments?.FirstOrDefault(env => env?.Name == oldSelection.Name);
+                }
+                SelectedEnvironment = newSelection ?? _environments.FirstOrDefault();
+            });
         }
 
         private void RSession_Mutated(object sender, EventArgs e) {

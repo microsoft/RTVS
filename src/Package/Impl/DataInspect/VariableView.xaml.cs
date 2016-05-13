@@ -87,7 +87,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             try {
                 result = await _session.EvaluateAndDescribeAsync(env.EnvironmentExpression, properties, null);
             } catch (RException ex) {
-                SetRootNode(VariableViewModel.Error(ex.Message));
+                VsAppShell.Current.DispatchOnUIThread(() => SetRootNode(VariableViewModel.Error(ex.Message)));
                 return;
             }
 
