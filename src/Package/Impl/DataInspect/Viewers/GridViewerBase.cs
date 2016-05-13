@@ -7,6 +7,7 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
@@ -32,7 +33,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             if (evaluation != null) {
                 await VsAppShell.Current.SwitchToMainThreadAsync();
 
-                var id = _toolWindowIdBase + evaluation.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase);
+                var id = Math.Abs(_toolWindowIdBase + expression.GetHashCode() % (Int32.MaxValue - _toolWindowIdBase));
+
+                var existingPane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);
+                var frame = existingPane?.Frame as IVsWindowFrame;
+                frame?.CloseFrame(0);
+
                 VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
                 title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
                 pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
