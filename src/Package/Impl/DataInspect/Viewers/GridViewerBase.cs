@@ -37,11 +37,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
                 var existingPane = ToolWindowUtilities.FindWindowPane<VariableGridWindowPane>(id);
                 var frame = existingPane?.Frame as IVsWindowFrame;
-                frame?.CloseFrame(0);
-
-                VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
-                pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
+                if (frame != null) {
+                    frame.Show();
+                } else {
+                    VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
+                    title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
+                    pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
+                }
             }
         }
         #endregion
