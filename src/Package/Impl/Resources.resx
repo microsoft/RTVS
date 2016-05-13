@@ -647,7 +647,10 @@ Additional information:
     <value>Import Dataset</value>
   </data>
   <data name="ImportData_EnterUrlTitle" xml:space="preserve">
-    <value>Import from Web URL</value>
+    <value>Import Dataset Into R Session From Web URL</value>
+  </data>
+  <data name="ImportData_EnterTextFileTitle" xml:space="preserve">
+    <value>Import Dataset Into R Session From Text File</value>
   </data>
   <data name="AutomaticValue" xml:space="preserve">
     <value>&lt;Automatic&gt;</value>

@@ -17,7 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
         protected override void Handle() {
             base.Handle();
 
-            string filePath = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, Package.Resources.CsvFileFilter);
+            string filePath = VsAppShell.Current.BrowseForFileOpen(
+                IntPtr.Zero, Package.Resources.CsvFileFilter,
+                title: Resources.ImportData_EnterTextFileTitle);
+
             if (!string.IsNullOrEmpty(filePath)) {
                 var dlg = new ImportDataWindow(filePath, null);
                 dlg.ShowModal();

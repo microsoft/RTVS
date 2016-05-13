@@ -484,7 +484,16 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Import from Web URL.
+        ///   Looks up a localized string similar to Import Dataset Into R Session From Text File.
+        /// </summary>
+        public static string ImportData_EnterTextFileTitle {
+            get {
+                return ResourceManager.GetString("ImportData_EnterTextFileTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import Dataset Into R Session From Web URL.
         /// </summary>
         public static string ImportData_EnterUrlTitle {
             get {
@@ -1186,7 +1195,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to (OS Default).
         /// </summary>
-        public static string Settings_OsDefaultEncoding {
+        public static string Settings_DefaultValue {
             get {
                 return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
             }
