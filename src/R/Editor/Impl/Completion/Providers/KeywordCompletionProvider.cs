@@ -15,7 +15,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// R language keyword completion provider.
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
-    public class KeywordCompletionProvider : IRCompletionListProvider {
+    [Export(typeof(IRHelpSearchTermProvider))]
+    public class KeywordCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         [Import(AllowDefault = true)]
         private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
 
@@ -44,6 +45,10 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             return completions;
         }
+        #endregion
+
+        #region IRHelpSearchTermProvider
+        public IReadOnlyCollection<string> GetEntries() => Keywords.KeywordList;
         #endregion
     }
 }

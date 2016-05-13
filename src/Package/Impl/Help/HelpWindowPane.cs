@@ -2,14 +2,23 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuidString)]
@@ -27,6 +36,65 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             Component = new HelpVisualComponent { Container = this };
             ToolBarCommandTarget = new CommandTargetToOleShim(null, Component.Controller);
             base.OnCreate();
+        }
+
+        public override bool SearchEnabled => true;
+
+        public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            var settings = (SearchSettingsDataSource)pSearchSettings;
+            settings.SearchWatermark = Resources.HelpSearchWatermark;
+            settings.SearchTooltip = Resources.HelpSearchTooltip;
+            settings.SearchStartType = VSSEARCHSTARTTYPE.SST_ONDEMAND;
+            base.ProvideSearchSettings(pSearchSettings);
+        }
+
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
+            return new HelpSearchTask(dwCookie, pSearchQuery, pSearchCallback);
+        }
+
+        private sealed class HelpSearchTask : VsSearchTask {
+            //private static IEnumerable<Lazy<IRHelpSearchTermProvider>> _termProviders;
+            //private readonly List<string> _terms = new List<string>();
+            private readonly IVsSearchCallback _callback;
+            private IRInteractiveWorkflowProvider _workflowProvider;
+
+            public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
+                : base(dwCookie, pSearchQuery, pSearchCallback) {
+                _callback = pSearchCallback;
+                _workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            }
+
+            protected override async void OnStartSearch() {
+                base.OnStartSearch();
+                _callback.ReportComplete(this, 1);
+
+                var searchString = SearchQuery.SearchString;
+                if (!string.IsNullOrWhiteSpace(searchString)) {
+                    var session = _workflowProvider.GetOrCreate().RSession;
+                    using (var inter = await session.BeginInteractionAsync()) {
+                        await inter.RespondAsync("?" + searchString + Environment.NewLine);
+                    }
+                }
+            }
+
+
+            // TODO: activate when adding completion to the search box
+            //private void GetSearchTerms() {
+            //    if (_terms.Count == 0) { }
+            //    foreach (var p in TermProviders) {
+            //        _terms.AddRange(p.Value.GetEntries());
+            //    }
+            //    _terms.Sort();
+            //}
+
+            //private static IEnumerable<Lazy<IRHelpSearchTermProvider>> TermProviders {
+            //    get {
+            //        if (_termProviders == null) {
+            //            _termProviders = ComponentLocator<IRHelpSearchTermProvider>.ImportMany();
+            //        }
+            //        return _termProviders;
+            //    }
+            //}
         }
     }
 }

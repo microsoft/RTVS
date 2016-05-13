@@ -114,12 +114,38 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HandleDefaultAction();
         }
 
-        private void RootTreeGrid_PreviewKeyUp(object sender, KeyEventArgs e) {
-            if (e.Key == Key.Enter) {
+        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+            if (e.Key == Key.Enter || e.Key == Key.Return) {
+                e.Handled = true;
+                return;
+            }
+            base.OnPreviewKeyDown(e);
+        }
+
+        protected override void OnPreviewKeyUp(KeyEventArgs e) {
+            if (e.Key == Key.Enter || e.Key == Key.Return) {
                 HandleDefaultAction();
-            } else if(e.Key == Key.Delete || e.Key == Key.Back) {
+                e.Handled = true;
+                return;
+            } else if (e.Key == Key.Delete || e.Key == Key.Back) {
                 DeleteCurrentVariableAsync().DoNotWait();
             }
+            base.OnPreviewKeyUp(e);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            // Suppress Enter navigation
+            if (e.Key == Key.Enter || e.Key == Key.Return) {
+                return;
+            }
+            base.OnKeyDown(e);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs e) {
+            if (e.Key == Key.Enter || e.Key == Key.Return) {
+                return;
+            }
+            base.OnKeyUp(e);
         }
 
         private void HandleDefaultAction() {

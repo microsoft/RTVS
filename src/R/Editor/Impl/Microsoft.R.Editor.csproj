@@ -92,6 +92,7 @@
     <Compile Include="Comments\UncommentCommand.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContext.cs" />
     <Compile Include="Completion\AutoCompletion\BraceCompletionContextProvider.cs" />
+    <Compile Include="Completion\Definitions\IRHelpSearchTermProvider.cs" />
     <Compile Include="Completion\Providers\CompletionUtilities.cs" />
     <Compile Include="Completion\Providers\UserVariablesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\SnippetCompletionProvider.cs" />
@@ -109,7 +110,6 @@
     <Compile Include="Completion\Engine\RCompletionEngine.cs" />
     <Compile Include="Completion\Providers\CompletionControllerProvider.cs" />
     <Compile Include="Completion\Providers\CompletionSourceProvider.cs" />
-    <Compile Include="Completion\Providers\CompletionTypeAttribute.cs" />
     <Compile Include="Completion\Providers\FilesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\ParameterNameCompletionProvider.cs" />
     <Compile Include="Completion\Providers\PackagesCompletionProvider.cs" />
