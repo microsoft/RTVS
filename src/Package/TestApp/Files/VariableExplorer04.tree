@@ -279,7 +279,7 @@
                     },
                     {
                       "Name": "DataContext",
-                      "Value": "null"
+                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                     },
                     {
                       "Name": "Name",
@@ -340,7 +340,7 @@
                       "Properties": [
                         {
                           "Name": "DataContext",
-                          "Value": "null"
+                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                         },
                         {
                           "Name": "Name",
@@ -401,7 +401,7 @@
                           "Properties": [
                             {
                               "Name": "DataContext",
-                              "Value": "null"
+                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                             },
                             {
                               "Name": "Name",
@@ -475,7 +475,7 @@
                             },
                             {
                               "Name": "DataContext",
-                              "Value": "null"
+                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                             },
                             {
                               "Name": "Name",
@@ -540,7 +540,7 @@
                                 },
                                 {
                                   "Name": "DataContext",
-                                  "Value": "null"
+                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                 },
                                 {
                                   "Name": "Name",
@@ -605,7 +605,7 @@
                                     },
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                     },
                                     {
                                       "Name": "Name",
@@ -670,7 +670,7 @@
                                         },
                                         {
                                           "Name": "DataContext",
-                                          "Value": "null"
+                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                         },
                                         {
                                           "Name": "Name",
@@ -803,20 +803,8 @@
                           ],
                           "Children": [
                             {
-                              "Name": "TextBlock",
+                              "Name": "StackPanel",
                               "Properties": [
-                                {
-                                  "Name": "Text",
-                                  "Value": ".GlobalEnv"
-                                },
-                                {
-                                  "Name": "Padding",
-                                  "Value": "0,0,0,0"
-                                },
-                                {
-                                  "Name": "TextAlignment",
-                                  "Value": "Left"
-                                },
                                 {
                                   "Name": "DataContext",
                                   "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
@@ -850,6 +838,10 @@
                                   "Value": "Visible"
                                 },
                                 {
+                                  "Name": "TextAlignment",
+                                  "Value": "Left"
+                                },
+                                {
                                   "Name": "IsVirtualizing",
                                   "Value": "True"
                                 },
@@ -870,7 +862,140 @@
                                   "Value": ""
                                 }
                               ],
-                              "Children": []
+                              "Children": [
+                                {
+                                  "Name": "CrispImage",
+                                  "Properties": [
+                                    {
+                                      "Name": "DataContext",
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Margin",
+                                      "Value": "0,0,0,0"
+                                    },
+                                    {
+                                      "Name": "HorizontalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "VerticalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "ToolTip",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "ContextMenu",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "Visibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "TextAlignment",
+                                      "Value": "Left"
+                                    },
+                                    {
+                                      "Name": "IsVirtualizing",
+                                      "Value": "True"
+                                    },
+                                    {
+                                      "Name": "HorizontalScrollBarVisibility",
+                                      "Value": "Disabled"
+                                    },
+                                    {
+                                      "Name": "VerticalScrollBarVisibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Text",
+                                      "Value": ""
+                                    }
+                                  ],
+                                  "Children": []
+                                },
+                                {
+                                  "Name": "TextBlock",
+                                  "Properties": [
+                                    {
+                                      "Name": "Text",
+                                      "Value": ".GlobalEnv"
+                                    },
+                                    {
+                                      "Name": "Padding",
+                                      "Value": "0,0,0,0"
+                                    },
+                                    {
+                                      "Name": "TextAlignment",
+                                      "Value": "Left"
+                                    },
+                                    {
+                                      "Name": "DataContext",
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Margin",
+                                      "Value": "4,0,0,0"
+                                    },
+                                    {
+                                      "Name": "HorizontalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "VerticalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "ToolTip",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "ContextMenu",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "Visibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "IsVirtualizing",
+                                      "Value": "True"
+                                    },
+                                    {
+                                      "Name": "HorizontalScrollBarVisibility",
+                                      "Value": "Disabled"
+                                    },
+                                    {
+                                      "Name": "VerticalScrollBarVisibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Text",
+                                      "Value": ""
+                                    }
+                                  ],
+                                  "Children": []
+                                }
+                              ]
                             }
                           ]
                         }
@@ -6184,7 +6309,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "Padding",
-                                                                                              "Value": "2,0,0,0"
+                                                                                              "Value": "2,0,2,0"
                                                                                             },
                                                                                             {
                                                                                               "Name": "TextAlignment",
@@ -6258,7 +6383,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "Margin",
-                                                                                              "Value": "0,0,0,0"
+                                                                                              "Value": "2,0,0,0"
                                                                                             },
                                                                                             {
                                                                                               "Name": "HorizontalAlignment",
@@ -6311,7 +6436,7 @@
                                                                                               "Properties": [
                                                                                                 {
                                                                                                   "Name": "Content",
-                                                                                                  "Value": "null"
+                                                                                                  "Value": "Microsoft.VisualStudio.Imaging.CrispImage"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "ContentTemplate",
@@ -6319,7 +6444,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Padding",
-                                                                                                  "Value": "6,3,6,3"
+                                                                                                  "Value": "1,1,1,1"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
@@ -6331,7 +6456,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Margin",
-                                                                                                  "Value": "6,6,6,6"
+                                                                                                  "Value": "0,0,0,0"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "HorizontalAlignment",
@@ -6392,7 +6517,7 @@
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
-                                                                                                      "Value": "Border"
+                                                                                                      "Value": "border"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Margin",
@@ -6445,27 +6570,35 @@
                                                                                                   ],
                                                                                                   "Children": [
                                                                                                     {
-                                                                                                      "Name": "CrispImage",
+                                                                                                      "Name": "ContentPresenter",
                                                                                                       "Properties": [
+                                                                                                        {
+                                                                                                          "Name": "Content",
+                                                                                                          "Value": "Microsoft.VisualStudio.Imaging.CrispImage"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContentTemplate",
+                                                                                                          "Value": "null"
+                                                                                                        },
                                                                                                         {
                                                                                                           "Name": "DataContext",
                                                                                                           "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Name",
-                                                                                                          "Value": ""
+                                                                                                          "Value": "contentPresenter"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Margin",
-                                                                                                          "Value": "0,0,0,0"
+                                                                                                          "Value": "1,1,1,1"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "HorizontalAlignment",
-                                                                                                          "Value": "Stretch"
+                                                                                                          "Value": "Center"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "VerticalAlignment",
-                                                                                                          "Value": "Stretch"
+                                                                                                          "Value": "Center"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "ToolTip",
@@ -6504,7 +6637,70 @@
                                                                                                           "Value": ""
                                                                                                         }
                                                                                                       ],
-                                                                                                      "Children": []
+                                                                                                      "Children": [
+                                                                                                        {
+                                                                                                          "Name": "CrispImage",
+                                                                                                          "Properties": [
+                                                                                                            {
+                                                                                                              "Name": "DataContext",
+                                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Name",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Margin",
+                                                                                                              "Value": "0,0,0,0"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "HorizontalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "VerticalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ToolTip",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ContextMenu",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Visibility",
+                                                                                                              "Value": "Visible"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "TextAlignment",
+                                                                                                              "Value": "Left"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "IsVirtualizing",
+                                                                                                              "Value": "True"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "HorizontalScrollBarVisibility",
+                                                                                                              "Value": "Disabled"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "VerticalScrollBarVisibility",
+                                                                                                              "Value": "Visible"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Name",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Text",
+                                                                                                              "Value": ""
+                                                                                                            }
+                                                                                                          ],
+                                                                                                          "Children": []
+                                                                                                        }
+                                                                                                      ]
                                                                                                     }
                                                                                                   ]
                                                                                                 }
@@ -6515,7 +6711,7 @@
                                                                                               "Properties": [
                                                                                                 {
                                                                                                   "Name": "Content",
-                                                                                                  "Value": "null"
+                                                                                                  "Value": "Microsoft.VisualStudio.Imaging.CrispImage"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "ContentTemplate",
@@ -6523,7 +6719,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Padding",
-                                                                                                  "Value": "6,3,6,3"
+                                                                                                  "Value": "1,1,1,1"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "DataContext",
@@ -6535,7 +6731,7 @@
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "Margin",
-                                                                                                  "Value": "6,6,6,6"
+                                                                                                  "Value": "0,0,0,0"
                                                                                                 },
                                                                                                 {
                                                                                                   "Name": "HorizontalAlignment",
@@ -6596,7 +6792,7 @@
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Name",
-                                                                                                      "Value": "Border"
+                                                                                                      "Value": "border"
                                                                                                     },
                                                                                                     {
                                                                                                       "Name": "Margin",
@@ -6649,27 +6845,35 @@
                                                                                                   ],
                                                                                                   "Children": [
                                                                                                     {
-                                                                                                      "Name": "CrispImage",
+                                                                                                      "Name": "ContentPresenter",
                                                                                                       "Properties": [
+                                                                                                        {
+                                                                                                          "Name": "Content",
+                                                                                                          "Value": "Microsoft.VisualStudio.Imaging.CrispImage"
+                                                                                                        },
+                                                                                                        {
+                                                                                                          "Name": "ContentTemplate",
+                                                                                                          "Value": "null"
+                                                                                                        },
                                                                                                         {
                                                                                                           "Name": "DataContext",
                                                                                                           "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Name",
-                                                                                                          "Value": ""
+                                                                                                          "Value": "contentPresenter"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "Margin",
-                                                                                                          "Value": "0,0,0,0"
+                                                                                                          "Value": "1,1,1,1"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "HorizontalAlignment",
-                                                                                                          "Value": "Stretch"
+                                                                                                          "Value": "Center"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "VerticalAlignment",
-                                                                                                          "Value": "Stretch"
+                                                                                                          "Value": "Center"
                                                                                                         },
                                                                                                         {
                                                                                                           "Name": "ToolTip",
@@ -6708,7 +6912,70 @@
                                                                                                           "Value": ""
                                                                                                         }
                                                                                                       ],
-                                                                                                      "Children": []
+                                                                                                      "Children": [
+                                                                                                        {
+                                                                                                          "Name": "CrispImage",
+                                                                                                          "Properties": [
+                                                                                                            {
+                                                                                                              "Name": "DataContext",
+                                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Name",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Margin",
+                                                                                                              "Value": "0,0,0,0"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "HorizontalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "VerticalAlignment",
+                                                                                                              "Value": "Stretch"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ToolTip",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "ContextMenu",
+                                                                                                              "Value": "null"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Visibility",
+                                                                                                              "Value": "Visible"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "TextAlignment",
+                                                                                                              "Value": "Left"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "IsVirtualizing",
+                                                                                                              "Value": "True"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "HorizontalScrollBarVisibility",
+                                                                                                              "Value": "Disabled"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "VerticalScrollBarVisibility",
+                                                                                                              "Value": "Visible"
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Name",
+                                                                                                              "Value": ""
+                                                                                                            },
+                                                                                                            {
+                                                                                                              "Name": "Text",
+                                                                                                              "Value": ""
+                                                                                                            }
+                                                                                                          ],
+                                                                                                          "Children": []
+                                                                                                        }
+                                                                                                      ]
                                                                                                     }
                                                                                                   ]
                                                                                                 }

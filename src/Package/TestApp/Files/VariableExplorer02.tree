@@ -64,10 +64,6 @@
     {
       "Name": "Name",
       "Value": ""
-    },
-    {
-      "Name": "Text",
-      "Value": ""
     }
   ],
   "Children": [
@@ -128,10 +124,6 @@
         },
         {
           "Name": "Name",
-          "Value": ""
-        },
-        {
-          "Name": "Text",
           "Value": ""
         }
       ],
@@ -198,10 +190,6 @@
             {
               "Name": "Name",
               "Value": ""
-            },
-            {
-              "Name": "Text",
-              "Value": ""
             }
           ],
           "Children": [
@@ -259,10 +247,6 @@
                 {
                   "Name": "Name",
                   "Value": ""
-                },
-                {
-                  "Name": "Text",
-                  "Value": ""
                 }
               ],
               "Children": [
@@ -271,7 +255,7 @@
                   "Properties": [
                     {
                       "Name": "Text",
-                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                      "Value": ""
                     },
                     {
                       "Name": "Padding",
@@ -279,7 +263,7 @@
                     },
                     {
                       "Name": "DataContext",
-                      "Value": "null"
+                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                     },
                     {
                       "Name": "Name",
@@ -328,10 +312,6 @@
                     {
                       "Name": "Name",
                       "Value": ""
-                    },
-                    {
-                      "Name": "Text",
-                      "Value": ""
                     }
                   ],
                   "Children": [
@@ -340,7 +320,7 @@
                       "Properties": [
                         {
                           "Name": "DataContext",
-                          "Value": "null"
+                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                         },
                         {
                           "Name": "Name",
@@ -389,10 +369,6 @@
                         {
                           "Name": "Name",
                           "Value": ""
-                        },
-                        {
-                          "Name": "Text",
-                          "Value": ""
                         }
                       ],
                       "Children": [
@@ -401,7 +377,7 @@
                           "Properties": [
                             {
                               "Name": "DataContext",
-                              "Value": "null"
+                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                             },
                             {
                               "Name": "Name",
@@ -450,10 +426,6 @@
                             {
                               "Name": "Name",
                               "Value": ""
-                            },
-                            {
-                              "Name": "Text",
-                              "Value": ""
                             }
                           ],
                           "Children": []
@@ -475,7 +447,7 @@
                             },
                             {
                               "Name": "DataContext",
-                              "Value": "null"
+                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                             },
                             {
                               "Name": "Name",
@@ -524,10 +496,6 @@
                             {
                               "Name": "Name",
                               "Value": ""
-                            },
-                            {
-                              "Name": "Text",
-                              "Value": ""
                             }
                           ],
                           "Children": [
@@ -540,7 +508,7 @@
                                 },
                                 {
                                   "Name": "DataContext",
-                                  "Value": "null"
+                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                 },
                                 {
                                   "Name": "Name",
@@ -589,10 +557,6 @@
                                 {
                                   "Name": "Name",
                                   "Value": ""
-                                },
-                                {
-                                  "Name": "Text",
-                                  "Value": ""
                                 }
                               ],
                               "Children": [
@@ -605,7 +569,7 @@
                                     },
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                     },
                                     {
                                       "Name": "Name",
@@ -654,10 +618,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -670,7 +630,7 @@
                                         },
                                         {
                                           "Name": "DataContext",
-                                          "Value": "null"
+                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironmentProvider"
                                         },
                                         {
                                           "Name": "Name",
@@ -719,10 +679,6 @@
                                         {
                                           "Name": "Name",
                                           "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
-                                          "Value": ""
                                         }
                                       ],
                                       "Children": []
@@ -738,7 +694,7 @@
                           "Properties": [
                             {
                               "Name": "Content",
-                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                              "Value": ""
                             },
                             {
                               "Name": "ContentTemplate",
@@ -746,7 +702,7 @@
                             },
                             {
                               "Name": "DataContext",
-                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                              "Value": ""
                             },
                             {
                               "Name": "Name",
@@ -795,31 +751,15 @@
                             {
                               "Name": "Name",
                               "Value": ""
-                            },
-                            {
-                              "Name": "Text",
-                              "Value": ""
                             }
                           ],
                           "Children": [
                             {
-                              "Name": "TextBlock",
+                              "Name": "StackPanel",
                               "Properties": [
                                 {
-                                  "Name": "Text",
-                                  "Value": "No R Interactive"
-                                },
-                                {
-                                  "Name": "Padding",
-                                  "Value": "0,0,0,0"
-                                },
-                                {
-                                  "Name": "TextAlignment",
-                                  "Value": "Left"
-                                },
-                                {
                                   "Name": "DataContext",
-                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.REnvironment"
+                                  "Value": ""
                                 },
                                 {
                                   "Name": "Name",
@@ -850,6 +790,10 @@
                                   "Value": "Visible"
                                 },
                                 {
+                                  "Name": "TextAlignment",
+                                  "Value": "Left"
+                                },
+                                {
                                   "Name": "IsVirtualizing",
                                   "Value": "True"
                                 },
@@ -864,13 +808,134 @@
                                 {
                                   "Name": "Name",
                                   "Value": ""
-                                },
-                                {
-                                  "Name": "Text",
-                                  "Value": ""
                                 }
                               ],
-                              "Children": []
+                              "Children": [
+                                {
+                                  "Name": "CrispImage",
+                                  "Properties": [
+                                    {
+                                      "Name": "DataContext",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Margin",
+                                      "Value": "0,0,0,0"
+                                    },
+                                    {
+                                      "Name": "HorizontalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "VerticalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "ToolTip",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "ContextMenu",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "Visibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "TextAlignment",
+                                      "Value": "Left"
+                                    },
+                                    {
+                                      "Name": "IsVirtualizing",
+                                      "Value": "True"
+                                    },
+                                    {
+                                      "Name": "HorizontalScrollBarVisibility",
+                                      "Value": "Disabled"
+                                    },
+                                    {
+                                      "Name": "VerticalScrollBarVisibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    }
+                                  ],
+                                  "Children": []
+                                },
+                                {
+                                  "Name": "TextBlock",
+                                  "Properties": [
+                                    {
+                                      "Name": "Text",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Padding",
+                                      "Value": "0,0,0,0"
+                                    },
+                                    {
+                                      "Name": "TextAlignment",
+                                      "Value": "Left"
+                                    },
+                                    {
+                                      "Name": "DataContext",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    },
+                                    {
+                                      "Name": "Margin",
+                                      "Value": "4,0,0,0"
+                                    },
+                                    {
+                                      "Name": "HorizontalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "VerticalAlignment",
+                                      "Value": "Stretch"
+                                    },
+                                    {
+                                      "Name": "ToolTip",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "ContextMenu",
+                                      "Value": "null"
+                                    },
+                                    {
+                                      "Name": "Visibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "IsVirtualizing",
+                                      "Value": "True"
+                                    },
+                                    {
+                                      "Name": "HorizontalScrollBarVisibility",
+                                      "Value": "Disabled"
+                                    },
+                                    {
+                                      "Name": "VerticalScrollBarVisibility",
+                                      "Value": "Visible"
+                                    },
+                                    {
+                                      "Name": "Name",
+                                      "Value": ""
+                                    }
+                                  ],
+                                  "Children": []
+                                }
+                              ]
                             }
                           ]
                         }
@@ -936,10 +1001,6 @@
                     {
                       "Name": "Name",
                       "Value": ""
-                    },
-                    {
-                      "Name": "Text",
-                      "Value": ""
                     }
                   ],
                   "Children": [
@@ -1000,10 +1061,6 @@
                         },
                         {
                           "Name": "Name",
-                          "Value": ""
-                        },
-                        {
-                          "Name": "Text",
                           "Value": ""
                         }
                       ],
@@ -1074,10 +1131,6 @@
                             {
                               "Name": "Name",
                               "Value": ""
-                            },
-                            {
-                              "Name": "Text",
-                              "Value": ""
                             }
                           ],
                           "Children": [
@@ -1134,10 +1187,6 @@
                                 },
                                 {
                                   "Name": "Name",
-                                  "Value": ""
-                                },
-                                {
-                                  "Name": "Text",
                                   "Value": ""
                                 }
                               ],
@@ -1208,10 +1257,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -1268,10 +1313,6 @@
                                         },
                                         {
                                           "Name": "Name",
-                                          "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
                                           "Value": ""
                                         }
                                       ],
@@ -1330,10 +1371,6 @@
                                             {
                                               "Name": "Name",
                                               "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
-                                              "Value": ""
                                             }
                                           ],
                                           "Children": []
@@ -1391,10 +1428,6 @@
                                             },
                                             {
                                               "Name": "Name",
-                                              "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
                                               "Value": ""
                                             }
                                           ],
@@ -1462,10 +1495,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -1522,10 +1551,6 @@
                                         },
                                         {
                                           "Name": "Name",
-                                          "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
                                           "Value": ""
                                         }
                                       ],
@@ -1596,10 +1621,6 @@
                                             {
                                               "Name": "Name",
                                               "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
-                                              "Value": ""
                                             }
                                           ],
                                           "Children": [
@@ -1656,10 +1677,6 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
                                                   "Value": ""
                                                 }
                                               ],
@@ -1721,10 +1738,6 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
                                                       "Value": ""
                                                     }
                                                   ],
@@ -1791,10 +1804,6 @@
                                                         {
                                                           "Name": "Name",
                                                           "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
-                                                          "Value": ""
                                                         }
                                                       ],
                                                       "Children": []
@@ -1859,10 +1868,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -1923,10 +1928,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -1992,10 +1993,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -2056,10 +2053,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -2125,10 +2118,6 @@
                                             {
                                               "Name": "Name",
                                               "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
-                                              "Value": ""
                                             }
                                           ],
                                           "Children": [
@@ -2185,10 +2174,6 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
                                                   "Value": ""
                                                 }
                                               ],
@@ -2259,10 +2244,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -2319,10 +2300,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -2384,10 +2361,6 @@
                                                             },
                                                             {
                                                               "Name": "Name",
-                                                              "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
                                                               "Value": ""
                                                             }
                                                           ],
@@ -2454,10 +2427,6 @@
                                                                 {
                                                                   "Name": "Name",
                                                                   "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
-                                                                  "Value": ""
                                                                 }
                                                               ],
                                                               "Children": [
@@ -2522,10 +2491,6 @@
                                                                     },
                                                                     {
                                                                       "Name": "Name",
-                                                                      "Value": ""
-                                                                    },
-                                                                    {
-                                                                      "Name": "Text",
                                                                       "Value": ""
                                                                     }
                                                                   ],
@@ -2593,10 +2558,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": []
@@ -2659,10 +2620,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -2724,10 +2681,6 @@
                                                                 {
                                                                   "Name": "Name",
                                                                   "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
-                                                                  "Value": ""
                                                                 }
                                                               ],
                                                               "Children": []
@@ -2803,10 +2756,6 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
                                                       "Value": ""
                                                     }
                                                   ],
@@ -2865,10 +2814,6 @@
                                                         {
                                                           "Name": "Name",
                                                           "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
-                                                          "Value": ""
                                                         }
                                                       ],
                                                       "Children": [
@@ -2929,10 +2874,6 @@
                                                             },
                                                             {
                                                               "Name": "Name",
-                                                              "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
                                                               "Value": ""
                                                             }
                                                           ],
@@ -2999,10 +2940,6 @@
                                                                 {
                                                                   "Name": "Name",
                                                                   "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
-                                                                  "Value": ""
                                                                 }
                                                               ],
                                                               "Children": [
@@ -3067,10 +3004,6 @@
                                                                     },
                                                                     {
                                                                       "Name": "Name",
-                                                                      "Value": ""
-                                                                    },
-                                                                    {
-                                                                      "Name": "Text",
                                                                       "Value": ""
                                                                     }
                                                                   ],
@@ -3138,10 +3071,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -3202,10 +3131,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -3271,10 +3196,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -3335,10 +3256,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -3415,10 +3332,6 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
                                                       "Value": ""
                                                     }
                                                   ],
@@ -3477,10 +3390,6 @@
                                                         {
                                                           "Name": "Name",
                                                           "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
-                                                          "Value": ""
                                                         }
                                                       ],
                                                       "Children": [
@@ -3541,10 +3450,6 @@
                                                             },
                                                             {
                                                               "Name": "Name",
-                                                              "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
                                                               "Value": ""
                                                             }
                                                           ],
@@ -3611,10 +3516,6 @@
                                                                 {
                                                                   "Name": "Name",
                                                                   "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
-                                                                  "Value": ""
                                                                 }
                                                               ],
                                                               "Children": [
@@ -3679,10 +3580,6 @@
                                                                     },
                                                                     {
                                                                       "Name": "Name",
-                                                                      "Value": ""
-                                                                    },
-                                                                    {
-                                                                      "Name": "Text",
                                                                       "Value": ""
                                                                     }
                                                                   ],
@@ -3750,10 +3647,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -3814,10 +3707,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -3883,10 +3772,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -3947,10 +3832,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -4028,10 +3909,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -4088,10 +3965,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -4153,10 +4026,6 @@
                                                             },
                                                             {
                                                               "Name": "Name",
-                                                              "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
                                                               "Value": ""
                                                             }
                                                           ],
@@ -4223,10 +4092,6 @@
                                                                 {
                                                                   "Name": "Name",
                                                                   "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
-                                                                  "Value": ""
                                                                 }
                                                               ],
                                                               "Children": [
@@ -4291,10 +4156,6 @@
                                                                     },
                                                                     {
                                                                       "Name": "Name",
-                                                                      "Value": ""
-                                                                    },
-                                                                    {
-                                                                      "Name": "Text",
                                                                       "Value": ""
                                                                     }
                                                                   ],
@@ -4362,10 +4223,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -4426,10 +4283,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -4495,10 +4348,6 @@
                                                             {
                                                               "Name": "Name",
                                                               "Value": ""
-                                                            },
-                                                            {
-                                                              "Name": "Text",
-                                                              "Value": ""
                                                             }
                                                           ],
                                                           "Children": [
@@ -4559,10 +4408,6 @@
                                                                 },
                                                                 {
                                                                   "Name": "Name",
-                                                                  "Value": ""
-                                                                },
-                                                                {
-                                                                  "Name": "Text",
                                                                   "Value": ""
                                                                 }
                                                               ],
@@ -4644,10 +4489,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -4705,10 +4546,6 @@
                                         {
                                           "Name": "Name",
                                           "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
-                                          "Value": ""
                                         }
                                       ],
                                       "Children": [
@@ -4765,10 +4602,6 @@
                                             },
                                             {
                                               "Name": "Name",
-                                              "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
                                               "Value": ""
                                             }
                                           ],
@@ -4829,10 +4662,6 @@
                                         },
                                         {
                                           "Name": "Name",
-                                          "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
                                           "Value": ""
                                         }
                                       ],
@@ -4898,10 +4727,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -4958,10 +4783,6 @@
                                         },
                                         {
                                           "Name": "Name",
-                                          "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
                                           "Value": ""
                                         }
                                       ],
@@ -5032,10 +4853,6 @@
                                             {
                                               "Name": "Name",
                                               "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
-                                              "Value": ""
                                             }
                                           ],
                                           "Children": [
@@ -5096,10 +4913,6 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
                                                   "Value": ""
                                                 }
                                               ],
@@ -5166,10 +4979,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -5230,10 +5039,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -5298,10 +5103,6 @@
                                             },
                                             {
                                               "Name": "Name",
-                                              "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
                                               "Value": ""
                                             }
                                           ],
@@ -5372,10 +5173,6 @@
                                                 {
                                                   "Name": "Name",
                                                   "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
-                                                  "Value": ""
                                                 }
                                               ],
                                               "Children": []
@@ -5446,10 +5243,6 @@
                                                 {
                                                   "Name": "Name",
                                                   "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
-                                                  "Value": ""
                                                 }
                                               ],
                                               "Children": []
@@ -5512,10 +5305,6 @@
                                                 {
                                                   "Name": "Name",
                                                   "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
-                                                  "Value": ""
                                                 }
                                               ],
                                               "Children": [
@@ -5572,10 +5361,6 @@
                                                     },
                                                     {
                                                       "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
                                                       "Value": ""
                                                     }
                                                   ],
@@ -5651,10 +5436,6 @@
                                             {
                                               "Name": "Name",
                                               "Value": ""
-                                            },
-                                            {
-                                              "Name": "Text",
-                                              "Value": ""
                                             }
                                           ],
                                           "Children": [
@@ -5715,10 +5496,6 @@
                                                 },
                                                 {
                                                   "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Text",
                                                   "Value": ""
                                                 }
                                               ],
@@ -5785,10 +5562,6 @@
                                                     {
                                                       "Name": "Name",
                                                       "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Text",
-                                                      "Value": ""
                                                     }
                                                   ],
                                                   "Children": [
@@ -5849,10 +5622,6 @@
                                                         },
                                                         {
                                                           "Name": "Name",
-                                                          "Value": ""
-                                                        },
-                                                        {
-                                                          "Name": "Text",
                                                           "Value": ""
                                                         }
                                                       ],
@@ -5922,10 +5691,6 @@
                                     {
                                       "Name": "Name",
                                       "Value": ""
-                                    },
-                                    {
-                                      "Name": "Text",
-                                      "Value": ""
                                     }
                                   ],
                                   "Children": [
@@ -5986,10 +5751,6 @@
                                         },
                                         {
                                           "Name": "Name",
-                                          "Value": ""
-                                        },
-                                        {
-                                          "Name": "Text",
                                           "Value": ""
                                         }
                                       ],
