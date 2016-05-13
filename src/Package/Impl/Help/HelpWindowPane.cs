@@ -5,16 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Search;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
@@ -22,8 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     internal class HelpWindowPane : VisualComponentToolWindow<IHelpVisualComponent> {
         public const string WindowGuidString = "9E909526-A616-43B2-A82B-FD639DCD40CB";
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
-
-        private static IEnumerable<Lazy<IRHelpSearchTermProvider>> _termProviders;
 
         public HelpWindowPane() {
             Caption = Resources.HelpWindowCaption;
@@ -36,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             ToolBarCommandTarget = new CommandTargetToOleShim(null, Component.Controller);
             base.OnCreate();
         }
+
+        public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
             var settings = (SearchSettingsDataSource)pSearchSettings;
@@ -50,33 +53,48 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private sealed class HelpSearchTask : VsSearchTask {
+            //private static IEnumerable<Lazy<IRHelpSearchTermProvider>> _termProviders;
+            //private readonly List<string> _terms = new List<string>();
             private readonly IVsSearchCallback _callback;
+            private IRInteractiveWorkflowProvider _workflowProvider;
+
             public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
                 _callback = pSearchCallback;
+                _workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             }
 
-            protected override void OnStartSearch() {
+            protected override async void OnStartSearch() {
                 base.OnStartSearch();
-                VsAppShell.Current.DispatchOnUIThread(() => _historyFiltering.Filter(SearchQuery.SearchString));
-            }
-        }
-        private string[] GetSearchTerms() {
-            var entries = new List<string>();
-            foreach (var p in TermProviders) {
-                entries.AddRange(p.Value.GetEntries());
-            }
-            entries.Sort();
-            return entries.ToArray();
-        }
+                _callback.ReportComplete(this, 1);
 
-        private static IEnumerable<Lazy<IRHelpSearchTermProvider>> TermProviders {
-            get {
-                if (_termProviders == null) {
-                    _termProviders = ComponentLocator<IRHelpSearchTermProvider>.ImportMany();
+                var searchString = SearchQuery.SearchString;
+                if (!string.IsNullOrWhiteSpace(searchString)) {
+                    var session = _workflowProvider.GetOrCreate().RSession;
+                    using (var inter = await session.BeginInteractionAsync()) {
+                        await inter.RespondAsync("?" + searchString + Environment.NewLine);
+                    }
                 }
-                return _termProviders;
             }
+
+
+            // TODO: activate when adding completion to the search box
+            //private void GetSearchTerms() {
+            //    if (_terms.Count == 0) { }
+            //    foreach (var p in TermProviders) {
+            //        _terms.AddRange(p.Value.GetEntries());
+            //    }
+            //    _terms.Sort();
+            //}
+
+            //private static IEnumerable<Lazy<IRHelpSearchTermProvider>> TermProviders {
+            //    get {
+            //        if (_termProviders == null) {
+            //            _termProviders = ComponentLocator<IRHelpSearchTermProvider>.ImportMany();
+            //        }
+            //        return _termProviders;
+            //    }
+            //}
         }
     }
 }
