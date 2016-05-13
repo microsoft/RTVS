@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -21,21 +22,31 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnStartSearch() {
             base.OnStartSearch();
 
+            bool found = false;
             var searchString = SearchQuery.SearchString;
             if (_grid?.Items != null && !string.IsNullOrWhiteSpace(searchString)) {
-                foreach(var itemControl in _grid.Items) {
-                    var tn = itemControl as ObservableTreeNode;
-                    var model = tn?.Model?.Content as VariableViewModel;
-                    if(model != null) {
-                        if (model.Name.StartsWithOrdinal(searchString)) {
-                            VsAppShell.Current.DispatchOnUIThread(() => _grid.SelectedItem = itemControl);
-                            _callback.ReportComplete(this, 1);
-                            return;
-                        }
+                found = Find(s => s.StartsWithOrdinal(searchString));
+                if (!found)
+                    found = Find(s => s.Contains(searchString));
+            }
+            if (!found) {
+                _callback.ReportComplete(this, 0);
+            }
+        }
+
+        private bool Find(Func<string, bool> match) {
+            foreach (var itemControl in _grid.Items) {
+                var tn = itemControl as ObservableTreeNode;
+                var model = tn?.Model?.Content as VariableViewModel;
+                if (model != null) {
+                    if (match(model.Name)) {
+                        VsAppShell.Current.DispatchOnUIThread(() => _grid.SelectedItem = itemControl);
+                        _callback.ReportComplete(this, 1);
+                        return true;
                     }
                 }
             }
-            _callback.ReportComplete(this, 0);
+            return false;
         }
     }
 }

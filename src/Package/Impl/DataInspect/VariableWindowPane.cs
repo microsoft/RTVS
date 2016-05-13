@@ -24,10 +24,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.variableWindowToolBarId);
         }
 
-        public override bool SearchEnabled
-        {
-            get
-            {
+        public override bool SearchEnabled {
+            get {
                 var grid = Content as VariableView;
                 return grid?.RootTreeGrid != null;
             }
