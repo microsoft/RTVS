@@ -10,14 +10,17 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
     internal sealed class ImportDataSetTextFileCommand : SessionCommand {
-        public ImportDataSetTextFileCommand(IRSession session) :
+        private readonly IApplicationShell _appShell;
+
+        public ImportDataSetTextFileCommand(IApplicationShell appShell, IRSession session) :
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdImportDatasetTextFile) {
+            _appShell = appShell;
         }
 
         protected override void Handle() {
             base.Handle();
 
-            string filePath = VsAppShell.Current.BrowseForFileOpen(
+            string filePath = _appShell.BrowseForFileOpen(
                 IntPtr.Zero, Package.Resources.CsvFileFilter,
                 title: Resources.ImportData_EnterTextFileTitle);
 

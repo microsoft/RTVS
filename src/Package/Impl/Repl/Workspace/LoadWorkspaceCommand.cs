@@ -17,12 +17,14 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class LoadWorkspaceCommand : PackageCommand {
+        private readonly IApplicationShell _appShell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public LoadWorkspaceCommand(IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public LoadWorkspaceCommand(IApplicationShell appShell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadWorkspace) {
+            _appShell = appShell;
             _interactiveWorkflow = interactiveWorkflow;
             _rSession = interactiveWorkflow.RSession;
             _projectServiceAccessor = projectServiceAccessor;
@@ -43,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.LoadWorkspaceTitle);
+            var file = _appShell.BrowseForFileOpen(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.LoadWorkspaceTitle);
             if (file == null) {
                 return;
             }

@@ -11,8 +11,11 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class ExportPlotAsImageCommand : PlotWindowCommand {
-        public ExportPlotAsImageCommand(IPlotHistory plotHistory) :
+        private readonly IApplicationShell _appShell;
+
+        public ExportPlotAsImageCommand(IApplicationShell appShell, IPlotHistory plotHistory) :
             base(plotHistory, RPackageCommandId.icmdExportPlotAsImage) {
+            _appShell = appShell;
         }
 
         protected override void SetStatus() {
@@ -20,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         protected override void Handle() {
-            string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
+            string destinationFilePath = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsImageFilter, null, Resources.ExportPlotAsImageDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
                 string device = string.Empty;
                 string extension = Path.GetExtension(destinationFilePath).TrimStart('.').ToLowerInvariant();

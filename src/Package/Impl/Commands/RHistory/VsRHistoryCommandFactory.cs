@@ -8,7 +8,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.History.Commands;
-using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -37,10 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
             var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, _interactiveWorkflow);
             var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, _interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
+            var appShell = VsAppShell.Current;
 
             return new ICommand[] {
-                new LoadHistoryCommand(textView, _historyProvider, _interactiveWorkflow),
-                new SaveHistoryCommand(textView, _historyProvider, _interactiveWorkflow),
+                new LoadHistoryCommand(appShell, textView, _historyProvider, _interactiveWorkflow),
+                new SaveHistoryCommand(appShell, textView, _historyProvider, _interactiveWorkflow),
                 sendToReplCommand,
                 sendToSourceCommand,
                 new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, _interactiveWorkflow),

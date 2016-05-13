@@ -9,8 +9,11 @@ using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
     internal sealed class ExportPlotAsPdfCommand : PlotWindowCommand {
-        public ExportPlotAsPdfCommand(IPlotHistory plotHistory) :
+        private readonly IApplicationShell _appShell;
+
+        public ExportPlotAsPdfCommand(IApplicationShell appShell, IPlotHistory plotHistory) :
             base(plotHistory, RPackageCommandId.icmdExportPlotAsPdf) {
+            _appShell = appShell;
         }
 
         protected override void SetStatus() {
@@ -18,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots.Commands {
         }
 
         protected override void Handle() {
-            string destinationFilePath = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsPdfFilter, null, Resources.ExportPlotAsPdfDialogTitle);
+            string destinationFilePath = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.PlotExportAsPdfFilter, null, Resources.ExportPlotAsPdfDialogTitle);
             if (!string.IsNullOrEmpty(destinationFilePath)) {
                 PlotHistory.PlotContentProvider.ExportAsPdf(destinationFilePath);
             }
