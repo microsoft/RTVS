@@ -358,6 +358,25 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html. Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes..
+        /// </summary>
+        public static string Error_PandocMissing {
+            get {
+                return ResourceManager.GetString("Error_PandocMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) - http://miktex.org/2.9/setup. Be sure to download the Complete installation. Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
+        ///.
+        /// </summary>
+        public static string Error_PdfLatexMissing {
+            get {
+                return ResourceManager.GetString("Error_PdfLatexMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {

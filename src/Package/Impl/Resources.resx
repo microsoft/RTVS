@@ -739,6 +739,13 @@ Additional information:
   <data name="Settings_OsDefaultEncoding" xml:space="preserve">
     <value>(OS Default)</value>
   </data>
+  <data name="Error_PandocMissing" xml:space="preserve">
+    <value>Publishing markdown requires Pandoc. Please install Pandoc for Windows from http://pandoc.org/installing.html. Click OK to open the Pandoc download page in default browser. You may need to restart Visual Studio when the Pandoc setup completes.</value>
+  </data>
+  <data name="Error_PdfLatexMissing" xml:space="preserve">
+    <value>Publishing markdown to PDF requires TeX installation. Please install MiKTeX (Complete) - http://miktex.org/2.9/setup. Be sure to download the Complete installation. Click OK to open MiKTeX download page in the default browser. You may need to restart Visual Studio when the MiKTeX setup completes.
+</value>
+  </data>
   <data name="HelpSearchTooltip" xml:space="preserve">
     <value>Type text to search for in R Help</value>
   </data>
