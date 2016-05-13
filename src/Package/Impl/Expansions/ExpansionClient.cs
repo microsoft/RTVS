@@ -205,16 +205,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
-                SnapshotSpan viewSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, startPos, endPos - startPos);
 
-                NormalizedSnapshotSpanCollection mappedSpans = TextView.BufferGraph.MapDownToBuffer(
-                    viewSpan, SpanTrackingMode.EdgeInclusive, TextBuffer);
-                Debug.Assert(mappedSpans.Count == 1);
+                var rStart = TextView.MapDownToR(startPos);
+                var rEnd = TextView.MapDownToR(endPos);
 
-                if (mappedSpans.Count > 0) {
-                    RangeFormatter.FormatRange(TextView, TextBuffer,
-                        new TextRange(mappedSpans[0].Start, mappedSpans[0].Length),
-                        REditorSettings.FormatOptions);
+                if (rStart.HasValue && rEnd.HasValue && rStart.Value < rEnd.Value) {
+                    RangeFormatter.FormatRange(TextView, TextBuffer, TextRange.FromBounds(rStart.Value, rEnd.Value), REditorSettings.FormatOptions);
                 }
             }
             return hr;
