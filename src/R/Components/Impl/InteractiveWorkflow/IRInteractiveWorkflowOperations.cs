@@ -34,7 +34,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
 
         void SourceFiles(IEnumerable<string> files);
 
-        void SourceFile(string file);
+        void SourceFile(string file, bool echo);
 
         /// <summary>
         /// Attempts to launch Shiby app. Invokes 'library(shiny)'

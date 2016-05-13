@@ -68,7 +68,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOverCommand(interactiveWorkflow),
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
-                new SourceRScriptCommand(interactiveWorkflow, textViewTracker),
+                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false),
+                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true),
                 new RunShinyAppCommand(interactiveWorkflow),
                 new StopShinyAppCommand(interactiveWorkflow),
 

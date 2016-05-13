@@ -1202,6 +1202,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="DownloadLog"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <Strings>
+          <ButtonText>Source R Script with Echo</ButtonText>
+          <MenuText>Source R Script with &amp;Echo</MenuText>
+          <CommandName>Source R Script with Echo</CommandName>
+        </Strings>
+      </Button>
+
       <!-- Context menu -->
       <Button guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" priority="0x0100" type="Button">
         <Icon guid="ImageCatalogGuid" id="StatusHelpOutline"/>
@@ -1449,6 +1462,9 @@
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
     </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x205">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarReplGroup"/>
+    </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="rToolbarDataGroup"/>
     </CommandPlacement>
@@ -1480,6 +1496,10 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x205">
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
@@ -1629,6 +1649,10 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScript" priority="0x410">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" priority="0x415">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
@@ -1807,6 +1831,12 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="SolutionExplorer" key1="S" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScript" editor="Global" key1="S" mod1="CONTROL SHIFT" />
 
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="guidRToolsCmdSet" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="REditor" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="SolutionExplorer" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
 
   </KeyBindings>
@@ -1897,6 +1927,7 @@
       <IDSymbol name="icmdStepOver" value="515" />
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
       <IDSymbol name="icmdClearRepl" value="517" />
+      <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
