@@ -26,6 +26,10 @@ namespace Microsoft.R.Editor.Formatting {
                 return;
             }
 
+            if (!REditorSettings.FormatScope && typedChar == '}') {
+                return;
+            }
+
             SnapshotPoint? rPoint = GetCaretPointInBuffer(textView);
             if (!rPoint.HasValue) {
                 return;
@@ -65,7 +69,7 @@ namespace Microsoft.R.Editor.Formatting {
                     FormatOperations.FormatCurrentLine(textView, subjectBuffer);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, -1);
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, limitAtCaret: true, caretOffset: -1);
             }
         }
 

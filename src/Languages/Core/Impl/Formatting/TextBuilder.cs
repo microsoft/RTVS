@@ -190,7 +190,6 @@ namespace Microsoft.Languages.Core.Formatting {
                 char ch = text[i];
                 if (ch.IsLineBreak()) {
                     AppendNewLine();
-                    i++;
                 } else {
                     AppendText(ch);
                 }

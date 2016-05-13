@@ -14,10 +14,8 @@ using Microsoft.VisualStudio.Editor.Mocks;
 
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
-    public class OutlineTest
-    {
-        public static OutlineRegionCollection BuildOutlineRegions(string content)
-        {
+    public class OutlineTest {
+        public static OutlineRegionCollection BuildOutlineRegions(string content) {
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             using (EditorTree tree = new EditorTree(textBuffer)) {
                 tree.Build();
@@ -34,8 +32,7 @@ namespace Microsoft.R.Editor.Test.Outline {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void OutlineFile(EditorTestFilesFixture fixture, string name)
-        {
+        public static void OutlineFile(EditorTestFilesFixture fixture, string name) {
             string testFile = fixture.GetDestinationPath(name);
             string baselineFile = testFile + ".outline";
             string text = fixture.LoadDestinationFile(name);
@@ -43,16 +40,10 @@ namespace Microsoft.R.Editor.Test.Outline {
             OutlineRegionCollection rc = BuildOutlineRegions(text);
             string actual = TextRangeCollectionWriter.WriteCollection(rc);
 
-            if (_regenerateBaselineFiles)
-            {
-                // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"F:\RTVS\src\R\Editor\Test\Files";
-                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".outline";
-
+            if (_regenerateBaselineFiles) {
+                baselineFile = Path.Combine(fixture.SourcePath, Path.GetFileName(testFile)) + ".outline";
                 TestFiles.UpdateBaseline(baselineFile, actual);
-            }
-            else
-            {
+            } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);
             }
         }

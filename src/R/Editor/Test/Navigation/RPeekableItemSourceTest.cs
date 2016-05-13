@@ -19,10 +19,12 @@ using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using NSubstitute;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Navigation]
+    [Collection(CollectionNames.NonParallel)]
     public class RPeekableItemSourceTest {
         [Test]
         public void PeekFunction01() {

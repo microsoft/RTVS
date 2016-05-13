@@ -206,7 +206,6 @@
                   AutoGenerateColumns="False"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   IsReadOnly="True"
-                  PreviewKeyUp="RootTreeGrid_PreviewKeyUp"
                   RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
