@@ -314,7 +314,7 @@ namespace Microsoft.R.Debugger {
             }
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE)) {
-                if (valueInfo != null) {
+                if (valueInfo != null && valueInfo.Representation != null) {
                     // TODO: handle radix
                     dpi.bstrValue = valueInfo.Representation.ToUnicodeQuotes();
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;

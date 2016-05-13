@@ -500,8 +500,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             var script = "e <- (function(x, y, z) base::environment())(1,,3)";
             var expectation = new VariableExpectation() { Name = "e", Value = "<environment:", TypeName = "environment", Class = "environment", HasChildren = true, CanShowDetail = false };
 
-            var x_expectation = new VariableExpectation() { Name = "x", Value = "<promise>", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
-            var y_expectation = new VariableExpectation() { Name = "z", Value = "<promise>", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+            var x_expectation = new VariableExpectation() { Name = "x", Value = "1", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
+            var y_expectation = new VariableExpectation() { Name = "z", Value = "3", TypeName = "<promise>", Class = "<promise>", HasChildren = false, CanShowDetail = false };
 
             using (var hostScript = new VariableRHostScript()) {
                 var evaluation = (VariableViewModel)await hostScript.EvaluateAndAssert(

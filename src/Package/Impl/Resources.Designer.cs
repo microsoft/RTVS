@@ -1186,7 +1186,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// <summary>
         ///   Looks up a localized string similar to (OS Default).
         /// </summary>
-        public static string Settings_OsDefaultEncoding {
+        public static string Settings_DefaultValue {
             get {
                 return ResourceManager.GetString("Settings_DefaultValue", resourceCulture);
             }
@@ -1702,6 +1702,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string VariableExplorer_EnvironmentName {
             get {
                 return ResourceManager.GetString("VariableExplorer_EnvironmentName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error retrieving environment list.
+        /// </summary>
+        public static string VariableExplorer_ErrorEnvironment {
+            get {
+                return ResourceManager.GetString("VariableExplorer_ErrorEnvironment", resourceCulture);
             }
         }
         
