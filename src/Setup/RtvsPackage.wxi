@@ -18,6 +18,7 @@
           <File Source="$(var.BinDir)\rtvs\R\mirror.R" />
           <File Source="$(var.BinDir)\rtvs\R\overrides.R" />
           <File Source="$(var.BinDir)\rtvs\R\packages.R" />
+          <File Source="$(var.BinDir)\rtvs\R\repr.R" />
           <File Source="$(var.BinDir)\rtvs\R\traceback.R" />
           <File Source="$(var.BinDir)\rtvs\R\util.R" />
         </Component>
