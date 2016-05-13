@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.OnStartSearch();
 
             var searchString = SearchQuery.SearchString;
-            if (!string.IsNullOrWhiteSpace(searchString)) {
+            if (_grid?.Items != null && !string.IsNullOrWhiteSpace(searchString)) {
                 foreach(var itemControl in _grid.Items) {
                     var tn = itemControl as ObservableTreeNode;
                     var model = tn?.Model?.Content as VariableViewModel;
