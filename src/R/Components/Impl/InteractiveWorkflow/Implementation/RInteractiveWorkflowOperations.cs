@@ -182,7 +182,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         private string GetSourceExpression(string file, bool echo) {
-            return $"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()}{(echo ? ", echo=TRUE" : "")})";
+            return $"{(_debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()}{(echo ? ", echo=TRUE" : "")})";
         }
 
         public void TryRunShinyApp () {
