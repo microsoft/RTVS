@@ -90,7 +90,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public void ViewObject(string expression, string title) {
             var viewer = _coreShell.ExportProvider.GetExportedValue<IObjectViewer>();
-            viewer?.ViewObjectDetails(expression, title);
+            viewer?.ViewObjectDetails(_session, REnvironments.GlobalEnv, expression, title);
         }
 
         public async Task ViewLibrary() {

@@ -12,7 +12,7 @@ make_repr_deparse <- function(max_length = NULL) {
 				deparse(obj)
 			} else {
 				# Force max length into range permitted by deparse
-				cutoff <- min(max(repr_max_length, 20), 500);
+				cutoff <- min(max(max_length, 20), 500);
 				deparse(obj, width.cutoff = cutoff, nlines = 1)
 			})
 	}
