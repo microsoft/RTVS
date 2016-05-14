@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -34,7 +35,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
 
         void SourceFiles(IEnumerable<string> files, bool echo);
 
-        void SourceFile(string file, bool echo);
+        void SourceFile(string file, bool echo, Encoding encoding = null);
 
         /// <summary>
         /// Attempts to launch Shiby app. Invokes 'library(shiny)'
