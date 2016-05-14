@@ -66,8 +66,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             try {
-                var localAssemblyName = AssemblyName.GetAssemblyName(path);
-                return Assembly.Load(localAssemblyName);
+                return Assembly.LoadFrom(path);
             } catch (IOException) {
                 return null;
             } catch (BadImageFormatException) {
