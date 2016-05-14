@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.settings" />
   <Import Project="..\R.Wix.Path.settings" />
@@ -13,18 +12,16 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>RTVS</OutputName>
     <OutputType>Bundle</OutputType>
-    <DDWixExtNugetPackageVersion>14.0.22823.1</DDWixExtNugetPackageVersion>
-    <DDWixExtDir>..\..\NugetPackages\DDWixExt.$(DDWixExtNugetPackageVersion)\</DDWixExtDir>
+    <DDWixExtDir Condition=" '$(DDWixExtDir)' == '' ">$(NuGetPackageRoot)DDWixExt\14.0.22823.1\</DDWixExtDir>
     <RHostMsi Condition=" '$(RHostMsi)' == '' ">RHost.msi</RHostMsi>
     <DefineConstants>$(DefineConstants);DDWixExtDir=$(DDWixExtDir);RHostMsi=$(RHostMsi)</DefineConstants>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
     <SccAuxPath>SAK</SccAuxPath>
     <SccLocalPath>SAK</SccLocalPath>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
+    <VsVersion Condition="'$(VsVersion)' == ''">$(VisualStudioVersion)</VsVersion>
     <BinDirectory Condition="'$(BinDirectory)' == ''">..\..\bin\</BinDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">..\..\obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
@@ -48,8 +45,8 @@
     <Compile Include="RTVS_UX.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
     <Content Include="EULA R Tools For Visual Studio.html" />
+    <Content Include="project.json" />
     <Content Include="UXResources\BootstrapperCore.config" />
     <Content Include="UXResources\DarkTheme.xaml" />
     <Content Include="UXResources\HighContrastSkuResources.xaml" />
@@ -61,21 +58,21 @@
   </ItemGroup>
   <ItemGroup>
     <WixExtension Include="WixUtilExtension">
-      <HintPath>$(WixExtDir)\WixUtilExtension.dll</HintPath>
+      <HintPath>$(WixExtDir)WixUtilExtension.dll</HintPath>
       <Name>WixUtilExtension</Name>
     </WixExtension>
     <WixExtension Include="WixBalExtension">
-      <HintPath>$(WixInstallPath)\WixBalExtension.dll</HintPath>
+      <HintPath>$(WixInstallPath)WixBalExtension.dll</HintPath>
       <Name>WixBalExtension</Name>
     </WixExtension>
     <WixExtension Include="DDWixExtension">
-      <HintPath>$(DDWixExtDir)\DDWixExtension.dll</HintPath>
+      <HintPath>$(DDWixExtDir)DDWixExtension.dll</HintPath>
       <Class>Microsoft.VisualStudio.Tools.Build.DDWiXExtension</Class>
       <Name>DDWixExtension</Name>
     </WixExtension>
     <WixExtension Include="DDBinderExtensionForBundle">
       <Class>Microsoft.VisualStudio.Tools.Build.DDBinderExtensionForBundle</Class>
-      <HintPath>$(DDWixExtDir)\DDBinderExtensionForBundle.dll</HintPath>
+      <HintPath>$(DDWixExtDir)DDBinderExtensionForBundle.dll</HintPath>
       <Name>DDBinderExtensionForBundle</Name>
     </WixExtension>
   </ItemGroup>
@@ -83,12 +80,4 @@
     <Folder Include="UXResources\" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props'))" />
-    <Error Condition="!Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets'))" />
-  </Target>
-  <Import Project="..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" Condition="Exists('..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
 </Project>

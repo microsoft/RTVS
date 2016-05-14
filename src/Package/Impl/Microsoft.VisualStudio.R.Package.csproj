@@ -1,7 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="$(VisualStudioVersion)" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props')" />
-  <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -13,8 +11,6 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
@@ -851,14 +847,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeAnalysis, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.CodeAnalysis.Common.1.2.1\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.CodeAnalysis.CSharp.1.2.1\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -877,7 +865,6 @@
       <SpecificVersion>False</SpecificVersion>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -1200,10 +1187,6 @@
   <ItemGroup>
     <Folder Include="Plots\Definitions\" />
   </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddTemplatesToVsixSources" AfterTargets="GetVsixSourceItems">
@@ -1223,26 +1206,10 @@
     <Copy SourceFiles="@(Rules)" DestinationFolder="$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\RTVS\Rules\" />
   </Target>
   <Import Project="..\..\R.Build.Version.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.props'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.props'))" />
-    <Error Condition="!Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets'))" />
-  </Target>
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" />
   <Target Name="BeforeBuild">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
   </Target>
-  <Import Project="..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets" Condition="Exists('..\..\..\NugetPackages\MicroBuild.Core.0.2.0\build\MicroBuild.Core.targets')" />
-  <Import Project="..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\..\..\NugetPackages\Microsoft.VSSDK.BuildTools.15.0.25123-Dev15Preview\build\Microsoft.VSSDK.BuildTools.targets')" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets" Condition="Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>
