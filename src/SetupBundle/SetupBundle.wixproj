@@ -12,6 +12,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <OutputName>RTVS</OutputName>
     <OutputType>Bundle</OutputType>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
     <DDWixExtDir Condition=" '$(DDWixExtDir)' == '' ">$(NuGetPackageRoot)DDWixExt\14.0.22823.1\</DDWixExtDir>
     <RHostMsi Condition=" '$(RHostMsi)' == '' ">RHost.msi</RHostMsi>
     <DefineConstants>$(DefineConstants);DDWixExtDir=$(DDWixExtDir);RHostMsi=$(RHostMsi)</DefineConstants>

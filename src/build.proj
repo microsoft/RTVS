@@ -9,7 +9,7 @@
     <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
     <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
-    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\15.0.16021801\</WixDirectory>
+    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\1.0.15100801\</WixDirectory>
     <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
     <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
     <DDWixDirectory Condition="'$(DDWixDirectory)' == ''">$(NugetDirectory)DDWixExt\14.0.22823.1\</DDWixDirectory>

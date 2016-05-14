@@ -2,7 +2,7 @@
   "dependencies": {
     "DDWixExt": "14.0.22823.1",
     "MicroBuild.Core": "0.2.0",
-    "VS.Tools.Wix": "15.0.16021801"
+    "VS.Tools.Wix": "1.0.15100801"
   },
   "frameworks": {
     "net46": {}
