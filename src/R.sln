@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.UnitTests.Referen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.R.Actions.Test", "R\Actions\Test\Microsoft.R.Actions.Test.csproj", "{E4528324-C399-48D2-AB38-66D951158F12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.UnitTests.References.14.0", "UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj", "{78203460-9937-45E5-81CC-3045DDC10527}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -585,6 +587,18 @@ Global
 		{E4528324-C399-48D2-AB38-66D951158F12}.Release|x64.Build.0 = Release|Any CPU
 		{E4528324-C399-48D2-AB38-66D951158F12}.Release|x86.ActiveCfg = Release|Any CPU
 		{E4528324-C399-48D2-AB38-66D951158F12}.Release|x86.Build.0 = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|x64.Build.0 = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Debug|x86.Build.0 = Debug|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x64.ActiveCfg = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x64.Build.0 = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x86.ActiveCfg = Release|Any CPU
+		{78203460-9937-45E5-81CC-3045DDC10527}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -611,5 +625,6 @@ Global
 		{A3978461-5C39-43AE-9067-D755D51E7B26} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{4297FA87-629A-4000-8169-D97E8E64890E} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 		{E4528324-C399-48D2-AB38-66D951158F12} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
+		{78203460-9937-45E5-81CC-3045DDC10527} = {EE50720D-A0E5-45EE-B2EC-E065B569DB27}
 	EndGlobalSection
 EndGlobal
