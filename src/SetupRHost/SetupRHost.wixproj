@@ -18,8 +18,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <VsVersion Condition="'$(VsVersion)' == ''">$(VisualStudioVersion)</VsVersion>
-    <BinDirectory Condition="'$(BinDirectory)' == ''">..\..\bin\</BinDirectory>
-    <ObjDirectory Condition="'$(ObjDirectory)' == ''">..\..\obj\</ObjDirectory>
+    <BinDirectory Condition="'$(BinDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\bin\</BinDirectory>
+    <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\SetupRHost\</IntermediateOutputPath>

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\R.Build.Version.targets" />
   <Import Project="..\R.Wix.settings" />
   <Import Project="..\R.Wix.Path.settings" />
@@ -23,7 +23,8 @@
   </PropertyGroup>
   <PropertyGroup>
     <VsVersion Condition="'$(VsVersion)' == ''">$(VisualStudioVersion)</VsVersion>
-    <VsRcVersion Condition="'$(VsVersion)' == '14.0' AND '$(VsRcVersion)' == ''">14.0.22823</VsRcVersion>
+    <CompatibleVsVersion Condition="'$(VsVersion)' == '14.0' AND '$(VsRcVersion)' == ''">14.0.22823</CompatibleVsVersion>
+    <CompatibleVsVersion Condition="'$(VsVersion)' == '15.0' AND '$(VsRcVersion)' == ''">15.0.25201</CompatibleVsVersion>
     <BinDirectory Condition="'$(BinDirectory)' == ''">..\..\bin\</BinDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">..\..\obj\</ObjDirectory>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
