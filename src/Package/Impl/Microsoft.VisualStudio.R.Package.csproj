@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="$(VisualStudioVersion)" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -171,9 +171,7 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
-    <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
@@ -328,12 +326,8 @@
     <Compile Include="Options\Attributes\LocDisplayNameAttribute.cs" />
     <Compile Include="Options\Common\LanguageSettingsStorage.cs" />
     <Compile Include="Options\Common\LanguageSettingsStorageWithDialog.cs" />
-    <Compile Include="Options\R\RToolsOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Options\R\Editor\REditorOptionsDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Options\R\RToolsOptionsPage.cs" />
+    <Compile Include="Options\R\Editor\REditorOptionsDialog.cs" />
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
