@@ -4,15 +4,16 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
-using Microsoft.Common.Core;
 using Microsoft.Deployment.WindowsInstaller;
 using Microsoft.R.Actions.Utility;
 using Microsoft.Win32;
 
 namespace SetupCustomActions {
     public class CustomActions {
-        private const string vsServicingKeyName = @"SOFTWARE\Microsoft\DevDiv\vs\Servicing\" + Toolset.Version;
+        private const string vsVersion = "14.0";
+        private const string vsServicingKeyName = @"SOFTWARE\Microsoft\DevDiv\vs\Servicing\" + vsVersion;
 
         [CustomAction]
         public static ActionResult MROInstallPromptAction(Session session) {

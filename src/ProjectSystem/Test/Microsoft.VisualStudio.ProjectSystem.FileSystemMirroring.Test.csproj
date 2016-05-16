@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props" Condition="Exists('..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props')" />
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -21,12 +20,11 @@
     <SccProvider>SAK</SccProvider>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
     <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+    <PreBuildEvent>copy /y "$(MSBuildProjectDirectory)\project.$(VisualStudioVersion).json" "$(MSBuildProjectDirectory)\project.json"</PreBuildEvent>
   </PropertyGroup>
   <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
@@ -36,83 +34,7 @@
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.5.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\FluentAssertions.4.5.0\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.5.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\FluentAssertions.4.5.0\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.15.0.25123-Dev15Preview\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.ProjectSystem">
-      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ProjectSystem.15.0.183-pre\lib\net451\Microsoft.VisualStudio.ProjectSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.ProjectSystem.Interop">
-      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ProjectSystem.15.0.183-pre\lib\net451\Microsoft.VisualStudio.ProjectSystem.Interop.dll</HintPath>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.ProjectSystem.VS">
-      <HintPath>..\..\..\NugetPackages\Microsoft.VisualStudio.ProjectSystem.15.0.183-pre\lib\net451\Microsoft.VisualStudio.ProjectSystem.VS.dll</HintPath>
-    </Reference>
-    <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.AttributedModel, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Convention, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Hosting, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.Runtime, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Composition.TypedParts, Version=1.0.30.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Composition.1.0.30\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Reflection.Metadata, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\System.Reflection.Metadata.1.2.0\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.assert, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\xunit.assert.2.2.0-beta1-build3239\lib\dotnet\xunit.assert.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.core, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\xunit.extensibility.core.2.2.0-beta1-build3239\lib\dotnet\xunit.core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.execution.desktop, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\NugetPackages\xunit.extensibility.execution.2.2.0-beta1-build3239\lib\net45\xunit.execution.desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
@@ -131,7 +53,7 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
+    <ProjectReference Include="..\..\UnitTests\References.$(VisualStudioVersion)\Microsoft.UnitTests.References.$(VisualStudioVersion).csproj">
       <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
       <Name>Microsoft.UnitTests.References.15.0</Name>
     </ProjectReference>
@@ -155,12 +77,12 @@
     <Compile Include="Project\FileSystemMirroringProjectUtilitiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
-    <Analyzer Include="..\..\..\NugetPackages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+    <None Include="..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+      <Link>app.config</Link>
+    </None>
+    <None Include="project.14.0.json" />
+    <None Include="project.15.0.json" />
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
@@ -171,17 +93,4 @@
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\..\NugetPackages\xunit.runner.visualstudio.2.2.0-beta1-build1144\build\net20\xunit.runner.visualstudio.props'))" />
-  </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

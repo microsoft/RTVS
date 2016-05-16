@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="$(VisualStudioVersion)"
+<Project ToolsVersion="14.0"
          DefaultTargets="Build"
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
@@ -7,11 +7,12 @@
     <RootDirectory Condition=" '$(RootDirectory)'=='' ">$(MSBuildThisFileDirectory)..\</RootDirectory>
     <OutputDirectory Condition=" '$(OutputDirectory)'=='' ">$(RootDirectory)bin\</OutputDirectory>
     <SourceDirectory Condition=" '$(SourceDirectory)'=='' ">$(RootDirectory)src\</SourceDirectory>
-    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(RootDirectory)NugetPackages\</NugetDirectory>
-    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix.1.0.15100801\</WixDirectory>
+    <NugetDirectory Condition="'$(NugetDirectory)' == ''">$(UserProfile)\.nuget\packages\</NugetDirectory>
+    <WixDirectory Condition="'$(WixDirectory)' == ''">$(NugetDirectory)VS.Tools.Wix\1.0.15100801\</WixDirectory>
     <WixBinDirectory Condition="'$(WixBinDirectory)' == ''">$(WixDirectory)bin\</WixBinDirectory>
     <WixBinSdkDirectory Condition="'$(WixBinSdkDirectory)' == ''">$(WixBinDirectory)sdk\</WixBinSdkDirectory>
-
+    <DDWixDirectory Condition="'$(DDWixDirectory)' == ''">$(NugetDirectory)DDWixExt\14.0.22823.1\</DDWixDirectory>
+    
     <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">any cpu</Platform>
     <Year Condition="'$(Year)' == ''">$([System.DateTime]::Now.Year)</Year>
@@ -27,8 +28,9 @@
     <RHostMsi Condition="'$(RHostMsi)' == ''">RHost_$(Year)$(Date)$(Time).msi</RHostMsi>
     <RtvsExe Condition="'$(RtvsExe)' == ''">RTVS_$(Year)$(Date)$(Time).exe</RtvsExe>
 
-    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SolutionProperties>
-    <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath)</SetupProperties>
+    <SolutionProperties Condition="'$(SolutionProperties)' == ''">Configuration=$(Configuration);Platform=$(Platform);GenerateAssemblyVersionInfo=true;Year=$(Year);Date=$(Date);Time=$(Time);SolutionDir=$(SourceDirectory);WIX=$(WixDirectory);WixToolPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath);DevEnvDir=$(DevEnvDir)</SolutionProperties>
+    <SetupProperties Condition="'$(SetupProperties)' == ''">Configuration=$(Configuration);Platform=x86;GenerateAssemblyVersionInfo=true;SuppressValidation=true;Year=$(Year);Date=$(Date);Time=$(Time);WIX=$(WixDirectory);WixInstallPath=$(WixBinDirectory);WixToolPath=$(WixBinDirectory);WixSdkPath=$(WixBinSdkDirectory);WixTargetsPath=$(WixTargetsPath);WixCATargetsPath=$(WixCATargetsPath);DevEnvDir=$(DevEnvDir)</SetupProperties>
+    <SetupBundleProperties Condition="'$(SetupBundleProperties)' == ''">RHostMsi=$(RHostMsi);$(SetupProperties);DDWixExtDir=$(DDWixDirectory)</SetupBundleProperties>
   </PropertyGroup>
 
   <Target Name="RenameRHostMSI">
@@ -39,31 +41,55 @@
     <Move SourceFiles="$(OutputDirectory)$(Configuration)\RTVS.exe" DestinationFiles="$(OutputDirectory)$(Configuration)\$(RtvsExe)" />
   </Target>
 
+  <Target Name="ResetNuget">
+    <ItemGroup>
+      <ProjectJson Include="$(SourceDirectory)**\project.$(VisualStudioVersion).json"/>
+      <ProjectLockJson Include="$(SourceDirectory)**\project.lock.json"/>
+      <NugetProps Include="$(SourceDirectory)**\*.nuget.props"/>
+      <NugetTargets Include="$(SourceDirectory)**\*.nuget.targets"/>
+    </ItemGroup>
+    <Copy SourceFiles="%(ProjectJson.FullPath)" DestinationFiles="@(ProjectJson -> '%(RootDir)%(Directory)project.json')" />
+    <Delete Files="%(ProjectLockJson.FullPath)" />
+    <Delete Files="%(NugetProps.FullPath)" />
+    <Delete Files="%(NugetTargets.FullPath)" />
+  </Target>
+
+  <Target Name="Reset">
+    <ItemGroup>
+      <Bin Include="$(RootDirectory)bin\" />	
+      <Obj Include="$(RootDirectory)obj\" />	
+    </ItemGroup>
+    <CallTarget Targets="ResetNuget" />
+    <RemoveDir Directories="%(Bin.FullPath);%(Obj.FullPath)" />
+  </Target>
+
   <Target Name="Clean">
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Clean" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Clean" Projects="$(Setup)" Properties="$(SetupProperties)" />
-    <MSBuild Targets="Clean" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+    <MSBuild Targets="Clean" Projects="$(SetupBundle)" Properties="$(SetupBundleProperties)" />
   </Target>
 
   <Target Name="Build">
+    <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Build" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <CallTarget Targets="RenameRHostMSI" />
-    <MSBuild Targets="Build" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+    <MSBuild Targets="Build" Projects="$(SetupBundle)" Properties="$(SetupBundleProperties)" />
     <CallTarget Targets="RenameSetupBundle" />
   </Target>
 
   <Target Name="Rebuild">
+    <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
     <MSBuild Targets="Rebuild" Projects="$(Setup)" Properties="$(SetupProperties)" />
     <CallTarget Targets="RenameRHostMSI" />
-    <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="RHostMsi=$(RHostMsi);$(SetupProperties)" />
+    <MSBuild Targets="Rebuild" Projects="$(SetupBundle)" Properties="$(SetupBundleProperties)" />
     <CallTarget Targets="RenameSetupBundle" />
   </Target>
 </Project>

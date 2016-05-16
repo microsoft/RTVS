@@ -48,6 +48,11 @@ _TeamCity*
 # NuGet Packages Directory
 NugetPackages/*
 
+# NuGet Generated files
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
 # Windows Azure Build Output
 csx/
 *.build.csdef
