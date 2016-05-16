@@ -15,7 +15,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// such as R inside RMD. ASP.NET or Razor would use different 
     /// custom implementation.
     /// </summary>
-    public class BufferGenerator {
+    public class BufferGenerator: IBufferGenerator {
         #region IBufferGenerator
         public virtual void GenerateContent(ITextBuffer diskBuffer, IEnumerable<ITextRange> languageBlocks) {
             var mappings = new List<ProjectionMapping>();
@@ -23,9 +23,10 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
 
             var pbm = ProjectionBufferManager.FromTextBuffer(diskBuffer);
             var sb = new StringBuilder();
+            var snapshot = diskBuffer.CurrentSnapshot;
 
             foreach (var b in languageBlocks) {
-                var text = pbm.ProjectionBuffer.CurrentSnapshot.GetText(b.Start, b.Length);
+                var text = snapshot.GetText(b.Start, b.Length);
                 secondaryIndex = sb.Length;
 
                 sb.Append(text + Environment.NewLine);
@@ -33,7 +34,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
                 mappings.Add(m);
             }
 
-            pbm.SetTextAndMappings(sb.ToString(), mappings);
+            pbm.SetProjectionMappings(diskBuffer, sb.ToString(), mappings);
         }
         #endregion
     }

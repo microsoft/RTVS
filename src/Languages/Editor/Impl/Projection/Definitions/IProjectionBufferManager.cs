@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
     public interface IProjectionBufferManager: IDisposable {
-        IProjectionBuffer ProjectionBuffer { get; }
-        void SetTextAndMappings(string text, IReadOnlyList<ProjectionMapping> mappings);
+        IProjectionBuffer PrimaryProjectionBuffer { get; }
+        IProjectionBuffer SecondaryProjectionBuffer { get; }
+        void SetProjectionMappings(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
     }
 }

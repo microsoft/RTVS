@@ -16,15 +16,19 @@ namespace Microsoft.Languages.Editor.Projection {
         private readonly ITextBuffer _diskBuffer;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
 
-        public ProjectionBufferManager(ITextBuffer diskBuffer, 
+        public ProjectionBufferManager(ITextBuffer diskBuffer,
                                        IProjectionBufferFactoryService projectionBufferFactoryService,
                                        IContentTypeRegistryService contentTypeRegistryService,
-                                       string projectionContentTypeName) {
+                                       string primaryProjectionContentTypeName,
+                                       string secondaryContentType) {
             _diskBuffer = diskBuffer;
             _contentTypeRegistryService = contentTypeRegistryService;
 
-            var contentType = _contentTypeRegistryService.GetContentType(projectionContentTypeName);
-            ProjectionBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            var contentType = _contentTypeRegistryService.GetContentType(primaryProjectionContentTypeName);
+            PrimaryProjectionBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+
+            contentType = _contentTypeRegistryService.GetContentType(secondaryContentType);
+            SecondaryProjectionBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             ServiceManager.AddService<IProjectionBufferManager>(this, _diskBuffer);
         }
@@ -34,11 +38,22 @@ namespace Microsoft.Languages.Editor.Projection {
         }
 
         #region IProjectionBufferManager
-        public IProjectionBuffer ProjectionBuffer { get; }
+        public IProjectionBuffer PrimaryProjectionBuffer { get; }
 
-        public void SetTextAndMappings(string text, IReadOnlyList<ProjectionMapping> mappings) {
+        public IProjectionBuffer SecondaryProjectionBuffer { get; }
+
+        public void SetProjectionMappings(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
-            UpdateTextBuffer(mappings, text);
+            List<object> primarySpans;
+            List<object> secondarySpans;
+
+            CreateSpans(primaryBuffer, secondaryBuffer, mappings, out primarySpans, out secondarySpans);
+
+            var editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(PrimaryProjectionBuffer.CurrentSnapshot.GetSourceSpans(), primarySpans);
+            PrimaryProjectionBuffer.ReplaceSpans(0, PrimaryProjectionBuffer.CurrentSnapshot.SpanCount, primarySpans, editOptions, this);
+
+            editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(PrimaryProjectionBuffer.CurrentSnapshot.GetSourceSpans(), secondarySpans);
+            SecondaryProjectionBuffer.ReplaceSpans(0, SecondaryProjectionBuffer.CurrentSnapshot.SpanCount, secondarySpans, editOptions, this);
         }
 
         public void Dispose() {
@@ -47,43 +62,48 @@ namespace Microsoft.Languages.Editor.Projection {
         #endregion
 
         /// <summary>
-        /// Sets the text and spans in the language buffer based on a list of mappings
-        /// </summary>
-        private void UpdateTextBuffer(IReadOnlyList<ProjectionMapping> mappings, string fullLangBufferText) {
-            List<object> sourceSpans = CreateSourceSpans(mappings, fullLangBufferText);
-            EditOptions editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(ProjectionBuffer.CurrentSnapshot.GetSourceSpans(), sourceSpans);
-
-            ProjectionBuffer.ReplaceSpans(0, ProjectionBuffer.CurrentSnapshot.SpanCount, sourceSpans, editOptions, this);
-        }
-
-        /// <summary>
         /// Uses the current GrowingSpanDatas content to create a list of
         /// source spans and inert text spans. This should really only be called from UpdateTextBuffer.
         /// </summary>
-        private List<object> CreateSourceSpans(IReadOnlyList<ProjectionMapping> mappings, string fullLangBufferText) {
-            List<object> sourceSpans = new List<object>(mappings.Count);
-            int langIndex = 0; // last processed position in language buffer
+        private void CreateSpans(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer,
+                                 IReadOnlyList<ProjectionMapping> mappings, 
+                                 out List<object> primarySpans, out List<object> secondarySpans) {
+            primarySpans = new List<object>(mappings.Count);
+            secondarySpans = new List<object>(mappings.Count);
+
+            var primaryText = primaryBuffer.CurrentSnapshot.GetText();
+            var secondaryText = secondaryBuffer.CurrentSnapshot.GetText();
+            int primaryIndex = 0;
+            int secondaryIndex = 0;
+            Span primarySpan, secondarySpan;
 
             for (int i = 0; i < mappings.Count; i++) {
                 ProjectionMapping mapping = mappings[i];
-                // Inert area is area that belongs to the primary (top-level) document
-                Span inertSpan = Span.FromBounds(langIndex, mapping.ProjectionStart);
-                if (!inertSpan.IsEmpty) {
-                    // Gather inert text between spans
-                    sourceSpans.Add(fullLangBufferText.Substring(inertSpan.Start, inertSpan.Length));
+                if (mapping.Length > 0) {
+                    // Inert area is area that belongs to the primary (top-level) document
+                    // is active area for the secondary buffer and vise versa.
+                    primarySpan = Span.FromBounds(primaryIndex, mapping.SourceStart);
+                    primarySpans.Add(primaryBuffer.CurrentSnapshot.CreateTrackingSpan(primarySpan, SpanTrackingMode.EdgeInclusive)); // active
+                    primarySpans.Add(primaryText.Substring(mapping.SourceRange.Start, mapping.Length)); // inert
+                    primaryIndex = mapping.SourceRange.End;
+
+                    secondarySpan = Span.FromBounds(secondaryIndex, mapping.Length);
+                    secondarySpans.Add(secondaryText.Substring(secondarySpan.End, mapping.Length)); // inert
+                    secondarySpans.Add(secondaryBuffer.CurrentSnapshot.CreateTrackingSpan(secondarySpan, SpanTrackingMode.EdgeInclusive)); // active
+                    secondaryIndex = mapping.ProjectionRange.End;
                 }
-                // Map contained language range
-                Span languageSpan = new Span(mapping.ProjectionStart, mapping.ProjectionRange.Length);
-                sourceSpans.Add(languageSpan);
-                langIndex = mapping.ProjectionStart + mapping.Length;
             }
 
             // Add the final inert text after the last span
-            Span lastInertSpan = Span.FromBounds(langIndex, fullLangBufferText.Length);
-            if (!lastInertSpan.IsEmpty) {
-                sourceSpans.Add(fullLangBufferText.Substring(lastInertSpan.Start, lastInertSpan.Length));
+            primarySpan = Span.FromBounds(primaryIndex, primaryBuffer.CurrentSnapshot.Length);
+            if (!primarySpan.IsEmpty) {
+                primarySpans.Add(primaryText.Substring(primarySpan.Start, primarySpan.Length)); // inert
             }
-            return sourceSpans;
+
+            secondarySpan = Span.FromBounds(secondaryIndex, secondaryBuffer.CurrentSnapshot.Length);
+            if (!secondarySpan.IsEmpty) {
+                secondarySpans.Add(secondaryText.Substring(secondarySpan.Start, secondarySpan.Length)); // inert
+            }
         }
     }
 }

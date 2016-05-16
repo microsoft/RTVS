@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
     internal sealed class RLanguageHandler : ContainedLanguageHandler {
         private readonly RCodeFragmentCollection _fragments = new RCodeFragmentCollection();
-        private readonly IBufferGenerator _generator;
+        private readonly IBufferGenerator _generator = new BufferGenerator();
 
         public RLanguageHandler(ITextBuffer textBuffer) :
             base(textBuffer) {
