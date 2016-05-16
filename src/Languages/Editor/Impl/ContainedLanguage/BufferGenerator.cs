@@ -14,7 +14,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// ASP.NET and Razor use different custom implementation.
     /// </summary>
     public abstract class BufferGenerator {
-        protected LanguageProjectionBuffer ProjectionBuffer { get; private set; }
+        protected ContainedLanguageProjectionBuffer ProjectionBuffer { get; private set; }
         protected ProjectionBufferManager ProjectionBufferManager { get; }
         protected LanguageBlockCollection LanguageBlocks { get; }
         protected IEditorDocument Document { get; }
@@ -50,7 +50,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
                 return true;
             }
 
-            ProjectionBuffer = ProjectionBufferManager.GetProjectionBuffer(ContentType) as LanguageProjectionBuffer;
+            ProjectionBuffer = ProjectionBufferManager.GetProjectionBuffer(ContentType) as ContainedLanguageProjectionBuffer;
             return ProjectionBuffer != null;
         }
     }

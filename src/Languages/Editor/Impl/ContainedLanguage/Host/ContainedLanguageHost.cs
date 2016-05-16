@@ -3,24 +3,21 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     using Composition;
-
+    using Services;
     /// <summary>
     /// Helper class that simplifies location of contained language host
     /// for contained (secondary) languages. 
     /// </summary>
-    public static class ContainedLanguageHost
-    {
+    public static class ContainedLanguageHost {
         /// <summary>
         /// Retrives contained language host. Typically called from text view connection listener.
         /// </summary>
         /// <param name="textView">Primary text view</param>
         /// <param name="textBuffer">Contained language buffer</param>
         /// <returns>Contained language host for this buffer and language, <seealso cref="IContainedLanguageHost"/></returns>
-        public static IContainedLanguageHost GetHost(ITextView textView, ITextBuffer textBuffer)
-        {
+        public static IContainedLanguageHost GetHost(ITextView textView, ITextBuffer textBuffer) {
             IContainedLanguageHost containedLanguageHost = TryGetHost(textBuffer);
-            if (containedLanguageHost == null)
-            {
+            if (containedLanguageHost == null) {
                 var containedLanguageHostProvider =
                     ComponentLocatorForOrderedContentType<IContainedLanguageHostProvider>.
                             FindFirstOrderedComponent(textView.TextDataModel.DocumentBuffer.ContentType.TypeName);
@@ -37,8 +34,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// </summary>
         /// <param name="textBuffer">Contained language buffer</param>
         /// <returns>Contained language host for this buffer and language, <seealso cref="IContainedLanguageHost"/> if it exists</returns>
-        public static IContainedLanguageHost TryGetHost(ITextBuffer textBuffer)
-        {
+        public static IContainedLanguageHost TryGetHost(ITextBuffer textBuffer) {
             return ServiceManager.GetService<IContainedLanguageHost>(textBuffer);
         }
     }

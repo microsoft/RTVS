@@ -89,6 +89,7 @@
     <Compile Include="ContainedLanguage\ILanguageBlock.cs" />
     <Compile Include="ContainedLanguage\LanguageBlock.cs" />
     <Compile Include="ContainedLanguage\LanguageBlockCollection.cs" />
+    <Compile Include="ContainedLanguage\LanguageBlockCollectionEventArgs.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />
     <Compile Include="Imaging\GlyphService.cs" />
@@ -99,14 +100,14 @@
     <Compile Include="Outline\OutlineRegionsChange.cs" />
     <Compile Include="Outline\OutlineRegionsChangedEventArgs.cs" />
     <Compile Include="Outline\OutliningTagger.cs" />
-    <Compile Include="Projection\LanguageProjectionBuffer.cs" />
-    <Compile Include="Projection\LanguageProjectionManager.cs" />
+    <Compile Include="Projection\ContainedLanguageProjectionBuffer.cs" />
+    <Compile Include="Projection\ContainedLanguageProjectionManager.cs" />
     <Compile Include="Projection\MappingsChangedEventArgs.cs" />
-    <Compile Include="Projection\ProjectionBuffer.cs" />
+    <Compile Include="Projection\ProjectionBufferBase.cs" />
     <Compile Include="Projection\ProjectionBufferCreatedEventArgs.cs" />
     <Compile Include="Projection\ProjectionBufferManager.cs" />
     <Compile Include="Projection\ProjectionMapping.cs" />
-    <Compile Include="Projection\ViewProjectionManager.cs" />
+    <Compile Include="Projection\PrimaryLanguageProjectionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Completion\CompletionCommandHandler.cs" />
     <Compile Include="Completion\CompletionController.cs" />

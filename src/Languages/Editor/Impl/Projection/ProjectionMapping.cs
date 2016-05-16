@@ -2,23 +2,22 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using Microsoft.Languages.Core.Text;
-using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Projection {
     /// <summary>
     /// Represent a mapping between primary (view) buffer and 
     /// the contained (projected) language 
     /// </summary>
-    public sealed class ProjectionMapping : TextRange, IPropertyOwner {
+    public sealed class ProjectionMapping : TextRange {
         /// <summary>
         /// Text range in primary (view) buffer
         /// </summary>
-        public ITextRange SourceRange { get; private set; }
+        public ITextRange SourceRange { get; }
 
         /// <summary>
         /// Text range inside contained language buffer.
         /// </summary>
-        public ITextRange ProjectionRange { get; private set; }
+        public ITextRange ProjectionRange { get; }
 
         /// <summary>
         /// Start of mapping in primary (view) buffer.
@@ -29,8 +28,6 @@ namespace Microsoft.Languages.Editor.Projection {
         /// Start of mapping in secondary (contained language) buffer.
         /// </summary>
         public int ProjectionStart => ProjectionRange.Start;
-
-        private PropertyCollection _properties = new PropertyCollection();
 
         /// <summary>
         /// Creates projection mapping
@@ -44,17 +41,5 @@ namespace Microsoft.Languages.Editor.Projection {
             SourceRange = new TextRange(sourceStart, length);
             ProjectionRange = new TextRange(projectionStart, length);
         }
-
-        public static int CompareViaSourceLocation(ITextRange first, ITextRange second) {
-            return first.Start.CompareTo(second.Start);
-        }
-
-        public static int CompareViaProjectionLocation(ProjectionMapping first, ProjectionMapping second) {
-            return first.ProjectionStart.CompareTo(second.ProjectionStart);
-        }
-
-        #region IPropertyOwner Members
-        public PropertyCollection Properties => _properties;
-        #endregion
     }
 }

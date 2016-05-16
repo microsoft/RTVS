@@ -8,23 +8,11 @@ using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// <summary>
-    /// Arguments for language block collection events
+    /// Collection of language blocks (spans) in the file. Represents ranges
+    /// that belong to different languages in the file. Example: HTML/CSS/Script 
+    /// in Web scenarios or Markdown/R in R Markdown files.
     /// </summary>
-    public class LanguageBlockCollectionEventArgs : EventArgs {
-        /// <summary>
-        /// Language block that was added or removed
-        /// </summary>
-        public LanguageBlock LanguageBlock { get; private set; }
-
-        public LanguageBlockCollectionEventArgs(LanguageBlock languageBlock) {
-            LanguageBlock = languageBlock;
-        }
-    }
-
-    /// <summary>
-    /// Collection of language blocks (spans) in the file
-    /// </summary>
-    public class LanguageBlockCollection : IEnumerable<LanguageBlock> {
+    public sealed class LanguageBlockCollection : IEnumerable<LanguageBlock> {
         /// <summary>
         /// List of secondary language blocks in the file
         /// </summary>
@@ -53,7 +41,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <summary>
         /// Number of blocks in the collection
         /// </summary>
-        public int Count { get { return _blockList.Count; } }
+        public int Count => _blockList.Count;
 
         /// <summary>
         /// Updates collection reflecting change made to the source text buffer
@@ -62,10 +50,8 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
             var removedBlocks = _blockList.ReflectTextChange(start, oldLength, newLength);
             if (removedBlocks.Count > 0) {
                 ClearCache();
-
                 foreach (var block in removedBlocks) {
-                    if (BlockRemoved != null)
-                        BlockRemoved(this, new LanguageBlockCollectionEventArgs(block));
+                    BlockRemoved?.Invoke(this, new LanguageBlockCollectionEventArgs(block));
                 }
             }
         }
@@ -75,9 +61,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// </summary>
         public void Clear() {
             _blockList.Clear();
-
-            if (Cleared != null)
-                Cleared(this, EventArgs.Empty);
+            Cleared?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -87,9 +71,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         public void AddBlock(LanguageBlock block) {
             ClearCache();
             _blockList.Add(block);
-
-            if (BlockAdded != null)
-                BlockAdded(this, new LanguageBlockCollectionEventArgs(block));
+            BlockAdded?.Invoke(this, new LanguageBlockCollectionEventArgs(block));
         }
 
         public void RemoveBlockAt(int index) {
@@ -97,9 +79,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
 
             var block = _blockList[index];
             _blockList.RemoveAt(index);
-
-            if (BlockRemoved != null)
-                BlockRemoved(this, new LanguageBlockCollectionEventArgs(block));
+            BlockRemoved?.Invoke(this, new LanguageBlockCollectionEventArgs(block));
         }
 
         public void RemoveBlock(LanguageBlock block) {
@@ -116,11 +96,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// </summary>
         /// <param name="index">Index into the collection</param>
         /// <returns>Language block</returns>
-        public LanguageBlock this[int index] {
-            get {
-                return _blockList[index];
-            }
-        }
+        public LanguageBlock this[int index] => _blockList[index];
 
         /// <summary>
         /// Locates language block at a given position in the document text buffer
@@ -184,13 +160,11 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
                 if (index >= 0)
                     RemoveBlockAt(index);
             }
-
             ClearCache();
         }
 
         public void SortByPosition() {
             _blockList.Sort();
-
             ClearCache();
         }
 

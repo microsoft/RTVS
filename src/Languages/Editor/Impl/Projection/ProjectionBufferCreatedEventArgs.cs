@@ -7,9 +7,9 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.Languages.Editor.Projection {
     public sealed class ProjectionBufferCreatedEventArgs : EventArgs {
         public IContentType ContentType { get; }
-        public LanguageProjectionBuffer ProjectionBuffer { get; }
+        public ContainedLanguageProjectionBuffer ProjectionBuffer { get; }
 
-        public ProjectionBufferCreatedEventArgs(IContentType contentType, LanguageProjectionBuffer projectionBuffer) {
+        public ProjectionBufferCreatedEventArgs(IContentType contentType, ContainedLanguageProjectionBuffer projectionBuffer) {
             ProjectionBuffer = projectionBuffer;
             ContentType = contentType;
         }

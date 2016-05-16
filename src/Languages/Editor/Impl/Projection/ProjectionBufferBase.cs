@@ -10,25 +10,10 @@ using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
     /// <summary>
-    /// Represents top level buffer in the buffer graph. Projection buffer is a stitched buffer 
-    /// that maps to contained language(s) as well as into the disk buffer. Example: HTML file
-    /// comes as a disk buffer and gets split into HTML, CSS, JavaScript. The respective contained
-    /// language buffers are generated (CSS and JavaScript) Then the projection buffer is created 
-    /// that contains stitched regions: some from HTML, some from CSS and some from JavaScript buffers.
-    /// Similarly, R inside R Markdown is a contained language. Original RMD is in the disk buffer
-    /// but actual buffer we see in the view is the projection buffer.
+    /// Base class projection buffer in the buffer graph.
     /// </summary>
-    public abstract class ProjectionBuffer {
-        public IProjectionBuffer IProjectionBuffer { get; protected set; }
-
-        /// <summary>
-        /// Original top-level file content
-        /// </summary>
-        protected ITextBuffer DiskBuffer { get; set; }
-
-        internal ProjectionBuffer(ITextBuffer diskBuffer) {
-            DiskBuffer = diskBuffer;
-        }
+    public abstract class ProjectionBufferBase {
+        public IProjectionBuffer ProjectionBuffer { get; protected set; }
 
         internal static EditOptions GetAppropriateChangeEditOptions(ReadOnlyCollection<SnapshotSpan> oldSourceSpans, List<object> newSourceSpans) {
             // A bunch of mappings are going to be either added or removed. This can be a real perf killer 
