@@ -1,6 +1,5 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.6.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.Editor": "15.0.25123-Dev15Preview",
     "Microsoft.VisualStudio.Language.StandardClassification": "15.0.25123-Dev15Preview",

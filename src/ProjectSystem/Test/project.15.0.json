@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.6.0",
+    "FluentAssertions": "4.6.1",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.183-pre",
     "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",

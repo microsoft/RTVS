@@ -1,6 +1,5 @@
 ﻿{
   "dependencies": {
-    "FluentAssertions": "4.6.0",
     "MicroBuild.Core": "0.2.0",
     "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
     "Microsoft.VisualStudio.ImageCatalog": "14.2.25123",
