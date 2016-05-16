@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
     "Microsoft.VisualStudio.Editor": "14.2.25123",
     "Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime": "14.2.25123",
     "Microsoft.VisualStudio.Language.Intellisense": "14.2.25123",
