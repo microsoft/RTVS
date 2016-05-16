@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             // block. For example, when user types ``` in a middle of existing ```...``` block. 
             // This is similar to typing %> or ?> in a middle of ASP.NET or PHP block.
             int last = tokens.Count - 1;
-            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.CodeStart) {
+            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.Code) {
                 tokens.RemoveAt(last);
             }
 

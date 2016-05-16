@@ -104,7 +104,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tokens\MarkdownRCodeToken.cs" />
     <Compile Include="Tokens\MarkdownToken.cs" />
     <Compile Include="Tokens\MdTokenizer.cs" />
     <Compile Include="Tokens\MarkdownTokenType.cs" />
@@ -132,6 +131,10 @@
     <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
+      <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
+      <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\R\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>

@@ -7,6 +7,6 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     public interface IBufferGenerator {
-        void GenerateContent(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer, IEnumerable<ITextRange> languageBlocks);
+        void GenerateContent(ITextBuffer primaryBuffer, IEnumerable<ITextRange> languageBlocks);
     }
 }

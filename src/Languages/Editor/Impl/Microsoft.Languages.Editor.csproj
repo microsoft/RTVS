@@ -85,12 +85,8 @@
     <Compile Include="Completion\CompletionList.cs" />
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
     <Compile Include="ContainedLanguage\ContainedLanguageHandler.cs" />
-    <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
-    <Compile Include="ContainedLanguage\Definitions\ILanguageBlock.cs" />
-    <Compile Include="ContainedLanguage\LanguageBlock.cs" />
-    <Compile Include="ContainedLanguage\LanguageBlockCollection.cs" />
-    <Compile Include="ContainedLanguage\LanguageBlockCollectionEventArgs.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHandler.cs" />
+    <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />
     <Compile Include="Imaging\GlyphService.cs" />

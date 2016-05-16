@@ -20,7 +20,7 @@ namespace Microsoft.Markdown.Editor.Document {
     /// Main editor document for Markdown language
     /// </summary>
     public class MdEditorDocument : IEditorDocument {
-        private readonly IContainedLanguageHandler _rLanguageHandler;
+        private readonly RLanguageHandler _rLanguageHandler;
         private readonly IProjectionBufferManager _projectionBufferManager;
 
         #region Constructors
@@ -32,7 +32,7 @@ namespace Microsoft.Markdown.Editor.Document {
             ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
 
             _projectionBufferManager = new ProjectionBufferManager(textBuffer, projectionBufferFactoryService, contentTypeRegistryService, MdProjectionContentTypeDefinition.ContentType);
-            _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager);
+            _rLanguageHandler = new RLanguageHandler(textBuffer);
         }
         #endregion
 

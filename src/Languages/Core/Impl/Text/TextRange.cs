@@ -163,23 +163,9 @@ namespace Microsoft.Languages.Core.Text {
             _end += endOffset;
         }
 
-        public virtual bool AllowZeroLength {
-            get {
-                return false;
-            }
-        }
-
-        public virtual bool IsStartInclusive {
-            get {
-                return true;
-            }
-        }
-
-        public virtual bool IsEndInclusive {
-            get {
-                return false;
-            }
-        }
+        public virtual bool AllowZeroLength => false;
+        public virtual bool IsStartInclusive => true;
+        public virtual bool IsEndInclusive => false;
 
         /// <summary>
         /// Determines if range contains given position
@@ -192,7 +178,6 @@ namespace Microsoft.Languages.Core.Text {
                     return IsEndInclusive;
                 return true;
             }
-
             return false;
         }
         #endregion
