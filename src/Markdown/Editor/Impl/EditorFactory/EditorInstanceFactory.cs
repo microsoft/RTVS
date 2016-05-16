@@ -4,11 +4,11 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.Markdown.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
+using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.EditorFactory {
     /// <summary>
@@ -20,17 +20,18 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class EditorInstanceFactory : IEditorFactory {
         public IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory) {
-            if (textBuffer == null)
+            if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
-
-            if (documentFactory == null)
+            }
+            if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
-
-            if (!(textBuffer is ITextBuffer))
-                throw new ArgumentException("textBuffer parameter must be a text buffer");
-
-            if (documentFactory == null)
-                documentFactory = new MdDocumentFactory();
+            }
+            if (!(textBuffer is ITextBuffer)) {
+                throw new ArgumentException(Invariant($"{nameof(textBuffer)} parameter must be a text buffer"));
+            }
+            if (documentFactory == null) {
+                documentFactory = new MdEditorDocumentFactory();
+            }
 
             return new EditorInstance(textBuffer as ITextBuffer, documentFactory);
         }

@@ -14,7 +14,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public VariableGridWindowPane() {
             Caption = Resources.VariableGrid_Caption;
             Content = _gridHost = new VariableGridHost();
-
             BitmapImageMoniker = KnownMonikers.VariableProperty;
         }
 

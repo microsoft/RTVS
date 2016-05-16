@@ -99,12 +99,11 @@
     <Compile Include="Html\Parser\Definitions\ICommentSeparatorInfo.cs" />
     <Compile Include="Html\Parser\Definitions\IHtmlAttributeValueToken.cs" />
     <Compile Include="Html\Parser\Definitions\IHtmlToken.cs" />
-    <Compile Include="Html\Parser\Definitions\ISensitiveFragmentSeparatorsInfo.cs" />
     <Compile Include="Html\Parser\DocType.cs" />
     <Compile Include="Html\Parser\DocTypeCollection.cs" />
     <Compile Include="Html\Parser\Events\Events.cs" />
     <Compile Include="Html\Parser\Fragments\CommentCollection.cs" />
-    <Compile Include="Html\Parser\Fragments\SensitiveFragmentCollection.cs" />
+    <Compile Include="Html\Parser\Fragments\HtmlSensitiveFragmentCollection.cs" />
     <Compile Include="Html\Parser\HtmlParser.cs" />
     <Compile Include="Html\Parser\HtmlParser_AttributeState.cs" />
     <Compile Include="Html\Parser\HtmlParser_CommentState.cs" />

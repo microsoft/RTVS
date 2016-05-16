@@ -16,8 +16,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <summary>
         /// List of secondary language blocks in the file
         /// </summary>
-        private TextRangeCollection<LanguageBlock> _blockList = new TextRangeCollection<LanguageBlock>();
-
+        private readonly TextRangeCollection<LanguageBlock> _blockList = new TextRangeCollection<LanguageBlock>();
         /// <summary>
         /// Index of the most recently accesses language block
         /// </summary>

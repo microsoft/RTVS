@@ -1,57 +1,40 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
-using Microsoft.Languages.Editor.EditorFactory;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.VisualStudio.Utilities;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// <summary>
     /// Base class for simple contained language buffer generators
     /// that do not require additional decoration to the code
-    /// like classic ASP, PHP, CSS and JScript or R inside RMD. 
-    /// ASP.NET and Razor use different custom implementation.
+    /// such as R inside RMD. ASP.NET or Razor would use different 
+    /// custom implementation.
     /// </summary>
-    public abstract class BufferGenerator {
-        protected ContainedLanguageProjectionBuffer ProjectionBuffer { get; private set; }
-        protected ProjectionBufferManager ProjectionBufferManager { get; }
-        protected LanguageBlockCollection LanguageBlocks { get; }
-        protected IEditorDocument Document { get; }
-        public IContentType ContentType { get; }
+    public class BufferGenerator: IBufferGenerator {
+        #region IBufferGenerator
+        public virtual void GenerateContent(ITextBuffer diskBuffer, ITextBuffer secondaryBuffer, IEnumerable<ITextRange> languageBlocks) {
+            var mappings = new List<ProjectionMapping>();
+            var secondaryIndex = 0;
 
-        protected BufferGenerator(IEditorDocument document, LanguageBlockCollection languageBlocks, IContentType contentType) {
-            Document = document;
-            LanguageBlocks = languageBlocks;
-            ContentType = contentType;
-            ProjectionBufferManager = ServiceManager.GetService<ProjectionBufferManager>(Document.TextBuffer);
-        }
+            var pbm = ProjectionBufferManager.FromTextBuffer(diskBuffer);
+            var sb = new StringBuilder();
 
-        public virtual void UpdateBuffer(bool forceRegeneration) {
-            if (forceRegeneration || IsRegenerationNeeded())
-                RegenerateBuffer();
-        }
+            foreach (var b in languageBlocks) {
+                var text = pbm.ProjectionBuffer.CurrentSnapshot.GetText(b.Start, b.Length);
+                secondaryIndex = sb.Length;
 
-        internal virtual bool IsRegenerationNeeded() {
-            // LanguageBlockHandler used to always force regen, so 
-            // keep doing this for now unless a specific generator
-            // overrides and implements the right logic.
-            return true;
-        }
-
-        protected abstract void RegenerateBuffer();
-
-        protected virtual bool EnsureProjectionBuffer() {
-            if (ProjectionBufferManager == null) {
-                return false;
+                sb.Append(text + Environment.NewLine);
+                var m = new ProjectionMapping(b.Start, secondaryIndex, b.Length);
+                mappings.Add(m);
             }
 
-            if (ProjectionBuffer != null) {
-                return true;
-            }
-
-            ProjectionBuffer = ProjectionBufferManager.GetProjectionBuffer(ContentType) as ContainedLanguageProjectionBuffer;
-            return ProjectionBuffer != null;
+            pbm.SetTextAndMappings(sb.ToString(), mappings);
         }
+        #endregion
     }
 }

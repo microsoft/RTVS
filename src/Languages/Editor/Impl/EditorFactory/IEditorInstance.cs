@@ -18,6 +18,11 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         ITextBuffer ViewBuffer { get; }
 
         /// <summary>
+        /// If language supports projections, the projected buffer.
+        /// </summary>
+        ITextBuffer ProjectedBuffer { get; }
+
+        /// <summary>
         /// Retrieves editor instance command target for a particular view
         /// </summary>
         ICommandTarget GetCommandTarget(ITextView textView);

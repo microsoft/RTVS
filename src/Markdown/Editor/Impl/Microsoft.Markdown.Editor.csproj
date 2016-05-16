@@ -87,11 +87,14 @@
     <Compile Include="Commands\MdMainController.cs" />
     <Compile Include="Commands\MdPackageCommandId.cs" />
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
+    <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
+    <Compile Include="ContainedLanguage\RCodeFragmentCollection.cs" />
+    <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
-    <Compile Include="Document\MdDocumentFactory.cs" />
+    <Compile Include="Document\MdEditorDocumentFactory.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstanceFactory.cs" />

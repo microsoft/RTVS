@@ -6,15 +6,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Differencing;
-using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
     /// <summary>
-    /// Base class projection buffer in the buffer graph.
+    /// Projection buffer edit options
     /// </summary>
-    public abstract class ProjectionBufferBase {
-        public IProjectionBuffer ProjectionBuffer { get; protected set; }
-
+    public static class ProjectionBufferEditOptions {
         internal static EditOptions GetAppropriateChangeEditOptions(ReadOnlyCollection<SnapshotSpan> oldSourceSpans, List<object> newSourceSpans) {
             // A bunch of mappings are going to be either added or removed. This can be a real perf killer 
             // in the subsequent call to ReplaceSpans due to the diffing of the source text of the old/new spans.

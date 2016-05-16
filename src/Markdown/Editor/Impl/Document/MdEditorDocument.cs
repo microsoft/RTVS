@@ -2,21 +2,40 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.Commands;
+using Microsoft.Markdown.Editor.ContainedLanguage;
+using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Projection;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Document {
     /// <summary>
     /// Main editor document for Markdown language
     /// </summary>
     public class MdEditorDocument : IEditorDocument {
+        private readonly IContainedLanguageHandler _rLanguageHandler;
+        private readonly IProjectionBufferManager _projectionBufferManager;
+
+        #region Constructors
+        public MdEditorDocument(ITextBuffer textBuffer, 
+            IProjectionBufferFactoryService projectionBufferFactoryService, 
+            IContentTypeRegistryService contentTypeRegistryService) {
+
+            this.TextBuffer = textBuffer;
+            ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
+
+            _projectionBufferManager = new ProjectionBufferManager(textBuffer, projectionBufferFactoryService, contentTypeRegistryService, MdProjectionContentTypeDefinition.ContentType);
+            _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager);
+        }
+        #endregion
+
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
 
@@ -25,15 +44,6 @@ namespace Microsoft.Markdown.Editor.Document {
 #pragma warning restore 67
 
         public virtual void Close() { }
-        #endregion
-
-        #region Constructors
-        public MdEditorDocument(ITextBuffer textBuffer) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
-
-            this.TextBuffer = textBuffer;
-            ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
-        }
         #endregion
 
         /// <summary>
@@ -64,7 +74,11 @@ namespace Microsoft.Markdown.Editor.Document {
         }
 
         #region IDisposable
-        protected virtual void Dispose(bool disposing) { }
+        protected virtual void Dispose(bool disposing) {
+            if(disposing) {
+                _projectionBufferManager?.Dispose();
+            }
+        }
 
         public void Dispose() {
             this.Dispose(true);

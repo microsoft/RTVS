@@ -1,9 +1,7 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
-using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
@@ -11,68 +9,81 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Projection {
     /// <summary>
-    /// Manages projection buffers for languages present the top level (primary) document.
+    /// Manages the projection buffer for the primary language
     /// </summary>
-    public sealed class ProjectionBufferManager {
-        public event EventHandler<ProjectionBufferCreatedEventArgs> LanguageBufferCreated;
-
+    public sealed class ProjectionBufferManager : IProjectionBufferManager {
+        private const string _inertContentTypeName = "inert";
         private readonly ITextBuffer _diskBuffer;
-        private readonly Dictionary<IContentType, ContainedLanguageProjectionBuffer> 
-            _containedLanguageBuffers = new Dictionary<IContentType, ContainedLanguageProjectionBuffer>();
+        private readonly IContentTypeRegistryService _contentTypeRegistryService;
 
-        private PrimaryLanguageProjectionManager _primaryProjectionManager;
-
-        /// <summary>
-        /// Constructs projection buffer manager based on the disk buffer
-        /// content. Disk buffer always represents top level or primary document.
-        /// Contained language buffers are generated in-memory and do not have
-        /// persistent representation on disk.
-        /// </summary>
         public ProjectionBufferManager(ITextBuffer diskBuffer, 
-            IProjectionBufferFactoryService projectionBufferFactoryService,
-            IContentTypeRegistryService contentTypeRegistryService,
-            string projectionContentTypeName) {
-
+                                       IProjectionBufferFactoryService projectionBufferFactoryService,
+                                       IContentTypeRegistryService contentTypeRegistryService,
+                                       string projectionContentTypeName) {
             _diskBuffer = diskBuffer;
-            _primaryProjectionManager = new PrimaryLanguageProjectionManager(_diskBuffer,
-                projectionBufferFactoryService, contentTypeRegistryService.GetContentType(projectionContentTypeName));
+            _contentTypeRegistryService = contentTypeRegistryService;
 
-            ServiceManager.AddService<ProjectionBufferManager>(this, diskBuffer);
+            var contentType = _contentTypeRegistryService.GetContentType(projectionContentTypeName);
+            ProjectionBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
-            var document = ServiceManager.GetService<IEditorDocument>(diskBuffer);
-            document.DocumentClosing += OnClosing;
+            ServiceManager.AddService<IProjectionBufferManager>(this, _diskBuffer);
         }
 
-        void OnClosing(object sender, EventArgs args) {
-            var document = (IEditorDocument)sender;
-            document.DocumentClosing -= OnClosing;
-            ServiceManager.RemoveService<ProjectionBufferManager>(_diskBuffer);
+        public static IProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) {
+            return ServiceManager.GetService<IProjectionBufferManager>(textBuffer);
         }
 
-        public static ProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) {
-            return ServiceManager.GetService<ProjectionBufferManager>(textBuffer);
+        #region IProjectionBufferManager
+        public IProjectionBuffer ProjectionBuffer { get; }
+
+        public void SetTextAndMappings(string text, IReadOnlyList<ProjectionMapping> mappings) {
+            mappings = mappings ?? new List<ProjectionMapping>();
+            UpdateTextBuffer(mappings, text);
         }
 
-        public IEnumerable<ContainedLanguageProjectionBuffer> LanguageBuffers => _containedLanguageBuffers.Values;
+        public void Dispose() {
+            ServiceManager.RemoveService<IProjectionBufferManager>(_diskBuffer);
+        }
+        #endregion
 
         /// <summary>
-        /// Retrieves language projection buffer for a given content type
+        /// Sets the text and spans in the language buffer based on a list of mappings
         /// </summary>
-        /// <param name="contentType">Content type</param>
-        /// <returns>Projection buffer</returns>
-        public ContainedLanguageProjectionBuffer GetProjectionBuffer(IContentType contentType) {
-            ContainedLanguageProjectionBuffer projectionBuffer;
-            if (!_containedLanguageBuffers.TryGetValue(contentType, out projectionBuffer)) {
-                if (!contentType.IsOfType(HtmlContentTypeDefinition.HtmlContentType)) {
-                    projectionBuffer = new ContainedLanguageProjectionBuffer(_diskBuffer, contentType, _primaryProjectionManager);
-                    _containedLanguageBuffers.Add(contentType, projectionBuffer);
-                    LanguageBufferCreated?.Invoke(this, new ProjectionBufferCreatedEventArgs(contentType, projectionBuffer));
+        private void UpdateTextBuffer(IReadOnlyList<ProjectionMapping> mappings, string fullLangBufferText) {
+            List<object> sourceSpans = CreateSourceSpans(mappings, fullLangBufferText);
+            EditOptions editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(ProjectionBuffer.CurrentSnapshot.GetSourceSpans(), sourceSpans);
+
+            ProjectionBuffer.ReplaceSpans(0, ProjectionBuffer.CurrentSnapshot.SpanCount, sourceSpans, editOptions, this);
+        }
+
+        /// <summary>
+        /// Uses the current GrowingSpanDatas content to create a list of
+        /// source spans and inert text spans. This should really only be called from UpdateTextBuffer.
+        /// </summary>
+        private List<object> CreateSourceSpans(IReadOnlyList<ProjectionMapping> mappings, string fullLangBufferText) {
+            List<object> sourceSpans = new List<object>(mappings.Count);
+            int langIndex = 0; // last processed position in language buffer
+
+            for (int i = 0; i < mappings.Count; i++) {
+                ProjectionMapping mapping = mappings[i];
+                // Inert area is area that belongs to the primary (top-level) document
+                Span inertSpan = Span.FromBounds(langIndex, mapping.ProjectionStart);
+                if (!inertSpan.IsEmpty) {
+                    // Gather inert text between spans
+                    sourceSpans.Add(fullLangBufferText.Substring(inertSpan.Start, inertSpan.Length));
                 }
+                // Map contained language range
+                Span languageSpan = new Span(mapping.ProjectionStart, mapping.ProjectionRange.Length);
+                sourceSpans.Add(languageSpan);
+                langIndex = mapping.ProjectionStart + mapping.Length;
             }
 
-            return projectionBuffer;
+            // Add the final inert text after the last span
+            Span lastInertSpan = Span.FromBounds(langIndex, fullLangBufferText.Length);
+            if (!lastInertSpan.IsEmpty) {
+                sourceSpans.Add(fullLangBufferText.Substring(lastInertSpan.Start, lastInertSpan.Length));
+            }
+            return sourceSpans;
         }
-
-        public IProjectionBuffer PrimaryProjectionBuffer => _primaryProjectionManager.ViewBuffer;
     }
 }

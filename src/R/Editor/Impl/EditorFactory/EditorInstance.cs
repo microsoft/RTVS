@@ -31,9 +31,9 @@ namespace Microsoft.R.Editor.EditorFactory {
         }
 
         #region IEditorInstance
-        public object WpfControl => null;
+        public ITextBuffer ViewBuffer { get; }
 
-        public ITextBuffer ViewBuffer { get; private set; }
+        public ITextBuffer ProjectedBuffer => null;
 
         public ICommandTarget GetCommandTarget(ITextView textView) {
             return RMainController.FromTextView(textView);

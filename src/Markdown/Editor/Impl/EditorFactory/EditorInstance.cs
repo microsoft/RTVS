@@ -14,11 +14,12 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
         IEditorDocument _document;
 
         public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
-            if (diskBuffer == null)
+            if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
-
-            if (documentFactory == null)
+            }
+            if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
+            }
 
              ViewBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
@@ -31,7 +32,9 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
         /// Text buffer containing document data that is 
         /// to be attached to a text view. 
         /// </summary>
-        public ITextBuffer ViewBuffer { get; private set; }
+        public ITextBuffer ViewBuffer { get; }
+
+        public ITextBuffer ProjectedBuffer => null;
 
         /// <summary>
         /// Retrieves editor instance command target for a particular view

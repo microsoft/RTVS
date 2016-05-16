@@ -4,14 +4,16 @@
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// <summary>
     /// Language block that describes span in an HTML file that belongs to primary or to 
     /// one of the secondary languages such as to CSS, script, server code or HTML markup. 
     /// </summary>
-    public abstract class LanguageBlock : TextRange {
+    public abstract class LanguageBlock : TextRange, ILanguageBlock {
         public abstract ICommandTarget GetCommandTarget(ITextView textView);
+        public abstract IContentType ContentType { get; }
 
         #region Constructors
         public LanguageBlock(int start, int length) :
