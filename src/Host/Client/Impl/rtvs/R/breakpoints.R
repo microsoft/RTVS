@@ -237,7 +237,8 @@ enable_breakpoints <- function(enable) {
 # an expression object containing separate calls. Consequently, when the returned object is eval'd,
 # it is possible to use debug stepping commands to execute expressions sequentially.
 debug_parse <- function(filename, encoding = getOption('encoding')) {
-  exprs <- parse(filename, encoding = encoding);
+  src <- file(filename, "r", encoding = encoding);
+  exprs <- tryCatch(parse(src), finally = close(src));
 
   # Create a `{` call wrapping all expressions in the file.
   result <- quote({});

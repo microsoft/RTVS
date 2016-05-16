@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
@@ -22,12 +23,14 @@ using Microsoft.VisualStudio.R.Package.Test.Mocks;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class ReplCommandTest: IDisposable {
+    public class ReplCommandTest : IDisposable {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
@@ -80,7 +83,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
             var commandFactory = new VsRCommandFactory(_workflowProvider, _componentContainerFactory);
             var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
-            
+
             await _workflow.RSession.HostStarted;
             _workflow.ActiveWindow.Should().NotBeNull();
 
@@ -113,6 +116,40 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
             line.GetText().Trim().Should().Be("x");
 
             _workflow.ActiveWindow.Dispose();
+        }
+
+
+        [CompositeTest]
+        [Category.Repl]
+        [InlineData(false, "utf-8")]
+        [InlineData(true, "Windows-1252")]
+        public void SourceRScriptTest(bool echo, string encoding) {
+            var textBuffer = new TextBufferMock("", RContentTypeDefinition.ContentType);
+            var textView = new WpfTextViewMock(textBuffer);
+            var tracker = Substitute.For<IActiveWpfTextViewTracker>();
+            tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns((IWpfTextView)null);
+
+            var operations = Substitute.For<IRInteractiveWorkflowOperations>();
+            var workflow = Substitute.For<IRInteractiveWorkflow>();
+            workflow.Operations.Returns(operations);
+            workflow.ActiveWindow.Returns((IInteractiveWindowVisualComponent)null);
+
+            var command = new SourceRScriptCommand(workflow, tracker, echo);
+            command.Should().BeInvisibleAndDisabled();
+
+            workflow.ActiveWindow.Returns(Substitute.For<IInteractiveWindowVisualComponent>());
+            command.Should().BeVisibleAndDisabled();
+
+            tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns(textView);
+            command.Should().BeVisibleAndDisabled();
+
+            var document = new TextDocumentMock(textBuffer, "~/foo.R");
+            document.Encoding = Encoding.GetEncoding(encoding);
+            textBuffer.Properties[typeof(ITextDocument)] = document;
+            command.Should().BeVisibleAndEnabled();
+
+            command.Invoke();
+            operations.Received().SourceFile(document.FilePath, echo, document.Encoding);
         }
     }
 }
