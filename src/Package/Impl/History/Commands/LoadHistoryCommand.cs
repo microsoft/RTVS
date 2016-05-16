@@ -16,11 +16,13 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class LoadHistoryCommand : ViewCommand {
+        private readonly IApplicationShell _appShell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRHistory _history;
 
-        public LoadHistoryCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
+        public LoadHistoryCommand(IApplicationShell appShell, ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow)
             : base(textView, RGuidList.RCmdSetGuid, RPackageCommandId.icmdLoadHistory, false) {
+            _appShell = appShell;
             _interactiveWorkflow = interactiveWorkflow;
             _history = historyProvider.GetAssociatedRHistory(textView);
         }
@@ -31,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var initialPath = RToolsSettings.Current.WorkingDirectory != null ? PathHelper.EnsureTrailingSlash(RToolsSettings.Current.WorkingDirectory) : null;
-            var file = VsAppShell.Current.BrowseForFileOpen(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
+            var file = _appShell.BrowseForFileOpen(IntPtr.Zero, Resources.HistoryFileFilter, initialPath, Resources.LoadHistoryTitle);
             if (file != null) {
                 _history.TryLoadFromFile(file);
             }
