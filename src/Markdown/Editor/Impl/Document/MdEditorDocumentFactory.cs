@@ -21,7 +21,7 @@ namespace Microsoft.Markdown.Editor.Document {
         private IContentTypeRegistryService ContentTypeRegistryService { get; set; }
 
         public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            return new MdEditorDocument(editorInstance.ViewBuffer, ProjectionBufferFactoryService, ContentTypeRegistryService);
+            return new MdEditorDocument(editorInstance.ProjectedBuffer, ProjectionBufferFactoryService, ContentTypeRegistryService);
         }
     }
 }

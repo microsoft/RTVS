@@ -34,7 +34,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
                 mappings.Add(m);
             }
 
-            pbm.SetProjectionMappings(diskBuffer, sb.ToString(), mappings);
+            pbm.SetProjectionMappings(sb.ToString(), mappings);
         }
         #endregion
     }

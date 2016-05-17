@@ -86,14 +86,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                ITextDocument textDocument;
-
-                textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
-                Debug.Assert(textDocument != null);
-
                 ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-
                 IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new VsREditorDocumentFactory());
             }
         }

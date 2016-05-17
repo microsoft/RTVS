@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.Controller;
@@ -21,8 +22,11 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
                 throw new ArgumentNullException(nameof(documentFactory));
             }
 
-             ViewBuffer = diskBuffer;
+            ProjectedBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
+ 
+            var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(diskBuffer);
+            ViewBuffer = projectionBufferManager.ViewBuffer;
 
             ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
         }
@@ -34,7 +38,7 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
         /// </summary>
         public ITextBuffer ViewBuffer { get; }
 
-        public ITextBuffer ProjectedBuffer => null;
+        public ITextBuffer ProjectedBuffer { get; }
 
         /// <summary>
         /// Retrieves editor instance command target for a particular view

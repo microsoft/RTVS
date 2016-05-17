@@ -3,13 +3,19 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
+    //  Graph:
+    //      View Buffer [ContentType = RMD Projection]
+    //        |      \
+    //        |    Secondary [ContentType = R]
+    //        |      /
+    //       Disk Buffer [ContentType = RMD]
+
     public interface IProjectionBufferManager: IDisposable {
-        IProjectionBuffer PrimaryProjectionBuffer { get; }
+        IProjectionBuffer ViewBuffer { get; }
         IProjectionBuffer SecondaryProjectionBuffer { get; }
-        void SetProjectionMappings(ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
+        void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
     }
 }

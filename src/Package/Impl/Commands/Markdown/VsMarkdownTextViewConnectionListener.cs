@@ -5,12 +5,14 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.R.Package.Document;
 using Microsoft.VisualStudio.R.Package.Document.Markdown;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
@@ -82,15 +84,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                ITextDocument textDocument;
+                var importComposer1 = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
+                var editorInstanceFactory = importComposer1.GetImport(textBuffer.ContentType.TypeName);
 
-                textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
-                Debug.Assert(textDocument != null);
+                var importComposer2 = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
+                var documentFactory = importComposer2.GetImport(textBuffer.ContentType.TypeName);
 
-                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
-                IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-
-                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new VsMdEditorDocumentFactory());
+                var editorInstance = editorInstanceFactory.CreateEditorInstance(textBuffer, documentFactory);
             }
         }
     }
