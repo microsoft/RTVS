@@ -141,7 +141,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
 
                 var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
-                var expansion = document.TextBuffer.GetBufferAdapter<IVsExpansion>();
+                // Document may be null in tests
+                var textBuffer = document != null ? document.TextBuffer : TextView.TextBuffer;
+                var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
 
                 Span span;
@@ -157,7 +159,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                 if (exp.HasValue && start.HasValue && end.HasValue) {
                     // Insert into R buffer
-                    ts = TextSpanFromSpan(document.TextBuffer, Span.FromBounds(start.Value, end.Value));
+                    ts = TextSpanFromSpan(textBuffer, Span.FromBounds(start.Value, end.Value));
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
                         // EndExpansion was called before InsertExpansion returned, so set _expansionSession
