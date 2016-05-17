@@ -13,19 +13,17 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task<IRSessionInteraction> CreateRequestTask => _createRequestTcs.Task;
         public bool IsVisible { get; }
-        public IReadOnlyList<IRContext> Contexts { get; }
 
-        public RSessionRequestSource(bool isVisible, IReadOnlyList<IRContext> contexts, CancellationToken ct) {
+        public RSessionRequestSource(bool isVisible, CancellationToken ct) {
             _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
             _responseTcs = new TaskCompletionSource<object>();
             ct.Register(() => _createRequestTcs.TrySetCanceled(ct));
 
             IsVisible = isVisible;
-            Contexts = contexts ?? new[] { RHost.TopLevelContext };
         }
 
-        public void Request(string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
-            var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, Contexts);
+        public void Request(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
+            var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, contexts ?? new[] { RHost.TopLevelContext });
             if (_createRequestTcs.TrySetResult(request)) {
                 return;
             }

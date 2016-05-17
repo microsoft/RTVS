@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Languages.Core.Tokens {
+    [DebuggerDisplay("Count={Count}")]
     public sealed class TokenBraceCounter<T> where T : ITextRange {
         T _openBrace1;
         T _closeBrace1;
@@ -43,11 +43,13 @@ namespace Microsoft.Languages.Core.Tokens {
             } else if (_braces2 != null && 0 == _comparer.Compare(brace, _openBrace2)) {
                 _braces2.Push(brace);
             } else if (0 == _comparer.Compare(brace, _closeBrace1)) {
-                if (_braces1.Count > 0)
+                if (_braces1.Count > 0) {
                     _braces1.Pop();
+                }
             } else if (_braces2 != null && 0 == _comparer.Compare(brace, _closeBrace2)) {
-                if (_braces2.Count > 0)
+                if (_braces2.Count > 0) {
                     _braces2.Pop();
+                }
             } else {
                 return false;
             }

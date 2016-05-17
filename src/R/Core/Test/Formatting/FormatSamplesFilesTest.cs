@@ -8,6 +8,7 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
+    [Category.R.Formatting]
     public class FormatSamplesFilesTest {
         private readonly CoreTestFilesFixture _files;
 
@@ -16,8 +17,7 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFile_LeastSquares() {
+        public void LeastSquares() {
             RFormatOptions options = new RFormatOptions {
                 IndentType = IndentType.Tabs
             };
@@ -26,13 +26,21 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFile_IfElse() {
+        public void IfElse() {
             RFormatOptions options = new RFormatOptions {
                 IndentSize = 2
             };
 
             FormatFilesFiles.FormatFile(_files, @"Formatting\ifelse.r", options);
+        }
+
+        [Test]
+        public void Args() {
+            RFormatOptions options = new RFormatOptions {
+                IndentSize = 4
+            };
+
+            FormatFilesFiles.FormatFile(_files, @"Formatting\args.r", options);
         }
     }
 }

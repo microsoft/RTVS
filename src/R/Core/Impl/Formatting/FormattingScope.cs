@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
+using System;
 using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
-using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.Tokens;
 
@@ -13,105 +12,42 @@ namespace Microsoft.R.Core.Formatting {
     /// <summary>
     /// Settings for formatting of { } scope.
     /// </summary>
-    internal sealed class FormattingScope {
-        private IndentState _previousState;
-        private IndentBuilder _indentBuilder;
+    internal sealed class FormattingScope : IDisposable {
+        private readonly RFormatOptions _options;
+        private readonly TextBuilder _tb;
+        private readonly int _previousIndentLevel;
 
         public int CloseBracePosition { get; private set; } = -1;
 
         public int SuppressLineBreakCount { get; set; }
 
-        /// <summary>
-        /// Control block defining keywords indented in this scope
-        /// </summary>
-        public List<string> Keywords { get; } = new List<string>();
+        public FormattingScope() { }
 
-        public FormattingScope(IndentBuilder indentBuilder) {
-            _indentBuilder = indentBuilder;
-        }
-
-        public void Close() {
-            if (_previousState != null) {
-                _indentBuilder.RestoreIndentState(_previousState);
-            }
-        }
-
-        public bool Open(ITextProvider textProvider, TokenStream<RToken> tokens, RFormatOptions options) {
+        public FormattingScope(TextBuilder tb, TokenStream<RToken> tokens, RFormatOptions options) {
             Debug.Assert(tokens.CurrentToken.TokenType == RTokenType.OpenCurlyBrace);
 
-            // When formatting scope in function arguments, use user indent
-            // where appropriate. User indent can be determined by 
-            //  a. current indentation of { if 'braces on new line' is on
-            //     and the open brace indent is deeper than the default.
-            //  b. if the above does not apply, it is equal to the indent
-            //     of the previous line.
-
-            // System.Action x = () => {
-            // }; <<- equal to the statement indent.
-
-            // System.Action x = () => 
-            // { <<- equal to the statement indent.
-            // };
-
-            // System.Action x = () => 
-            //      {
-            //      }; <<- based on the *opening* brace position.
+            _options = options;
+            _tb = tb;
 
             CloseBracePosition = TokenBraceCounter<RToken>.GetMatchingBrace(tokens,
-                new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace), new RTokenTypeComparer());
+                new RToken(RTokenType.OpenCurlyBrace), new RToken(RTokenType.CloseCurlyBrace),
+                new RTokenTypeComparer());
 
-            //if (CloseBracePosition > 0)
-            //{
-            //    if (!IsLineBreakInRange(textProvider, tokens.CurrentToken.End, tokens[CloseBracePosition].Start))
-            //    {
-            //        SuppressLineBreakCount++;
-            //        return true;
-            //    }
-            //}
-
-            if (options.BracesOnNewLine) {
-                // If open curly is on its own line (there is only whitespace
-                // between line break and the curly, find out current indent
-                // and if it is deeper than the default one, use it,
-                // otherwise continue with default.
-                CompareAndSetIndent(textProvider, tokens, tokens.CurrentToken.Start, options);
-                return true;
-            }
-
-            return false;
+            _previousIndentLevel = tb.IndentBuilder.IndentLevel;
+            tb.IndentBuilder.SetIndentLevelForSize(CurrentLineIndent(tb));
         }
 
-        private void CompareAndSetIndent(ITextProvider textProvider, TokenStream<RToken> tokens, int position, RFormatOptions options) {
-            // If curly is on its own line (there is only whitespace between line break 
-            // and the curly, find out its current indent and if it is deeper than 
-            // the default one, use it, otherwise continue with default.
-
-            string userIndentString = GetUserIndentString(textProvider, position, options);
-            int defaultIndentSize = _indentBuilder.IndentLevelString.Length;
-            if (userIndentString.Length > defaultIndentSize) {
-                _previousState = _indentBuilder.ResetBaseIndent(userIndentString);
-            }
-        }
-
-        private string GetUserIndentString(ITextProvider textProvider, int position, RFormatOptions options) {
-            for (int i = position - 1; i >= 0; i--) {
-                char ch = textProvider[i];
-                if (!char.IsWhiteSpace(ch)) {
-                    break;
-                }
-
-                if (ch.IsLineBreak()) {
-                    string userIndentString = textProvider.GetText(TextRange.FromBounds(i + 1, position));
-                    int indentSize = IndentBuilder.TextIndentInSpaces(userIndentString, options.TabSize);
-                    return IndentBuilder.GetIndentString(indentSize, options.IndentType, options.IndentSize);
+        private int CurrentLineIndent(TextBuilder tb) {
+            for (int i = tb.Length - 1; i >= 0; i--) {
+                if (CharExtensions.IsLineBreak(tb.Text[i])) {
+                    return IndentBuilder.TextIndentInSpaces(tb.Text.Substring(i + 1), _options.TabSize);
                 }
             }
-
-            return string.Empty;
+            return 0;
         }
 
-        private bool IsLineBreakInRange(ITextProvider textProvider, int start, int end) {
-            return textProvider.IndexOf('\n', TextRange.FromBounds(start, end)) >= 0;
+        public void Dispose() {
+            _tb.IndentBuilder.SetIndentLevel(_previousIndentLevel);
         }
     }
 }

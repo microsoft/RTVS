@@ -17,12 +17,14 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class SaveWorkspaceCommand : PackageCommand {
+        private readonly IApplicationShell _appShell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public SaveWorkspaceCommand(IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public SaveWorkspaceCommand(IApplicationShell appShell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace) {
+            _appShell = appShell;
             _rSession = interactiveWorkflow.RSession;
             _projectServiceAccessor = projectServiceAccessor;
             _interactiveWorkflow = interactiveWorkflow;
@@ -43,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
+            var file = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
             if (file == null) {
                 return;
             }

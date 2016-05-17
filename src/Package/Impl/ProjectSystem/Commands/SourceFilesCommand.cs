@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdSourceSelectedFiles && nodes.GetSelectedNodesPaths().Count() > 0) {
+            if ((commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) && nodes.GetSelectedNodesPaths().Count() > 0) {
                 foreach (var n in nodes) {
                     if (n.IsFolder || !Path.GetExtension(n.FilePath).EqualsIgnoreCase(".r")) { 
                         return CommandStatusResult.Unhandled;
@@ -40,11 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
         }
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            if (commandId == RPackageCommandId.icmdSourceSelectedFiles) {
+            if (commandId == RPackageCommandId.icmdSourceSelectedFiles || commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho) {
                 var rFiles = nodes.GetSelectedNodesPaths().Where(x =>
                                Path.GetExtension(x).EqualsIgnoreCase(".r") &&
                                File.Exists(x));
-                _interactiveWorkflowProvider.GetOrCreate().Operations.SourceFiles(rFiles);
+                bool echo = commandId == RPackageCommandId.icmdSourceSelectedFilesWithEcho;
+                _interactiveWorkflowProvider.GetOrCreate().Operations.SourceFiles(rFiles, echo);
                 return true;
             }
             return false;

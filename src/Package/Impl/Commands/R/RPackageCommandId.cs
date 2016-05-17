@@ -36,6 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdStepOver = 515;
         public const int icmdAttachToRInteractive = 516;
         public const int icmdClearRepl = 517;
+        public const int icmdSourceRScriptWithEcho = 518;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
@@ -115,6 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAddRMarkdown = 1505;
         public const int icmdOpenCmdPromptHere = 1506;
         public const int icmdOpenAdminCmdPromptHere = 1507;
+        public const int icmdSourceSelectedFilesWithEcho = 1508;
 
         // Shiny
         public const int icmdRunShinyApp = 1601;

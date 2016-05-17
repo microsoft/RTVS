@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Formatting;
@@ -21,14 +22,16 @@ namespace Microsoft.R.Editor.Commands {
     [ContentType(RContentTypeDefinition.ContentType)]
     internal class RCommandFactory : ICommandFactory {
         private readonly IObjectViewer _objectViewer;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         [ImportingConstructor]
-        public RCommandFactory([Import(AllowDefault = true)] IObjectViewer objectViewer) {
+        public RCommandFactory([Import(AllowDefault = true)] IObjectViewer objectViewer, [Import(AllowDefault = true)] IRInteractiveWorkflowProvider workflowProvider) {
             _objectViewer = objectViewer;
+            _workflowProvider = workflowProvider;
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            return new ICommand[] {
+            var commands = new List<ICommand> {
                 new GotoBraceCommand(textView, textBuffer),
                 new CommentCommand(textView, textBuffer),
                 new UncommentCommand(textView, textBuffer),
@@ -38,10 +41,15 @@ namespace Microsoft.R.Editor.Commands {
                 new SelectWordCommand(textView, textBuffer),
                 new RTypingCommandHandler(textView),
                 new RCompletionCommandHandler(textView),
-                new GoToDefinitionCommand(textView, textBuffer, _objectViewer),
                 new PeekDefinitionCommand(textView, textBuffer),
                 new InsertRoxygenBlockCommand(textView, textBuffer)
             };
+
+            if (_workflowProvider != null) {
+                commands.Add(new GoToDefinitionCommand(textView, textBuffer, _objectViewer, _workflowProvider.GetOrCreate().RSession));
+            }
+
+            return commands;
         }
     }
 }

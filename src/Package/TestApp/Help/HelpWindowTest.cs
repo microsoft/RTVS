@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     component.VisualTheme = "Dark.css";
                     clientApp.Component = component;
 
-                    ShowHelp("?plot\n", hostScript, clientApp);
+                    ShowHelp("?plot", hostScript, clientApp);
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     GetBackgroundColor(component.Browser).Should().Be(darkThemeCssColor);
 
                     component.VisualTheme = "Light.css";
-                    ShowHelp("?lm\n", hostScript, clientApp);
+                    ShowHelp("?lm", hostScript, clientApp);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
                     GetBackgroundColor(component.Browser).Should().Be("white");
@@ -70,9 +70,10 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
 
         private void ShowHelp(string command, VsRHostScript hostScript, RHostClientHelpTestApp clientApp) {
             clientApp.Ready = false;
-            using (var request = hostScript.Session.BeginInteractionAsync().Result) {
-                request.RespondAsync(command);
-            }
+            hostScript.Session.ExecuteAsync($"rtvs:::show_help({command.ToRStringLiteral()})")
+                .SilenceException<RException>()
+                .SilenceException<MessageTransportException>()
+                .DoNotWait();
             WaitForAppReady(clientApp);
         }
 

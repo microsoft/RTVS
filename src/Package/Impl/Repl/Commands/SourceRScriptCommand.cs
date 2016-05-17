@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -12,11 +13,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class SourceRScriptCommand : PackageCommand {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly bool _echo;
 
-        public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker)
-            : base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript) {
+        public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker, bool echo)
+            : base(RGuidList.RCmdSetGuid, echo ? RPackageCommandId.icmdSourceRScriptWithEcho : RPackageCommandId.icmdSourceRScript) {
             _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
+            _echo = echo;
         }
 
         private ITextView GetActiveTextView() {
@@ -29,8 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void SetStatus() {
-            Visible = _interactiveWorkflow.ActiveWindow != null && _interactiveWorkflow.ActiveWindow.Container.IsOnScreen;
-            Enabled = GetFilePath() != null;
+            Visible = _interactiveWorkflow.ActiveWindow != null;
+            Enabled = Visible && !string.IsNullOrEmpty(GetFilePath());
         }
 
         protected override void Handle() {
@@ -39,8 +42,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 // Save file before sourcing
                 ITextView textView = GetActiveTextView();
                 if (textView != null) {
-                    textView.SaveFile();
-                    _interactiveWorkflow.Operations.SourceFile(filePath);
+                    if (RPackage.Current != null) {
+                        textView.SaveFile();
+                    }
+
+                    var encoding = textView.TextBuffer.GetTextDocument()?.Encoding;
+
+                    _interactiveWorkflow.ActiveWindow?.Container.Show(false);
+                    _interactiveWorkflow.Operations.SourceFile(filePath, _echo, encoding);
                 }
             }
         }

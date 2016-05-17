@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Markdown.Editor.Commands;
@@ -69,6 +70,10 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     return CommandResult.Disabled;
                 }
 
+                if(!CheckPrerequisites()) {
+                    return CommandResult.Disabled;
+                }
+
                 // Save the file
                 var tb = TextView.TextBuffer;
                 if (!tb.CanBeSavedInCurrentEncoding()) {
@@ -98,6 +103,15 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 _lastCommandTask = session.ExecuteAsync(arguments).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;
+        }
+
+        protected virtual bool CheckPrerequisites() {
+            if (!IOExtensions.ExistsOnPath("pandoc.exe")) {
+                VsAppShell.Current.ShowErrorMessage(Resources.Error_PandocMissing);
+                Process.Start("http://pandoc.org/installing.html");
+                return false;
+            }
+            return true;
         }
 
         private void LaunchViewer() {

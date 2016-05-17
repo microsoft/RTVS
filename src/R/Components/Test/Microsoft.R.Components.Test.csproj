@@ -138,7 +138,11 @@
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\Microsoft.UnitTests.References.$(VisualStudioVersion).csproj">
+    <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj" Condition="'$(VisualStudioVersion)'=='14.0'">
+      <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+      <Name>Microsoft.UnitTests.References.14.0</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj" Condition="'$(VisualStudioVersion)'=='15.0'">
       <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
       <Name>Microsoft.UnitTests.References.15.0</Name>
     </ProjectReference>

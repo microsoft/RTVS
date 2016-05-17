@@ -11,6 +11,7 @@
     <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[14.0, 15.0]" />
   </Installation>
   <Assets>
+    <Asset Type="Microsoft.VisualStudio.Assembly" Path="websocket-sharp.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Newtonsoft.Json.dll" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.R.Host.exe" />
     <Asset Type="Microsoft.VisualStudio.Assembly" Path="Microsoft.Languages.Core.dll" />

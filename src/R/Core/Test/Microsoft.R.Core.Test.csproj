@@ -64,6 +64,8 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="Files\Formatting\AllEqual.r" />
+    <None Include="Files\Formatting\args.r" />
+    <None Include="Files\Formatting\args.r.formatted" />
     <None Include="Files\Parser\Check.r" />
     <None Include="Files\Formatting\ifelse.r" />
     <None Include="Files\Formatting\ifelse.r.formatted" />
@@ -93,6 +95,7 @@
     <Compile Include="DataTips\DataTipTest.cs" />
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
+    <Compile Include="Formatting\FormatMultilineTest.cs" />
     <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />

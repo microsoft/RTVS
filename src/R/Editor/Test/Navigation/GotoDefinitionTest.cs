@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Navigation.Commands;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;
@@ -116,20 +117,21 @@ if(TRUE) {
 
         private void RunGotoDefTestInternalItem(string content, int startLineNumber, int startColumn, string itemName) {
             TextViewMock tv = SetupTextView(content, startLineNumber, startColumn);
-
+            var session = Substitute.For<IRSession>();
             var viewer = Substitute.For<IObjectViewer>();
-            viewer.ViewObjectDetails(itemName, itemName).Returns(Task.CompletedTask);
-            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, viewer);
+
+            viewer.ViewObjectDetails(session, REnvironments.GlobalEnv, itemName, itemName).Returns(Task.CompletedTask);
+            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, viewer, session);
 
             var o = new object();
             var result = cmd.Invoke(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.GotoDefn, null, ref o);
             result.Should().Be(CommandResult.Executed);
-            viewer.Received().ViewObjectDetails(itemName, itemName);
+            viewer.Received().ViewObjectDetails(session, REnvironments.GlobalEnv, itemName, itemName);
         }
 
         private void RunGotoDefTestUserDefinedItem(string content, int startLineNumber, int startColumn, int finalCaretPosition) {
             TextViewMock tv = SetupTextView(content, startLineNumber, startColumn);
-            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, Substitute.For<IObjectViewer>());
+            var cmd = new GoToDefinitionCommand(tv, tv.TextBuffer, Substitute.For<IObjectViewer>(), Substitute.For<IRSession>());
 
             var o = new object();
             var result = cmd.Invoke(typeof(VSConstants.VSStd97CmdID).GUID, (int)VSConstants.VSStd97CmdID.GotoDefn, null, ref o);

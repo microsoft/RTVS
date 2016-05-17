@@ -18,6 +18,7 @@ namespace Microsoft.R.Actions.Utility {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
+        private const string rServer = "R_SERVER";
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
         private static IRegistry _registry;
         private static IFileSystem _fileSystem;
@@ -131,10 +132,50 @@ namespace Microsoft.R.Actions.Utility {
         /// First tries user settings, then 64-bit registry.
         /// </summary>
         public static string GetRInstallPath(string basePath) {
-            if (String.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
-                basePath = RInstallation.GetCompatibleEnginePathFromRegistry();
+            if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
+                basePath = GetRPathFromMRS();
+                if (string.IsNullOrEmpty(basePath)) {
+                    basePath = GetCompatibleEnginePathFromRegistry();
+                }
             }
             return basePath;
+        }
+
+        private static string GetRPathFromMRS() {
+            // First check that MRS is present on the machine.
+            bool mrsInstalled = false;
+            try {
+                using (var hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+                    var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr");
+                    var path = (string)key.GetValue("Path");
+                    if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
+                        mrsInstalled = true;
+                    }
+                }
+            } catch (Exception) { }
+
+            // If yes, check 32-bit registry for R engine installed by the R Server.
+            // TODO: remove this when MRS starts writing 64-bit keys.
+            if (mrsInstalled) {
+                using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
+                    try {
+                        using (var key = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
+                            foreach (var keyName in key.GetSubKeyNames()) {
+                                using (var rsKey = key.OpenSubKey(keyName)) {
+                                    try {
+                                        var path = (string)key.GetValue("InstallPath");
+                                        if(!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
+                                            return path;
+                                        }
+                                    } catch(Exception) { }
+                                }
+                            }
+                        }
+                    } catch (Exception) { }
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

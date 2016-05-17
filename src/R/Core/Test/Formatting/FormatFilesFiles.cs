@@ -14,10 +14,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public static void FormatFile(CoreTestFilesFixture fixture, string name) {
-            FormatFile(fixture, name, new RFormatOptions());
-        }
-
         public static void FormatFile(CoreTestFilesFixture fixture, string name, RFormatOptions options) {
             Action a = () => FormatFileImplementation(fixture, name, options);
             a.ShouldNotThrow();
@@ -33,9 +29,7 @@ namespace Microsoft.R.Core.Test.Formatting {
             string actual = formatter.Format(text);
             if (_regenerateBaselineFiles) {
                 // Update this to your actual enlistment if you need to update baseline
-                string enlistmentPath = @"C:\RTVS\src\R\Core\Test\Files\Formatting";
-                baselineFile = Path.Combine(enlistmentPath, Path.GetFileName(testFile)) + ".formatted";
-
+                baselineFile = Path.Combine(fixture.SourcePath, @"Formatting\", Path.GetFileName(testFile)) + ".formatted";
                 TestFiles.UpdateBaseline(baselineFile, actual);
             } else {
                 TestFiles.CompareToBaseLine(baselineFile, actual);

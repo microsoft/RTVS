@@ -6,8 +6,6 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
-using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.BraceCompletion;
 using Microsoft.VisualStudio.Text.Editor;
@@ -52,8 +50,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
                 }
 
                 // We don't want to complete inside comments
-                int index = ast.Comments.GetItemContaining(openingPoint.Position);
-                if (index >= 0) {
+                if (document.IsPositionInComment(openingPoint.Position)) {
                     context = null;
                     return false;
                 }
