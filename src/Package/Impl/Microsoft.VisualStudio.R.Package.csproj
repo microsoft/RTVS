@@ -56,6 +56,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\MenuCommandToOleMenuCommandShim.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
@@ -205,7 +206,7 @@
     <Compile Include="Options\R\Tools\GoToEditorOptionsCommand.cs" />
     <Compile Include="Options\R\Tools\ImportRSettingsCommand.cs" />
     <Compile Include="Packages\Definitions\IPackage.cs" />
-    <Compile Include="Packages\Attributes\PackageCommand.cs" />
+    <Compile Include="Commands\PackageCommand.cs" />
     <Compile Include="Packages\Attributes\LanguageEditorOptionsAttribute.cs" />
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\Attributes\ProvideNewFileTemplatesAttribute.cs" />
@@ -259,7 +260,6 @@
     <Compile Include="Repl\ReplPromptTagger.cs" />
     <Compile Include="Repl\Debugger\ContinueDebuggingCommand.cs" />
     <Compile Include="Repl\Debugger\AttachDebuggerCommand.cs" />
-    <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Repl\VsRInteractiveWorkflowProvider.cs" />
     <Compile Include="Repl\Workspace\ResetReplCommand.cs" />
     <Compile Include="Repl\Workspace\ShowRInteractiveWindowsCommand.cs" />
