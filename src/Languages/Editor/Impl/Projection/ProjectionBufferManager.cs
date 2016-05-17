@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
@@ -54,6 +55,7 @@ namespace Microsoft.Languages.Editor.Projection {
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
 
+            // Now update language spans
             var secondarySpans = CreateSecondarySpans(secondaryContent, mappings);
             ContainedLanguageBuffer.ReplaceSpans(0, ContainedLanguageBuffer.CurrentSnapshot.SpanCount, secondarySpans, EditOptions.DefaultMinimalChange, this);
 
@@ -63,12 +65,13 @@ namespace Microsoft.Languages.Editor.Projection {
             ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
         }
 
+
         public void Dispose() {
             ServiceManager.RemoveService<IProjectionBufferManager>(_diskBuffer);
         }
         #endregion
 
-        private List<object> CreateSecondarySpans(string secondaryText, IReadOnlyList<ProjectionMapping> mappings) { 
+        private List<object> CreateSecondarySpans(string secondaryText, IReadOnlyList<ProjectionMapping> mappings) {
             var spans = new List<object>(mappings.Count);
 
             int secondaryIndex = 0;
@@ -83,7 +86,7 @@ namespace Microsoft.Languages.Editor.Projection {
                     }
                     span = new Span(mapping.SourceStart, mapping.Length);
                     // Active span comes from the disk buffer
-                    spans.Add(_diskBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // active
+                    spans.Add(new CustomTrackingSpan(_diskBuffer.CurrentSnapshot, span)); // active
                     secondaryIndex = mapping.ProjectionRange.End;
                 }
             }
@@ -106,18 +109,17 @@ namespace Microsoft.Languages.Editor.Projection {
                 ProjectionMapping mapping = mappings[i];
                 if (mapping.Length > 0) {
                     span = Span.FromBounds(primaryIndex, mapping.SourceStart);
-                    spans.Add(diskSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // Markdown
+                    spans.Add(new CustomTrackingSpan(diskSnapshot, span)); // Markdown
+                    primaryIndex = mapping.SourceRange.End;
 
                     span = new Span(mapping.ProjectionStart, mapping.Length);
-                    spans.Add(ContainedLanguageBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // R
-
-                    primaryIndex = mapping.SourceRange.End;
+                    spans.Add(new CustomTrackingSpan(ContainedLanguageBuffer.CurrentSnapshot, span, canAppend: true)); // R
                 }
             }
-            // Add the final inert text after the last span
+            // Add the final section after the last span
             span = Span.FromBounds(primaryIndex, diskSnapshot.Length);
             if (!span.IsEmpty) {
-                spans.Add(diskSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // Markdown
+                spans.Add(new CustomTrackingSpan(diskSnapshot, span, canAppend: true)); // Markdown
             }
             return spans;
         }

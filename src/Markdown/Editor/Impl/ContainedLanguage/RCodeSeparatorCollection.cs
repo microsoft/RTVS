@@ -3,10 +3,9 @@
 
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Markdown.Editor.Tokens;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
-    public sealed class RCodeFragmentCollection: SensitiveFragmentCollection<MarkdownToken>, ISensitiveFragmentSeparatorsInfo {
+    public sealed class RCodeSeparatorCollection: SensitiveFragmentCollection<ITextRange>, ISensitiveFragmentSeparatorsInfo {
         protected override IEnumerable<ISensitiveFragmentSeparatorsInfo> SeparatorInfos => new ISensitiveFragmentSeparatorsInfo[] { this };
 
         #region ISensitiveFragmentSeparatorsInfo

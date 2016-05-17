@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
     internal sealed class RLanguageHandler : ContainedLanguageHandler {
-        private readonly RCodeFragmentCollection _fragments = new RCodeFragmentCollection();
+        private readonly RCodeSeparatorCollection _separators = new RCodeSeparatorCollection();
         private readonly IBufferGenerator _generator = new BufferGenerator();
 
         public RLanguageHandler(ITextBuffer textBuffer) :
@@ -32,12 +32,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             var changes = e.ConvertToRelative();
-            bool destructive = false;
             foreach (var c in changes) {
-                destructive |= _fragments.IsDestructiveChange(c.OldStart, c.OldLength, c.NewLength, c.OldText, c.NewText);
+                var destructive = _separators.IsDestructiveChange(c.OldStart, c.OldLength, c.NewLength, c.OldText, c.NewText);
                 if (destructive) {
-                    IdleTimeAction.Cancel(this.GetType());
-                    IdleTimeAction.Create(UpdateProjections, 200, this.GetType());
+                    UpdateProjections();
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
@@ -57,8 +55,11 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var rCodeTokens = tokens.Where(t => t.TokenType == MarkdownTokenType.Code);
             // TODO: incremental updates
             Blocks.Clear();
+            _separators.Clear();
             foreach (var t in rCodeTokens) {
                 Blocks.Add(new TextRange(t.Start + 3, t.Length - 6));
+                _separators.Add(new TextRange(t.Start, 3));
+                _separators.Add(new TextRange(t.End-3, 3));
             }
         }
     }

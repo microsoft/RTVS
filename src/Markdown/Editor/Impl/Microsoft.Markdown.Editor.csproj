@@ -88,7 +88,7 @@
     <Compile Include="Commands\MdPackageCommandId.cs" />
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
     <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
-    <Compile Include="ContainedLanguage\RCodeFragmentCollection.cs" />
+    <Compile Include="ContainedLanguage\RCodeSeparatorCollection.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />

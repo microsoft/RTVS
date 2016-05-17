@@ -99,9 +99,9 @@
     <Compile Include="Outline\OutlineRegionsChange.cs" />
     <Compile Include="Outline\OutlineRegionsChangedEventArgs.cs" />
     <Compile Include="Outline\OutliningTagger.cs" />
+    <Compile Include="Projection\CustomTrackingSpan.cs" />
     <Compile Include="Projection\Definitions\IProjectionBufferManager.cs" />
     <Compile Include="Projection\ProjectionBufferManager.cs" />
-    <Compile Include="Projection\ProjectionBufferEditOptions.cs" />
     <Compile Include="Projection\ProjectionMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Completion\CompletionCommandHandler.cs" />

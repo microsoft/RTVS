@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -16,7 +17,11 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal sealed class MdClassifierProvider : MarkdownClassifierProvider<MdClassifierProvider> {
         protected override IClassifier CreateClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs, IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders) {
-            return new MdClassifier(textBuffer, ClassificationRegistryService, ContentTypeRegistryService, ClassificationNameProviders);
+            var classifier = ServiceManager.GetService<MdClassifier>(textBuffer);
+            if (classifier == null) {
+                classifier = new MdClassifier(textBuffer, ClassificationRegistryService, ContentTypeRegistryService, ClassificationNameProviders);
+            }
+            return classifier;
         }
     }
 }
