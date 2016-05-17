@@ -97,7 +97,7 @@
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
-    <Compile Include="Controller\IMenuCommand.cs" />
+    <Compile Include="Controller\ICommandAsync.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Extensions\CoreShellExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />

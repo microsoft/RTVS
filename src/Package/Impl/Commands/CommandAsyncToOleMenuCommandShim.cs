@@ -2,15 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Design;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Controller;
-using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
-    internal class MenuCommandToOleMenuCommandShim : PackageCommand {
-        private readonly IMenuCommand _command;
+    internal class CommandAsyncToOleMenuCommandShim : PackageCommand {
+        private readonly ICommandAsync _command;
 
-        public MenuCommandToOleMenuCommandShim(IMenuCommand command, Guid group, int id)
+        public CommandAsyncToOleMenuCommandShim(Guid group, int id, ICommandAsync command)
             : base(group, id) {
             if (command == null) {
                 throw new ArgumentNullException(nameof(command));
@@ -27,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
 
         protected override void Handle(object inArg, out object outArg) {
             outArg = null;
-            _command.Invoke(inArg, ref outArg);
+            _command.InvokeAsync().DoNotWait();
         }
     }
 }

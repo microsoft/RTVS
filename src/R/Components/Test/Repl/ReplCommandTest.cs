@@ -25,7 +25,6 @@ using Xunit;
 
 namespace Microsoft.R.Components.Test.Repl {
     [ExcludeFromCodeCoverage]
-    [Collection(CollectionNames.NonParallel)]
     public class ReplCommandTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
         private readonly ExportProvider _exportProvider;
@@ -93,8 +92,7 @@ namespace Microsoft.R.Components.Test.Repl {
 
                     var mutatedTask = EventTaskSources.IRSession.Mutated.Create(session);
 
-                    object outArg = null;
-                    command.Invoke(null, ref outArg);
+                    await command.InvokeAsync();
 
                     await mutatedTask;
                     (await session.EvaluateAsync<bool>("sourced", REvaluationKind.Normal)).Should().BeTrue();
