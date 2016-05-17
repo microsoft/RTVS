@@ -10,6 +10,6 @@ namespace Microsoft.Languages.Editor.Projection {
     public interface IProjectionBufferManager: IDisposable {
         IProjectionBuffer PrimaryProjectionBuffer { get; }
         IProjectionBuffer SecondaryProjectionBuffer { get; }
-        void SetProjectionMappings(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
+        void SetProjectionMappings(ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
     }
 }

@@ -42,18 +42,17 @@ namespace Microsoft.Languages.Editor.Projection {
 
         public IProjectionBuffer SecondaryProjectionBuffer { get; }
 
-        public void SetProjectionMappings(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
+        public void SetProjectionMappings(ITextBuffer secondaryBuffer, string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
-            List<object> primarySpans;
-            List<object> secondarySpans;
+            var secondarySpans = CreateProjectionSpans(secondaryBuffer, secondaryContent, mappings);
 
-            CreateSpans(primaryBuffer, secondaryBuffer, mappings, out primarySpans, out secondarySpans);
-
-            var editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(PrimaryProjectionBuffer.CurrentSnapshot.GetSourceSpans(), primarySpans);
-            PrimaryProjectionBuffer.ReplaceSpans(0, PrimaryProjectionBuffer.CurrentSnapshot.SpanCount, primarySpans, editOptions, this);
-
-            editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(PrimaryProjectionBuffer.CurrentSnapshot.GetSourceSpans(), secondarySpans);
+            var editOptions = ProjectionBufferEditOptions.GetAppropriateChangeEditOptions(PrimaryProjectionBuffer.CurrentSnapshot.GetSourceSpans(), secondarySpans);
             SecondaryProjectionBuffer.ReplaceSpans(0, SecondaryProjectionBuffer.CurrentSnapshot.SpanCount, secondarySpans, editOptions, this);
+
+            // Update primary (view) buffer projected spans. View buffer spans are all tracking spans:
+            // they either come from primary content or secondary content. Inert spans do not participate.
+            var primarySpans = CreatePrimarySpans(_diskBuffer, secondarySpans, mappings);
+            PrimaryProjectionBuffer.ReplaceSpans(0, PrimaryProjectionBuffer.CurrentSnapshot.SpanCount, primarySpans, editOptions, this);
         }
 
         public void Dispose() {
@@ -61,49 +60,45 @@ namespace Microsoft.Languages.Editor.Projection {
         }
         #endregion
 
-        /// <summary>
-        /// Uses the current GrowingSpanDatas content to create a list of
-        /// source spans and inert text spans. This should really only be called from UpdateTextBuffer.
-        /// </summary>
-        private void CreateSpans(ITextBuffer primaryBuffer, ITextBuffer secondaryBuffer,
-                                 IReadOnlyList<ProjectionMapping> mappings, 
-                                 out List<object> primarySpans, out List<object> secondarySpans) {
-            primarySpans = new List<object>(mappings.Count);
-            secondarySpans = new List<object>(mappings.Count);
+        private List<object> CreateProjectionSpans(ITextBuffer secondaryBuffer, string secondaryText, IReadOnlyList<ProjectionMapping> mappings) { 
+            var spans = new List<object>(mappings.Count);
 
-            var primaryText = primaryBuffer.CurrentSnapshot.GetText();
-            var secondaryText = secondaryBuffer.CurrentSnapshot.GetText();
-            int primaryIndex = 0;
+            secondaryBuffer.Replace(new Span(0, secondaryBuffer.CurrentSnapshot.Length), secondaryText);
             int secondaryIndex = 0;
-            Span primarySpan, secondarySpan;
+            Span span;
 
             for (int i = 0; i < mappings.Count; i++) {
                 ProjectionMapping mapping = mappings[i];
                 if (mapping.Length > 0) {
-                    // Inert area is area that belongs to the primary (top-level) document
-                    // is active area for the secondary buffer and vise versa.
-                    primarySpan = Span.FromBounds(primaryIndex, mapping.SourceStart);
-                    primarySpans.Add(primaryBuffer.CurrentSnapshot.CreateTrackingSpan(primarySpan, SpanTrackingMode.EdgeInclusive)); // active
-                    primarySpans.Add(primaryText.Substring(mapping.SourceRange.Start, mapping.Length)); // inert
-                    primaryIndex = mapping.SourceRange.End;
-
-                    secondarySpan = Span.FromBounds(secondaryIndex, mapping.Length);
-                    secondarySpans.Add(secondaryText.Substring(secondarySpan.End, mapping.Length)); // inert
-                    secondarySpans.Add(secondaryBuffer.CurrentSnapshot.CreateTrackingSpan(secondarySpan, SpanTrackingMode.EdgeInclusive)); // active
+                    span = Span.FromBounds(secondaryIndex, mapping.Length);
+                    spans.Add(secondaryText.Substring(span.End, mapping.Length)); // inert
+                    spans.Add(secondaryBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive)); // active
                     secondaryIndex = mapping.ProjectionRange.End;
                 }
             }
 
             // Add the final inert text after the last span
-            primarySpan = Span.FromBounds(primaryIndex, primaryBuffer.CurrentSnapshot.Length);
-            if (!primarySpan.IsEmpty) {
-                primarySpans.Add(primaryText.Substring(primarySpan.Start, primarySpan.Length)); // inert
+            span = Span.FromBounds(secondaryIndex, secondaryBuffer.CurrentSnapshot.Length);
+            if (!span.IsEmpty) {
+                spans.Add(secondaryText.Substring(span.Start, span.Length)); // inert
             }
+            return spans;
+        }
 
-            secondarySpan = Span.FromBounds(secondaryIndex, secondaryBuffer.CurrentSnapshot.Length);
-            if (!secondarySpan.IsEmpty) {
-                secondarySpans.Add(secondaryText.Substring(secondarySpan.Start, secondarySpan.Length)); // inert
+        private List<object> CreatePrimarySpans(ITextBuffer primaryBuffer, List<object> secondarySpans, IReadOnlyList<ProjectionMapping> mappings) {
+            var spans = new List<object>(mappings.Count);
+            int primaryIndex = 0;
+
+            for (int i = 0; i < mappings.Count; i++) {
+                ProjectionMapping mapping = mappings[i];
+                if (mapping.Length > 0) {
+                    var span = Span.FromBounds(primaryIndex, mapping.Length);
+                    spans.Add(primaryBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive)); // active
+                    spans.Add(secondarySpans[i]);
+                    primaryIndex = mapping.ProjectionRange.End;
+                }
             }
+            return spans;
         }
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
@@ -31,7 +32,8 @@ namespace Microsoft.Markdown.Editor.Document {
             this.TextBuffer = textBuffer;
             ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
 
-            _projectionBufferManager = new ProjectionBufferManager(textBuffer, projectionBufferFactoryService, contentTypeRegistryService, MdProjectionContentTypeDefinition.ContentType);
+            _projectionBufferManager = new ProjectionBufferManager(textBuffer, projectionBufferFactoryService, contentTypeRegistryService, 
+                     MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
             _rLanguageHandler = new RLanguageHandler(textBuffer);
         }
         #endregion
