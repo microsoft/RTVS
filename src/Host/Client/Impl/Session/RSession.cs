@@ -278,6 +278,7 @@ namespace Microsoft.R.Host.Client.Session {
                         await evaluation.SetROptions();
                         await evaluation.OverrideFunction("setwd", "base");
                         await evaluation.SetFunctionRedirection();
+                        await evaluation.OptionsSetWidth(startupInfo.TerminalWidth);
                     }
 
                     _afterHostStartedTcs.SetResult(null);

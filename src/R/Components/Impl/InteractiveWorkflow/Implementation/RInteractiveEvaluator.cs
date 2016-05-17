@@ -43,14 +43,21 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<ExecutionResult> InitializeAsync() {
             try {
                 if (!Session.IsHostRunning) {
-                    await Session.StartHostAsync(new RHostStartupInfo {
+                    var startupInfo = new RHostStartupInfo {
                         Name = "REPL",
                         RBasePath = _settings.RBasePath,
                         RHostCommandLineArguments = _settings.RCommandLineArguments,
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
-                        WorkingDirectory = _settings.WorkingDirectory
-                    }, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
+                        WorkingDirectory = _settings.WorkingDirectory,
+                    };
+
+                    IInteractiveWindowVisualComponent visualComponent;
+                    if (CurrentWindow.Properties.TryGetProperty<IInteractiveWindowVisualComponent>(typeof(IInteractiveWindowVisualComponent), out visualComponent)) {
+                        startupInfo.TerminalWidth = visualComponent.TerminalWidth;
+                    }
+
+                    await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
                 return ExecutionResult.Success;
             } catch (RHostBinaryMissingException) {

@@ -10,5 +10,6 @@ namespace Microsoft.R.Host.Client {
         public string CranMirrorName { get; set; }
         public string WorkingDirectory { get; set; }
         public int CodePage { get; set; }
+        public int TerminalWidth { get; set; } = 80;
     }
 }
