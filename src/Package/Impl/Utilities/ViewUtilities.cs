@@ -79,16 +79,6 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             return result != null;
         }
 
-        public static void SaveFile(this ITextView textView) {
-            if (textView != null) {
-                RunningDocumentTable rdt = new RunningDocumentTable(RPackage.Current);
-                string filePath = textView.TextBuffer.GetFilePath();
-                if (filePath != null) {
-                    rdt.SaveFileIfDirty(filePath);
-                }
-            }
-        }
-
         public static string GetFilePath(this ITextView textView) {
             if (textView != null && !textView.IsClosed) {
                 ITextDocument document;

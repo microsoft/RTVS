@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Test {
-    sealed class SourceFile : IDisposable {
+    public sealed class SourceFile : IDisposable {
         public string FilePath { get; }
 
         public SourceFile(string content) {

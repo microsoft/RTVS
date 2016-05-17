@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Design;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -19,11 +20,28 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected virtual void SetStatus() { }
+
         protected virtual void Handle() { }
+
+        protected virtual void Handle(object inArg, out object outArg) {
+            outArg = null;
+            Handle();
+        }
 
         public static void OnCommand(object sender, EventArgs args) {
             var command = sender as PackageCommand;
-            command?.Handle();
+            if (command != null) {
+                object inArg, outArg;
+
+                var oleArgs = args as OleMenuCmdEventArgs;
+                inArg = oleArgs?.InValue;
+
+                command.Handle(inArg, out outArg);
+
+                if (oleArgs != null && oleArgs.OutValue != IntPtr.Zero) {
+                    Marshal.GetNativeVariantForObject(outArg, oleArgs.OutValue);
+                }
+            }
         }
     }
 }

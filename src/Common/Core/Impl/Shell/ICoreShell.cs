@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -63,5 +62,12 @@ namespace Microsoft.Common.Core.Shell {
         /// Returns host locale ID
         /// </summary>
         int LocaleId { get; }
+
+        /// <summary>
+        /// If the specified file is opened as a document, and it has unsaved changes, save those changes.
+        /// </summary>
+        /// <param name="fullPath">The full path to the document to be saved.</param>
+        /// <returns> The path to which the file was saved. This is either the original path or a new path specified by the user.</returns>
+        string SaveFileIfDirty(string fullPath);
     }
 }
