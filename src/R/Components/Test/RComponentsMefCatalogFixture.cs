@@ -27,21 +27,21 @@ namespace Microsoft.R.Components.Test {
             };
         }
 
-        protected override IEnumerable<string> GetNugetAssemblies() {
+        protected override IEnumerable<string> GetVsAssemblies() {
+            return new[] {
+                "Microsoft.VisualStudio.Editor.dll",
+                "Microsoft.VisualStudio.Language.Intellisense.dll",
+                "Microsoft.VisualStudio.Platform.VSEditor.dll"
+            };
+        }
+
+        protected override IEnumerable<string> GetLoadedAssemblies() {
             return new[] {
                 "Microsoft.VisualStudio.CoreUtility.dll",
                 "Microsoft.VisualStudio.Text.Data.dll",
                 "Microsoft.VisualStudio.Text.Logic.dll",
                 "Microsoft.VisualStudio.Text.UI.dll",
                 "Microsoft.VisualStudio.Text.UI.Wpf.dll"
-            };
-        }
-
-        protected override IEnumerable<string> GetVsAssemblies() {
-            return new[] {
-                "Microsoft.VisualStudio.Editor.dll",
-                "Microsoft.VisualStudio.Language.Intellisense.dll",
-                "Microsoft.VisualStudio.Platform.VSEditor.dll"
             };
         }
 

@@ -7,15 +7,16 @@ using System.ComponentModel.Composition;
 using System.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(200)]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class OpenContainingFolderCommand : ICommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
 

@@ -8,4 +8,3 @@ using System.Runtime.CompilerServices;
 #else
 [assembly: InternalsVisibleTo("Microsoft.R.Support.Test")]
 #endif
-

@@ -6,17 +6,18 @@ using System.Collections.Immutable;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(200)]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class SetDirectoryHereCommand : ICommandGroupHandler {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly UnconfiguredProject _unconfiguredProject;

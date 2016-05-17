@@ -10,17 +10,19 @@ using System.Windows.Forms;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(200)]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class CopyItemPathCommand : IAsyncCommandGroupHandler {
         private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 

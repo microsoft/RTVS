@@ -11,6 +11,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
     internal class TestFramework : XunitTestFramework {
         public TestFramework(IMessageSink messageSink) : base(messageSink) {}
 
+        protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo) {
+            return new TestFrameworkDiscoverer(assemblyInfo, SourceInformationProvider, DiagnosticMessageSink, AssemblyLoaderAttribute.GetAssemblyLoaders(assemblyInfo));
+        }
+
         protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName) {
             return new TestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
         }
