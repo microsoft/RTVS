@@ -22,9 +22,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public IVisualComponentContainer<IVisualComponent> Container { get; }
 
-        public int TerminalWidth { get; private set; } = 80;
-        public event EventHandler<TerminalWidthChangedEventArgs> TerminalWidthChanged;
-
         public RInteractiveWindowVisualComponent(IInteractiveWindow interactiveWindow, IVisualComponentContainer<IInteractiveWindowVisualComponent> container) {
             InteractiveWindow = interactiveWindow;
             Container = container;
@@ -33,18 +30,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Controller = ServiceManagerBase.GetService<ICommandTarget>(textView);
             Control = textView.VisualElement;
             interactiveWindow.Properties.AddProperty(typeof(IInteractiveWindowVisualComponent), this);
-            interactiveWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-        }
-
-        private void VisualElement_SizeChanged(object sender, SizeChangedEventArgs e) {
-            int width = (int)(TextView.VisualElement.ActualWidth / TextView.FormattedLineSource.ColumnWidth);
-            // From R docs:  Valid values are 10...10000 with default normally 80.
-            TerminalWidth = Math.Max(10, Math.Min(10000, width));
-            TerminalWidthChanged?.Invoke(this, new TerminalWidthChangedEventArgs(TerminalWidth));
         }
 
         public void Dispose() {
-            InteractiveWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
             InteractiveWindow.Properties.RemoveProperty(typeof (IInteractiveWindowVisualComponent));
         }
     }

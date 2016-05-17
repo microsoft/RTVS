@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -14,16 +13,5 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         ITextBuffer CurrentLanguageBuffer { get; }
 
         IInteractiveWindow InteractiveWindow { get; }
-
-        /// <summary>
-        /// Width of the terminal window, in number of columns.
-        /// </summary>
-        int TerminalWidth { get; }
-
-        /// <summary>
-        /// Width of the terminal window changed, usually due to the window
-        /// being resized, or zoom level changed.
-        /// </summary>
-        event EventHandler<TerminalWidthChangedEventArgs> TerminalWidthChanged;
     }
 }

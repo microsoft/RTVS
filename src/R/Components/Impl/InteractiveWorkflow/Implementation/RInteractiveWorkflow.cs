@@ -12,7 +12,6 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
@@ -111,14 +110,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var interactiveWindow = ActiveWindow.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;
-            ActiveWindow.TerminalWidthChanged += TerminalWidthChanged;
             await interactiveWindow.InitializeAsync();
             ActiveWindow.Container.UpdateCommandStatus(true);
             return ActiveWindow;
-        }
-
-        private void TerminalWidthChanged(object sender, TerminalWidthChangedEventArgs e) {
-            RSession.OptionsSetWidth(e.NewWidth);
         }
 
         public void Dispose() {
@@ -128,7 +122,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _disposed = true;
 
             _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged;
-            ActiveWindow.TerminalWidthChanged -= TerminalWidthChanged;
             RSession.Disconnected -= RSessionDisconnected;
             Operations.Dispose();
             _onDispose();

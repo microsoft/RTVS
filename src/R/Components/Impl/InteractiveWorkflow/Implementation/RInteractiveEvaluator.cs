@@ -12,6 +12,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
@@ -20,6 +21,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
+        private int _terminalWidth = 80;
 
         public IRHistory History { get; }
         public IRSession Session { get; }
@@ -35,6 +37,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void Dispose() {
+            CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+
             Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
             Session.BeforeRequest -= SessionOnBeforeRequest;
@@ -50,12 +54,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         CranMirrorName = _settings.CranMirror,
                         CodePage = _settings.RCodePage,
                         WorkingDirectory = _settings.WorkingDirectory,
+                        TerminalWidth = _terminalWidth,
                     };
 
-                    IInteractiveWindowVisualComponent visualComponent;
-                    if (CurrentWindow.Properties.TryGetProperty<IInteractiveWindowVisualComponent>(typeof(IInteractiveWindowVisualComponent), out visualComponent)) {
-                        startupInfo.TerminalWidth = visualComponent.TerminalWidth;
-                    }
+                    CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
 
                     await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
@@ -70,6 +72,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
+                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+
                 if (Session.IsHostRunning) {
                     CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
@@ -213,6 +217,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             if (CurrentWindow != null) {
                 _coreShell.DispatchOnUIThread(() => CurrentWindow.WriteLine(message));
             }
+        }
+
+        private void VisualElement_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e) {
+            int width = (int)(e.NewSize.Width / CurrentWindow.TextView.FormattedLineSource.ColumnWidth);
+            // From R docs:  Valid values are 10...10000 with default normally 80.
+            _terminalWidth = Math.Max(10, Math.Min(10000, width));
+
+            Session.OptionsSetWidth(_terminalWidth);
         }
     }
 }
