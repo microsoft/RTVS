@@ -12,9 +12,9 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.EditorFactory {
     [Export(typeof(IEditorFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal class EditorInstanceFactory : IEditorFactory
+    internal class REditorInstanceFactory : IEditorFactory
     {
-        public IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory)
+        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory)
         {
             if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
@@ -22,14 +22,7 @@ namespace Microsoft.R.Editor.EditorFactory {
             if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
             }
-            if (!(textBuffer is ITextBuffer)) {
-                throw new ArgumentException("textBuffer parameter must be a text buffer");
-            }
-
-            if (documentFactory == null) {
-                documentFactory = new DocumentFactory();
-            }
-            return new EditorInstance(textBuffer as ITextBuffer, documentFactory);
+            return new REditorInstance(textBuffer, documentFactory);
         }
     }
 }

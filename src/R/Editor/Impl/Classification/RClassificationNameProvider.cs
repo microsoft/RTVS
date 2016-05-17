@@ -13,19 +13,15 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.Classification {
     [Export(typeof(IClassificationNameProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class RClassificationNameProvider: IClassificationNameProvider<RToken>, IClassificationNameProvider
-    {
-        public string GetClassificationName(object o, out ITextRange range)
-        {
+    internal sealed class RClassificationNameProvider : IClassificationNameProvider<RToken>, IClassificationNameProvider {
+        public string GetClassificationName(object o, out ITextRange range) {
             var token = (RToken)o;
             range = token;
             return GetClassificationName(token);
         }
 
-        public string GetClassificationName(RToken t)
-        {
-            switch (t.TokenType)
-            {
+        public string GetClassificationName(RToken t) {
+            switch (t.TokenType) {
                 case RTokenType.Comment:
                     return PredefinedClassificationTypeNames.Comment;
                 case RTokenType.Logical:
@@ -55,13 +51,10 @@ namespace Microsoft.R.Editor.Classification {
                     return "Punctuation";
 
                 case RTokenType.Identifier:
-                    if (t.SubType == RTokenSubType.BuiltinConstant || 
-                        t.SubType == RTokenSubType.BuiltinFunction)
-                    {
+                    if (t.SubType == RTokenSubType.BuiltinConstant ||
+                        t.SubType == RTokenSubType.BuiltinFunction) {
                         return PredefinedClassificationTypeNames.Keyword;
-                    }
-                    else if (t.SubType == RTokenSubType.TypeFunction)
-                    {
+                    } else if (t.SubType == RTokenSubType.TypeFunction) {
                         return RClassificationTypes.TypeFunction;
                     }
                     break;

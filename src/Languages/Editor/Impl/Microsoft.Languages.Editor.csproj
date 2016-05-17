@@ -88,6 +88,8 @@
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHandler.cs" />
     <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
+    <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
+    <Compile Include="EditorFactory\EditorInstance.cs" />
     <Compile Include="EditorHelpers\TrackingHelper.cs" />
     <Compile Include="Imaging\GlyphService.cs" />
     <Compile Include="Outline\OutlineController.cs" />
@@ -127,10 +129,10 @@
     <Compile Include="Controller\TextViewConnectionListener.cs" />
     <Compile Include="Controller\TextViewData.cs" />
     <Compile Include="Controller\ViewController.cs" />
-    <Compile Include="EditorFactory\IEditorDocument.cs" />
-    <Compile Include="EditorFactory\IEditorDocumentFactory.cs" />
-    <Compile Include="EditorFactory\IEditorFactory.cs" />
-    <Compile Include="EditorFactory\IEditorInstance.cs" />
+    <Compile Include="EditorFactory\Definitions\IEditorDocument.cs" />
+    <Compile Include="EditorFactory\Definitions\IEditorDocumentFactory.cs" />
+    <Compile Include="EditorFactory\Definitions\IEditorFactory.cs" />
+    <Compile Include="EditorFactory\Definitions\IEditorInstance.cs" />
     <Compile Include="EditorHelpers\TextBufferHelper.cs" />
     <Compile Include="EditorHelpers\TextChange.cs" />
     <Compile Include="EditorHelpers\TextViewHelpers.cs" />

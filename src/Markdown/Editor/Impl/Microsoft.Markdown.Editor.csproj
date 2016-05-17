@@ -90,14 +90,13 @@
     <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
     <Compile Include="ContainedLanguage\RCodeFragmentCollection.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
-    <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />
     <Compile Include="Document\MdEditorDocumentFactory.cs" />
     <Compile Include="Document\MdEditorDocument.cs" />
-    <Compile Include="EditorFactory\EditorInstance.cs" />
-    <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
+    <Compile Include="EditorFactory\MdEditorInstance.cs" />
+    <Compile Include="EditorFactory\MdEditorInstanceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

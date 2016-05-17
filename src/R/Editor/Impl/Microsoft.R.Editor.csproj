@@ -124,9 +124,9 @@
     <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />
     <Compile Include="Documentation\RoxygenBlock.cs" />
     <Compile Include="Document\Definitions\IREditorDocument.cs" />
-    <Compile Include="Document\DocumentFactory.cs" />
-    <Compile Include="EditorFactory\EditorInstance.cs" />
-    <Compile Include="EditorFactory\EditorInstanceFactory.cs" />
+    <Compile Include="Document\RDocumentFactory.cs" />
+    <Compile Include="EditorFactory\REditorInstance.cs" />
+    <Compile Include="EditorFactory\REditorInstanceFactory.cs" />
     <Compile Include="Extensions\DocumentExtensions.cs" />
     <Compile Include="Extensions\AstRootExtensions.cs" />
     <Compile Include="Extensions\FunctionDefinitionExtensions.cs" />
@@ -158,7 +158,7 @@
     <Compile Include="Outline\ROutlineRegion.cs" />
     <Compile Include="Outline\ROutlineRegionBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Document\EditorDocument.cs" />
+    <Compile Include="Document\REditorDocument.cs" />
     <Compile Include="QuickInfo\QuickInfoController.cs" />
     <Compile Include="QuickInfo\QuickInfoControllerProvider.cs" />
     <Compile Include="QuickInfo\QuickInfoSource.cs" />

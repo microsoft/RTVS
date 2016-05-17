@@ -32,8 +32,9 @@ namespace Microsoft.Markdown.Editor.Document {
             this.TextBuffer = textBuffer;
             ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
 
-            _projectionBufferManager = new ProjectionBufferManager(textBuffer, projectionBufferFactoryService, contentTypeRegistryService, 
-                                       MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
+            _projectionBufferManager = new ProjectionBufferManager(textBuffer, 
+                        projectionBufferFactoryService, contentTypeRegistryService, 
+                        RContentTypeDefinition.ContentType);
             _rLanguageHandler = new RLanguageHandler(textBuffer);
         }
         #endregion

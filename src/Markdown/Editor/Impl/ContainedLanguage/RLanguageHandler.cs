@@ -20,7 +20,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
 
         public RLanguageHandler(ITextBuffer textBuffer) :
             base(textBuffer) {
-            IdleTimeAction.Create(UpdateProjections, 100, this.GetType());
+            UpdateProjections();
         }
 
         public override ICommandTarget GetCommandTargetOfLocation(ITextView textView, int bufferPosition) {

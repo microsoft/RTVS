@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Editor.Workspace;
+using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.EditorFactory {
     /// <summary>
@@ -11,10 +12,8 @@ namespace Microsoft.Languages.Editor.EditorFactory {
     /// </summary>
     public interface IEditorFactory {
         /// <summary>
-        /// Creates an instance of an editor
+        /// Creates an instance of an editor over the text buffer.
         /// </summary>
-        /// <param name="workspaceItem">Workspace item that represents document in the workspace</param>
-        /// <returns>An editor instance</returns>
-        IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory);
+        IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory);
     }
 }

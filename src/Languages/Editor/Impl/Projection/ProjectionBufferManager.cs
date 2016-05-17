@@ -14,24 +14,23 @@ namespace Microsoft.Languages.Editor.Projection {
     /// </summary>
     public sealed class ProjectionBufferManager : IProjectionBufferManager {
         private const string _inertContentTypeName = "inert";
+        private const string _projectionContentTypeName = "projection";
+
         private readonly ITextBuffer _diskBuffer;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
 
         public ProjectionBufferManager(ITextBuffer diskBuffer,
                                        IProjectionBufferFactoryService projectionBufferFactoryService,
                                        IContentTypeRegistryService contentTypeRegistryService,
-                                       string primaryProjectionContentTypeName,
                                        string secondaryContentTypeName) {
             _diskBuffer = diskBuffer;
             _contentTypeRegistryService = contentTypeRegistryService;
 
-            SnapshotSpan everything = new SnapshotSpan(_diskBuffer.CurrentSnapshot, 0, _diskBuffer.CurrentSnapshot.Length);
-            ITrackingSpan trackingSpan = _diskBuffer.CurrentSnapshot.CreateTrackingSpan(everything, SpanTrackingMode.EdgeInclusive);
-            var contentType = _contentTypeRegistryService.GetContentType(primaryProjectionContentTypeName);
-            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(1) { trackingSpan }, ProjectionBufferOptions.None, contentType);
+            var contentType = _contentTypeRegistryService.GetContentType(_projectionContentTypeName);
+            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
 
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
-            SecondaryProjectionBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             ServiceManager.AddService<IProjectionBufferManager>(this, _diskBuffer);
         }
@@ -50,18 +49,18 @@ namespace Microsoft.Languages.Editor.Projection {
 
         public IProjectionBuffer ViewBuffer { get; }
 
-        public IProjectionBuffer SecondaryProjectionBuffer { get; }
+        public IProjectionBuffer ContainedLanguageBuffer { get; }
 
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
 
             var secondarySpans = CreateSecondarySpans(secondaryContent, mappings);
-            SecondaryProjectionBuffer.ReplaceSpans(0, SecondaryProjectionBuffer.CurrentSnapshot.SpanCount, secondarySpans, EditOptions.None, this);
+            ContainedLanguageBuffer.ReplaceSpans(0, ContainedLanguageBuffer.CurrentSnapshot.SpanCount, secondarySpans, EditOptions.DefaultMinimalChange, this);
 
             // Update primary (view) buffer projected spans. View buffer spans are all tracking spans:
             // they either come from primary content or secondary content. Inert spans do not participate.
             var viewSpans = CreateViewSpans(mappings);
-            ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.None, this);
+            ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
         }
 
         public void Dispose() {
@@ -99,19 +98,26 @@ namespace Microsoft.Languages.Editor.Projection {
 
         private List<object> CreateViewSpans(IReadOnlyList<ProjectionMapping> mappings) {
             var spans = new List<object>(mappings.Count);
+            var diskSnapshot = _diskBuffer.CurrentSnapshot;
             int primaryIndex = 0;
+            Span span;
 
             for (int i = 0; i < mappings.Count; i++) {
                 ProjectionMapping mapping = mappings[i];
                 if (mapping.Length > 0) {
-                    var span = Span.FromBounds(primaryIndex, mapping.SourceStart);
-                    spans.Add(_diskBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // Markdown
+                    span = Span.FromBounds(primaryIndex, mapping.SourceStart);
+                    spans.Add(diskSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // Markdown
 
                     span = new Span(mapping.ProjectionStart, mapping.Length);
-                    spans.Add(SecondaryProjectionBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // R
+                    spans.Add(ContainedLanguageBuffer.CurrentSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // R
 
                     primaryIndex = mapping.SourceRange.End;
                 }
+            }
+            // Add the final inert text after the last span
+            span = Span.FromBounds(primaryIndex, diskSnapshot.Length);
+            if (!span.IsEmpty) {
+                spans.Add(diskSnapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeExclusive)); // Markdown
             }
             return spans;
         }
