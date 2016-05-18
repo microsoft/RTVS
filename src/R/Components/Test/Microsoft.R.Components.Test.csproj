@@ -113,6 +113,8 @@
     <None Include="Files\Packages\rtvslib1\R\func1.R" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.2\PACKAGES" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.2\rtvslib1_0.1.0.zip" />
+    <None Include="Files\Repos\Repo1\bin\windows\contrib\3.4\PACKAGES" />
+    <None Include="Files\Repos\Repo1\bin\windows\contrib\3.4\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\PACKAGES" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\src\contrib\PACKAGES" />
