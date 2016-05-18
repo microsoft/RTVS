@@ -37,6 +37,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
+                    _separators.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);
                 }
             }
         }
