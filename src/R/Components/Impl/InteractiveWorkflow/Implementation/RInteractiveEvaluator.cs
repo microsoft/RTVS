@@ -37,7 +37,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         }
 
         public void Dispose() {
-            CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+            if (CurrentWindow != null) {
+                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+            }
 
             Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
@@ -224,7 +226,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // From R docs:  Valid values are 10...10000 with default normally 80.
             _terminalWidth = Math.Max(10, Math.Min(10000, width));
 
-            Session.OptionsSetWidth(_terminalWidth);
+            Session.OptionsSetWidth(_terminalWidth).DoNotWait();
         }
     }
 }
