@@ -45,6 +45,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="Assertions\AsyncCommandAssertions.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
@@ -80,7 +82,7 @@
     <Compile Include="PackageManager\TestRepositories.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repl\ReplCommandTest.cs" />
+    <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryProviderStubFactory.cs" />

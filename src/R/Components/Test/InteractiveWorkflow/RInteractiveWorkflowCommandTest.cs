@@ -9,29 +9,27 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Commands;
+using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test;
-using Microsoft.R.Support.Settings;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.R.Components.Test.Repl {
+namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
-    public class ReplCommandTest : IAsyncLifetime {
+    public class RInteractiveWorkflowCommandTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
         private readonly ExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
-        public ReplCommandTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod) {
+        public RInteractiveWorkflowCommandTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod) {
             _testMethod = testMethod.MethodInfo;
             _exportProvider = catalog.CreateExportProvider();
             _workflow = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
@@ -39,12 +37,13 @@ namespace Microsoft.R.Components.Test.Repl {
         }
 
         public async Task InitializeAsync() {
+            var settings = _exportProvider.GetExportedValue<IRSettings>();
             await _workflow.RSession.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RToolsSettings.Current.RBasePath,
-                RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
-                CranMirrorName = RToolsSettings.Current.CranMirror,
-                CodePage = RToolsSettings.Current.RCodePage
+                RBasePath = settings.RBasePath,
+                RHostCommandLineArguments = settings.RCommandLineArguments,
+                CranMirrorName = settings.CranMirror,
+                CodePage = settings.RCodePage
             }, null, 50000);
         }
 
@@ -66,12 +65,12 @@ namespace Microsoft.R.Components.Test.Repl {
             tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns((IWpfTextView)null);
 
             var command = new SourceRScriptCommand(_workflow, tracker, echo);
-            command.Status.Should().HaveFlag(CommandStatus.Supported | CommandStatus.Invisible)
-                .And.NotHaveFlag(CommandStatus.Enabled);
+            command.Should().BeSupported()
+                .And.BeInvisibleAndDisabled();
 
-            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
-                command.Status.Should().HaveFlag(CommandStatus.Supported)
-                    .And.NotHaveFlag(CommandStatus.Enabled | CommandStatus.Invisible);
+            using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                command.Should().BeSupported()
+                    .And.BeVisibleAndDisabled();
 
                 const string code = "sourced <- TRUE";
                 var textBuffer = new TextBufferMock(code, RContentTypeDefinition.ContentType);
@@ -79,16 +78,18 @@ namespace Microsoft.R.Components.Test.Repl {
 
                 tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns(textView);
 
-                command.Status.Should().HaveFlag(CommandStatus.Supported)
-                    .And.NotHaveFlag(CommandStatus.Enabled | CommandStatus.Invisible);
+                command.Should().BeSupported()
+                    .And.BeVisibleAndDisabled();
 
                 using (var sf = new SourceFile(code)) {
-                    var document = new TextDocumentMock(textBuffer, sf.FilePath);
-                    document.Encoding = Encoding.GetEncoding(encoding);
+                    var document = new TextDocumentMock(textBuffer, sf.FilePath) {
+                        Encoding = Encoding.GetEncoding(encoding)
+                    };
+
                     textBuffer.Properties[typeof(ITextDocument)] = document;
 
-                    command.Status.Should().HaveFlag(CommandStatus.Supported | CommandStatus.Enabled)
-                        .And.NotHaveFlag(CommandStatus.Invisible);
+                    command.Should().BeSupported()
+                        .And.BeVisibleAndEnabled();
 
                     var mutatedTask = EventTaskSources.IRSession.Mutated.Create(session);
 
