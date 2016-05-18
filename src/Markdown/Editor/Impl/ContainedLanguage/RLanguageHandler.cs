@@ -25,9 +25,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
 
         public override ICommandTarget GetCommandTargetOfLocation(ITextView textView, int bufferPosition) {
             var block = GetLanguageBlockOfLocation(bufferPosition);
-            return block != null
-                ? (ICommandTarget)RMainController.FromTextView(textView)
-                : MdMainController.FromTextView(textView);
+            return block != null ? (ICommandTarget)RMainController.FromTextView(textView) : null;
         }
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
