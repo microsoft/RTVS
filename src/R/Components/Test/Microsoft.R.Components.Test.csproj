@@ -123,6 +123,24 @@
     <None Include="Files\Repos\Repo1\src\contrib\rtvslib1_0.1.0.tar.gz" />
     <None Include="project.json" />
   </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)'=='14.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.14.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.15.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
@@ -147,14 +165,6 @@
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj" Condition="'$(VisualStudioVersion)'=='14.0'">
-      <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
-      <Name>Microsoft.UnitTests.References.14.0</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj" Condition="'$(VisualStudioVersion)'=='15.0'">
-      <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-      <Name>Microsoft.UnitTests.References.15.0</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
