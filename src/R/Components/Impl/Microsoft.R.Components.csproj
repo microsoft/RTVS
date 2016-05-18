@@ -58,7 +58,7 @@
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
-    <Compile Include="Controller\ICommandAsync.cs" />
+    <Compile Include="Controller\IAsyncCommand.cs" />
     <Compile Include="Controller\ICommandTarget.cs" />
     <Compile Include="Extensions\CoreShellExtensions.cs" />
     <Compile Include="Extensions\TextBufferExtensions.cs" />
@@ -152,7 +152,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Resources\Images.cs" />
-    <Compile Include="Repl\Commands\SourceRScriptCommand.cs" />
+    <Compile Include="InteractiveWorkflow\Commands\SourceRScriptCommand.cs" />
     <Compile Include="Search\ISearchControl.cs" />
     <Compile Include="Search\ISearchControlProvider.cs" />
     <Compile Include="Search\ISearchHandler.cs" />
