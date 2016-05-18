@@ -92,6 +92,7 @@
     <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollection.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
+    <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
     <Compile Include="Flavor\MdFlavor.cs" />
     <Compile Include="Flavor\MarkdownFlavor.cs" />
     <Compile Include="ContentType\MdContentTypeDefinition.cs" />

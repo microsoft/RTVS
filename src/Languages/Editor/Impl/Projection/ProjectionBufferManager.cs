@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
@@ -15,7 +13,6 @@ namespace Microsoft.Languages.Editor.Projection {
     /// </summary>
     public sealed class ProjectionBufferManager : IProjectionBufferManager {
         private const string _inertContentTypeName = "inert";
-        private const string _projectionContentTypeName = "projection";
 
         private readonly ITextBuffer _diskBuffer;
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
@@ -23,11 +20,12 @@ namespace Microsoft.Languages.Editor.Projection {
         public ProjectionBufferManager(ITextBuffer diskBuffer,
                                        IProjectionBufferFactoryService projectionBufferFactoryService,
                                        IContentTypeRegistryService contentTypeRegistryService,
+                                       string topLevelContentTypeName,
                                        string secondaryContentTypeName) {
             _diskBuffer = diskBuffer;
             _contentTypeRegistryService = contentTypeRegistryService;
 
-            var contentType = _contentTypeRegistryService.GetContentType(_projectionContentTypeName);
+            var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
             ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
 
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
