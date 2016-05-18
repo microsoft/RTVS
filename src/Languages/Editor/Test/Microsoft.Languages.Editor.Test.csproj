@@ -39,12 +39,22 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+    <When Condition="'$(VisualStudioVersion)'=='14.0'">
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+        <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.14.0</Name>
+        </ProjectReference>
       </ItemGroup>
     </When>
-    <Otherwise />
+    <When Condition="'$(VisualStudioVersion)'=='15.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
+          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
+          <Name>Microsoft.UnitTests.References.15.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
   </Choose>
   <ItemGroup>
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
@@ -90,14 +100,6 @@
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj" Condition="'$(VisualStudioVersion)'=='14.0'">
-      <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
-      <Name>Microsoft.UnitTests.References.14.0</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj" Condition="'$(VisualStudioVersion)'=='15.0'">
-      <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
-      <Name>Microsoft.UnitTests.References.15.0</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\Impl\Microsoft.Languages.Core.csproj">
       <Project>{25cd8690-6208-4740-b123-6dbce6b9444a}</Project>
