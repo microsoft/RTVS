@@ -7,7 +7,7 @@ namespace Microsoft.R.Components.Controller {
     /// <summary>
     /// An object that implements a single command. 
     /// </summary>
-    public interface ICommandAsync {
+    public interface IAsyncCommand {
         /// <summary>
         /// Determines current command status.
         /// </summary>

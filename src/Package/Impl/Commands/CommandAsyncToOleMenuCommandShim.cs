@@ -7,9 +7,9 @@ using Microsoft.R.Components.Controller;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal class CommandAsyncToOleMenuCommandShim : PackageCommand {
-        private readonly ICommandAsync _command;
+        private readonly IAsyncCommand _command;
 
-        public CommandAsyncToOleMenuCommandShim(Guid group, int id, ICommandAsync command)
+        public CommandAsyncToOleMenuCommandShim(Guid group, int id, IAsyncCommand command)
             : base(group, id) {
             if (command == null) {
                 throw new ArgumentNullException(nameof(command));

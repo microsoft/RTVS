@@ -5,20 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
-    public sealed class SourceRScriptCommand : ICommandAsync {
+namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
+    public sealed class SourceRScriptCommand : IAsyncCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly bool _echo;
 
-        public SourceRScriptCommand(
-            IRInteractiveWorkflow interactiveWorkflow,
-            IActiveWpfTextViewTracker activeTextViewTracker,
-            bool echo
-        ) {
+        public SourceRScriptCommand(IRInteractiveWorkflow interactiveWorkflow, IActiveWpfTextViewTracker activeTextViewTracker, bool echo) {
             _interactiveWorkflow = interactiveWorkflow;
             _activeTextViewTracker = activeTextViewTracker;
             _echo = echo;
