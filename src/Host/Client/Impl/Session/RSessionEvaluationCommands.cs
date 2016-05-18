@@ -11,37 +11,37 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
     public static class RSessionEvaluationCommands {
-        public static Task OptionsSetWidth(this IRExpressionEvaluator evaluation, int width) {
+        public static Task OptionsSetWidthAsync(this IRExpressionEvaluator evaluation, int width) {
             return evaluation.ExecuteAsync(Invariant($"options(width=as.integer({width}))\n"));
         }
 
-        public static async Task<string> GetRUserDirectory(this IRExpressionEvaluator evaluation) {
+        public static async Task<string> GetRUserDirectoryAsync(this IRExpressionEvaluator evaluation) {
             var result = await evaluation.EvaluateAsync<string>("Sys.getenv('R_USER')", REvaluationKind.Normal);
             return result.Replace('/', '\\');
         }
 
-        public static async Task<string> GetWorkingDirectory(this IRExpressionEvaluator evaluation) {
+        public static async Task<string> GetWorkingDirectoryAsync(this IRExpressionEvaluator evaluation) {
             var result = await evaluation.EvaluateAsync<string>("getwd()", REvaluationKind.Normal);
             return result.Replace('/', '\\');
         }
 
-        public static Task SetWorkingDirectory(this IRExpressionEvaluator evaluation, string path) {
+        public static Task SetWorkingDirectoryAsync(this IRExpressionEvaluator evaluation, string path) {
             return evaluation.ExecuteAsync($"setwd('{path.Replace('\\', '/')}')\n");
         }
 
-        public static Task SetDefaultWorkingDirectory(this IRExpressionEvaluator evaluation) {
+        public static Task SetDefaultWorkingDirectoryAsync(this IRExpressionEvaluator evaluation) {
             return evaluation.ExecuteAsync($"setwd('~')\n");
         }
 
-        public static Task LoadWorkspace(this IRExpressionEvaluator evaluation, string path) {
+        public static Task LoadWorkspaceAsync(this IRExpressionEvaluator evaluation, string path) {
             return evaluation.ExecuteAsync($"load('{path.Replace('\\', '/')}', .GlobalEnv)\n");
         }
 
-        public static Task SaveWorkspace(this IRExpressionEvaluator evaluation, string path) {
+        public static Task SaveWorkspaceAsync(this IRExpressionEvaluator evaluation, string path) {
             return evaluation.ExecuteAsync($"save.image(file='{path.Replace('\\', '/')}')\n", REvaluationKind.Normal);
         }
 
-        public static Task SetVsGraphicsDevice(this IRExpressionEvaluator evaluation) {
+        public static Task SetVsGraphicsDeviceAsync(this IRExpressionEvaluator evaluation) {
             var script = @"
 attach(as.environment(list(ide = function() { rtvs:::graphics.ide.new() })), name='rtvs::graphics::ide')
 options(device='ide')
@@ -50,111 +50,111 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task ResizePlot(this IRSessionInteraction evaluation, int width, int height, int resolution) {
+        public static Task ResizePlotAsync(this IRSessionInteraction evaluation, int width, int height, int resolution) {
             var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height}, {resolution})\n");
             return evaluation.RespondAsync(script);
         }
 
-        public static Task NextPlot(this IRSessionInteraction evaluation) {
+        public static Task NextPlotAsync(this IRSessionInteraction evaluation) {
             var script = "rtvs:::graphics.ide.nextplot()\n";
             return evaluation.RespondAsync(script);
         }
 
-        public static Task PreviousPlot(this IRSessionInteraction evaluation) {
+        public static Task PreviousPlotAsync(this IRSessionInteraction evaluation) {
             var script = "rtvs:::graphics.ide.previousplot()\n";
             return evaluation.RespondAsync(script);
         }
 
-        public static Task ClearPlotHistory(this IRSessionInteraction evaluation) {
+        public static Task ClearPlotHistoryAsync(this IRSessionInteraction evaluation) {
             var script = "rtvs:::graphics.ide.clearplots()\n";
             return evaluation.RespondAsync(script);
         }
 
-        public static Task RemoveCurrentPlot(this IRSessionInteraction evaluation) {
+        public static Task RemoveCurrentPlotAsync(this IRSessionInteraction evaluation) {
             var script = "rtvs:::graphics.ide.removeplot()\n";
             return evaluation.RespondAsync(script);
         }
 
-        public static Task<int[]> PlotHistoryInfo(this IRExpressionEvaluator evaluation) {
+        public static Task<int[]> PlotHistoryInfoAsync(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::graphics.ide.historyinfo()";
             return evaluation.EvaluateAsync<int[]>(script, REvaluationKind.Normal);
         }
 
-        public static Task InstallPackage(this IRSessionInteraction interaction, string name) {
+        public static Task InstallPackageAsync(this IRSessionInteraction interaction, string name) {
             var script = Invariant($"install.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task InstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+        public static Task InstallPackageAsync(this IRSessionInteraction interaction, string name, string libraryPath) {
             var script = Invariant($"install.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task UninstallPackage(this IRSessionInteraction interaction, string name) {
+        public static Task UninstallPackageAsync(this IRSessionInteraction interaction, string name) {
             var script = Invariant($"remove.packages({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task UninstallPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+        public static Task UninstallPackageAsync(this IRSessionInteraction interaction, string name, string libraryPath) {
             var script = Invariant($"remove.packages({name.ToRStringLiteral()}, lib={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task LoadPackage(this IRSessionInteraction interaction, string name) {
+        public static Task LoadPackageAsync(this IRSessionInteraction interaction, string name) {
             var script = Invariant($"library({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task LoadPackage(this IRSessionInteraction interaction, string name, string libraryPath) {
+        public static Task LoadPackageAsync(this IRSessionInteraction interaction, string name, string libraryPath) {
             var script = Invariant($"library({name.ToRStringLiteral()}, lib.loc={libraryPath.ToRPath().ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task UnloadPackage(this IRSessionInteraction interaction, string name) {
+        public static Task UnloadPackageAsync(this IRSessionInteraction interaction, string name) {
             var script = Invariant($"unloadNamespace({name.ToRStringLiteral()})\n");
             return interaction.RespondAsync(script);
         }
 
-        public static Task<JArray> InstalledPackages(this IRExpressionEvaluator evaluation) {
+        public static Task<JArray> InstalledPackagesAsync(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.installed()";
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task<JArray> AvailablePackages(this IRExpressionEvaluator evaluation) {
+        public static Task<JArray> AvailablePackagesAsync(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.available()";
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Reentrant);
         }
 
-        public static Task<JArray> LoadedPackages(this IRExpressionEvaluator evaluation) {
+        public static Task<JArray> LoadedPackagesAsync(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.loaded()";
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task<JArray> LibraryPaths(this IRExpressionEvaluator evaluation) {
+        public static Task<JArray> LibraryPathsAsync(this IRExpressionEvaluator evaluation) {
             var script = @"rtvs:::packages.libpaths()";
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task ExportToBitmap(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+        public static Task ExportToBitmapAsync(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, {deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
             return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task ExportToMetafile(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+        public static Task ExportToMetafileAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
             string script = Invariant($"rtvs:::graphics.ide.exportimage({outputFilePath.ToRPath().ToRStringLiteral()}, win.metafile, {widthInInches}, {heightInInches}, {resolution})");
             return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
         }
 
-        public static Task ExportToPdf(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
+        public static Task ExportToPdfAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
             string script = Invariant($"rtvs:::graphics.ide.exportpdf({outputFilePath.ToRPath().ToRStringLiteral()}, {widthInInches}, {heightInInches})");
             return evaluation.ExecuteAsync(script, REvaluationKind.Normal);
         }
 
-        public static async Task SetVsCranSelection(this IRExpressionEvaluator evaluation, string mirrorUrl) {
+        public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl) {
             await evaluation.ExecuteAsync(Invariant($"rtvs:::set_mirror({mirrorUrl.ToRStringLiteral()})"));
         }
 
-        public static Task SetROptions(this IRExpressionEvaluator evaluation) {
+        public static Task SetROptionsAsync(this IRExpressionEvaluator evaluation) {
             var script =
 @"options(help_type = 'html')
   options(browser = rtvs:::open_url)
@@ -163,7 +163,7 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task SetCodePage(this IRExpressionEvaluator evaluation, int codePage) {
+        public static Task SetCodePageAsync(this IRExpressionEvaluator evaluation, int codePage) {
             if (codePage == 0) {
                 codePage = NativeMethods.GetOEMCP();
             }
@@ -171,7 +171,7 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task OverrideFunction(this IRExpressionEvaluator evaluation, string name, string ns) {
+        public static Task OverrideFunctionAsync(this IRExpressionEvaluator evaluation, string name, string ns) {
             name = name.ToRStringLiteral();
             ns = ns.ToRStringLiteral();
             var script = Invariant($"utils::assignInNamespace({name}, rtvs:::{name}, {ns})");
@@ -179,7 +179,7 @@ grDevices::deviceIsInteractive('ide')
         }
 
 
-        public static Task SetFunctionRedirection(this IRExpressionEvaluator evaluation) {
+        public static Task SetFunctionRedirectionAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::redirect_functions()";
             return evaluation.ExecuteAsync(script);
         }

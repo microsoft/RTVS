@@ -128,10 +128,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (loadDefaultWorkspace) {
-                    await evaluation.LoadWorkspace(rdataPath);
+                    await evaluation.LoadWorkspaceAsync(rdataPath);
                 }
 
-                await evaluation.SetWorkingDirectory(_projectDirectory);
+                await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
             }
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
@@ -197,9 +197,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Task.Run(async () => {
                 using (var evaluation = await _session.BeginEvaluationAsync()) {
                     if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspace(rdataPath);
+                        await evaluation.SaveWorkspaceAsync(rdataPath);
                     }
-                    await evaluation.SetDefaultWorkingDirectory();
+                    await evaluation.SetDefaultWorkingDirectoryAsync();
                 }
             }).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
         }

@@ -66,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 try {
-                    await evaluation.LoadWorkspace(rDataNode.FilePath);
+                    await evaluation.LoadWorkspaceAsync(rDataNode.FilePath);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
                         rDataNode.FilePath, ex.Message);

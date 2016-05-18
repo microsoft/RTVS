@@ -39,11 +39,11 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public async Task<IReadOnlyList<RPackage>> GetInstalledPackagesAsync() {
-            return await GetPackagesAsync(async (eval) => await eval.InstalledPackages());
+            return await GetPackagesAsync(async (eval) => await eval.InstalledPackagesAsync());
         }
 
         public async Task<IReadOnlyList<RPackage>> GetAvailablePackagesAsync() {
-            return await GetPackagesAsync(async (eval) => await eval.AvailablePackages());
+            return await GetPackagesAsync(async (eval) => await eval.AvailablePackagesAsync());
         }
 
         public async Task InstallPackageAsync(string name, string libraryPath) {
@@ -54,9 +54,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                     if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.InstallPackage(name);
+                        await request.InstallPackageAsync(name);
                     } else {
-                        await request.InstallPackage(name, libraryPath);
+                        await request.InstallPackageAsync(name, libraryPath);
                     }
                 }
             } catch (MessageTransportException ex) {
@@ -72,9 +72,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                     if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.UninstallPackage(name);
+                        await request.UninstallPackageAsync(name);
                     } else {
-                        await request.UninstallPackage(name, libraryPath);
+                        await request.UninstallPackageAsync(name, libraryPath);
                     }
                 }
             } catch (MessageTransportException ex) {
@@ -90,9 +90,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                     if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.LoadPackage(name);
+                        await request.LoadPackageAsync(name);
                     } else {
-                        await request.LoadPackage(name, libraryPath);
+                        await request.LoadPackageAsync(name, libraryPath);
                     }
                 }
             } catch (MessageTransportException ex) {
@@ -107,7 +107,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
 
             try {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
-                    await request.UnloadPackage(name);
+                    await request.UnloadPackageAsync(name);
                 }
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
@@ -120,7 +120,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             try {
-                var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackages());
+                var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
@@ -133,7 +133,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
 
             try {
-                var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPaths());
+                var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
             } catch (MessageTransportException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
