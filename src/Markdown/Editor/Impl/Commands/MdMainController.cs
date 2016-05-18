@@ -33,10 +33,6 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
-            if ((NonRoutedStatus(group, id, null) & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled) {
-                return CommandStatus.SupportedAndEnabled;
-            }
-
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
                 return containedCommandTarget.Status(group, id);
@@ -45,19 +41,13 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            // Some commands need to be handled at primary language level (like formatting) rather
-            // that routed to contained target. Check if primary controller supports the command
-            // and send it there. Command can delegate to contained languages as appropriate.
-            if ((NonRoutedStatus(group, id, inputArg) & CommandStatus.SupportedAndEnabled) != CommandStatus.SupportedAndEnabled) {
-                var containedCommandTarget = GetContainedCommandTarget();
-                if (containedCommandTarget != null) {
-                    CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
-                    if (result.WasExecuted) {
-                        return result;
-                    }
+            var containedCommandTarget = GetContainedCommandTarget();
+            if (containedCommandTarget != null) {
+                CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
+                if (result.WasExecuted) {
+                    return result;
                 }
             }
-
             return base.Invoke(group, id, inputArg, ref outputArg);
         }
 
