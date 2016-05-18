@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Guid(RGuidList.ProjectFileGeneratorGuidString)]
     internal sealed class RProjectFileGenerator : FileSystemMirroringProjectFileGenerator {
         public RProjectFileGenerator()
-            : base(RGuidList.CpsProjectFactoryGuid, null, RContentTypeDefinition.VsRProjectExtension, new[] { @"RTVS\Rules\rtvs.rules.props" }) {
+            : base(RGuidList.CpsProjectFactoryGuid, null, RContentTypeDefinition.VsRProjectExtension, new[] { Constants.RtvsRulesPropsRelativePath }) {
         }
     }
 }

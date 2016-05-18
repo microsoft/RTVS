@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using static System.FormattableString;
@@ -40,17 +41,15 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private void EnsureCpsProjFile(string cpsProjFileName) {
             var fileInfo = new FileInfo(cpsProjFileName);
-
-            var vsVersion = "14.0";
             var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
             var xProjDocument = new XProjDocument(
-                new XProject(vsVersion, "Build",
+                new XProject(Toolset.Version, "Build",
                     new XPropertyGroup("Globals", null,
                         new XProperty("ProjectGuid", Guid.NewGuid().ToString("D"))
                     ),
                     new XPropertyGroup(
-                        new XDefaultValueProperty("VisualStudioVersion", vsVersion),
+                        new XDefaultValueProperty("VisualStudioVersion", Toolset.Version),
                         new XDefaultValueProperty("Configuration", "Debug"),
                         new XDefaultValueProperty("Platform", "AnyCPU")
                     ),

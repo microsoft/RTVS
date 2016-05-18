@@ -15,8 +15,19 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
     [Export(typeof(IClassifierProvider))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal sealed class MdClassifierProvider : MarkdownClassifierProvider<MdClassifierProvider> {
-        protected override IClassifier CreateClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs, IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> ClassificationNameProviders) {
-            return new MdClassifier(textBuffer, ClassificationRegistryService, ContentTypeRegistryService, ClassificationNameProviders);
+        private readonly IClassificationTypeRegistryService _classificationRegistryService;
+        private readonly IContentTypeRegistryService _contentTypeRegistryService;
+        private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _classificationNameProviders;
+
+        [ImportingConstructor]
+        public MdClassifierProvider(IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs, IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> cnp) {
+            _classificationRegistryService = crs;
+            _contentTypeRegistryService = ctrs;
+            _classificationNameProviders = cnp;
+        }
+
+        protected override IClassifier CreateClassifier(ITextBuffer textBuffer) {
+            return new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService, _classificationNameProviders);
         }
     }
 }

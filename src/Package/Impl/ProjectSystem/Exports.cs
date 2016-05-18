@@ -4,7 +4,16 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.IO;
 
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem;
+#endif
+
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
+
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class Export {
 
         [Export(typeof(IFileSystem))]

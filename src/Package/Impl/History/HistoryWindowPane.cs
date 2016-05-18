@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.History {
         public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            var settings = (SearchSettingsDataSource)pSearchSettings;
+            dynamic settings = pSearchSettings;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
             base.ProvideSearchSettings(pSearchSettings);
         }

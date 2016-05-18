@@ -19,13 +19,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
         private readonly IRSettings _settings;
-        private readonly ICoreShell _coreShell;
         private readonly Action _onDispose;
         private readonly RInteractiveWorkflowOperations _operations;
 
         private bool _replLostFocus;
         private bool _disposed;
 
+        public ICoreShell Shell { get; }
         public IRHistory History { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
@@ -46,13 +46,13 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
             _settings = settings;
-            _coreShell = coreShell;
             _onDispose = onDispose;
 
+            Shell = coreShell;
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
-            _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, _coreShell);
+            _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
             RSession.Disconnected += RSessionDisconnected;
@@ -65,11 +65,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             if (ActiveWindow.TextView.Equals(e.Old) && !ActiveWindow.TextView.Equals(e.New)) {
                 _replLostFocus = true;
-                _coreShell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
+                Shell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
             }
 
             if (ActiveWindow.TextView.Equals(e.New)) {
-                _coreShell.DispatchOnUIThread(Operations.PositionCaretAtPrompt);
+                Shell.DispatchOnUIThread(Operations.PositionCaretAtPrompt);
             }
         }
 
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         }
 
         public async Task<IInteractiveWindowVisualComponent> GetOrCreateVisualComponent(IInteractiveWindowComponentContainerFactory componentContainerFactory, int instanceId = 0) {
-            _coreShell.AssertIsOnMainThread();
+            Shell.AssertIsOnMainThread();
 
             if (ActiveWindow != null) {
                 // Right now only one instance of interactive window is allowed
@@ -102,8 +102,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ActiveWindow;
             }
 
-            var evaluator = RInstallationHelper.VerifyRIsInstalled(_coreShell, _settings.RBasePath)
-                ? new RInteractiveEvaluator(RSession, History, _coreShell, _settings)
+            var evaluator = RInstallationHelper.VerifyRIsInstalled(Shell, _settings.RBasePath)
+                ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
                 : (IInteractiveEvaluator) new NullInteractiveEvaluator();
 
             ActiveWindow = componentContainerFactory.Create(instanceId, evaluator);

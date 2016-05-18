@@ -70,8 +70,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOverCommand(interactiveWorkflow),
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
-                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false),
-                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true),
+
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript,
+                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false)),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScriptWithEcho,
+                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true)),
+
                 new RunShinyAppCommand(interactiveWorkflow),
                 new StopShinyAppCommand(interactiveWorkflow),
 

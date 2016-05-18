@@ -1,0 +1,23 @@
+﻿{
+  "dependencies": {
+    "MicroBuild.Core": "0.2.0",
+    "Microsoft.VisualStudio.CoreUtility": "14.2.25123",
+    "Microsoft.VisualStudio.ImageCatalog": "14.2.25123",
+    "Microsoft.VisualStudio.Language.Intellisense": "14.2.25123",
+    "Microsoft.VisualStudio.SDK.EmbedInteropTypes": "14.1.2",
+    "Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime": "14.2.25123",
+    "Microsoft.VisualStudio.Text.Data": "14.2.25123",
+    "Microsoft.VisualStudio.Text.Logic": "14.2.25123",
+    "Microsoft.VisualStudio.Text.UI": "14.2.25123",
+    "Microsoft.VisualStudio.Text.UI.Wpf": "14.2.25123",
+    "NSubstitute": "1.10.0",
+    "xunit": "2.2.0-beta1-build3239",
+    "xunit.runner.visualstudio": "2.2.0-beta1-build1144"
+  },
+  "frameworks": {
+    "net46": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

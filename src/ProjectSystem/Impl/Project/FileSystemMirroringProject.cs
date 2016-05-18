@@ -16,8 +16,9 @@ using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using MsBuildProject = Microsoft.Build.Evaluation.Project;
+#endif
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
     public class FileSystemMirroringProject : IFileSystemMirroringProjectTemporaryItems {
@@ -129,10 +130,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         private async Task ReevaluateLoadedConfiguredProjects(CancellationToken cancellationToken, ProjectWriteLockReleaser access) {
             foreach (var configuredProject in _unconfiguredProject.LoadedConfiguredProjects) {
                 try {
-                    MsBuildProject jsproj = await access.GetProjectAsync(configuredProject, cancellationToken);
+                    var jsproj = await access.GetProjectAsync(configuredProject, cancellationToken);
                     jsproj.ReevaluateIfNecessary();
                 } catch (Exception ex) {
-                    Debug.Fail("We were unable to mark a configuration as dirty" + ex.Message, ex.StackTrace);
+                    System.Diagnostics.Debug.Fail("We were unable to mark a configuration as dirty" + ex.Message, ex.StackTrace);
                 }
             }
         }
@@ -178,7 +179,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
                     foreach (var configuredProject in _unconfiguredProject.LoadedConfiguredProjects) {
                         try {
-                            MsBuildProject project =
+                            var project =
                                 await access.GetProjectAsync(configuredProject, _unloadCancellationToken);
                             project.ReevaluateIfNecessary();
                         } catch (Exception ex) {

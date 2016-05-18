@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +12,9 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
@@ -149,7 +150,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 } catch (Exception e) {
                     _hasErrors = 1;
                     _log.WatcherApplyChangeFailed(change.ToString(), e);
-                    Debug.Fail(Invariant($"Failed to apply change {change}:\n{e}"));
+                    System.Diagnostics.Debug.Fail(Invariant($"Failed to apply change {change}:\n{e}"));
                 }
             }
         }

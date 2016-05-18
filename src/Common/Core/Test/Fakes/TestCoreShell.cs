@@ -52,6 +52,8 @@ namespace Microsoft.Common.Core.Test.Fakes {
             return MessageButtons.OK;
         }
 
+        public string SaveFileIfDirty(string fullPath) => fullPath;
+
         public int LocaleId => 1033;
 
         public string LastShownMessage { get; private set; }

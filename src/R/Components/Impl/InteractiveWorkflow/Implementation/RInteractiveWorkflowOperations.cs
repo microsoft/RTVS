@@ -173,13 +173,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             });
         }
 
-        public void SourceFile(string file, bool echo, Encoding encoding = null) {
-            Task.Run(async () => {
-                file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
-                _coreShell.DispatchOnUIThread(() => {
-                    ExecuteExpression(GetSourceExpression(file, echo, encoding));
-                });
-            });
+        public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
+            await _coreShell.SwitchToMainThreadAsync();
+            ExecuteExpression(GetSourceExpression(file, echo, encoding));
         }
 
         private string GetSourceExpression(string file, bool echo, Encoding encoding = null) {

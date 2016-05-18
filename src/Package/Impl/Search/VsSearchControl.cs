@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Internal.VisualStudio.PlatformUI;
@@ -39,17 +40,20 @@ namespace Microsoft.VisualStudio.R.Package.Search {
         }
 
         public void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            var settings = (SearchSettingsDataSource)pSearchSettings;
-            settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
-            SetIfSpecified(settings, SearchSettingsDataSource.ControlMinWidthProperty, nameof(SearchControlSettings.MinWidth));
-            SetIfSpecified(settings, SearchSettingsDataSource.ControlMaxWidthProperty, nameof(SearchControlSettings.MaxWidth));
-        } 
+            SetDWordBuiltIn(pSearchSettings, "SearchStartType", (uint)VSSEARCHSTARTTYPE.SST_INSTANT);
+            SetDWordBuiltInIfSpecified(pSearchSettings, nameof(SearchControlSettings.MinWidth), "ControlMinWidth");
+            SetDWordBuiltInIfSpecified(pSearchSettings, nameof(SearchControlSettings.MaxWidth), "ControlMaxWidth");
+        }
 
-        private void SetIfSpecified(SearchSettingsDataSource vsSettings, GelProperty vsPropertyName, string propertyName) {
-            object value;
+        private void SetDWordBuiltInIfSpecified(IVsUIDataSource pSearchSettings, string propertyName, string vsPropertyName) {
+            uint value;
             if (_settings.TryGetValue(propertyName, out value)) {
-                vsSettings.SetValue(vsPropertyName, value);
+                SetDWordBuiltIn(pSearchSettings, vsPropertyName, value);
             }
+        }
+
+        private static void SetDWordBuiltIn(IVsUIDataSource pSearchSettings, string vsPropertyName, uint value) {
+            pSearchSettings.SetValue(vsPropertyName, new VsUIObject(value, VsUIObject.DWordType, __VSUIDATAFORMAT.VSDF_BUILTIN));
         }
 
         public bool OnNavigationKeyDown(uint dwNavigationKey, uint dwModifiers) => false;
@@ -60,6 +64,50 @@ namespace Microsoft.VisualStudio.R.Package.Search {
 
         public void Dispose() {
             _vsWindowSearchHost.TerminateSearch();
+        }
+
+        private class VsUIObject : IVsUIObject {
+            public static string DWordType = "VsUI.DWord";
+
+            private readonly object _data;
+            private readonly string _type;
+            private readonly uint _format;
+            
+            public VsUIObject(object value, string type, __VSUIDATAFORMAT format) {
+                _data = value;
+                _type = type;
+                _format = (uint)format;
+            }
+
+            private bool AreEqual(IVsUIObject other) {
+                if (ReferenceEquals(this, other)) {
+                    return true;
+                }
+
+                object otherData;
+                Marshal.ThrowExceptionForHR(other.get_Data(out otherData));
+                return object.Equals(otherData, _data);
+            }
+
+            public int Equals(IVsUIObject pOtherObject, out bool pfAreEqual) {
+                pfAreEqual = AreEqual(pOtherObject);
+                return VSConstants.S_OK;
+            }
+
+            public int get_Data(out object pVar) {
+                pVar = _data;
+                return VSConstants.S_OK;
+            }
+
+            public int get_Format(out uint pdwDataFormat) {
+                pdwDataFormat = _format;
+                return VSConstants.S_OK;
+            }
+
+            public int get_Type(out string pTypeName) {
+                pTypeName = _type;
+                return VSConstants.S_OK;
+            }
         }
     }
 }

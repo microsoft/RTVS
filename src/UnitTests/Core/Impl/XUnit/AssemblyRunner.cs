@@ -16,12 +16,15 @@ namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal sealed class AssemblyRunner : XunitTestAssemblyRunner {
         private IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
+        private IList<AssemblyLoaderAttribute> _assemblyLoaders;
 
         public AssemblyRunner(ITestAssembly testAssembly, IEnumerable<IXunitTestCase> testCases, IMessageSink diagnosticMessageSink, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
             : base(testAssembly, testCases, diagnosticMessageSink, executionMessageSink, executionOptions) {}
 
         protected override async Task AfterTestAssemblyStartingAsync() {
             await base.AfterTestAssemblyStartingAsync();
+
+            _assemblyLoaders = AssemblyLoaderAttribute.GetAssemblyLoaders(TestAssembly.Assembly);
 
             var assemblyFixtureTypes = TestAssembly.Assembly.GetTypes(false)
                 .Where(t => t.GetCustomAttributes(typeof(AssemblyFixtureAttribute).AssemblyQualifiedName).Any())
@@ -44,6 +47,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
             foreach (var disposable in _assemblyFixtureMappings.Values.OfType<IDisposable>()) {
                 Aggregator.Run(disposable.Dispose);
+            }
+
+            foreach (var assemblyLoader in _assemblyLoaders) {
+                assemblyLoader.Dispose();
             }
 
             await base.BeforeTestAssemblyFinishedAsync();

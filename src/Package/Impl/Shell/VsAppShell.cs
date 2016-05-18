@@ -201,6 +201,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return MessageButtons.OK;
         }
 
+        public string SaveFileIfDirty(string fullPath) =>
+            new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
+
         /// <summary>
         /// Returns host locale ID
         /// </summary>
