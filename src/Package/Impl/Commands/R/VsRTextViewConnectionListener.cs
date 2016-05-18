@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
@@ -17,8 +14,6 @@ using Microsoft.VisualStudio.R.Package.Document.R;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -33,17 +28,18 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
     [Order(Before = "Default")]
     internal sealed class VsRTextViewConnectionListener : RTextViewConnectionListener {
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
+            bool isProjected = (textBuffer != textView.TextDataModel.DocumentBuffer);
             // Only attach controllers if the document is editable
-            if (textView.Roles.Contains(PredefinedTextViewRoles.Editable)) {
+            if (!isProjected && textView.Roles.Contains(PredefinedTextViewRoles.Editable)) {
                 // Check if another buffer already attached a command controller to the view.
                 // Don't allow two to be attached, or commands could be run twice.
                 // This currently can only happen with inline diff views.
                 RMainController mainController = RMainController.FromTextView(textView);
-                if (textBuffer == mainController.TextBuffer) {
+                if (textBuffer == mainController?.TextBuffer) {
                     // Connect main controller to VS text view filter chain. The chain looks like
-                    // VS IDE -> HTML main controller -> Core editor
+                    // VS IDE -> R main controller -> Core editor
                     // However, IDE wants IOleCommandTarget and core editor, although managed,
-                    // is represented by OLE command target as well. Since HTML controller
+                    // is represented by OLE command target as well. Since R controller
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
 
@@ -60,14 +56,13 @@ namespace Microsoft.VisualStudio.R.Package.Commands.R {
 
                         // nextOleTarget is typically a core editor wrapped into OLE layer.
                         // Create a wrapper that will present OLE target as ICommandTarget to
-                        // HTML main controller so controller can operate in platform-agnostic way.
+                        // the R main controller so controller can operate in platform-agnostic way.
                         ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
 
                         mainController.ChainedController = nextCommandTarget;
                     }
                 }
             }
-
             base.OnTextViewGotAggregateFocus(textView, textBuffer);
         }
 

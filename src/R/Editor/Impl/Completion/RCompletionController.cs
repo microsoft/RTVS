@@ -390,11 +390,7 @@ namespace Microsoft.R.Editor.Completion {
         /// </summary>
         public override void TriggerSignatureHelp() {
             DismissAllSessions();
-            SnapshotPoint? point = REditorDocument.MapCaretPositionFromView(TextView);
-            if (point.HasValue) {
-                ITrackingPoint trackingPoint = _textBuffer.CurrentSnapshot.CreateTrackingPoint(point.Value.Position, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-                SignatureBroker.TriggerSignatureHelp(TextView, trackingPoint, trackCaret: false);
-            }
+            SignatureBroker.TriggerSignatureHelp(TextView);
         }
 
         private async Task<bool> IsFunction(string name) {

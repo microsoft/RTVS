@@ -5,6 +5,7 @@ using System;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,6 +31,13 @@ namespace Microsoft.Markdown.Editor.Commands {
 
         public static MdMainController FromTextView(ITextView textView) {
             return ServiceManager.GetService<MdMainController>(textView);
+        }
+        public override ICommandTarget ChainedController {
+            get { return base.ChainedController; }
+            set {
+                base.ChainedController = value;
+                CommandTargetProxy.SetCommandTarget(TextView, value);
+            }
         }
 
         public override CommandStatus Status(Guid group, int id) {

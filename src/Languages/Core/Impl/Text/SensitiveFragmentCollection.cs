@@ -64,7 +64,7 @@ namespace Microsoft.Languages.Core.Text {
             // If no items are affected, change is unsafe only if new region contains left side separators.
             if (itemsInRange.Count == 0) {
                 // Simple optimization for whitespace insertion
-                if (oldLength == 0 && String.IsNullOrWhiteSpace(newText.GetText(new TextRange(start, newLength)))) {
+                if (oldLength == 0 && string.IsNullOrWhiteSpace(newText.GetText(new TextRange(start, newLength)))) {
                     return false;
                 }
 

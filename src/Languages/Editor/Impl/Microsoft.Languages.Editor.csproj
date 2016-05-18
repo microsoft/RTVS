@@ -84,9 +84,13 @@
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Completion\CompletionList.cs" />
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
+    <Compile Include="ContainedLanguage\CommandTargetProxy.cs" />
     <Compile Include="ContainedLanguage\ContainedLanguageHandler.cs" />
+    <Compile Include="ContainedLanguage\ContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHandler.cs" />
     <Compile Include="ContainedLanguage\Definitions\IBufferGenerator.cs" />
+    <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHost.cs" />
+    <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHostProvider.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />

@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -26,12 +25,7 @@ namespace Microsoft.Languages.Editor.Shell {
             _shell = shell;
          }
 
-        public static bool HasShell {
-            get { return _shell != null; }
-        }
-
-        public static void Init() {
-        }
+        public static bool HasShell  => _shell != null;
 
         public static IEditorShell Current {
             get {
