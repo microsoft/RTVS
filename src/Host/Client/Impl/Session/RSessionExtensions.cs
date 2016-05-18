@@ -14,7 +14,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    return await session.GetWorkingDirectory();
+                    return await session.GetWorkingDirectoryAsync();
                 } catch (RException) {
                 } catch (OperationCanceledException) {
                 }
@@ -26,7 +26,7 @@ namespace Microsoft.R.Host.Client.Session {
             if (session.IsHostRunning) {
                 await TaskUtilities.SwitchToBackgroundThread();
                 try {
-                    return await session.GetRUserDirectory();
+                    return await RSessionEvaluationCommands.GetRUserDirectoryAsync(session);
                 } catch (RException) {
                 } catch (OperationCanceledException) { }
             }

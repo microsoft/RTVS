@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Components.Extensions;
@@ -111,7 +110,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             var interactiveWindow = ActiveWindow.InteractiveWindow;
             interactiveWindow.TextView.Closed += (_, __) => evaluator.Dispose();
             _operations.InteractiveWindow = interactiveWindow;
-
             await interactiveWindow.InitializeAsync();
             ActiveWindow.Container.UpdateCommandStatus(true);
             return ActiveWindow;

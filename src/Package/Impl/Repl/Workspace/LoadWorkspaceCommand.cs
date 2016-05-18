@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private async Task LoadWorkspace(IRSession session, string file) {
             using (var evaluation = await session.BeginEvaluationAsync()) {
                 try {
-                    await evaluation.LoadWorkspace(file);
+                    await evaluation.LoadWorkspaceAsync(file);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat, file, ex.Message);
                     VsAppShell.Current.ShowErrorMessage(message);

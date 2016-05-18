@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private async Task SaveWorkspace(string file) {
             using (var evaluation = await _rSession.BeginEvaluationAsync()) {
                 try {
-                    await evaluation.SaveWorkspace(file);
+                    await evaluation.SaveWorkspaceAsync(file);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
                     VsAppShell.Current.ShowErrorMessage(message);

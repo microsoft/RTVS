@@ -122,7 +122,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
                 try {
                     using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetVsCranSelection(mirrorUrl);
+                        await eval.SetVsCranSelectionAsync(mirrorUrl);
                     }
                 } catch (RException) {
                 } catch (MessageTransportException) {
@@ -139,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             foreach (var s in sessions.Where(s => s.IsHostRunning)) {
                 try {
                     using (var eval = await s.BeginEvaluationAsync()) {
-                        await eval.SetCodePage(cp);
+                        await eval.SetCodePageAsync(cp);
                     }
                 } catch (OperationCanceledException) { }
             }
