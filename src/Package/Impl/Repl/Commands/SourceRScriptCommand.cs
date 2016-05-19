@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.ContentTypes;
@@ -34,8 +35,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         private ITextView GetActiveTextView() {
             foreach (var c in _contentTypes) {
-                var tv = _activeTextViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
-                if(tv != null) {
+                var tv = _activeTextViewTracker.GetLastActiveTextView(c);
+                if (tv != null) {
                     return tv;
                 }
             }
@@ -65,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 } else if (contentType.EqualsIgnoreCase(MdProjectionContentTypeDefinition.ContentType)) {
                     HandleMarkdown();
                 }
-             }
+            }
         }
 
         private void HandleR() {
@@ -88,16 +89,43 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     var filePath = textView.TextBuffer.GetTextDocument()?.FilePath;
                     if (filePath != null) {
                         filePath += ".r";
-                        filePath = Path.Combine(Path.GetTempPath(), filePath);
+                        filePath = Path.Combine(Path.GetTempPath(), Path.GetFileName(filePath));
                         try {
+                            string rContent = FilterR(document.TextBuffer.CurrentSnapshot.GetText());
                             using (var sw = new StreamWriter(filePath)) {
-                                sw.Write(document.TextBuffer.CurrentSnapshot.GetText());
+                                sw.Write(rContent);
                             }
                             _interactiveWorkflow.Operations.SourceFile(filePath, _echo);
                         } catch (IOException) { } catch (AccessViolationException) { }
                     }
                 }
             }
+        }
+
+        private string FilterR(string content) {
+            // Change decoration like '{r, x = FALSE, ...} into
+            // legal R like 'x = FALSE; y = 1.0;  Allow brace nesting.
+            while (true) {
+                var start = content.IndexOfIgnoreCase("{r");
+                if (start < 0) {
+                    break;
+                }
+
+                var bc = new BraceCounter<char>('{', '}');
+                var end = start;
+                bc.CountBrace(content[end]);
+                while (bc.Count > 0 && end < content.Length) {
+                    end++;
+                    bc.CountBrace(content[end]);
+                }
+                if (end < content.Length && end > start) {
+                    content = content.Replace("{r", string.Empty, start, 2);
+                    end -= 2;
+                    content = content.Replace("}", string.Empty, end, 1);
+                    content = content.Replace(",", ";", start, end - start);
+                }
+            }
+            return content;
         }
     }
 }

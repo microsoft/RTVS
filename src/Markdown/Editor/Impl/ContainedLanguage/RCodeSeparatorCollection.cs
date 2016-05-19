@@ -9,7 +9,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         protected override IEnumerable<ISensitiveFragmentSeparatorsInfo> SeparatorInfos => new ISensitiveFragmentSeparatorsInfo[] { this };
 
         #region ISensitiveFragmentSeparatorsInfo
-        public string LeftSeparator => "```{r}";
+        public string LeftSeparator => "```{r";
         public string RightSeparator => "```";
         #endregion
     }
