@@ -10,6 +10,7 @@ using Microsoft.Markdown.Editor.Utility;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
+using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -39,7 +40,9 @@ namespace Microsoft.Markdown.Editor.Commands {
                     var code = TextView.TextBuffer.CurrentSnapshot.GetText(new Span(codeRange.Start, codeRange.Length));
                     code = MarkdownUtility.GetRContentFromMarkdownCodeBlock(code).Trim();
                     if (!string.IsNullOrWhiteSpace(code)) {
-                        _interactiveWorkflow.Operations.EnqueueExpression(code, addNewLine: false);
+                        try {
+                            _interactiveWorkflow.Operations.ExecuteExpression(code);
+                        } catch (MessageTransportException) { } catch (RException) { } catch (OperationCanceledException) { }
                     }
                 }
             }
