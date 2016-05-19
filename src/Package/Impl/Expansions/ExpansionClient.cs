@@ -147,8 +147,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var ts = TextSpanFromViewSpan(span);
                 if (exp.HasValue && ts.HasValue) {
                     // Insert into R buffer
-                    ts = TextSpanFromSpan(textBuffer, Span.FromBounds(start.Value, end.Value));
-                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
+                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
                         // EndExpansion was called before InsertExpansion returned, so set _expansionSession
                         // to null to indicate that there is no active expansion session. This can occur when 

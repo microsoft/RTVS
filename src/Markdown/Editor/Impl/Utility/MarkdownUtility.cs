@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
@@ -11,8 +10,8 @@ namespace Microsoft.Markdown.Editor.Utility {
     public static class MarkdownUtility {
         /// <summary>
         /// Converts R code block as it appears in R Markdown to legal R.
-        /// Changes decoration like '{r, x = FALSE, ...} into
-        /// x = FALSE; y = 1.0;  Allows for brace nesting.
+        /// Drops options setting block '{r, x = FALSE, ...}.
+        /// Allows for curly brace nesting.
         /// </summary>
         /// <param name="content"></param>
         /// <remarks>
@@ -33,28 +32,21 @@ namespace Microsoft.Markdown.Editor.Utility {
                     end++;
                     bc.CountBrace(content[end]);
                 }
-                // Remove {r and the closing }
-                if (end >= content.Length || end <= start) {
+                // Remove {r ... }
+                if (end >= content.Length - 1 || end <= start) {
                     break;
                 }
-                content = content.Remove(end, 1);
-                content = content.Remove(start, 2);
-                content = content.Replace(",", ";", start, end - start);
+                content = content.Remove(start, end - start + 1);
             }
-            // Remove parameter lines like params$x as well as leading ' from lines if any
+            // Remove parameter lines like params$x as well
             var lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
             var sb = new StringBuilder();
-            for(int i = 0; i < lines.Length; i++) { 
-                var index = lines[i].IndexOf(';');
-                if (index >= 0  && string.IsNullOrWhiteSpace(lines[i].Substring(0, index))) {
-                    sb.Append(lines[i].Substring(index + 1));
-                } else {
-                    index = lines[i].IndexOfOrdinal("params$");
-                    if(index < 0) {
-                        sb.Append(lines[i]);
-                    }
+            for (int i = 0; i < lines.Length; i++) {
+                var index = lines[i].IndexOfOrdinal("params$");
+                if (index < 0) {
+                    sb.Append(lines[i]);
+                    sb.Append(Environment.NewLine);
                 }
-                sb.Append(Environment.NewLine);
             }
             content = sb.ToString();
             return content;
