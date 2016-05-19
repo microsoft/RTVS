@@ -4,9 +4,7 @@
 using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
-using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;

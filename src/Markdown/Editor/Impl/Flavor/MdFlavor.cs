@@ -1,26 +1,24 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.IO;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Markdown.Editor.Flavor {
     public static class MdFlavor {
         public static MarkdownFlavor FromTextBuffer(ITextBuffer textBuffer) {
-            MarkdownFlavor flavor = MarkdownFlavor.Basic;
-            if (textBuffer.Properties.TryGetProperty("MarkdownFlavor", out flavor)) {
-                return flavor;
+            if (textBuffer.ContentType.TypeName.EqualsOrdinal(MdProjectionContentTypeDefinition.ContentType)) {
+                return MarkdownFlavor.R;
             }
 
-            ITextDocument textDocument = null;
-            if (textBuffer.Properties.TryGetProperty(typeof(ITextDocument), out textDocument)) {
-                if (!string.IsNullOrEmpty(textDocument.FilePath)) {
-                    string ext = Path.GetExtension(textDocument.FilePath);
-                    if (ext.EqualsIgnoreCase(".rmd")) {
-                        return MarkdownFlavor.R;
-                    }
+            var textDocument = textBuffer.GetTextDocument();
+            if (!string.IsNullOrEmpty(textDocument?.FilePath)) {
+                string ext = Path.GetExtension(textDocument.FilePath);
+                if (ext.EqualsIgnoreCase(".rmd")) {
+                    return MarkdownFlavor.R;
                 }
             }
 

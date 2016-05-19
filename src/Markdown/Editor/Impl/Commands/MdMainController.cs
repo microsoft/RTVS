@@ -29,9 +29,10 @@ namespace Microsoft.Markdown.Editor.Commands {
             return controller;
         }
 
-        public static MdMainController FromTextView(ITextView textView) {
+        public static new MdMainController FromTextView(ITextView textView) {
             return ServiceManager.GetService<MdMainController>(textView);
         }
+
         public override ICommandTarget ChainedController {
             get { return base.ChainedController; }
             set {
@@ -41,6 +42,11 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
+            var status = NonRoutedStatus(@group, id, null);
+            if ((status & CommandStatus.SupportedAndEnabled) == CommandStatus.SupportedAndEnabled) {
+                return status;
+            }
+
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
                 return containedCommandTarget.Status(group, id);

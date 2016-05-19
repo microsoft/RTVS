@@ -29,6 +29,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             _textViews = new Dictionary<IContentType, IWpfTextView>();
         }
 
+        public IWpfTextView LastActiveTextView { get; private set; }
+
         public IWpfTextView GetLastActiveTextView(IContentType contentType) {
             IWpfTextView value;
             return _textViews.TryGetValue(contentType, out value) ? value : null;
@@ -68,6 +70,8 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         private void UpdateTextViewIfRequired(IWpfTextView wpfTextView) {
+            LastActiveTextView = wpfTextView;
+
             var contentType = wpfTextView.TextBuffer.ContentType;
             IWpfTextView oldValue;
             if (_textViews.TryGetValue(contentType, out oldValue) && oldValue.Equals(wpfTextView)) {

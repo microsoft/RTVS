@@ -8,7 +8,19 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
     public interface IActiveWpfTextViewTracker {
+        /// <summary>
+        /// Last active view of any kind
+        /// </summary>
+        IWpfTextView LastActiveTextView { get; }
+
+        /// <summary>
+        /// Last active view of a particular content type
+        /// </summary>
         IWpfTextView GetLastActiveTextView(IContentType contentType);
+
+        /// <summary>
+        /// Last active view of a particular content type
+        /// </summary>
         IWpfTextView GetLastActiveTextView(string contentType);
 
         event EventHandler<ActiveTextViewChangedEventArgs> LastActiveTextViewChanged;

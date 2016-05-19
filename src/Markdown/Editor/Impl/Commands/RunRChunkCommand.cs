@@ -2,14 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Controller.Command;
-using Microsoft.Languages.Editor.Services;
+using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Utility;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -23,19 +23,23 @@ namespace Microsoft.Markdown.Editor.Commands {
         }
 
         public override CommandStatus Status(Guid group, int id) {
+            if (!TextView.TextBuffer.ContentType.TypeName.EqualsOrdinal(MdProjectionContentTypeDefinition.ContentType)) {
+                return CommandStatus.Invisible;
+            }
             return IsInRCode() ? CommandStatus.SupportedAndEnabled : CommandStatus.Supported;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             if (!TextView.Caret.InVirtualSpace) {
                 var caretPosition = TextView.Caret.Position.BufferPosition;
-                var handler = ServiceManager.GetService<IContainedLanguageHandler>(TextView.TextBuffer);
+                var document = MdEditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
+                var handler = document?.ContainedLanguageHandler;
                 var codeRange = handler?.GetCodeBlockOfLocation(TextView, caretPosition);
                 if (codeRange != null) {
                     var code = TextView.TextBuffer.CurrentSnapshot.GetText(new Span(codeRange.Start, codeRange.Length));
-                    code = MarkdownUtility.GetRContentFromMarkdownCodeBlock(code);
+                    code = MarkdownUtility.GetRContentFromMarkdownCodeBlock(code).Trim();
                     if (!string.IsNullOrWhiteSpace(code)) {
-                        _interactiveWorkflow.RSession.ExecuteAsync(code);
+                        _interactiveWorkflow.Operations.EnqueueExpression(code, addNewLine: false);
                     }
                 }
             }

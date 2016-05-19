@@ -8,14 +8,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor.Classification;
-using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
@@ -95,21 +94,7 @@ namespace Microsoft.R.Editor.Document {
         /// Retrieves document instance from text buffer
         /// </summary>
         public static IREditorDocument TryFromTextBuffer(ITextBuffer textBuffer) {
-            IREditorDocument document = ServiceManager.GetService<IREditorDocument>(textBuffer);
-            if (document == null) {
-                document = FindInProjectedBuffers(textBuffer);
-                if (document == null) {
-                    TextViewData viewData = TextViewConnectionListener.GetTextViewDataForBuffer(textBuffer);
-                    if (viewData != null && viewData.LastActiveView != null) {
-                        RMainController controller = RMainController.FromTextView(viewData.LastActiveView);
-                        if (controller != null && controller.TextBuffer != null) {
-                            document = ServiceManager.GetService<REditorDocument>(controller.TextBuffer);
-                        }
-                    }
-                }
-            }
-
-            return document;
+            return EditorExtensions.TryFromTextBuffer<IREditorDocument>(textBuffer, RContentTypeDefinition.ContentType);
         }
 
         /// <summary>
@@ -122,28 +107,7 @@ namespace Microsoft.R.Editor.Document {
         /// <param name="viewBuffer"></param>
         /// <returns></returns>
         public static IREditorDocument FindInProjectedBuffers(ITextBuffer viewBuffer) {
-            IREditorDocument document = null;
-            if (viewBuffer.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                return ServiceManager.GetService<REditorDocument>(viewBuffer);
-            }
-
-            // Try locating R buffer
-            ITextBuffer rBuffer = null;
-            IProjectionBuffer pb = viewBuffer as IProjectionBuffer;
-            if (pb != null) {
-                rBuffer = pb.SourceBuffers.FirstOrDefault((ITextBuffer tb) => {
-                    if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
-                        document = ServiceManager.GetService<REditorDocument>(tb);
-                        if (document != null) {
-                            return true;
-                        }
-                    }
-
-                    return false;
-                });
-            }
-
-            return document;
+            return EditorExtensions.FindInProjectedBuffers<IREditorDocument>(viewBuffer, RContentTypeDefinition.ContentType);
         }
 
         /// <summary>
