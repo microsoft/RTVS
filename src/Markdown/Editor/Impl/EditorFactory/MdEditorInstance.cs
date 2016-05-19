@@ -9,8 +9,6 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Markdown.Editor.EditorFactory {
     public sealed class MdEditorInstance : ProjectionEditorInstance {
-        IEditorDocument _document;
-
         public MdEditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) : 
             base(diskBuffer, documentFactory) {
         }

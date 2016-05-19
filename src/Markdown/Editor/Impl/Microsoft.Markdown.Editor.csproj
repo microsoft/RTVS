@@ -87,6 +87,7 @@
     <Compile Include="Commands\MdMainController.cs" />
     <Compile Include="Commands\MdPackageCommandId.cs" />
     <Compile Include="Commands\MdTextViewConnectionListener.cs" />
+    <Compile Include="Commands\RunRChunkCommand.cs" />
     <Compile Include="ContainedLanguage\MdContainedLanguageHostProvider.cs" />
     <Compile Include="ContainedLanguage\MdContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="Tokens\MarkdownToken.cs" />
     <Compile Include="Tokens\MdTokenizer.cs" />
     <Compile Include="Tokens\MarkdownTokenType.cs" />
+    <Compile Include="Utility\MarkdownUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

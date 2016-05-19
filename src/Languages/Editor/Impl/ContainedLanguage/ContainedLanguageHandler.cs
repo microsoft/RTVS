@@ -31,6 +31,11 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// <param name="position">Position in the document buffer</param>
         /// <returns>Command target or null if location appears to be primary</returns>
         public abstract ICommandTarget GetCommandTargetOfLocation(ITextView textView, int bufferPosition);
+        /// <summary>
+        /// Locates contained language block for a given location.
+        /// </summary>
+        /// <returns>block range or null if no secondary block found</returns>
+        public abstract ITextRange GetCodeBlockOfLocation(ITextView textView, int bufferPosition);
         #endregion
 
         protected ITextRange GetLanguageBlockOfLocation(int bufferPosition) {

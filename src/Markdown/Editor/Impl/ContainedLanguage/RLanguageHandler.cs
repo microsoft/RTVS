@@ -28,6 +28,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             return block != null ? (ICommandTarget)RMainController.FromTextView(textView) : null;
         }
 
+        public override ITextRange GetCodeBlockOfLocation(ITextView textView, int bufferPosition) {
+            return GetLanguageBlockOfLocation(bufferPosition);
+        }
+
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             var changes = e.ConvertToRelative();
             foreach (var c in changes) {
