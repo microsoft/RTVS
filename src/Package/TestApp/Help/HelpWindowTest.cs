@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     component.VisualTheme = "Dark.css";
                     clientApp.Component = component;
 
-                    ShowHelp("?plot", hostScript, clientApp);
+                    ShowHelp("plot", hostScript, clientApp);
                     clientApp.Uri.IsLoopback.Should().Be(true);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/graphics/html/plot.html");
 
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
                     GetBackgroundColor(component.Browser).Should().Be(darkThemeCssColor);
 
                     component.VisualTheme = "Light.css";
-                    ShowHelp("?lm", hostScript, clientApp);
+                    ShowHelp("lm", hostScript, clientApp);
                     clientApp.Uri.PathAndQuery.Should().Be("/library/stats/html/lm.html");
 
                     GetBackgroundColor(component.Browser).Should().Be("white");

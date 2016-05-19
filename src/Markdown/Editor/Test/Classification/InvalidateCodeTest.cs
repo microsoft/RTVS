@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Languages.Core.Classification;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Text;
 using Microsoft.Languages.Editor.Test.Utility;
@@ -13,6 +15,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
@@ -25,7 +28,11 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             ITextBuffer textBuffer = factory.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
             textBuffer.Insert(0, content);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider();
+            var crs = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationTypeRegistryService>();
+            var ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var cnp = EditorShell.Current.ExportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
+
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp);
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 
             string actual = GetSpans(cls, textBuffer);

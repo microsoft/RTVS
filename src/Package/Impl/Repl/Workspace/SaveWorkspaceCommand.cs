@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -18,12 +17,14 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
     internal sealed class SaveWorkspaceCommand : PackageCommand {
+        private readonly IApplicationShell _appShell;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IRSession _rSession;
         private readonly IProjectServiceAccessor _projectServiceAccessor;
 
-        public SaveWorkspaceCommand(IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
+        public SaveWorkspaceCommand(IApplicationShell appShell, IRInteractiveWorkflow interactiveWorkflow, IProjectServiceAccessor projectServiceAccessor) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSaveWorkspace) {
+            _appShell = appShell;
             _rSession = interactiveWorkflow.RSession;
             _projectServiceAccessor = projectServiceAccessor;
             _interactiveWorkflow = interactiveWorkflow;
@@ -44,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var lastLoadedProject = projectService.LoadedUnconfiguredProjects.LastOrDefault();
 
             var initialPath = lastLoadedProject != null ? lastLoadedProject.GetProjectDirectory() : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var file = VsAppShell.Current.BrowseForFileSave(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
+            var file = _appShell.BrowseForFileSave(IntPtr.Zero, Resources.WorkspaceFileFilter, initialPath, Resources.SaveWorkspaceAsTitle);
             if (file == null) {
                 return;
             }
@@ -55,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
         private async Task SaveWorkspace(string file) {
             using (var evaluation = await _rSession.BeginEvaluationAsync()) {
                 try {
-                    await evaluation.SaveWorkspace(file);
+                    await evaluation.SaveWorkspaceAsync(file);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.SaveWorkspaceFailedMessageFormat, file, ex.Message);
                     VsAppShell.Current.ShowErrorMessage(message);

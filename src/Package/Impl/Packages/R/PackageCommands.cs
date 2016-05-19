@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
@@ -22,12 +23,14 @@ using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;
 using Microsoft.VisualStudio.R.Package.RPackages.Commands;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
     internal static class PackageCommands {
         public static IEnumerable<MenuCommand> GetCommands(ExportProvider exportProvider) {
+            var appShell = VsAppShell.Current;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflowComponentContainerFactory = exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
@@ -58,8 +61,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdCheckForUpdates, DocumentationUrls.CheckForRtvsUpdates),
                 new OpenDocumentationCommand(RGuidList.RCmdSetGuid, RPackageCommandId.icmdMicrosoftRProducts, DocumentationUrls.MicrosoftRProducts),
 
-                new LoadWorkspaceCommand(interactiveWorkflow, projectServiceAccessor),
-                new SaveWorkspaceCommand(interactiveWorkflow, projectServiceAccessor),
+                new LoadWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
+                new SaveWorkspaceCommand(appShell, interactiveWorkflow, projectServiceAccessor),
 
                 new AttachDebuggerCommand(interactiveWorkflow),
                 new AttachToRInteractiveCommand(interactiveWorkflow),
@@ -68,15 +71,21 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new StepOverCommand(interactiveWorkflow),
                 new StepOutCommand(interactiveWorkflow),
                 new StepIntoCommand(interactiveWorkflow),
-                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false),
-                new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true),
+
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScript,
+                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, false)),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdSourceRScriptWithEcho,
+                    new SourceRScriptCommand(interactiveWorkflow, textViewTracker, true)),
+
                 new RunShinyAppCommand(interactiveWorkflow),
                 new StopShinyAppCommand(interactiveWorkflow),
 
                 new InterruptRCommand(interactiveWorkflow, debuggerModeTracker),
                 new ResetReplCommand(interactiveWorkflow),
 
-                new ImportDataSetTextFileCommand(interactiveWorkflow.RSession),
+                new ImportDataSetTextFileCommand(appShell, interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
 
@@ -95,8 +104,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowPackageManagerWindowCommand(),
 
                 // Plot commands
-                new ExportPlotAsImageCommand(plotHistory),
-                new ExportPlotAsPdfCommand(plotHistory),
+                new ExportPlotAsImageCommand(appShell, plotHistory),
+                new ExportPlotAsPdfCommand(appShell, plotHistory),
                 new CopyPlotAsBitmapCommand(plotHistory),
                 new CopyPlotAsMetafileCommand(plotHistory),
                 new HistoryNextPlotCommand(plotHistory),

@@ -27,7 +27,7 @@ using Xunit;
 namespace Microsoft.VisualStudio.R.Package.Test.Commands {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class ReplCommandTest: IDisposable {
+    public class ReplCommandTest : IDisposable {
         private readonly VsDebuggerModeTracker _debuggerModeTracker;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
             var commandFactory = new VsRCommandFactory(_workflowProvider, _componentContainerFactory);
             var commands = UIThreadHelper.Instance.Invoke(() => commandFactory.GetCommands(tv, editorBuffer));
-            
+
             await _workflow.RSession.HostStarted;
             _workflow.ActiveWindow.Should().NotBeNull();
 

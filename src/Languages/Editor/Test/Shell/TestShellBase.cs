@@ -4,7 +4,6 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.Threading;
@@ -25,6 +24,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void ShowContextMenu(CommandID commandId, int x, int y) { }
+
+        public string SaveFileIfDirty(string fullPath) => fullPath;
 
         public void DoIdle() {
             Idle?.Invoke(null, EventArgs.Empty);

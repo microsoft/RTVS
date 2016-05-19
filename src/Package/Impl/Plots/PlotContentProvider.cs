@@ -95,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsImageAsync(string fileName, string deviceName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap(deviceName, fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
+                    await eval.ExportToBitmapAsync(deviceName, fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
                 }
             }
         }
@@ -104,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToBitmap("bmp", fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
+                    await eval.ExportToBitmapAsync("bmp", fileName, _lastPixelWidth, _lastPixelHeight, _lastResolution);
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
                             try {
@@ -129,7 +129,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             if (_rSession != null) {
                 string fileName = Path.GetTempFileName();
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToMetafile(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
+                    await eval.ExportToMetafileAsync(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
 
                     VsAppShell.Current.DispatchOnUIThread(
                         () => {
@@ -160,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ExportAsPdfAsync(string fileName) {
             if (_rSession != null) {
                 using (IRSessionEvaluation eval = await _rSession.BeginEvaluationAsync()) {
-                    await eval.ExportToPdf(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
+                    await eval.ExportToPdfAsync(fileName, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
                 }
             }
         }
@@ -170,7 +170,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
                 return new PlotHistoryInfo();
             }
 
-            var result = await _rSession.PlotHistoryInfo();
+            var result = await _rSession.PlotHistoryInfoAsync();
             return new PlotHistoryInfo(result[0], result[1]);
         }
 
@@ -180,7 +180,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                await eval.ClearPlotHistory();
+                await eval.ClearPlotHistoryAsync();
             }
         }
 
@@ -190,7 +190,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                await eval.RemoveCurrentPlot();
+                await eval.RemoveCurrentPlotAsync();
             }
         }
 
@@ -200,7 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                await eval.NextPlot();
+                await eval.NextPlotAsync();
             }
         }
 
@@ -210,7 +210,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
             }
 
             using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                await eval.PreviousPlot();
+                await eval.PreviousPlotAsync();
             }
         }
 
@@ -229,7 +229,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         private async System.Threading.Tasks.Task ApplyNewSize() {
             if (_rSession != null) {
                 using (var eval = await _rSession.BeginInteractionAsync(false)) {
-                    await eval.ResizePlot(_lastPixelWidth, _lastPixelHeight, _lastResolution);
+                    await eval.ResizePlotAsync(_lastPixelWidth, _lastPixelHeight, _lastResolution);
                 }
             }
         }

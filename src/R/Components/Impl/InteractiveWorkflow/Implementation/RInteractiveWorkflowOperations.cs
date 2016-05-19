@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -172,17 +173,18 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             });
         }
 
-        public void SourceFile(string file, bool echo) {
-            Task.Run(async () => {
-                file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
-                _coreShell.DispatchOnUIThread(() => {
-                    ExecuteExpression(GetSourceExpression(file, echo));
-                });
-            });
+        public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
+            await _coreShell.SwitchToMainThreadAsync();
+            ExecuteExpression(GetSourceExpression(file, echo, encoding));
         }
 
-        private string GetSourceExpression(string file, bool echo) {
-            return $"{(_debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()}{(echo ? ", echo=TRUE" : "")})";
+        private string GetSourceExpression(string file, bool echo, Encoding encoding = null) {
+            string func = _debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source";
+            string echoArg = echo ? ", echo = TRUE" : "";
+            string encodingArg = encoding != null ? ", encoding = " + encoding.WebName.ToRStringLiteral() : "";
+            return $"{func}({file.ToRStringLiteral()}{echoArg}{encodingArg})";
         }
 
         public void TryRunShinyApp () {

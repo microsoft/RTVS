@@ -103,10 +103,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
             var envProvider = new REnvironmentProvider(_session);
             var envTcs = new TaskCompletionSource<IREnvironment[]>();
-            envProvider.PropertyChanged += (sender, args) => {
-                if (args.PropertyName == nameof(REnvironmentProvider.Environments)) {
-                    envTcs.SetResult(envProvider.Environments.ToArray());
-                }
+            envProvider.Environments.CollectionChanged += (sender, args) => {
+                envTcs.SetResult(envProvider.Environments.ToArray());
             };
 
             using (var inter = await _session.BeginInteractionAsync()) {

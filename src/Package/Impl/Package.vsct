@@ -748,9 +748,9 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>Import From Web URL...</ButtonText>
-          <MenuText>Import From Web &amp;URL...</MenuText>
-          <CommandName>Import Dataset From Web Url</CommandName>
+          <ButtonText>Import Dataset Into R Session From Web URL...</ButtonText>
+          <MenuText>Import Dataset Into R Session From Web &amp;URL...</MenuText>
+          <CommandName>Import Dataset Into R Session From Web Url</CommandName>
         </Strings>
       </Button>
 
@@ -760,9 +760,9 @@
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
-          <ButtonText>Import From Text File...</ButtonText>
-          <MenuText>Import From &amp;Text File...</MenuText>
-          <CommandName>Import Dataset From Text File</CommandName>
+          <ButtonText>Import Dataset Into R Session From Text File...</ButtonText>
+          <MenuText>Import Dataset Into R Session From &amp;Text File...</MenuText>
+          <CommandName>Import Dataset Into R Session From Text File</CommandName>
         </Strings>
       </Button>
 

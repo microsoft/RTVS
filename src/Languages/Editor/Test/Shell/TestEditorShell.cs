@@ -35,7 +35,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             // test run.
             UIThreadHelper.Instance.Invoke(() => {
                 _instance = new TestEditorShell(EditorTestCompositionCatalog.Current);
-                EditorShell.Current = _instance;
+                EditorShell.Current = (IEditorShell)(object)_instance;
             });
         }
 

@@ -3,14 +3,16 @@
 
 using System;
 using System.Collections.Immutable;
+using Microsoft.VisualStudio.ProjectSystem;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands
 {
     [ExportCommandGroup("1496A755-94DE-11D0-8C3F-00C04FC2AAE2")]
-    [AppliesTo("RTools")]
-    [OrderPrecedence(100)]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class ExcludeFromProjectCommand : ICommandGroupHandler
     {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {

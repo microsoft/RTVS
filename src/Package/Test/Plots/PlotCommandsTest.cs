@@ -92,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
         [Category.Plots]
         public void ExportPlotAsImage() {
             var history = new PlotHistory();
-            var cmd = new ExportPlotAsImageCommand(history);
+            var cmd = new ExportPlotAsImageCommand(null, history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdExportPlotAsImage);
             cmd.Should().BeDisabled();
@@ -106,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Plots {
         [Category.Plots]
         public void ExportPlotAsPdf() {
             var history = new PlotHistory();
-            var cmd = new ExportPlotAsPdfCommand(history);
+            var cmd = new ExportPlotAsPdfCommand(null, history);
 
             cmd.CommandID.ID.Should().Be(RPackageCommandId.icmdExportPlotAsPdf);
             cmd.Should().BeDisabled();

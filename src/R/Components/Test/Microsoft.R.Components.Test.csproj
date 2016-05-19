@@ -18,71 +18,23 @@
   </PropertyGroup>
   <Import Project="..\..\..\R.Settings.targets" />
   <PropertyGroup>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='14.0'">VS14;$(DefineConstants)</DefineConstants>
+    <DefineConstants Condition="'$(VisualStudioVersion)'=='15.0'">VS15;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\$(Configuration)\$(AssemblyName)\</IntermediateOutputPath>
     <OutputPath>$(BaseOutputPath)\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentAssertions, Version=4.3.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.3.2\lib\net45\FluentAssertions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentAssertions.Core, Version=4.3.2.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\FluentAssertions.4.3.2\lib\net45\FluentAssertions.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.CoreUtility, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.CoreUtility.14.1.24720\lib\net45\Microsoft.VisualStudio.CoreUtility.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Data, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Data.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Data.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.Logic, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.Logic.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.Logic.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.UI.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.VisualStudio.Text.UI.Wpf, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\Microsoft.VisualStudio.Text.UI.Wpf.14.1.24720\lib\net45\Microsoft.VisualStudio.Text.UI.Wpf.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
-    <Reference Include="NSubstitute, Version=1.10.0.0, Culture=neutral, PublicKeyToken=92dd2e9066daa5ca, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\NSubstitute.1.10.0.0\lib\net45\NSubstitute.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
-    <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.assert, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\xunit.assert.2.2.0-beta1-build3239\lib\dotnet\xunit.assert.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.core, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.core.2.2.0-beta1-build3239\lib\dotnet\xunit.core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="xunit.execution.desktop, Version=2.2.0.3239, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\NugetPackages\xunit.extensibility.execution.2.2.0-beta1-build3239\lib\net45\xunit.execution.desktop.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
@@ -93,6 +45,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertionExtensions.cs" />
+    <Compile Include="Assertions\AsyncCommandAssertions.cs" />
+    <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestRInteractiveWorkflowProvider.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />
@@ -117,6 +72,7 @@
     <Compile Include="Fakes\VisualComponentFactories\TestRPackageManagerVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryIntegrationTest.cs" />
     <Compile Include="History\RHistoryTests.cs" />
+    <Compile Include="InteractiveWorkflow\RInteractiveEvaluatorTest.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowOperationsTest.cs" />
     <Compile Include="MefCompositionTests.cs" />
     <Compile Include="PackageManager\PackageVersionTest.cs" />
@@ -127,6 +83,7 @@
     <Compile Include="PackageManager\TestRepositories.cs" />
     <Compile Include="RComponentsMefCatalogFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryProviderStubFactory.cs" />
@@ -148,7 +105,9 @@
     </FilesToSign>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
+      <Link>app.config</Link>
+    </None>
     <None Include="Files\Packages\rtvslib1\.Rbuildignore" />
     <None Include="Files\Packages\rtvslib1\DESCRIPTION" />
     <None Include="Files\Packages\rtvslib1\man\func1.Rd" />
@@ -157,12 +116,32 @@
     <None Include="Files\Packages\rtvslib1\R\func1.R" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.2\PACKAGES" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.2\rtvslib1_0.1.0.zip" />
+    <None Include="Files\Repos\Repo1\bin\windows\contrib\3.4\PACKAGES" />
+    <None Include="Files\Repos\Repo1\bin\windows\contrib\3.4\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\PACKAGES" />
     <None Include="Files\Repos\Repo1\bin\windows\contrib\3.3\rtvslib1_0.1.0.zip" />
     <None Include="Files\Repos\Repo1\src\contrib\PACKAGES" />
     <None Include="Files\Repos\Repo1\src\contrib\rtvslib1_0.1.0.tar.gz" />
-    <None Include="packages.config" />
+    <None Include="project.json" />
   </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)'=='14.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.14.0\Microsoft.UnitTests.References.14.0.csproj">
+          <Project>{78203460-9937-45E5-81CC-3045DDC10527}</Project>
+          <Name>Microsoft.UnitTests.References.14.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(VisualStudioVersion)'=='15.0'">
+      <ItemGroup>
+        <ProjectReference Include="..\..\..\UnitTests\References.15.0\Microsoft.UnitTests.References.15.0.csproj">
+          <Project>{4297FA87-629A-4000-8169-D97E8E64890E}</Project>
+          <Name>Microsoft.UnitTests.References.15.0</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
@@ -180,13 +159,13 @@
       <Project>{e1b1909e-3193-499b-91db-1e13e6836929}</Project>
       <Name>Microsoft.R.Host.Client.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Mocks\Editor\Microsoft.VisualStudio.Editor.Mocks.csproj">
+      <Project>{5fcb86d5-4b25-4039-858c-b5a06eb702e1}</Project>
+      <Name>Microsoft.VisualStudio.Editor.Mocks</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5ef2ad64-d6fe-446b-b350-8c7f0df0834d}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Support\Impl\Microsoft.R.Support.csproj">
-      <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
-      <Name>Microsoft.R.Support</Name>
     </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

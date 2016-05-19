@@ -6,8 +6,11 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.Common.Core.OS;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class CommandPromptCommand : ICommandGroupHandler {

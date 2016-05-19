@@ -132,7 +132,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // Get the text at the current caret position and
             // determine if it is a snippet shortcut.
             if (!TextView.Caret.InVirtualSpace) {
-                var expansion = GetTargetBuffer().GetBufferAdapter<IVsExpansion>();
+                SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
+
+                var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
+                // Document may be null in tests
+                var textBuffer = document != null ? document.TextBuffer : TextView.TextBuffer;
+                var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
 
                 Span span;
@@ -142,7 +147,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var ts = TextSpanFromViewSpan(span);
                 if (exp.HasValue && ts.HasValue) {
                     // Insert into R buffer
-                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
+                    ts = TextSpanFromSpan(textBuffer, Span.FromBounds(start.Value, end.Value));
+                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
                         // EndExpansion was called before InsertExpansion returned, so set _expansionSession
                         // to null to indicate that there is no active expansion session. This can occur when 

@@ -21,15 +21,22 @@ using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.ProjectSystem.VS;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
+#endif
+#if VS15
+using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
+#endif
+
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
-    [AppliesTo("RTools")]
     internal sealed class RProjectLoadHooks {
         private const string DefaultRDataName = ".RData";
         private const string DefaultRHistoryName = ".RHistory";
@@ -63,8 +70,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
             , IFileSystem fileSystem
-            , IThreadHandling threadHandling,
-            ISurveyNewsService surveyNews) {
+            , IThreadHandling threadHandling
+            , ISurveyNewsService surveyNews) {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
@@ -83,15 +90,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
         }
 
-        [AppliesTo("RTools")]
+        [AppliesTo(Constants.RtvsProjectCapability)]
+#if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
+#else
+        [ProjectAutoLoad(startAfter: ProjectLoadCheckpoint.UnconfiguredProjectLocalCapabilitiesEstablished,
+                         completeBy: ProjectLoadCheckpoint.BeforeLoadInitialConfiguration,
+                         RequiresUIThread = false)]
+#endif
         public async Task InitializeProjectFromDiskAsync() {
             await Project.CreateInMemoryImport();
             _fileWatcher.Start();
 
-            // Force REPL window up and continue only when it is shown
             await _threadHandling.SwitchToUIThread();
-
             // Make sure R package is loaded
             VsAppShell.EnsurePackageLoaded(RGuidList.RPackageGuid);
 
@@ -115,13 +126,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             var rdataPath = Path.Combine(_projectDirectory, DefaultRDataName);
             bool loadDefaultWorkspace = _fileSystem.FileExists(rdataPath) && await GetLoadDefaultWorkspace(rdataPath);
-
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 if (loadDefaultWorkspace) {
-                    await evaluation.LoadWorkspace(rdataPath);
+                    await evaluation.LoadWorkspaceAsync(rdataPath);
                 }
 
-                await evaluation.SetWorkingDirectory(_projectDirectory);
+                await evaluation.SetWorkingDirectoryAsync(_projectDirectory);
             }
 
             _toolsSettings.WorkingDirectory = _projectDirectory;
@@ -157,8 +167,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         continue;
                     }
 
-                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof (SVsSolution));
-                    solution.CloseSolutionElement((uint) __VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
+                    var solution = VsAppShell.Current.GetGlobalService<IVsSolution>(typeof(SVsSolution));
+                    solution.CloseSolutionElement((uint)__VSSLNCLOSEOPTIONS.SLNCLOSEOPT_UnloadProject, (IVsHierarchy)iVsProject, 0);
                     return;
                 }
             });
@@ -187,9 +197,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Task.Run(async () => {
                 using (var evaluation = await _session.BeginEvaluationAsync()) {
                     if (saveDefaultWorkspace) {
-                        await evaluation.SaveWorkspace(rdataPath);
+                        await evaluation.SaveWorkspaceAsync(rdataPath);
                     }
-                    await evaluation.SetDefaultWorkingDirectory();
+                    await evaluation.SetDefaultWorkingDirectoryAsync();
                 }
             }).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
         }
@@ -229,7 +239,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 var driveType = (NativeMethods.DriveType)NativeMethods.GetDriveType(pathRoot);
                 remoteDrive = driveType == NativeMethods.DriveType.Remote;
             }
-            if(remoteDrive) {
+            if (remoteDrive) {
                 VsAppShell.Current.ShowMessage(Resources.Warning_UncPath, MessageButtons.OK);
             }
         }
