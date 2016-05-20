@@ -59,8 +59,8 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             _separators.Clear();
             foreach (var t in rCodeTokens) {
                 Blocks.Add(new TextRange(t.Start + 3, t.Length - 6));
-                _separators.Add(new TextRange(t.Start, 3));
-                _separators.Add(new TextRange(t.End-3, 3));
+                _separators.Add(new TextRange(t.Start, 5));
+                _separators.Add(new TextRange(t.End - 3, 3));
             }
         }
     }

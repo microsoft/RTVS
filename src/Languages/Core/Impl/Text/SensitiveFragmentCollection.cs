@@ -16,10 +16,17 @@ namespace Microsoft.Languages.Core.Text {
     /// Type that implements ITextRange and supplies separator information via 
     /// ISensitiveFragmentSeparatorsInfo interface
     /// </typeparam>
-    public abstract class SensitiveFragmentCollection<T> : TextRangeCollection<T> where T : ITextRange {
+    public abstract class SensitiveFragmentCollection<T> : 
+        TextRangeCollection<T>, 
+        ISensitiveFragmentSeparatorsInfo 
+        where T : ITextRange {
+
+        public abstract string LeftSeparator { get; }
+        public abstract string RightSeparator { get; }
+
         /// <summary>
-        /// Determines if particular change to the document creates new or changes boundaries
-        /// of one of the existing sensitive fragments (comments, artifacts).
+        /// Determines if particular change to the document creates new or changes 
+        /// boundaries of one of the existing sensitive fragments.
         /// </summary>
         /// <param name="collection">Fragment collection.</param>
         /// <param name="oldText">Document text before the change.</param>
@@ -34,8 +41,9 @@ namespace Microsoft.Languages.Core.Text {
             IReadOnlyList<T> itemsInRange = ItemsInRange(new TextRange(start, oldLength));
 
             // Is crosses item boundaries, it is destructive
-            if (itemsInRange.Count > 1 || (itemsInRange.Count == 1 && (!itemsInRange[0].Contains(start) || !itemsInRange[0].Contains(start + oldLength))))
+            if (itemsInRange.Count > 1 || (itemsInRange.Count == 1 && (!itemsInRange[0].Contains(start) || !itemsInRange[0].Contains(start + oldLength)))) {
                 return true;
+            }
 
             foreach (ISensitiveFragmentSeparatorsInfo curSeparatorInfo in SeparatorInfos) {
                 if (IsDestructiveChangeForSeparator(curSeparatorInfo, itemsInRange, start, oldLength, newLength, oldText, newText)) {
@@ -46,7 +54,11 @@ namespace Microsoft.Languages.Core.Text {
             return false;
         }
 
-        protected virtual bool IsDestructiveChangeForSeparator(ISensitiveFragmentSeparatorsInfo separatorInfo, IReadOnlyList<T> itemsInRange, int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText) {
+        protected virtual bool IsDestructiveChangeForSeparator(
+            ISensitiveFragmentSeparatorsInfo separatorInfo, 
+            IReadOnlyList<T> itemsInRange, 
+            int start, int oldLength, int newLength, 
+            ITextProvider oldText, ITextProvider newText) {
             if (separatorInfo == null) {
                 return false;
             }
@@ -57,29 +69,31 @@ namespace Microsoft.Languages.Core.Text {
 
             // Find out if one of the existing fragments contains position 
             // and if change damages fragment start or end separators
-
             string leftSeparator = separatorInfo.LeftSeparator;
             string rightSeparator = separatorInfo.RightSeparator;
 
-            // If no items are affected, change is unsafe only if new region contains left side separators.
+            // If no items are affected, change is unsafe only if new region contains separators.
             if (itemsInRange.Count == 0) {
                 // Simple optimization for whitespace insertion
                 if (oldLength == 0 && string.IsNullOrWhiteSpace(newText.GetText(new TextRange(start, newLength)))) {
                     return false;
                 }
 
-                int fragmentStart = Math.Max(0, start - leftSeparator.Length + 1);
-                int fragmentEnd;
-
                 // Take into account that user could have deleted space between existing 
                 // <! and -- or added - to the existing <!- so extend search range accordingly.
-
-                fragmentEnd = Math.Min(newText.Length, start + newLength + leftSeparator.Length - 1);
+                int fragmentStart = Math.Max(0, start - leftSeparator.Length + 1);
+                int fragmentEnd = Math.Min(newText.Length, start + newLength + leftSeparator.Length - 1);
 
                 int fragmentStartPosition = newText.IndexOf(leftSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true);
                 if (fragmentStartPosition >= 0) {
-                    // We could've found the left separator only in the newly inserted text since we extended the range we examined
-                    // by one less than the separator length. Return true, no further checks necessary.
+                    return true;
+                }
+
+                fragmentStart = Math.Max(0, start - rightSeparator.Length + 1);
+                fragmentEnd = Math.Min(newText.Length, start + newLength + rightSeparator.Length - 1);
+
+                fragmentStartPosition = newText.IndexOf(rightSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true);
+                if (fragmentStartPosition >= 0) {
                     return true;
                 }
                 return false;
@@ -108,7 +122,7 @@ namespace Microsoft.Languages.Core.Text {
                 if (itemsInRange[0].Start + leftSeparator.Length == start) {
                     if (oldLength == 0) {
                         string text = newText.GetText(new TextRange(start, newLength));
-                        if (String.IsNullOrWhiteSpace(text))
+                        if (string.IsNullOrWhiteSpace(text))
                             return false;
                     }
                     return true;

@@ -52,7 +52,6 @@
     <Compile Include="Commands\RunRChunkCommand.cs" />
     <Compile Include="ContainedLanguage\MdContainedLanguageHostProvider.cs" />
     <Compile Include="ContainedLanguage\MdContainedLanguageHost.cs" />
-    <Compile Include="ContainedLanguage\RBufferGenerator.cs" />
     <Compile Include="ContainedLanguage\RCodeSeparatorCollection.cs" />
     <Compile Include="ContainedLanguage\RLanguageHandler.cs" />
     <Compile Include="ContentType\MdProjectionContentTypeDefinition.cs" />
