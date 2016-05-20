@@ -59,8 +59,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         TerminalWidth = _terminalWidth,
                     };
 
-                    CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-
+                    if (CurrentWindow != null) {
+                        CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
+                    }
                     await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
                 return ExecutionResult.Success;
@@ -74,10 +75,12 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
-                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                if (CurrentWindow != null) {
+                    CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
+                }
 
                 if (Session.IsHostRunning) {
-                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
+                    CurrentWindow?.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
                 }
 
@@ -85,7 +88,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
+                CurrentWindow?.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
                 return await InitializeAsync();
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
@@ -132,7 +135,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                         using (var request = await Session.BeginInteractionAsync()) {
                             if (line.Length >= request.MaxLength) {
-                                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                                CurrentWindow?.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
                                 return ExecutionResult.Failure;
                             }
 
