@@ -33,7 +33,7 @@ namespace Microsoft.Markdown.Editor.Utility {
                     bc.CountBrace(content[end]);
                 }
                 // Remove {r ... }
-                if (end >= content.Length - 1 || end <= start) {
+                if (end >= content.Length || end <= start) {
                     break;
                 }
                 content = content.Remove(start, end - start + 1);

@@ -44,6 +44,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class TokenizerAttribute : CategoryAttribute {
                 public TokenizerAttribute() : base("Md.Tokenizer") { }
             }
+
+            [ExcludeFromCodeCoverage]
+            public class RCodeAttribute : CategoryAttribute {
+                public RCodeAttribute() : base("Md.RCode") { }
+            }
         }
 
         [ExcludeFromCodeCoverage]
