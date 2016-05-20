@@ -69,6 +69,7 @@
     <Compile Include="Tasks\FailOnTimeoutTest.cs" />
     <Compile Include="Tasks\TaskExtensionsTest.cs" />
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
+    <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />
     <Compile Include="Utility\RUtilities.cs" />
     <Compile Include="Utility\SupportedWpfProperties.cs" />
