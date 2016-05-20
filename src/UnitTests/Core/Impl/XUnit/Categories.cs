@@ -8,8 +8,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public static class Category {
         [ExcludeFromCodeCoverage]
         public static class Languages {
+            [ExcludeFromCodeCoverage]
             public class CoreAttribute : CategoryAttribute {
                 public CoreAttribute() : base("Languages.Core") { }
+            }
+            [ExcludeFromCodeCoverage]
+            public class ContainedAttribute : CategoryAttribute {
+                public ContainedAttribute() : base("Languages.Contained") { }
             }
         }
 

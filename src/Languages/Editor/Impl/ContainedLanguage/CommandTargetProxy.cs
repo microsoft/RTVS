@@ -18,9 +18,9 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
 
         public static CommandTargetProxy GetProxyTarget(ITextView textView) {
             var proxy = ServiceManager.GetService<CommandTargetProxy>(textView);
-            if (proxy == null)
+            if (proxy == null) {
                 proxy = new CommandTargetProxy(textView);
-
+            }
             return proxy;
         }
 
