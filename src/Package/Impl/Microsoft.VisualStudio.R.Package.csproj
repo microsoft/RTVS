@@ -176,9 +176,7 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
-    <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs" />
     <Compile Include="Options\R\Tools\EncodingTypeConverter.cs" />
     <Compile Include="PackageManager\ShowPackageManagerWindowCommand.cs" />
     <Compile Include="History\Commands\ToggleMultilineHistorySelectionCommand.cs" />
@@ -201,7 +199,6 @@
     <Compile Include="ProjectSystem\IConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\IRProjectProperties.cs" />
     <Compile Include="ProjectSystem\IVsHierarchyExtensions.cs" />
-    <Compile Include="ProjectSystem\ProjectDebuggerProvider.cs" />
     <Compile Include="ProjectSystem\ProjectProperties.cs" />
     <Compile Include="ProjectSystem\PropertyPages\PropertyPage.cs">
       <SubType>UserControl</SubType>
@@ -360,12 +357,8 @@
     <Compile Include="Options\Attributes\LocDisplayNameAttribute.cs" />
     <Compile Include="Options\Common\LanguageSettingsStorage.cs" />
     <Compile Include="Options\Common\LanguageSettingsStorageWithDialog.cs" />
-    <Compile Include="Options\R\RToolsOptionsPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Options\R\Editor\REditorOptionsDialog.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Options\R\RToolsOptionsPage.cs" />
+    <Compile Include="Options\R\Editor\REditorOptionsDialog.cs" />
     <Compile Include="Options\R\VsRSettingsStorage.cs" />
     <Compile Include="ProjectSystem\RProjectLoadHooks.cs" />
     <Compile Include="ProjectSystem\RProjectSourceItemProviderExtension.cs" />
