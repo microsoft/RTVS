@@ -21,7 +21,8 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
         private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _classificationNameProviders;
 
         [ImportingConstructor]
-        public MdClassifierProvider(IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs, IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> cnp) {
+        public MdClassifierProvider(IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs,
+                                    [ImportMany] IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> cnp) {
             _classificationRegistryService = crs;
             _contentTypeRegistryService = ctrs;
             _classificationNameProviders = cnp;
