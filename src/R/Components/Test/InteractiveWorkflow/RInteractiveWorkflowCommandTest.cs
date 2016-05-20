@@ -69,14 +69,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 .And.BeInvisibleAndDisabled();
 
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                command.Should().BeSupported()
-                    .And.BeVisibleAndDisabled();
-
                 const string code = "sourced <- TRUE";
                 var textBuffer = new TextBufferMock(code, RContentTypeDefinition.ContentType);
                 var textView = new WpfTextViewMock(textBuffer);
 
                 tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns(textView);
+                tracker.LastActiveTextView.Returns(textView);
 
                 command.Should().BeSupported()
                     .And.BeVisibleAndDisabled();
