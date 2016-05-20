@@ -48,6 +48,18 @@ _TeamCity*
 # NuGet Packages Directory
 NugetPackages/*
 
+# NuGet Generated files
+project.lock.json
+*.nuget.props
+*.nuget.targets
+
+# NuGet project.json files that created from project.*.json depending on VS version
+src/Mocks/VisualStudio/project.json
+src/Package/Impl/project.json
+src/Package/Test/project.json
+src/ProjectSystem/Impl/project.json
+src/ProjectSystem/Test/project.json
+
 # Windows Azure Build Output
 csx/
 *.build.csdef

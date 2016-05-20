@@ -5,9 +5,11 @@ using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Windows;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Guid("99d2ea62-72f2-33be-afc8-b8ce6e43b5d0")]
@@ -20,6 +22,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             BitmapImageMoniker = KnownMonikers.VariableProperty;
 
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.variableWindowToolBarId);
+        }
+
+        public override bool SearchEnabled {
+            get {
+                var grid = Content as VariableView;
+                return grid?.RootTreeGrid != null;
+            }
+        }
+
+        public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
+            var settings = (SearchSettingsDataSource)pSearchSettings;
+            settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
+            base.ProvideSearchSettings(pSearchSettings);
+        }
+
+        public override IVsSearchTask CreateSearch(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback) {
+            if (SearchEnabled) {
+                var grid = Content as VariableView;
+                return new VariableSearchTask(grid.RootTreeGrid, dwCookie, pSearchQuery, pSearchCallback);
+            }
+            return null;
         }
     }
 }

@@ -63,8 +63,10 @@ namespace Microsoft.VisualStudio.R.Package.Packages {
             }
 
             var dte = VsAppShell.Current.GetGlobalService<DTE2>(typeof(DTE));
-            var cbs = dte?.CommandBars;
-            var cb = dte?.CommandBars["R Toolbar"] as CommandBar;
+            var cbs = (CommandBars.CommandBars)dte?.CommandBars;
+            Debug.Assert(cbs != null, "Unable to find R Toolbar");
+
+            var cb = cbs["R Toolbar"];
             Debug.Assert(cb != null, "Unable to find R Toolbar");
             if (cb != null) {
                 cb.Visible = true;

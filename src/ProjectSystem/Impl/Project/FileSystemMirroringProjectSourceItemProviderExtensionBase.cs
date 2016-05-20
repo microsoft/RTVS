@@ -8,9 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Build.Evaluation;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.Threading;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Items;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
-using Microsoft.VisualStudio.Threading;
+#endif
 using ItemData = System.Tuple<string, string, System.Collections.Generic.IEnumerable<System.Collections.Generic.KeyValuePair<string, string>>>;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
@@ -29,7 +31,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             _temporaryItems = temporaryItems;
         }
 
-        #region IProjectSourceItemProviderExtension implementation
+#region IProjectSourceItemProviderExtension implementation
 
         public Task<bool> CheckSourceItemOwnershipAsync(string itemType, string evaluatedInclude) {
             return this.CheckFolderItemOwnershipAsync(evaluatedInclude);
@@ -76,9 +78,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             return GetMsBuildItemByProjectItem(projectItem);
         }
 
-        #endregion
+#endregion
 
-        #region IProjectFolderItemProviderExtension implementation
+#region IProjectFolderItemProviderExtension implementation
 
         public Task<bool> CheckFolderItemOwnershipAsync(string evaluatedInclude) {
             return _unconfiguredProject.IsOutsideProjectDirectory(_unconfiguredProject.MakeRooted(evaluatedInclude))
@@ -107,7 +109,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             return GetMsBuildItemByProjectItem(projectItem);
         }
 
-        #endregion
+#endregion
 
         private bool CheckProjectFileOwnership(string projectFilePath) {
             return _unconfiguredProject.GetInMemoryTargetsFileFullPath().EqualsIgnoreCase(projectFilePath);

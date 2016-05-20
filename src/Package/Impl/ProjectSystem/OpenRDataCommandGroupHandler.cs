@@ -11,11 +11,14 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {
@@ -63,7 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             using (var evaluation = await _session.BeginEvaluationAsync()) {
                 try {
-                    await evaluation.LoadWorkspace(rDataNode.FilePath);
+                    await evaluation.LoadWorkspaceAsync(rDataNode.FilePath);
                 } catch (RException ex) {
                     var message = string.Format(CultureInfo.CurrentCulture, Resources.LoadWorkspaceFailedMessageFormat,
                         rDataNode.FilePath, ex.Message);

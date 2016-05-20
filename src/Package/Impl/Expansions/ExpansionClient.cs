@@ -4,6 +4,7 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -138,15 +139,27 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             // determine if it is a snippet shortcut.
             if (!TextView.Caret.InVirtualSpace) {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
-                var expansion = TextBuffer.GetBufferAdapter<IVsExpansion>();
 
+                var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
+                // Document may be null in tests
+                var textBuffer = document != null ? document.TextBuffer : TextView.TextBuffer;
+                var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
+
                 Span span;
                 _shortcut = TextView.GetItemBeforeCaret(out span, x => true);
-
                 VsExpansion? exp = _cache.GetExpansion(_shortcut);
+
+                // Get view span
                 var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
-                if (exp.HasValue) {
+
+                // Map it down to R buffer
+                var start = TextView.MapDownToR(span.Start);
+                var end = TextView.MapDownToR(span.End);
+
+                if (exp.HasValue && start.HasValue && end.HasValue) {
+                    // Insert into R buffer
+                    ts = TextSpanFromSpan(textBuffer, Span.FromBounds(start.Value, end.Value));
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
                         // EndExpansion was called before InsertExpansion returned, so set _expansionSession
@@ -176,8 +189,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         private static TextSpan TextSpanFromSpan(ITextView textView, Span span) {
+            return TextSpanFromSpan(textView.TextBuffer, span);
+        }
+
+        private static TextSpan TextSpanFromSpan(ITextBuffer textBuffer, Span span) {
             var ts = new TextSpan();
-            ITextSnapshotLine line = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
+            ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
             ts.iStartLine = line.LineNumber;
             ts.iEndLine = line.LineNumber;
             ts.iStartIndex = span.Start - line.Start;
@@ -205,16 +222,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
-                SnapshotSpan viewSpan = new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot, startPos, endPos - startPos);
 
-                NormalizedSnapshotSpanCollection mappedSpans = TextView.BufferGraph.MapDownToBuffer(
-                    viewSpan, SpanTrackingMode.EdgeInclusive, TextBuffer);
-                Debug.Assert(mappedSpans.Count == 1);
+                var rStart = TextView.MapDownToR(startPos);
+                var rEnd = TextView.MapDownToR(endPos);
 
-                if (mappedSpans.Count > 0) {
-                    RangeFormatter.FormatRange(TextView, TextBuffer,
-                        new TextRange(mappedSpans[0].Start, mappedSpans[0].Length),
-                        REditorSettings.FormatOptions);
+                if (rStart.HasValue && rEnd.HasValue && rStart.Value < rEnd.Value) {
+                    RangeFormatter.FormatRange(TextView, TextBuffer, TextRange.FromBounds(rStart.Value, rEnd.Value), REditorSettings.FormatOptions);
                 }
             }
             return hr;

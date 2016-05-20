@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -161,24 +162,29 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             return InteractiveWindow.Operations.ResetAsync();
         }
 
-        public void SourceFiles(IEnumerable<string> files) {
+        public void SourceFiles(IEnumerable<string> files, bool echo) {
             Task.Run(async () => {
                 var shortNames = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(files);
                 _coreShell.DispatchOnUIThread(() => {
                     foreach (var name in shortNames) {
-                        EnqueueExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({name.ToRStringLiteral()})", addNewLine: true);
+                        EnqueueExpression(GetSourceExpression(name, echo), addNewLine: true);
                     }
                 });
             });
         }
 
-        public void SourceFile(string file) {
-            Task.Run(async () => {
-                file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
-                _coreShell.DispatchOnUIThread(() => {
-                    ExecuteExpression($"{(_debuggerModeTracker.IsDebugging ? "rtvs::debug_source" : "source")}({file.ToRStringLiteral()})");
-                });
-            });
+        public async Task SourceFileAsync(string file, bool echo, Encoding encoding = null) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            file = await _workflow.RSession.MakeRelativeToRUserDirectoryAsync(file);
+            await _coreShell.SwitchToMainThreadAsync();
+            ExecuteExpression(GetSourceExpression(file, echo, encoding));
+        }
+
+        private string GetSourceExpression(string file, bool echo, Encoding encoding = null) {
+            string func = _debuggerModeTracker.IsDebugging && !echo ? "rtvs::debug_source" : "source";
+            string echoArg = echo ? ", echo = TRUE" : "";
+            string encodingArg = encoding != null ? ", encoding = " + encoding.WebName.ToRStringLiteral() : "";
+            return $"{func}({file.ToRStringLiteral()}{echoArg}{encodingArg})";
         }
 
         public void TryRunShinyApp () {

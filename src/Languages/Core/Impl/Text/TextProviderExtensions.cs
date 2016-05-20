@@ -95,5 +95,21 @@ namespace Microsoft.Languages.Core.Text {
 
             return count;
         }
+
+        public static bool IsWhiteSpaceOnlyRange(this ITextProvider textProvider, int start, int end) {
+            if (end < start) {
+                end = textProvider.Length;
+            }
+            for (int i = start; i < end; i++) {
+                char ch = textProvider[i];
+                if (!char.IsWhiteSpace(ch)) {
+                    return false;
+                }
+                if (ch.IsLineBreak()) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }

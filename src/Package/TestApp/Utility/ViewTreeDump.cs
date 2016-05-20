@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
+using Newtonsoft.Json;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
 
         private static void CompareVisualTree(VisualTreeObject actual, VisualTreeObject expected, bool compareProperty = true) {
             bool visible = true;
-            
+
             // compare
             actual.Name.Should().Be(expected.Name);
 
@@ -67,18 +68,20 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         }
 
         private static string SerializeVisualTree(VisualTreeObject o) {
-            var serializer = new XmlSerializer(typeof(VisualTreeObject));
-            using (var stringWriter = new StringWriter()) {
-                serializer.Serialize(stringWriter, o);
-                return stringWriter.ToString();
+            var serializer = new JsonSerializer();
+            using (var sw = new StringWriter()) {
+                using (var writer = new JsonTextWriter(sw)) {
+                    writer.Formatting = Formatting.Indented;
+                    serializer.Serialize(writer, o);
+                    return sw.ToString();
+                }
             }
         }
 
         private static VisualTreeObject DeserializeVisualTree(string filePath) {
-            var serializer = new XmlSerializer(typeof(VisualTreeObject));
-
+            var serializer = new JsonSerializer();
             using (var stringReader = new StreamReader(filePath)) {
-                return (VisualTreeObject)serializer.Deserialize(stringReader);
+                return (VisualTreeObject)serializer.Deserialize(stringReader, typeof(VisualTreeObject));
             }
         }
     }

@@ -45,7 +45,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(variableName);
             var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
-            var rfile = file.Replace('\\', '/');
 
             string currentStatusText;
             var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
@@ -53,7 +52,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             try {
                 statusBar.SetText(Resources.Status_WritingCSV);
-                await CreateCsvAndStartProcess(result, session, rfile, file);
+                await CreateCsvAndStartProcess(result, session, file);
             } catch (Win32Exception ex) {
                 VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } catch (FileNotFoundException ex) {
@@ -65,11 +64,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string rfile, string file) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string file) {
             await TaskUtilities.SwitchToBackgroundThread();
 
+            var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+            var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+
             using (var e = await session.BeginEvaluationAsync()) {
-                await e.EvaluateAsync($"write.csv({result.Expression}, file='{rfile}')", REvaluationKind.Normal);
+                await e.EvaluateAsync($"write.table({result.Expression}, qmethod='double', col.names=NA, file={file.ToRPath().ToRStringLiteral()}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
             }
 
             if (File.Exists(file)) {

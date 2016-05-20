@@ -21,7 +21,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// Provides list of functions from installed packages
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
-    public class PackageFunctionCompletionProvider : IRCompletionListProvider {
+    [Export(typeof(IRHelpSearchTermProvider))]
+    public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         private static readonly string[] _preloadPackages = new string[]
         {
             "stats",
@@ -76,6 +77,16 @@ namespace Microsoft.R.Editor.Completion.Providers {
             }
 
             return completions;
+        }
+        #endregion
+
+        #region IRHelpSearchTermProvider
+        public IReadOnlyCollection<string> GetEntries() {
+            var list = new List<string>();
+            foreach (IPackageInfo pkg in PackageIndex.Packages) {
+                list.AddRange(pkg.Functions.Select(x => x.Name));
+            }
+            return list;
         }
         #endregion
 

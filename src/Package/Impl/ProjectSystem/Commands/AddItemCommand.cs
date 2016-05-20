@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Utilities;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class AddItemCommand : ICommandGroupHandler {

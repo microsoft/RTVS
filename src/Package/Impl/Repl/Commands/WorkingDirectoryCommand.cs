@@ -11,13 +11,15 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudioTools;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
@@ -72,8 +74,10 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
         }
 
-        public override CommandStatus Status(Guid group, int id) {
-            return _interactiveWorkflow.ActiveWindow != null ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+        public override Microsoft.R.Components.Controller.CommandStatus Status(Guid group, int id) {
+            return _interactiveWorkflow.ActiveWindow != null ?
+                Microsoft.R.Components.Controller.CommandStatus.SupportedAndEnabled :
+                Microsoft.R.Components.Controller.CommandStatus.Invisible;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
@@ -108,7 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
             if (newDirectory != null && currentDirectory != newDirectory) {
                 RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
-                _session.SetWorkingDirectory(newDirectory)
+                _session.SetWorkingDirectoryAsync(newDirectory)
                     .SilenceException<RException>()
                     .SilenceException<MessageTransportException>()
                     .DoNotWait();

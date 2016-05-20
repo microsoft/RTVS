@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
         }
 
         public bool FormatSupported(PublishFormat format) {
-            return format != PublishFormat.Pdf;
+            return true;
         }
 
         public string GetCommandLine(string inputFile, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {

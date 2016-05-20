@@ -2,16 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     public static class ToolWindowUtilities {
+        /// <summary>
+        /// Locates the specified window pane (tool window). Does not create one.
+        /// </summary>
         public static T FindWindowPane<T>(int id) where T : ToolWindowPane {
             if (RPackage.Current != null) {
-                return RPackage.Current.FindWindowPane<T>(typeof(T), id, true) as T;
+                return RPackage.Current.FindWindowPane<T>(typeof(T), id, false) as T;
             }
             return null;
         }

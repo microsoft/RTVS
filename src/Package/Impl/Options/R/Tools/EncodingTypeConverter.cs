@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         private int ConvertToCodePage(string encodingName) {
-            if(encodingName.EqualsOrdinal(Resources.Settings_OsDefaultEncoding)) {
+            if(encodingName.EqualsOrdinal(Resources.Settings_DefaultValue)) {
                 return 0;
             }
             var enc = Encoding.GetEncodings().FirstOrDefault(e => e.DisplayName.EqualsOrdinal(encodingName));
@@ -76,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
 
         private string ConvertToEncodingName(int codePage) {
             var enc = Encoding.GetEncodings().FirstOrDefault(e => e.CodePage == codePage);
-            return enc != null ? enc.DisplayName : Resources.Settings_OsDefaultEncoding;
+            return enc != null ? enc.DisplayName : Resources.Settings_DefaultValue;
         }
     }
 }

@@ -25,16 +25,23 @@ namespace Microsoft.R.Components.Search {
         }
 
         private T GetValue<T>([CallerMemberName] string propertyName = null) {
-            object value;
-            return _values.TryGetValue(propertyName, out value) ? (T) value : default(T);
+            T value;
+            return TryGetValue(propertyName, out value) ? value : default(T);
         }
 
         private void SetValue<T>(T value, [CallerMemberName] string propertyName = null) {
             _values[propertyName] = value;
         }
 
-        public bool TryGetValue(string propertyName, out object value) {
-            return _values.TryGetValue(propertyName, out value);
+        public bool TryGetValue<T>(string propertyName, out T value) {
+            object objValue;
+            if (_values.TryGetValue(propertyName, out objValue)) {
+                value = (T) objValue;
+                return true;
+            }
+
+            value = default(T);
+            return false;
         }
     }
 }

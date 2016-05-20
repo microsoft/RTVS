@@ -110,7 +110,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return CanceledBeginInteractionTask;
             }
 
-            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, _contexts, cancellationToken);
+            RSessionRequestSource requestSource = new RSessionRequestSource(isVisible, cancellationToken);
             _pendingRequestSources.Post(requestSource);
 
             return _isHostRunning ? requestSource.CreateRequestTask : CanceledBeginInteractionTask;
@@ -210,7 +210,7 @@ namespace Microsoft.R.Host.Client.Session {
                 using (var inter = await requestTask) {
                     // Try graceful shutdown with q() first.
                     try {
-                        await Task.WhenAny(_hostRunTask, inter.Quit(), Task.Delay(500)).Unwrap();
+                        await Task.WhenAny(_hostRunTask, inter.QuitAsync(), Task.Delay(500)).Unwrap();
                     } catch (Exception) {
                     }
 
@@ -262,22 +262,23 @@ namespace Microsoft.R.Host.Client.Session {
                     // below calls may depend on functions exposed from the RTVS package
                     await LoadRtvsPackage(evaluation);
                     if (startupInfo.WorkingDirectory != null) {
-                        await evaluation.SetWorkingDirectory(startupInfo.WorkingDirectory);
+                        await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
                     } else {
-                        await evaluation.SetDefaultWorkingDirectory();
+                        await evaluation.SetDefaultWorkingDirectoryAsync();
                     }
 
                     var callback = _callback;
                     if (callback != null) {
-                        await evaluation.SetVsGraphicsDevice();
+                        await evaluation.SetVsGraphicsDeviceAsync();
 
                         string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
-                        await evaluation.SetVsCranSelection(mirrorUrl);
+                        await evaluation.SetVsCranSelectionAsync(mirrorUrl);
 
-                        await evaluation.SetCodePage(startupInfo.CodePage);
-                        await evaluation.SetROptions();
-                        await evaluation.OverrideFunction("setwd", "base");
-                        await evaluation.SetFunctionRedirection();
+                        await evaluation.SetCodePageAsync(startupInfo.CodePage);
+                        await evaluation.SetROptionsAsync();
+                        await evaluation.OverrideFunctionAsync("setwd", "base");
+                        await evaluation.SetFunctionRedirectionAsync();
+                        await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
                     }
 
                     _afterHostStartedTcs.SetResult(null);
@@ -387,7 +388,7 @@ namespace Microsoft.R.Host.Client.Session {
             TaskCompletionSource<string> requestTcs = new TaskCompletionSource<string>();
             Interlocked.Exchange(ref _currentRequestSource, requestSource);
 
-            requestSource.Request(prompt, len, requestTcs);
+            requestSource.Request(_contexts, prompt, len, requestTcs);
             ct.Register(delegate { requestTcs.TrySetCanceled(); });
 
             string response = await requestTcs.Task;

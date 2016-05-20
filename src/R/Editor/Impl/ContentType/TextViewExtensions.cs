@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Core.Formatting;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
@@ -78,15 +79,20 @@ namespace Microsoft.R.Editor {
         public static string GetIdentifierUnderCaret(this ITextView textView, out Span span) {
             if (!textView.Caret.InVirtualSpace) {
                 if (textView.Selection.Mode == TextSelectionMode.Stream) {
+                    SnapshotPoint position = textView.Caret.Position.BufferPosition;
+                    ITextSnapshotLine line = null;
+                    int caretPosition = -1;
                     if (textView.Selection.SelectedSpans.Count > 0) {
                         span = textView.Selection.SelectedSpans[0];
-                        if(span.Length > 0) {
-                            return textView.TextBuffer.CurrentSnapshot.GetText(span);
+                        // Make sure span is reasonable (single line and only contains one item)
+                        if (span.Length > 0) {
+                            line = position.Snapshot.GetLineFromPosition(span.Start + 1);
+                            caretPosition = Math.Min(position.Position, line.Start + (line.Length - line.GetText().TrimStart().Length + 1));
                         }
                     }
-                    SnapshotPoint position = textView.Caret.Position.BufferPosition;
-                    ITextSnapshotLine line = position.GetContainingLine();
-                    return GetItemAtPosition(line, position.Position, (x) => x == RTokenType.Identifier, out span);
+                    line = line ?? position.GetContainingLine();
+                    caretPosition = caretPosition >= 0 ? caretPosition : position.Position;
+                    return GetItemAtPosition(line, caretPosition, (x) => x == RTokenType.Identifier, out span);
                 }
             }
             span = Span.FromBounds(0, 0);

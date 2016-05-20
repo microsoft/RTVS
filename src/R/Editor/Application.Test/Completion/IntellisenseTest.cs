@@ -351,6 +351,23 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
+        public void R_NoCompletionOnTabInComment() {
+            // Tab only completes when selected item starts
+            // with the text typed so far in the buffer
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                script.DoIdle(100);
+                script.Type("#com");
+                script.DoIdle(300);
+                script.Type("{TAB}a");
+                script.DoIdle(100);
+
+                string actual = script.EditorText;
+                actual.Should().Be("#com    a"); // Tab was not consumed
+            }
+        }
+
+        [Test]
+        [Category.Interactive]
         public void R_SnippetsCompletion01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
