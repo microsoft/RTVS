@@ -57,9 +57,11 @@ namespace Microsoft.Markdown.Editor.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
-                CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
-                if (result.WasExecuted) {
-                    return result;
+                using (new BraceCompletionWorkaround223902(TextView)) {
+                    CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
+                    if (result.WasExecuted) {
+                        return result;
+                    }
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -82,6 +84,34 @@ namespace Microsoft.Markdown.Editor.Commands {
                 ServiceManager.RemoveService<MdMainController>(TextView);
             }
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Workaround for VS 2015 bug 223902: Brace completion is incorrectly disabled 
+        /// in projection scenarios.
+        /// </summary>
+        /// <remarks>
+        /// IDE incorrectly fetches option from view. In projected scenarios view belongs 
+        /// to the language that may not have brace completion enabled and that disables 
+        /// brace completion in the projected language. Example: R inside markdown.
+        /// </remarks>
+        sealed class BraceCompletionWorkaround223902 : IDisposable {
+            private readonly ITextView _textView;
+            private bool _optionValue;
+
+            public BraceCompletionWorkaround223902(ITextView textView) {
+                _textView = textView;
+                _optionValue = _textView.Options.GetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId);
+                if (!_optionValue) {
+                    _textView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, true);
+                }
+            }
+
+            public void Dispose() {
+                if (!_optionValue) {
+                    _textView.Options.SetOptionValue(DefaultTextViewOptions.BraceCompletionEnabledOptionId, false);
+                }
+            }
         }
     }
 }
