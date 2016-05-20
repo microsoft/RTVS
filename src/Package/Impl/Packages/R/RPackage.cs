@@ -62,14 +62,14 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideToolWindow(typeof(HelpWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.PropertiesWindow)]
     [ProvideToolWindow(typeof(HistoryWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
     [ProvideToolWindow(typeof(PackageManagerWindowPane), Style = VsDockStyle.MDI)]
+    [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
+    [ProvideToolWindow(typeof(VariableGridWindowPane), MultiInstances = true,
+                       Style = VsDockStyle.Linked, Window = RGuidList.VariableGridWindowBracedGuidString, Transient = true)]
     [ProvideDebugEngine(RContentTypeDefinition.LanguageName, null, typeof(AD7Engine), DebuggerGuids.DebugEngineString)]
     [ProvideDebugLanguage(RContentTypeDefinition.LanguageName, DebuggerGuids.LanguageGuidString, "{D67D5DB8-3D44-4105-B4B8-47AB1BA66180}", DebuggerGuids.DebugEngineString, DebuggerGuids.CustomViewerString)]
     [ProvideDebugPortSupplier("R Interactive sessions", typeof(RDebugPortSupplier), DebuggerGuids.PortSupplierString, typeof(RDebugPortPicker))]
     [ProvideComClass(typeof(RDebugPortPicker))]
     [ProvideComClass(typeof(AD7CustomViewer))]
-    [ProvideToolWindow(typeof(VariableWindowPane), Style = VsDockStyle.Linked, Window = ToolWindowGuids80.SolutionExplorer)]
-    [ProvideToolWindow(typeof(VariableGridWindowPane), MultiInstances = true, 
-                       Style = VsDockStyle.Linked, Window = RGuidList.VariableGridWindowGuidString, Transient = true)]
     [ProvideNewFileTemplates(RGuidList.MiscFilesProjectGuidString, RGuidList.RPackageGuidString, "#106", @"Templates\NewItem\")]
     [ProvideCodeExpansions(RGuidList.RLanguageServiceGuidString, false, 0,
                            RContentTypeDefinition.LanguageName, @"Snippets\SnippetsIndex.xml")]
