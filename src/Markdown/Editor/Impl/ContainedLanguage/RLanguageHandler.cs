@@ -4,6 +4,7 @@
 using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Components.Controller;
@@ -15,9 +16,11 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     internal sealed class RLanguageHandler : ContainedLanguageHandler {
         private readonly RCodeSeparatorCollection _separators = new RCodeSeparatorCollection();
         private readonly IBufferGenerator _generator = new BufferGenerator();
+        private readonly IProjectionBufferManager _projectionBufferManager;
 
-        public RLanguageHandler(ITextBuffer textBuffer) :
+        public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager) :
             base(textBuffer) {
+            _projectionBufferManager = projectionBufferManager;
             UpdateProjections();
         }
 
@@ -45,8 +48,11 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         }
 
         private void UpdateProjections() {
+            ProjectionMapping[] mappings;
+
             BuildLanguageBlockCollection();
-            _generator.GenerateContent(TextBuffer, Blocks);
+            var content = _generator.GenerateContent(TextBuffer.CurrentSnapshot, Blocks, out mappings);
+            _projectionBufferManager.SetProjectionMappings(content, mappings);
         }
 
         private void BuildLanguageBlockCollection() {

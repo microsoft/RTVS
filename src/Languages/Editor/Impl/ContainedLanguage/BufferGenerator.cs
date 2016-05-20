@@ -17,13 +17,11 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
     /// </summary>
     public class BufferGenerator: IBufferGenerator {
         #region IBufferGenerator
-        public virtual void GenerateContent(ITextBuffer diskBuffer, IEnumerable<ITextRange> languageBlocks) {
-            var mappings = new List<ProjectionMapping>();
+        public virtual string GenerateContent(ITextSnapshot snapshot, IEnumerable<ITextRange> languageBlocks, out ProjectionMapping[] mappings) {
+            var mappingsList = new List<ProjectionMapping>();
             var secondaryIndex = 0;
 
-            var pbm = ProjectionBufferManager.FromTextBuffer(diskBuffer);
             var sb = new StringBuilder();
-            var snapshot = diskBuffer.CurrentSnapshot;
 
             foreach (var b in languageBlocks) {
                 var text = snapshot.GetText(b.Start, b.Length);
@@ -31,10 +29,11 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
 
                 sb.Append(text + Environment.NewLine);
                 var m = new ProjectionMapping(b.Start, secondaryIndex, b.Length);
-                mappings.Add(m);
+                mappingsList.Add(m);
             }
 
-            pbm.SetProjectionMappings(sb.ToString(), mappings);
+            mappings = mappingsList.ToArray();
+            return sb.ToString();
         }
         #endregion
     }
