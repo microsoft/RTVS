@@ -52,11 +52,7 @@ namespace Microsoft.Languages.Editor.Projection {
 
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
-
-            ITextSnapshot diskSnap = _diskBuffer.CurrentSnapshot;
-            SnapshotSpan everything = new SnapshotSpan(diskSnap, 0, diskSnap.Length);
-            ITrackingSpan trackingSpan = diskSnap.CreateTrackingSpan(everything, SpanTrackingMode.EdgeInclusive);
-            ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, new List<object>() { trackingSpan }, EditOptions.None, this);
+            MapEverythingToView();
 
             // Now update language spans
             var secondarySpans = CreateSecondarySpans(secondaryContent, mappings);
@@ -68,6 +64,12 @@ namespace Microsoft.Languages.Editor.Projection {
             ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
         }
 
+        private void MapEverythingToView() {
+            ITextSnapshot diskSnap = _diskBuffer.CurrentSnapshot;
+            SnapshotSpan everything = new SnapshotSpan(diskSnap, 0, diskSnap.Length);
+            ITrackingSpan trackingSpan = diskSnap.CreateTrackingSpan(everything, SpanTrackingMode.EdgeInclusive);
+            ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, new List<object>() { trackingSpan }, EditOptions.None, this);
+        }
 
         public void Dispose() {
             ServiceManager.RemoveService<IProjectionBufferManager>(_diskBuffer);

@@ -31,6 +31,7 @@
     <Compile Include="Core\TextDataModel.cs" />
     <Compile Include="Core\TextViewRoleSet.cs" />
     <Compile Include="Host\EditorInstanceFactory.cs" />
+    <Compile Include="Packages\MarkdownPackage.cs" />
     <Compile Include="Packages\TextPackage.cs" />
     <Compile Include="Packages\RPackage.cs" />
     <Compile Include="Packages\SettingsStorage.cs" />
@@ -54,6 +55,10 @@
     <ProjectReference Include="..\Languages\Editor\Test\Microsoft.Languages.Editor.Test.csproj">
       <Project>{5340191e-31e5-43a0-a485-b6678d391b10}</Project>
       <Name>Microsoft.Languages.Editor.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Markdown\Editor\Impl\Microsoft.Markdown.Editor.csproj">
+      <Project>{98e0b8ac-1193-4bfd-bf5c-6712c93abd03}</Project>
+      <Name>Microsoft.Markdown.Editor</Name>
     </ProjectReference>
     <ProjectReference Include="..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

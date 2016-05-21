@@ -4,8 +4,14 @@
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Commands;
+using Microsoft.R.Editor.Document;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -16,10 +22,21 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [TextViewRole(PredefinedTextViewRoles.Editable)]
     [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
-    internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener
-    {
-        public TestRTextViewConnectionListener()
-        {
+    internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
+        public TestRTextViewConnectionListener() {
+        }
+
+        protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
+            InitEditorInstance(textBuffer);
+            base.OnTextBufferCreated(textBuffer);
+        }
+
+        private void InitEditorInstance(ITextBuffer textBuffer) {
+            if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
+                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
+                IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
+                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory());
+            }
         }
     }
 
@@ -28,7 +45,5 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Test settings")]
     [Order(Before = "Default")]
-    internal sealed class RSettingsStorage : SettingsStorage
-    {
-    }
+    internal sealed class RSettingsStorage : SettingsStorage { }
 }

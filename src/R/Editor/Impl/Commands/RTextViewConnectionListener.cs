@@ -11,8 +11,6 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Commands {
-    // In HTML case document creation and controller connection happens either in
-    // application-specific listener or in text buffer / editor factory.
     public class RTextViewConnectionListener : TextViewConnectionListener {
         private IContainedLanguageHost _containedLanguageHost;
         private ITextBuffer _textBuffer;
