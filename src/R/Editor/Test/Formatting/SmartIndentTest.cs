@@ -40,14 +40,18 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("if (x > 1) {\n\n}", 2, 0)]
         [InlineData("while (TRUE) {\n    if (x > 1) {\n\n    }\n}", 4, 0)]
         [InlineData("if (x > 1) {\r\n\r\n}", 1, 4)]
-        [InlineData("x <- function(a,\n", 1, 14)]
-        [InlineData("func(a,\n", 1, 5)]
+        [InlineData("x <- function(a,\n", 1, 4)]
+        [InlineData("func(a,\n", 1, 4)]
         [InlineData("if (TRUE)\n    x <- 1\n\n", 3, 0)]
         [InlineData("repeat\r\n    if (x > 1)\r\n", 2, 8)]
         [InlineData("{if (x > 1)\r\n    x <- 1\r\nelse\n", 3, 4)]
         [InlineData("if (x > 1)\n", 1, 4)]
         [InlineData("x <- function(a) {\n  if(TRUE)\n\n}", 2, 6)]
-        [InlineData("x <- function(a) {}\n", 1, 0)]
+        [InlineData("function(a) { a }\n", 1, 0)]
+        [InlineData("x <- func(\n    z = list(\n", 2, 8)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n", 3, 12)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
+        [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         public void Scope(string content, int lineNum, int expectedIndent) {
             int? indent = GetSmartIndent(content, lineNum);
             indent.Should().HaveValue().And.Be(expectedIndent);

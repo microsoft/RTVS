@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
             var paths = string.Join(",", libPaths.Select(p => p.ToRPath().ToRStringLiteral()));
             var code = $".libPaths(c({paths}))";
-            return eval.EvaluateAsync(code, REvaluationKind.Normal);
+            return eval.ExecuteAsync(code);
         }
 
         public static Task SetLocalLibraryAsync(IRSessionEvaluation eval, MethodInfo testMethod, TestFilesFixture testFiles) {

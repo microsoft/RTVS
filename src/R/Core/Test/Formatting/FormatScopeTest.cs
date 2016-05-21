@@ -8,18 +8,17 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
+    [Category.R.Formatting]
     public class FormatScopeTest {
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_EmptyFileTest() {
+        public void EmptyFileTest() {
             RFormatter f = new RFormatter();
             string s = f.Format(string.Empty);
             s.Should().BeEmpty();
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatRandom01() {
+        public void FormatRandom01() {
             RFormatter f = new RFormatter();
             string original = "a   b 1.  2 Inf\tNULL";
 
@@ -29,8 +28,7 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_StatementTest01() {
+        public void StatementTest01() {
             RFormatter f = new RFormatter();
             string actual = f.Format("x<-2");
             string expected = "x <- 2";
@@ -38,14 +36,21 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatSimpleScopesTest01() {
+        public void SimpleScopesTest01() {
+            RFormatter f = new RFormatter();
+            string actual = f.Format("{\n{}}");
+            string expected =
+            "{\n" +
+            "  { }\n" +
+            "}";
+            actual.Should().Be(expected);
+        }
+
+        [Test]
+        public void SimpleScopesTest02() {
             RFormatter f = new RFormatter();
             string actual = f.Format("{{}}");
-            string expected =
-"{\n" +
-"  { }\n" +
-"}";
+            string expected = "{{ }}";
             actual.Should().Be(expected);
         }
     }

@@ -12,8 +12,8 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Definitions;
+using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
@@ -199,17 +199,20 @@ namespace Microsoft.R.Editor.Completion {
                 SnapshotPoint? position = REditorDocument.MapCaretPositionFromView(TextView);
                 if (position.HasValue) {
                     int pos = position.Value;
-                    if (pos > 0 && pos <= position.Value.Snapshot.Length) {
-                        bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
-                        bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
-                        if (!showCompletion) {
-                            var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
-                            string directory;
-                            showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
-                        }
-                        if (showCompletion) {
-                            ShowCompletion(autoShownCompletion: false);
-                            return true; // eat the character
+                    var doc = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                    if (!doc.IsPositionInComment(pos)) {
+                        if (pos > 0 && pos <= position.Value.Snapshot.Length) {
+                            bool endOfIdentifier = RTokenizer.IsIdentifierCharacter(position.Value.Snapshot[pos - 1]);
+                            bool showCompletion = endOfIdentifier && REditorSettings.ShowCompletionOnTab;
+                            if (!showCompletion) {
+                                var document = REditorDocument.FromTextBuffer(position.Value.Snapshot.TextBuffer);
+                                string directory;
+                                showCompletion = RCompletionEngine.CanShowFileCompletion(document.EditorTree.AstRoot, pos, out directory);
+                            }
+                            if (showCompletion) {
+                                ShowCompletion(autoShownCompletion: false);
+                                return true; // eat the character
+                            }
                         }
                     }
                 }
@@ -409,11 +412,9 @@ namespace Microsoft.R.Editor.Completion {
             IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             if (session != null) {
                 using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
-                    REvaluationResult result = await eval.EvaluateAsync(expression, REvaluationKind.Normal);
-                    if (result.ParseStatus == RParseStatus.OK &&
-                        !string.IsNullOrEmpty(result.StringResult) &&
-                         (result.StringResult == "T" || result.StringResult == "TRUE")) {
-                        return true;
+                    try {
+                        return await eval.EvaluateAsync<bool>(expression, REvaluationKind.Normal);
+                    } catch (RException) {
                     }
                 }
             }

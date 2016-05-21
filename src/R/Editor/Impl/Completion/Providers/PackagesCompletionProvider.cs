@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
 using System.Windows.Media;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Completion.Definitions;
@@ -15,7 +17,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// library(...) statement. List of packages is  obtained from 
     /// ~\Program Files\R and from ~\Documents\R folders
     /// </summary>
-    public class PackagesCompletionProvider : IRCompletionListProvider {
+    [Export(typeof(IRHelpSearchTermProvider))]
+    public class PackagesCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
+
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
@@ -29,6 +33,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
             }
 
             return completions;
+        }
+        #endregion
+
+        #region IRHelpSearchTermProvider
+        public IReadOnlyCollection<string> GetEntries() {
+            return PackageIndex.Packages.Select(p => p.Name).ToList();
         }
         #endregion
     }

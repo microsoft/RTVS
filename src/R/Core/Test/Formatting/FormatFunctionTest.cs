@@ -10,28 +10,21 @@ using Xunit;
 
 namespace Microsoft.R.Core.Test.Formatting {
     [ExcludeFromCodeCoverage]
+    [Category.R.Formatting]
     public class FormatFunctionTest {
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunction() {
+        [CompositeTest]
+        [InlineData("function(a,b) {\nreturn(a+b)}", "function(a, b) {\n  return(a + b)\n}")]
+        [InlineData("function(a,b) {return(a+b)}", "function(a, b) { return(a + b) }")]
+        [InlineData("function(a,b) {{return(a+b)}}", "function(a, b) {{ return(a + b) }}")]
+        [InlineData("function(a,b) a+b", "function(a, b) a + b")]
+        public void FormatFunction(string original, string expected) {
             RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) {return(a+b)}");
-            string expected = "function(a, b) {\n  return(a + b)\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
 
         [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatInlineFunction() {
-            RFormatter f = new RFormatter();
-            string actual = f.Format("function(a,b) a+b");
-            string expected = @"function(a, b) a + b";
-            actual.Should().Be(expected);
-        }
-
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionAlignArguments() {
+        public void FormatFunctionAlignArguments() {
             RFormatOptions options = new RFormatOptions();
             options.IndentType = IndentType.Tabs;
             options.TabSize = 2;
@@ -45,9 +38,10 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [Category.R.Formatting]
-        [InlineData("x <- func(a,{return(b)})", "x <- func(a, {\n  return(b)\n})")]
-        [InlineData("x<-func({return(b)})", "x <- func({\n  return(b)\n})")]
+        [InlineData("x <- func(a,{return(b)})", "x <- func(a, { return(b) })")]
+        [InlineData("x <- func(a,{return(b)\n})", "x <- func(a, {\n  return(b)\n})")]
+        [InlineData("x<-func({return(b)})", "x <- func({ return(b) })")]
+        [InlineData("x<-func({\nreturn(b)})", "x <- func({\n  return(b)\n})")]
         public void FunctionInlineScope(string original, string expected) {
             RFormatter f = new RFormatter();
             string actual = f.Format(original);
@@ -55,12 +49,11 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [CompositeTest]
-        [Category.R.Formatting]
-        [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, {\n  if (TRUE) {\n    x\n  } else {\n    y\n  }\n})")]
-        [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
+        [InlineData("x <- func(a,{if(TRUE) {x} else {y}})", "x <- func(a, { if (TRUE) { x } else { y }})")]
+        [InlineData("x <- func(a,{if(TRUE) 1 else 2})", "x <- func(a, { if (TRUE) 1 else 2 })")]
         [InlineData("x <- func(a,{\nif(TRUE) 1 else 2})", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
-        [InlineData("x <- func(a,{\nif(TRUE) {1} else {2}})", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
-        [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) {\n    1\n  } else {\n    2\n  }\n})")]
+        [InlineData("x <- func(a,{\nif(TRUE) {1} else {2}})", "x <- func(a, {\n  if (TRUE) { 1 } else { 2 }\n})")]
+        [InlineData("x <- func(a,{\n        if(TRUE) {1} \n        else {2}\n })", "x <- func(a, {\n  if (TRUE) { 1 }\n  else { 2 }\n})")]
         [InlineData("x <- func(a,\n   {\n      if(TRUE) 1 else 2\n   })", "x <- func(a, {\n  if (TRUE) 1 else 2\n})")]
         public void FunctionInlineIf(string original, string expected) {
             RFormatter f = new RFormatter();
@@ -69,7 +62,6 @@ namespace Microsoft.R.Core.Test.Formatting {
         }
 
         [Test]
-        [Category.R.Formatting]
         public void FormatFunctionInlineIf02() {
             RFormatter f = new RFormatter();
 
@@ -78,28 +70,23 @@ namespace Microsoft.R.Core.Test.Formatting {
             string expected =
 "x <- func(a, {\n" +
 "  if (TRUE)\n" +
-"    if (FALSE) {\n" +
-"      x <- 1\n" +
-"    } else\n" +
-"      x <- 2\n" +
+"    if (FALSE) { x <- 1 } else x <- 2\n" +
 "  else\n" +
-"    if (z) x <- 1 else {\n" +
-"      5\n" +
-"    }\n" +
+"    if (z) x <- 1 else { 5 }\n" +
 "})";
 
             actual.Should().Be(expected);
         }
 
-        [Test]
-        [Category.R.Formatting]
-        public void Formatter_FormatFunctionNoSpaceAfterComma() {
+        [CompositeTest]
+        [InlineData("function(a, b) {return(a+b)}", "function(a,b) { return(a + b) }")]
+        [InlineData("function(a, b) {return(a+b)\n}", "function(a,b) {\n  return(a + b)\n}")]
+        public void FormatFunctionNoSpaceAfterComma(string original, string expected) {
             RFormatOptions options = new RFormatOptions();
             options.SpaceAfterComma = false;
 
             RFormatter f = new RFormatter(options);
-            string actual = f.Format("function(a, b) {return(a+b)}");
-            string expected = "function(a,b) {\n  return(a + b)\n}";
+            string actual = f.Format(original);
             actual.Should().Be(expected);
         }
     }

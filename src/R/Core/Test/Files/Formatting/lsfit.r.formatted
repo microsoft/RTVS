@@ -4,10 +4,8 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	y <- as.matrix(y)
 	xnames <- colnames(x)
 	if (is.null(xnames)) {
-		if (ncol(x) == 1L)
-			xnames <- "X"
-		else
-			xnames <- paste0("X", 1L:ncol(x))
+		if (ncol(x) == 1L) xnames <- "X"
+		else xnames <- paste0("X", 1L:ncol(x))
 	}
 	if (intercept) {
 		x <- cbind(1, x)
@@ -60,8 +58,7 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 		if (any(wt == 0)) {
 			if (ncx == 1L)
 				fitted.zeros <- xzero * z$coefficients
-			else
-				fitted.zeros <- xzero %*% z$coefficients
+			else fitted.zeros <- xzero %*% z$coefficients
 			z$residuals[wt == 0,] <- yzero - fitted.zeros
 		}
 		z$residuals <- z$residuals * invmult
@@ -70,7 +67,8 @@ x <- function(x, y, wt = NULL, intercept = TRUE, tolerance = 1e-07,
 	if (dimy[2L] == 1 && is.null(yname)) {
 		resids <- drop(resids)
 		names(z$coefficients) <- xnames
-	} else {
+	}
+	else {
 		colnames(resids) <- yname
 		colnames(z$effects) <- yname
 		dim(z$coefficients) <- c(ncx, ncy)
