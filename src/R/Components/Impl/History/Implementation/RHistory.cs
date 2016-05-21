@@ -165,8 +165,12 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
         public void PreviousEntry() {
+            if (!HasEntries) {
+                return;
+            }
+
             if (_currentEntry == null) {
-                _currentEntry = _entries.LastOrDefault();
+                _currentEntry = _entries.Last();
             } else while (_currentEntry.Previous != null) {
                 _currentEntry = _currentEntry.Previous;
                 if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Next.Span, _currentEntry.Span)) {
@@ -345,7 +349,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    entryToSelect = _entries.FirstOrDefault();
+                    entryToSelect = _entries.First();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.End.Position);
                     if (entry.Next == null) {
@@ -388,7 +392,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    entryToSelect = _entries.LastOrDefault();
+                    entryToSelect = _entries.Last();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.Start.Position);
                     if (entry.Previous == null) {
