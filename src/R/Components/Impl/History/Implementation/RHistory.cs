@@ -330,6 +330,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
+            IRHistoryEntry entryToSelect;
             if (HasSelectedEntries) {
                 var lastSelectedEntry = _entries.GetSelectedEntries().Last();
                 if (lastSelectedEntry.Next == null) {
@@ -337,14 +338,14 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 ClearHistoryEntrySelection();
-                lastSelectedEntry.Next.IsSelected = true;
+                entryToSelect = lastSelectedEntry.Next;
             } else {
                 if (VisualComponent == null) {
                     return;
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    _entries.FirstOrDefault().IsSelected = true;
+                    entryToSelect = _entries.FirstOrDefault();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.End.Position);
                     if (entry.Next == null) {
@@ -352,8 +353,16 @@ namespace Microsoft.R.Components.History.Implementation {
                     }
 
                     VisualComponent.TextView.Selection.Clear();
-                    entry.Next.IsSelected = true;
+                    entryToSelect = entry.Next.Next;
                 }
+            }
+
+            entryToSelect.IsSelected = true;
+
+            var snapshotPoint = entryToSelect.Span.GetEndPoint(_historyTextBuffer.CurrentSnapshot);
+            var line = VisualComponent.TextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
+            if (line.VisibilityState != VisibilityState.FullyVisible) {
+                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Bottom);
             }
 
             OnSelectionChanged();
@@ -364,6 +373,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
+            IRHistoryEntry entryToSelect;
             if (HasSelectedEntries) {
                 var firstSelectedEntry = _entries.GetSelectedEntries().First();
                 if (firstSelectedEntry.Previous == null) {
@@ -371,14 +381,14 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 ClearHistoryEntrySelection();
-                firstSelectedEntry.Previous.IsSelected = true;
+                entryToSelect = firstSelectedEntry.Previous;
             } else {
                 if (VisualComponent == null) {
                     return;
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    _entries.LastOrDefault().IsSelected = true;
+                    entryToSelect = _entries.LastOrDefault();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.Start.Position);
                     if (entry.Previous == null) {
@@ -386,10 +396,18 @@ namespace Microsoft.R.Components.History.Implementation {
                     }
 
                     VisualComponent.TextView.Selection.Clear();
-                    entry.Previous.IsSelected = true;
+                    entryToSelect = entry.Previous;
                 }
             }
 
+            entryToSelect.IsSelected = true;
+
+            var snapshotPoint = entryToSelect.Span.GetStartPoint(_historyTextBuffer.CurrentSnapshot);
+            var line = VisualComponent.TextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
+            if (line.VisibilityState != VisibilityState.FullyVisible) {
+                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Top);
+            }
+            
             OnSelectionChanged();
         }
 
