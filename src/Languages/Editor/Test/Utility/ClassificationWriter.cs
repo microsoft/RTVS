@@ -6,17 +6,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.Languages.Editor.Test.Utility
-{
+namespace Microsoft.Languages.Editor.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class ClassificationWriter
-    {
-        public static string WriteClassifications(IList<ClassificationSpan> classifications)
-        {
+    public static class ClassificationWriter {
+        public static string WriteClassifications(IEnumerable<ClassificationSpan> classifications) {
             var sb = new StringBuilder();
 
-            foreach (var c in classifications)
-            {
+            foreach (var c in classifications) {
                 sb.Append('[');
                 sb.Append(c.Span.Start.Position.ToString());
                 sb.Append(':');

@@ -1,0 +1,9 @@
+[0:6] Markdown Monospace
+[8:6] Markdown Italic Text
+[71:8] Markdown Bold Text
+[24:2] keyword
+[27:4] keyword
+[39:2] operator
+[42:3] number
+[50:2] operator
+[53:6] string

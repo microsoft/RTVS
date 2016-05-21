@@ -8,19 +8,21 @@ using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
-namespace Microsoft.R.Editor.Application.Test.Formatting {
+namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class RInMarkdownTest {
-        [Test]
+    public class MarkdownRCompletionTest {
+        //[Test]
         [Category.Interactive]
         public void TypeRBlock() {
             using (var script = new TestScript("```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 script.MoveDown();
-                script.Type("x<-");
+                script.Type("x");
+                script.DoIdle(1000);
+                script.Type("<-");
                 script.DoIdle(200);
                 script.Type("fu");
-                script.DoIdle(300);
+                script.DoIdle(1500);
                 script.Type("{TAB}(){");
                 script.DoIdle(200);
                 script.Type("{ENTER}a");

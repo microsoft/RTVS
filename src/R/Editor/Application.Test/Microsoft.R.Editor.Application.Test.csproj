@@ -140,7 +140,8 @@
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
-    <Compile Include="Markdown\RInMarkdownTest.cs" />
+    <Compile Include="Markdown\RmdClassificationTest.cs" />
+    <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
@@ -159,6 +160,8 @@
       <Link>app.config</Link>
     </None>
     <None Include="Files\01.rd" />
+    <None Include="Files\01.rmd" />
+    <None Include="Files\01.rmd.colors" />
     <None Include="Files\Check.r" />
     <None Include="Files\lsfit-part.r" />
     <None Include="Files\lsfit.r" />
