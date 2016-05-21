@@ -357,7 +357,7 @@ namespace Microsoft.R.Components.History.Implementation {
                     }
 
                     VisualComponent.TextView.Selection.Clear();
-                    entryToSelect = entry.Next.Next;
+                    entryToSelect = entry.Next;
                 }
             }
 
