@@ -26,12 +26,28 @@ namespace Microsoft.R.Debugger {
             _request = request;
 
             var requestInfo = new BP_REQUEST_INFO[1];
-            Marshal.ThrowExceptionForHR(request.GetRequestInfo(enum_BPREQI_FIELDS.BPREQI_BPLOCATION | enum_BPREQI_FIELDS.BPREQI_CONDITION | enum_BPREQI_FIELDS.BPREQI_ALLFIELDS, requestInfo));
+            Marshal.ThrowExceptionForHR(request.GetRequestInfo(enum_BPREQI_FIELDS.BPREQI_ALLFIELDS, requestInfo));
             _requestInfo = requestInfo[0];
         }
 
-        private bool CanBind() {
-            return !IsDeleted && _requestInfo.bpLocation.bpLocationType == (uint)enum_BP_LOCATION_TYPE.BPLT_CODE_FILE_LINE;
+        private string GetBindError() {
+            if (IsDeleted) {
+                return "Breakpoint is deleted.";
+            }
+
+            if (_requestInfo.bpLocation.bpLocationType != (uint)enum_BP_LOCATION_TYPE.BPLT_CODE_FILE_LINE) {
+                return "Function, call stack, and address breakpoints are not supported in R.";
+            }
+
+            if (_requestInfo.bpCondition.styleCondition != (uint)enum_BP_COND_STYLE.BP_COND_NONE) {
+                return "Conditional breakpoints are not supported in R.";
+            }
+
+            if (_requestInfo.bpPassCount.stylePassCount != (uint)enum_BP_PASSCOUNT_STYLE.BP_PASSCOUNT_NONE) {
+                return "Hit count breakpoints are not supported in R.";
+            }
+
+            return null;
         }
 
         public void GetLocation(out string fileName, out int lineNumber, out TEXT_POSITION start, out TEXT_POSITION end) {
@@ -49,7 +65,7 @@ namespace Microsoft.R.Debugger {
         }
 
         int IDebugPendingBreakpoint2.Bind() {
-            if (!CanBind()) {
+            if (GetBindError() != null) {
                 return VSConstants.S_FALSE;
             }
 
@@ -63,8 +79,15 @@ namespace Microsoft.R.Debugger {
         }
 
         int IDebugPendingBreakpoint2.CanBind(out IEnumDebugErrorBreakpoints2 ppErrorEnum) {
-            ppErrorEnum = null;
-            return CanBind() ? VSConstants.S_OK : VSConstants.S_FALSE;
+            string message = GetBindError();
+            if (message == null) {
+                ppErrorEnum = null;
+                return VSConstants.S_OK;
+            }
+
+            var error = new AD7ErrorBreakpoint(this, new AD7ErrorBreakpointResolution(message));
+            ppErrorEnum = new AD7ErrorBreakpointEnum(new IDebugErrorBreakpoint2[] { error });
+            return VSConstants.S_FALSE;
         }
 
         int IDebugPendingBreakpoint2.Delete() {
