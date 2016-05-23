@@ -33,5 +33,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// become unavailable and may return null.
         /// </summary>
         event EventHandler<EventArgs> Closing;
+
+        bool CanFormatLine(int lineNumber);
     }
 }

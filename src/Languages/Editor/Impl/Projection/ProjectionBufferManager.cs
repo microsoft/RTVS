@@ -61,7 +61,9 @@ namespace Microsoft.Languages.Editor.Projection {
             // Update primary (view) buffer projected spans. View buffer spans are all tracking spans:
             // they either come from primary content or secondary content. Inert spans do not participate.
             var viewSpans = CreateViewSpans(mappings);
-            ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
+            if (viewSpans.Count > 0) {
+                ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
+            }
         }
 
         private void MapEverythingToView() {

@@ -67,28 +67,31 @@ namespace Microsoft.R.Editor.Completion {
             IReadOnlyCollection<IRCompletionListProvider> providers =
                 RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion);
 
-            Span applicableSpan = GetApplicableSpan(position, session);
-            ITrackingSpan trackingSpan = session.TextView.TextBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan, SpanTrackingMode.EdgeInclusive);
-            List<RCompletion> completions = new List<RCompletion>();
-            bool sort = true;
+            Span applicableViewSpan = GetApplicableSpan(position, session);
+            var spans = session.TextView.MapDownToR(new SnapshotSpan(session.TextView.TextBuffer.CurrentSnapshot, applicableViewSpan));
+            if (spans.Count > 0) {
+                ITrackingSpan trackingSpan = context.TextBuffer.CurrentSnapshot.CreateTrackingSpan(spans[0], SpanTrackingMode.EdgeInclusive);
+                List<RCompletion> completions = new List<RCompletion>();
+                bool sort = true;
 
-            foreach (IRCompletionListProvider provider in providers) {
-                IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
-                Debug.Assert(entries != null);
+                foreach (IRCompletionListProvider provider in providers) {
+                    IReadOnlyCollection<RCompletion> entries = provider.GetEntries(context);
+                    Debug.Assert(entries != null);
 
-                if (entries.Count > 0) {
-                    completions.AddRange(entries);
+                    if (entries.Count > 0) {
+                        completions.AddRange(entries);
+                    }
+                    sort &= provider.AllowSorting;
                 }
-                sort &= provider.AllowSorting;
-            }
 
-            if (sort) {
-                completions.Sort(RCompletion.Compare);
-                completions.RemoveDuplicates();
-            }
+                if (sort) {
+                    completions.Sort(RCompletion.Compare);
+                    completions.RemoveDuplicates();
+                }
 
-            CompletionSet completionSet = new RCompletionSet(session.TextView.TextBuffer, trackingSpan, completions);
-            completionSets.Add(completionSet);
+                CompletionSet completionSet = new RCompletionSet(session.TextView.TextBuffer, trackingSpan, completions);
+                completionSets.Add(completionSet);
+            }
         }
 
         /// <summary>

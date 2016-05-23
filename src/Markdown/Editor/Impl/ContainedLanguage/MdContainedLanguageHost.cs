@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.EditorHelpers;
@@ -58,6 +59,12 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         public void RemoveContainedCommandTarget(ITextView textView) {
             ContainedCommandTarget = null;
         }
+
+        public bool CanFormatLine(int lineNumber) {
+            var lineText = _document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
+            return !lineText.TrimStart().StartsWithIgnoreCase("```{r");
+        }
+
         #endregion
 
         /// <summary>

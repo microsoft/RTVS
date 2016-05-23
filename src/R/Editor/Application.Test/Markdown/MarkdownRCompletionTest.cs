@@ -12,17 +12,18 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class MarkdownRCompletionTest {
-        //[Test]
+        [Test]
         [Category.Interactive]
         public void TypeRBlock() {
-            using (var script = new TestScript("```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
+            using (var script = new TestScript("```{r}\r\nfunction\r\n```", MdContentTypeDefinition.ContentType)) {
+                script.DoIdle(3000);
                 script.MoveDown();
                 script.Type("x");
                 script.DoIdle(1000);
                 script.Type("<-");
                 script.DoIdle(200);
-                script.Type("fu");
-                script.DoIdle(1500);
+                script.Type("function");
+                script.DoIdle(4000);
                 script.Type("{TAB}(){");
                 script.DoIdle(200);
                 script.Type("{ENTER}a");

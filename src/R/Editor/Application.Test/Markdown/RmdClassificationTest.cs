@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class RmdClassificationTest {
-        private static bool _regenerateBaselineFiles;
+        private static bool _regenerateBaselineFiles = false;
         private readonly EditorAppTestFilesFixture _files;
 
         public RmdClassificationTest(EditorAppTestFilesFixture files) {

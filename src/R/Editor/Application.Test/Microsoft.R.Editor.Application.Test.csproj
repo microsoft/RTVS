@@ -162,7 +162,6 @@
     <None Include="Files\01.rd" />
     <None Include="Files\01.rmd" />
     <None Include="Files\01.rmd.colors" />
-    <None Include="Files\Check.r" />
     <None Include="Files\lsfit-part.r" />
     <None Include="Files\lsfit.r" />
     <None Include="project.json" />
