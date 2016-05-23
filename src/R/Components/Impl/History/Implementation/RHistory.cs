@@ -361,15 +361,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
             }
 
-            entryToSelect.IsSelected = true;
-
-            var snapshotPoint = entryToSelect.Span.GetEndPoint(_historyTextBuffer.CurrentSnapshot);
-            var line = VisualComponent.TextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
-            if (line.VisibilityState != VisibilityState.FullyVisible) {
-                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Bottom);
-            }
-
-            OnSelectionChanged();
+            SelectAndDispalyEntry(entryToSelect, ViewRelativePosition.Bottom);
         }
 
         public void SelectPreviousHistoryEntry() {
@@ -404,14 +396,21 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
             }
 
+            SelectAndDispalyEntry(entryToSelect, ViewRelativePosition.Top);
+        }
+
+        private void SelectAndDispalyEntry(IRHistoryEntry entryToSelect, ViewRelativePosition relativeTo) {
             entryToSelect.IsSelected = true;
 
-            var snapshotPoint = entryToSelect.Span.GetStartPoint(_historyTextBuffer.CurrentSnapshot);
+            var snapshotPoint = relativeTo == ViewRelativePosition.Top 
+                ? entryToSelect.Span.GetStartPoint(_historyTextBuffer.CurrentSnapshot)
+                : entryToSelect.Span.GetEndPoint(_historyTextBuffer.CurrentSnapshot);
+
             var line = VisualComponent.TextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
             if (line.VisibilityState != VisibilityState.FullyVisible) {
-                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, ViewRelativePosition.Top);
+                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, relativeTo);
             }
-            
+
             OnSelectionChanged();
         }
 
