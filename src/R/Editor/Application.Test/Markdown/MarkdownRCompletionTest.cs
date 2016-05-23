@@ -26,14 +26,12 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
                 script.DoIdle(200);
                 script.Type("{TAB}(){");
                 script.DoIdle(200);
-                script.Type("{ENTER}abbr{TAB}");
-                script.DoIdle(200);
-                script.Type("(nam{TAB}");
-
+                script.Type("{ENTER}abbr{TAB}(");
+ 
                 string expected = 
 @"```{r}
 x <- function() {
-    abbreviate(name)
+    abbreviate()
 }
 ```";
                 string actual = script.EditorText;
