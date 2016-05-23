@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             string functionCode = await GetFunctionCode(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
 
-                string tempFile = GetFileName(functionName, title);
+                string tempFile = Path.ChangeExtension(Path.GetTempFileName(), ".r");
                 try {
                     if (File.Exists(tempFile)) {
                         File.Delete(tempFile);
@@ -80,12 +80,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 functionCode = formatter.Format(functionCode);
             }
             return functionCode;
-        }
-
-        internal string GetFileName(string functionName, string title) {
-            string name = (!string.IsNullOrEmpty(title) && title.IndexOfAny(Path.GetInvalidFileNameChars()) < 0) ? title : functionName;
-            string fileName = "~" + name;
-            return Path.Combine(Path.GetTempPath(), Path.ChangeExtension(fileName, ".r"));
         }
     }
 }
