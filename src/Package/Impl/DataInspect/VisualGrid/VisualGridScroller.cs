@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _ui = TaskScheduler.FromCurrentSynchronizationContext();
 
             _owner = owner;
-            Points = owner.Points;
 
             _cancelSource = new CancellationTokenSource();
             _scrollCommands = new BlockingCollection<ScrollCommand>();
@@ -37,35 +36,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _handlerTask = ScrollCommandsHandler(_cancelSource.Token).SilenceException<Exception>();
         }
 
-        public GridPoints Points { get; }
-
-        public VisualGrid ColumnHeader {
-            get {
-                return _owner.ColumnHeader;
-            }
-        }
-
-        public VisualGrid RowHeader {
-            get {
-                return _owner.RowHeader;
-            }
-        }
-
-        public VisualGrid DataGrid {
-            get {
-                return _owner.Data;
-            }
-        }
-
-        public IGridProvider<string> DataProvider {
-            get {
-                return _owner.DataProvider;
-            }
-        }
-
-        internal void StopScroller() {
-            _cancelSource.Cancel();
-        }
+        public GridPoints Points => _owner.Points;
+        public VisualGrid ColumnHeader => _owner.ColumnHeader;
+        public VisualGrid RowHeader => _owner.RowHeader;
+        public VisualGrid DataGrid => _owner.Data;
+        public IGridProvider<string> DataProvider => _owner.DataProvider;
+        internal void StopScroller() => _cancelSource.Cancel();
 
         internal void EnqueueCommand(ScrollType code, double param) {
             _scrollCommands.Add(new ScrollCommand(code, param));
@@ -189,11 +165,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             if (drawVisual) {
-                await DrawVisualsAsync(refresh, suppress, token);
+                await DrawVisualsAsync(refresh, suppress, token, new List<string>() { "mpg" });
             }
         }
 
-        private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
+        private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token, IEnumerable<string> sortOrder) {
             Rect visualViewport = new Rect(
                     Points.HorizontalOffset,
                     Points.VerticalOffset,
@@ -208,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // pull data from provider
             try {
-                var data = await DataProvider.GetAsync(newViewport);
+                var data = await DataProvider.GetAsync(newViewport, sortOrder);
                 if (!data.Grid.Range.Contains(newViewport)
                     || !data.ColumnHeader.Range.Contains(newViewport.Columns)
                     || !data.RowHeader.Range.Contains(newViewport.Rows)) {
@@ -221,8 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     token,
                     TaskCreationOptions.None,
                     _ui);
-            }
-            catch(OperationCanceledException) { }
+            } catch (OperationCanceledException) { }
         }
 
         private void DrawVisuals(

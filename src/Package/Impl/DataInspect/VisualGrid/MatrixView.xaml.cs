@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
-    /// a fast matrix view usercontrol for two dimensional data
+    /// Matrix view user control for two dimensional data
     /// Internally Visual is used directly for performance
     /// </summary>
     public partial class MatrixView : UserControl {

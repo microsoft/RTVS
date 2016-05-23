@@ -13,7 +13,7 @@ grid.format <- function(x) {
   sapply(format(x, trim = TRUE, justify = "none"), grid.trim);
 }
 
-grid.data <- function(x, rows, cols) {
+grid.data <- function(x, rows, cols, sortOrder, descending = FALSE) {
   d <- dim(x);
   if (missing(rows)) {
     rows <- 1:d[[1]];
@@ -42,7 +42,12 @@ grid.data <- function(x, rows, cols) {
     data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
   } else {
     # data frames
-    x.df <- as.data.frame(x)[rows, cols];
+    if(missing(sortOrder)) {
+      x.df <- as.data.frame(x)[rows, cols];
+    } else {
+      selector <- x[sortOrder[1]]
+      x.df <- as.data.frame(x)[order(selector, decreasing = descending),][rows, cols];
+    }
     data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);

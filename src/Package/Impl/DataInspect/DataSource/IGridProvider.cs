@@ -28,6 +28,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         int ColumnCount { get; }
 
-        Task<IGridData<TData>> GetAsync(GridRange range);
+        /// <summary>
+        /// Fetches range or tabular data
+        /// </summary>
+        /// <param name="range">Range to fetch</param>
+        /// <param name="sortOrder">Sequence of fields to sort by (in order)</param>
+        /// <param name="decreasing">Ascending (increasing, default) or descending order</param>
+        /// <returns></returns>
+        Task<IGridData<TData>> GetAsync(GridRange range, IEnumerable<string> sortOrder = null, bool decreasing = false);
     }
 }

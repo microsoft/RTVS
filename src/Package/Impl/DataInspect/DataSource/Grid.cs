@@ -30,19 +30,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             Range = range;
-
             _list = list;
         }
 
-        public T this[int rowIndex, int columnIndex]
-        {
-            get
-            {
+        public T this[int rowIndex, int columnIndex] {
+            get {
                 return _list[ListIndex(rowIndex, columnIndex)];
             }
-
-            set
-            {
+            set {
                 _list[ListIndex(rowIndex, columnIndex)] = value;
             }
         }
@@ -81,7 +76,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get {
                 return _getItemFunc(rowIndex, columnIndex);
             }
-
             set {
                 _setItemFunc(rowIndex, columnIndex, value);
             }
@@ -127,7 +121,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public GridByList(GridRange range, List<List<T>> data) {
             Range = range;
-
             _data = data;
         }
         public GridRange Range { get; }
@@ -136,7 +129,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             get {
                 return _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start];
             }
-
             set {
                 _data[columnIndex - Range.Columns.Start][rowIndex - Range.Rows.Start] = value;
             }

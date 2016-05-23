@@ -118,6 +118,8 @@
     <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollDirection.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollType.cs" />
+    <Compile Include="DataInspect\VisualGrid\HeaderTextVisual.cs" />
+    <Compile Include="DataInspect\VisualGrid\ColumnSortOrder.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />
