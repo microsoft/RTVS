@@ -15,6 +15,8 @@ namespace Microsoft.Markdown.Editor.Commands {
     /// Main R editor command controller
     /// </summary>
     public class MdMainController : ViewController {
+        private BraceCompletionWorkaround223902 _workaround;
+
         public MdMainController(ITextView textView, ITextBuffer textBuffer)
             : base(textView, textBuffer) {
             ServiceManager.AddService(this, textView);
@@ -57,13 +59,17 @@ namespace Microsoft.Markdown.Editor.Commands {
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             var containedCommandTarget = GetContainedCommandTarget();
             if (containedCommandTarget != null) {
-                using (new BraceCompletionWorkaround223902(TextView)) {
-                    CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
-                    if (result.WasExecuted) {
-                        return result;
-                    }
+                if (_workaround == null) {
+                    _workaround = new BraceCompletionWorkaround223902(TextView);
+                }
+                CommandResult result = containedCommandTarget.Invoke(group, id, inputArg, ref outputArg);
+                if (result.WasExecuted) {
+                    return result;
                 }
             }
+            _workaround?.Dispose();
+            _workaround = null;
+
             return base.Invoke(group, id, inputArg, ref outputArg);
         }
 

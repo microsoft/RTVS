@@ -28,19 +28,16 @@ namespace Microsoft.R.Components.Extensions {
             return null;
         }
 
-        public static SnapshotPoint? MapUpToBuffer(this ITextView textView, int position, ITextBuffer buffer) {
+        public static SnapshotPoint? MapUpToView(this ITextView textView, SnapshotPoint position) {
             if (textView.BufferGraph == null) {
                 // Unit test case
-                return new SnapshotPoint(buffer.CurrentSnapshot, position);
+                return position;
             }
             return textView.BufferGraph.MapUpToBuffer(
-                 new SnapshotPoint(
-                     buffer.CurrentSnapshot,
-                     position
-                 ),
-                 PointTrackingMode.Positive,
-                 PositionAffinity.Successor,
-                 textView.TextBuffer
+                position,
+                PointTrackingMode.Positive,
+                PositionAffinity.Successor,
+                textView.TextBuffer
              );
         }
     }

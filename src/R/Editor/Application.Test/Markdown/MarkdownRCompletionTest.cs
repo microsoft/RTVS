@@ -15,24 +15,25 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
         [Test]
         [Category.Interactive]
         public void TypeRBlock() {
-            using (var script = new TestScript("```{r}\r\nfunction\r\n```", MdContentTypeDefinition.ContentType)) {
-                script.DoIdle(3000);
-                script.MoveDown();
+            using (var script = new TestScript("", MdContentTypeDefinition.ContentType)) {
+                script.Type("```{r}{ENTER}{ENTER}```");
+                script.MoveUp();
                 script.Type("x");
-                script.DoIdle(1000);
+                script.DoIdle(200);
                 script.Type("<-");
                 script.DoIdle(200);
-                script.Type("function");
-                script.DoIdle(4000);
+                script.Type("funct");
+                script.DoIdle(200);
                 script.Type("{TAB}(){");
                 script.DoIdle(200);
-                script.Type("{ENTER}a");
+                script.Type("{ENTER}abbr{TAB}");
+                script.DoIdle(200);
+                script.Type("(nam{TAB}");
 
                 string expected = 
-@"
-```{r}
+@"```{r}
 x <- function() {
-    a
+    abbreviate(name)
 }
 ```";
                 string actual = script.EditorText;
