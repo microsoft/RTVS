@@ -57,6 +57,13 @@ namespace Microsoft.R.Editor.Completion {
             }
         }
 
+        /// <summary>
+        /// Populates R completion list for a given position
+        /// </summary>
+        /// <param name="position">Position in R text buffer</param>
+        /// <param name="session">Completion session</param>
+        /// <param name="completionSets">Completion sets to add to</param>
+        /// <param name="ast">Document abstract syntax tree</param>
         internal void PopulateCompletionList(int position, ICompletionSession session, IList<CompletionSet> completionSets, AstRoot ast) {
             RCompletionContext context = new RCompletionContext(session, _textBuffer, ast, position);
 
@@ -67,10 +74,10 @@ namespace Microsoft.R.Editor.Completion {
             IReadOnlyCollection<IRCompletionListProvider> providers =
                 RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion);
 
-            Span applicableViewSpan = GetApplicableSpan(position, session);
-            var spans = session.TextView.MapDownToR(new SnapshotSpan(session.TextView.TextBuffer.CurrentSnapshot, applicableViewSpan));
-            if (spans.Count > 0) {
-                ITrackingSpan trackingSpan = context.TextBuffer.CurrentSnapshot.CreateTrackingSpan(spans[0], SpanTrackingMode.EdgeInclusive);
+            // Position is in R as is the applicable spa, so no need to map down
+            Span? applicableSpan = GetApplicableSpan(position, session);
+            if (applicableSpan.HasValue) {
+                ITrackingSpan trackingSpan = context.TextBuffer.CurrentSnapshot.CreateTrackingSpan(applicableSpan.Value, SpanTrackingMode.EdgeInclusive);
                 List<RCompletion> completions = new List<RCompletion>();
                 bool sort = true;
 
@@ -101,10 +108,14 @@ namespace Microsoft.R.Editor.Completion {
         /// tracking span as user types and filter completion session
         /// based on the data inside the tracking span.
         /// </summary>
-        private Span GetApplicableSpan(int position, ICompletionSession session) {
+        private Span? GetApplicableSpan(int position, ICompletionSession session) {
             var selectedSpans = session.TextView.Selection.SelectedSpans;
             if (selectedSpans.Count == 1 && selectedSpans[0].Span.Length > 0) {
-                return selectedSpans[0].Span;
+                var spans = session.TextView.MapDownToR(selectedSpans[0]);
+                if (spans.Count > 0) {
+                    return spans[0].Span;
+                }
+                return null;
             }
 
             ITextSnapshot snapshot = _textBuffer.CurrentSnapshot;
