@@ -31,6 +31,8 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AD7ErrorBreakpointResolution.cs" />
+    <Compile Include="AD7ErrorBreakpoint.cs" />
     <Compile Include="AD7BoundBreakpoint.cs" />
     <Compile Include="AD7BreakpointResolution.cs" />
     <Compile Include="AD7CustomViewer.cs" />
