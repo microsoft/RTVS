@@ -4,7 +4,12 @@
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.ProjectSystem;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem.Properties;
+#endif
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package {

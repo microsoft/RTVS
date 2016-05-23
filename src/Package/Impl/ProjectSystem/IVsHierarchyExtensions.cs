@@ -3,7 +3,12 @@
 
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem.Properties;
+#endif
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 

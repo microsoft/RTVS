@@ -5,7 +5,9 @@ using System;
 using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.VisualStudio.ProjectSystem;
+#if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
