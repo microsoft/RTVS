@@ -18,12 +18,9 @@ namespace Microsoft.Markdown.Editor.Utility {
         /// http://rmarkdown.rstudio.com/developer_parameterized_reports.html#accessing_from_r
         /// </remarks>
         public static string GetRContentFromMarkdownCodeBlock(string content) {
-            while (true) {
-                // Locate start of the block
-                var start = content.IndexOfIgnoreCase("{r");
-                if (start < 0) {
-                    break;
-                }
+            // Locate start of the block
+            var start = content.IndexOfIgnoreCase("{r");
+            if (start >= 0) {
                 // Locate the closing curly brace
                 var bc = new BraceCounter<char>('{', '}');
                 var end = start;
@@ -33,22 +30,21 @@ namespace Microsoft.Markdown.Editor.Utility {
                     bc.CountBrace(content[end]);
                 }
                 // Remove {r ... }
-                if (end >= content.Length || end <= start) {
-                    break;
+                if (end < content.Length && end > start) {
+                    content = content.Remove(start, end - start + 1);
+                    // Remove parameter lines like params$x as well
+                    var lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
+                    var sb = new StringBuilder();
+                    for (int i = 0; i < lines.Length; i++) {
+                        var index = lines[i].IndexOfOrdinal("params$");
+                        if (index < 0) {
+                            sb.Append(lines[i]);
+                            sb.Append(Environment.NewLine);
+                        }
+                    }
+                    content = sb.ToString();
                 }
-                content = content.Remove(start, end - start + 1);
             }
-            // Remove parameter lines like params$x as well
-            var lines = content.Split(CharExtensions.LineBreakChars, StringSplitOptions.RemoveEmptyEntries);
-            var sb = new StringBuilder();
-            for (int i = 0; i < lines.Length; i++) {
-                var index = lines[i].IndexOfOrdinal("params$");
-                if (index < 0) {
-                    sb.Append(lines[i]);
-                    sb.Append(Environment.NewLine);
-                }
-            }
-            content = sb.ToString();
             return content;
         }
     }

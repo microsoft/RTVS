@@ -3,6 +3,7 @@
 
 using System.Linq;
 using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
@@ -13,7 +14,7 @@ namespace Microsoft.Languages.Editor.Extensions {
         /// Given text view buffer and the content type, locates document 
         /// in the underlying  text buffer graph.
         /// </summary>
-        public static T FindInProjectedBuffers<T>(ITextBuffer viewBuffer, string contentType) where T: class {
+        public static T FindInProjectedBuffers<T>(ITextBuffer viewBuffer, string contentType) where T: class, IEditorDocument {
             if (viewBuffer.ContentType.IsOfType(contentType)) {
                 return ServiceManager.GetService<T>(viewBuffer);
             }
@@ -35,7 +36,7 @@ namespace Microsoft.Languages.Editor.Extensions {
             return document;
         }
 
-        public static T TryFromTextBuffer<T>(ITextBuffer textBuffer, string contentType) where T: class {
+        public static T TryFromTextBuffer<T>(ITextBuffer textBuffer, string contentType) where T: class, IEditorDocument {
             var document = ServiceManager.GetService<T>(textBuffer);
             if (document == null) {
                 document = FindInProjectedBuffers<T>(textBuffer, contentType);

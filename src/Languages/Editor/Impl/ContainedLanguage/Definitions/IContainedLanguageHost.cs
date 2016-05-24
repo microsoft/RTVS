@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.R.Components.Controller;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.ContainedLanguage {
@@ -34,6 +35,13 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// </summary>
         event EventHandler<EventArgs> Closing;
 
-        bool CanFormatLine(int lineNumber);
+        /// <summary>
+        /// Determines if secondary language can format given line.
+        /// </summary>
+        /// <param name="textView">Text view</param>
+        /// <param name="containedLanguageBuffer">Contained language buffer</param>
+        /// <param name="lineNumber">Line number in the contained language buffer</param>
+        /// <returns></returns>
+        bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber);
     }
 }

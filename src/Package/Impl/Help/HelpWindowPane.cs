@@ -72,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 if (!string.IsNullOrWhiteSpace(searchString)) {
                     var session = _workflowProvider.GetOrCreate().RSession;
                     using (var inter = await session.BeginInteractionAsync()) {
-                        await inter.RespondAsync("?" + searchString + Environment.NewLine);
+                        await inter.RespondAsync("?" + searchString.ToRName() + Environment.NewLine);
                     }
                 }
             }

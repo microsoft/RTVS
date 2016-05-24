@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Formatting {
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
             var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer);
-            if(host != null && !host.CanFormatLine(textView.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+            if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
 

@@ -75,12 +75,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
-                if (CurrentWindow != null) {
-                    CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
-                }
-
+                CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
                 if (Session.IsHostRunning) {
-                    CurrentWindow?.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
+                    CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();
                 }
 
@@ -88,7 +85,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     return ExecutionResult.Success;
                 }
 
-                CurrentWindow?.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
+                CurrentWindow.WriteError(Resources.MicrosoftRHostStarting + Environment.NewLine);
                 return await InitializeAsync();
             } catch (Exception ex) {
                 Trace.Fail($"Exception in RInteractiveEvaluator.ResetAsync\n{ex}");
@@ -135,7 +132,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                         using (var request = await Session.BeginInteractionAsync()) {
                             if (line.Length >= request.MaxLength) {
-                                CurrentWindow?.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
                                 return ExecutionResult.Failure;
                             }
 

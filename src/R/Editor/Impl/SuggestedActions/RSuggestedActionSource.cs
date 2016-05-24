@@ -89,10 +89,14 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            int caretPosition = _textView.Caret.Position.BufferPosition;
-            foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
-                if (actionProvider.HasSuggestedActions(_textView, _textBuffer, caretPosition)) {
-                    return Task.FromResult(true);
+            if (!_textView.Caret.InVirtualSpace) {
+                var rPosition = _textView.MapDownToR(_textView.Caret.Position.BufferPosition);
+                if (rPosition.HasValue) {
+                    foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
+                        if (actionProvider.HasSuggestedActions(_textView, _textBuffer, rPosition.Value.Position)) {
+                            return Task.FromResult(true);
+                        }
+                    }
                 }
             }
             return Task.FromResult(false);

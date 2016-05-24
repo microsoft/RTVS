@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
@@ -60,9 +61,14 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             ContainedCommandTarget = null;
         }
 
-        public bool CanFormatLine(int lineNumber) {
-            var lineText = _document.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber).GetText();
-            return !lineText.TrimStart().StartsWithIgnoreCase("```{r");
+        public bool CanFormatLine(ITextView textView, ITextBuffer containedLanguageBuffer, int lineNumber) {
+            var line = containedLanguageBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber);
+            var viewPoint = textView.MapUpToView(line.Start);
+            if (viewPoint.HasValue) {
+                var lineText = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPoint.Value).GetText();
+                return !lineText.TrimStart().StartsWithIgnoreCase("```{r");
+            }
+            return false;
         }
 
         #endregion

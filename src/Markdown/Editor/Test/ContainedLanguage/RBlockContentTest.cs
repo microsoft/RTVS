@@ -18,6 +18,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [InlineData("{r x=1,\ny=2}\nx <- 1\n", "x <- 1")]
         [InlineData("{r x=function() {\n}}\nx <- 1\n", "x <- 1")]
         [InlineData("{r}\nparams$a = 3\nx <- 1\n", "x <- 1")]
+        [InlineData("{r}\nparams$a = 3\n{r}\n", "{r}")]
+        [InlineData("{r}\n{r}\n", "{r}")]
         public void RCode(string markdown, string rCode) {
             MarkdownUtility.GetRContentFromMarkdownCodeBlock(markdown).TrimEnd().Should().Be(rCode);
         }
