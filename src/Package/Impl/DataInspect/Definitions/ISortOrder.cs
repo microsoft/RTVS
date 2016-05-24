@@ -2,8 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public interface ISortOrder {
+    /// <summary>
+    /// Describes sorting set in details grid
+    /// </summary>
+    internal interface ISortOrder {
+        /// <summary>
+        /// No sorting is specified
+        /// </summary>
         bool IsEmpty { get; }
+
+        /// <summary>
+        /// Returns expression to evaluate in R when ordering the data frame
+        /// </summary>
         string GetSortExpression();
     }
 }

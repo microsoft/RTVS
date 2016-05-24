@@ -223,15 +223,18 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e) {
             if (Header) {
                 var pt = e.GetPosition(this);
-                for (int i = 0; i < VisualChildrenCount; i++) {
-                    var v = GetVisualChild(i) as HeaderTextVisual;
+                foreach (var viz in _visualChildren) {
+                    var v = viz as HeaderTextVisual;
                     if (v != null) {
                         Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
                         if (rc.Contains(pt)) {
+                            // Order: None -> Ascending -> Descending -> Ascending -> Descending -> ...
                             v.ToggleSortOrder();
                             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+                                // Shift+Click adds column to the sorting set.
                                 _sortOrder.Add(v);
                             } else {
+                                // Clear all column sorts except the one that was clicked on.
                                 ResetSortToPrimary(v);
                                 _sortOrder.ResetTo(v);
                              }
