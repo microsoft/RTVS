@@ -20,8 +20,8 @@ namespace Microsoft.R.Components.History.Implementation {
         public IReadOnlyList<IRHistoryEntry> GetEntries() => new List<IRHistoryEntry>(_entries);
         public IReadOnlyList<IRHistoryEntry> GetSelectedEntries() => new List<IRHistoryEntry>(_selectedEntries);
         public IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate) => _entries.First(predicate);
-        public IRHistoryEntry FirstOrDefault() => _entries.FirstOrDefault();
-        public IRHistoryEntry LastOrDefault() => _entries.LastOrDefault();
+        public IRHistoryEntry First() => _entries.First();
+        public IRHistoryEntry Last() => _entries.Last();
         public bool HasEntries => _entries.Count > 0;
         public bool HasSelectedEntries => _selectedEntries.Count > 0;
 

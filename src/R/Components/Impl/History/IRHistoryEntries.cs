@@ -10,8 +10,8 @@ namespace Microsoft.R.Components.History {
         IReadOnlyList<IRHistoryEntry> GetEntries();
         IReadOnlyList<IRHistoryEntry> GetSelectedEntries();
         IRHistoryEntry Find(Func<IRHistoryEntry, bool> predicate);
-        IRHistoryEntry FirstOrDefault();
-        IRHistoryEntry LastOrDefault();
+        IRHistoryEntry First();
+        IRHistoryEntry Last();
         bool IsMultiline { get; }
         bool HasEntries { get; }
         bool HasSelectedEntries { get; }
