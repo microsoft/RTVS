@@ -36,7 +36,7 @@ namespace Microsoft.Languages.Editor.Extensions {
             return document;
         }
 
-        public static T TryFromTextBuffer<T>(ITextBuffer textBuffer, string contentType) where T: class {
+        public static T TryFromTextBuffer<T>(ITextBuffer textBuffer, string contentType) where T: class, IEditorDocument {
             var document = ServiceManager.GetService<T>(textBuffer);
             if (document == null) {
                 document = FindInProjectedBuffers<T>(textBuffer, contentType);
