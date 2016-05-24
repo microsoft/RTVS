@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    public class TestCase : XunitTestCase {
+    internal class TestCase : XunitTestCase {
         public ThreadType ThreadType { get; private set; }
 
         public TestCase(IMessageSink diagnosticMessageSink, TestMethodDisplay defaultMethodDisplay, ITestMethod testMethod, TestParameters parameters, object[] testMethodArguments = null) 
@@ -78,7 +78,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected virtual XunitTestCaseRunner CreateTestCaseRunner(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
-            => new XunitTestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
+            => new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
         private static object[] InjectTestMethodFixture(object[] constructorArguments, int testInformationFixtureIndex, TestMethodFixture testMethodFixture) {
             var constructorArgumentsCopy = new object[constructorArguments.Length];

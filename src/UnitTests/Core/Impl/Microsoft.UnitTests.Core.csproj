@@ -86,6 +86,7 @@
     <Compile Include="XUnit\AssemblyMefCatalogFixture.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
     <Compile Include="XUnit\TestCase.cs" />
+    <Compile Include="XUnit\TestCaseRunner.cs" />
     <Compile Include="XUnit\TestDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesAttribute.cs" />
     <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
@@ -95,8 +96,10 @@
     <Compile Include="XUnit\TestFrameworkExecutor.cs" />
     <Compile Include="XUnit\TestFrameworkOverrideAttribute.cs" />
     <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />
+    <Compile Include="XUnit\TestInvoker.cs" />
     <Compile Include="XUnit\TestMethodFixture.cs" />
     <Compile Include="XUnit\TestParameters.cs" />
+    <Compile Include="XUnit\TestRunner.cs" />
     <Compile Include="XUnit\TestTraceListener.cs" />
     <Compile Include="XUnit\ThreadType.cs" />
     <Compile Include="XUnit\TraceFailException.cs" />
