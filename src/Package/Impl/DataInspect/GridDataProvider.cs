@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
@@ -11,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// grid data provider to control
     /// </summary>
-    internal class GridDataProvider : IGridProvider<string> {
+    internal sealed class GridDataProvider : IGridProvider<string> {
         private readonly VariableViewModel _evaluation;
 
         public GridDataProvider(VariableViewModel evaluation) {
@@ -25,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public int RowCount { get; }
 
-        public Task<IGridData<string>> GetAsync(GridRange gridRange, IEnumerable<string> sortOrder = null, bool decreasing = false) {
+        public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null) {
             var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);
             if (t == null) {
                 // May happen when R host is not running

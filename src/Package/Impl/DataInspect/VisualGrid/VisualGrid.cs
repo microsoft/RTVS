@@ -14,9 +14,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// A control that arranges Visual in grid
     /// </summary>
-    internal class VisualGrid : FrameworkElement {
+    internal sealed class VisualGrid : FrameworkElement {
         private readonly GridLineVisual _gridLine;
         private readonly VisualCollection _visualChildren;
+        private readonly SortOrder _sortOrder = new SortOrder();
         private GridRange _dataViewport;
         private Grid<TextVisual> _visualGrid;
 
@@ -38,9 +39,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool Header { get; set; }
 
         /// <summary>
-        /// If sorting is enabled, defines sort direction
+        /// Fires when sorting order changes
         /// </summary>
-        public ListSortDirection SortDirection { get; set; }
+        public event EventHandler SortOrderChanged;
 
         public ScrollDirection ScrollDirection { get; set; }
 
@@ -99,8 +100,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Brush Foreground { get; set; } = Brushes.Black;
         public Brush Background { get; set; } = Brushes.Transparent;
 
-        internal void MeasurePoints(IPoints points, GridRange newViewport, IGrid<string> data, bool refresh) {
-            CreateGrid(newViewport, data, refresh);
+        public void Clear() => _visualChildren.Clear();
+
+        public ISortOrder SortOrder => _sortOrder;
+
+        internal void MeasurePoints(IPoints points, GridRange newViewport, IGrid<string> data, GridUpdateType updateType) {
+            CreateGrid(newViewport, data, updateType);
             _visualChildren.Clear();
 
             foreach (int c in newViewport.Columns.GetEnumerable()) {
@@ -118,41 +123,43 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _dataViewport = newViewport;
         }
 
-        private void CreateGrid(GridRange newViewport, IGrid<string> data, bool refresh) {
+        private void CreateGrid(GridRange newViewport, IGrid<string> data, GridUpdateType updateType) {
             var orgGrid = _visualGrid;
             if (Header) {
                 _visualGrid = new Grid<TextVisual>(
                         newViewport,
                         (r, c) => {
-                            if (!refresh && _dataViewport.Contains(r, c)) {
+                            if (updateType == GridUpdateType.Sort) {
+                                return orgGrid[r, c];
+                            }
+                            if (updateType != GridUpdateType.Refresh && _dataViewport.Contains(r, c)) {
                                 return orgGrid[r, c];
                             }
                             var visual = new HeaderTextVisual();
-                            visual.Row = r;
-                            visual.Column = c;
-                            visual.Text = data[r, c];
-                            visual.Typeface = Typeface;
-                            visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
-                            visual.Foreground = Foreground;
+                            InitVisual(r, c, data, visual);
                             return visual;
                         });
             } else {
                 _visualGrid = new Grid<TextVisual>(
                     newViewport,
                     (r, c) => {
-                        if (!refresh && _dataViewport.Contains(r, c)) {
+                        if (updateType != GridUpdateType.Refresh && _dataViewport.Contains(r, c)) {
                             return orgGrid[r, c];
                         }
                         var visual = new TextVisual();
-                        visual.Row = r;
-                        visual.Column = c;
-                        visual.Text = data[r, c];
-                        visual.Typeface = Typeface;
-                        visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
-                        visual.Foreground = Foreground;
+                        InitVisual(r, c, data, visual);
                         return visual;
                     });
             }
+        }
+
+        private void InitVisual(int r, int c, IGrid<string> data, TextVisual visual) {
+            visual.Row = r;
+            visual.Column = c;
+            visual.Text = data[r, c];
+            visual.Typeface = Typeface;
+            visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
+            visual.Foreground = Foreground;
         }
 
         private bool alignRight = true;
@@ -196,8 +203,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
         }
 
-        public void Clear() => _visualChildren.Clear();
-
         protected override int VisualChildrenCount {
             get {
                 if (_visualChildren.Count == 0) return 0;
@@ -224,6 +229,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
                         if (rc.Contains(pt)) {
                             v.ToggleSortOrder();
+                            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+                                _sortOrder.Add(v);
+                            } else {
+                                ResetSortToPrimary(v);
+                                _sortOrder.ResetTo(v);
+                             }
+                            SortOrderChanged?.Invoke(this, EventArgs.Empty);
                             break;
                         }
                     }
@@ -231,6 +243,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             // Find out which visual is it
             base.OnPreviewMouseDown(e);
+        }
+
+        private void ResetSortToPrimary(HeaderTextVisual primary) {
+            foreach (var viz in _visualChildren) {
+                var v = viz as HeaderTextVisual;
+                if (v != null && v != primary) {
+                    v.SortOrder = SortOrderType.None;
+                }
+            }
         }
     }
 }

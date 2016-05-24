@@ -80,6 +80,7 @@
     <Compile Include="DataInspect\DefaultHeaderData.cs" />
     <Compile Include="DataInspect\Definitions\IDebugObjectEvaluator.cs" />
     <Compile Include="DataInspect\Definitions\IObjectDetailsViewer.cs" />
+    <Compile Include="DataInspect\Definitions\ISortOrder.cs" />
     <Compile Include="DataInspect\Definitions\ObjectDetailsViewerAggregatorExtensions.cs" />
     <Compile Include="DataInspect\Definitions\IObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Definitions\IREnvironmentProvider.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerAggregator.cs" />
     <Compile Include="DataInspect\Viewers\ObjectDetailsViewerProvider.cs" />
     <Compile Include="DataInspect\Viewers\ViewerBase.cs" />
+    <Compile Include="DataInspect\VisualGrid\SortOrderType.cs" />
     <Compile Include="DataInspect\VisualGrid\GridLineVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\GridPoints.cs" />
     <Compile Include="DataInspect\VisualGrid\Indexer.cs" />
@@ -117,9 +119,10 @@
     <Compile Include="DataInspect\VisualGrid\PointChangedEventArgs.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollCommand.cs" />
     <Compile Include="DataInspect\VisualGrid\ScrollDirection.cs" />
-    <Compile Include="DataInspect\VisualGrid\ScrollType.cs" />
+    <Compile Include="DataInspect\VisualGrid\GridUpdateType.cs" />
     <Compile Include="DataInspect\VisualGrid\HeaderTextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\ColumnSortOrder.cs" />
+    <Compile Include="DataInspect\VisualGrid\SortOrder.cs" />
     <Compile Include="DataInspect\VisualGrid\TextVisual.cs" />
     <Compile Include="DataInspect\VisualGrid\ThumbTrack.cs" />
     <Compile Include="DataInspect\VisualGrid\VisualGrid.cs" />

@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public interface IGridData<TData> {
+    internal interface IGridData<TData> {
         IRange<TData> ColumnHeader { get; }
 
         IRange<TData> RowHeader { get; }
@@ -17,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Two dimensional data provider
     /// </summary>
     /// <typeparam name="TData">data type</typeparam>
-    public interface IGridProvider<TData> {
+    internal interface IGridProvider<TData> {
         /// <summary>
         /// total number of items in row
         /// </summary>
@@ -35,6 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <param name="sortOrder">Sequence of fields to sort by (in order)</param>
         /// <param name="decreasing">Ascending (increasing, default) or descending order</param>
         /// <returns></returns>
-        Task<IGridData<TData>> GetAsync(GridRange range, IEnumerable<string> sortOrder = null, bool decreasing = false);
+        Task<IGridData<TData>> GetAsync(GridRange range, ISortOrder sortOrder = null);
     }
 }

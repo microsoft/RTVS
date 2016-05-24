@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private const char ArrowUp = (char)0x25B4;
         private const char ArrowDown = (char)0x25BE;
 
-        private ColumnSortOrder _sortOrder;
-        public ColumnSortOrder SortOrder {
+        private SortOrderType _sortOrder;
+        public SortOrderType SortOrder {
             get { return _sortOrder; }
             set {
                 _sortOrder = value;
@@ -23,6 +23,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        public string Name {
+            get {
+                return HasArrow(Text) ? Text.Substring(0, Text.Length - 1) : Text;
+            }
+        }
         protected override Size GetRenderSize(FormattedText formattedText, out double offset) {
             var arrowGlyph = new FormattedText(((char)0x25B4).ToString(), CultureInfo.CurrentUICulture,
                                                 FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
@@ -38,15 +43,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void SetArrowDisplay() {
             string text = Text;
             switch (SortOrder) {
-                case ColumnSortOrder.None:
+                case SortOrderType.None:
                     SetArrow('\0');
                     break;
 
-                case ColumnSortOrder.Ascending:
+                case SortOrderType.Ascending:
                     SetArrow(ArrowDown);
                     break;
 
-                case ColumnSortOrder.Descending:
+                case SortOrderType.Descending:
                     SetArrow(ArrowUp);
                     break;
             }
@@ -63,14 +68,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public void ToggleSortOrder() {
             switch (SortOrder) {
-                case ColumnSortOrder.None:
-                    SortOrder = ColumnSortOrder.Ascending;
+                case SortOrderType.None:
+                    SortOrder = SortOrderType.Ascending;
                     break;
-                case ColumnSortOrder.Ascending:
-                    SortOrder = ColumnSortOrder.Descending;
+                case SortOrderType.Ascending:
+                    SortOrder = SortOrderType.Descending;
                     break;
-                case ColumnSortOrder.Descending:
-                    SortOrder = ColumnSortOrder.None;
+                case SortOrderType.Descending:
+                    SortOrder = SortOrderType.Ascending;
                     break;
             }
         }

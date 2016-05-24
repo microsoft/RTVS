@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -13,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// Matrix view user control for two dimensional data
     /// Internally Visual is used directly for performance
     /// </summary>
-    public partial class MatrixView : UserControl {
+    internal partial class MatrixView : UserControl {
         private VisualGridScroller _scroller;
 
         static MatrixView() {
@@ -29,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             InitializeComponent();
         }
 
-        public void Initialize(IGridProvider<string> dataProvider) {
+        internal void Initialize(IGridProvider<string> dataProvider) {
             if (Points != null) {
                 Points.PointChanged -= Points_PointChanged;
             }
@@ -54,7 +53,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public void Refresh() {
-            _scroller?.EnqueueCommand(ScrollType.Refresh, 0);
+            _scroller?.EnqueueCommand(GridUpdateType.Refresh, 0);
+        }
+        public void UpdateSort() {
+            _scroller?.EnqueueCommand(GridUpdateType.Sort, 0);
         }
 
         internal GridPoints Points { get; set; }
@@ -203,21 +205,21 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnKeyDown(KeyEventArgs e) {
             e.Handled = true;
             if (e.Key == Key.Up) {
-                _scroller?.EnqueueCommand(ScrollType.LineUp, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.LineUp, 1);
             } else if (e.Key == Key.Down) {
-                _scroller?.EnqueueCommand(ScrollType.LineDown, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.LineDown, 1);
             } else if (e.Key == Key.Right) {
-                _scroller?.EnqueueCommand(ScrollType.LineRight, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.LineRight, 1);
             } else if (e.Key == Key.Left) {
-                _scroller?.EnqueueCommand(ScrollType.LineLeft, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.LineLeft, 1);
             } else if (e.Key == Key.PageUp) {
-                _scroller?.EnqueueCommand(ScrollType.PageUp, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.PageUp, 1);
             } else if (e.Key == Key.PageDown) {
-                _scroller?.EnqueueCommand(ScrollType.PageDown, 1);
+                _scroller?.EnqueueCommand(GridUpdateType.PageDown, 1);
             } else if (e.Key == Key.Home) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 0.0, ThumbTrack.None);
+                _scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, 0.0, ThumbTrack.None);
             } else if (e.Key == Key.End) {
-                _scroller?.EnqueueCommand(ScrollType.SetVerticalOffset, 1.0, ThumbTrack.None);
+                _scroller?.EnqueueCommand(GridUpdateType.SetVerticalOffset, 1.0, ThumbTrack.None);
             } else {
                 e.Handled = false;
             }
@@ -232,13 +234,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // null if not Initialized yet
             if (_scroller != null) {
-                _scroller.EnqueueCommand(ScrollType.SizeChange, Data.RenderSize);
+                _scroller.EnqueueCommand(GridUpdateType.SizeChange, Data.RenderSize);
             }
         }
 
         protected override void OnMouseWheel(MouseWheelEventArgs e) {
             if (_scroller != null && (e.Delta > 0 || e.Delta < 0)) {
-                _scroller.EnqueueCommand(ScrollType.MouseWheel, e.Delta);
+                _scroller.EnqueueCommand(GridUpdateType.MouseWheel, e.Delta);
                 e.Handled = true;
             }
 
@@ -271,39 +273,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             switch (e.ScrollEventType) {
                 // page up/down
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageUp, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.PageUp, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageDown, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.PageDown, 1);
                     break;
 
                 // line up/down
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineUp, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.LineUp, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineDown, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.LineDown, 1);
                     break;
 
                 // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
 
                 // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.Track);
+                    _scroller.EnqueueCommand(GridUpdateType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.Track);
                     break;
                 case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.End);
+                    _scroller.EnqueueCommand(GridUpdateType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.End);
                     break;
 
                 // home/end (scroll to limit)
                 case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
                 case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetVerticalOffset, ComputeVerticalOffset(e), ThumbTrack.None);
                     break;
 
                 default:
@@ -319,39 +321,39 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             switch (e.ScrollEventType) {
                 // page left/right
                 case ScrollEventType.LargeDecrement:
-                    _scroller.EnqueueCommand(ScrollType.PageLeft, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.PageLeft, 1);
                     break;
                 case ScrollEventType.LargeIncrement:
-                    _scroller.EnqueueCommand(ScrollType.PageRight, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.PageRight, 1);
                     break;
 
                 // line left/right
                 case ScrollEventType.SmallDecrement:
-                    _scroller.EnqueueCommand(ScrollType.LineLeft, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.LineLeft, 1);
                     break;
                 case ScrollEventType.SmallIncrement:
-                    _scroller.EnqueueCommand(ScrollType.LineRight, 1);
+                    _scroller.EnqueueCommand(GridUpdateType.LineRight, 1);
                     break;
 
                 // scroll to here
                 case ScrollEventType.ThumbPosition:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
 
                 // thumb drag
                 case ScrollEventType.ThumbTrack:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.Track);
+                    _scroller.EnqueueCommand(GridUpdateType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.Track);
                     break;
                 case ScrollEventType.EndScroll:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.End);
+                    _scroller.EnqueueCommand(GridUpdateType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.End);
                     break;
 
                 // home/end (scroll to limit)
                 case ScrollEventType.First:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
                 case ScrollEventType.Last:
-                    _scroller.EnqueueCommand(ScrollType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
+                    _scroller.EnqueueCommand(GridUpdateType.SetHorizontalOffset, ComputeHorizontalOffset(e), ThumbTrack.None);
                     break;
 
                 default:
