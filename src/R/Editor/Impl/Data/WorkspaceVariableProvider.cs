@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
@@ -111,9 +112,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     .ToArray();
                         }
                     }
+                } else {
+                    // May be a package object line mtcars$
+                    //var workflowProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+                    //var session = workflowProvider.GetOrCreate().RSession;
+                    //session.DescribeChildrenAsync("NULL", variableName, REvaluationResultProperties.ClassesProperty, )
                 }
-            } catch (OperationCanceledException) {
-            }
+            } catch (OperationCanceledException) { }
             return new VariableInfo[0];
         }
         #endregion
