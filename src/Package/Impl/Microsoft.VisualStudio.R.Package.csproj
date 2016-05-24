@@ -60,6 +60,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
+    <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
@@ -252,7 +253,7 @@
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
     <Compile Include="Repl\Commands\ClearReplCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
-    <Compile Include="Repl\Commands\RexecuteCommand.cs" />
+    <Compile Include="Repl\Commands\RExecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />
     <Compile Include="Repl\Debugger\StepIntoCommand.cs" />

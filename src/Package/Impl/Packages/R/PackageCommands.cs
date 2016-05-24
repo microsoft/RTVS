@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
 using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
-using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Shiny;
 using Microsoft.VisualStudio.R.Package.Repl.Workspace;

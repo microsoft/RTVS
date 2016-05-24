@@ -3,21 +3,30 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.Html.Core.Parser {
+namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Class represents collection of text ranges that have 'sensitive' separator
     /// sequences at the beginning and at the end. For example, HTML comments &lt;!-- -->
-    /// or ASP.NET blocks like &lt;% %>. This collection has additional methods that
-    /// help to detemine if change to a text buffer may have created new or invalidated
-    /// existing comments or external code fragments.
+    /// or ASP.NET blocks like &lt;% %> or R markdown code block like ```{r...code...```. 
+    /// This collection has additional methods that help to detemine if change to the text
+    /// buffer may have created new or invalidated existing comments or external code fragments.
     /// </summary>
-    /// <typeparam name="T">Type that implements ITextRange and supplies separator information via ISensitiveFragmentSeparatorsInfo interface</typeparam>
-    public abstract class SensitiveFragmentCollection<T> : TextRangeCollection<T> where T : ITextRange {
+    /// <typeparam name="T">
+    /// Type that implements ITextRange and supplies separator information via 
+    /// ISensitiveFragmentSeparatorsInfo interface
+    /// </typeparam>
+    public abstract class SensitiveFragmentCollection<T> : 
+        TextRangeCollection<T>, 
+        ISensitiveFragmentSeparatorsInfo 
+        where T : ITextRange {
+
+        public abstract string LeftSeparator { get; }
+        public abstract string RightSeparator { get; }
+
         /// <summary>
-        /// Determines if particular change to the document creates new or changes boundaries
-        /// of one of the existing sensitive fragments (comments, artifacts).
+        /// Determines if particular change to the document creates new or changes 
+        /// boundaries of one of the existing sensitive fragments.
         /// </summary>
         /// <param name="collection">Fragment collection.</param>
         /// <param name="oldText">Document text before the change.</param>
@@ -32,8 +41,9 @@ namespace Microsoft.Html.Core.Parser {
             IReadOnlyList<T> itemsInRange = ItemsInRange(new TextRange(start, oldLength));
 
             // Is crosses item boundaries, it is destructive
-            if (itemsInRange.Count > 1 || (itemsInRange.Count == 1 && (!itemsInRange[0].Contains(start) || !itemsInRange[0].Contains(start + oldLength))))
+            if (itemsInRange.Count > 1 || (itemsInRange.Count == 1 && (!itemsInRange[0].Contains(start) || !itemsInRange[0].Contains(start + oldLength)))) {
                 return true;
+            }
 
             foreach (ISensitiveFragmentSeparatorsInfo curSeparatorInfo in SeparatorInfos) {
                 if (IsDestructiveChangeForSeparator(curSeparatorInfo, itemsInRange, start, oldLength, newLength, oldText, newText)) {
@@ -44,7 +54,11 @@ namespace Microsoft.Html.Core.Parser {
             return false;
         }
 
-        private bool IsDestructiveChangeForSeparator(ISensitiveFragmentSeparatorsInfo separatorInfo, IReadOnlyList<T> itemsInRange, int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText) {
+        protected virtual bool IsDestructiveChangeForSeparator(
+            ISensitiveFragmentSeparatorsInfo separatorInfo, 
+            IReadOnlyList<T> itemsInRange, 
+            int start, int oldLength, int newLength, 
+            ITextProvider oldText, ITextProvider newText) {
             if (separatorInfo == null) {
                 return false;
             }
@@ -55,53 +69,52 @@ namespace Microsoft.Html.Core.Parser {
 
             // Find out if one of the existing fragments contains position 
             // and if change damages fragment start or end separators
-
             string leftSeparator = separatorInfo.LeftSeparator;
             string rightSeparator = separatorInfo.RightSeparator;
 
-            // If no items are affected, change is unsafe only if new region contains left side separators.
+            // If no items are affected, change is unsafe only if new region contains separators.
             if (itemsInRange.Count == 0) {
                 // Simple optimization for whitespace insertion
-                if (oldLength == 0 && String.IsNullOrWhiteSpace(newText.GetText(new TextRange(start, newLength))))
+                if (oldLength == 0 && string.IsNullOrWhiteSpace(newText.GetText(new TextRange(start, newLength)))) {
                     return false;
-
-                int fragmentStart = Math.Max(0, start - leftSeparator.Length + 1);
-                int fragmentEnd;
+                }
 
                 // Take into account that user could have deleted space between existing 
                 // <! and -- or added - to the existing <!- so extend search range accordingly.
-
-                fragmentEnd = Math.Min(newText.Length, start + newLength + leftSeparator.Length - 1);
+                int fragmentStart = Math.Max(0, start - leftSeparator.Length + 1);
+                int fragmentEnd = Math.Min(newText.Length, start + newLength + leftSeparator.Length - 1);
 
                 int fragmentStartPosition = newText.IndexOf(leftSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true);
                 if (fragmentStartPosition >= 0) {
-                    // We could've found the left separator only in the newly inserted text since we extended the range we examined
-                    // by one less than the separator length. Return true, no further checks necessary.
                     return true;
                 }
 
+                fragmentStart = Math.Max(0, start - rightSeparator.Length + 1);
+                fragmentEnd = Math.Min(newText.Length, start + newLength + rightSeparator.Length - 1);
+
+                fragmentStartPosition = newText.IndexOf(rightSeparator, TextRange.FromBounds(fragmentStart, fragmentEnd), true);
+                if (fragmentStartPosition >= 0) {
+                    return true;
+                }
                 return false;
             }
 
             // Is change completely inside an existing item?
             if (itemsInRange.Count == 1 && (itemsInRange[0].Contains(start) && itemsInRange[0].Contains(start + oldLength))) {
                 // Check that change does not affect item left separator
-                if (TextRange.Contains(itemsInRange[0].Start, leftSeparator.Length, start))
+                if (TextRange.Contains(itemsInRange[0].Start, leftSeparator.Length, start)) {
                     return true;
+                }
 
                 // Check that change does not affect item right separator. Note that we should not be using 
                 // TextRange.Intersect since in case oldLength is zero (like when user is typing right before %> or ?>)
                 // TextRange.Intersect will determine that zero-length range intersects with the right separator
                 // which is incorrect. Typing at position 10 does not change separator at position 10. Similarly,
                 // deleting text right before %> or ?> does not make change destructive.
-
-                IHtmlToken htmlToken = itemsInRange[0] as IHtmlToken;
-                if (htmlToken == null || htmlToken.IsWellFormed) {
-                    int rightSeparatorStart = itemsInRange[0].End - rightSeparator.Length;
-                    if (start + oldLength > rightSeparatorStart) {
-                        if (TextRange.Intersect(rightSeparatorStart, rightSeparator.Length, start, oldLength))
-                            return true;
-                    }
+                int rightSeparatorStart = itemsInRange[0].End - rightSeparator.Length;
+                if (start + oldLength > rightSeparatorStart) {
+                    if (TextRange.Intersect(rightSeparatorStart, rightSeparator.Length, start, oldLength))
+                        return true;
                 }
 
                 // Touching left separator is destructive too, like when changing <% to <%@
@@ -109,10 +122,9 @@ namespace Microsoft.Html.Core.Parser {
                 if (itemsInRange[0].Start + leftSeparator.Length == start) {
                     if (oldLength == 0) {
                         string text = newText.GetText(new TextRange(start, newLength));
-                        if (String.IsNullOrWhiteSpace(text))
+                        if (string.IsNullOrWhiteSpace(text))
                             return false;
                     }
-
                     return true;
                 }
 
@@ -132,26 +144,5 @@ namespace Microsoft.Html.Core.Parser {
         }
 
         protected abstract IEnumerable<ISensitiveFragmentSeparatorsInfo> SeparatorInfos { get; }
-
-        public override IReadOnlyList<T> ItemsInRange(ITextRange range) {
-            IReadOnlyList<T> list = base.ItemsInRange(range);
-
-            if (Count > 0) {
-                IHtmlToken lastItem = this[Count - 1] as IHtmlToken;
-                if (lastItem != null && !lastItem.IsWellFormed) {
-                    if (range.Contains(lastItem.End)) {
-                        // Underlying method returs static readonly collection if nothing was found 
-                        // in the range so we need to create a new collection here.
-                        List<T> modifiedList = new List<T>(list.Count + 1);
-                        modifiedList.AddRange(list);
-                        modifiedList.Add(this[Count - 1]);
-
-                        list = modifiedList;
-                    }
-                }
-            }
-
-            return list;
-        }
     }
 }

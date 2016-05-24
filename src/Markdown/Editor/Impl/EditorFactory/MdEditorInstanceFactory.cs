@@ -4,9 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.Markdown.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
 
@@ -18,21 +16,15 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
     /// </summary>
     [Export(typeof(IEditorFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
-    internal class EditorInstanceFactory : IEditorFactory {
-        public IEditorInstance CreateEditorInstance(object textBuffer, IEditorDocumentFactory documentFactory) {
-            if (textBuffer == null)
+    internal class MdEditorInstanceFactory : IEditorFactory {
+        public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory) {
+            if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
-
-            if (documentFactory == null)
+            }
+            if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
-
-            if (!(textBuffer is ITextBuffer))
-                throw new ArgumentException("textBuffer parameter must be a text buffer");
-
-            if (documentFactory == null)
-                documentFactory = new MdDocumentFactory();
-
-            return new EditorInstance(textBuffer as ITextBuffer, documentFactory);
+            }
+            return new MdEditorInstance(textBuffer, documentFactory);
         }
     }
 }

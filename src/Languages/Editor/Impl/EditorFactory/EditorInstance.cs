@@ -2,25 +2,27 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.Markdown.Editor.EditorFactory {
-    internal class EditorInstance : IEditorInstance {
+namespace Microsoft.Languages.Editor.EditorFactory {
+    /// <summary>
+    /// Represents instance of the editor to the host application
+    /// </summary>
+    public abstract class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
         public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
-            if (diskBuffer == null)
+            if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
-
-            if (documentFactory == null)
+            }
+            if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
+            }
 
-             ViewBuffer = diskBuffer;
+            ViewBuffer = DiskBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
 
             ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
@@ -28,17 +30,19 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
 
         #region IEditorInstance
         /// <summary>
-        /// Text buffer containing document data that is 
-        /// to be attached to a text view. 
+        /// Text buffer containing document data that is to be attached to the text view. 
+        /// In languages that support projected language scenarios this is the top level
+        /// projection buffer. In regular scenarios the same as the disk buffer.
         /// </summary>
-        public ITextBuffer ViewBuffer { get; private set; }
+        public ITextBuffer ViewBuffer { get; }
 
         /// <summary>
-        /// Retrieves editor instance command target for a particular view
+        /// Buffer that contains original content as it was retrieved from disk
+        /// or generated in memory. 
         /// </summary>
-        public ICommandTarget GetCommandTarget(ITextView textView) {
-            return MdMainController.FromTextView(textView);
-        }
+        public ITextBuffer DiskBuffer { get; }
+
+        public abstract ICommandTarget GetCommandTarget(ITextView textView);
         #endregion
 
         #region IDisposable

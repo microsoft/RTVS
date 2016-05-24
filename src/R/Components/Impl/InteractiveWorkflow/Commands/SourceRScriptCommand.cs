@@ -24,6 +24,8 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Commands {
                 var status = CommandStatus.Supported;
                 if (_interactiveWorkflow.ActiveWindow == null) {
                     status |= CommandStatus.Invisible;
+                } else if (RContentTypeDefinition.ContentType != _activeTextViewTracker.LastActiveTextView?.TextBuffer?.ContentType?.TypeName) {
+                    status |= CommandStatus.Invisible;
                 } else if (!string.IsNullOrEmpty(GetFilePath())) {
                     status |= CommandStatus.Enabled;
                 }

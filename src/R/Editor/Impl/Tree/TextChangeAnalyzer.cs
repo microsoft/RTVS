@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Tree {
                 change.PendingChanges.TextChangeType |= CheckChangeInsideString(change, out node, out positionType);
                 if (change.PendingChanges.TextChangeType == TextChangeType.Token) {
                     return;
-                } else if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
+                } else if (node != null && change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                     change.PendingChanges.TextChangeType |= CheckWhiteSpaceChange(change, node, positionType);
                     if (change.PendingChanges.TextChangeType == TextChangeType.Trivial) {
                         return;

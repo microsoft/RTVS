@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
-using System.Xml.Serialization;
 using Microsoft.Common.Core.Test.Script;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;

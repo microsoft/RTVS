@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -37,6 +38,13 @@ namespace Microsoft.R.Editor.Formatting {
 
             var document = REditorDocument.FromTextBuffer(textView.TextBuffer);
             var ast = document.EditorTree.AstRoot;
+
+            // Make sure we are not formatting damaging the projected range in R Markdown
+            // which looks like ```{r. 'r' should not separate from {.
+            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer);
+            if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
+                return;
+            }
 
             // We don't want to auto-format inside strings
             if (ast.IsPositionInsideString(rPoint.Value.Position)) {

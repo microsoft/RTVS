@@ -8,36 +8,29 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 
-namespace Microsoft.R.Editor.Classification
-{
+namespace Microsoft.R.Editor.Classification {
     /// <summary>
     /// Implements <see cref="IClassifier"/> and provides classification (colorization) of CoffeeScript items
     /// </summary>
-    internal sealed class RClassifier : TokenBasedClassifier<RTokenType, RToken>
-    {
+    internal sealed class RClassifier : TokenBasedClassifier<RTokenType, RToken> {
         public RClassifier(ITextBuffer textBuffer, IClassificationTypeRegistryService classificationRegistryService) :
-            base(textBuffer, new RTokenizer(), new RClassificationNameProvider())
-        {
+            base(textBuffer, new RTokenizer(), new RClassificationNameProvider()) {
             ClassificationRegistryService = classificationRegistryService;
             ServiceManager.AddService<RClassifier>(this, textBuffer);
         }
 
-        protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens)
-        {
-            if (tokens == null)
-            {
+        protected override void RemoveSensitiveTokens(int position, TextRangeCollection<RToken> tokens) {
+            if (tokens == null) {
                 return;
             }
 
             bool foundSpace = false;
 
-            while (tokens.Count > 0 && !foundSpace)
-            {
+            while (tokens.Count > 0 && !foundSpace) {
                 int count = tokens.Count;
                 var token = tokens[count - 1];
 
-                if ((token.TokenType == RTokenType.Number || token.TokenType == RTokenType.Complex) && token.End + 2 >= position)
-                {
+                if ((token.TokenType == RTokenType.Number || token.TokenType == RTokenType.Complex) && token.End + 2 >= position) {
                     // This handles case when user types 1.23e1. In 1.23e case 'e' is not part 
                     // of the number since 1.23e is not a valid js number. However, 1.23e+1 is 
                     // a valid number. Hence we are considering typing within 2 character of 
@@ -46,10 +39,8 @@ namespace Microsoft.R.Editor.Classification
                     continue;
                 }
 
-                if (count > 1)
-                {
-                    if (token.Start != tokens[count - 2].End)
-                    {
+                if (count > 1) {
+                    if (token.Start != tokens[count - 2].End) {
                         foundSpace = true;
                         break;
                     }

@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Diagnostics;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
@@ -20,14 +20,13 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     public sealed class ExpansionClient : IVsExpansionClient {
         private static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
         private static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
+        private const string _replContentTypeName = "Interactive Content";
 
         private IVsExpansionManager _expansionManager;
         private IVsExpansionSession _expansionSession;
         private IExpansionsCache _cache;
 
         private bool _earlyEndExpansionHappened = false;
-        private string _shortcut = null;
-        private string _title = null;
 
         public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
             TextView = textView;
@@ -52,12 +51,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
             // Get the snippet span
             TextSpan[] pts = new TextSpan[1];
-            ErrorHandler.ThrowOnFailure(_expansionSession.GetSnippetSpan(pts));
+            ErrorHandler.ThrowOnFailure(Session.GetSnippetSpan(pts));
             TextSpan snippetSpan = pts[0];
 
             // Convert text span to stream positions
             int snippetStart, snippetEnd;
-            var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
+            var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>();
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
             ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
 
@@ -67,16 +66,18 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             IVsEnumStreamMarkers enumMarkers;
             if (VSConstants.S_OK == textStream.EnumMarkers(snippetStart, snippetEnd - snippetStart, 0, (uint)(ENUMMARKERFLAGS.EM_ALLTYPES | ENUMMARKERFLAGS.EM_INCLUDEINVISIBLE | ENUMMARKERFLAGS.EM_CONTAINED), out enumMarkers)) {
                 IVsTextStreamMarker curMarker;
-                SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
+                var span = SpanFromViewSpan(new Span(TextView.Caret.Position.BufferPosition, 0));
+                if(span.HasValue) { 
                 while (VSConstants.S_OK == enumMarkers.Next(out curMarker)) {
                     int curMarkerPos;
                     int curMarkerLen;
-                    if (VSConstants.S_OK == curMarker.GetCurrentSpan(out curMarkerPos, out curMarkerLen)) {
-                        if (caretPoint.Position >= curMarkerPos && caretPoint.Position <= curMarkerPos + curMarkerLen) {
-                            int markerType;
-                            if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
-                                if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
-                                    return true;
+                        if (VSConstants.S_OK == curMarker.GetCurrentSpan(out curMarkerPos, out curMarkerLen)) {
+                            if (span.Value.Start >= curMarkerPos && span.Value.Start <= curMarkerPos + curMarkerLen) {
+                                int markerType;
+                                if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
+                                    if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -116,17 +117,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.E_UNEXPECTED;
         }
 
-        public int GoToNextExpansionField() {
-            return _expansionSession.GoToNextExpansionField(0 /* fCommitIfLast - so don't commit */);
-        }
-
-        public int GoToPreviousExpansionField() {
-            return _expansionSession.GoToPreviousExpansionField();
-        }
-
-        public int EndExpansionSession(bool leaveCaretWhereItIs) {
-            return _expansionSession.EndCurrentExpansion(leaveCaretWhereItIs ? 1 : 0);
-        }
+        public int GoToNextExpansionField() => Session.GoToNextExpansionField(0 /* fCommitIfLast - so don't commit */);
+        public int GoToPreviousExpansionField() => Session.GoToPreviousExpansionField();
+        public int EndExpansionSession(bool leaveCaretWhereItIs) => Session.EndCurrentExpansion(leaveCaretWhereItIs ? 1 : 0);
 
         /// <summary>
         /// Inserts a snippet based on a shortcut string.
@@ -147,28 +140,19 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 _earlyEndExpansionHappened = false;
 
                 Span span;
-                _shortcut = TextView.GetItemBeforeCaret(out span, x => true);
-                VsExpansion? exp = _cache.GetExpansion(_shortcut);
+                var shortcut = TextView.GetItemBeforeCaret(out span, x => true);
+                VsExpansion? exp = _cache.GetExpansion(shortcut);
 
-                // Get view span
-                var ts = span.Length > 0 ? TextSpanFromSpan(TextView, span) : TextSpanFromPoint(caretPoint);
-
-                // Map it down to R buffer
-                var start = TextView.MapDownToR(span.Start);
-                var end = TextView.MapDownToR(span.End);
-
-                if (exp.HasValue && start.HasValue && end.HasValue) {
+                var ts = TextSpanFromViewSpan(span);
+                if (exp.HasValue && ts.HasValue) {
                     // Insert into R buffer
-                    ts = TextSpanFromSpan(textBuffer, Span.FromBounds(start.Value, end.Value));
-                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
+                    hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
                     if (_earlyEndExpansionHappened) {
                         // EndExpansion was called before InsertExpansion returned, so set _expansionSession
                         // to null to indicate that there is no active expansion session. This can occur when 
                         // the snippet inserted doesn't have any expansion fields.
                         _expansionSession = null;
                         _earlyEndExpansionHappened = false;
-                        _shortcut = null;
-                        _title = null;
                     }
                     ErrorHandler.ThrowOnFailure(hr);
                     snippetInserted = true;
@@ -178,30 +162,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return hr;
         }
 
-        private static TextSpan TextSpanFromPoint(SnapshotPoint point) {
-            var ts = new TextSpan();
-            ITextSnapshotLine line = point.GetContainingLine();
-            ts.iStartLine = line.LineNumber;
-            ts.iEndLine = line.LineNumber;
-            ts.iStartIndex = point.Position;
-            ts.iEndIndex = point.Position;
-            return ts;
-        }
-
-        private static TextSpan TextSpanFromSpan(ITextView textView, Span span) {
-            return TextSpanFromSpan(textView.TextBuffer, span);
-        }
-
-        private static TextSpan TextSpanFromSpan(ITextBuffer textBuffer, Span span) {
-            var ts = new TextSpan();
-            ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
-            ts.iStartLine = line.LineNumber;
-            ts.iEndLine = line.LineNumber;
-            ts.iStartIndex = span.Start - line.Start;
-            ts.iEndIndex = span.End - line.Start;
-            return ts;
-        }
-
         #region IVsExpansionClient
         public int EndExpansion() {
             if (_expansionSession == null) {
@@ -209,26 +169,17 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             } else {
                 _expansionSession = null;
             }
-            _title = null;
-            _shortcut = null;
-
             return VSConstants.S_OK;
         }
 
-        public int FormatSpan(IVsTextLines pBuffer, TextSpan[] ts) {
+        public int FormatSpan(IVsTextLines vsTextLines, TextSpan[] ts) {
             int hr = VSConstants.S_OK;
             int startPos = -1;
             int endPos = -1;
-            var vsTextLines = TextBuffer.GetBufferAdapter<IVsTextLines>();
             if (ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iStartLine, ts[0].iStartIndex, out startPos)) &&
                 ErrorHandler.Succeeded(vsTextLines.GetPositionOfLineIndex(ts[0].iEndLine, ts[0].iEndIndex, out endPos))) {
-
-                var rStart = TextView.MapDownToR(startPos);
-                var rEnd = TextView.MapDownToR(endPos);
-
-                if (rStart.HasValue && rEnd.HasValue && rStart.Value < rEnd.Value) {
-                    RangeFormatter.FormatRange(TextView, TextBuffer, TextRange.FromBounds(rStart.Value, rEnd.Value), REditorSettings.FormatOptions);
-                }
+                var textBuffer = vsTextLines.ToITextBuffer();
+                RangeFormatter.FormatRange(TextView, textBuffer, TextRange.FromBounds(startPos, endPos), REditorSettings.FormatOptions);
             }
             return hr;
         }
@@ -259,22 +210,20 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         public int OnItemChosen(string pszTitle, string pszPath) {
             int hr = VSConstants.E_FAIL;
             if (!TextView.Caret.InVirtualSpace) {
-                SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
-
-                IVsExpansion expansion = TextBuffer.GetBufferAdapter<IVsExpansion>();
-                _earlyEndExpansionHappened = false;
-                _title = pszTitle;
-                var ts = TextSpanFromPoint(caretPoint);
-
-                hr = expansion.InsertNamedExpansion(pszTitle, pszPath, ts, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
-                if (_earlyEndExpansionHappened) {
-                    // EndExpansion was called before InsertNamedExpansion returned, so set _expansionSession
-                    // to null to indicate that there is no active expansion session. This can occur when 
-                    // the snippet inserted doesn't have any expansion fields.
-                    _expansionSession = null;
+                var span = new Span(TextView.Caret.Position.BufferPosition, 0);
+                var ts = TextSpanFromViewSpan(span);
+                if (ts.HasValue) {
+                    var expansion = GetTargetBuffer().GetBufferAdapter<IVsExpansion>();
                     _earlyEndExpansionHappened = false;
-                    _title = null;
-                    _shortcut = null;
+
+                    hr = expansion.InsertNamedExpansion(pszTitle, pszPath, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
+                    if (_earlyEndExpansionHappened) {
+                        // EndExpansion was called before InsertNamedExpansion returned, so set _expansionSession
+                        // to null to indicate that there is no active expansion session. This can occur when 
+                        // the snippet inserted doesn't have any expansion fields.
+                        _expansionSession = null;
+                        _earlyEndExpansionHappened = false;
+                    }
                 }
             }
             return hr;
@@ -284,5 +233,61 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.S_OK;
         }
         #endregion
+
+        /// <summary>
+        /// Converts Span to [legacy] TextSpan structure that is used in IVs* interfaces
+        /// </summary>
+        private static TextSpan TextSpanFromSpan(ITextBuffer textBuffer, Span span) {
+            var ts = new TextSpan();
+            var startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
+            var endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.End);
+            ts.iStartLine = startLine.LineNumber;
+            ts.iEndLine = endLine.LineNumber;
+            ts.iStartIndex = span.Start - startLine.Start;
+            ts.iEndIndex = span.End - endLine.Start;
+            return ts;
+        }
+
+        private ITextBuffer GetTargetBuffer() {
+            if (IsRepl) {
+                var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
+                return document?.TextBuffer;
+            }
+            return TextView.TextBuffer;
+        }
+
+        private Span? SpanFromViewSpan(Span span) {
+            var textBuffer = GetTargetBuffer();
+            if (IsRepl) {
+                // Map it down to R buffer
+                var start = TextView.MapDownToR(span.Start);
+                var end = TextView.MapDownToR(span.End);
+                if (!start.HasValue || !end.HasValue) {
+                    return null;
+                }
+                return Span.FromBounds(start.Value, end.Value);
+            }
+            return span;
+        }
+
+        /// <summary>
+        /// Converts view span to TextSpan structure in the R buffer.
+        /// TextSpan structure is used in legacy IVs* interfaces
+        /// </summary>
+        private TextSpan? TextSpanFromViewSpan(Span span) {
+            var textBuffer = GetTargetBuffer();
+            if (IsRepl) {
+                // Map it down to R buffer
+                var start = TextView.MapDownToR(span.Start);
+                var end = TextView.MapDownToR(span.End);
+                if (!start.HasValue || !end.HasValue) {
+                    return null;
+                }
+                span = Span.FromBounds(start.Value, end.Value);
+            }
+            return TextSpanFromSpan(textBuffer, span);
+        }
+
+        private bool IsRepl => TextView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
     }
 }

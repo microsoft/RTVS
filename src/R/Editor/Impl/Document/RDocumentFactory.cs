@@ -14,9 +14,9 @@ namespace Microsoft.R.Editor.Document {
     /// </summary>
     [Export(typeof(IEditorDocumentFactory))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    public class DocumentFactory : IEditorDocumentFactory {
+    public class RDocumentFactory : IEditorDocumentFactory {
         public IEditorDocument CreateDocument(IEditorInstance editorInstance) {
-            return new REditorDocument(editorInstance.ViewBuffer);
+            return new REditorDocument(editorInstance.DiskBuffer);
         }
     }
 }

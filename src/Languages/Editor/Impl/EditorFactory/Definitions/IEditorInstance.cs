@@ -12,10 +12,17 @@ namespace Microsoft.Languages.Editor.EditorFactory {
     /// </summary>
     public interface IEditorInstance : IDisposable {
         /// <summary>
-        /// Text buffer containing document data that is 
-        /// to be attached to a text view. 
+        /// Text buffer containing document data that is to be attached to the text view. 
+        /// In languages that support projected language scenarios this is the top level
+        /// projection buffer. In regular scenarios the same as the disk buffer.
         /// </summary>
         ITextBuffer ViewBuffer { get; }
+
+        /// <summary>
+        /// Buffer that contains original content as it was retrieved from disk
+        /// or generated in memory. 
+        /// </summary>
+        ITextBuffer DiskBuffer { get; }
 
         /// <summary>
         /// Retrieves editor instance command target for a particular view

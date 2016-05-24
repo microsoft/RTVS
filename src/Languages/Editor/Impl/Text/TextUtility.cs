@@ -50,7 +50,7 @@ namespace Microsoft.Languages.Editor.Text {
         /// </summary>
         /// <param name="changes">Sorted collection of changes</param>
         /// <returns>Collection of relative changes</returns>
-        public static List<TextChangeEventArgs> ConvertToRelative(TextContentChangedEventArgs changeInfo) {
+        public static IReadOnlyList<TextChangeEventArgs> ConvertToRelative(this TextContentChangedEventArgs changeInfo) {
             IList<ITextChange> changes = changeInfo.Changes;
             var list = new List<TextChangeEventArgs>(changes.Count);
             ITextChange previousChange = null;

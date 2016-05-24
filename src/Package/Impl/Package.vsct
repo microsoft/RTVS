@@ -739,7 +739,7 @@
         </Strings>
       </Button>
 
-        <!-- End Plots flyout -->
+      <!-- End Plots flyout -->
 
       <!-- Data flyout -->
       <Button guid="guidRToolsCmdSet" id="icmdImportDatasetUrl" priority="0x0100" type="Button">
@@ -1373,6 +1373,7 @@
           <ButtonText>MD Context</ButtonText>
         </Strings>
       </Menu>
+
       <!-- Preview flyout -->
       <Menu guid="guidMdToolsCmdSet" id="previewSubMenu" type="Menu" priority="0x100">
         <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
@@ -1385,25 +1386,35 @@
 
     <Groups>
       <!-- MD code editor context menu groups -->
-      <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0200">
+      <Group guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0210">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
 
-      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0210">
+      <Group guid="guidMdToolsCmdSet" id="groupRmdRepl" priority="0x0220">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
-      </Group>
-
-      <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
-        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
       </Group>
 
       <Group guid="guidMdToolsCmdSet" id="groupPublish" priority="0x0300">
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
       <!-- End MD code editor context menu groups -->
+
+      <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
+        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
+      </Group>
     </Groups>
 
     <Buttons>
+      <Button guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Execute"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>E&amp;xecute Current Chunk</ButtonText>
+        </Strings>
+      </Button>
+
       <!-- Preview menu item (in MD/RMD with flyout submenu -->
       <Button guid="guidMdToolsCmdSet" id="cmdidPreview" priority="0x0101" type="Button">
         <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
@@ -1515,7 +1526,11 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
-    <!-- Snippets group -->
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x206">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
+    </CommandPlacement>
+
+      <!-- Snippets group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
@@ -1535,7 +1550,11 @@
     <!-- End R code editor context menu -->
 
     <!-- RMD context menu -->
-    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x100">
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x100">
+      <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSendToRepl" priority="0x110">
       <Parent guid="guidMdToolsCmdSet" id="groupRmdRepl"/>
     </CommandPlacement>
     <!-- End RMD context menu -->
@@ -1668,6 +1687,10 @@
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidRunRChunk" priority="0x0416">
+      <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
+    </CommandPlacement>
+
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdInterruptR" priority="0x0420">
       <Parent guid="guidRToolsCmdSet" id="sessionSubMenuRInteractiveGroup"/>
     </CommandPlacement>
@@ -1768,12 +1791,12 @@
   <KeyBindings>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidRToolsCmdSet" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="REditor" key1="VK_RETURN" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="guidMdEditor" key1="VK_RETURN" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="RmdEditor" key1="VK_RETURN" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSendToRepl" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidRToolsCmdSet" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="REditor" key1="L" mod1="CONTROL" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="guidMdEditor" key1="L" mod1="CONTROL" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="RmdEditor" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="InteractiveWindow" key1="L" mod1="CONTROL" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdClearRepl" editor="SolutionExplorer" key1="L" mod1="CONTROL" />
 
@@ -1851,6 +1874,8 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
+    <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
   </KeyBindings>
 
@@ -1891,7 +1916,8 @@
       <IDSymbol name="cmdidPreviewHtml" value="601" />
       <IDSymbol name="cmdidPreviewPdf" value="602" />
       <IDSymbol name="cmdidPreviewWord" value="603" />
-      <IDSymbol name="cmdidPublish" value="6103" />
+      <IDSymbol name="cmdidPublish" value="610" />
+      <IDSymbol name="cmdidRunRChunk" value="611" />
     </GuidSymbol>
 
     <GuidSymbol name="guidRToolsCmdSet" value="{AD87578C-B324-44DC-A12A-B01A6ED5C6E3}">
@@ -2090,7 +2116,6 @@
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
       <IDSymbol name="dataSubMenuEditGroup" value="0x2341"/>
       <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
-      <IDSymbol name="publishSubMenuGroup" value="0x2350"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>
@@ -2104,12 +2129,10 @@
 
     <!-- Context Guids -->
     <GuidSymbol name="REditor" value="{EE606CC0-077A-4FDE-91C3-24EC012C8389}" />
+    <GuidSymbol name="RmdEditor" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
     <GuidSymbol name="InteractiveWindow" value="{2D0A56AA-9527-4B78-B6E6-EBE6E05DA749}"/>
     <GuidSymbol name="SolutionExplorer" value="{3AE79031-E1BC-11D0-8F78-00A0C9110057}"/>
     <GuidSymbol name="Global" value="{5EFC7975-14BC-11CF-9B2B-00AA00573819}"/>
-
-    <!-- Markdown Editor Factory Guid -->
-    <GuidSymbol name="guidMdEditor" value="{998B021A-4AA4-41C5-A4C0-205470AC4BC4}" />
 
     <GuidSymbol name="pdfIconGuid" value="{A5D7DC8A-C1BA-4A2D-BD76-DEEB65A63BE9}">
       <IDSymbol name="pdfIcon" value="1" />

@@ -14,7 +14,6 @@ namespace Microsoft.Markdown.Editor.Commands {
 
         protected override void OnTextViewConnected(ITextView textView, ITextBuffer textBuffer) {
             MdMainController.Attach(textView, textBuffer);
-
             base.OnTextViewConnected(textView, textBuffer);
         }
 
@@ -23,7 +22,6 @@ namespace Microsoft.Markdown.Editor.Commands {
             if (editorInstance != null) {
                 editorInstance.Dispose();
             }
-
             base.OnTextBufferDisposing(textBuffer);
         }
     }

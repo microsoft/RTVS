@@ -93,7 +93,7 @@ namespace Microsoft.R.Actions.Logging {
 
         public static FileLogWriter InTempFolder(string fileName) {
             return _writers.GetOrAdd(fileName, _ => {
-                var path = Invariant($@"{Path.GetTempPath()}/{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log");
+                var path = Path.Combine(Path.GetTempPath(), Invariant($@"{fileName}_{DateTime.Now:yyyyMdd_HHmmss}_pid{Process.GetCurrentProcess().Id}.log"));
                 return new FileLogWriter(path);
             });
         }

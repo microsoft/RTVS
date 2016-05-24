@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
@@ -16,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
     internal class SendHistoryToSourceCommand : ViewCommand {
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
-        private readonly IContentType _contentType;
+        private readonly List<IContentType> _contentTypes = new List<IContentType>();
         private readonly IRHistory _history;
 
         public SendHistoryToSourceCommand(ITextView textView, IRHistoryProvider historyProvider, IRInteractiveWorkflow interactiveWorkflow, IContentTypeRegistryService contentTypeRegistry, IActiveWpfTextViewTracker textViewTracker)
@@ -24,8 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
 
             _textViewTracker = textViewTracker;
             _interactiveWorkflow = interactiveWorkflow;
-            _contentType = contentTypeRegistry.GetContentType(RContentTypeDefinition.ContentType);
             _history = historyProvider.GetAssociatedRHistory(textView);
+
+            _contentTypes.Add(contentTypeRegistry.GetContentType(RContentTypeDefinition.ContentType));
+            _contentTypes.Add(contentTypeRegistry.GetContentType(MdProjectionContentTypeDefinition.ContentType));
         }
 
         public override CommandStatus Status(Guid guid, int id) {
@@ -44,10 +48,13 @@ namespace Microsoft.VisualStudio.R.Package.History.Commands {
         }
 
         private IWpfTextView GetLastActiveRTextView() {
-            var textView = _textViewTracker.GetLastActiveTextView(_contentType);
-            return textView != null && !textView.IsClosed && textView.VisualElement.IsVisible
-                ? textView
-                : null;
+            foreach (var c in _contentTypes) {
+                var textView = _textViewTracker.GetLastActiveTextView(c);
+                if (textView != null && !textView.IsClosed && textView.VisualElement.IsVisible) {
+                    return textView;
+                }
+            }
+            return null;
         }
     }
 }

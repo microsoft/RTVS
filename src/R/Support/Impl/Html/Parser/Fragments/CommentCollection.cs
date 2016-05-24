@@ -3,12 +3,13 @@
 
 using System.Collections.Generic;
 using Microsoft.Html.Core.Parser.Tokens;
+using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Html.Core.Parser {
     /// <summary>
     /// Collection of HTML comments in the document.
     /// </summary>
-    public class CommentCollection : SensitiveFragmentCollection<CommentToken>, ISensitiveFragmentSeparatorsInfo {
+    public class CommentCollection : HtmlSensitiveFragmentCollection<CommentToken>, ISensitiveFragmentSeparatorsInfo {
         protected override IEnumerable<ISensitiveFragmentSeparatorsInfo> SeparatorInfos {
             get { return new ISensitiveFragmentSeparatorsInfo[] { this }; }
         }

@@ -1,0 +1,10 @@
+﻿`code`
+*text*
+```{r}
+if(TRUE) {
+	x <- 2.0
+	y <- 'some'
+}
+```
+
+**text**

@@ -9,6 +9,7 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Controller;
+using Microsoft.Languages.Editor.Services;
 
 namespace Microsoft.Languages.Editor.Controller {
     public abstract class ViewController : Controller {
@@ -29,6 +30,10 @@ namespace Microsoft.Languages.Editor.Controller {
             BuildControllerSet();
 
             TextViewListenerEvents.TextViewDisconnected += OnTextViewDisconnected;
+        }
+
+        public static ViewController FromTextView(ITextView textView) {
+            return ServiceManager.GetService<ViewController>(textView);
         }
 
         private void OnTextViewDisconnected(object sender, TextViewListenerEventArgs e) {

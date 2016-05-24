@@ -29,9 +29,11 @@ namespace Microsoft.R.Components.Test.Fakes.Trackers {
                 return;
             }
 
-            _textViews[contentType] = wpfTextView;
+            _textViews[contentType] = LastActiveTextView = wpfTextView;
             LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldValue, wpfTextView));
         }
+
+        public IWpfTextView LastActiveTextView { get; private set; }
 
         public IWpfTextView GetLastActiveTextView(IContentType contentType) {
             IWpfTextView value;
@@ -43,7 +45,6 @@ namespace Microsoft.R.Components.Test.Fakes.Trackers {
             if (contentType == null) {
                 return null;
             }
-
             return GetLastActiveTextView(contentType);
         }
 

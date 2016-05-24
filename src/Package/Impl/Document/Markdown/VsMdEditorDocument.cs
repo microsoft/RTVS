@@ -4,13 +4,17 @@
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Document;
+using Microsoft.VisualStudio.Text.Projection;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Document.Markdown {
     internal class VsMdEditorDocument : MdEditorDocument {
-        private IEditorInstance _editorInstance;
+        private readonly IEditorInstance _editorInstance;
 
-        public VsMdEditorDocument(IEditorInstance editorInstance)
-            : base(editorInstance.ViewBuffer) {
+        public VsMdEditorDocument(IEditorInstance editorInstance,
+            IProjectionBufferFactoryService projectionBufferFactoryService,
+            IContentTypeRegistryService contentTypeRegistryService)
+            : base(editorInstance.ViewBuffer, projectionBufferFactoryService, contentTypeRegistryService) {
 
             _editorInstance = editorInstance;
             ServiceManager.AddService<VsMdEditorDocument>(this, TextBuffer);
@@ -19,9 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.Markdown {
         public override void Close() {
             ServiceManager.RemoveService<VsMdEditorDocument>(TextBuffer);
             base.Close();
-
             _editorInstance?.Dispose();
-            _editorInstance = null;
         }
     }
 }

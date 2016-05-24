@@ -127,30 +127,13 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
             EditorWindow.Select(startLine, startColumn, endLine, endColumn);
         }
 
-        public IList<ClassificationSpan> GetClassificationSpans() {
-            var classifierAggregator = EditorShell.Current.ExportProvider.GetExport<IClassifierAggregatorService>().Value;
+        public IEnumerable<ClassificationSpan> GetClassificationSpans() {
+            var svc = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
+            var aggregator = svc.CreateTagAggregator<IClassificationTag>(EditorWindow.CoreEditor.View);
             var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
-            var classifier = classifierAggregator.GetClassifier(textBuffer);
             var snapshot = textBuffer.CurrentSnapshot;
-            return classifier.GetClassificationSpans(new SnapshotSpan(snapshot, 0, snapshot.Length));
-        }
-
-        public string WriteClassifications(IList<ClassificationSpan> classifications) {
-            var sb = new StringBuilder();
-
-            foreach (var c in classifications) {
-                sb.Append('[');
-                sb.Append(c.Span.Start.Position.ToString());
-                sb.Append(':');
-                sb.Append(c.Span.Length);
-                sb.Append(']');
-                sb.Append(' ');
-                sb.Append(c.ClassificationType.ToString());
-                sb.Append('\r');
-                sb.Append('\n');
-            }
-
-            return sb.ToString();
+            var tags = aggregator.GetTags(new SnapshotSpan(snapshot, 0, snapshot.Length));
+            return tags.Select(t => new ClassificationSpan(t.Span.GetSpans(textBuffer)[0], t.Tag.ClassificationType));
         }
 
         public ISignatureHelpSession GetSignatureSession() {

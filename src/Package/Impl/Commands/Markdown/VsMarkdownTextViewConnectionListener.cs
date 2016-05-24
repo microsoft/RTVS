@@ -2,22 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Editor;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.R.Package.Document.Markdown;
 using Microsoft.VisualStudio.R.Package.Editors;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
@@ -28,6 +20,14 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
     [Name("Visual Studio Markdown Editor Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class VsMarkdownTextViewConnectionListener : MdTextViewConnectionListener {
+        private readonly IVsEditorAdaptersFactoryService _adapterService;
+        private CommandTargetToOleShim _oleController;
+
+        [ImportingConstructor]
+        public VsMarkdownTextViewConnectionListener(IVsEditorAdaptersFactoryService adapterService) {
+            _adapterService = adapterService;
+        }
+
         protected override void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
             // Only attach controllers if the document is editable
             if (textView.Roles.Contains(PredefinedTextViewRoles.Editable)) {
@@ -42,25 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
                     // is represented by OLE command target as well. Since HTML controller
                     // is not specific to VS and does not use OLE, we create OLE-to-managed target shim
                     // and managed target-to-OLE shims. 
-
-                    IVsEditorAdaptersFactoryService adapterService = VsAppShell.Current.ExportProvider.GetExport<IVsEditorAdaptersFactoryService>().Value;
-                    IVsTextView viewAdapter = adapterService.GetViewAdapter(textView);
-
-                    if (viewAdapter != null) {
-                        // Create OLE shim that wraps main controller ICommandTarget and represents
-                        // it as IOleCommandTarget that is accepted by VS IDE.
-                        CommandTargetToOleShim oleController = new CommandTargetToOleShim(textView, mainController);
-
-                        IOleCommandTarget nextOleTarget;
-                        viewAdapter.AddCommandFilter(oleController, out nextOleTarget);
-
-                        // nextOleTarget is typically a core editor wrapped into OLE layer.
-                        // Create a wrapper that will present OLE target as ICommandTarget to
-                        // HTML main controller so controller can operate in platform-agnostic way.
-                        ICommandTarget nextCommandTarget = VsAppShell.Current.TranslateCommandTarget(textView, nextOleTarget);
-
-                        mainController.ChainedController = nextCommandTarget;
-                    }
+                    OleControllerChain.ConnectController(_adapterService, textView, mainController);
                 }
             }
 
@@ -73,25 +55,19 @@ namespace Microsoft.VisualStudio.R.Package.Commands.Markdown {
             base.OnTextViewCreated(textView);
         }
 
+        protected override void OnTextViewDisconnected(ITextView textView, ITextBuffer textBuffer) {
+            if (textBuffer == textView.TextDataModel.DocumentBuffer && _oleController != null) {
+                OleControllerChain.DisconnectController(_adapterService, textView, _oleController);
+                _oleController = null;
+            }
+            base.OnTextViewDisconnected(textView, textBuffer);
+        }
+
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
             // Force creations
             var appShell = VsAppShell.Current;
-            InitEditorInstance(textBuffer);
+            OleControllerChain.InitEditorInstance(textBuffer);
             base.OnTextBufferCreated(textBuffer);
-        }
-
-        private void InitEditorInstance(ITextBuffer textBuffer) {
-            if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                ITextDocument textDocument;
-
-                textBuffer.Properties.TryGetProperty<ITextDocument>(typeof(ITextDocument), out textDocument);
-                Debug.Assert(textDocument != null);
-
-                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
-                IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-
-                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new VsMdEditorDocumentFactory());
-            }
         }
     }
 }

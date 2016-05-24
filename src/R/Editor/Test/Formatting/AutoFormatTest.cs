@@ -54,8 +54,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = TextViewTest.MakeTextView(initialContent, position, out ast);
 
             textView.TextBuffer.Changed += (object sender, TextContentChangedEventArgs e) => {
-                List<TextChangeEventArgs> textChanges = TextUtility.ConvertToRelative(e);
-                ast.ReflectTextChanges(textChanges);
+                ast.ReflectTextChanges(e.ConvertToRelative());
 
                 if (e.Changes[0].NewText.Length == 1) {
                     char ch = e.Changes[0].NewText[0];

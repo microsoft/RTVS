@@ -30,6 +30,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public static readonly Guid ReplInteractiveWindowProviderGuid = new Guid(ReplInteractiveWindowProviderGuidString);
         public static readonly Guid ReplWindowGuid = new Guid(ReplWindowGuidString);
 
+        public const string VariableGridWindowGuidString = "3F6855E6-E2DB-46F2-9820-EDC794FE8AFE";
+        public const string VariableGridWindowBracedGuidString = "{3F6855E6-E2DB-46F2-9820-EDC794FE8AFE}";
+        public static readonly Guid VariableGridWindowGuid = new Guid(VariableGridWindowGuidString);
+        
         /// <summary>
         /// Miscellanious files project (no project is opened in IDE)
         /// </summary>
