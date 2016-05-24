@@ -12,8 +12,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         bool IsEmpty { get; }
 
         /// <summary>
+        /// Returns sort direction of the primary column
+        /// </summary>
+        bool IsPrimaryDescending { get; }
+
+        /// <summary>
         /// Returns expression to evaluate in R when ordering the data frame
         /// </summary>
-        string GetSortExpression();
+        string GetDataFrameSortExpression();
     }
 }

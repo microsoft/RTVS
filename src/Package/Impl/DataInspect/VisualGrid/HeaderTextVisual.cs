@@ -23,11 +23,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
+        /// <summary>
+        /// Name of the column
+        /// </summary>
         public string Name {
-            get {
-                return HasArrow(Text) ? Text.Substring(0, Text.Length - 1) : Text;
-            }
+            get { return HasArrow(Text) ? Text.Substring(0, Text.Length - 1) : Text; }
         }
+
+        /// <summary>
+        /// Calculates column header render size taking into account
+        /// optional sorting arrow, if any.
+        /// </summary>
         protected override Size GetRenderSize(FormattedText formattedText, out double offset) {
             var arrowGlyph = new FormattedText(((char)0x25B4).ToString(), CultureInfo.CurrentUICulture,
                                                 FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
@@ -35,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var baseSize = base.GetRenderSize(formattedText, out offset);
             offset = arrowGlyph.Width;
             if (!HasArrow(Text)) {
-                return new Size(baseSize.Width + 2*arrowGlyph.Width, baseSize.Height);
+                return new Size(baseSize.Width + 2 * arrowGlyph.Width, baseSize.Height);
             }
             return new Size(baseSize.Width + arrowGlyph.Width, baseSize.Height);
         }

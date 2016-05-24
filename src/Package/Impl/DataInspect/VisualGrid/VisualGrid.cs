@@ -237,7 +237,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 // Clear all column sorts except the one that was clicked on.
                                 ResetSortToPrimary(v);
                                 _sortOrder.ResetTo(v);
-                             }
+                            }
                             SortOrderChanged?.Invoke(this, EventArgs.Empty);
                             break;
                         }

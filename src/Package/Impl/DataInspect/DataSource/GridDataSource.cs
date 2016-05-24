@@ -23,8 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 try {
                     string exp;
                     if (sortOrder != null && !sortOrder.IsEmpty) {
-                        string sortExpression = sortOrder.GetSortExpression();
-                        exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns}, \"{sortExpression}\")");
+                        if (gridRange.Value.Columns.Count > 1) {
+                            string dataFrameSortExpression = sortOrder.GetDataFrameSortExpression();
+                            exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns}, \"{dataFrameSortExpression}\")");
+                        } else {
+                            int sortType = sortOrder.IsPrimaryDescending ? 2 : 1;
+                            exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns}, NULL, {sortType})");
+                        }
                     } else {
                         exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns})");
                     }

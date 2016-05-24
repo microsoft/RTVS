@@ -11,13 +11,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Describes sorting set in details grid
     /// </summary>
-    internal sealed class SortOrder: ISortOrder {
+    internal sealed class SortOrder : ISortOrder {
         private readonly List<ColumnSortOrder> _sortOrderList = new List<ColumnSortOrder>();
 
         /// <summary>
         /// No sorting is specified
         /// </summary>
         public bool IsEmpty => _sortOrderList.Count == 0;
+
+        /// <summary>
+        /// Returns sort direction of the primary column
+        /// </summary>
+        public bool IsPrimaryDescending {
+            get { return !IsEmpty ? _sortOrderList[0].Descending : false; }
+        }
 
         /// <summary>
         /// Resets sort to one column assuming default (ascending) order.
@@ -53,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// where x.df is name of the data frame in grid.r and minus tells R
         /// that the column sort order is descending rather than ascending.
         /// </summary>
-        public string GetSortExpression() {
+        public string GetDataFrameSortExpression() {
             var sb = new StringBuilder("do.call(order, c(");
             bool first = true;
             foreach (var s in _sortOrderList) {
