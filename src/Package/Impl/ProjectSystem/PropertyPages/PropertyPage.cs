@@ -176,7 +176,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                             string vsConfigName;
                             pcg.get_CanonicalName(out vsConfigName);
 
-                            ThreadHandling.JoinableTaskFactory.Run(async delegate {
+                            ThreadHandling.ExecuteSynchronously(async delegate {
                                 var provider = new ConfiguredRProjectExportProvider();
                                 var configuredProjProps = await provider.GetExportAsync<ProjectProperties>(UnconfiguredProject, vsConfigName);
                                 configuredProjectsProperties.Add(configuredProjProps);

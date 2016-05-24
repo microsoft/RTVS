@@ -17,20 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IConfiguredRProjectExportProvider))]
     [AppliesTo("RTools")]
     internal class ConfiguredRProjectExportProvider : IConfiguredRProjectExportProvider {
-#if VS14
-        public Task<T> GetExportAsync<T>(UnconfiguredProject unconfigProject, string configurationName)
-        {
-            configurationName = configurationName.Replace("Any CPU", "AnyCPU");
-            var configProject = unconfigProject.LoadedConfiguredProjects.SingleOrDefault(cp => cp.ProjectConfiguration.Name.Equals(configurationName, StringComparison.OrdinalIgnoreCase));
-            if (configProject == null) {
-                throw new ArgumentException();
-            }
-            var exportedValue = configProject.Services.ExportProvider.GetExportedValue<T>();
-            Task.FromResult(exportedValue);
-        }
-#endif
-
-#if VS15
         public async Task<T> GetExportAsync<T>(UnconfiguredProject unconfigProject, string configurationName) {
             configurationName = configurationName.Replace("Any CPU", "AnyCPU");
             var configurationProps = ConfigurationPropertiesFromConfigurationName(configurationName);
@@ -40,7 +26,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
             return configProject.Services.ExportProvider.GetExportedValue<T>();
         }
-#endif
 
         public async Task<T> GetExportAsync<T>(IVsHierarchy projectHierarchy, string configurationName) {
             var unconfigProject = projectHierarchy.GetUnconfiguredProject();
