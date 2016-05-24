@@ -85,6 +85,7 @@
     <Compile Include="XUnit\MessageBusOverride.cs" />
     <Compile Include="XUnit\AssemblyMefCatalogFixture.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
+    <Compile Include="XUnit\TestCase.cs" />
     <Compile Include="XUnit\TestDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesAttribute.cs" />
     <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
@@ -100,10 +101,8 @@
     <Compile Include="XUnit\ThreadType.cs" />
     <Compile Include="XUnit\TraceFailException.cs" />
     <Compile Include="XUnit\UnitTestTraitDiscoverer.cs" />
-    <Compile Include="XUnit\XunitMainThreadTestCaseDecorator.cs" />
-    <Compile Include="XUnit\XunitTestCaseDecorator.cs" />
     <Compile Include="XUnit\XunitTestCaseDecoratorBase.cs" />
-    <Compile Include="XUnit\TestForTypesXunitTestCase.cs" />
+    <Compile Include="XUnit\TestForTypesTestCase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
