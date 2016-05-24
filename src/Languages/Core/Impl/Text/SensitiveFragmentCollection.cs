@@ -8,7 +8,7 @@ namespace Microsoft.Languages.Core.Text {
     /// <summary>
     /// Class represents collection of text ranges that have 'sensitive' separator
     /// sequences at the beginning and at the end. For example, HTML comments &lt;!-- -->
-    /// or ASP.NET blocks like &lt;% %> or markdown code block like ```...code...```. 
+    /// or ASP.NET blocks like &lt;% %> or R markdown code block like ```{r...code...```. 
     /// This collection has additional methods that help to detemine if change to the text
     /// buffer may have created new or invalidated existing comments or external code fragments.
     /// </summary>

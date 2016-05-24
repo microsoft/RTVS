@@ -5,10 +5,8 @@ using System;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.Markdown.Editor.Document;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Utilities;
-using static System.FormattableString;
 
 namespace Microsoft.Markdown.Editor.EditorFactory {
     /// <summary>
