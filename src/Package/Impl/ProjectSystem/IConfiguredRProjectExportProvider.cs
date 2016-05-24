@@ -3,10 +3,11 @@
 
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Threading.Tasks;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal interface IConfiguredRProjectExportProvider {
-        T GetExport<T>(UnconfiguredProject unconfigProject, string configurationName);
-        T GetExport<T>(IVsHierarchy projectHierarchy, string configurationName);
+        Task<T> GetExportAsync<T>(UnconfiguredProject unconfigProject, string configurationName);
+        Task<T> GetExportAsync<T>(IVsHierarchy projectHierarchy, string configurationName);
     }
 }
