@@ -1,4 +1,5 @@
 ﻿<UserControl x:Class="Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+             x:ClassModifier="internal"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -41,7 +42,7 @@
                    Fill="{Binding HeaderBackground, RelativeSource={RelativeSource AncestorType={x:Type local:MatrixView}}}" />
         </Border>
         <local:VisualGrid x:Name="ColumnHeader" ScrollDirection="Horizontal" FocusVisualStyle="{StaticResource EmptyFocusVisualStyle}"
-                          Grid.Row="0" Grid.Column="1"/>
+                          Grid.Row="0" Grid.Column="1" Header="True"/>
         <Rectangle x:Name="RightTopCorner"
                    Grid.Row="0" Grid.Column="2" MinWidth="10" MinHeight="10"
                    Fill="{DynamicResource {x:Static vsui:EnvironmentColors.ScrollBarBackgroundBrushKey}}"/>

@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// Handles scroll command
     /// </summary>
-    internal class VisualGridScroller {
+    internal sealed class VisualGridScroller {
         private TaskScheduler _ui;
         private BlockingCollection<ScrollCommand> _scrollCommands;
 
@@ -28,8 +28,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _ui = TaskScheduler.FromCurrentSynchronizationContext();
 
             _owner = owner;
-            Points = owner.Points;
-
+            if(_owner.ColumnHeader != null) {
+                _owner.ColumnHeader.SortOrderChanged += OnSortOrderChanged;
+            }
             _cancelSource = new CancellationTokenSource();
             _scrollCommands = new BlockingCollection<ScrollCommand>();
 
@@ -37,50 +38,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _handlerTask = ScrollCommandsHandler(_cancelSource.Token).SilenceException<Exception>();
         }
 
-        public GridPoints Points { get; }
+        public GridPoints Points => _owner.Points;
+        public VisualGrid ColumnHeader => _owner.ColumnHeader;
+        public VisualGrid RowHeader => _owner.RowHeader;
+        public VisualGrid DataGrid => _owner.Data;
+        public IGridProvider<string> DataProvider => _owner.DataProvider;
+        internal void StopScroller() => _cancelSource.Cancel();
 
-        public VisualGrid ColumnHeader {
-            get {
-                return _owner.ColumnHeader;
-            }
-        }
-
-        public VisualGrid RowHeader {
-            get {
-                return _owner.RowHeader;
-            }
-        }
-
-        public VisualGrid DataGrid {
-            get {
-                return _owner.Data;
-            }
-        }
-
-        public IGridProvider<string> DataProvider {
-            get {
-                return _owner.DataProvider;
-            }
-        }
-
-        internal void StopScroller() {
-            _cancelSource.Cancel();
-        }
-
-        internal void EnqueueCommand(ScrollType code, double param) {
+        internal void EnqueueCommand(GridUpdateType code, double param) {
             _scrollCommands.Add(new ScrollCommand(code, param));
         }
 
-        internal void EnqueueCommand(ScrollType code, double offset, ThumbTrack track) {
+        internal void EnqueueCommand(GridUpdateType code, double offset, ThumbTrack track) {
             _scrollCommands.Add(new ScrollCommand(code, offset, track));
         }
 
-        internal void EnqueueCommand(ScrollType code, Size size) {
+        internal void EnqueueCommand(GridUpdateType code, Size size) {
             _scrollCommands.Add(new ScrollCommand(code, size));
         }
 
-        private static ScrollType[] RepeatSkip = new ScrollType[] { ScrollType.SizeChange, ScrollType.SetHorizontalOffset, ScrollType.SetVerticalOffset, ScrollType.Refresh };
-        private static ScrollType[] RepeatAccum = new ScrollType[] { ScrollType.MouseWheel, ScrollType.LineUp, ScrollType.LineDown, ScrollType.PageUp, ScrollType.PageDown, ScrollType.LineLeft, ScrollType.LineRight, ScrollType.PageLeft, ScrollType.PageRight };
+        private static GridUpdateType[] RepeatSkip = new GridUpdateType[] { GridUpdateType.SizeChange, GridUpdateType.SetHorizontalOffset, GridUpdateType.SetVerticalOffset, GridUpdateType.Refresh };
+        private static GridUpdateType[] RepeatAccum = new GridUpdateType[] { GridUpdateType.MouseWheel, GridUpdateType.LineUp, GridUpdateType.LineDown, GridUpdateType.PageUp, GridUpdateType.PageDown, GridUpdateType.LineLeft, GridUpdateType.LineRight, GridUpdateType.PageLeft, GridUpdateType.PageRight };
 
         private async Task ScrollCommandsHandler(CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -126,74 +104,72 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        private bool IsRepeating(List<ScrollCommand> commands, int index, ScrollType[] scrollTypes) {
-            return commands[index].Code == commands[index + 1].Code && scrollTypes.Contains(commands[index].Code);
+        private bool IsRepeating(List<ScrollCommand> commands, int index, GridUpdateType[] scrollTypes) {
+            return commands[index].UpdateType == commands[index + 1].UpdateType && scrollTypes.Contains(commands[index].UpdateType);
         }
 
         private async Task ExecuteCommandAsync(ScrollCommand cmd, CancellationToken token) {
             bool drawVisual = true;
-            bool refresh = false;
             bool suppress = false;
-            switch (cmd.Code) {
-                case ScrollType.LineUp:
+            switch (cmd.UpdateType) {
+                case GridUpdateType.LineUp:
                     Points.VerticalOffset -= Points.AverageItemHeight * (double)cmd.Param;
                     break;
-                case ScrollType.LineDown:
+                case GridUpdateType.LineDown:
                     Points.VerticalOffset += Points.AverageItemHeight * (double)cmd.Param;
                     break;
-                case ScrollType.LineLeft:
+                case GridUpdateType.LineLeft:
                     Points.HorizontalOffset -= Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
-                case ScrollType.LineRight:
+                case GridUpdateType.LineRight:
                     Points.HorizontalOffset += Points.AverageItemHeight * (double)cmd.Param;    // for horizontal line increment, use vertical size
                     break;
-                case ScrollType.PageUp:
+                case GridUpdateType.PageUp:
                     Points.VerticalOffset -= Points.ViewportHeight * (double)cmd.Param;
                     break;
-                case ScrollType.PageDown:
+                case GridUpdateType.PageDown:
                     Points.VerticalOffset += Points.ViewportHeight * (double)cmd.Param;
                     break;
-                case ScrollType.PageLeft:
+                case GridUpdateType.PageLeft:
                     Points.HorizontalOffset -= Points.ViewportWidth * (double)cmd.Param;
                     break;
-                case ScrollType.PageRight:
+                case GridUpdateType.PageRight:
                     Points.HorizontalOffset += Points.ViewportWidth * (double)cmd.Param;
                     break;
-                case ScrollType.SetHorizontalOffset: {
+                case GridUpdateType.SetHorizontalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
                         Points.HorizontalOffset = args.Item1 * (Points.HorizontalExtent - Points.ViewportWidth);
                         suppress = args.Item2 == ThumbTrack.Track;
                     }
                     break;
-                case ScrollType.SetVerticalOffset: {
+                case GridUpdateType.SetVerticalOffset: {
                         var args = (Tuple<double, ThumbTrack>)cmd.Param;
                         Points.VerticalOffset = args.Item1 * (Points.VerticalExtent - Points.ViewportHeight);
                         suppress = args.Item2 == ThumbTrack.Track;
                     }
                     break;
-                case ScrollType.MouseWheel:
+                case GridUpdateType.MouseWheel:
                     Points.VerticalOffset -= (double)cmd.Param;
                     break;
-                case ScrollType.SizeChange:
+                case GridUpdateType.SizeChange:
                     Points.ViewportWidth = ((Size)cmd.Param).Width;
                     Points.ViewportHeight = ((Size)cmd.Param).Height;
-                    refresh = false;
                     break;
-                case ScrollType.Refresh:
-                    refresh = true;
+                case GridUpdateType.Refresh:
+                case GridUpdateType.Sort:
                     break;
-                case ScrollType.Invalid:
+                case GridUpdateType.Invalid:
                 default:
                     drawVisual = false;
                     break;
             }
 
             if (drawVisual) {
-                await DrawVisualsAsync(refresh, suppress, token);
+                await DrawVisualsAsync(cmd.UpdateType, suppress, token, _owner.ColumnHeader?.SortOrder);
             }
         }
 
-        private async Task DrawVisualsAsync(bool refresh, bool suppressNotification, CancellationToken token) {
+        private async Task DrawVisualsAsync(GridUpdateType updateType, bool suppressNotification, CancellationToken token, ISortOrder sortOrder) {
             Rect visualViewport = new Rect(
                     Points.HorizontalOffset,
                     Points.VerticalOffset,
@@ -208,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             // pull data from provider
             try {
-                var data = await DataProvider.GetAsync(newViewport);
+                var data = await DataProvider.GetAsync(newViewport, sortOrder);
                 if (!data.Grid.Range.Contains(newViewport)
                     || !data.ColumnHeader.Range.Contains(newViewport.Columns)
                     || !data.RowHeader.Range.Contains(newViewport.Rows)) {
@@ -217,18 +193,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // actual drawing runs in UI thread
                 await Task.Factory.StartNew(
-                    () => DrawVisuals(newViewport, data, refresh, visualViewport, suppressNotification),
+                    () => DrawVisuals(newViewport, data, updateType, visualViewport, suppressNotification),
                     token,
                     TaskCreationOptions.None,
                     _ui);
-            }
-            catch(OperationCanceledException) { }
+            } catch (OperationCanceledException) { }
         }
 
         private void DrawVisuals(
             GridRange dataViewport,
             IGridData<string> data,
-            bool refresh,
+            GridUpdateType updateType,
             Rect visualViewport,
             bool suppressNotification) {
 
@@ -238,19 +213,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Points.GetAccessToPoints(ColumnHeader.ScrollDirection),
                     new GridRange(new Range(0, 1), dataViewport.Columns),
                     new RangeToGrid<string>(dataViewport.Columns, data.ColumnHeader, true),
-                    refresh);
+                    updateType);
 
                 RowHeader?.MeasurePoints(
                     Points.GetAccessToPoints(RowHeader.ScrollDirection),
                     new GridRange(dataViewport.Rows, new Range(0, 1)),
                     new RangeToGrid<string>(dataViewport.Rows, data.RowHeader, false),
-                    refresh);
+                    updateType == GridUpdateType.Sort ? GridUpdateType.Refresh : updateType);
 
                 DataGrid?.MeasurePoints(
                     Points.GetAccessToPoints(DataGrid.ScrollDirection),
                     dataViewport,
                     data.Grid,
-                    refresh);
+                    updateType == GridUpdateType.Sort ? GridUpdateType.Refresh : updateType);
 
                 // adjust Offset in case of overflow
                 if ((Points.HorizontalOffset + visualViewport.Width).GreaterThanOrClose(Points.HorizontalExtent)) {
@@ -268,6 +243,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 Points.ViewportHeight = DataGrid.RenderSize.Height;
                 Points.ViewportWidth = DataGrid.RenderSize.Width;
             }
+        }
+        private void OnSortOrderChanged(object sender, EventArgs e) {
+            if(_owner?.Data == null || _owner.ColumnHeader == null) {
+                return;
+            }
+            _owner?.UpdateSort();
         }
     }
 }

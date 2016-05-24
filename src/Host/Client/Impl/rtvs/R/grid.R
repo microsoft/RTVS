@@ -13,7 +13,28 @@ grid.format <- function(x) {
   sapply(format(x, trim = TRUE, justify = "none"), grid.trim);
 }
 
-grid.data <- function(x, rows, cols) {
+grid.sort.df <- function(x, rows, cols, df.sort.expression) {
+  if(missing(df.sort.expression)) {
+    x.df <- as.data.frame(x)[rows, cols];
+  } else {
+    x.df <- as.data.frame(x)
+    x.df <- x.df[eval(parse(text = df.sort.expression)),][rows, cols];
+  }
+  x.df
+}
+
+grid.sort.vector <- function(x, vector.sort.type) {
+  if(!missing(vector.sort.type) && vector.sort.type > 0) {
+    if(vector.sort.type == 1) {
+        x <- sort(x)
+    } else {
+        x <- sort(x, decreasing = TRUE)
+    }
+  }
+  x
+}
+
+grid.data <- function(x, rows, cols, df.sort.expression, vector.sort.type) {
   d <- dim(x);
   if (missing(rows)) {
     rows <- 1:d[[1]];
@@ -26,6 +47,7 @@ grid.data <- function(x, rows, cols) {
   if (length(rows) == 1 || length(cols) == 1) {
     # one-dimension objects
     if(is(x, 'vector') || is.ts(x)) {
+      x <- grid.sort.vector(x, vector.sort.type)
       if(length(cols) == 1) {
         data <- grid.format(x[rows]);
       } else {
@@ -36,14 +58,10 @@ grid.data <- function(x, rows, cols) {
     }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
-  } else if(is.matrix(x)) {
-    rn <- row.names(x)[rows];
-    cn <- colnames(x)[cols];
-    data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
   } else {
-    # data frames
-    x.df <- as.data.frame(x)[rows, cols];
-    data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
+    x <- as.data.frame(x)
+    x.df <- grid.sort.df(x, rows, cols, df.sort.expression);
+    data <- sapply(x.df, grid.format, USE.NAMES = FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);
   }

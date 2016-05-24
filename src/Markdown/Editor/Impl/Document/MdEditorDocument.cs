@@ -76,7 +76,7 @@ namespace Microsoft.Markdown.Editor.Document {
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
             if(disposing) {
-                _projectionBufferManager?.Dispose();
+                _projectionBufferManager.Dispose();
             }
         }
 
