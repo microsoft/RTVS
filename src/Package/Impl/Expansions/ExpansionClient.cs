@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Editor;
@@ -235,13 +234,17 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
         #endregion
 
+        /// <summary>
+        /// Converts Span to [legacy] TextSpan structure that is used in IVs* interfaces
+        /// </summary>
         private static TextSpan TextSpanFromSpan(ITextBuffer textBuffer, Span span) {
             var ts = new TextSpan();
-            ITextSnapshotLine line = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
-            ts.iStartLine = line.LineNumber;
-            ts.iEndLine = line.LineNumber;
-            ts.iStartIndex = span.Start - line.Start;
-            ts.iEndIndex = span.End - line.Start;
+            var startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
+            var endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.End);
+            ts.iStartLine = startLine.LineNumber;
+            ts.iEndLine = endLine.LineNumber;
+            ts.iStartIndex = span.Start - startLine.Start;
+            ts.iEndIndex = span.End - endLine.Start;
             return ts;
         }
 
@@ -267,6 +270,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return span;
         }
 
+        /// <summary>
+        /// Converts view span to TextSpan structure in the R buffer.
+        /// TextSpan structure is used in legacy IVs* interfaces
+        /// </summary>
         private TextSpan? TextSpanFromViewSpan(Span span) {
             var textBuffer = GetTargetBuffer();
             if (IsRepl) {
