@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,6 +14,8 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.VisualStudio.Imaging;
+using Microsoft.VisualStudio.Imaging.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
@@ -160,6 +163,61 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
             var ew = node?.Model?.Content as VariableViewModel;
             return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
+        }
+
+        private ImageMoniker GetVariableIcon(IREvaluationResultInfo info) {
+            if (info is IRActiveBindingInfo) {
+                return KnownMonikers.Property;
+            } else if (info is IRPromiseInfo) {
+                return KnownMonikers.Delegate;
+            } else if (info is IRErrorInfo) {
+                return KnownMonikers.StatusInvalid;
+            }
+
+            var value = info as IRValueInfo;
+            if (value != null) {
+                // Order of checks here is important, as some categories are subsets of others, and hence have to be checked first.
+                // For example, all dataframes are also lists, and so we need to check for class "data.frame", and supply an icon
+                // for it, before we check for type "list".
+                if (value.TypeName == "S4") {
+                    return KnownMonikers.Class;
+                } else if (value.Classes.Contains("refObjectGenerator")) {
+                    return KnownMonikers.NewClass;
+                } else if (value.TypeName == "closure" || value.TypeName == "builtin") {
+                    return KnownMonikers.Procedure;
+                } else if (value.Classes.Contains("formula")) {
+                    return KnownMonikers.MemberFormula;
+                } else if (value.TypeName == "symbol" || value.TypeName == "language" || value.TypeName == "expression") {
+                    return KnownMonikers.Code;
+                } else if (value.Classes.Contains("data.frame")) {
+                    return KnownMonikers.Table;
+                } else if (value.Classes.Contains("matrix")) {
+                    return KnownMonikers.Matrix;
+                } else if (value.TypeName == "environment") {
+                    return KnownMonikers.BulletList;
+                } else if (value.TypeName == "list" || (value.IsAtomic() && value.Length > 1)) {
+                    return KnownMonikers.OrderedList;
+                } else {
+                    return KnownMonikers.BinaryRegistryValue;
+                }
+            }
+
+            return KnownMonikers.UnknownMember;
+        }
+
+        private ImageMoniker GetEnvironmentIcon(REnvironmentKind kind) {
+            switch (kind) {
+                case REnvironmentKind.Global:
+                    return KnownMonikers.GlobalVariable;
+                case REnvironmentKind.Function:
+                    return KnownMonikers.MethodPublic;
+                case REnvironmentKind.Package:
+                    return KnownMonikers.Package;
+                case REnvironmentKind.Error:
+                    return KnownMonikers.StatusInvalid;
+                default:
+                    return KnownMonikers.ObjectPublic;
+            }
         }
     }
 }

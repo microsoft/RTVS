@@ -29,48 +29,6 @@
 
             <local:MultiplyConverter x:Key="MultiplyConverter" />
 
-            <wpf:Lambda x:Key="REnvironmentKindConverter">
-                (REnvironmentKind kind) => {
-                    switch (kind) {
-                        case REnvironmentKind.Global:
-                            return KnownMonikers.GlobalVariable;
-                        case REnvironmentKind.Function:
-                            return KnownMonikers.MethodPublic;
-                        case REnvironmentKind.Package:
-                            return KnownMonikers.Package;
-                        case REnvironmentKind.Error:
-                            return KnownMonikers.StatusInvalid;
-                        default:
-                            return KnownMonikers.ObjectPublic;
-                    }
-                }
-            </wpf:Lambda>
-
-            <wpf:Lambda x:Key="VariableIconConverter">
-                (IREvaluationResultInfo info) => {
-                    if (info is IRActiveBindingInfo) {
-                        return KnownMonikers.PropertyPublic;
-                    } else if (info is IRPromiseInfo) {
-                        return KnownMonikers.FieldShortcut;
-                    }
-                
-                    var value = info as IRValueInfo;
-                    if (value != null) {
-                        if (value.TypeName == "closure" || value.TypeName == "builtin") {
-                            return KnownMonikers.MethodPublic;
-                        } else if (value.Classes.Contains("data.frame")) {
-                            return KnownMonikers.Table;
-                        } else if (value.Classes.Contains("matrix")) {
-                            return KnownMonikers.Matrix;
-                        } else {
-                            return KnownMonikers.FieldPublic;
-                        }
-                    }
-                
-                    return KnownMonikers.StatusInvalid;
-                }
-            </wpf:Lambda>
-
             <core:Double x:Key="ExpanderToggleSize">16</core:Double>
 
             <Style x:Key="ExpanderToggleStyle" TargetType="{x:Type ToggleButton}">
@@ -129,7 +87,7 @@
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Moniker="{Binding Model.Content.DebugEvaluation, Converter={StaticResource VariableIconConverter}}" />
+                    <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}" />
                     <TextBlock Grid.Column="3" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" Margin="2,0,0,0" />
                 </Grid>
             </DataTemplate>
@@ -206,7 +164,7 @@
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={StaticResource REnvironmentKindConverter}}"/>
+                        <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={wpf:Lambda '(REnvironmentKind kind) => GetEnvironmentIcon(kind)'}}"/>
                         <TextBlock Text="{Binding Name}" Margin="4,0,0,0" />
                     </StackPanel>
                 </DataTemplate>
