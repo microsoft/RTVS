@@ -27,7 +27,7 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
                 var text = snapshot.GetText(b.Start, b.Length);
                 secondaryIndex = sb.Length;
 
-                sb.Append(text + Environment.NewLine);
+                sb.AppendLine(text);
                 var m = new ProjectionMapping(b.Start, secondaryIndex, b.Length);
                 mappingsList.Add(m);
             }
