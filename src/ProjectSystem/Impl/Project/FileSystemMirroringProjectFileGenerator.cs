@@ -41,6 +41,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private void EnsureCpsProjFile(string cpsProjFileName) {
             var fileInfo = new FileInfo(cpsProjFileName);
+            if (fileInfo.Exists) {
+                return;
+            }
+
             var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
             var xProjDocument = new XProjDocument(
@@ -63,10 +67,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                     new XImportExisting(inMemoryTargetsFile)
                 )
             );
-
-            if (fileInfo.Exists) {
-                fileInfo.Delete();
-            }
 
             using (var writer = fileInfo.CreateText()) {
                 xProjDocument.Save(writer);
