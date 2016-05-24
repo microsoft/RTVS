@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                     await inter.RespondAsync("View(mtcars)" + Environment.NewLine);
                 }
             }
-            cb.Received().ViewObject("mtcars", "");
+            cb.Received().ViewObject("mtcars", "mtcars");
         }
 
         [Test]
@@ -86,18 +86,21 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
-        [Test]
+        [CompositeTest]
         [Category.Viewers]
-        public async Task FunctionViewerTest() {
+        [InlineData(null, "lm", "function(formula, data, subset, weights, na.action")]
+        [InlineData("`?` <- function(a, b, c) { }", "`?`", "function(a, b, c)")]
+        [InlineData("`?` <- function(a, b, c) { }; x <- `?`", "x", "function(a, b, c)")]
+        public async Task FunctionViewerTest(string expression, string functionName, string expected) {
             using (var hostScript = new RHostScript(_sessionProvider)) {
-                var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, "lm") as CodeViewer;
+                if(!string.IsNullOrEmpty(expression)) {
+                    await hostScript.Session.ExecuteAsync(expression);
+                }
+                var funcViewer = await _aggregator.GetViewer(hostScript.Session, REnvironments.GlobalEnv, functionName) as CodeViewer;
                 funcViewer.Should().NotBeNull();
 
-                funcViewer.GetFileName("lm", null).Should().Be(Path.Combine(Path.GetTempPath(), "~lm.r"));
-                funcViewer.GetFileName("lm", "abc").Should().Be(Path.Combine(Path.GetTempPath(), "~abc.r"));
-
-                var code = await funcViewer.GetFunctionCode("lm");
-                code.StartsWithOrdinal("function(formula, data, subset, weights, na.action").Should().BeTrue();
+                var code = await funcViewer.GetFunctionCode(functionName);
+                code.StartsWithOrdinal(expected).Should().BeTrue();
             }
         }
 
