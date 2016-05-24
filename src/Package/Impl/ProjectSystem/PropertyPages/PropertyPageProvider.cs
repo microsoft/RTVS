@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Properties;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
-    [AppliesTo("RTools")]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     [Export(typeof(IVsProjectDesignerPageProvider))]
     internal class PropertyPageProvider : IVsProjectDesignerPageProvider {
         [ImportMany]

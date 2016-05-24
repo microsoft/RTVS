@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Properties;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
     [Export(typeof(IPageMetadata))]
-    [AppliesTo("RTools")]
+    [AppliesTo(Constants.RtvsProjectCapability)]
     internal class RunPageMetadata : IPageMetadata {
         public bool HasConfigurationCondition => true;
 
