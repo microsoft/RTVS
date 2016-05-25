@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.UnitTests.Core.Threading;
@@ -37,7 +38,9 @@ namespace Microsoft.UnitTests.Core.UI {
         public static async Task<IDisposable> AddContainer(UIElement element) {
             await TaskUtilities.SwitchToBackgroundThread();
             await AvailableSpots.WaitAsync();
-            return UIThreadHelper.Instance.Invoke(() => _current.AddContainerToHost(element));
+            var removeFromHost = UIThreadHelper.Instance.Invoke(() => _current.AddContainerToHost(element));
+            await UIThreadHelper.Instance.DoEventsAsync();
+            return removeFromHost;
         }
 
         private readonly UIElement[] _elements = new UIElement[MaxContainerCount];
@@ -166,7 +169,7 @@ namespace Microsoft.UnitTests.Core.UI {
         private async Task ShowWindowAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
             _createWindowTask = ScheduleTask(ShowWindow);
-            await ScheduleTask(() => { });
+             await UIThreadHelper.Instance.DoEventsAsync();
         }
 
         private async Task CloseWindowAsync() {
@@ -186,12 +189,30 @@ namespace Microsoft.UnitTests.Core.UI {
 
             Content = _grid;
 
+            var checkerBrush = new DrawingBrush {
+                Drawing = new DrawingGroup {
+                    Children = new DrawingCollection {
+                        new GeometryDrawing(Brushes.White, null, new RectangleGeometry(new Rect(0, 0, 10, 10))),
+                        new GeometryDrawing(Brushes.LightGray, null, new GeometryGroup {
+                            Children = new GeometryCollection {
+                                new RectangleGeometry(new Rect(0, 0, 5, 5)),
+                                new RectangleGeometry(new Rect(5, 5, 5, 5))
+                            }
+                        })
+                    }
+                },
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, 10, 10),
+                ViewportUnits = BrushMappingMode.Absolute
+            };
+
             _window = new Window {
                 Title = "Test window",
                 Height = double.NaN,
                 Width = double.NaN,
                 Content = this,
                 SizeToContent = SizeToContent.WidthAndHeight,
+                Background = checkerBrush
             };
 
             UpdateWindowSize();
