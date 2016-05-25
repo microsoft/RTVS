@@ -492,6 +492,29 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
             }
         }
 
+        [Test]
+        [Category.Interactive]
+        public void R_PackageVariablesCompletion() {
+            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                using (var hostScript = new RHostScript(provider)) {
+                    PrimeIntellisenseProviders();
+                    script.DoIdle(1000);
+
+                    script.Type("mtcars$");
+
+                    var session = script.GetCompletionSession();
+                    session.Should().NotBeNull();
+                    script.DoIdle(1000);
+
+                    var list = session.SelectedCompletionSet.Completions.ToList();
+                    var item = list.FirstOrDefault(x => x.DisplayText == "cyl");
+                    item.Should().NotBeNull();
+                    script.DoIdle(100);
+                }
+            }
+        }
+
         private void PrimeIntellisenseProviders() {
             // Prime variable provider
             EditorShell.Current.DispatchOnUIThread(() => {
