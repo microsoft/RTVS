@@ -14,6 +14,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Actions.Logging {
     public sealed class FileLogWriter : IActionLogWriter {
+        private const int _maxTimeout = 5000;
         private const int _maxBufferSize = 1024;
         private static readonly ConcurrentDictionary<string, FileLogWriter> _writers = new ConcurrentDictionary<string, FileLogWriter>();
         private readonly char[] _lineBreaks = { '\n' };
@@ -47,11 +48,11 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e) {
-            WriteBuffer(string.Empty, flush: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
         }
 
         private void OnProcessExit(object sender, EventArgs e) {
-            WriteBuffer(string.Empty, flush: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
         }
 
         private async Task WriteBuffer(string message, bool flush) {
@@ -74,7 +75,7 @@ namespace Microsoft.R.Actions.Logging {
         }
 
         public void Flush() {
-            WriteBuffer(string.Empty, flush: true).Wait();
+            WriteBuffer(string.Empty, flush: true).Wait(_maxTimeout);
         }
 
 
