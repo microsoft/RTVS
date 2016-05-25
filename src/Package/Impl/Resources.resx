@@ -721,6 +721,12 @@ Additional information:
   <data name="Error_UnableToDeleteVariable" xml:space="preserve">
     <value>Cannot delete variable(s). Exception {0}</value>
   </data>
+  <data name="PropertyPageDifferentOptions" xml:space="preserve">
+    <value>&lt;different options&gt;</value>
+  </data>
+  <data name="RunPropertyPageTitle" xml:space="preserve">
+    <value>Run</value>
+  </data>
   <data name="Settings_DefaultValue" xml:space="preserve">
     <value>(OS Default)</value>
   </data>
