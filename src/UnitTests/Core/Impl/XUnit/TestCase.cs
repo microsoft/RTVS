@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.UnitTests.Core.Threading;
@@ -48,61 +48,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
             MessageBusOverride messageBusOverride = new MessageBusOverride(messageBus)
                 .AddAfterStartingBeforeFinished(new ExecuteBeforeAfterAttributesMessageBusInjection(Method, TestMethod.TestClass.Class));
 
-            XunitTestCaseRunner runner;
-            var testInformationFixtureIndex = Array.IndexOf(constructorArguments, ClassRunner.TestMethodFixtureDummy);
-            if (testInformationFixtureIndex == -1) {
-                runner = CreateTestCaseRunner(diagnosticMessageSink, messageBusOverride, constructorArguments, aggregator, cancellationTokenSource);
-                return RunAsync(runner, messageBusOverride);
-            }
+            var testMethodArguments = GetTestMethodArguments();
+            var runner = constructorArguments.Any(a => a is IMethodFixture)
+                ? new TestCaseRunnerWithMethodFixtures(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource)
+                : new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
-            var testMethodFixture = new TestMethodFixture(TestMethod.Method.ToRuntimeMethod());
-            var constructorArgumentsCopy = InjectTestMethodFixture(constructorArguments, testInformationFixtureIndex, testMethodFixture);
-            var observeTask = CreateObserveTask(testMethodFixture.FailedObservedTask, messageBusOverride, cancellationTokenSource);
-
-            runner = CreateTestCaseRunner(diagnosticMessageSink, messageBusOverride, constructorArgumentsCopy, aggregator, cancellationTokenSource);
-            return Task.WhenAny(RunAsync(runner, messageBusOverride), observeTask)
-                .Unwrap()
-                .ContinueWith((t, s) => {
-                    ((IDisposable)s).Dispose();
-                    return t.Result;
-                }, testMethodFixture, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-        }
-
-        private Task<RunSummary> RunAsync(XunitTestCaseRunner runner, MessageBusOverride messageBus) {
             if (ThreadType == ThreadType.UI) {
-                return UIThreadHelper.Instance.Invoke(runner.RunAsync);
+                return UIThreadHelper.Instance.Invoke(((XunitTestCaseRunner) runner).RunAsync);
             }
 
-            messageBus.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
+            messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
             return runner.RunAsync();
         }
 
-        protected virtual XunitTestCaseRunner CreateTestCaseRunner(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
-            => new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource);
-
-        private static object[] InjectTestMethodFixture(object[] constructorArguments, int testInformationFixtureIndex, TestMethodFixture testMethodFixture) {
-            var constructorArgumentsCopy = new object[constructorArguments.Length];
-            Array.Copy(constructorArguments, constructorArgumentsCopy, constructorArguments.Length);
-            constructorArgumentsCopy[testInformationFixtureIndex] = testMethodFixture;
-            return constructorArgumentsCopy;
-        }
-
-        private Task<RunSummary> CreateObserveTask(Task failedObservedTask, IMessageBus messageBus, CancellationTokenSource cancellationTokenSource) {
-            var tcs = new TaskCompletionSource<RunSummary>();
-            var stopwatch = Stopwatch.StartNew();
-
-            failedObservedTask.ContinueWith(t => {
-                stopwatch.Stop();
-                if (!t.IsFaulted) {
-                    return;
-                }
-
-                var runSummary = new RunSummary { Total = 1, Failed = 1, Time = (decimal)stopwatch.Elapsed.TotalSeconds };
-                messageBus.QueueMessage(new TestFailed(new XunitTest(this, DisplayName), runSummary.Time, string.Empty, t.Exception));
-                cancellationTokenSource.Cancel();
-                tcs.SetResult(runSummary);
-            }, TaskContinuationOptions.ExecuteSynchronously);
-            return tcs.Task;
-        }
+        protected virtual object[] GetTestMethodArguments() => TestMethodArguments;
     }
 }

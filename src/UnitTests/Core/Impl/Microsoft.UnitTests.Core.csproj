@@ -74,7 +74,8 @@
     <Compile Include="XUnit\CompositeTestAttribute.cs" />
     <Compile Include="XUnit\CompositeTestDiscoverer.cs" />
     <Compile Include="XUnit\DeployFilesFixture.cs" />
-    <Compile Include="XUnit\IAssemblyFixture.cs" />
+    <Compile Include="XUnit\AssemblyFixtureAttribute.cs" />
+    <Compile Include="XUnit\IMethodFixture.cs" />
     <Compile Include="XUnit\InlineArrayAttribute.cs" />
     <Compile Include="XUnit\InlineArrayDiscoverer.cs" />
     <Compile Include="XUnit\MefCatalogFixture.cs" />
@@ -84,9 +85,12 @@
     <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusOverride.cs" />
     <Compile Include="XUnit\AssemblyMefCatalogFixture.cs" />
+    <Compile Include="XUnit\MethodFixtures\MethodFixtureBase.cs" />
+    <Compile Include="XUnit\MethodFixtures\TaskObserverMethodFixture.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />
     <Compile Include="XUnit\TestCase.cs" />
     <Compile Include="XUnit\TestCaseRunner.cs" />
+    <Compile Include="XUnit\TestCaseRunnerWithMethodFixtures.cs" />
     <Compile Include="XUnit\TestDiscoverer.cs" />
     <Compile Include="XUnit\TestForTypesAttribute.cs" />
     <Compile Include="XUnit\TestForTypesDiscoverer.cs" />
@@ -97,14 +101,13 @@
     <Compile Include="XUnit\TestFrameworkOverrideAttribute.cs" />
     <Compile Include="XUnit\TestFrameworkTypeDiscoverer.cs" />
     <Compile Include="XUnit\TestInvoker.cs" />
-    <Compile Include="XUnit\TestMethodFixture.cs" />
+    <Compile Include="XUnit\MethodFixtures\TestMethodFixture.cs" />
     <Compile Include="XUnit\TestParameters.cs" />
     <Compile Include="XUnit\TestRunner.cs" />
     <Compile Include="XUnit\TestTraceListener.cs" />
     <Compile Include="XUnit\ThreadType.cs" />
     <Compile Include="XUnit\TraceFailException.cs" />
     <Compile Include="XUnit\UnitTestTraitDiscoverer.cs" />
-    <Compile Include="XUnit\XunitTestCaseDecoratorBase.cs" />
     <Compile Include="XUnit\TestForTypesTestCase.cs" />
   </ItemGroup>
   <ItemGroup>

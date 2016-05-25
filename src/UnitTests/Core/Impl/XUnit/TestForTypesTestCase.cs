@@ -20,10 +20,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
             : base(diagnosticMessageSink, defaultMethodDisplay, testMethod, parameters, new object[] { testMethodArgumentType }) {
         }
 
-        protected override XunitTestCaseRunner CreateTestCaseRunner(IMessageSink diagnosticMessageSink, IMessageBus messageBus, object[] constructorArguments, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource) {
+        protected override object[] GetTestMethodArguments() {
             var testMethodArgumentType = (Type)TestMethodArguments.First();
             var testMethodArgument = Activator.CreateInstance(testMethodArgumentType);
-            return new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, new[] {testMethodArgument}, messageBus, aggregator, cancellationTokenSource);
+            return new[] { testMethodArgument };
         }
     }
 }

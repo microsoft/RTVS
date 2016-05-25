@@ -12,6 +12,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 

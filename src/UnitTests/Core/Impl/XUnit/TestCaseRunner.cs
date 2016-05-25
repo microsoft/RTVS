@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
-    internal sealed class TestCaseRunner : XunitTestCaseRunner {
+    internal class TestCaseRunner : XunitTestCaseRunner {
         public TestCaseRunner(IXunitTestCase testCase, string displayName, string skipReason, object[] constructorArguments, object[] testMethodArguments, IMessageBus messageBus, ExceptionAggregator aggregator, CancellationTokenSource cancellationTokenSource)
             : base(testCase, displayName, skipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource) { }
 
