@@ -16,8 +16,23 @@ namespace Microsoft.UnitTests.Core.UI {
     internal class ContainerHost : ContentControl {
         private const int MaxContainerCount = 9;
 
+        private static int _count;
         private static ContainerHost _current;
         private static readonly SemaphoreSlim AvailableSpots = new SemaphoreSlim(MaxContainerCount, MaxContainerCount);
+
+        public static async Task Increment() {
+            if (Interlocked.Increment(ref _count) == 1) {
+                _current = UIThreadHelper.Instance.Invoke(() => new ContainerHost());
+                await _current.ShowWindowAsync();
+            }
+        }
+
+        public static async Task Decrement() {
+            if (Interlocked.Decrement(ref _count) == 0) {
+                await _current.CloseWindowAsync();
+                _current = null;
+            }
+        }
 
         public static async Task<IDisposable> AddContainer(UIElement element) {
             await TaskUtilities.SwitchToBackgroundThread();
@@ -26,7 +41,7 @@ namespace Microsoft.UnitTests.Core.UI {
         }
 
         private readonly UIElement[] _elements = new UIElement[MaxContainerCount];
-        private readonly Grid _grid;
+        private Grid _grid;
 
         private int _columns = 1;
         private int _rows = 1;
@@ -36,21 +51,6 @@ namespace Microsoft.UnitTests.Core.UI {
 
         private Window _window;
         private Task _createWindowTask;
-
-        public ContainerHost(Window window) {
-            _window = window;
-            _current = this;
-            _firstEmptySlot = 0;
-
-            HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-            VerticalAlignment = VerticalAlignment.Stretch;
-            _grid = new Grid {
-                RowDefinitions = { new RowDefinition() },
-                ColumnDefinitions = { new ColumnDefinition() }
-            };
-            Content = _grid;
-            UpdateWindowSize();
-        }
 
         private void UpdateWindowSize() {
             Width = _columns * _columnWidth;
@@ -163,26 +163,39 @@ namespace Microsoft.UnitTests.Core.UI {
             return 1;
         }
 
-        public async Task ShowWindowAsync() {
+        private async Task ShowWindowAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
             _createWindowTask = ScheduleTask(ShowWindow);
             await ScheduleTask(() => { });
         }
 
-        public async Task CloseWindowAsync() {
+        private async Task CloseWindowAsync() {
             await ScheduleTask(CloseWindow);
             await _createWindowTask;
         }
 
         private void ShowWindow() {
+            _firstEmptySlot = 0;
+
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
+            VerticalAlignment = VerticalAlignment.Stretch;
+            _grid = new Grid {
+                RowDefinitions = { new RowDefinition() },
+                ColumnDefinitions = { new ColumnDefinition() }
+            };
+
+            Content = _grid;
+
             _window = new Window {
                 Title = "Test window",
                 Height = double.NaN,
                 Width = double.NaN,
+                Content = this,
+                SizeToContent = SizeToContent.WidthAndHeight,
             };
 
-            _window.Content = new ContainerHost(_window);
-            _window.SizeToContent = SizeToContent.WidthAndHeight;
+            UpdateWindowSize();
+
             if (Screen.AllScreens.Length == 1) {
                 _window.Left = 0;
                 _window.Top = 50;

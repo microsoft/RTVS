@@ -85,6 +85,7 @@
     <Compile Include="XUnit\MessageBusInjections\VerifyGlobalProviderMessageBusInjection.cs" />
     <Compile Include="XUnit\MessageBusOverride.cs" />
     <Compile Include="XUnit\AssemblyMefCatalogFixture.cs" />
+    <Compile Include="XUnit\MethodFixtures\ContainerHostMethodFixture.cs" />
     <Compile Include="XUnit\MethodFixtures\MethodFixtureBase.cs" />
     <Compile Include="XUnit\MethodFixtures\TaskObserverMethodFixture.cs" />
     <Compile Include="XUnit\TestAttribute.cs" />

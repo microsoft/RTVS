@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
@@ -58,7 +61,7 @@ namespace Microsoft.UnitTests.Core.XUnit.MethodFixtures {
             _observedTasks.TryRemove(task, out _);
         }
         
-        public Task DisposeAsync() {
+        public Task DisposeAsync(IMessageBus messageBus) {
             _stopwatch.Stop();
             _observedTasks.Clear();
             return Task.CompletedTask;

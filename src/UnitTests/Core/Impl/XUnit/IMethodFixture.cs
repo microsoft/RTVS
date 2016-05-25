@@ -25,6 +25,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
         /// </returns>
         Task<Task<RunSummary>> InitializeAsync(IXunitTestCase testCase, MethodInfo methodInfo, IMessageBus messageBus);
 
-        Task DisposeAsync();
+        Task DisposeAsync(IMessageBus messageBus);
     }
 }

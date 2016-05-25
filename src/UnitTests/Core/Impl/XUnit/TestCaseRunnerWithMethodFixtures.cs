@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit.Sdk;
@@ -47,7 +46,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             foreach (var methodFixture in _methodFixtures) {
-                await methodFixture.DisposeAsync();
+                await methodFixture.DisposeAsync(MessageBus);
             }
 
             return runSummaryTask.Result;

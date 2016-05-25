@@ -54,7 +54,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 : new TestCaseRunner(this, DisplayName, SkipReason, constructorArguments, testMethodArguments, messageBus, aggregator, cancellationTokenSource);
 
             if (ThreadType == ThreadType.UI) {
-                return UIThreadHelper.Instance.Invoke(((XunitTestCaseRunner) runner).RunAsync);
+                return UIThreadHelper.Instance.Invoke(runner.RunAsync);
             }
 
             messageBusOverride.AddAfterStartingBeforeFinished(new VerifyGlobalProviderMessageBusInjection());
