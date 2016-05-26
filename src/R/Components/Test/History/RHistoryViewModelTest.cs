@@ -11,6 +11,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
@@ -48,6 +49,8 @@ namespace Microsoft.R.Components.Test.History {
         [InlineData(new[] { 3 }, "    print(7*9)", 4)]
         [InlineData(new[] { 1, 3 }, "    print(7*9)", 4)]
         [InlineData(new[] { 1, 5 }, "h <- function() {", 6)]
+        [InlineData(new[] { 6, 5 }, "    print(42)", 7)]
+        [InlineData(new[] { 2, 6, 4 }, "    print(42)", 7)]
         public async Task SelectNextHistoryEntry(int[] linesToSelect, string selectedText, int selectedLineIndex) {
             var input = @"f <- function() {
     print(42)
@@ -68,11 +71,46 @@ h <- function() {
             _history.SelectNextHistoryEntry();
 
             await DoEvents();
+            var selectedSpans = _history.GetSelectedHistoryEntrySpans();
+            var selectedSpan = selectedSpans.Should().ContainSingle().Which;
+            selectedSpan.GetText().Should().Be(selectedText);
 
-            var startPosition = _historyVisualComponent.TextView.TextBuffer.CurrentSnapshot.Lines.ElementAt(selectedLineIndex).Start;
-            var selectedLine = _historyVisualComponent.TextView.TextViewLines.GetTextViewLineContainingBufferPosition(startPosition);
-            selectedLine.VisibilityState.Should().Be(VisibilityState.FullyVisible);
-            _history.GetSelectedText().Should().Be(selectedText);
+            var selectedTextViewLine = _historyVisualComponent.TextView.TextViewLines.GetTextViewLineContainingBufferPosition(selectedSpan.Start);
+            selectedTextViewLine.VisibilityState.Should().Be(VisibilityState.FullyVisible);
+        }
+
+        [CompositeTest(ThreadType.UI)]
+        [InlineData(new[] { 7 }, "h <- function() {", 6)]
+        [InlineData(new[] { 7, 2 }, "    print(42)", 1)]
+        [InlineData(new[] { 3, 4 }, "}", 2)]
+        [InlineData(new[] { 4, 3 }, "}", 2)]
+        [InlineData(new[] { 2, 6, 4 }, "    print(42)", 1)]
+        public async Task SelectPreviousHistoryEntry(int[] linesToSelect, string selectedText, int selectedLineIndex) {
+            var input = @"f <- function() {
+    print(42)
+}
+g <- function() {
+    print(7*9)
+}
+h <- function() {
+    print(42)
+}";
+            _history.AddToHistory(input);
+
+            foreach (var line in linesToSelect) {
+                _history.SelectHistoryEntry(line);
+            }
+
+            await DoEvents();
+            _history.SelectPreviousHistoryEntry();
+
+            await DoEvents();
+            var selectedSpans = _history.GetSelectedHistoryEntrySpans();
+            var selectedSpan = selectedSpans.Should().ContainSingle().Which;
+            selectedSpan.GetText().Should().Be(selectedText);
+
+            var selectedTextViewLine = _historyVisualComponent.TextView.TextViewLines.GetTextViewLineContainingBufferPosition(selectedSpan.Start);
+            selectedTextViewLine.VisibilityState.Should().Be(VisibilityState.FullyVisible);
         }
     }
 }
