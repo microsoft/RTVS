@@ -13,18 +13,19 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Stubs;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class ReadInput : IAsyncLifetime {
-            private readonly TestMethodFixture _testMethodFixture;
+            private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
             private readonly RSession _session;
             private readonly RSessionCallbackStub _callback;
 
-            public ReadInput(TestMethodFixture testMethod) {
-                _testMethodFixture = testMethod;
+            public ReadInput(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+                _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, () => { });
                 _callback = new RSessionCallbackStub();
@@ -36,7 +37,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     RBasePath = RUtilities.FindExistingRBasePath()
                 }, _callback, 50000);
 
-                _testMethodFixture.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
+                _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {

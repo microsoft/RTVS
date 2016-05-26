@@ -11,7 +11,7 @@
     <ProjectCapability Include="AllTargetOutputGroups"/>
     <ProjectCapability Include="VisualStudioWellKnownOutputGroups"/>
     <ProjectCapability Include="SourceItemsFromImports"/>
-    <ProjectCapability Include="ProjectConfigurationsDeclaredAsItems"/>
+    <ProjectCapability Include="ProjectConfigurationsInferredFromUsage"/>
     <ProjectCapability Include="SharedImports"/>
     <ProjectCapability Include="RTools"/>
   </ItemGroup>
@@ -20,6 +20,10 @@
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\ProjectItemsSchema.xaml;"/>
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Scc.xaml">
       <Context>Invisible</Context>
+    </PropertyPageSchema>
+
+    <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Run.xaml;">
+      <Context>Project</Context>
     </PropertyPageSchema>
 
     <PropertyPageSchema Include="$(MSBuildThisFileDirectory)\General.BrowseObject.xaml;">
