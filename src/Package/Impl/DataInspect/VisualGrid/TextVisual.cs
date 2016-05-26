@@ -7,32 +7,21 @@ using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class TextVisual : DrawingVisual {
-
-        public TextVisual() {
-            Margin = 3.0;
-        }
-
         public Brush Foreground { get; set; }
-
         public Typeface Typeface { get; set; }
-
         public double FontSize { get; set; }
-
         public int Row { get; set; }
-
         public int Column { get; set; }
-
-        public double Margin { get; set; }
+        public double Margin { get; set; } = 3.0;
+        public double X { get; set; }
+        public double Y { get; set; }
 
         private string _text;
-        public string Text {
-            get {
-                return _text;
-            }
+        public virtual string Text {
+            get { return _text; }
             set {
                 _text = value;
-                _formattedText = null;
-                _drawValid = false;
+                Invalidate();
             }
         }
 
@@ -54,19 +43,27 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         private bool _drawValid = false;
         public bool Draw() {
-            if (_drawValid) return false;
+            if (_drawValid) {
+                return false;
+            }
+
             DrawingContext dc = RenderOpen();
             try {
                 var formattedText = GetFormattedText();
+                double offset;
+                Size = GetRenderSize(formattedText, out offset);
 
-                Size = new Size(formattedText.Width, formattedText.Height);
-
-                dc.DrawText(formattedText, new Point());
+                dc.DrawText(formattedText, new Point(offset, 0));
                 _drawValid = true;
                 return true;
             } finally {
                 dc.Close();
             }
+        }
+
+        protected virtual Size GetRenderSize(FormattedText formattedText, out double offset) {
+            offset = 0;
+            return new Size(formattedText.Width, formattedText.Height);
         }
 
         private bool _isHighlight = false;
@@ -75,6 +72,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _drawValid = false;
 
             Draw();
+        }
+
+        protected void Invalidate() {
+            _formattedText = null;
+            _drawValid = false;
         }
     }
 }

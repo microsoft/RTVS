@@ -11,17 +11,29 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
-    public class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange) {
+    internal sealed class GridDataSource {
+        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
             await TaskUtilities.SwitchToBackgroundThread();
             var rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
- 
+
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
 
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
                 try {
-                    return await evaluator.EvaluateAsync<GridData>($"rtvs:::grid.data({expression}, {rows}, {columns})", REvaluationKind.Normal);
+                    string exp;
+                    if (sortOrder != null && !sortOrder.IsEmpty) {
+                        if (gridRange.Value.Columns.Count > 1) {
+                            string dataFrameSortExpression = sortOrder.GetDataFrameSortFunction();
+                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {dataFrameSortExpression.ToRStringLiteral()})");
+                        } else {
+                            int sortType = sortOrder.IsPrimaryDescending ? 2 : 1;
+                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, NULL, {sortType})");
+                        }
+                    } else {
+                        exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns})");
+                    }
+                    return await evaluator.EvaluateAsync<GridData>(exp, REvaluationKind.Normal);
                 } catch (RException ex) {
                     var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
                     GeneralLog.Write(message);
