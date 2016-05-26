@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _ui = TaskScheduler.FromCurrentSynchronizationContext();
 
             _owner = owner;
-            if(_owner.ColumnHeader != null) {
+            if (_owner.ColumnHeader != null) {
                 _owner.ColumnHeader.SortOrderChanged += OnSortOrderChanged;
             }
             _cancelSource = new CancellationTokenSource();
@@ -245,7 +245,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
         private void OnSortOrderChanged(object sender, EventArgs e) {
-            if(_owner?.Data == null || _owner.ColumnHeader == null) {
+            if (_owner?.Data == null || _owner.ColumnHeader == null) {
                 return;
             }
             _owner?.UpdateSort();
