@@ -37,7 +37,9 @@ namespace Microsoft.R.Debugger {
         internal bool IsDisposed { get; private set; }
         internal bool IsConnected { get; private set; }
         internal bool IsProgramDestroyed { get; private set; }
-        internal IRExecutionTracer DebugSession { get; private set; }
+
+        internal IRSession Session { get; private set; }
+        internal IRExecutionTracer Tracer { get; private set; }
         internal AD7Thread MainThread { get; private set; }
 
         [Import]
@@ -60,10 +62,9 @@ namespace Microsoft.R.Debugger {
                 return;
             }
 
-            var rSession = DebugSession.Session;
-            DebugSession.Browse -= Session_Browse;
-            DebugSession.Session.AfterRequest -= RSession_AfterRequest;
-            DebugSession.Session.Disconnected -= RSession_Disconnected;
+            Tracer.Browse -= Tracer_Browse;
+            Session.AfterRequest -= Session_AfterRequest;
+            Session.Disconnected -= Session_Disconnected;
 
             _events = null;
             _program = null;
@@ -71,14 +72,15 @@ namespace Microsoft.R.Debugger {
             MainThread.Dispose();
             MainThread = null;
 
-            DebugSession = null;
+            Tracer = null;
             RSessionProvider = null;
 
-            IsDisposed = true;
-
-            ExitBrowserAsync(rSession)
+            ExitBrowserAsync(Session)
                 .SilenceException<MessageTransportException>()
                 .DoNotWait();
+            Session = null;
+
+            IsDisposed = true;
         }
 
         private void ThrowIfDisposed() {
@@ -144,23 +146,23 @@ namespace Microsoft.R.Debugger {
             ThrowIfDisposed();
 
             if (rgpPrograms.Length != 1) {
-                throw new ArgumentException("Zero or more than one programs", "rgpPrograms");
+                throw new ArgumentException("Zero or more than one programs", nameof(rgpPrograms));
             }
 
             _program = rgpPrograms[0] as RDebugPortSupplier.DebugProgram;
             if (_program == null) {
-                throw new ArgumentException("rgpPrograms[0] must be an " + nameof(RDebugPortSupplier.DebugProgram), "rgpPrograms");
+                throw new ArgumentException("rgpPrograms[0] must be an " + nameof(RDebugPortSupplier.DebugProgram), nameof(rgpPrograms));
             }
-
             Marshal.ThrowExceptionForHR(_program.GetProgramId(out _programId));
 
             _events = pCallback;
-            DebugSession = TaskExtensions.RunSynchronouslyOnUIThread(ct => _program.Session.TraceExecutionAsync(ct));
+            Session = _program.Session;
+            Tracer = TaskExtensions.RunSynchronouslyOnUIThread(ct => Session.TraceExecutionAsync(ct));
             MainThread = new AD7Thread(this);
             IsConnected = true;
 
             // Enable breakpoint instrumentation.
-            TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugSession.EnableBreakpointsAsync(true, ct));
+            TaskExtensions.RunSynchronouslyOnUIThread(ct => Tracer.EnableBreakpointsAsync(true, ct));
 
             // Send notification after acquiring the session - we need it in case there were any breakpoints pending before
             // the attach, in which case we'll immediately get breakpoint creation requests as soon as we send these, and
@@ -174,14 +176,14 @@ namespace Microsoft.R.Debugger {
             // to pause the debugger - but it will be ignored unless the engine has reported its creation.
             // Also, AfterRequest must be registered before Browse, so that we never get in a situation where we get
             // Browse but not AfterRequest that follows it because of a race between raising and registration.
-            DebugSession.Session.AfterRequest += RSession_AfterRequest;
-            DebugSession.Session.Disconnected += RSession_Disconnected;
+            Session.AfterRequest += Session_AfterRequest;
+            Session.Disconnected += Session_Disconnected;
 
             // If we're already at the Browse prompt, registering the handler will result in its immediate invocation.
             // We want to handle that fully before we process any following AfterRequest event to avoid concurrency issues
             // where we pause and never resume, so hold the lock while adding the handler. 
             lock (_browseLock) {
-                DebugSession.Browse += Session_Browse;
+                Tracer.Browse += Tracer_Browse;
             }
 
             return VSConstants.S_OK;
@@ -189,7 +191,7 @@ namespace Microsoft.R.Debugger {
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            DebugSession.BreakAsync()
+            Tracer.BreakAsync()
                 .SilenceException<MessageTransportException>()
                 .DoNotWait();
             return VSConstants.S_OK;
@@ -300,7 +302,7 @@ namespace Microsoft.R.Debugger {
                 // Queue disabling breakpoint instrumentation, but do not wait for it to complete -
                 // if there's currently some code running, this may take a while, so just detach and
                 // let breakpoints be taken care of later.
-                DebugSession.EnableBreakpointsAsync(false)
+                Tracer.EnableBreakpointsAsync(false)
                     .SilenceException<MessageTransportException>()
                     .DoNotWait();
             } finally {
@@ -325,7 +327,7 @@ namespace Microsoft.R.Debugger {
                 lock (_browseLock) {
                     if (_sentContinue != true) {
                         _sentContinue = true;
-                        continueMethod = ct => DebugSession.ContinueAsync(ct);
+                        continueMethod = ct => Tracer.ContinueAsync(ct);
                     }
                 }
 
@@ -428,10 +430,10 @@ namespace Microsoft.R.Debugger {
             Task<bool> step;
             switch (sk) {
                 case enum_STEPKIND.STEP_OVER:
-                    step = DebugSession.StepOverAsync();
+                    step = Tracer.StepOverAsync();
                     break;
                 case enum_STEPKIND.STEP_INTO:
-                    step = DebugSession.StepIntoAsync();
+                    step = Tracer.StepIntoAsync();
                     break;
                 case enum_STEPKIND.STEP_OUT:
                     goto default;
@@ -511,7 +513,7 @@ namespace Microsoft.R.Debugger {
 
         int IDebugProgram3.ExecuteOnThread(IDebugThread2 pThread) {
             ThrowIfDisposed();
-            DebugSession.CancelStep();
+            Tracer.CancelStep();
             return Continue(pThread);
         }
 
@@ -565,7 +567,7 @@ namespace Microsoft.R.Debugger {
             return VSConstants.S_OK;
         }
 
-        private void Session_Browse(object sender, RBrowseEventArgs e) {
+        private void Tracer_Browse(object sender, RBrowseEventArgs e) {
             lock (_browseLock) {
                 _currentBrowseEventArgs = e;
                 _sentContinue = false;
@@ -580,7 +582,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
+        private void Session_AfterRequest(object sender, RRequestEventArgs e) {
             bool? sentContinue;
             lock (_browseLock) {
                 var browseEventArgs = _currentBrowseEventArgs;
@@ -606,7 +608,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        private void RSession_Disconnected(object sender, EventArgs e) {
+        private void Session_Disconnected(object sender, EventArgs e) {
             IsConnected = false;
             DestroyProgram();
         }

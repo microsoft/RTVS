@@ -78,7 +78,7 @@ namespace Microsoft.R.Debugger {
 
         private string GetReprToString() {
             var code = $"rtvs:::repr_toString(eval(quote({EvaluationResult.Expression}), envir = {EvaluationResult.EnvironmentExpression}))";
-            return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.DebugSession.Session.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
+            return TaskExtensions.RunSynchronouslyOnUIThread(ct => StackFrame.Engine.Tracer.Session.EvaluateAsync<string>(code, REvaluationKind.Normal, ct));
         }
 
         int IDebugProperty2.EnumChildren(enum_DEBUGPROP_INFO_FLAGS dwFields, uint dwRadix, ref Guid guidFilter, enum_DBG_ATTRIB_FLAGS dwAttribFilter, string pszNameFilter, uint dwTimeout, out IEnumDebugPropertyInfo2 ppEnum) {

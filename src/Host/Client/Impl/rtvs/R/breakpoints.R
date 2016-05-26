@@ -248,6 +248,9 @@ debug_parse <- function(filename, encoding = getOption('encoding')) {
   srcfile <- srcfilecopy(filename, text, file.mtime(filename), isFile = TRUE)
 
   exprs <- parse(text = text, srcfile = srcfile);
+  if (length(exprs) == 0) {
+    return(quote({}));
+  }
 
   # Create a `{` call wrapping all expressions in the file.
   result <- quote({});

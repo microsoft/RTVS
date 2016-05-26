@@ -229,6 +229,7 @@
     <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.Designer.cs">
       <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
@@ -1190,6 +1191,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Rules\Debugger.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Targets\Microsoft.R.targets">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

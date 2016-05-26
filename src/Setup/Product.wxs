@@ -187,6 +187,7 @@
               <Directory Id="MSBuildMicrosoftVisualStudioVersionFolder" Name="v$(var.VsVersion)">
                 <Directory Id="MSBuildRTVSFolder" Name="RTVS">
                   <Directory Id="CpsRulesInstallFolder" Name="Rules" />
+                  <Directory Id="MSBuildTargetsInstallFolder" Name="Targets" />
                 </Directory>
               </Directory>
             </Directory>
@@ -201,6 +202,7 @@
     <?include Assemblies.wxi ?>
     <?include FileNewTemplates.wxi ?>
     <?include CpsRules.wxi ?>
+    <?include MSBuildTargets.wxi ?>
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
     <?include SqlTemplates.wxi ?>

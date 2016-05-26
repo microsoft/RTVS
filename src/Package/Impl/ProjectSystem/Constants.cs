@@ -5,5 +5,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal sealed class Constants {
         public const string RtvsProjectCapability = "RTools";
         public const string RtvsRulesPropsRelativePath = @"RTVS\Rules\rtvs.rules.props";
+        public const string RtvsTargetsRelativePath = @"RTVS\Targets\Microsoft.R.targets";
     }
 }

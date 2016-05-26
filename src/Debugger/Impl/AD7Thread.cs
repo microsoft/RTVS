@@ -19,14 +19,14 @@ namespace Microsoft.R.Debugger {
         public AD7Engine Engine { get; set; }
 
         public AD7Thread(AD7Engine engine) {
-            Debug.Assert(engine.DebugSession != null);
+            Debug.Assert(engine.Tracer != null);
             Engine = engine;
-            Engine.DebugSession.Session.BeforeRequest += RSession_BeforeRequest;
+            Engine.Tracer.Session.BeforeRequest += RSession_BeforeRequest;
             ResetStackFrames();
         }
 
         public void Dispose() {
-            Engine.DebugSession.Session.BeforeRequest -= RSession_BeforeRequest;
+            Engine.Tracer.Session.BeforeRequest -= RSession_BeforeRequest;
             Engine = null;
         }
 
@@ -160,7 +160,7 @@ namespace Microsoft.R.Debugger {
         private void ResetStackFrames() {
             _stackFrames = Lazy.Create(() =>
                 (IReadOnlyList<IRStackFrame>)
-                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.Session.TracebackAsync(cancellationToken: ct))
+                TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.Tracer.Session.TracebackAsync(cancellationToken: ct))
                 .Reverse()
                 .ToArray());
         }
