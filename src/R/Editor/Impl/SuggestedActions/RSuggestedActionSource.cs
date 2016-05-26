@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
@@ -60,7 +62,8 @@ namespace Microsoft.R.Editor.SuggestedActions {
         public event EventHandler<EventArgs> SuggestedActionsChanged;
 
         public IEnumerable<SuggestedActionSet> GetSuggestedActions(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            if (cancellationToken.IsCancellationRequested) {
+            if (cancellationToken.IsCancellationRequested || 
+                !range.Snapshot.TextBuffer.ContentType.TypeName.EqualsOrdinal(RContentTypeDefinition.ContentType)) {
                 return Enumerable.Empty<SuggestedActionSet>();
             }
 
@@ -86,10 +89,14 @@ namespace Microsoft.R.Editor.SuggestedActions {
         }
 
         public Task<bool> HasSuggestedActionsAsync(ISuggestedActionCategorySet requestedActionCategories, SnapshotSpan range, CancellationToken cancellationToken) {
-            int caretPosition = _textView.Caret.Position.BufferPosition;
-            foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
-                if (actionProvider.HasSuggestedActions(_textView, _textBuffer, caretPosition)) {
-                    return Task.FromResult(true);
+            if (!_textView.Caret.InVirtualSpace) {
+                var rPosition = _textView.MapDownToR(_textView.Caret.Position.BufferPosition);
+                if (rPosition.HasValue) {
+                    foreach (IRSuggestedActionProvider actionProvider in _suggestedActionProviders) {
+                        if (actionProvider.HasSuggestedActions(_textView, _textBuffer, rPosition.Value.Position)) {
+                            return Task.FromResult(true);
+                        }
+                    }
                 }
             }
             return Task.FromResult(false);

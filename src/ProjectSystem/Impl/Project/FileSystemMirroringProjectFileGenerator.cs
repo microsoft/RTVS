@@ -41,6 +41,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private void EnsureCpsProjFile(string cpsProjFileName) {
             var fileInfo = new FileInfo(cpsProjFileName);
+            if (fileInfo.Exists) {
+                return;
+            }
+
             var inMemoryTargetsFile = FileSystemMirroringProjectUtilities.GetInMemoryTargetsFileName(cpsProjFileName);
 
             var xProjDocument = new XProjDocument(
@@ -64,10 +68,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                 )
             );
 
-            if (fileInfo.Exists) {
-                fileInfo.Delete();
-            }
-
             using (var writer = fileInfo.CreateText()) {
                 xProjDocument.Save(writer);
             }
@@ -81,14 +81,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
         private IEnumerable<XImport> CreateMsBuildExtensionXImports(string import) {
             var msBuildImportExtensionPath = Invariant($@"$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
-#if DEBUG
             var msBuildImportUserExtensionPath = Invariant($@"$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\{import}");
 
             yield return new XImportExisting(msBuildImportUserExtensionPath);
             yield return new XImportExisting(msBuildImportExtensionPath, $"!Exists('{msBuildImportUserExtensionPath}')");
-#else
-            yield return new XImportExisting(msBuildImportExtensionPath);
-#endif
         }
     }
 }

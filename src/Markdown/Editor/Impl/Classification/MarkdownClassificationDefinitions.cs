@@ -153,25 +153,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// `monospace`
         /// </summary>
         [Export]
-        [Name("Markdown Code")]
-        internal ClassificationTypeDefinition MdCodeClassificationType { get; set; }
-
-        [Export(typeof(EditorFormatDefinition))]
-        [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Code")]
-        [Name("Markdown Code")]
-        [ExcludeFromCodeCoverage]
-        internal sealed class MdCodeClassificationFormat : ClassificationFormatDefinition {
-            public MdCodeClassificationFormat() {
-                ForegroundColor = Colors.DarkGray;
-                this.DisplayName = Resources.ColorName_MD_Code;
-            }
-        }
-
-        /// <summary>
-        /// `monospace`
-        /// </summary>
-        [Export]
         [Name("Markdown Alt Text")]
         internal ClassificationTypeDefinition MdAltTextClassificationType { get; set; }
 

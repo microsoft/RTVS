@@ -245,8 +245,7 @@ namespace Microsoft.R.Editor.Tree {
                 // sequentially as after every change element positions will shift and hence
                 // next change must be relative to the new position and not to the current
                 // text buffer snapshot. Changes are sorted by position.
-                List<TextChangeEventArgs> textChanges = TextUtility.ConvertToRelative(e);
-                TreeUpdateTask.OnTextChanges(textChanges);
+                TreeUpdateTask.OnTextChanges(e.ConvertToRelative());
             }
         }
 

@@ -4,17 +4,16 @@
 using System.Diagnostics.CodeAnalysis;
 using Xunit.Abstractions;
 
-namespace Microsoft.UnitTests.Core.XUnit
-{
+namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
-    public class TestParameters
-    {
-        public TestParameters(IAttributeInfo factAttribute)
-        {
-            SkipReason = factAttribute.GetNamedArgument<string>("Skip");
-            ThreadType = factAttribute.GetNamedArgument<ThreadType>("ThreadType");
+    public class TestParameters {
+        public TestParameters(IAttributeInfo factAttribute) {
+            SkipReason = factAttribute.GetNamedArgument<string>(nameof(TestAttribute.Skip));
+            ThreadType = factAttribute.GetNamedArgument<ThreadType>(nameof(TestAttribute.ThreadType));
+            ShowWindow = factAttribute.GetNamedArgument<bool>(nameof(TestAttribute.ShowWindow));
         }
 
+        public bool ShowWindow { get; }
         public ThreadType ThreadType { get; }
         public string SkipReason { get; }
     }

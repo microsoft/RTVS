@@ -69,18 +69,21 @@ namespace Microsoft.VisualStudio.R.Package.Editors {
             Debug.Assert(diskBuffer != null);
 
             try {
-                var importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
-                var factory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
+                var editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
+                if (editorInstance == null) {
+                    var importComposer = new ContentTypeImportComposer<IEditorFactory>(VsAppShell.Current.CompositionService);
+                    var instancefactory = importComposer.GetImport(diskBuffer.ContentType.TypeName);
+                    Debug.Assert(instancefactory != null);
 
-                var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
-                var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
+                    var documentFactoryImportComposer = new ContentTypeImportComposer<IVsEditorDocumentFactory>(VsAppShell.Current.CompositionService);
+                    var documentFactory = documentFactoryImportComposer.GetImport(diskBuffer.ContentType.TypeName);
+                    Debug.Assert(documentFactory != null);
 
-                IEditorInstance editorInstance = ServiceManager.GetService<IEditorInstance>(diskBuffer);
-
-                if (factory != null && editorInstance == null) {
-                    editorInstance = factory.CreateEditorInstance(diskBuffer, documentFactory);
-                    adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
+                    editorInstance = instancefactory.CreateEditorInstance(diskBuffer, documentFactory);
                 }
+
+                Debug.Assert(editorInstance != null);
+                adapterService.SetDataBuffer(_textLines, editorInstance.ViewBuffer);
             } finally {
                 cp.Unadvise(cookie);
                 cookie = 0;

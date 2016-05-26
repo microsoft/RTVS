@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -20,14 +21,19 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
         private readonly IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> _classificationNameProviders;
 
         [ImportingConstructor]
-        public MdClassifierProvider(IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs, IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> cnp) {
+        public MdClassifierProvider(IClassificationTypeRegistryService crs, IContentTypeRegistryService ctrs,
+                                    [ImportMany] IEnumerable<Lazy<IClassificationNameProvider, IComponentContentTypes>> cnp) {
             _classificationRegistryService = crs;
             _contentTypeRegistryService = ctrs;
             _classificationNameProviders = cnp;
         }
 
         protected override IClassifier CreateClassifier(ITextBuffer textBuffer) {
-            return new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService, _classificationNameProviders);
+            var classifier = ServiceManager.GetService<MdClassifier>(textBuffer);
+            if (classifier == null) {
+                classifier = new MdClassifier(textBuffer, _classificationRegistryService, _contentTypeRegistryService, _classificationNameProviders);
+            }
+            return classifier;
         }
     }
 }

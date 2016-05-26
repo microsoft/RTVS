@@ -154,19 +154,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Deletes variable represented by this mode
         /// </summary>
-        public Task DeleteAsync() {
+        public async Task DeleteAsync() {
             if (!_deleted) {
                 _deleted = true;
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
                 try {
-                    return session.ExecuteAsync(Invariant($"rm({Name})"));
-                } catch (RException ex) {
+                    using (var e = await session.BeginInteractionAsync(isVisible: false)) {
+                        await e.RespondAsync(Invariant($"rm({Name})"));
+                    }
+                } catch (RException rex) {
                     VsAppShell.Current.ShowErrorMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
                 } catch (MessageTransportException) { }
             }
-            return Task.CompletedTask;
         }
         #endregion
     }

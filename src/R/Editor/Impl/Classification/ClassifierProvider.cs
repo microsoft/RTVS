@@ -13,16 +13,13 @@ namespace Microsoft.R.Editor.Classification {
     [Export(typeof(IClassifierProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
-    internal sealed class ClassifierProvider : IClassifierProvider
-    {
+    internal sealed class ClassifierProvider : IClassifierProvider {
         [Import]
         public IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
 
-        public IClassifier GetClassifier(ITextBuffer textBuffer)
-        {
+        public IClassifier GetClassifier(ITextBuffer textBuffer) {
             RClassifier classifier = ServiceManager.GetService<RClassifier>(textBuffer);
-            if (classifier == null)
-            {
+            if (classifier == null) {
                 classifier = new RClassifier(textBuffer, ClassificationRegistryService);
             }
 

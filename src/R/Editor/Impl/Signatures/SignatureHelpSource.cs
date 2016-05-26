@@ -34,14 +34,16 @@ namespace Microsoft.R.Editor.Signatures {
             }
 
             var document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if (document != null && !document.EditorTree.IsReady) {
-                document.EditorTree.InvokeWhenReady((p) => {
-                    var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
-                    broker.DismissAllSessions((ITextView)p);
-                    broker.TriggerSignatureHelp((ITextView)p);
-                }, session.TextView, this.GetType(), processNow: true);
+            if (document != null) {
+                if (!document.EditorTree.IsReady) {
+                    document.EditorTree.InvokeWhenReady((p) => {
+                        var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                        broker.DismissAllSessions((ITextView)p);
+                        broker.TriggerSignatureHelp((ITextView)p);
+                    }, session.TextView, this.GetType(), processNow: true);
+                }
+                AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
             }
-            AugmentSignatureHelpSession(session, signatures, document.EditorTree.AstRoot, TriggerSignatureHelp);
         }
 
         public bool AugmentSignatureHelpSession(ISignatureHelpSession session, IList<ISignature> signatures, AstRoot ast, Action<object> triggerSession) {

@@ -165,8 +165,12 @@ namespace Microsoft.R.Components.History.Implementation {
         }
 
         public void PreviousEntry() {
+            if (!HasEntries) {
+                return;
+            }
+
             if (_currentEntry == null) {
-                _currentEntry = _entries.LastOrDefault();
+                _currentEntry = _entries.Last();
             } else while (_currentEntry.Previous != null) {
                 _currentEntry = _currentEntry.Previous;
                 if (!_historyTextBuffer.IsContentEqualsOrdinal(_currentEntry.Next.Span, _currentEntry.Span)) {
@@ -330,6 +334,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
+            IRHistoryEntry entryToSelect;
             if (HasSelectedEntries) {
                 var lastSelectedEntry = _entries.GetSelectedEntries().Last();
                 if (lastSelectedEntry.Next == null) {
@@ -337,14 +342,14 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 ClearHistoryEntrySelection();
-                lastSelectedEntry.Next.IsSelected = true;
+                entryToSelect = lastSelectedEntry.Next;
             } else {
                 if (VisualComponent == null) {
                     return;
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    _entries.FirstOrDefault().IsSelected = true;
+                    entryToSelect = _entries.First();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.End.Position);
                     if (entry.Next == null) {
@@ -352,11 +357,11 @@ namespace Microsoft.R.Components.History.Implementation {
                     }
 
                     VisualComponent.TextView.Selection.Clear();
-                    entry.Next.IsSelected = true;
+                    entryToSelect = entry.Next;
                 }
             }
 
-            OnSelectionChanged();
+            SelectAndDispalyEntry(entryToSelect, ViewRelativePosition.Bottom);
         }
 
         public void SelectPreviousHistoryEntry() {
@@ -364,6 +369,7 @@ namespace Microsoft.R.Components.History.Implementation {
                 return;
             }
 
+            IRHistoryEntry entryToSelect;
             if (HasSelectedEntries) {
                 var firstSelectedEntry = _entries.GetSelectedEntries().First();
                 if (firstSelectedEntry.Previous == null) {
@@ -371,14 +377,14 @@ namespace Microsoft.R.Components.History.Implementation {
                 }
 
                 ClearHistoryEntrySelection();
-                firstSelectedEntry.Previous.IsSelected = true;
+                entryToSelect = firstSelectedEntry.Previous;
             } else {
                 if (VisualComponent == null) {
                     return;
                 }
 
                 if (VisualComponent.TextView.Selection.IsEmpty) {
-                    _entries.LastOrDefault().IsSelected = true;
+                    entryToSelect = _entries.Last();
                 } else {
                     var entry = GetHistoryEntryFromPosition(VisualComponent.TextView.Selection.Start.Position);
                     if (entry.Previous == null) {
@@ -386,8 +392,23 @@ namespace Microsoft.R.Components.History.Implementation {
                     }
 
                     VisualComponent.TextView.Selection.Clear();
-                    entry.Previous.IsSelected = true;
+                    entryToSelect = entry.Previous;
                 }
+            }
+
+            SelectAndDispalyEntry(entryToSelect, ViewRelativePosition.Top);
+        }
+
+        private void SelectAndDispalyEntry(IRHistoryEntry entryToSelect, ViewRelativePosition relativeTo) {
+            entryToSelect.IsSelected = true;
+
+            var snapshotPoint = relativeTo == ViewRelativePosition.Top 
+                ? entryToSelect.Span.GetStartPoint(_historyTextBuffer.CurrentSnapshot)
+                : entryToSelect.Span.GetEndPoint(_historyTextBuffer.CurrentSnapshot);
+
+            var line = VisualComponent.TextView.GetTextViewLineContainingBufferPosition(snapshotPoint);
+            if (line.VisibilityState != VisibilityState.FullyVisible) {
+                VisualComponent.TextView.DisplayTextLineContainingBufferPosition(snapshotPoint, 0, relativeTo);
             }
 
             OnSelectionChanged();

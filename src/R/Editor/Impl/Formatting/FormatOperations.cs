@@ -77,7 +77,7 @@ namespace Microsoft.R.Editor.Formatting {
                             document.EditorTree.EnsureTreeReady();
                             ast = document.EditorTree.AstRoot;
                             scope = ast.GetNodeOfTypeFromPosition<IScope>(caretPoint.Value);
-                            IndentCaretInNewScope(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                            IndentCaretInNewScope(textView, scope, caretPoint.Value, REditorSettings.FormatOptions);
                         }
                     }
                     if (changed) {
@@ -129,33 +129,33 @@ namespace Microsoft.R.Editor.Formatting {
             return scope;
         }
 
-        private static void IndentCaretInNewScope(ITextView textView, ITextBuffer textBuffer, IScope scope, RFormatOptions options) {
-            ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-
-            SnapshotPoint? positionInBuffer = textView.MapDownToBuffer(textView.Caret.Position.BufferPosition, textBuffer);
-            if (!positionInBuffer.HasValue || scope == null || scope.OpenCurlyBrace == null) {
+        private static void IndentCaretInNewScope(ITextView textView, IScope scope, SnapshotPoint caretBufferPoint, RFormatOptions options) {
+            if (scope == null || scope.OpenCurlyBrace == null) {
                 return;
             }
+            ITextSnapshot rSnapshot = caretBufferPoint.Snapshot;
+            ITextBuffer rTextBuffer = rSnapshot.TextBuffer;
+            int rCaretPosition = caretBufferPoint.Position;
 
-            int position = positionInBuffer.Value.Position;
-            ITextSnapshotLine caretLine = snapshot.GetLineFromPosition(position);
+            var caretLine = rSnapshot.GetLineFromPosition(rCaretPosition);
+            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(rTextBuffer, scope, options);
 
-            int innerIndentSize = SmartIndenter.InnerIndentSizeFromNode(textBuffer, scope, options);
+            int openBraceLineNumber = rSnapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
+            var braceLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber);
+            var indentLine = rSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
 
-            int openBraceLineNumber = snapshot.GetLineNumberFromPosition(scope.OpenCurlyBrace.Start);
-            ITextSnapshotLine braceLine = snapshot.GetLineFromLineNumber(openBraceLineNumber);
-            ITextSnapshotLine indentLine = snapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
             string lineBreakText = braceLine.GetLineBreakText();
+            rTextBuffer.Insert(indentLine.Start, lineBreakText);
 
-            textBuffer.Insert(indentLine.Start, lineBreakText);
-
-            positionInBuffer = textView.MapUpToBuffer(indentLine.Start.Position, textView.TextBuffer);
-            if (!positionInBuffer.HasValue) {
-                return;
+            // Fetch the line again since snapshot has changed when line break was inserted
+            indentLine = rTextBuffer.CurrentSnapshot.GetLineFromLineNumber(openBraceLineNumber + 1);
+            
+            // Map new caret position back to the view
+            var positionInView = textView.MapUpToView(indentLine.Start);
+            if (positionInView.HasValue) {
+                var viewIndentLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(positionInView.Value);
+                textView.Caret.MoveTo(new VirtualSnapshotPoint(viewIndentLine.Start, innerIndentSize));
             }
-
-            indentLine = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(positionInBuffer.Value);
-            textView.Caret.MoveTo(new VirtualSnapshotPoint(indentLine, innerIndentSize));
         }
     }
 }

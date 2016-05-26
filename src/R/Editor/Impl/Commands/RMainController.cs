@@ -33,7 +33,7 @@ namespace Microsoft.R.Editor.Commands {
         /// <summary>
         /// Retrieves R command controller from text view
         /// </summary>
-        public static RMainController FromTextView(ITextView textView) {
+        public static new RMainController FromTextView(ITextView textView) {
             return ServiceManager.GetService<RMainController>(textView);
         }
 

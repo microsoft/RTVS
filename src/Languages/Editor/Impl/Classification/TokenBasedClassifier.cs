@@ -118,28 +118,22 @@ namespace Microsoft.Languages.Editor.Classification {
             }
 
             _lastValidPosition = Math.Min(_lastValidPosition, start);
-            if (Tokens.Count > 0)
+            if (Tokens.Count > 0) {
                 Tokens.RemoveInRange(TextRange.FromBounds(_lastValidPosition, Tokens[Tokens.Count - 1].End), true);
+            }
 
             // In line-based tokenizers like SaSS or Jade we need to start at the beginning 
             // of the line i.e. at 'anchor' position that is calculated depending on 
             // the particular language syntax.
 
             _lastValidPosition = GetAnchorPosition(_lastValidPosition);
-
             RemoveSensitiveTokens(_lastValidPosition, Tokens);
             VerifyTokensSorted();
-
             _lastValidPosition = Tokens.Count > 0 ? Math.Min(_lastValidPosition, Tokens[Tokens.Count - 1].End) : 0;
 
-            if (ClassificationChanged != null) {
-                var snapshot = TextBuffer.CurrentSnapshot;
-
-                ClassificationChanged(this, new ClassificationChangedEventArgs(
-                        new SnapshotSpan(snapshot,
-                            Span.FromBounds(_lastValidPosition, snapshot.Length)))
-                            );
-            }
+            ClassificationChanged?.Invoke(this, new ClassificationChangedEventArgs(
+                    new SnapshotSpan(TextBuffer.CurrentSnapshot, Span.FromBounds(_lastValidPosition, TextBuffer.CurrentSnapshot.Length)))
+                   );
         }
 
         public virtual IList<ClassificationSpan> GetClassificationSpans(SnapshotSpan span) {

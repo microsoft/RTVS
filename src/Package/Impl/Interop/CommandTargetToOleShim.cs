@@ -16,8 +16,8 @@ namespace Microsoft.VisualStudio.R.Package.Interop {
     /// While a command is executing, the current variant arguments are cached.
     /// </summary>
     public sealed class CommandTargetToOleShim : IOleCommandTarget, ICommandTarget {
-        private ICommandTarget _commandTarget;
-        private CommandTargetToOleShimVariantStacks _variantStacks;
+        private readonly ICommandTarget _commandTarget;
+        private readonly CommandTargetToOleShimVariantStacks _variantStacks;
 
         public CommandTargetToOleShim(ITextView textView, ICommandTarget commandTarget) {
             _commandTarget = commandTarget;

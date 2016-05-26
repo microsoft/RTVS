@@ -18,6 +18,7 @@ using Microsoft.R.Components.Plots.Implementation.View;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {

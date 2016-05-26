@@ -17,6 +17,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
             _textView = new WpfTextViewMock(tb);
         }
 
+        public IWpfTextView LastActiveTextView => _textView;
+
         public IWpfTextView GetLastActiveTextView(string contentType) {
             return _textView;
         }

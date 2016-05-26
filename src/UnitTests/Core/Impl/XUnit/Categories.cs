@@ -8,8 +8,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
     public static class Category {
         [ExcludeFromCodeCoverage]
         public static class Languages {
+            [ExcludeFromCodeCoverage]
             public class CoreAttribute : CategoryAttribute {
                 public CoreAttribute() : base("Languages.Core") { }
+            }
+            [ExcludeFromCodeCoverage]
+            public class ContainedAttribute : CategoryAttribute {
+                public ContainedAttribute() : base("Languages.Contained") { }
             }
         }
 
@@ -43,6 +48,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             [ExcludeFromCodeCoverage]
             public class TokenizerAttribute : CategoryAttribute {
                 public TokenizerAttribute() : base("Md.Tokenizer") { }
+            }
+
+            [ExcludeFromCodeCoverage]
+            public class RCodeAttribute : CategoryAttribute {
+                public RCodeAttribute() : base("Md.RCode") { }
             }
         }
 

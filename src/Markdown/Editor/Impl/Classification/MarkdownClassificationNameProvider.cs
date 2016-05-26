@@ -28,11 +28,6 @@ namespace Microsoft.Markdown.Editor.Classification {
                 case MarkdownTokenType.BoldItalic:
                     return MarkdownClassificationTypes.BoldItalic;
 
-                case MarkdownTokenType.CodeStart:
-                case MarkdownTokenType.CodeContent:
-                case MarkdownTokenType.CodeEnd:
-                    return MarkdownClassificationTypes.Code;
-
                 case MarkdownTokenType.Monospace:
                     return MarkdownClassificationTypes.Monospace;
 

@@ -15,6 +15,7 @@ using Microsoft.R.Host.Client.Definitions;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {

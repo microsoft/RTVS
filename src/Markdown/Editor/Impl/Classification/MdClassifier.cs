@@ -7,6 +7,7 @@ using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Classification;
 using Microsoft.Languages.Editor.Composition;
+using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -25,6 +26,8 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             ContentTypeRegistryService = contentTypeRegistryService;
             ClassificationNameProviders = classificationNameProviders;
             ClassificationRegistryService = classificationRegistryService;
+
+            ServiceManager.AddService<MdClassifier>(this, textBuffer);
         }
 
 
@@ -35,7 +38,7 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             // block. For example, when user types ``` in a middle of existing ```...``` block. 
             // This is similar to typing %> or ?> in a middle of ASP.NET or PHP block.
             int last = tokens.Count - 1;
-            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.CodeStart) {
+            if (last >= 0 && tokens[last].TokenType == MarkdownTokenType.Code) {
                 tokens.RemoveAt(last);
             }
 

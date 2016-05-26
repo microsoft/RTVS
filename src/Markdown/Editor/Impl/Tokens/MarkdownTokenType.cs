@@ -56,19 +56,9 @@ namespace Microsoft.Markdown.Editor.Tokens {
         Monospace,
 
         /// <summary>
-        /// Leading triple-backtick
+        /// ```code```
         /// </summary>
-        CodeStart,
-
-        /// <summary>
-        /// Code inside ```code``` block
-        /// </summary>
-        CodeContent,
-
-        /// <summary>
-        /// Trailing triple-backtick
-        /// </summary>
-        CodeEnd,
+        Code,
         
         /// <summary>
         /// (url)

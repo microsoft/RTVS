@@ -59,8 +59,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         TerminalWidth = _terminalWidth,
                     };
 
-                    CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
-
+                    if (CurrentWindow != null) {
+                        CurrentWindow.TextView.VisualElement.SizeChanged += VisualElement_SizeChanged;
+                    }
                     await Session.StartHostAsync(startupInfo, new RSessionCallback(CurrentWindow, Session, _settings, _coreShell));
                 }
                 return ExecutionResult.Success;
@@ -75,7 +76,6 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public async Task<ExecutionResult> ResetAsync(bool initialize = true) {
             try {
                 CurrentWindow.TextView.VisualElement.SizeChanged -= VisualElement_SizeChanged;
-
                 if (Session.IsHostRunning) {
                     CurrentWindow.WriteError(Resources.MicrosoftRHostStopping + Environment.NewLine);
                     await Session.StopHostAsync();

@@ -15,6 +15,7 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -69,14 +70,12 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 .And.BeInvisibleAndDisabled();
 
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                command.Should().BeSupported()
-                    .And.BeVisibleAndDisabled();
-
                 const string code = "sourced <- TRUE";
                 var textBuffer = new TextBufferMock(code, RContentTypeDefinition.ContentType);
                 var textView = new WpfTextViewMock(textBuffer);
 
                 tracker.GetLastActiveTextView(RContentTypeDefinition.ContentType).Returns(textView);
+                tracker.LastActiveTextView.Returns(textView);
 
                 command.Should().BeSupported()
                     .And.BeVisibleAndDisabled();
