@@ -31,6 +31,30 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         private IVsWindowFrame VsWindowFrame => _vsWindowFrame ?? (_vsWindowFrame = _toolWindowPane.Frame as IVsWindowFrame);
 
+        public string CaptionText
+        {
+            get { return _toolWindowPane.Caption; }
+            set { _toolWindowPane.Caption = value; }
+        }
+
+        public string StatusText
+        {
+            get {
+                string text = string.Empty;
+                VsAppShell.Current.DispatchOnUIThread(() => {
+                    var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                    ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
+                });
+                return text;
+            }
+            set {
+                VsAppShell.Current.DispatchOnUIThread(() => {
+                    var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                    statusBar.SetText(value);
+                });
+            }
+        }
+
         public void ShowContextMenu(CommandID commandId, Point position) {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 var point = Component.Control.PointToScreen(position);

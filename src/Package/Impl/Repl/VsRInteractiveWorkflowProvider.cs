@@ -8,6 +8,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 
@@ -17,6 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;
         private readonly IRPackageManagerProvider _packagesProvider;
+        private readonly IRPlotManagerProvider _plotsProvider;
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
 
@@ -26,12 +28,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public VsRInteractiveWorkflowProvider(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
+            , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker) {
 
             _sessionProvider = sessionProvider;
             _historyProvider = historyProvider;
             _packagesProvider = packagesProvider;
+            _plotsProvider = plotsProvider;
             _activeTextViewTracker = activeTextViewTracker;
             _debuggerModeTracker = debuggerModeTracker;
         }
@@ -44,7 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         private IRInteractiveWorkflow CreateRInteractiveWorkflow() {
             var shell = EditorShell.Current;
             var settings = RToolsSettings.Current;
-            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _activeTextViewTracker, _debuggerModeTracker, shell, settings, DisposeInstance);
+            return new RInteractiveWorkflow(_sessionProvider, _historyProvider, _packagesProvider, _plotsProvider, _activeTextViewTracker, _debuggerModeTracker, shell, settings, DisposeInstance);
         }
 
         private void DisposeInstance() {

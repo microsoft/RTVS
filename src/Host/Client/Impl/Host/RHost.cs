@@ -14,6 +14,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Logging;
+using Microsoft.R.Host.Client.Definitions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -417,7 +418,12 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "Plot":
-                                await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
+                                await _callbacks.Plot(
+                                    new PlotMessage(
+                                        message.GetString(0, "xaml_file_path"),
+                                        message.GetInt32(1, "active_plot_index"),
+                                        message.GetInt32(2, "plot_count")),
+                                    ct);
                                 break;
 
                             case "Locator":

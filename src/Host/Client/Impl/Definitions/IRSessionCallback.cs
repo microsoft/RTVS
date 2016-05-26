@@ -4,6 +4,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client {
     /// <summary>
@@ -29,7 +30,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        Task Plot(string filePath, CancellationToken ct);
+        Task Plot(PlotMessage plot, CancellationToken ct);
 
         /// <summary>
         /// Set locator mode in the plot window

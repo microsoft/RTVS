@@ -17,6 +17,9 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
 
         public T Component { get; set; }
 
+        public string CaptionText { get; set; }
+        public string StatusText { get; set; }
+
         public bool IsOnScreen => Visibility == Visibility.Visible;
 
         public void Show(bool focus) {

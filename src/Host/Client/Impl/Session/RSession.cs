@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Task = System.Threading.Tasks.Task;
 using static System.FormattableString;
+using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {
@@ -499,9 +500,9 @@ namespace Microsoft.R.Host.Client.Session {
             return Task.CompletedTask;
         }
 
-        Task IRCallbacks.Plot(string filePath, CancellationToken ct) {
+        Task IRCallbacks.Plot(PlotMessage plot, CancellationToken ct) {
             var callback = _callback;
-            return callback != null ? callback.Plot(filePath, ct) : Task.CompletedTask;
+            return callback != null ? callback.Plot(plot, ct) : Task.CompletedTask;
         }
 
         Task<LocatorResult> IRCallbacks.Locator(CancellationToken ct) {

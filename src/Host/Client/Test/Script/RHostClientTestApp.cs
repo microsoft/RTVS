@@ -5,19 +5,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRSessionCallback {
         public Func<LocatorResult> LocatorHandler { get; set; }
-        public Action<string> PlotHandler { get; set; }
+        public Action<PlotMessage> PlotHandler { get; set; }
 
         public virtual string CranUrlFromName(string name) {
             return "https://cran.rstudio.com";
         }
 
-        public virtual Task Plot(string filePath, CancellationToken ct) {
+        public virtual Task Plot(PlotMessage plot, CancellationToken ct) {
             if (PlotHandler != null) {
-                PlotHandler(filePath);
+                PlotHandler(plot);
                 return Task.CompletedTask;
             }
             throw new NotImplementedException();

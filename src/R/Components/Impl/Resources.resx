@@ -192,7 +192,6 @@
   <data name="Dismiss" xml:space="preserve">
     <value>Dismiss</value>
   </data>
-
   <data name="DismissAll" xml:space="preserve">
     <value>Dismiss all</value>
   </data>
@@ -294,5 +293,44 @@
   </data>
   <data name="PackageManager_PackageUpdateWarning" xml:space="preserve">
     <value>Are you sure you wish to update '{0}' package? This action cannot be undone.</value>
+  </data>
+  <data name="Plots_RemoveAllPlotsWarning" xml:space="preserve">
+    <value>Are you sure you want to remove all plots?</value>
+  </data>
+  <data name="Plots_RemoveCurrentPlotWarning" xml:space="preserve">
+    <value>Are you sure you want to remove the current plot?</value>
+  </data>
+  <data name="Plots_CopyToClipboardError" xml:space="preserve">
+    <value>Error copying plot to the clipboard.\n{0}</value>
+  </data>
+  <data name="Plots_ExportAsImageFilter" xml:space="preserve">
+    <value>PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*</value>
+  </data>
+  <data name="Plots_ExportAsPdfFilter" xml:space="preserve">
+    <value>PDF (*.pdf)|*.pdf|All Files (*.*)|*.*</value>
+  </data>
+  <data name="Plots_ExportUnsupportedImageFormat" xml:space="preserve">
+    <value>File extension '{0}' is not a supported image file format.</value>
+  </data>
+  <data name="Plots_ExportAsImageDialogTitle" xml:space="preserve">
+    <value>Export Plot As Image</value>
+  </data>
+  <data name="Plots_ExportAsPdfDialogTitle" xml:space="preserve">
+    <value>Export Plot As PDF</value>
+  </data>
+  <data name="Plots_WindowCaption" xml:space="preserve">
+    <value>R Plot</value>
+  </data>
+  <data name="Plots_WindowCaptionLocatorActive" xml:space="preserve">
+    <value>R Plot - Locator is Active</value>
+  </data>
+  <data name="Plots_StatusLocatorActive" xml:space="preserve">
+    <value>Locator is active. Click in the plot window to select points then choose End Locator.</value>
+  </data>
+  <data name="Plots_EvalError" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="Plots_TransportError" xml:space="preserve">
+    <value>Connection to R host process failed.</value>
   </data>
 </root>

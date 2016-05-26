@@ -18,6 +18,18 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             }
         }
 
+        public string CaptionText
+        {
+            get { return _adapter.CaptionText; }
+            set { _adapter.CaptionText = value; }
+        }
+
+        public string StatusText
+        {
+            get { return _adapter.StatusText; }
+            set { _adapter.StatusText = value; }
+        }
+
         public bool IsOnScreen => _adapter?.IsOnScreen ?? false;
 
         protected VisualComponentToolWindow() {

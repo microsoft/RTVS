@@ -6,6 +6,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Components.Test.StubFactories;
@@ -21,6 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
         public static IRInteractiveWorkflowProvider Create(IRSessionProvider sessionProvider = null
             , IRHistoryProvider historyProvider = null
             , IRPackageManagerProvider packagesProvider = null
+            , IRPlotManagerProvider plotsProvider = null
             , IActiveWpfTextViewTracker activeTextViewTracker = null
             , IDebuggerModeTracker debuggerModeTracker = null
             , ICoreShell shell = null
@@ -28,11 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             sessionProvider = sessionProvider ?? new RSessionProviderMock();
             historyProvider = historyProvider ?? RHistoryProviderStubFactory.CreateDefault();
             packagesProvider = packagesProvider ?? RPackageManagerProviderStubFactory.CreateDefault();
+            plotsProvider = plotsProvider ?? RPlotManagerProviderStubFactory.CreateDefault();
 
             activeTextViewTracker = activeTextViewTracker ?? new ActiveTextViewTrackerMock(string.Empty, RContentTypeDefinition.ContentType);
             debuggerModeTracker = debuggerModeTracker ?? new VsDebuggerModeTracker();
 
-           return new TestRInteractiveWorkflowProvider(sessionProvider, historyProvider, packagesProvider, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
+           return new TestRInteractiveWorkflowProvider(sessionProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
         }
     }
 }

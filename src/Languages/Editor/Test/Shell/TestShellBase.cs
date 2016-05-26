@@ -27,6 +27,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
+            return null;
+        }
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
+            return null;
+        }
+
         public void DoIdle() {
             Idle?.Invoke(null, EventArgs.Empty);
             DoEvents();

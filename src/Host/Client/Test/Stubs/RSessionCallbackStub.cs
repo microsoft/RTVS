@@ -6,13 +6,14 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client.Test.Stubs {
     public class RSessionCallbackStub : IRSessionCallback {
         public IList<string> ShowErrorMessageCalls { get; } = new List<string>();
         public IList<Tuple<string, MessageButtons>> ShowMessageCalls { get; } = new List<Tuple<string, MessageButtons>>();
         public IList<string> HelpUrlCalls { get; } = new List<string>();
-        public IList<Tuple<string, CancellationToken>> PlotCalls { get; } = new List<Tuple<string, CancellationToken>>();
+        public IList<Tuple<PlotMessage, CancellationToken>> PlotCalls { get; } = new List<Tuple<PlotMessage, CancellationToken>>();
         public IList<CancellationToken> LocatorCalls { get; } = new List<CancellationToken>();
         public IList<Tuple<string, int, CancellationToken>> ReadUserInputCalls { get; } = new List<Tuple<string, int, CancellationToken>>();
         public IList<string> CranUrlFromNameCalls { get; } = new List<string>();
@@ -44,8 +45,8 @@ namespace Microsoft.R.Host.Client.Test.Stubs {
             return Task.CompletedTask;
         }
 
-        public Task Plot(string filePath, CancellationToken ct) {
-            PlotCalls.Add(new Tuple<string, CancellationToken>(filePath, ct));
+        public Task Plot(PlotMessage plot, CancellationToken ct) {
+            PlotCalls.Add(new Tuple<PlotMessage, CancellationToken>(plot, ct));
             return Task.CompletedTask;
         }
 

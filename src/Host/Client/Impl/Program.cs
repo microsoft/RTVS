@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Definitions;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
@@ -91,8 +92,8 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task Plot(string filePath, CancellationToken ct) {
-            await Console.Error.WriteLineAsync(filePath);
+        public async Task Plot(PlotMessage plot, CancellationToken ct) {
+            await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
         public async Task Browser(string url) {
