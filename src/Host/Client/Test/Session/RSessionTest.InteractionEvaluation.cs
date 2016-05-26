@@ -12,17 +12,18 @@ using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
         public class InteractionEvaluation : IAsyncLifetime {
-            private readonly TestMethodFixture _testMethodFixture;
+            private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
             private readonly RSession _session;
 
-            public InteractionEvaluation(TestMethodFixture testMethod) {
-                _testMethodFixture = testMethod;
+            public InteractionEvaluation(TestMethodFixture testMethod, TaskObserverMethodFixture taskObserver) {
+                _taskObserver = taskObserver;
                 _testMethod = testMethod.MethodInfo;
                 _session = new RSession(0, () => { });
             }
@@ -33,7 +34,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
                     RBasePath = RUtilities.FindExistingRBasePath()
                 }, null, 50000);
 
-                _testMethodFixture.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
+                _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());
             }
 
             public async Task DisposeAsync() {
