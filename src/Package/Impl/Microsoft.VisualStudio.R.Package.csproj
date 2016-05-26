@@ -145,7 +145,6 @@
     <Compile Include="Commands\RHistory\VsRHistoryTextViewConnectionListener.cs" />
     <Compile Include="Commands\ShowToolWindowCommand.cs" />
     <Compile Include="DataInspect\BindableBase.cs" />
-    <Compile Include="DataInspect\BooleanToVisibilityConverter.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\VariableViewModel.cs" />
