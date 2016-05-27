@@ -3,13 +3,13 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Utility;
+using Microsoft.R.Actions.Logging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes;
@@ -17,6 +17,7 @@ using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
+using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Outline {
     /// <summary>
@@ -75,7 +76,6 @@ namespace Microsoft.R.Editor.Outline {
                 }
 
                 AstRoot rootNode = null;
-
                 try {
                     rootNode = EditorTree.AcquireReadLock(_treeUserId);
                     if (rootNode != null) {
@@ -85,7 +85,9 @@ namespace Microsoft.R.Editor.Outline {
                         OutlineSections(rootNode, context);
                     }
                 } catch (Exception ex) {
-                    Debug.Fail(String.Format(CultureInfo.CurrentCulture, "Exception in outliner: {0}", ex.Message));
+                    var message = Invariant($"Exception in outliner: {ex.Message}");
+                    Debug.Assert(false, message);
+                    GeneralLog.Write(message);
                 } finally {
                     if (rootNode != null) {
                         EditorTree.ReleaseReadLock(_treeUserId);
@@ -154,7 +156,8 @@ namespace Microsoft.R.Editor.Outline {
 
                 if (end > startLine.Start) {
                     context.Regions.Add(
-                       new ROutlineRegion(EditorDocument.TextBuffer, TextRange.FromBounds(startLine.Start, end), displayText));
+                       new ROutlineRegion(EditorDocument.TextBuffer, 
+                           TextRange.FromBounds(startLine.Start, end), displayText));
                 }
             }
         }
