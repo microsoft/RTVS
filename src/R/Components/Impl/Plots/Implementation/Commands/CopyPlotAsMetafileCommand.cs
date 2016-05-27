@@ -37,7 +37,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                         var mf = new System.Drawing.Imaging.Metafile(filePath);
                         Clipboard.SetData(DataFormats.EnhancedMetafile, mf);
                     } catch (Exception e) when (!e.IsCriticalException()) {
-                        MessageBox.Show(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
+                        InteractiveWorkflow.Shell.ShowErrorMessage(string.Format(Resources.Plots_CopyToClipboardError, e.Message));
                     } finally {
                         try {
                             File.Delete(filePath);
