@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -17,15 +18,15 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class OutlineBuilderTest {
+    public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
 
-        public OutlineBuilderTest(EditorTestFilesFixture testFiles) {
+        public ROutlineBuilderTest(EditorTestFilesFixture testFiles) {
             _testFiles = testFiles;
         }
 
         [Test]
-        public void RRegionBuilder_ConstructionTest() {
+        public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
             EditorTree tree = new EditorTree(textBuffer);
             EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
@@ -48,7 +49,7 @@ namespace Microsoft.R.Editor.Test.Outline {
         }
 
         [Test(ThreadType.UI)]
-        public void RRegionBuilder_Test01() {
+        public void EmptyTest() {
             OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions("");
 
             rc.Should().BeEmpty();
@@ -57,7 +58,7 @@ namespace Microsoft.R.Editor.Test.Outline {
         }
 
         [Test(ThreadType.UI)]
-        public void RRegionBuilder_Test02() {
+        public void Conditionals() {
             string content =
 @"if (ncol(x) == 1L) {
     xnames < -1
@@ -88,9 +89,51 @@ namespace Microsoft.R.Editor.Test.Outline {
         [CompositeTest]
         [InlineData("01.r")]
         [InlineData("02.r")]
-        public void RRegionBuilder_OutlineFile(string name) {
+        public void OutlineFile(string name) {
             Action a = () => OutlineTest.OutlineFile(_testFiles, name);
             a.ShouldNotThrow();
+        }
+
+        [Test]
+        public void Sections() {
+            string content =
+@"# NAME1 -----
+x <- 1
+# NAME2 -----
+";
+
+            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            EditorTree tree = new EditorTree(textBuffer);
+            tree.Build();
+            EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
+
+            var ob = new ROutlineRegionBuilder(editorDocument);
+            var rc1 = new OutlineRegionCollection(0);
+            ob.BuildRegions(rc1);
+
+            rc1.Should().HaveCount(2);
+            rc1[0].DisplayText.Should().Be("# NAME1");
+            rc1[1].DisplayText.Should().Be("# NAME2");
+
+            int calls = 0;
+            OutlineRegionsChangedEventArgs args = null;
+            ob.RegionsChanged += (s, e) => {
+                calls++;
+                args = e;
+            };
+
+            textBuffer.Insert(2, "A");
+            editorDocument.EditorTree.EnsureTreeReady();
+            EditorShell.Current.DoIdle();
+
+            // Wait for background/idle tasks to complete
+            var start = DateTime.Now;
+            while(calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) { }
+
+            calls.Should().Be(1);
+            args.Should().NotBeNull();
+            args.ChangedRange.Start.Should().Be(0);
+            args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
         }
     }
 }

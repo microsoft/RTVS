@@ -18,7 +18,7 @@ namespace Microsoft.Languages.Editor.Outline {
     /// </summary>
     public abstract class OutlineRegionBuilder : IDisposable {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
-        public EventHandler<OutlineRegionsChangedEventArgs> RegionsChanged;
+        public event EventHandler<OutlineRegionsChangedEventArgs> RegionsChanged;
 
         protected OutlineRegionCollection CurrentRegions { get; set; }
         protected IdleTimeAsyncTask BackgroundTask { get; set; }
@@ -33,11 +33,8 @@ namespace Microsoft.Languages.Editor.Outline {
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;
 
-            // Unit test case
-            if (EditorShell.IsUIThread) {
-                BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction);
-                BackgroundTask.DoTaskOnIdle(300);
-            }
+            BackgroundTask = new IdleTimeAsyncTask(TaskAction, MainThreadAction);
+            BackgroundTask.DoTaskOnIdle(300);
         }
 
         public virtual bool IsReady => !BackgroundTask.TaskRunning;
