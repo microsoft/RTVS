@@ -51,8 +51,8 @@
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />
+    <Compile Include="Utility\VisualTreeExtensions.cs" />
     <Compile Include="Utility\VisualTreeObject.cs" />
-    <Compile Include="Utility\VisualTreeProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">

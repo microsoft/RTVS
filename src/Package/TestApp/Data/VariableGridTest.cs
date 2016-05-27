@@ -3,6 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using FluentAssertions;
 using Microsoft.Common.Core.Test.Controls;
 using Microsoft.UnitTests.Core.Threading;
@@ -24,31 +26,49 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             _files = files;
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1825")]
-        public async Task VariableGrid_ConstructorTest() {
+        [Test]
+        public async Task ConstructorTest() {
             VisualTreeObject actual = null;
             using (var hostScript = new VariableRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
-                    DoIdle(100);
-
-                    var result = await hostScript.EvaluateAsync("grid.test <- matrix(1:10, 2, 5)");
-                    VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.ExportProvider.GetExportedValue< IObjectDetailsViewerAggregator>());
-
-                    DoIdle(2000);
-
-                    wrapper.Should().NotBeNull();
-
-                    UIThreadHelper.Instance.Invoke(() => {
-                        var host = (VariableGridHost)script.Control;
-                        host.SetEvaluation(wrapper);
-                    });
-
-                    DoIdle(1000);
-
+                    await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                     actual = VisualTreeObject.Create(script.Control);
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGrid02");
                 }
             }
+        }
+
+        [Test]
+        public async Task SortTest() {
+            VisualTreeObject actual = null;
+            using (var hostScript = new VariableRHostScript()) {
+                using (var script = new ControlTestScript(typeof(VariableGridHost))) {
+                    await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
+                    var header = VisualTreeExtensions.FindChild<HeaderTextVisual>(script.Control);
+                    header.Should().NotBeNull();
+                    header.SortOrder = SortOrderType.Descending;
+                    actual = VisualTreeObject.Create(script.Control);
+                    ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
+                }
+            }
+        }
+
+        private async Task PrepareControl(VariableRHostScript hostScript, ControlTestScript script, string expression) {
+            DoIdle(100);
+
+            var result = await hostScript.EvaluateAsync(expression);
+            VariableViewModel wrapper = new VariableViewModel(result, VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>());
+
+            DoIdle(2000);
+
+            wrapper.Should().NotBeNull();
+
+            UIThreadHelper.Instance.Invoke(() => {
+                var host = (VariableGridHost)script.Control;
+                host.SetEvaluation(wrapper);
+            });
+
+            DoIdle(1000);
         }
     }
 }

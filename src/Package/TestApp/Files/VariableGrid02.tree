@@ -784,73 +784,9 @@
                                       "Name": "HeaderTextVisual",
                                       "Properties": [
                                         {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
+                                          "Name": "Text",
+                                          "Value": "V1"
                                         },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "HeaderTextVisual",
-                                      "Properties": [
-                                        {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "HeaderTextVisual",
-                                      "Properties": [
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -886,6 +822,10 @@
                                       "Name": "HeaderTextVisual",
                                       "Properties": [
                                         {
+                                          "Name": "Text",
+                                          "Value": "V2"
+                                        },
+                                        {
                                           "Name": "ToolTip",
                                           "Value": "null"
                                         },
@@ -919,6 +859,86 @@
                                     {
                                       "Name": "HeaderTextVisual",
                                       "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "V3"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "HeaderTextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "V4"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "HeaderTextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "V5"
+                                        },
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -1105,6 +1125,10 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
+                                          "Name": "Text",
+                                          "Value": "1"
+                                        },
+                                        {
                                           "Name": "ToolTip",
                                           "Value": "null"
                                         },
@@ -1138,6 +1162,10 @@
                                     {
                                       "Name": "TextVisual",
                                       "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "2"
+                                        },
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -1266,73 +1294,9 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
+                                          "Name": "Text",
+                                          "Value": "1"
                                         },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "TextVisual",
-                                      "Properties": [
-                                        {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "TextVisual",
-                                      "Properties": [
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -1368,73 +1332,9 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
+                                          "Name": "Text",
+                                          "Value": "2"
                                         },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "TextVisual",
-                                      "Properties": [
-                                        {
-                                          "Name": "ToolTip",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "ContextMenu",
-                                          "Value": "null"
-                                        },
-                                        {
-                                          "Name": "TextAlignment",
-                                          "Value": "Left"
-                                        },
-                                        {
-                                          "Name": "IsVirtualizing",
-                                          "Value": "True"
-                                        },
-                                        {
-                                          "Name": "HorizontalScrollBarVisibility",
-                                          "Value": "Disabled"
-                                        },
-                                        {
-                                          "Name": "VerticalScrollBarVisibility",
-                                          "Value": "Visible"
-                                        },
-                                        {
-                                          "Name": "Name",
-                                          "Value": ""
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "TextVisual",
-                                      "Properties": [
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -1470,6 +1370,10 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
+                                          "Name": "Text",
+                                          "Value": "3"
+                                        },
+                                        {
                                           "Name": "ToolTip",
                                           "Value": "null"
                                         },
@@ -1504,6 +1408,10 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
+                                          "Name": "Text",
+                                          "Value": "4"
+                                        },
+                                        {
                                           "Name": "ToolTip",
                                           "Value": "null"
                                         },
@@ -1538,6 +1446,10 @@
                                       "Name": "TextVisual",
                                       "Properties": [
                                         {
+                                          "Name": "Text",
+                                          "Value": "5"
+                                        },
+                                        {
                                           "Name": "ToolTip",
                                           "Value": "null"
                                         },
@@ -1571,6 +1483,162 @@
                                     {
                                       "Name": "TextVisual",
                                       "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "6"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "TextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "7"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "TextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "8"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "TextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "9"
+                                        },
+                                        {
+                                          "Name": "ToolTip",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "ContextMenu",
+                                          "Value": "null"
+                                        },
+                                        {
+                                          "Name": "TextAlignment",
+                                          "Value": "Left"
+                                        },
+                                        {
+                                          "Name": "IsVirtualizing",
+                                          "Value": "True"
+                                        },
+                                        {
+                                          "Name": "HorizontalScrollBarVisibility",
+                                          "Value": "Disabled"
+                                        },
+                                        {
+                                          "Name": "VerticalScrollBarVisibility",
+                                          "Value": "Visible"
+                                        },
+                                        {
+                                          "Name": "Name",
+                                          "Value": ""
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "TextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "10"
+                                        },
                                         {
                                           "Name": "ToolTip",
                                           "Value": "null"
@@ -1783,970 +1851,6 @@
                                             }
                                           ],
                                           "Children": []
-                                        },
-                                        {
-                                          "Name": "RepeatButton",
-                                          "Properties": [
-                                            {
-                                              "Name": "Content",
-                                              "Value": "System.Windows.Shapes.Path"
-                                            },
-                                            {
-                                              "Name": "ContentTemplate",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Padding",
-                                              "Value": "1,1,1,1"
-                                            },
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_LineUpButton"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "Border",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": "border"
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "ContentPresenter",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "Content",
-                                                      "Value": "System.Windows.Shapes.Path"
-                                                    },
-                                                    {
-                                                      "Name": "ContentTemplate",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "contentPresenter"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "1,1,1,1"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": [
-                                                    {
-                                                      "Name": "Path",
-                                                      "Properties": [
-                                                        {
-                                                          "Name": "Data",
-                                                          "Value": "M0,4C0,4 0,6 0,6 0,6 3.5,2.5 3.5,2.5 3.5,2.5 7,6 7,6 7,6 7,4 7,4 7,4 3.5,0.5 3.5,0.5 3.5,0.5 0,4 0,4z"
-                                                        },
-                                                        {
-                                                          "Name": "DataContext",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": "ArrowTop"
-                                                        },
-                                                        {
-                                                          "Name": "Margin",
-                                                          "Value": "3,4,3,3"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "ToolTip",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "ContextMenu",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Visibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "TextAlignment",
-                                                          "Value": "Left"
-                                                        },
-                                                        {
-                                                          "Name": "IsVirtualizing",
-                                                          "Value": "True"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalScrollBarVisibility",
-                                                          "Value": "Disabled"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalScrollBarVisibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": ""
-                                                        }
-                                                      ],
-                                                      "Children": []
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Name": "Track",
-                                          "Properties": [
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_Track"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Hidden"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "RepeatButton",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Content",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContentTemplate",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Name": "RepeatButton",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Content",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContentTemplate",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Name": "Thumb",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "rectangle"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Name": "RepeatButton",
-                                          "Properties": [
-                                            {
-                                              "Name": "Content",
-                                              "Value": "System.Windows.Shapes.Path"
-                                            },
-                                            {
-                                              "Name": "ContentTemplate",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Padding",
-                                              "Value": "1,1,1,1"
-                                            },
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_LineDownButton"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "Border",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": "border"
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "ContentPresenter",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "Content",
-                                                      "Value": "System.Windows.Shapes.Path"
-                                                    },
-                                                    {
-                                                      "Name": "ContentTemplate",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "contentPresenter"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "1,1,1,1"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": [
-                                                    {
-                                                      "Name": "Path",
-                                                      "Properties": [
-                                                        {
-                                                          "Name": "Data",
-                                                          "Value": "M0,2.5C0,2.5 0,0.5 0,0.5 0,0.5 3.5,4 3.5,4 3.5,4 7,0.5 7,0.5 7,0.5 7,2.5 7,2.5 7,2.5 3.5,6 3.5,6 3.5,6 0,2.5 0,2.5z"
-                                                        },
-                                                        {
-                                                          "Name": "DataContext",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": "ArrowBottom"
-                                                        },
-                                                        {
-                                                          "Name": "Margin",
-                                                          "Value": "3,4,3,3"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "ToolTip",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "ContextMenu",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Visibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "TextAlignment",
-                                                          "Value": "Left"
-                                                        },
-                                                        {
-                                                          "Name": "IsVirtualizing",
-                                                          "Value": "True"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalScrollBarVisibility",
-                                                          "Value": "Disabled"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalScrollBarVisibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": ""
-                                                        }
-                                                      ],
-                                                      "Children": []
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ]
                                         }
                                       ]
                                     }
@@ -2989,970 +2093,6 @@
                                             }
                                           ],
                                           "Children": []
-                                        },
-                                        {
-                                          "Name": "RepeatButton",
-                                          "Properties": [
-                                            {
-                                              "Name": "Content",
-                                              "Value": "System.Windows.Shapes.Path"
-                                            },
-                                            {
-                                              "Name": "ContentTemplate",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Padding",
-                                              "Value": "1,1,1,1"
-                                            },
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_LineLeftButton"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "Border",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": "border"
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "ContentPresenter",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "Content",
-                                                      "Value": "System.Windows.Shapes.Path"
-                                                    },
-                                                    {
-                                                      "Name": "ContentTemplate",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "contentPresenter"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "1,1,1,1"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": [
-                                                    {
-                                                      "Name": "Path",
-                                                      "Properties": [
-                                                        {
-                                                          "Name": "Data",
-                                                          "Value": "M3.18,7C3.18,7 5,7 5,7 5,7 1.81,3.5 1.81,3.5 1.81,3.5 5,0 5,0 5,0 3.18,0 3.18,0 3.18,0 0,3.5 0,3.5 0,3.5 3.18,7 3.18,7z"
-                                                        },
-                                                        {
-                                                          "Name": "DataContext",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": "ArrowLeft"
-                                                        },
-                                                        {
-                                                          "Name": "Margin",
-                                                          "Value": "3,3,3,3"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "ToolTip",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "ContextMenu",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Visibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "TextAlignment",
-                                                          "Value": "Left"
-                                                        },
-                                                        {
-                                                          "Name": "IsVirtualizing",
-                                                          "Value": "True"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalScrollBarVisibility",
-                                                          "Value": "Disabled"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalScrollBarVisibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": ""
-                                                        }
-                                                      ],
-                                                      "Children": []
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Name": "Track",
-                                          "Properties": [
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_Track"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Hidden"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "RepeatButton",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Content",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContentTemplate",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Name": "RepeatButton",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Content",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContentTemplate",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            },
-                                            {
-                                              "Name": "Thumb",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "Rectangle",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "rectangle"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "0,0,0,0"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Stretch"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": []
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        },
-                                        {
-                                          "Name": "RepeatButton",
-                                          "Properties": [
-                                            {
-                                              "Name": "Content",
-                                              "Value": "System.Windows.Shapes.Path"
-                                            },
-                                            {
-                                              "Name": "ContentTemplate",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Padding",
-                                              "Value": "1,1,1,1"
-                                            },
-                                            {
-                                              "Name": "DataContext",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": "PART_LineRightButton"
-                                            },
-                                            {
-                                              "Name": "Margin",
-                                              "Value": "0,0,0,0"
-                                            },
-                                            {
-                                              "Name": "HorizontalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "VerticalAlignment",
-                                              "Value": "Stretch"
-                                            },
-                                            {
-                                              "Name": "ToolTip",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "ContextMenu",
-                                              "Value": "null"
-                                            },
-                                            {
-                                              "Name": "Visibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "TextAlignment",
-                                              "Value": "Left"
-                                            },
-                                            {
-                                              "Name": "IsVirtualizing",
-                                              "Value": "True"
-                                            },
-                                            {
-                                              "Name": "HorizontalScrollBarVisibility",
-                                              "Value": "Disabled"
-                                            },
-                                            {
-                                              "Name": "VerticalScrollBarVisibility",
-                                              "Value": "Visible"
-                                            },
-                                            {
-                                              "Name": "Name",
-                                              "Value": ""
-                                            }
-                                          ],
-                                          "Children": [
-                                            {
-                                              "Name": "Border",
-                                              "Properties": [
-                                                {
-                                                  "Name": "Padding",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "DataContext",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": "border"
-                                                },
-                                                {
-                                                  "Name": "Margin",
-                                                  "Value": "0,0,0,0"
-                                                },
-                                                {
-                                                  "Name": "HorizontalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "VerticalAlignment",
-                                                  "Value": "Stretch"
-                                                },
-                                                {
-                                                  "Name": "ToolTip",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "ContextMenu",
-                                                  "Value": "null"
-                                                },
-                                                {
-                                                  "Name": "Visibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "TextAlignment",
-                                                  "Value": "Left"
-                                                },
-                                                {
-                                                  "Name": "IsVirtualizing",
-                                                  "Value": "True"
-                                                },
-                                                {
-                                                  "Name": "HorizontalScrollBarVisibility",
-                                                  "Value": "Disabled"
-                                                },
-                                                {
-                                                  "Name": "VerticalScrollBarVisibility",
-                                                  "Value": "Visible"
-                                                },
-                                                {
-                                                  "Name": "Name",
-                                                  "Value": ""
-                                                }
-                                              ],
-                                              "Children": [
-                                                {
-                                                  "Name": "ContentPresenter",
-                                                  "Properties": [
-                                                    {
-                                                      "Name": "Content",
-                                                      "Value": "System.Windows.Shapes.Path"
-                                                    },
-                                                    {
-                                                      "Name": "ContentTemplate",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "DataContext",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": "contentPresenter"
-                                                    },
-                                                    {
-                                                      "Name": "Margin",
-                                                      "Value": "1,1,1,1"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalAlignment",
-                                                      "Value": "Center"
-                                                    },
-                                                    {
-                                                      "Name": "ToolTip",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "ContextMenu",
-                                                      "Value": "null"
-                                                    },
-                                                    {
-                                                      "Name": "Visibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "TextAlignment",
-                                                      "Value": "Left"
-                                                    },
-                                                    {
-                                                      "Name": "IsVirtualizing",
-                                                      "Value": "True"
-                                                    },
-                                                    {
-                                                      "Name": "HorizontalScrollBarVisibility",
-                                                      "Value": "Disabled"
-                                                    },
-                                                    {
-                                                      "Name": "VerticalScrollBarVisibility",
-                                                      "Value": "Visible"
-                                                    },
-                                                    {
-                                                      "Name": "Name",
-                                                      "Value": ""
-                                                    }
-                                                  ],
-                                                  "Children": [
-                                                    {
-                                                      "Name": "Path",
-                                                      "Properties": [
-                                                        {
-                                                          "Name": "Data",
-                                                          "Value": "M1.81,7C1.81,7 0,7 0,7 0,7 3.18,3.5 3.18,3.5 3.18,3.5 0,0 0,0 0,0 1.81,0 1.81,0 1.81,0 5,3.5 5,3.5 5,3.5 1.81,7 1.81,7z"
-                                                        },
-                                                        {
-                                                          "Name": "DataContext",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": "ArrowRight"
-                                                        },
-                                                        {
-                                                          "Name": "Margin",
-                                                          "Value": "3,3,3,3"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalAlignment",
-                                                          "Value": "Stretch"
-                                                        },
-                                                        {
-                                                          "Name": "ToolTip",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "ContextMenu",
-                                                          "Value": "null"
-                                                        },
-                                                        {
-                                                          "Name": "Visibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "TextAlignment",
-                                                          "Value": "Left"
-                                                        },
-                                                        {
-                                                          "Name": "IsVirtualizing",
-                                                          "Value": "True"
-                                                        },
-                                                        {
-                                                          "Name": "HorizontalScrollBarVisibility",
-                                                          "Value": "Disabled"
-                                                        },
-                                                        {
-                                                          "Name": "VerticalScrollBarVisibility",
-                                                          "Value": "Visible"
-                                                        },
-                                                        {
-                                                          "Name": "Name",
-                                                          "Value": ""
-                                                        }
-                                                      ],
-                                                      "Children": []
-                                                    }
-                                                  ]
-                                                }
-                                              ]
-                                            }
-                                          ]
                                         }
                                       ]
                                     }

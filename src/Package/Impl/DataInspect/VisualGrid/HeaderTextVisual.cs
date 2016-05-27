@@ -14,16 +14,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private const char ArrowUp = (char)0x25B4;
         private const char ArrowDown = (char)0x25BE;
         private const char Nbsp = (char)0x00A0;
-
         private char _arrowChar = Nbsp;
-        private SortOrderType _sortOrder;
+
+        #region Dependency Properties
+        public static readonly DependencyProperty SortOrderProperty =
+            DependencyProperty.Register("SortOrder", typeof(SortOrderType), typeof(TextVisual), new PropertyMetadata(SortOrderType.None));
+
         public SortOrderType SortOrder {
-            get { return _sortOrder; }
+            get { return (SortOrderType)GetValue(SortOrderProperty); }
             set {
-                _sortOrder = value;
+                SetValue(SortOrderProperty, value);
                 SetArrowDisplay();
             }
         }
+        #endregion
 
         /// <summary>
         /// Name of the column
