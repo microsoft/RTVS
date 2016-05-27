@@ -134,6 +134,10 @@ x <- 1
             args.Should().NotBeNull();
             args.ChangedRange.Start.Should().Be(0);
             args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
+            args.Regions.Should().HaveCount(2);
+
+            args.Regions[0].DisplayText.Should().Be("# ANAME1");
+            args.Regions[1].DisplayText.Should().Be("# NAME2");
         }
     }
 }
