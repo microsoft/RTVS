@@ -11,8 +11,8 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
             InteractiveWorkflow = interactiveWorkflow;
         }
 
-        protected bool IsInLocatorMode { get { return InteractiveWorkflow.Plots.IsInLocatorMode; } }
+        protected bool IsInLocatorMode => InteractiveWorkflow.Plots.IsInLocatorMode;
 
-        protected bool HasCurrentPlot { get { return InteractiveWorkflow.Plots.ActivePlotIndex >= 0; } }
+        protected bool HasCurrentPlot => InteractiveWorkflow.Plots.ActivePlotIndex >= 0;
     }
 }
