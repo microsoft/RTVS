@@ -12,6 +12,7 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.Common.Core.Test.Fakes;
+using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation.View;
@@ -66,7 +67,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -85,7 +86,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -105,7 +106,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
 
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -130,7 +131,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
 
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -154,7 +155,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -176,7 +177,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -198,7 +199,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -241,7 +242,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
@@ -257,7 +258,7 @@ namespace Microsoft.R.Components.Test.Plots {
                     File.Exists(outputFilePath).Should().BeTrue();
                     CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                    var image = new BitmapImage(new Uri(outputFilePath));
+                    var image = BitmapImageFactory.Load(outputFilePath);
                     image.PixelWidth.Should().Be(600);
                     image.PixelHeight.Should().Be(500);
                     ((int)Math.Round(image.DpiX)).Should().Be(96);
@@ -418,7 +419,7 @@ namespace Microsoft.R.Components.Test.Plots {
             };
 
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(scripts);
 
@@ -448,7 +449,7 @@ namespace Microsoft.R.Components.Test.Plots {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
-                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(state.area)",
@@ -495,7 +496,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task LocatorCommand() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await _workflow.Plots.ResizeCurrentPlotAsync(360, 360, 96);
+                await _workflow.Plots.ResizeAsync(360, 360, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(0:10)",
@@ -564,7 +565,7 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task LocatorCommandNoClick() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await _workflow.Plots.ResizeCurrentPlotAsync(360, 360, 96);
+                await _workflow.Plots.ResizeAsync(360, 360, 96);
 
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(0:10)",
@@ -661,7 +662,7 @@ dev.off()
 
             var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
             var result = await eval.ExecuteCodeAsync(script);
-            return new BitmapImage(new Uri(filePath));
+            return BitmapImageFactory.Load(filePath);
         }
 
         private void CheckEnabledCommands(bool isFirst, bool isLast, bool anyPlot) {

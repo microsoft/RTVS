@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using Microsoft.Common.Core;
+using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 
@@ -32,12 +32,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
 
                 InteractiveWorkflow.Shell.DispatchOnUIThread(() => {
                     try {
-                        // Use Begin/EndInit to avoid locking the file on disk
-                        var image = new BitmapImage();
-                        image.BeginInit();
-                        image.UriSource = new Uri(filePath);
-                        image.CacheOption = BitmapCacheOption.OnLoad;
-                        image.EndInit();
+                        var image = BitmapImageFactory.Load(filePath);
                         Clipboard.SetImage(image);
                     } catch (Exception e) when (!e.IsCriticalException()) {
                         MessageBox.Show(string.Format(Resources.Plots_CopyToClipboardError, e.Message));

@@ -65,7 +65,7 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
         }
 
         public async Task ResizePlotAsync(int pixelWidth, int pixelHeight, int resolution) {
-            await _plotManager.ResizeCurrentPlotAsync(pixelWidth, pixelHeight, resolution);
+            await _plotManager.ResizeAsync(pixelWidth, pixelHeight, resolution);
         }
 
         public void ResizePlotAfterDelay(int pixelWidth, int pixelHeight, int resolution) {

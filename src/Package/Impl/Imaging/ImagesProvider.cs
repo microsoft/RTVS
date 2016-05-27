@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Common.Core;
+using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
@@ -111,12 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.Imaging {
                 using (MemoryStream memory = new MemoryStream()) {
                     bmp.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
                     memory.Position = 0;
-                    BitmapImage bitmapImage = new BitmapImage();
-                    bitmapImage.BeginInit();
-                    bitmapImage.StreamSource = memory;
-                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmapImage.EndInit();
-                    source = bitmapImage;
+                    source = BitmapImageFactory.Load(memory);
                 }
             }
 

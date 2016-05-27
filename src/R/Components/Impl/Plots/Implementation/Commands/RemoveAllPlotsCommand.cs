@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
         public async Task<CommandResult> InvokeAsync() {
             if (InteractiveWorkflow.Shell.ShowMessage(Resources.Plots_RemoveAllPlotsWarning, MessageButtons.YesNo) == MessageButtons.Yes) {
                 try {
-                    await InteractiveWorkflow.Plots.ClearAllPlotsAsync();
+                    await InteractiveWorkflow.Plots.RemoveAllPlotsAsync();
                 } catch (RPlotManagerException ex) {
                     InteractiveWorkflow.Shell.ShowErrorMessage(ex.Message);
                 } catch (OperationCanceledException) {

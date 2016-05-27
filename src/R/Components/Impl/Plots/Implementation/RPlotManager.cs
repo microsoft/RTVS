@@ -51,7 +51,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
         private async void RSession_Connected(object sender, EventArgs e) {
             if (_lastPixelWidth > 0 && _lastPixelHeight > 0 && _lastResolution > 0) {
                 try {
-                    await ResizeCurrentPlotAsync(_lastPixelWidth, _lastPixelHeight, _lastResolution);
+                    await ResizeAsync(_lastPixelWidth, _lastPixelHeight, _lastResolution);
                 } catch (OperationCanceledException) {
                 } catch (MessageTransportException) {
                 } catch (RException) {
@@ -119,7 +119,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             return await task;
         }
 
-        public async Task ClearAllPlotsAsync() {
+        public async Task RemoveAllPlotsAsync() {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.ClearPlotHistoryAsync();
@@ -155,7 +155,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task ResizeCurrentPlotAsync(int pixelWidth, int pixelHeight, int resolution) {
+        public async Task ResizeAsync(int pixelWidth, int pixelHeight, int resolution) {
             _lastPixelWidth = pixelWidth;
             _lastPixelHeight = pixelHeight;
             _lastResolution = resolution;
