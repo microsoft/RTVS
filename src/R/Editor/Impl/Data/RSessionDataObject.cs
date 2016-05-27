@@ -80,7 +80,7 @@ namespace Microsoft.R.Editor.Data {
 
         protected int MaxReprLength { get; set; }
 
-        protected IREvaluationResultInfo DebugEvaluation { get; }
+        public IREvaluationResultInfo DebugEvaluation { get; }
 
         public Task<IReadOnlyList<IRSessionDataObject>> GetChildrenAsync() {
             if (_getChildrenTask == null) {
