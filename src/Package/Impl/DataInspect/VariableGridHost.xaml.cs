@@ -54,11 +54,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal void SetEvaluation(VariableViewModel wrapper) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
+            bool evalDimensionsCorrect = _evaluation != null && _evaluation.Dimensions != null && _evaluation.Dimensions.Count == 2;
+            bool wrapperDimensionsCorrect = wrapper.Dimensions != null && wrapper.Dimensions.Count == 2;
+            bool gridSizeChanged = evalDimensionsCorrect && evalDimensionsCorrect && 
+                                 (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1]);
+
+            if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL" || !evalDimensionsCorrect || !wrapperDimensionsCorrect) {
                 // the variable should have been removed
                 SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
-            } else if (_evaluation == null
-                || (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1])) {
+            } else if (_evaluation == null || gridSizeChanged) {
                 // matrix size changed. Reset the evaluation
                 ClearError();
                 VariableGrid.Initialize(new GridDataProvider(wrapper));
