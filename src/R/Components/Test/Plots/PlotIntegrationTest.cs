@@ -473,6 +473,9 @@ namespace Microsoft.R.Components.Test.Plots {
                     "plot(0:10)",
                 });
 
+                _workflow.Plots.IsInLocatorMode.Should().BeFalse();
+                _workflow.Plots.Commands.EndLocator.Should().BeInvisibleAndDisabled();
+
                 await WaitForLocatorModeChangedAsync(delegate {
                     ExecuteAndDoNotWaitForPlotsAsync(new string[] {
                         "res <- locator()",
@@ -494,6 +497,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 // the not clicked result.
                 foreach (var point in points) {
                     _workflow.Plots.IsInLocatorMode.Should().BeTrue();
+                    _workflow.Plots.Commands.EndLocator.Should().BeEnabled();
 
                     // Send a result with a click point, which will causes
                     // locator mode to end and immediately start again
@@ -502,6 +506,7 @@ namespace Microsoft.R.Components.Test.Plots {
                     });
 
                     _workflow.Plots.IsInLocatorMode.Should().BeFalse();
+                    _workflow.Plots.Commands.EndLocator.Should().BeInvisibleAndDisabled();
 
                     await WaitForLocatorModeChangedAsync(() => { });
                 }
@@ -514,6 +519,7 @@ namespace Microsoft.R.Components.Test.Plots {
                 });
 
                 _workflow.Plots.IsInLocatorMode.Should().BeFalse();
+                _workflow.Plots.Commands.EndLocator.Should().BeInvisibleAndDisabled();
 
                 string outputFilePath = _testFiles.GetDestinationPath("LocatorResult.csv");
                 await ExecuteAndDoNotWaitForPlotsAsync(new string[] {
@@ -543,12 +549,14 @@ namespace Microsoft.R.Components.Test.Plots {
                 });
 
                 _workflow.Plots.IsInLocatorMode.Should().BeTrue();
+                _workflow.Plots.Commands.EndLocator.Should().BeEnabled();
 
                 await WaitForLocatorModeChangedAsync(async delegate {
                     await _workflow.Plots.Commands.EndLocator.InvokeAsync();
                 });
 
                 _workflow.Plots.IsInLocatorMode.Should().BeFalse();
+                _workflow.Plots.Commands.EndLocator.Should().BeInvisibleAndDisabled();
 
                 string outputFilePath = _testFiles.GetDestinationPath("LocatorResultNoClick.csv");
                 await ExecuteAndDoNotWaitForPlotsAsync(new string[] {

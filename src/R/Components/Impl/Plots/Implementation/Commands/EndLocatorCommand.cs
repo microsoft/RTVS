@@ -20,7 +20,7 @@ namespace Microsoft.R.Components.Plots.Implementation.Commands {
                     return CommandStatus.SupportedAndEnabled;
                 }
 
-                return CommandStatus.Supported & CommandStatus.Invisible;
+                return CommandStatus.Supported | CommandStatus.Invisible;
             }
         }
 
