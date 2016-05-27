@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
@@ -35,10 +36,10 @@ namespace Microsoft.R.Editor.Outline {
         private static readonly Guid _treeUserId = new Guid("15B63323-6670-4D24-BDD7-FF71DD14CD5A");
         private const int _minLinesToOutline = 3;
         private readonly object _threadLock = new object();
+        private RSectionsCollection _sections;
 
         internal IREditorDocument EditorDocument { get; }
         internal IEditorTree EditorTree { get; }
-
 
         public ROutlineRegionBuilder(IREditorDocument document)
             : base(document.EditorTree.TextBuffer) {
@@ -50,7 +51,7 @@ namespace Microsoft.R.Editor.Outline {
         }
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            if (e.Before.LineCount != e.After.LineCount) {
+            if (e.Before.LineCount != e.After.LineCount || (_sections != null && _sections.Changed(e.After))) {
                 BackgroundTask.DoTaskOnIdle();
             }
             base.OnTextBufferChanged(sender, e);
@@ -77,15 +78,18 @@ namespace Microsoft.R.Editor.Outline {
 
                 AstRoot rootNode = null;
                 try {
+                    // We are in a background thread so in order to walk the tree
+                    // we must obtain the read lock first.
                     rootNode = EditorTree.AcquireReadLock(_treeUserId);
                     if (rootNode != null) {
                         OutliningContext context = new OutliningContext();
                         context.Regions = newRegions;
+                        // Walk the tree and construct new regions
                         rootNode.Accept(this, context);
                         OutlineSections(rootNode, context);
                     }
                 } catch (Exception ex) {
-                    var message = Invariant($"Exception in outliner: {ex.Message}");
+                    var message = Invariant($"Exception in R outliner: {ex.Message}");
                     Debug.Assert(false, message);
                     GeneralLog.Write(message);
                 } finally {
@@ -104,6 +108,17 @@ namespace Microsoft.R.Editor.Outline {
             if (!IsDisposed) {
                 base.MainThreadAction(backgroundProcessingResult);
             }
+        }
+
+        protected override ITextRange CompareRegions(OutlineRegionCollection newRegions, OutlineRegionCollection oldRegions, int upperBound) {
+            // Determine if we must force change on the editor if section name(s) changed.
+            // Regular change may or may not re-create collapsible regions since if regions
+            // positions and lengths match optimization will not be rebuilding regions.
+            var sectionsChanged = _sections != null && _sections.Changed(EditorTree.TextBuffer.CurrentSnapshot);
+            if (!sectionsChanged) {
+                return base.CompareRegions(newRegions, oldRegions, upperBound);
+            }
+            return new TextRange(0, EditorTree.TextBuffer.CurrentSnapshot.Length);
         }
 
         #region IAstVisitor
@@ -130,7 +145,13 @@ namespace Microsoft.R.Editor.Outline {
         }
         #endregion
 
+        /// <summary>
+        /// Outlines comments that define sections such as
+        /// # NAME ---
+        /// </summary>
+        /// <returns>True if names changed and outline regions need to be rebuilt</returns>
         private void OutlineSections(AstRoot ast, OutliningContext context) {
+            // Collect comments that define sections
             var snapshot = EditorTree.TextSnapshot;
             var sections = ast.Comments.Where(c => {
                 var text = snapshot.GetText(new Span(c.Start, c.Length));
@@ -138,6 +159,8 @@ namespace Microsoft.R.Editor.Outline {
                 return text.TrimEnd().EndsWithOrdinal("---") && text.IndexOfAny(CharExtensions.LineBreakChars) < 0;
             }).ToArray();
 
+            // Construct collapsible regions
+            var ranges = new List<ITextRange>();
             for (int i = 0; i < sections.Length; i++) {
                 var startLine = snapshot.GetLineFromPosition(sections[i].Start);
                 int end = -1;
@@ -155,14 +178,20 @@ namespace Microsoft.R.Editor.Outline {
                 }
 
                 if (end > startLine.Start) {
-                    context.Regions.Add(
-                       new ROutlineRegion(EditorDocument.TextBuffer, 
-                           TextRange.FromBounds(startLine.Start, end), displayText));
+                    var range = TextRange.FromBounds(startLine.Start, end);
+                    ranges.Add(sections[i]);
+                    context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, range, displayText));
                 }
             }
+
+            // Track changes in section names
+            _sections = new RSectionsCollection(EditorDocument.TextBuffer.CurrentSnapshot, ranges);
         }
 
 
+        /// <summary>
+        /// Determines if range is large enough to be outlined
+        /// </summary>
         private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, out int startLineNumber, out int endLineNumber) {
             int start = Math.Max(0, range.Start);
             int end = Math.Min(range.End, snapshot.Length);
@@ -177,12 +206,14 @@ namespace Microsoft.R.Editor.Outline {
             return false;
         }
 
+        /// <summary>
+        /// Determines if particular AST node produces collapsible region
+        /// </summary>
         private bool OutlineNode(IAstNode node, out int startLineNumber, out int endLineNumber) {
             if (node is AstRoot || node is GlobalScope) {
                 startLineNumber = endLineNumber = 0;
                 return false;
             }
-
             return OutlineRange(EditorTree.TextSnapshot, node, out startLineNumber, out endLineNumber);
         }
 

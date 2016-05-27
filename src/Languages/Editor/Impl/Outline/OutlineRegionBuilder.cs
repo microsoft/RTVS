@@ -10,6 +10,12 @@ using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.Languages.Editor.Outline {
+    /// <summary>
+    /// Base outline (collapsible regions) builder. Performs region building
+    /// in a background thread that starts on idle so it does not run
+    /// continuously as user is typing or otherwise constantly changing 
+    /// the underlying text buffer content.
+    /// </summary>
     public abstract class OutlineRegionBuilder : IDisposable {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         public EventHandler<OutlineRegionsChangedEventArgs> RegionsChanged;
@@ -34,11 +40,7 @@ namespace Microsoft.Languages.Editor.Outline {
             }
         }
 
-        public virtual bool IsReady {
-            get {
-                return !BackgroundTask.TaskRunning;
-            }
-        }
+        public virtual bool IsReady => !BackgroundTask.TaskRunning;
 
         protected virtual void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
             // In order to provide nicer experience when user presser and holds
@@ -127,17 +129,15 @@ namespace Microsoft.Languages.Editor.Outline {
                         CurrentRegions = result.NewRegions;
                     }
 
-                    if (RegionsChanged != null) {
-                        RegionsChanged(this,
-                            new OutlineRegionsChangedEventArgs(CurrentRegions.Clone() as OutlineRegionCollection,
-                            result.ChangedRange)
-                         );
-                    }
+                    RegionsChanged?.Invoke(this,
+                        new OutlineRegionsChangedEventArgs(CurrentRegions.Clone() as OutlineRegionCollection,
+                        result.ChangedRange)
+                     );
                 }
             }
         }
 
-        protected static ITextRange CompareRegions(
+        protected virtual ITextRange CompareRegions(
             OutlineRegionCollection newRegions,
             OutlineRegionCollection oldRegions, int upperBound) {
             TextRangeCollection<OutlineRegion> oldClone = null;
