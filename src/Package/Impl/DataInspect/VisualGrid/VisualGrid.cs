@@ -228,17 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (v != null) {
                         Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
                         if (rc.Contains(pt)) {
-                            // Order: None -> Ascending -> Descending -> Ascending -> Descending -> ...
-                            v.ToggleSortOrder();
-                            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
-                                // Shift+Click adds column to the sorting set.
-                                _sortOrder.Add(v);
-                            } else {
-                                // Clear all column sorts except the one that was clicked on.
-                                ResetSortToPrimary(v);
-                                _sortOrder.ResetTo(v);
-                            }
-                            SortOrderChanged?.Invoke(this, EventArgs.Empty);
+                            ToggleSort(v);
                             break;
                         }
                     }
@@ -246,6 +236,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             // Find out which visual is it
             base.OnPreviewMouseDown(e);
+        }
+
+        public void ToggleSort(HeaderTextVisual v) {
+            // Order: None -> Ascending -> Descending -> Ascending -> Descending -> ...
+            v.ToggleSortOrder();
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+                // Shift+Click adds column to the sorting set.
+                _sortOrder.Add(v);
+            } else {
+                // Clear all column sorts except the one that was clicked on.
+                ResetSortToPrimary(v);
+                _sortOrder.ResetTo(v);
+            }
+            SortOrderChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void ResetSortToPrimary(HeaderTextVisual primary) {

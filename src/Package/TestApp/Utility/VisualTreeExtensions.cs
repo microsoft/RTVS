@@ -4,22 +4,28 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class VisualTreeExtensions {
         public static T FindChild<T>(DependencyObject o) where T : DependencyObject {
-            if(o is T) {
+            if (o is T) {
                 return o as T;
             }
-            int childrenCount = VisualTreeHelper.GetChildrenCount(o);
-            if (childrenCount > 0) {
-                for (int i = 0; i < childrenCount; i++) {
-                    var child = VisualTreeHelper.GetChild(o, i);
-                    return FindChild<T>(child);
+            return UIThreadHelper.Instance.Invoke(() => {
+                int childrenCount = VisualTreeHelper.GetChildrenCount(o);
+                if (childrenCount > 0) {
+                    for (int i = 0; i < childrenCount; i++) {
+                        var child = VisualTreeHelper.GetChild(o, i);
+                        var inner = FindChild<T>(child);
+                        if(inner != null) {
+                            return inner;
+                        }
+                    }
                 }
-            }
-            return null;
+                return null;
+            });
         }
     }
 }

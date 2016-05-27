@@ -45,8 +45,9 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
                     var header = VisualTreeExtensions.FindChild<HeaderTextVisual>(script.Control);
+                    var grid = VisualTreeExtensions.FindChild<VisualGrid>(script.Control);
                     header.Should().NotBeNull();
-                    header.SortOrder = SortOrderType.Descending;
+                    UIThreadHelper.Instance.Invoke(() => grid.ToggleSort(header));
                     actual = VisualTreeObject.Create(script.Control);
                     ViewTreeDump.CompareVisualTrees(_files, actual, "VariableGridSorted01");
                 }
