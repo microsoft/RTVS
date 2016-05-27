@@ -12,6 +12,7 @@ using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
+using Xunit;
 
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
@@ -84,9 +85,11 @@ namespace Microsoft.R.Editor.Test.Outline {
             rc[2].DisplayText.Should().Be("if...");
         }
 
-        [Test]
-        public void RRegionBuilder_OutlineFile01() {
-            Action a = () => OutlineTest.OutlineFile(_testFiles, "01.r");
+        [CompositeTest]
+        [InlineData("01.r")]
+        [InlineData("02.r")]
+        public void RRegionBuilder_OutlineFile(string name) {
+            Action a = () => OutlineTest.OutlineFile(_testFiles, name);
             a.ShouldNotThrow();
         }
     }
