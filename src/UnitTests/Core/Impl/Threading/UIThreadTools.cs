@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
     public static class UIThreadTools {
+        public static Task DoEvents() {
+            return UIThreadHelper.Instance.DoEventsAsync();
+        }
+
         public static Task InUI(Action action) {
             return UIThreadHelper.Instance.InvokeAsync(action);
         }

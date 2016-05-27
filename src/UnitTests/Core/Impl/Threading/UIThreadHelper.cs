@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.UnitTests.Core.Threading {
@@ -114,6 +115,12 @@ namespace Microsoft.UnitTests.Core.Threading {
         public async Task<Exception> WaitForNextExceptionAsync(CancellationToken cancellationToken = default (CancellationToken)) {
             var args = await EventTaskSources.Dispatcher.UnhandledException.Create(_application.Dispatcher, e => e.Handled = true, cancellationToken);
             return args.Exception;
+        }
+
+        public Task DoEventsAsync() {
+            return TaskUtilities.IsOnBackgroundThread()
+                ? _application.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background).Task
+                : Task.Run(DoEventsAsync);
         }
 
         private void RunMainThread(object obj) {

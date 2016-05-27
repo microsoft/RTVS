@@ -19,6 +19,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Returns expression to evaluate in R when ordering the data frame
         /// </summary>
-        string GetDataFrameSortExpression();
+        string GetDataFrameSortFunction();
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -60,8 +61,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// where x.df is name of the data frame in grid.r and minus tells R
         /// that the column sort order is descending rather than ascending.
         /// </summary>
-        public string GetDataFrameSortExpression() {
-            var sb = new StringBuilder("do.call(order, c(");
+        public string GetDataFrameSortFunction() {
+            var sb = new StringBuilder("function(x) { do.call(order, c(");
             bool first = true;
             foreach (var s in _sortOrderList) {
                 if (!first) {
@@ -73,9 +74,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     sb.Append('-');
                 }
                 // NOTE: name must match name of the data frame in grid.r
-                sb.Append(Invariant($"x.df['{s.ColumnName}']"));
+                sb.Append(Invariant($"x[{s.ColumnName.ToRStringLiteral()}]"));
             }
-            sb.Append("))");
+            sb.Append(")) }");
             return sb.ToString();
         }
     }

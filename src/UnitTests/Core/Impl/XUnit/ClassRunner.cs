@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     internal sealed class ClassRunner : XunitTestClassRunner {
+        private static readonly IDictionary<Type, object> Dummies = new Dictionary<Type, object>();
+
         internal static readonly TestMethodFixture TestMethodFixtureDummy = new TestMethodFixture();
         private readonly IReadOnlyDictionary<Type, object> _assemblyFixtureMappings;
 
@@ -21,9 +24,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue) {
-            if (parameter.ParameterType == typeof (TestMethodFixture)) {
-                // We want to provide unique instance for every test, so for now just add a default dummy that will be replaced in RunTestMethodAsync with real value
-                argumentValue = TestMethodFixtureDummy;
+            if (typeof(IMethodFixture).IsAssignableFrom(parameter.ParameterType)) {
+                if (!Dummies.TryGetValue(parameter.ParameterType, out argumentValue)) {
+                    argumentValue = Activator.CreateInstance(parameter.ParameterType);
+                    Dummies[parameter.ParameterType] = argumentValue;
+                }
                 return true;
             }
 

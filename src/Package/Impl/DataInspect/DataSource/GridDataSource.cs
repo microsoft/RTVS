@@ -24,14 +24,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                     string exp;
                     if (sortOrder != null && !sortOrder.IsEmpty) {
                         if (gridRange.Value.Columns.Count > 1) {
-                            string dataFrameSortExpression = sortOrder.GetDataFrameSortExpression();
-                            exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns}, \"{dataFrameSortExpression}\")");
+                            string dataFrameSortExpression = sortOrder.GetDataFrameSortFunction();
+                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {dataFrameSortExpression.ToRStringLiteral()})");
                         } else {
                             int sortType = sortOrder.IsPrimaryDescending ? 2 : 1;
-                            exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns}, NULL, {sortType})");
+                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, NULL, {sortType})");
                         }
                     } else {
-                        exp = Invariant($"rtvs:::grid.data({expression}, {rows}, {columns})");
+                        exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns})");
                     }
                     return await evaluator.EvaluateAsync<GridData>(exp, REvaluationKind.Normal);
                 } catch (RException ex) {

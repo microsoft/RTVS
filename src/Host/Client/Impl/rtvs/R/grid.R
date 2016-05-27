@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-grid.trim <- function(str, max_length = 100) {
+grid_trim <- function(str, max_length = 100) {
   if (nchar(str) > (100 - 3)) {
     paste(substr(str, 1, 97), '...', sep='');
   } else {
@@ -9,23 +9,24 @@ grid.trim <- function(str, max_length = 100) {
   }
 }
 
-grid.format <- function(x) {
-  sapply(format(x, trim = TRUE, justify = "none"), grid.trim);
+grid_format <- function(x) {
+  sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
 }
 
-grid.sort.df <- function(x, rows, cols, df.sort.expression) {
-  if(missing(df.sort.expression)) {
+grid_sort_df <- function(x, rows, cols, df_sort_function_text) {
+  if(missing(df_sort_function_text)) {
     x.df <- as.data.frame(x)[rows, cols];
   } else {
     x.df <- as.data.frame(x)
-    x.df <- x.df[eval(parse(text = df.sort.expression)),][rows, cols];
+    df_sort_function = eval(parse(text = df_sort_function_text))
+    x.df <- x.df[df_sort_function(x.df),][rows, cols];
   }
   x.df
 }
 
-grid.sort.vector <- function(x, vector.sort.type) {
-  if(!missing(vector.sort.type) && vector.sort.type > 0) {
-    if(vector.sort.type == 1) {
+grid_sort_vector <- function(x, vector_sort_type) {
+  if(!missing(vector_sort_type) && vector_sort_type > 0) {
+    if(vector_sort_type == 1) {
         x <- sort(x)
     } else {
         x <- sort(x, decreasing = TRUE)
@@ -34,7 +35,7 @@ grid.sort.vector <- function(x, vector.sort.type) {
   x
 }
 
-grid.data <- function(x, rows, cols, df.sort.expression, vector.sort.type) {
+grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
   d <- dim(x);
   if (missing(rows)) {
     rows <- 1:d[[1]];
@@ -47,21 +48,21 @@ grid.data <- function(x, rows, cols, df.sort.expression, vector.sort.type) {
   if (length(rows) == 1 || length(cols) == 1) {
     # one-dimension objects
     if(is(x, 'vector') || is.ts(x)) {
-      x <- grid.sort.vector(x, vector.sort.type)
+      x <- grid_sort_vector(x, vector_sort_type)
       if(length(cols) == 1) {
-        data <- grid.format(x[rows]);
+        data <- grid_format(x[rows]);
       } else {
-        data <- grid.format(x[cols]);
+        data <- grid_format(x[cols]);
       }
     } else {
-      data <- grid.format(x[rows, cols]);
+      data <- grid_format(x[rows, cols]);
     }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
   } else {
     x <- as.data.frame(x)
-    x.df <- grid.sort.df(x, rows, cols, df.sort.expression);
-    data <- sapply(x.df, grid.format, USE.NAMES = FALSE);
+    x.df <- grid_sort_df(x, rows, cols, df_sort_function_text);
+    data <- sapply(x.df, grid_format, USE.NAMES = FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);
   }
@@ -92,16 +93,4 @@ grid.data <- function(x, rows, cols, df.sort.expression, vector.sort.type) {
   }
   vp$data<-data.list;
   vp;
-}
-
-grid.dput <- function(obj) {
-    conn <- memory_connection(NA, 0x10000);
-    json <- "{}";
-    tryCatch({
-        dput(obj, conn);
-        json <- memory_connection_tochar(conn);
-    }, finally = {
-        close(conn);
-    });
-    json;
 }

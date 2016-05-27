@@ -13,7 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public sealed class HeaderTextVisual : TextVisual {
         private const char ArrowUp = (char)0x25B4;
         private const char ArrowDown = (char)0x25BE;
+        private const char Nbsp = (char)0x00A0;
 
+        private char _arrowChar = Nbsp;
         private SortOrderType _sortOrder;
         public SortOrderType SortOrder {
             get { return _sortOrder; }
@@ -26,46 +28,43 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Name of the column
         /// </summary>
-        public string Name {
-            get { return HasArrow(Text) ? Text.Substring(0, Text.Length - 1) : Text; }
-        }
+        public string Name => base.Text;
 
+        public override string Text {
+            get { return base.Text + _arrowChar; }
+            set { base.Text = value; }
+        }
         /// <summary>
         /// Calculates column header render size taking into account
         /// optional sorting arrow, if any.
         /// </summary>
         protected override Size GetRenderSize(FormattedText formattedText, out double offset) {
-            var arrowGlyph = new FormattedText(((char)0x25B4).ToString(), CultureInfo.CurrentUICulture,
-                                                FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
-
             var baseSize = base.GetRenderSize(formattedText, out offset);
-            offset = arrowGlyph.Width;
-            if (!HasArrow(Text)) {
-                return new Size(baseSize.Width + 2 * arrowGlyph.Width, baseSize.Height);
-            }
-            return new Size(baseSize.Width + arrowGlyph.Width, baseSize.Height);
+
+            var currentArrowGlyph = new FormattedText(_arrowChar.ToString(), CultureInfo.CurrentUICulture,
+                                               FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
+            var largestArrowGlyph = new FormattedText(ArrowUp.ToString(), CultureInfo.CurrentUICulture,
+                                               FlowDirection.LeftToRight, Typeface, FontSize, Foreground);
+
+            offset = largestArrowGlyph.Width;
+            return new Size(baseSize.Width - currentArrowGlyph.Width + 2* largestArrowGlyph.Width, baseSize.Height);
         }
 
         private void SetArrowDisplay() {
-            string text = Text;
             switch (SortOrder) {
                 case SortOrderType.None:
-                    SetArrow('\0');
+                    _arrowChar = Nbsp;
                     break;
 
                 case SortOrderType.Ascending:
-                    SetArrow(ArrowDown);
+                    _arrowChar = ArrowDown;
                     break;
 
                 case SortOrderType.Descending:
-                    SetArrow(ArrowUp);
+                    _arrowChar = ArrowUp;
                     break;
             }
-        }
-
-        private void SetArrow(char arrow) {
-            string text = HasArrow(Text) ? Text.Substring(0, Text.Length - 1) : Text;
-            Text = text + (arrow != '\0' ? arrow.ToString() : string.Empty);
+            Invalidate();
         }
 
         private static bool HasArrow(string text) {

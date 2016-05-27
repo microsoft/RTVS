@@ -18,6 +18,7 @@ using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using NSubstitute;
 using Xunit;
 using Xunit.Abstractions;

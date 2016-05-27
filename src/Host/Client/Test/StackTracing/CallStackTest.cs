@@ -18,6 +18,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 using Microsoft.R.DataInspection;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.StackTracing.Test {
     [ExcludeFromCodeCoverage]

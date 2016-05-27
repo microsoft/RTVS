@@ -17,14 +17,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public double Y { get; set; }
 
         private string _text;
-        public string Text {
-            get {
-                return _text;
-            }
+        public virtual string Text {
+            get { return _text; }
             set {
                 _text = value;
-                _formattedText = null;
-                _drawValid = false;
+                Invalidate();
             }
         }
 
@@ -75,6 +72,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _drawValid = false;
 
             Draw();
+        }
+
+        protected void Invalidate() {
+            _formattedText = null;
+            _drawValid = false;
         }
     }
 }

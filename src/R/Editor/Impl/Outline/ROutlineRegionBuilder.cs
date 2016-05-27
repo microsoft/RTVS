@@ -4,7 +4,9 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Utility;
@@ -16,16 +18,13 @@ using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Outline
-{
+namespace Microsoft.R.Editor.Outline {
     /// <summary>
     /// Code outline region builder. Runs asynchronously but starts
     /// on next idle slot after the most recent tree change.
     /// </summary>
-    internal sealed class ROutlineRegionBuilder : OutlineRegionBuilder, IAstVisitor
-    {
-        class OutliningContext
-        {
+    internal sealed class ROutlineRegionBuilder : OutlineRegionBuilder, IAstVisitor {
+        class OutliningContext {
             public int LastRegionStartLineNumber = -1;
             public int LastRegionEndLineNumber = -1;
 
@@ -34,15 +33,14 @@ namespace Microsoft.R.Editor.Outline
 
         private static readonly Guid _treeUserId = new Guid("15B63323-6670-4D24-BDD7-FF71DD14CD5A");
         private const int _minLinesToOutline = 3;
-
-        internal IREditorDocument EditorDocument { get; private set; }
-        internal IEditorTree EditorTree { get; private set; }
-
         private readonly object _threadLock = new object();
 
+        internal IREditorDocument EditorDocument { get; }
+        internal IEditorTree EditorTree { get; }
+
+
         public ROutlineRegionBuilder(IREditorDocument document)
-            : base(document.EditorTree.TextBuffer)
-        {
+            : base(document.EditorTree.TextBuffer) {
             EditorDocument = document;
             EditorDocument.DocumentClosing += OnDocumentClosing;
 
@@ -50,106 +48,77 @@ namespace Microsoft.R.Editor.Outline
             EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
         }
 
-        protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e)
-        {
-            if (e.Before.LineCount != e.After.LineCount)
-            {
+        protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
+            if (e.Before.LineCount != e.After.LineCount) {
                 BackgroundTask.DoTaskOnIdle();
             }
-
             base.OnTextBufferChanged(sender, e);
         }
 
-        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e)
-        {
-            if (e.UpdateType != TreeUpdateType.PositionsOnly)
-            {
+        private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
+            if (e.UpdateType != TreeUpdateType.PositionsOnly) {
                 BackgroundTask.DoTaskOnIdle();
             }
         }
 
-        private void OnDocumentClosing(object sender, EventArgs e)
-        {
+        private void OnDocumentClosing(object sender, EventArgs e) {
             // Make sure background thread is not building regions
-            lock (_threadLock)
-            {
+            lock (_threadLock) {
                 Dispose();
             }
         }
 
-        public override bool BuildRegions(OutlineRegionCollection newRegions)
-        {
-            lock (_threadLock)
-            {
-                if (IsDisposed || !EditorTree.IsReady)
-                {
+        public override bool BuildRegions(OutlineRegionCollection newRegions) {
+            lock (_threadLock) {
+                if (IsDisposed || !EditorTree.IsReady) {
                     return false;
                 }
 
                 AstRoot rootNode = null;
 
-                try
-                {
+                try {
                     rootNode = EditorTree.AcquireReadLock(_treeUserId);
-                    if (rootNode != null)
-                    {
+                    if (rootNode != null) {
                         OutliningContext context = new OutliningContext();
                         context.Regions = newRegions;
-
                         rootNode.Accept(this, context);
+                        OutlineSections(rootNode, context);
                     }
-                }
-                catch (Exception ex)
-                {
+                } catch (Exception ex) {
                     Debug.Fail(String.Format(CultureInfo.CurrentCulture, "Exception in outliner: {0}", ex.Message));
-                }
-                finally
-                {
-                    if (rootNode != null)
-                    {
+                } finally {
+                    if (rootNode != null) {
                         EditorTree.ReleaseReadLock(_treeUserId);
-                    }
-                    else
-                    {
+                    } else {
                         // Tree was busy. Will try again later.
                         GuardedOperations.DispatchInvoke(() => BackgroundTask.DoTaskOnIdle(), DispatcherPriority.Normal);
                     }
                 }
-
                 return true;
             }
-        } 
+        }
 
-        protected override void MainThreadAction(object backgroundProcessingResult)
-        {
-            if (!IsDisposed)
-            {
+        protected override void MainThreadAction(object backgroundProcessingResult) {
+            if (!IsDisposed) {
                 base.MainThreadAction(backgroundProcessingResult);
             }
         }
 
         #region IAstVisitor
-        public bool Visit(IAstNode node, object param)
-        {
+        public bool Visit(IAstNode node, object param) {
             OutliningContext context = param as OutliningContext;
             int startLineNumber, endLineNumber;
 
-            if (OutlineNode(node, out startLineNumber, out endLineNumber))
-            {
-                if (context.LastRegionStartLineNumber == startLineNumber && context.LastRegionEndLineNumber != endLineNumber)
-                {
+            if (OutlineNode(node, out startLineNumber, out endLineNumber)) {
+                if (context.LastRegionStartLineNumber == startLineNumber && context.LastRegionEndLineNumber != endLineNumber) {
                     // Always prefer outer (bigger) region.
                     var lastRegion = context.Regions[context.Regions.Count - 1];
-                    if (lastRegion.Length < node.Length)
-                    {
+                    if (lastRegion.Length < node.Length) {
                         context.Regions.RemoveAt(context.Regions.Count - 1);
                         context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, node));
                     }
-                }
-                else if (context.LastRegionStartLineNumber != startLineNumber)
-                {
+                } else if (context.LastRegionStartLineNumber != startLineNumber) {
                     context.Regions.Add(new ROutlineRegion(EditorDocument.TextBuffer, node));
-
                     context.LastRegionStartLineNumber = startLineNumber;
                     context.LastRegionEndLineNumber = endLineNumber;
                 }
@@ -159,28 +128,54 @@ namespace Microsoft.R.Editor.Outline
         }
         #endregion
 
-        private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, out int startLineNumber, out int endLineNumber)
-        {
+        private void OutlineSections(AstRoot ast, OutliningContext context) {
+            var snapshot = EditorTree.TextSnapshot;
+            var sections = ast.Comments.Where(c => {
+                var text = snapshot.GetText(new Span(c.Start, c.Length));
+                // Section looks like # [NAME] --------
+                return text.TrimEnd().EndsWithOrdinal("---") && text.IndexOfAny(CharExtensions.LineBreakChars) < 0;
+            }).ToArray();
+
+            for (int i = 0; i < sections.Length; i++) {
+                var startLine = snapshot.GetLineFromPosition(sections[i].Start);
+                int end = -1;
+
+                var text = snapshot.GetText(new Span(sections[i].Start, sections[i].Length));
+                var displayText = text.Substring(0, text.IndexOf("---")).Trim();
+
+                if (i < sections.Length - 1) {
+                    var endLineNumber = snapshot.GetLineNumberFromPosition(sections[i + 1].Start);
+                    if (endLineNumber > startLine.LineNumber) {
+                        end = snapshot.GetLineFromLineNumber(endLineNumber - 1).End;
+                    }
+                } else {
+                    end = snapshot.Length;
+                }
+
+                if (end > startLine.Start) {
+                    context.Regions.Add(
+                       new ROutlineRegion(EditorDocument.TextBuffer, TextRange.FromBounds(startLine.Start, end), displayText));
+                }
+            }
+        }
+
+
+        private static bool OutlineRange(ITextSnapshot snapshot, ITextRange range, out int startLineNumber, out int endLineNumber) {
             int start = Math.Max(0, range.Start);
             int end = Math.Min(range.End, snapshot.Length);
 
             startLineNumber = endLineNumber = 0;
-
-            if (start < end)
-            {
+            if (start < end) {
                 startLineNumber = snapshot.GetLineNumberFromPosition(start);
                 endLineNumber = snapshot.GetLineNumberFromPosition(end);
 
                 return endLineNumber - startLineNumber + 1 >= _minLinesToOutline;
             }
-
             return false;
         }
 
-        private bool OutlineNode(IAstNode node, out int startLineNumber, out int endLineNumber)
-        {
-            if (node is AstRoot || node is GlobalScope)
-            {
+        private bool OutlineNode(IAstNode node, out int startLineNumber, out int endLineNumber) {
+            if (node is AstRoot || node is GlobalScope) {
                 startLineNumber = endLineNumber = 0;
                 return false;
             }
@@ -189,15 +184,10 @@ namespace Microsoft.R.Editor.Outline
         }
 
         #region IDisposable
-        protected override void Dispose(bool disposing)
-        {
-            if (!IsDisposed)
-            {
+        protected override void Dispose(bool disposing) {
+            if (!IsDisposed) {
                 EditorDocument.DocumentClosing -= OnDocumentClosing;
-                EditorDocument = null;
-
                 EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
-                EditorTree = null;
             }
 
             base.Dispose(disposing);

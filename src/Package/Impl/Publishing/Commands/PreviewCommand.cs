@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Command;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Markdown.Editor.Commands;
+using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.Markdown.Editor.Document;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Actions.Logging;
 using Microsoft.R.Actions.Script;
@@ -75,7 +78,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 }
 
                 // Save the file
-                var tb = TextView.TextBuffer;
+                var document = EditorExtensions.FindInProjectedBuffers<MdEditorDocument>(TextView.TextBuffer, MdContentTypeDefinition.ContentType);
+                var tb = document.TextBuffer;
                 if (!tb.CanBeSavedInCurrentEncoding()) {
                     if (MessageButtons.No == VsAppShell.Current.ShowMessage(Resources.Warning_SaveInUtf8, MessageButtons.YesNo)) {
                         return CommandResult.Executed;
@@ -85,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     tb.Save();
                 }
 
-                var inputFilePath = tb.GetFilePath();
+               var inputFilePath = tb.GetFilePath();
                 _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
                 try {
