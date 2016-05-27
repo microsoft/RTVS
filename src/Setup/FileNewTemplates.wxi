@@ -4,6 +4,9 @@
     <Component Id="FileNewTemplates" Guid="{B1FE1106-EE87-4EEE-A136-366FE6B43543}">
       <File Source="$(var.BinDir)\Templates\NewItem\markdown.rmd" />
       <File Source="$(var.BinDir)\Templates\NewItem\script.r" />
+      <File Source="$(var.BinDir)\Templates\NewItem\dataset.rd" />
+      <File Source="$(var.BinDir)\Templates\NewItem\document.rd" />
+      <File Source="$(var.BinDir)\Templates\NewItem\function.rd" />
       <File Source="$(var.BinDir)\Templates\NewItem\NewRItems.vsdir" />
     </Component>
   </DirectoryRef>
