@@ -950,7 +950,7 @@
                                     },
                                     {
                                       "Name": "Margin",
-                                      "Value": "4,0,0,0"
+                                      "Value": "6,0,0,0"
                                     },
                                     {
                                       "Name": "HorizontalAlignment",
@@ -5884,6 +5884,68 @@
                                                                                           ]
                                                                                         },
                                                                                         {
+                                                                                          "Name": "CrispImage",
+                                                                                          "Properties": [
+                                                                                            {
+                                                                                              "Name": "DataContext",
+                                                                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.ObservableTreeNode"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "Name",
+                                                                                              "Value": ""
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "Margin",
+                                                                                              "Value": "0,0,0,0"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "HorizontalAlignment",
+                                                                                              "Value": "Stretch"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "VerticalAlignment",
+                                                                                              "Value": "Stretch"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "ToolTip",
+                                                                                              "Value": "null"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "ContextMenu",
+                                                                                              "Value": "null"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "Visibility",
+                                                                                              "Value": "Visible"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "TextAlignment",
+                                                                                              "Value": "Left"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "IsVirtualizing",
+                                                                                              "Value": "True"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "HorizontalScrollBarVisibility",
+                                                                                              "Value": "Disabled"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "VerticalScrollBarVisibility",
+                                                                                              "Value": "Visible"
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "Name",
+                                                                                              "Value": ""
+                                                                                            },
+                                                                                            {
+                                                                                              "Name": "Text",
+                                                                                              "Value": ""
+                                                                                            }
+                                                                                          ],
+                                                                                          "Children": []
+                                                                                        },
+                                                                                        {
                                                                                           "Name": "TextBlock",
                                                                                           "Properties": [
                                                                                             {
@@ -5908,7 +5970,7 @@
                                                                                             },
                                                                                             {
                                                                                               "Name": "Margin",
-                                                                                              "Value": "0,0,0,0"
+                                                                                              "Value": "6,0,0,0"
                                                                                             },
                                                                                             {
                                                                                               "Name": "HorizontalAlignment",

@@ -894,7 +894,7 @@
                                     },
                                     {
                                       "Name": "Margin",
-                                      "Value": "4,0,0,0"
+                                      "Value": "6,0,0,0"
                                     },
                                     {
                                       "Name": "HorizontalAlignment",
