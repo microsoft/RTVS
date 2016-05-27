@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertionExtensions.cs" />
-    <Compile Include="Assertions\BitmapImageAssertions.cs" />
+    <Compile Include="Assertions\BitmapSourceAssertions.cs" />
     <Compile Include="Assertions\AsyncCommandAssertions.cs" />
     <Compile Include="EventTaskSources.cs" />
     <Compile Include="Fakes\InteractiveWindow\TestInteractiveWindowEditorsFactoryService.cs" />

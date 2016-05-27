@@ -13,8 +13,8 @@ namespace Microsoft.R.Components.Test {
             return new AsyncCommandAssertions(command);
         }
 
-        public static BitmapImageAssertions Should(this BitmapImage image) {
-            return new BitmapImageAssertions(image);
+        public static BitmapSourceAssertions Should(this BitmapSource image) {
+            return new BitmapSourceAssertions(image);
         }
     }
 }

@@ -153,6 +153,8 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task CopyAsBitmap() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                var plot1to10 = await GetExpectedImageAsync("bmp", 600, 500, 96, "plot1-10", "plot(1:10)");
+
                 // We set an initial size for plots, because export as image command
                 // will use the current size of plot control as export parameter.
                 await _workflow.Plots.ResizeAsync(600, 500, 96);
@@ -168,6 +170,9 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 Clipboard.ContainsImage().Should().BeTrue();
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
+
+                var clipboardBitmapSource = Clipboard.GetImage();
+                clipboardBitmapSource.Should().HaveSamePixels(plot1to10);
             }
         }
 
