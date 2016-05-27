@@ -171,8 +171,8 @@ namespace Microsoft.R.Components.Test.Plots {
                 Clipboard.ContainsImage().Should().BeTrue();
                 CoreShell.LastShownErrorMessage.Should().BeNullOrEmpty();
 
-                var clipboardBitmapSource = Clipboard.GetImage();
-                clipboardBitmapSource.Should().HaveSamePixels(plot1to10);
+                var clipboardImage = Clipboard.GetImage();
+                clipboardImage.Should().HaveSamePixels(plot1to10);
             }
         }
 
