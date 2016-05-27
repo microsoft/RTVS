@@ -24,7 +24,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             _files = files;
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1825")]
         public async Task VariableGrid_ConstructorTest() {
             VisualTreeObject actual = null;
             using (var hostScript = new VariableRHostScript()) {
