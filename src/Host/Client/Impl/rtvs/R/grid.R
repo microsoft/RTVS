@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-grid.trim <- function(str, max_length = 100) {
+grid_trim <- function(str, max_length = 100) {
   if (nchar(str) > (100 - 3)) {
     paste(substr(str, 1, 97), '...', sep='');
   } else {
@@ -9,11 +9,33 @@ grid.trim <- function(str, max_length = 100) {
   }
 }
 
-grid.format <- function(x) {
-  sapply(format(x, trim = TRUE, justify = "none"), grid.trim);
+grid_format <- function(x) {
+  sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
 }
 
-grid.data <- function(x, rows, cols) {
+grid_sort_df <- function(x, rows, cols, df_sort_function_text) {
+  if(missing(df_sort_function_text)) {
+    x.df <- as.data.frame(x)[rows, cols];
+  } else {
+    x.df <- as.data.frame(x)
+    df_sort_function = eval(parse(text = df_sort_function_text))
+    x.df <- x.df[df_sort_function(x.df),][rows, cols];
+  }
+  x.df
+}
+
+grid_sort_vector <- function(x, vector_sort_type) {
+  if(!missing(vector_sort_type) && vector_sort_type > 0) {
+    if(vector_sort_type == 1) {
+        x <- sort(x)
+    } else {
+        x <- sort(x, decreasing = TRUE)
+    }
+  }
+  x
+}
+
+grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
   d <- dim(x);
   if (missing(rows)) {
     rows <- 1:d[[1]];
@@ -26,24 +48,21 @@ grid.data <- function(x, rows, cols) {
   if (length(rows) == 1 || length(cols) == 1) {
     # one-dimension objects
     if(is(x, 'vector') || is.ts(x)) {
+      x <- grid_sort_vector(x, vector_sort_type)
       if(length(cols) == 1) {
-        data <- grid.format(x[rows]);
+        data <- grid_format(x[rows]);
       } else {
-        data <- grid.format(x[cols]);
+        data <- grid_format(x[cols]);
       }
     } else {
-      data <- grid.format(x[rows, cols]);
+      data <- grid_format(x[rows, cols]);
     }
     rn <- row.names(x)[rows];
     cn <- colnames(x)[cols];
-  } else if(is.matrix(x)) {
-    rn <- row.names(x)[rows];
-    cn <- colnames(x)[cols];
-    data <- sapply(as.data.frame(x[rows, cols]), grid.format, USE.NAMES=FALSE);
   } else {
-    # data frames
-    x.df <- as.data.frame(x)[rows, cols];
-    data <- sapply(x.df, grid.format, USE.NAMES=FALSE);
+    x <- as.data.frame(x)
+    x.df <- grid_sort_df(x, rows, cols, df_sort_function_text);
+    data <- sapply(x.df, grid_format, USE.NAMES = FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);
   }
@@ -74,16 +93,4 @@ grid.data <- function(x, rows, cols) {
   }
   vp$data<-data.list;
   vp;
-}
-
-grid.dput <- function(obj) {
-    conn <- memory_connection(NA, 0x10000);
-    json <- "{}";
-    tryCatch({
-        dput(obj, conn);
-        json <- memory_connection_tochar(conn);
-    }, finally = {
-        close(conn);
-    });
-    json;
 }

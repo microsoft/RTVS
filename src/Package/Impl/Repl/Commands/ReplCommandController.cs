@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             return controller;
         }
 
-        public static ReplCommandController FromTextView(ITextView textView) {
+        public static new ReplCommandController FromTextView(ITextView textView) {
             return ServiceManager.GetService<ReplCommandController>(textView);
         }
 

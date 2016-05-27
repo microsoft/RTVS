@@ -4,10 +4,11 @@
 view <- function(x, title) {
   if(is.function(x) || is.data.frame(x) || is.table(x) || 
      is.matrix(x) || is.list(x) || is.ts(x) || length(x) > 1) {
+    dep <- deparse(substitute(x), backtick = TRUE)
     if (missing(title)) {
-      title <- ""
+      title <- dep[1]
     }
-    invisible(rtvs:::send_message('View', deparse(substitute(x)), title))
+    invisible(rtvs:::send_message('View', dep, title))
   } else {
     print(x)
   }

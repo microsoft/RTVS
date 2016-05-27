@@ -7,15 +7,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     /// <summary>
     /// A control that arranges Visual in grid
     /// </summary>
-    internal class VisualGrid : FrameworkElement {
-        private GridLineVisual _gridLine;
-        private VisualCollection _visualChildren;
+    internal sealed class VisualGrid : FrameworkElement {
+        private readonly GridLineVisual _gridLine;
+        private readonly VisualCollection _visualChildren;
+        private readonly SortOrder _sortOrder = new SortOrder();
         private GridRange _dataViewport;
         private Grid<TextVisual> _visualGrid;
 
@@ -27,9 +29,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             AddVisualChild(_gridLine);
 
             ClipToBounds = true;
-
             Focusable = true;
         }
+
+        /// <summary>
+        /// If true, the object is assumed to be a grid header and clicking
+        /// on fields changes sorting for the actual data grid.
+        /// </summary>
+        public bool Header { get; set; }
+
+        /// <summary>
+        /// Fires when sorting order changes
+        /// </summary>
+        public event EventHandler SortOrderChanged;
 
         public ScrollDirection ScrollDirection { get; set; }
 
@@ -79,55 +91,23 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         #endregion
 
-        public double GridLineThickness {
-            get {
-                return _gridLine.GridLineThickness;
-            }
-        }
+        public double GridLineThickness => _gridLine.GridLineThickness;
 
         public void SetGridLineBrush(Brush brush) {
             _gridLine.GridLineBrush = brush;
         }
 
-        private Brush _foreground = Brushes.Black;
-        public Brush Foreground {
-            get {
-                return _foreground;
-            }
-            set {
-                _foreground = value;
-            }
-        }
+        public Brush Foreground { get; set; } = Brushes.Black;
+        public Brush Background { get; set; } = Brushes.Transparent;
 
-        private Brush _background = Brushes.Transparent;
-        public Brush Background {
-            get {
-                return _background;
-            }
-            set {
-                _background = value;
-            }
-        }
+        public void Clear() => _visualChildren.Clear();
 
-        internal void MeasurePoints(IPoints points, GridRange newViewport, IGrid<string> data, bool refresh) {
-            var orgGrid = _visualGrid;
-            _visualGrid = new Grid<TextVisual>(
-                newViewport,
-                (r, c) => {
-                    if (!refresh && _dataViewport.Contains(r, c)) {
-                        return orgGrid[r, c];
-                    }
-                    var visual = new TextVisual();
-                    visual.Row = r;
-                    visual.Column = c;
-                    visual.Text = data[r, c];
-                    visual.Typeface = Typeface;
-                    visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
-                    visual.Foreground = Foreground;
-                    return visual;
-                });
+        public ISortOrder SortOrder => _sortOrder;
 
+        internal void MeasurePoints(IPoints points, GridRange newViewport, IGrid<string> data, GridUpdateType updateType) {
+            CreateGrid(newViewport, data, updateType);
             _visualChildren.Clear();
+
             foreach (int c in newViewport.Columns.GetEnumerable()) {
                 foreach (int r in newViewport.Rows.GetEnumerable()) {
                     var visual = _visualGrid[r, c];
@@ -141,6 +121,45 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             _dataViewport = newViewport;
+        }
+
+        private void CreateGrid(GridRange newViewport, IGrid<string> data, GridUpdateType updateType) {
+            var orgGrid = _visualGrid;
+            if (Header) {
+                _visualGrid = new Grid<TextVisual>(
+                        newViewport,
+                        (r, c) => {
+                            if (updateType == GridUpdateType.Sort) {
+                                return orgGrid[r, c];
+                            }
+                            if (updateType != GridUpdateType.Refresh && _dataViewport.Contains(r, c)) {
+                                return orgGrid[r, c];
+                            }
+                            var visual = new HeaderTextVisual();
+                            InitVisual(r, c, data, visual);
+                            return visual;
+                        });
+            } else {
+                _visualGrid = new Grid<TextVisual>(
+                    newViewport,
+                    (r, c) => {
+                        if (updateType != GridUpdateType.Refresh && _dataViewport.Contains(r, c)) {
+                            return orgGrid[r, c];
+                        }
+                        var visual = new TextVisual();
+                        InitVisual(r, c, data, visual);
+                        return visual;
+                    });
+            }
+        }
+
+        private void InitVisual(int r, int c, IGrid<string> data, TextVisual visual) {
+            visual.Row = r;
+            visual.Column = c;
+            visual.Text = data[r, c];
+            visual.Typeface = Typeface;
+            visual.FontSize = FontSize; // FontSize here is in device independent pixel, and Visual's FormattedText API uses the same unit
+            visual.Foreground = Foreground;
         }
 
         private bool alignRight = true;
@@ -163,6 +182,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         transform.X = x;
                         transform.Y = y;
                     }
+
+                    visual.X = x;
+                    visual.Y = y;
                 }
             }
 
@@ -178,12 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
-
             drawingContext.DrawRectangle(Background, null, new Rect(RenderSize));
-        }
-
-        public void Clear() {
-            _visualChildren.Clear();
         }
 
         protected override int VisualChildrenCount {
@@ -194,10 +211,50 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override Visual GetVisualChild(int index) {
-            if (index < 0 || index >= _visualChildren.Count + 1)
+            if (index < 0 || index >= _visualChildren.Count + 1) {
                 throw new ArgumentOutOfRangeException(nameof(index));
-            if (index == 0) return _gridLine;
+            }
+            if (index == 0) {
+                return _gridLine;
+            }
             return _visualChildren[index - 1];
+        }
+
+        protected override void OnPreviewMouseDown(MouseButtonEventArgs e) {
+            if (Header) {
+                var pt = e.GetPosition(this);
+                foreach (var viz in _visualChildren) {
+                    var v = viz as HeaderTextVisual;
+                    if (v != null) {
+                        Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
+                        if (rc.Contains(pt)) {
+                            // Order: None -> Ascending -> Descending -> Ascending -> Descending -> ...
+                            v.ToggleSortOrder();
+                            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+                                // Shift+Click adds column to the sorting set.
+                                _sortOrder.Add(v);
+                            } else {
+                                // Clear all column sorts except the one that was clicked on.
+                                ResetSortToPrimary(v);
+                                _sortOrder.ResetTo(v);
+                            }
+                            SortOrderChanged?.Invoke(this, EventArgs.Empty);
+                            break;
+                        }
+                    }
+                }
+            }
+            // Find out which visual is it
+            base.OnPreviewMouseDown(e);
+        }
+
+        private void ResetSortToPrimary(HeaderTextVisual primary) {
+            foreach (var viz in _visualChildren) {
+                var v = viz as HeaderTextVisual;
+                if (v != null && v != primary) {
+                    v.SortOrder = SortOrderType.None;
+                }
+            }
         }
     }
 }

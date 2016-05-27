@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    internal enum ScrollType {
+    internal enum GridUpdateType {
         Invalid,
         LineUp,
         LineDown,
@@ -17,5 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         MouseWheel,
         SizeChange,
         Refresh,
+        Sort
     }
 }
