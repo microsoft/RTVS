@@ -210,13 +210,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 case REnvironmentKind.Global:
                     return KnownMonikers.GlobalVariable;
                 case REnvironmentKind.Function:
-                    return KnownMonikers.MethodPublic;
+                    return KnownMonikers.Procedure;
                 case REnvironmentKind.Package:
                     return KnownMonikers.Package;
                 case REnvironmentKind.Error:
                     return KnownMonikers.StatusInvalid;
                 default:
-                    return KnownMonikers.ObjectPublic;
+                    return KnownMonikers.BulletList;
             }
         }
     }

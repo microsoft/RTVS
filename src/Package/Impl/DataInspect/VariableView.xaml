@@ -87,8 +87,9 @@
                               Grid.Column="1"
                               Style="{StaticResource ExpanderToggleStyle}"
                               ClickMode="Press" IsChecked="{Binding IsExpanded, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                    <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}" />
-                    <TextBlock Grid.Column="3" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                    <imaging:CrispImage Grid.Column="2" Width="16" Height="16" Opacity="0.5"
+                                        Moniker="{Binding Model.Content.DebugEvaluation, Converter={wpf:Lambda '(IREvaluationResultInfo info) => GetVariableIcon(info)'}}" />
+                    <TextBlock Grid.Column="3" Text="{Binding Model.Content.Name}" VerticalAlignment="Center" Margin="6,0,0,0" />
                 </Grid>
             </DataTemplate>
             
@@ -165,7 +166,7 @@
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
                         <imaging:CrispImage Width="16" Height="16" Moniker="{Binding Kind, Converter={wpf:Lambda '(REnvironmentKind kind) => GetEnvironmentIcon(kind)'}}"/>
-                        <TextBlock Text="{Binding Name}" Margin="4,0,0,0" />
+                        <TextBlock Text="{Binding Name}" Margin="6,0,0,0" />
                     </StackPanel>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
