@@ -14,7 +14,6 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     public class RPlotManagerVisualComponent : IRPlotManagerVisualComponent {
-        public RPlotManagerControl PlotControl => Control as RPlotManagerControl;
         private IRPlotManagerViewModel ViewModel { get; }
 
         public RPlotManagerVisualComponent(IRPlotManager plotManager, IVisualComponentContainer<IRPlotManagerVisualComponent> container, IRSession session, IRSettings settings, ICoreShell coreShell) {

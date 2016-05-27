@@ -64,9 +64,16 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task SomeCommandsEnabledForSinglePlot() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
+
+                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
                 });
+
+                var viewModel = ((RPlotManagerControl)_workflow.Plots.VisualComponent.Control).Model;
+                viewModel.PlotImage.Should().HaveSamePixels(plot1to10);
 
                 CheckEnabledCommands(isFirst: true, isLast: true, anyPlot: true);
             }
@@ -76,10 +83,17 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task SomeCommandsEnabledForLastPlot() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
+
+                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
                     "plot(10:20)",
                 });
+
+                var viewModel = ((RPlotManagerControl)_workflow.Plots.VisualComponent.Control).Model;
+                viewModel.PlotImage.Should().HaveSamePixels(plot10to20);
 
                 CheckEnabledCommands(isFirst: false, isLast: true, anyPlot: true);
             }
@@ -89,6 +103,10 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task SomeCommandsEnabledForMiddlePlot() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                var plot10to20 = await GetExpectedImageAsync("png", 600, 500, 96, "plot10-20", "plot(10:20)");
+
+                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
                     "plot(10:20)",
@@ -99,6 +117,9 @@ namespace Microsoft.R.Components.Test.Plots {
                     await _workflow.Plots.Commands.Previous.InvokeAsync();
                 });
 
+                var viewModel = ((RPlotManagerControl)_workflow.Plots.VisualComponent.Control).Model;
+                viewModel.PlotImage.Should().HaveSamePixels(plot10to20);
+
                 CheckEnabledCommands(isFirst: false, isLast: false, anyPlot: true);
             }
         }
@@ -107,6 +128,10 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task SomeCommandsEnabledForFirstPlot() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                var plot1to10 = await GetExpectedImageAsync("png", 600, 500, 96, "plot1-10", "plot(1:10)");
+
+                await _workflow.Plots.ResizeCurrentPlotAsync(600, 500, 96);
+
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
                     "plot(10:20)",
@@ -115,6 +140,9 @@ namespace Microsoft.R.Components.Test.Plots {
                 await WaitForPlotAsync(async delegate {
                     await _workflow.Plots.Commands.Previous.InvokeAsync();
                 });
+
+                var viewModel = ((RPlotManagerControl)_workflow.Plots.VisualComponent.Control).Model;
+                viewModel.PlotImage.Should().HaveSamePixels(plot1to10);
 
                 CheckEnabledCommands(isFirst: true, isLast: false, anyPlot: true);
             }
@@ -621,6 +649,19 @@ namespace Microsoft.R.Components.Test.Plots {
             var locatorModeChangedTask = eas.Create(_workflow.Plots);
             await action();
             await locatorModeChangedTask;
+        }
+
+        private async Task<BitmapImage> GetExpectedImageAsync(string imageType, int width, int height, int res, string name, string code) {
+            var filePath = _testFiles.GetDestinationPath(_testMethod.Name + name + "." + imageType);
+            var script = string.Format(@"
+{0}({1}, width={2}, height={3}, res={4})
+{5}
+dev.off()
+", imageType, filePath.ToRPath().ToRStringLiteral(), width, height, res, code);
+
+            var eval = _workflow.ActiveWindow.InteractiveWindow.Evaluator;
+            var result = await eval.ExecuteCodeAsync(script);
+            return new BitmapImage(new Uri(filePath));
         }
 
         private void CheckEnabledCommands(bool isFirst, bool isLast, bool anyPlot) {
