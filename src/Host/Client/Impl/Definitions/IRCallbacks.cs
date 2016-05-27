@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client {
     public interface IRCallbacks {

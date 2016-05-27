@@ -15,7 +15,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Actions.Utility;
 using Task = System.Threading.Tasks.Task;
 using static System.FormattableString;
-using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSession : IRSession, IRCallbacks {

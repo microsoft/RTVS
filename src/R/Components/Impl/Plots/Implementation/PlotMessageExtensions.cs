@@ -3,7 +3,7 @@
 
 using System.Windows.Media.Imaging;
 using Microsoft.Common.Wpf.Imaging;
-using Microsoft.R.Host.Client.Definitions;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     internal static class PlotMessageExtensions {

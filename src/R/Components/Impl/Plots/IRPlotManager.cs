@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Components.Plots {
     public interface IRPlotManager : IDisposable {

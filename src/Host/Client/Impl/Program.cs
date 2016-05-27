@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Host.Client.Definitions;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {

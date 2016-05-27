@@ -5,7 +5,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Host.Client.Definitions;
 
 namespace Microsoft.R.Host.Client.Test.Script {
     public class RHostClientTestApp : IRSessionCallback {

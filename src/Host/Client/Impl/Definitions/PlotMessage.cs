@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace Microsoft.R.Host.Client.Definitions {
+namespace Microsoft.R.Host.Client {
     public struct PlotMessage {
         public string FilePath { get; }
         public int ActivePlotIndex { get; }

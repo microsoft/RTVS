@@ -10,7 +10,6 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots.Implementation.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Definitions;
 using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Components.Plots.Implementation {
