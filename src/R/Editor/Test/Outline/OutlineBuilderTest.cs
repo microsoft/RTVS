@@ -94,7 +94,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             a.ShouldNotThrow();
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void Sections() {
             string content =
 @"# NAME1 -----
@@ -124,11 +124,12 @@ x <- 1
 
             textBuffer.Insert(2, "A");
             editorDocument.EditorTree.EnsureTreeReady();
-            EditorShell.Current.DoIdle();
 
             // Wait for background/idle tasks to complete
             var start = DateTime.Now;
-            while(calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) { }
+            while(calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                EditorShell.Current.DoIdle();
+            }
 
             calls.Should().Be(1);
             args.Should().NotBeNull();
