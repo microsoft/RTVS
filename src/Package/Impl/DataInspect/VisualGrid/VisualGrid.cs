@@ -228,7 +228,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     if (v != null) {
                         Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
                         if (rc.Contains(pt)) {
-                            ToggleSort(v);
+                            ToggleSort(v, Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
                             break;
                         }
                     }
@@ -238,10 +238,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             base.OnPreviewMouseDown(e);
         }
 
-        public void ToggleSort(HeaderTextVisual v) {
+        public void ToggleSort(HeaderTextVisual v, bool add) {
             // Order: None -> Ascending -> Descending -> Ascending -> Descending -> ...
             v.ToggleSortOrder();
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
+            if (add) {
                 // Shift+Click adds column to the sorting set.
                 _sortOrder.Add(v);
             } else {

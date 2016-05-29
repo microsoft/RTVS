@@ -13,21 +13,21 @@ using Microsoft.UnitTests.Core.Threading;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
     public class VisualTreeObject {
-        public VisualTreeObject() {
-            Children = new List<VisualTreeObject>();
-        }
-
         public string Name { get; set; }
 
+        public List<VisualTreeProperty> Properties { get; set; }
+
         public List<VisualTreeObject> Children { get; set; }
+
+        private VisualTreeObject() { }
 
         public static VisualTreeObject Create(DependencyObject o) {
             VisualTreeObject visualTreeObj = null;
 
             UIThreadHelper.Instance.Invoke(() => {
                 visualTreeObj = new VisualTreeObject();
-
                 visualTreeObj.Name = o.GetType().Name;
+                visualTreeObj.Properties = VisualTreeProperty.GetProperties(o).Where(p => SupportedWpfProperties.IsSupported(p.Name)).ToList();
                 visualTreeObj.Children = GetChildren(o);
             });
 

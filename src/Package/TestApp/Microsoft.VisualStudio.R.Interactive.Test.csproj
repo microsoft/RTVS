@@ -53,6 +53,7 @@
     <Compile Include="Utility\ViewTreeDump.cs" />
     <Compile Include="Utility\VisualTreeExtensions.cs" />
     <Compile Include="Utility\VisualTreeObject.cs" />
+    <Compile Include="Utility\VisualTreeProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
@@ -63,6 +64,8 @@
     <None Include="Files\VariableExplorer04.tree" />
     <None Include="Files\VariableGrid02.tree" />
     <AppDesigner Include="Properties\" />
+    <None Include="Files\VariableGridSorted01.tree" />
+    <None Include="Files\VariableGridSorted02.tree" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
