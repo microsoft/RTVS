@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             _files = files;
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1825")]
         [Category.Interactive]
         public void ConstructorTest02() {
             using (var hostScript = new VsRHostScript()) {
@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             }
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1825")]
         [Category.Interactive]
         public void SimpleDataTest() {
             VisualTreeObject actual = null;
@@ -50,7 +50,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             ViewTreeDump.CompareVisualTrees(_files, actual, "VariableExplorer03");
         }
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1825")]
         [Category.Interactive]
         public void SimpleFunctionTest() {
             VisualTreeObject actual = null;

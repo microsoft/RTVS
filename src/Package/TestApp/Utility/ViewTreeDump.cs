@@ -25,47 +25,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
             string testFileName = fileName + ".tree";
             string testFilePath = fixture.GetDestinationPath(testFileName);
 
+            var serializedActual = SerializeVisualTree(actual);
+            string baselineFilePath = fixture.GetSourcePath(testFileName);
             if (_regenerateBaselineFiles) {
-                var serializedActual = SerializeVisualTree(actual);
-                string baselineFilePath = fixture.GetSourcePath(testFileName);
                 TestFiles.UpdateBaseline(baselineFilePath, serializedActual);
             } else {
-                var deserializedExpected = DeserializeVisualTree(testFilePath);
-                CompareVisualTree(actual, deserializedExpected);
+                TestFiles.CompareToBaseLine(baselineFilePath, serializedActual);
             }
         }
 
-        private static void CompareVisualTree(VisualTreeObject actual, VisualTreeObject expected, bool compareProperty = true) {
-            bool visible = true;
-
-            // compare
-            actual.Name.Should().Be(expected.Name);
-
-            var visibility = actual.Properties.FirstOrDefault(p => p.Name == "Visibility");
-            if (visibility != null) {
-                visible = (visibility.Value != "Collapsed");
-            }
-
-            if (compareProperty && visible) {
-                var filteredActual = actual.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
-                var filteredExpected = expected.Properties.Where(p => SupportedWpfProperties.IsSupported(p.Name));
-
-                filteredActual.Should().BeEquivalentTo(filteredExpected);
-            }
-
-            actual.Children.Count.ShouldBeEquivalentTo(expected.Children.Count);
-
-            if (visible) {
-                var sortedActualChildren = actual.Children.OrderBy(c => c.Name).ToList();
-                var sortedExpectedChildren = expected.Children.OrderBy(c => c.Name).ToList();
-
-                sortedActualChildren.Count.Should().Be(sortedExpectedChildren.Count);
-
-                for (int i = 0; i < actual.Children.Count; i++) {
-                    CompareVisualTree(sortedActualChildren[i], sortedExpectedChildren[i], compareProperty);
-                }
-            }
-        }
 
         private static string SerializeVisualTree(VisualTreeObject o) {
             var serializer = new JsonSerializer();
@@ -75,13 +43,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                     serializer.Serialize(writer, o);
                     return sw.ToString();
                 }
-            }
-        }
-
-        private static VisualTreeObject DeserializeVisualTree(string filePath) {
-            var serializer = new JsonSerializer();
-            using (var stringReader = new StreamReader(filePath)) {
-                return (VisualTreeObject)serializer.Deserialize(stringReader, typeof(VisualTreeObject));
             }
         }
     }

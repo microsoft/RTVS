@@ -4,33 +4,26 @@
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.VisualStudio.Text.Tagging;
 
-namespace Microsoft.R.Editor.Outline
-{
+namespace Microsoft.R.Editor.Outline {
     /// <summary>
     /// Represents code outline region.
     /// </summary>
-    public class ROutliningRegionTag : OutliningRegionTag, IOutliningRegionTag
-    {
+    public class ROutliningRegionTag : OutliningRegionTag, IOutliningRegionTag {
         private OutlineRegion _outlineRegion;
 
         internal ROutliningRegionTag(OutlineRegion outlineRegion) :
-            base(false, false, string.Empty, string.Empty)
-        {
+            base(false, false, string.Empty, string.Empty) {
             _outlineRegion = outlineRegion;
         }
 
-        object IOutliningRegionTag.CollapsedForm
-        {
-            get
-            {
+        object IOutliningRegionTag.CollapsedForm {
+            get {
                 return _outlineRegion.DisplayText;
             }
         }
 
-        object IOutliningRegionTag.CollapsedHintForm
-        {
-            get
-            {
+        object IOutliningRegionTag.CollapsedHintForm {
+            get {
                 return _outlineRegion.HoverText;
             }
         }

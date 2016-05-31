@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
@@ -25,6 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
+        private const int _maxWaitTime = 2000;
+        private const int _maxResults = 100;
+
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
@@ -43,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // TODO: do estimate
-            return 100;
+            return _maxResults;
         }
 
         /// <summary>
@@ -92,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             break;
                         }
 
-                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                        var children = eval.GetChildrenAsync().WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?
                         if (children != null) {
                             eval = children.FirstOrDefault((x) => x != null && x.Name == part && !x.IsHidden);
                             if (eval == null) {
@@ -102,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
 
                     if (eval != null) {
-                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
+                        var children = eval.GetChildrenAsync().WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?
                         if (children != null) {
                             return children
                                     .Where(x => !x.IsHidden)
@@ -111,12 +115,41 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                     .ToArray();
                         }
                     }
+                } else {
+                    // May be a package object line mtcars$
+                    variableName = TrimTrailingSelector(variableName);
+                    var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                    var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                    var infoList = session.DescribeChildrenAsync("NULL", variableName, REvaluationResultProperties.HasChildrenProperty, 
+                                RValueRepresentations.Str(), _maxResults).WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?;
+
+                    if (infoList != null) {
+                        return infoList
+                                    .Where(m => m.Name.StartsWithOrdinal("$"))
+                                    .Take(maxCount)
+                                    .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
+                                    .ToArray();
+                    }
                 }
-            } catch (OperationCanceledException) {
-            }
+            } catch (OperationCanceledException) { } catch(RException) { } catch (MessageTransportException) { }
+
             return new VariableInfo[0];
         }
         #endregion
+
+        private static string TrimTrailingSelector(string name) {
+            if (name.EndsWithOrdinal("$") || name.EndsWithOrdinal("@")) {
+                return name.Substring(0, name.Length - 1);
+            }
+            return name;
+        }
+
+        private static string TrimLeadingSelector(string name) {
+            if (name.StartsWithOrdinal("$") || name.StartsWithOrdinal("@")) {
+                return name.Substring(1);
+            }
+            return name;
+        }
 
         protected override void SessionMutated() {
             UpdateList().DoNotWait();
@@ -169,6 +202,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             public VariableInfo(IRSessionDataObject e) {
                 this.Name = e.Name;
                 if (e.TypeName == "closure") {
+                    ItemType = NamedItemType.Function;
+                } else {
+                    ItemType = NamedItemType.Variable;
+                }
+            }
+
+            public VariableInfo(string name, string typeName) {
+                this.Name = name;
+                if (typeName == "closure") {
                     ItemType = NamedItemType.Function;
                 } else {
                     ItemType = NamedItemType.Variable;
