@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.IO;
-using Microsoft.R.Actions.Utility;
+using Microsoft.Common.Core.Install;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help.Packages {

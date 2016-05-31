@@ -1,24 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Test.StubFactories;
-using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
-using Xunit.Abstractions;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
-{
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
     [ExcludeFromCodeCoverage]
     public partial class MsBuildFileSystemWatcherTest
     {

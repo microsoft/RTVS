@@ -41,10 +41,6 @@
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>
       <Name>Microsoft.UnitTests.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Impl\Microsoft.R.Actions.csproj">
-      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
-      <Name>Microsoft.R.Actions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Installation\RegistryBaseKeyMock.cs" />

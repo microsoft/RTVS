@@ -3,8 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Actions.Utility;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;

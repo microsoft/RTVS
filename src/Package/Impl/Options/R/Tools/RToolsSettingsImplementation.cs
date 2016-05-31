@@ -4,16 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
+using Microsoft.Common.Core.Install;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Tasks;
-using Microsoft.R.Actions.Utility;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;

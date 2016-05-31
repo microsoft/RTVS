@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Build.Construction;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging {
     internal static class FileSystemMirroringProjectLoggingExtensions {

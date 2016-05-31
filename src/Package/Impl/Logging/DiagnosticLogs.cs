@@ -11,7 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Utility;
+using Microsoft.Common.Core.Install;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;

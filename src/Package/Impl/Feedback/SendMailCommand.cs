@@ -4,11 +4,10 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Office.Interop.Outlook;
-using Microsoft.R.Actions.Logging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
-using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Feedback {
     internal class SendMailCommand : PackageCommand {

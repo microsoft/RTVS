@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.IO;
-using Microsoft.R.Actions.Utility;
+using Microsoft.Common.Core.Install;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudioTools;

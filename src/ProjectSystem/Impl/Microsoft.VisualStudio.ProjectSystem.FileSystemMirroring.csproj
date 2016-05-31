@@ -83,10 +83,6 @@
       <Project>{8D408909-459F-4853-A36C-745118F99869}</Project>
       <Name>Microsoft.Common.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
-      <Project>{B68D4AD2-2DC2-473E-AB06-408172C4FB92}</Project>
-      <Name>Microsoft.R.Actions</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">

@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
-using Microsoft.R.Actions.Utility;
+using Microsoft.Common.Core.Install;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;

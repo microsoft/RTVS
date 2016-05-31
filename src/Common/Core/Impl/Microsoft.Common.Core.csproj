@@ -39,6 +39,22 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Interop\NativeMethods.cs" />
+    <Compile Include="Logging\FileLogWriter.cs" />
+    <Compile Include="Logging\GeneralLog.cs" />
+    <Compile Include="Logging\IActionLinesLog.cs" />
+    <Compile Include="Logging\IActionLog.cs" />
+    <Compile Include="Logging\IActionLogWriter.cs" />
+    <Compile Include="Logging\LinesLog.cs" />
+    <Compile Include="Logging\MessageCategory.cs" />
+    <Compile Include="Logging\NullLog.cs" />
+    <Compile Include="Logging\NullLogWriter.cs" />
+    <Compile Include="Logging\StringLog.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Threading\BackgroundThreadAwaitable.cs" />
     <Compile Include="Threading\BackgroundThreadAwaiter.cs" />
     <Compile Include="Collections\ListExtensions.cs" />
@@ -93,6 +109,11 @@
     <Compile Include="Telemetry\TelemetryServiceBase.cs" />
     <Compile Include="Threading\BinaryAsyncLock.cs" />
     <Compile Include="Threading\DelayedAsyncAction.cs" />
+    <Compile Include="Install\RInstallation.cs" />
+    <Compile Include="Install\RInstallationHelper.cs" />
+    <Compile Include="Install\RInstallData.cs" />
+    <Compile Include="Install\RInstallStatus.cs" />
+    <Compile Include="Install\SupportedRVersionList.cs" />
     <Compile Include="Versions\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +124,12 @@
       <Authenticode>Microsoft</Authenticode>
       <StrongName>StrongName</StrongName>
     </FilesToSign>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\..\R.Build.Version.targets" />
