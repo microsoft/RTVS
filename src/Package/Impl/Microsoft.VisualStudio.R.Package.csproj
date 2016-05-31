@@ -134,6 +134,7 @@
     <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
+    <Compile Include="Commands\R\InstallRClientCommand.cs" />
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
       <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
     </Compile>
