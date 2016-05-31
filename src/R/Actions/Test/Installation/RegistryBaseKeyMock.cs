@@ -23,7 +23,11 @@ namespace Microsoft.R.Actions.Test.Installation {
             throw new NotImplementedException();
         }
 
-        public IRegistryKey OpenSubKey(string name) {
+        public void SetValue(string name, object value) {
+            throw new NotImplementedException();
+        }
+
+        public IRegistryKey OpenSubKey(string name, bool writable = false) {
             return _subkeys.FirstOrDefault(x => x.Name == name);
         }
     }

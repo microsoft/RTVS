@@ -109,7 +109,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
-            RBasePath = RInstallation.GetRInstallPath(null);
+            RBasePath = RInstallation.GetRInstallPath(null, VsAppShell.Current);
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

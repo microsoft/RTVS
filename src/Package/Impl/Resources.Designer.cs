@@ -386,11 +386,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R..
+        ///   Looks up a localized string similar to Unable to download Microsoft R Client. Exception {0}..
         /// </summary>
-        public static string Error_UnableToFindR {
+        public static string Error_UnableToDownloadRClient {
             get {
-                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
+                return ResourceManager.GetString("Error_UnableToDownloadRClient", resourceCulture);
             }
         }
         
@@ -400,15 +400,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnknownMirror {
             get {
                 return ResourceManager.GetString("Error_UnknownMirror", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
-        /// </summary>
-        public static string Error_UnsupportedRVersion {
-            get {
-                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
         

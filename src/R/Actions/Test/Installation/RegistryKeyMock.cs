@@ -33,7 +33,11 @@ namespace Microsoft.R.Actions.Test.Installation {
             return _values[name];
         }
 
-        public IRegistryKey OpenSubKey(string name) {
+        public void SetValue(string name, object value) {
+            _values[name] = value.ToString();
+        }
+
+        public IRegistryKey OpenSubKey(string name, bool writable = false) {
             return _subkeys.FirstOrDefault(x => x.Name == name);
         }
     }

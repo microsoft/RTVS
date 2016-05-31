@@ -11,6 +11,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;

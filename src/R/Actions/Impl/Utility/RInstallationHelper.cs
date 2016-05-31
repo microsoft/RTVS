@@ -11,45 +11,58 @@ namespace Microsoft.R.Actions.Utility {
         public static bool VerifyRIsInstalled(ICoreShell coreShell, string path, bool showErrors = true) {
             var data = RInstallation.GetInstallationData(path,
                 SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
-                SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion);
+                SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion,
+                coreShell);
 
             if (data.Status == RInstallStatus.OK) {
                 return true;
             }
 
             if (showErrors) {
-                string message = FormatMessage(data);
-                coreShell.ShowErrorMessage(message);
-                if (data.Status == RInstallStatus.PathNotSpecified || data.Status == RInstallStatus.UnsupportedVersion) {
-                    RInstallation.GoToRInstallPage();
+                if (ShowMessage(coreShell, data) == MessageButtons.Yes) {
+                    var exception = RInstallation.LaunchRClientSetup();
+                    if(exception != null) {
+                        coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture,
+                            Resources.Error_UnableToDownloadRClient, exception.Message));
+                    } else {
+
+                    }
                 }
             }
 
             return false;
         }
 
-        private static string FormatMessage(RInstallData data) {
+        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data) {
             Debug.Assert(data.Status != RInstallStatus.OK);
 
             switch (data.Status) {
                 case RInstallStatus.UnsupportedVersion:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion, 
+                    return coreShell.ShowMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
                         data.Version.Major, data.Version.Minor, data.Version.Build,
                         SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion, "*",
-                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion, "*");
+                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion, "*",
+                        Environment.NewLine + Environment.NewLine),
+                        MessageButtons.YesNo);
 
                 case RInstallStatus.ExceptionAccessingPath:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, data.Path, data.Exception.Message);
+                    coreShell.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath, 
+                        data.Path, data.Exception.Message));
+                    return MessageButtons.OK;
 
                 case RInstallStatus.NoRBinaries:
-                    Debug.Assert(!string.IsNullOrEmpty(data.Path));
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, data.Path);
+                    coreShell.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat, 
+                        data.Path));
+                    return MessageButtons.OK;
 
                 case RInstallStatus.PathNotSpecified:
-                    return string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToFindR);
+                    return coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture, 
+                        Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine), MessageButtons.YesNo);
             }
-
-            return String.Empty;
+            return MessageButtons.OK;
         }
     }
 }

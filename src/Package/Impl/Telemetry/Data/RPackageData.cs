@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.R.Actions.Utility;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
     /// <summary>
@@ -21,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
         /// <returns></returns>
         public static IEnumerable<string> GetInstalledPackageHashes(RPackageType packageType) {
 
-            string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
+            string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath, VsAppShell.Current);
             if (!string.IsNullOrEmpty(rInstallPath)) {
                 IEnumerable<string> packageNames = Enumerable.Empty<string>();
                 if (packageType == RPackageType.Base) {

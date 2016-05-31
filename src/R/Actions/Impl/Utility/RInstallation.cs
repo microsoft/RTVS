@@ -7,8 +7,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Win32;
 
 namespace Microsoft.R.Actions.Utility {
@@ -22,26 +25,38 @@ namespace Microsoft.R.Actions.Utility {
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
         private static IRegistry _registry;
         private static IFileSystem _fileSystem;
+        private static IProcessServices _processServices;
 
         internal static IRegistry Registry {
             get {
-                if (RInstallation._registry == null) {
-                    RInstallation._registry = new RegistryImpl();
+                if (_registry == null) {
+                    _registry = new RegistryImpl();
                 }
-                return RInstallation._registry;
+                return _registry;
             }
-            set { RInstallation._registry = value; }
+            set { _registry = value; }
         }
 
         internal static IFileSystem FileSystem {
             get {
-                if (RInstallation._fileSystem == null) {
-                    RInstallation._fileSystem = new FileSystem();
+                if (_fileSystem == null) {
+                    _fileSystem = new FileSystem();
                 }
-                return RInstallation._fileSystem;
+                return _fileSystem;
             }
-            set { RInstallation._fileSystem = value; }
+            set { _fileSystem = value; }
         }
+
+        internal static IProcessServices ProcessServices {
+            get {
+                if (_processServices == null) {
+                    _processServices = new ProcessServices();
+                }
+                return _processServices;
+            }
+            set { _processServices = value; }
+        }
+
 
         /// <summary>
         /// Tries to determine R installation information. If user-specified path
@@ -51,21 +66,25 @@ namespace Microsoft.R.Actions.Utility {
         /// </summary>
         /// <param name="basePath">Path as specified by the user settings</param>
         /// <returns></returns>
-        public static RInstallData GetInstallationData(string basePath, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
-            string path = RInstallation.GetRInstallPath(basePath);
+        public static RInstallData GetInstallationData(string basePath, 
+            int minMajorVersion, int minMinorVersion, 
+            int maxMajorVersion, int maxMinorVersion, 
+            ICoreShell coreShell = null) {
+
+            string path = GetRInstallPath(basePath, coreShell);
 
             // If nothing is found, look into the file system
-            if (String.IsNullOrEmpty(path)) {
+            if (string.IsNullOrEmpty(path)) {
                 foreach (var f in rFolders) {
                     path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
-                    if (!String.IsNullOrEmpty(path)) {
+                    if (!string.IsNullOrEmpty(path)) {
                         break;
                     }
                 }
             }
 
             // Still nothing? Fail, caller will typically display an error message.
-            if (String.IsNullOrEmpty(path)) {
+            if (string.IsNullOrEmpty(path)) {
                 return new RInstallData() { Status = RInstallStatus.PathNotSpecified };
             }
 
@@ -123,15 +142,39 @@ namespace Microsoft.R.Actions.Utility {
             return path;
         }
 
-        public static void GoToRInstallPage() {
-            Process.Start("https://mran.revolutionanalytics.com/download");
+        public static Exception LaunchRClientSetup() {
+            var rClientExe = Path.Combine(Path.GetTempPath(), "RClientSetup.exe");
+            try {
+                using (var client = new WebClient()) {
+                    client.DownloadFileAsync(
+                        new Uri("http://go.microsoft.com/fwlink/?LinkId=800048", UriKind.Absolute), rClientExe);
+
+                    var startTime = DateTime.Now;
+                    while(client.IsBusy && (DateTime.Now - startTime).TotalMilliseconds < 5000) {
+                        Thread.Sleep(200);
+                    }
+                    if (!FileSystem.FileExists(rClientExe)) {
+                        return new TimeoutException(Resources.Error_UnableToDownloadRClient_Timeout);
+                    }
+                }
+            } catch(WebException ex) {
+                return ex;
+            }
+
+            ProcessServices.Start(rClientExe);
+            return null;
         }
 
         /// <summary>
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath) {
+        public static string GetRInstallPath(string basePath, ICoreShell coreShell = null) {
+            // First check if Microsoft R Client was just installed.
+            if(IsMRSJustInstalled(coreShell, basePath)) {
+
+            }
+
             if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = GetRPathFromMRS();
                 if (string.IsNullOrEmpty(basePath)) {
@@ -139,6 +182,28 @@ namespace Microsoft.R.Actions.Utility {
                 }
             }
             return basePath;
+        }
+
+        private static bool IsMRSJustInstalled(ICoreShell coreShell, string basePath) {
+            if (coreShell != null) {
+                try {
+                    using (var hkcu = Registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64)) {
+                        var key = hkcu.OpenSubKey(@"SOFTWARE\Microsoft\RClient");
+                        var installed = (int)key.GetValue("Installed");
+                        if (installed > 0) {
+                            // Get MSRClient path
+                            // Check if it is different what what is currently set
+                            if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
+
+                            }
+                            // Reset value
+                            key.SetValue("Installed", 0);
+                            return true;
+                        }
+                    }
+                } catch (Exception) { }
+            }
+            return false;
         }
 
         private static string GetRPathFromMRS() {
@@ -183,9 +248,9 @@ namespace Microsoft.R.Actions.Utility {
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder(string basePath) {
+        public static string GetBinariesFolder(string basePath, ICoreShell coreShell = null) {
             string binFolder = null;
-            string installPath = RInstallation.GetRInstallPath(basePath);
+            string installPath = RInstallation.GetRInstallPath(basePath, coreShell);
 
             if (!String.IsNullOrEmpty(installPath)) {
                 binFolder = Path.Combine(installPath, @"bin\x64");

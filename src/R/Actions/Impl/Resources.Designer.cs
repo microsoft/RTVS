@@ -88,7 +88,25 @@ namespace Microsoft.R.Actions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to determine location of R binaries. If R is not installed please install Microsoft R Open and restart Visual Studio. If R is installed please specify path to R binaries in Tools | Options | R Tools..
+        ///   Looks up a localized string similar to Unable to download Microsoft R Client. Exception: {0}..
+        /// </summary>
+        internal static string Error_UnableToDownloadRClient {
+            get {
+                return ResourceManager.GetString("Error_UnableToDownloadRClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout downloading Microsoft R Client installer executable..
+        /// </summary>
+        internal static string Error_UnableToDownloadRClient_Timeout {
+            get {
+                return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify path to R engine in  R Tools | Options. If R is not installed, Visual Studio can launch setup of the Microsoft R Client.{0}Would you like to start installation of the Microsoft R Client now? Visual Studio will close when the setup application starts..
         /// </summary>
         internal static string Error_UnableToFindR {
             get {
@@ -97,11 +115,20 @@ namespace Microsoft.R.Actions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
+        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.{9}Visual Studio can launch setup of the Microsoft R Client. Click Yes if you would you like to start installation of Microsoft R Client now. Visual Studio will close when the setup application starts..
         /// </summary>
         internal static string Error_UnsupportedRVersion {
             get {
                 return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?.
+        /// </summary>
+        internal static string Prompt_MsRClientJustInstalled {
+            get {
+                return ResourceManager.GetString("Prompt_MsRClientJustInstalled", resourceCulture);
             }
         }
     }
