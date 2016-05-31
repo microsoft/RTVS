@@ -97,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 if (infoList != null) {
                     return infoList
-                                .Where(m => m.Name.StartsWithOrdinal("$"))
+                                .Where(m => m.Name.StartsWithOrdinal("$") || m.Name.StartsWithOrdinal("@"))
                                 .Take(maxCount)
                                 .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
                                 .ToArray();
