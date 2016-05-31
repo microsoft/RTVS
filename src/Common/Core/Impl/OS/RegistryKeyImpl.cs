@@ -29,7 +29,11 @@ namespace Microsoft.Common.Core.OS {
         }
 
         public IRegistryKey OpenSubKey(string name, bool writable = false) {
-            return new RegistryKeyImpl(_key.OpenSubKey(name, writable));
+            var key = _key.OpenSubKey(name, writable);
+            if(key == null && writable) {
+                key = _key.CreateSubKey(name, true);
+            }
+            return new RegistryKeyImpl(key);
         }
     }
 }

@@ -24,8 +24,6 @@ namespace Microsoft.Common.Core.Install {
                     if(exception != null) {
                         coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture,
                             Resources.Error_UnableToDownloadRClient, exception.Message));
-                    } else {
-
                     }
                 }
             }

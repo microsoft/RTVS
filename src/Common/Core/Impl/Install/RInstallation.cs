@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -22,6 +21,8 @@ namespace Microsoft.Common.Core.Install {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
+        private const string rtvsKey = @"SOFTWARE\Microsoft\R Tools";
+        private const string rClientKey = @"SOFTWARE\Microsoft\R Client";
         private const string rServer = "R_SERVER";
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
         private static IRegistry _registry;
@@ -173,8 +174,12 @@ namespace Microsoft.Common.Core.Install {
         /// </summary>
         public static string GetRInstallPath(string basePath, ICoreShell coreShell = null) {
             // First check if Microsoft R Client was just installed.
-            if (IsMRSJustInstalled(coreShell, basePath)) {
-
+            var rClientPath = GetRClientPath();
+            if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
+                // Get R Client path
+                if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
+                    return GetRClientPath();
+                }
             }
 
             if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
@@ -183,31 +188,39 @@ namespace Microsoft.Common.Core.Install {
                     basePath = GetCompatibleEnginePathFromRegistry();
                 }
             }
+
             return basePath;
         }
 
-        private static bool IsMRSJustInstalled(ICoreShell coreShell, string basePath) {
-            if (coreShell != null) {
-                try {
-                    using (var hkcu = Registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64)) {
-                        using (var key = hkcu.OpenSubKey(@"SOFTWARE\Microsoft\R Client")) {
-                            if (key != null) {
-                                object value = key.GetValue("Installed");
-                                if (value != null && (int)value > 0) {
-                                    // Get MSRClient path
-                                    if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
-                                        // Fetch R path from the R Client
-                                    }
-                                    // Reset value
-                                    key.SetValue("Installed", 0);
-                                    return true;
-                                }
-                            }
+        private static bool AskUserSwitchToRClient() {
+            try {
+                using (var hkcu = Registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64)) {
+                    using (var key = hkcu.OpenSubKey(rtvsKey + "\\" + Toolset.Version, writable: true)) {
+                        object value = key.GetValue("RClientPrompt");
+                        if (value == null) {
+                            key.SetValue("RClientPrompt", 0);
+                            return true;
                         }
                     }
-                } catch (Exception) { }
-            }
+                }
+            } catch (Exception) { }
+
             return false;
+        }
+
+        public static string GetRClientPath() {
+            try {
+                using (var hkcu = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+                    using (var key = hkcu.OpenSubKey(rClientKey)) {
+                        string path = (string)key.GetValue("Path");
+                        if (!string.IsNullOrEmpty(path)) {
+                            return Path.Combine(path, rServer + "\\");
+                        }
+                    }
+                }
+            } catch (Exception) { }
+
+            return string.Empty;
         }
 
         private static string GetRPathFromMRS() {

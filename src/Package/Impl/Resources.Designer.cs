@@ -711,6 +711,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client is already installed..
+        /// </summary>
+        public static string Message_RClientIsAlreadyInstalled {
+            get {
+                return ResourceManager.GetString("Message_RClientIsAlreadyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current R engine is already set to the Microsoft R Client..
+        /// </summary>
+        public static string Message_RClientIsAlreadySet {
+            get {
+                return ResourceManager.GetString("Message_RClientIsAlreadySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -899,6 +917,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowStatusLocatorActive {
             get {
                 return ResourceManager.GetString("PlotWindowStatusLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete..
+        /// </summary>
+        public static string Prompt_RClientNotInstalled {
+            get {
+                return ResourceManager.GetString("Prompt_RClientNotInstalled", resourceCulture);
             }
         }
         
