@@ -190,14 +190,13 @@ namespace Microsoft.Common.Core.Install {
             if (coreShell != null) {
                 try {
                     using (var hkcu = Registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64)) {
-                        using (var key = hkcu.OpenSubKey(@"SOFTWARE\Microsoft\RClient")) {
+                        using (var key = hkcu.OpenSubKey(@"SOFTWARE\Microsoft\R Client")) {
                             if (key != null) {
                                 object value = key.GetValue("Installed");
                                 if (value != null && (int)value > 0) {
                                     // Get MSRClient path
-                                    // Check if it is different what what is currently set
                                     if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
-
+                                        // Fetch R path from the R Client
                                     }
                                     // Reset value
                                     key.SetValue("Installed", 0);
@@ -216,10 +215,11 @@ namespace Microsoft.Common.Core.Install {
             bool mrsInstalled = false;
             try {
                 using (var hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                    var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr");
-                    var path = (string)key.GetValue("Path");
-                    if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
-                        mrsInstalled = true;
+                    using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
+                        var path = (string)key.GetValue("Path");
+                        if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
+                            mrsInstalled = true;
+                        }
                     }
                 }
             } catch (Exception) { }
