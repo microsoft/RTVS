@@ -84,54 +84,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
                 // so the last part doesn't matter.
                 int partCount = parts.Length - 1;
-                IRSessionDataObject eval;
 
-                // Go by parts and drill into members
-                if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
-                    for (int i = 1; i < partCount; i++) {
-                        string part = parts[i];
+                // May be a package object line mtcars$
+                variableName = TrimTrailingSelector(variableName);
+                var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                IReadOnlyList<IREvaluationResultInfo> infoList = null;
+                try {
+                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, variableName, REvaluationResultProperties.HasChildrenProperty,
+                            RValueRepresentations.Str(), _maxResults).WaitTimeout(_maxWaitTime);
+                } catch(TimeoutException) { }
 
-                        if (string.IsNullOrEmpty(part)) {
-                            // Something looks like abc$$def
-                            break;
-                        }
-
-                        var children = eval.GetChildrenAsync().WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?
-                        if (children != null) {
-                            eval = children.FirstOrDefault((x) => x != null && x.Name == part && !x.IsHidden);
-                            if (eval == null) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (eval != null) {
-                        var children = eval.GetChildrenAsync().WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?
-                        if (children != null) {
-                            return children
-                                    .Where(x => !x.IsHidden)
-                                    .Take(maxCount)
-                                    .Select(m => new VariableInfo(m))
-                                    .ToArray();
-                        }
-                    }
-                } else {
-                    // May be a package object line mtcars$
-                    variableName = TrimTrailingSelector(variableName);
-                    var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
-                    var infoList = session.DescribeChildrenAsync("NULL", variableName, REvaluationResultProperties.HasChildrenProperty, 
-                                RValueRepresentations.Str(), _maxResults).WaitTimeout(_maxWaitTime);   // TODO: discuss wait is fine here. If not, how to fix?;
-
-                    if (infoList != null) {
-                        return infoList
-                                    .Where(m => m.Name.StartsWithOrdinal("$"))
-                                    .Take(maxCount)
-                                    .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
-                                    .ToArray();
-                    }
+                if (infoList != null) {
+                    return infoList
+                                .Where(m => m.Name.StartsWithOrdinal("$"))
+                                .Take(maxCount)
+                                .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
+                                .ToArray();
                 }
-            } catch (OperationCanceledException) { } catch(RException) { } catch (MessageTransportException) { }
+            } catch (OperationCanceledException) { } catch (RException) { } catch (MessageTransportException) { }
 
             return new VariableInfo[0];
         }
@@ -199,18 +170,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         class VariableInfo : INamedItemInfo {
-            public VariableInfo(IRSessionDataObject e) {
-                this.Name = e.Name;
-                if (e.TypeName == "closure") {
-                    ItemType = NamedItemType.Function;
-                } else {
-                    ItemType = NamedItemType.Variable;
-                }
-            }
+            public VariableInfo(IRSessionDataObject e) :
+                this(e.Name, e.TypeName) { }
 
             public VariableInfo(string name, string typeName) {
                 this.Name = name;
-                if (typeName == "closure") {
+                if (typeName.EqualsOrdinal("closure") || typeName.EqualsOrdinal("builtin")) {
                     ItemType = NamedItemType.Function;
                 } else {
                     ItemType = NamedItemType.Variable;
