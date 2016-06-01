@@ -125,7 +125,7 @@ x <- 1
 
             textBuffer.Insert(2, "A");
             editorDocument.EditorTree.EnsureTreeReady();
-            UIThreadHelper.Instance.Invoke(() => EditorShell.Current.DoIdle());
+            EditorShell.Current.DoIdle();
 
             // Wait for background/idle tasks to complete
             var start = DateTime.Now;
