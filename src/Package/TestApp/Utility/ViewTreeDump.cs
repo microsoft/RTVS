@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Xml.Serialization;
-using FluentAssertions;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Newtonsoft.Json;

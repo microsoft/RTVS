@@ -260,8 +260,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var textBuffer = GetTargetBuffer();
             if (IsRepl) {
                 // Map it down to R buffer
-                var start = TextView.MapDownToR(span.Start);
-                var end = TextView.MapDownToR(span.End);
+                var start = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.Start));
+                var end = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.End));
                 if (!start.HasValue || !end.HasValue) {
                     return null;
                 }
@@ -278,8 +278,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             var textBuffer = GetTargetBuffer();
             if (IsRepl) {
                 // Map it down to R buffer
-                var start = TextView.MapDownToR(span.Start);
-                var end = TextView.MapDownToR(span.End);
+                var start = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.Start));
+                var end = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.End));
                 if (!start.HasValue || !end.HasValue) {
                     return null;
                 }

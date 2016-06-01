@@ -11,6 +11,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -124,6 +125,7 @@ x <- 1
 
             textBuffer.Insert(2, "A");
             editorDocument.EditorTree.EnsureTreeReady();
+            EditorShell.Current.DoIdle();
 
             // Wait for background/idle tasks to complete
             var start = DateTime.Now;

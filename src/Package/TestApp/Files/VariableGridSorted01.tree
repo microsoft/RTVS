@@ -652,7 +652,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "1"
+                                          "Value": "2"
                                         }
                                       ],
                                       "Children": []
@@ -662,7 +662,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "2"
+                                          "Value": "1"
                                         }
                                       ],
                                       "Children": []
@@ -716,16 +716,6 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "1"
-                                        }
-                                      ],
-                                      "Children": []
-                                    },
-                                    {
-                                      "Name": "TextVisual",
-                                      "Properties": [
-                                        {
-                                          "Name": "Text",
                                           "Value": "2"
                                         }
                                       ],
@@ -736,7 +726,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "3"
+                                          "Value": "1"
                                         }
                                       ],
                                       "Children": []
@@ -756,7 +746,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "5"
+                                          "Value": "3"
                                         }
                                       ],
                                       "Children": []
@@ -776,7 +766,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "7"
+                                          "Value": "5"
                                         }
                                       ],
                                       "Children": []
@@ -796,7 +786,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "9"
+                                          "Value": "7"
                                         }
                                       ],
                                       "Children": []
@@ -807,6 +797,16 @@
                                         {
                                           "Name": "Text",
                                           "Value": "10"
+                                        }
+                                      ],
+                                      "Children": []
+                                    },
+                                    {
+                                      "Name": "TextVisual",
+                                      "Properties": [
+                                        {
+                                          "Name": "Text",
+                                          "Value": "9"
                                         }
                                       ],
                                       "Children": []

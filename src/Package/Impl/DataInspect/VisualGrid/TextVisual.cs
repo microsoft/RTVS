@@ -7,23 +7,42 @@ using System.Windows.Media;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class TextVisual : DrawingVisual {
-        public Brush Foreground { get; set; }
-        public Typeface Typeface { get; set; }
-        public double FontSize { get; set; }
-        public int Row { get; set; }
-        public int Column { get; set; }
-        public double Margin { get; set; } = 3.0;
-        public double X { get; set; }
-        public double Y { get; set; }
 
-        private string _text;
+        #region Dependency Properties
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register("Text", typeof(string), typeof(TextVisual), new PropertyMetadata());
+
         public virtual string Text {
-            get { return _text; }
+            get { return (string)GetValue(TextProperty); }
             set {
-                _text = value;
+                SetValue(TextProperty, value);
                 Invalidate();
             }
         }
+
+        public static readonly DependencyProperty RowProperty =
+            DependencyProperty.Register("Row", typeof(int), typeof(TextVisual), new PropertyMetadata());
+
+        public virtual int Row {
+            get { return (int)GetValue(RowProperty); }
+            set { SetValue(RowProperty, value); }
+        }
+
+        public static readonly DependencyProperty ColumnProperty =
+            DependencyProperty.Register("Column", typeof(int), typeof(TextVisual), new PropertyMetadata());
+
+        public virtual int Column {
+            get { return (int)GetValue(ColumnProperty); }
+            set { SetValue(ColumnProperty, value); }
+        }
+        #endregion
+
+        public Brush Foreground { get; set; }
+        public Typeface Typeface { get; set; }
+        public double FontSize { get; set; }
+        public double Margin { get; set; } = 3.0;
+        public double X { get; set; }
+        public double Y { get; set; }
 
         private FormattedText _formattedText;
         public FormattedText GetFormattedText() {

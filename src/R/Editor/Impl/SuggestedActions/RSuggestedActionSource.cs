@@ -68,7 +68,7 @@ namespace Microsoft.R.Editor.SuggestedActions {
             }
 
             List<SuggestedActionSet> actionSets = new List<SuggestedActionSet>();
-            int caretPosition = _textView.Caret.Position.BufferPosition;
+            var caretPosition = _textView.Caret.Position.BufferPosition;
             SnapshotPoint? bufferPoint = _textView.MapDownToR(caretPosition);
             if (bufferPoint.HasValue) {
                 AstRoot ast = _document?.EditorTree.AstRoot;
