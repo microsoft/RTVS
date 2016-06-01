@@ -102,7 +102,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ActiveWindow;
             }
 
-            var evaluator = RInstallationHelper.VerifyRIsInstalled(Shell, _settings.RBasePath)
+            var svl = new SupportedRVersionList();
+            var evaluator = RInstallationHelper.VerifyRIsInstalled(Shell, svl, _settings.RBasePath)
                 ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
                 : (IInteractiveEvaluator) new NullInteractiveEvaluator();
 

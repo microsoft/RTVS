@@ -239,7 +239,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
+                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath, new SupportedRVersionList()), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce.CancellationToken);
             } catch (Exception ex) {

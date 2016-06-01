@@ -68,17 +68,17 @@ namespace Microsoft.Common.Core.Install {
         /// </summary>
         /// <param name="basePath">Path as specified by the user settings</param>
         /// <returns></returns>
-        public static RInstallData GetInstallationData(string basePath,
-            int minMajorVersion, int minMinorVersion,
-            int maxMajorVersion, int maxMinorVersion,
+        public static RInstallData GetInstallationData(
+            string basePath, 
+            ISupportedRVersionList svl,
             ICoreShell coreShell = null) {
 
-            string path = GetRInstallPath(basePath, coreShell);
+            string path = GetRInstallPath(basePath, svl, coreShell);
 
             // If nothing is found, look into the file system
             if (string.IsNullOrEmpty(path)) {
                 foreach (var f in rFolders) {
-                    path = TryFindRInProgramFiles(f, minMajorVersion, minMinorVersion, maxMajorVersion, maxMinorVersion);
+                    path = TryFindRInProgramFiles(f, svl);
                     if (!string.IsNullOrEmpty(path)) {
                         break;
                     }
@@ -116,7 +116,7 @@ namespace Microsoft.Common.Core.Install {
                     GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
                     data.Version = new Version(fvi.FileMajorPart, minor, revision);
 
-                    if (!SupportedRVersionList.IsCompatibleVersion(data.Version)) {
+                    if (!svl.IsCompatibleVersion(data.Version)) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
                 } else {
@@ -172,7 +172,8 @@ namespace Microsoft.Common.Core.Install {
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath, ICoreShell coreShell = null) {
+        public static string GetRInstallPath(string basePath, ISupportedRVersionList svl = null, ICoreShell coreShell = null) {
+            svl = svl ?? new SupportedRVersionList();
             // First check if Microsoft R Client was just installed.
             var rClientPath = GetRClientPath();
             if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
@@ -185,7 +186,7 @@ namespace Microsoft.Common.Core.Install {
             if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = GetRPathFromMRS();
                 if (string.IsNullOrEmpty(basePath)) {
-                    basePath = GetCompatibleEnginePathFromRegistry();
+                    basePath = GetCompatibleEnginePathFromRegistry(svl);
                 }
             }
 
@@ -266,9 +267,9 @@ namespace Microsoft.Common.Core.Install {
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder(string basePath, ICoreShell coreShell = null) {
+        public static string GetBinariesFolder(string basePath, ISupportedRVersionList svl, ICoreShell coreShell = null) {
             string binFolder = null;
-            string installPath = RInstallation.GetRInstallPath(basePath, coreShell);
+            string installPath = RInstallation.GetRInstallPath(basePath, svl, coreShell);
 
             if (!String.IsNullOrEmpty(installPath)) {
                 binFolder = Path.Combine(installPath, @"bin\x64");
@@ -299,7 +300,8 @@ namespace Microsoft.Common.Core.Install {
         /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
         /// Selects highest from compatible versions, not just the highest.
         /// </summary>
-        public static string GetCompatibleEnginePathFromRegistry() {
+        public static string GetCompatibleEnginePathFromRegistry(ISupportedRVersionList svl = null) {
+            svl = svl ?? new SupportedRVersionList();
             string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
             string highestVersionName = String.Empty;
             Version highest = null;
@@ -309,7 +311,7 @@ namespace Microsoft.Common.Core.Install {
                 if (!String.IsNullOrEmpty(name)) {
                     string versionString = ExtractVersionString(name);
                     Version v;
-                    if (Version.TryParse(versionString, out v) && SupportedRVersionList.IsCompatibleVersion(v)) {
+                    if (Version.TryParse(versionString, out v) && svl.IsCompatibleVersion(v)) {
                         if (highest != null) {
                             if (v > highest) {
                                 highest = v;
@@ -394,7 +396,7 @@ namespace Microsoft.Common.Core.Install {
             return new Version(0, 0);
         }
 
-        private static string TryFindRInProgramFiles(string folder, int minMajorVersion, int minMinorVersion, int maxMajorVersion, int maxMinorVersion) {
+        private static string TryFindRInProgramFiles(string folder, ISupportedRVersionList supportedVersions) {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
@@ -405,10 +407,10 @@ namespace Microsoft.Common.Core.Install {
                 foreach (IFileSystemInfo fsi in directories) {
                     string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
                     Version v = GetRVersionFromFolderName(subFolderName);
-                    if (v.Major >= minMajorVersion &&
-                        v.Minor >= minMinorVersion &&
-                        v.Major <= maxMajorVersion &&
-                        v.Minor <= maxMinorVersion) {
+                    if (v.Major >= supportedVersions.MinMajorVersion &&
+                        v.Minor >= supportedVersions.MinMinorVersion &&
+                        v.Major <= supportedVersions.MaxMajorVersion &&
+                        v.Minor <= supportedVersions.MaxMinorVersion) {
                         versions.Add(v);
                     }
                 }

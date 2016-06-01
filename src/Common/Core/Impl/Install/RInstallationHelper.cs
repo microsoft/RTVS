@@ -8,18 +8,15 @@ using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.Common.Core.Install {
     public static class RInstallationHelper {
-        public static bool VerifyRIsInstalled(ICoreShell coreShell, string path, bool showErrors = true) {
-            var data = RInstallation.GetInstallationData(path,
-                SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion,
-                SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion,
-                coreShell);
-
+        public static bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionList svl, string path, bool showErrors = true) {
+            svl = svl ?? new SupportedRVersionList();
+            var data = RInstallation.GetInstallationData(path, svl, coreShell);
             if (data.Status == RInstallStatus.OK) {
                 return true;
             }
 
             if (showErrors) {
-                if (ShowMessage(coreShell, data) == MessageButtons.Yes) {
+                if (ShowMessage(coreShell, data, svl) == MessageButtons.Yes) {
                     var exception = RInstallation.LaunchRClientSetup();
                     if(exception != null) {
                         coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture,
@@ -31,7 +28,7 @@ namespace Microsoft.Common.Core.Install {
             return false;
         }
 
-        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data) {
+        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data, ISupportedRVersionList svl) {
             Debug.Assert(data.Status != RInstallStatus.OK);
 
             switch (data.Status) {
@@ -39,8 +36,8 @@ namespace Microsoft.Common.Core.Install {
                     return coreShell.ShowMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
                         data.Version.Major, data.Version.Minor, data.Version.Build,
-                        SupportedRVersionList.MinMajorVersion, SupportedRVersionList.MinMinorVersion, "*",
-                        SupportedRVersionList.MaxMajorVersion, SupportedRVersionList.MaxMinorVersion, "*",
+                        svl.MinMajorVersion, svl.MinMinorVersion, "*",
+                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*",
                         Environment.NewLine + Environment.NewLine),
                         MessageButtons.YesNo);
 

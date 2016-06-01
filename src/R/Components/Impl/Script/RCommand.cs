@@ -69,7 +69,7 @@ namespace Microsoft.R.Components.Script {
         }
 
         private void Launch(string rBasePath, string executable, string arguments) {
-            string binPath = RInstallation.GetBinariesFolder(rBasePath);
+            string binPath = RInstallation.GetBinariesFolder(rBasePath, new SupportedRVersionList());
 
             if (!string.IsNullOrEmpty(binPath)) {
                 ProcessStartInfo info = new ProcessStartInfo();

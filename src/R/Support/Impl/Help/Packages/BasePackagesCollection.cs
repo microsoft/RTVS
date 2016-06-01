@@ -12,7 +12,8 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private static string GetInstallPath() {
-            string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current != null ? RToolsSettings.Current.RBasePath : null);
+            var basePath = RToolsSettings.Current != null ? RToolsSettings.Current.RBasePath : null;
+            string rInstallPath = RInstallation.GetRInstallPath(basePath, new SupportedRVersionList());
             return rInstallPath != null ? Path.Combine(rInstallPath, "library") : null;
         }
     }

@@ -4,20 +4,29 @@
 using System;
 
 namespace Microsoft.Common.Core.Install {
-    public static class SupportedRVersionList {
+    public sealed class SupportedRVersionList : ISupportedRVersionList {
         // TODO: this probably needs configuration file
         // or another dynamic source of supported versions.
-        public const int MinMajorVersion = 3;
-        public const int MinMinorVersion = 2;
-        public const int MaxMajorVersion = 3;
-        public const int MaxMinorVersion = 9;
+        public int MinMajorVersion { get; }
+        public int MinMinorVersion { get; }
+        public int MaxMajorVersion { get; }
+        public int MaxMinorVersion { get; }
 
-        public static readonly Version MinVersion = new Version(MinMajorVersion, MinMinorVersion);
-        public static readonly Version MaxVersion = new Version(MaxMajorVersion, MaxMinorVersion);
+        public SupportedRVersionList() : this(3, 2, 3, 9) { }
 
-        public static bool IsCompatibleVersion(Version v) {
+        public SupportedRVersionList(int minVersionMajorPart, int minVersionMinorPart, int maxVersionMajorPart, int maxVersionMinorPart) {
+            MinMajorVersion = minVersionMajorPart;
+            MinMinorVersion = minVersionMinorPart;
+            MaxMajorVersion = maxVersionMajorPart;
+            MaxMinorVersion = maxVersionMinorPart;
+        }
+
+        public bool IsCompatibleVersion(Version v) {
+            var minVersion = new Version(MinMajorVersion, MinMinorVersion);
+            var maxVersion = new Version(MaxMajorVersion, MaxMinorVersion);
+
             var verMajorMinor = new Version(v.Major, v.Minor);
-            return verMajorMinor >= MinVersion && verMajorMinor <= MaxVersion;
+            return verMajorMinor >= minVersion && verMajorMinor <= maxVersion;
         }
     }
 }
