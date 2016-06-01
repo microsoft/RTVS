@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.Test.Script {
         [Category.R.Package]
         public void InstallPackages_BaseTest()
         {
-            var svl = RInstallationTest.MakeSupportedVersions(3, 2, 3, 2);
+            var svl =new SupportedRVersionList(3, 2, 3, 2);
             RInstallData data = RInstallation.GetInstallationData(string.Empty, svl);
 
             data.Status.Should().Be(RInstallStatus.OK);
