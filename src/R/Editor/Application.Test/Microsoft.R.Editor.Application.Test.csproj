@@ -175,5 +175,5 @@
   <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
-  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>
