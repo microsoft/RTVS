@@ -12,14 +12,14 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor {
     public static class TextViewExtensions {
 
-        public static SnapshotPoint? MapDownToR(this ITextView textView, int position) {
+        public static SnapshotPoint? MapDownToR(this ITextView textView, SnapshotPoint position) {
             if (textView.BufferGraph == null) {
                 // Unit test case
-                return new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position);
+                return position;
             }
 
             return textView.BufferGraph.MapDownToFirstMatch(
-                new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, position),
+                position,
                 PointTrackingMode.Positive,
                 x => x.ContentType.IsOfType(RContentTypeDefinition.ContentType),
                 PositionAffinity.Successor
