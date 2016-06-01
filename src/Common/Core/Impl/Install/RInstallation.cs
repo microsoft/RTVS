@@ -247,7 +247,7 @@ namespace Microsoft.Common.Core.Install {
                             foreach (var keyName in key.GetSubKeyNames()) {
                                 using (var rsKey = key.OpenSubKey(keyName)) {
                                     try {
-                                        var path = (string)key.GetValue("InstallPath");
+                                        var path = (string)rsKey.GetValue("InstallPath");
                                         if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
                                             return path;
                                         }

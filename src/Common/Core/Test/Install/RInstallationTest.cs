@@ -7,6 +7,7 @@ using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Shell;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
@@ -18,7 +19,7 @@ namespace Microsoft.Common.Core.Test.Install {
     public class RInstallationTest {
         [Test]
         [Category.R.Install]
-        public void RInstallation_Test01() {
+        public void Test01() {
             var svl = new SupportedRVersionList(0, 0, 0, 0);
             RInstallData data = RInstallation.GetInstallationData(null, svl);
             data.Status.Should().BeEither(RInstallStatus.PathNotSpecified, RInstallStatus.UnsupportedVersion);
@@ -36,7 +37,7 @@ namespace Microsoft.Common.Core.Test.Install {
 
         [Test]
         [Category.R.Install]
-        public void RInstallation_Test02() {
+        public void Test02() {
             // Use actual files and registry
             RInstallation.Registry = null;
             RInstallation.FileSystem = null;
@@ -52,7 +53,7 @@ namespace Microsoft.Common.Core.Test.Install {
 
         [Test]
         [Category.R.Install]
-        public void RInstallation_Test03() {
+        public void Test03() {
             var tr = new RegistryMock(SimulateRegistry03());
             RInstallation.Registry = tr;
 
@@ -97,7 +98,7 @@ namespace Microsoft.Common.Core.Test.Install {
 
         [Test]
         [Category.R.Install]
-        public void RInstallation_Test04() {
+        public void Test04() {
             var tr = new RegistryMock(SimulateRegistry04());
             RInstallation.Registry = tr;
             var svl = new SupportedRVersionList(3, 2, 3, 9);
@@ -122,7 +123,7 @@ namespace Microsoft.Common.Core.Test.Install {
 
         [Test]
         [Category.R.Install]
-        public void RInstallation_Test05() {
+        public void Test05() {
             var tr = new RegistryMock(SimulateRegistry04());
             RInstallation.Registry = tr;
 
@@ -148,6 +149,52 @@ namespace Microsoft.Common.Core.Test.Install {
                      new RegistryKeyMock[] {
                              new RegistryKeyMock("8.0.3")
                      }),
+             };
+        }
+
+        [Test]
+        [Category.R.Install]
+        public void MsRClient() {
+            var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
+            var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
+            var tr = new RegistryMock(SimulateRegistryMsRClient(rClientInstallPath, rClientRPath));
+            RInstallation.Registry = tr;
+
+            RInstallation.GetRClientPath().Should().Be(rClientRPath);
+
+            var shell = Substitute.For<ICoreShell>();
+            shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+
+            RInstallation.GetRInstallPath(null, null, shell).Should().Be(rClientRPath);
+            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+
+            RInstallation.GetRInstallPath(null, null, shell).Should().Be(rClientRPath);
+            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+        }
+
+        private RegistryKeyMock[] SimulateRegistryMsRClient(string rClientInstallPath, string rClientRPath) {
+            return new RegistryKeyMock[] {
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\R Client",
+                        subkeys: null,
+                        valueNames: new string[] {"Path"}, 
+                        values: new string[] {rClientInstallPath}),
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\R Tools\" + Toolset.Version),
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr",
+                        subkeys: null,
+                        valueNames: new string[] {"Path"},
+                        values: new string[] {rClientRPath}),
+                new RegistryKeyMock(
+                       @"SOFTWARE\R-core\R64",
+                        new RegistryKeyMock[] {
+                            new RegistryKeyMock(
+                                name: "3.2.5",
+                                subkeys: null,
+                                valueNames: new string[] {"InstallPath"},
+                                values: new string[] {rClientRPath}),
+                        })
              };
         }
 

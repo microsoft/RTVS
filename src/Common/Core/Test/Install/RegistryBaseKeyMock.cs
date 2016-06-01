@@ -2,12 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core.OS;
 
 namespace Microsoft.Common.Core.Test.Install {
     internal sealed class RegistryBaseKeyMock : IRegistryKey {
         RegistryKeyMock[] _subkeys;
+        Dictionary<string, object> _values = new Dictionary<string, object>();
+
         public RegistryBaseKeyMock(RegistryKeyMock[] subkeys) {
             _subkeys = subkeys;
         }
@@ -20,11 +23,11 @@ namespace Microsoft.Common.Core.Test.Install {
         }
 
         public object GetValue(string name) {
-            throw new NotImplementedException();
+            return _values.ContainsKey(name) ? _values[name] : null;
         }
 
         public void SetValue(string name, object value) {
-            throw new NotImplementedException();
+            _values[name] = value;
         }
 
         public IRegistryKey OpenSubKey(string name, bool writable = false) {

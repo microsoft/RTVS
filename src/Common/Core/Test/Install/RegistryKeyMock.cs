@@ -14,10 +14,10 @@ namespace Microsoft.Common.Core.Test.Install {
 
         public RegistryKeyMock(string name) : this(name, new RegistryKeyMock[0]) { }
         public RegistryKeyMock(string name, params RegistryKeyMock[] subkeys) : this(name, subkeys, new string[0], new string[0]) { }
-        public RegistryKeyMock(string name, RegistryKeyMock[] subkeys, string[] valueNames, string[] values) {
+        public RegistryKeyMock(string name, RegistryKeyMock[] subkeys = null, string[] valueNames = null, string[] values = null) {
             Name = name;
-            _subkeys = subkeys;
-            for (int i = 0; i < valueNames.Length; i++) {
+            _subkeys = subkeys ?? new RegistryKeyMock[0];
+            for (int i = 0; valueNames != null && i < valueNames.Length; i++) {
                 _values[valueNames[i]] = values[i];
             }
         }
@@ -30,7 +30,7 @@ namespace Microsoft.Common.Core.Test.Install {
         }
 
         public object GetValue(string name) {
-            return _values[name];
+            return _values.ContainsKey(name) ? _values[name] : null;
         }
 
         public void SetValue(string name, object value) {
