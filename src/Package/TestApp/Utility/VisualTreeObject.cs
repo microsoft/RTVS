@@ -42,12 +42,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 if (childrenCount > 0) {
                     for (int i = 0; i < childrenCount; i++) {
                         var child = VisualTreeHelper.GetChild(o, i);
-
-                        // Skip parts that are not bound
-                        var fe = child as FrameworkElement;
-                        if (fe != null && !string.IsNullOrEmpty(fe.Name) && fe.Name.StartsWithOrdinal("PART_") && fe.DataContext == null) {
-                            continue;
-                        }
                         children.Add(Create(child));
                     }
                 }
