@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         };
 
         object[,] formulaTestData = new object[,] {
-            { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula' length 3 y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = true } },
+            { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula'  language y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = true } },
         };
 
         object[,] expressionTestData = new object[,] {
