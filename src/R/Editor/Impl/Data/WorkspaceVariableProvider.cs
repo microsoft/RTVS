@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
+        private static readonly char[] _selectors = new char[] { '$', '@' };
         private const int _maxWaitTime = 2000;
         private const int _maxResults = 100;
 
@@ -62,14 +63,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IReadOnlyCollection<INamedItemInfo> GetMembers(string variableName, int maxCount) {
             try {
                 // Split abc$def$g into parts. String may also be empty or end with $ or @.
-                string[] parts = variableName.Split(new char[] { '$', '@' });
+                string[] parts = variableName.Split(_selectors);
 
-                if (parts.Length == 0 || parts[0].Length == 0) {
-                    if (variableName.Length > 0) {
+                if ((parts.Length == 0 || parts[0].Length == 0) && variableName.Length > 0) {
                         // Something odd like $$ or $@ so we got empty parts
                         // and yet variable name is not empty. Don't show anything.
                         return new INamedItemInfo[0];
-                    }
+                }
+
+                if (parts.Length == 0 || parts[0].Length == 0 || variableName.IndexOfAny(_selectors) < 0) {
                     // Global scope
                     return _topLevelVariables.Values
                         .Where(x => !x.IsHidden)
@@ -78,14 +80,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         .ToArray();
                 }
 
-                // Last member name may be empty or partially typed
-                string lastMemberName = parts[parts.Length - 1];
-                // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
-                // so the last part doesn't matter.
-                int partCount = parts.Length - 1;
-
                 // May be a package object line mtcars$
-                variableName = TrimTrailingSelector(variableName);
+                variableName = TrimToTrailingSelector(variableName);
                 var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
@@ -93,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
                                variableName, 
                                REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
-                            RValueRepresentations.Str(null), _maxResults).WaitTimeout(_maxWaitTime);
+                               null, _maxResults).WaitTimeout(_maxWaitTime);
                 } catch(TimeoutException) { }
 
                 if (infoList != null) {
@@ -111,11 +107,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
-        private static string TrimTrailingSelector(string name) {
-            if (name.EndsWithOrdinal("$") || name.EndsWithOrdinal("@")) {
-                return name.Substring(0, name.Length - 1);
+        private static string TrimToTrailingSelector(string name) {
+            int i = name.Length - 1;
+            for (; i >= 0; i--) {
+                if(_selectors.Contains(name[i])) {
+                    return name.Substring(0, i);
+                }
             }
-            return name;
+            return string.Empty;
         }
 
         private static string TrimLeadingSelector(string name) {
