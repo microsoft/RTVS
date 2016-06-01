@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
@@ -30,8 +30,7 @@ namespace Microsoft.R.Editor.Document {
     /// Main editor document for the R language
     /// </summary>
     public class REditorDocument : IREditorDocument {
-        [Import]
-        private ITextDocumentFactoryService TextDocumentFactoryService { get; set; }
+        private readonly ITextDocumentFactoryService _textDocumentFactoryService;
 
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
@@ -61,12 +60,11 @@ namespace Microsoft.R.Editor.Document {
 
         #region Constructors
         public REditorDocument(ITextBuffer textBuffer) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+            _textDocumentFactoryService = EditorShell.Current.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
+            _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
             this.TextBuffer = textBuffer;
-
             IsClosed = false;
-            TextDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
             ServiceManager.AddService<REditorDocument>(this, TextBuffer);
 
@@ -76,7 +74,6 @@ namespace Microsoft.R.Editor.Document {
             }
 
             _editorTree.Build();
-
             RCompletionEngine.Initialize();
         }
         #endregion
@@ -196,23 +193,20 @@ namespace Microsoft.R.Editor.Document {
         /// <summary>
         /// Editor parse tree (object model)
         /// </summary>
-        public IEditorTree EditorTree {
-            get { return _editorTree; }
-        }
+        public IEditorTree EditorTree => _editorTree;
 
         /// <summary>
         /// Closes the document
         /// </summary>
         public virtual void Close() {
-            if (IsClosed)
+            if (IsClosed) {
                 return;
+            }
 
             IsClosed = true;
+            _textDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
 
-            TextDocumentFactoryService.TextDocumentDisposed -= OnTextDocumentDisposed;
-
-            if (DocumentClosing != null)
-                DocumentClosing(this, null);
+            DocumentClosing?.Invoke(this, null);
 
             if (EditorTree != null) {
                 _editorTree.Dispose(); // this will also remove event handlers
@@ -242,7 +236,8 @@ namespace Microsoft.R.Editor.Document {
         /// </summary>
         public bool IsTransient {
             get {
-                return string.IsNullOrEmpty(TextBuffer.GetFilePath());
+                var textView = TextViewConnectionListener.GetFirstViewForBuffer(TextBuffer);
+                return textView != null && textView.IsRepl();
             }
         }
 
@@ -257,11 +252,9 @@ namespace Microsoft.R.Editor.Document {
                 _editorTree.TreeUpdateTask.Suspend();
 
                 RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
-                if (colorizer != null)
-                    colorizer.Suspend();
+                colorizer?.Suspend();
 
-                if (MassiveChangeBegun != null)
-                    MassiveChangeBegun(this, EventArgs.Empty);
+                MassiveChangeBegun?.Invoke(this, EventArgs.Empty);
             }
 
             _inMassiveChange++;
@@ -276,9 +269,8 @@ namespace Microsoft.R.Editor.Document {
             bool changed = _editorTree.TreeUpdateTask.TextBufferChangedSinceSuspend;
 
             if (_inMassiveChange == 1) {
-                RClassifier colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
-                if (colorizer != null)
-                    colorizer.Resume();
+                var colorizer = ServiceManager.GetService<RClassifier>(TextBuffer);
+                colorizer?.Resume();
 
                 if (changed) {
                     TextChangeEventArgs textChange =
@@ -292,13 +284,12 @@ namespace Microsoft.R.Editor.Document {
                 }
 
                 _editorTree.TreeUpdateTask.Resume();
-
-                if (MassiveChangeEnded != null)
-                    MassiveChangeEnded(this, EventArgs.Empty);
+                MassiveChangeEnded?.Invoke(this, EventArgs.Empty);
             }
 
-            if (_inMassiveChange > 0)
+            if (_inMassiveChange > 0) {
                 _inMassiveChange--;
+            }
 
             return changed;
         }
@@ -307,9 +298,7 @@ namespace Microsoft.R.Editor.Document {
         /// Indicates if massive change to the document is in progress. If massive change
         /// is in progress, tree updates and colorizer are suspended.
         /// </summary>
-        public bool IsMassiveChangeInProgress {
-            get { return _inMassiveChange > 0; }
-        }
+        public bool IsMassiveChangeInProgress  => _inMassiveChange > 0;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> MassiveChangeBegun;

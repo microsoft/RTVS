@@ -101,13 +101,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         private void RemoveAllTags() {
             _errorTags.Clear();
 
-            if (TasksCleared != null)
-                TasksCleared(this, EventArgs.Empty);
-
-            if (TagsChanged != null) {
-                TagsChanged(this, new SnapshotSpanEventArgs(
-                                    new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
-            }
+            TasksCleared?.Invoke(this, EventArgs.Empty);
+            TagsChanged?.Invoke(this, new SnapshotSpanEventArgs(
+                                new SnapshotSpan(_textBuffer.CurrentSnapshot, 0, _textBuffer.CurrentSnapshot.Length)));
         }
 
         private void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
@@ -137,8 +133,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                                         new SnapshotSpan(snapshot, start, end - start)));
                 }
 
-                if (TasksUpdated != null)
-                    TasksUpdated(this, EventArgs.Empty);
+                TasksUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
 
