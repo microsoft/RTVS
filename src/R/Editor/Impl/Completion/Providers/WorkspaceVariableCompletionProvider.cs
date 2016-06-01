@@ -40,15 +40,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
             ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
-            Selector selector = Selector.Dollar;
 
             string variableName = context.Session.TextView.GetVariableNameBeforeCaret();
-            if (variableName.IndexOfAny(new char[] { '$', '@' }) < 0) {
-                variableName = string.Empty;
-                selector = Selector.None;
-            } else if (variableName.EndsWith("@", StringComparison.Ordinal)) {
-                selector = Selector.At;
-            }
 
             VariablesProvider.Initialize();
             int memberCount = VariablesProvider.GetMemberCount(variableName);
