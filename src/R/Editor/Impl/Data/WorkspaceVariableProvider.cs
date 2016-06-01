@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
@@ -91,13 +90,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 try {
-                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, variableName, REvaluationResultProperties.HasChildrenProperty,
-                            RValueRepresentations.Str(), _maxResults).WaitTimeout(_maxWaitTime);
+                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
+                               variableName, 
+                               REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
+                            RValueRepresentations.Str(null), _maxResults).WaitTimeout(_maxWaitTime);
                 } catch(TimeoutException) { }
 
                 if (infoList != null) {
                     return infoList
-                                .Where(m => m.Name.StartsWithOrdinal("$") || m.Name.StartsWithOrdinal("@"))
+                                .Where(m => m is IRValueInfo && 
+                                               (((IRValueInfo)m).AccessorKind == RChildAccessorKind.At ||
+                                                ((IRValueInfo)m).AccessorKind == RChildAccessorKind.Dollar))
                                 .Take(maxCount)
                                 .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
                                 .ToArray();

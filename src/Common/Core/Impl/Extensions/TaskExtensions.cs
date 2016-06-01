@@ -122,16 +122,17 @@ namespace Microsoft.Common.Core {
         /// within the timeout specified.
         /// </summary>
         public static T WaitTimeout<T>(this Task<T> task, int msTimeout) {
-            bool result = false;
             try {
                 task.Wait(msTimeout);
-                result = task.IsCompleted;
             } catch(AggregateException) { }
 
             if(!task.IsCompleted) {
+                // Caller most probably will abandon the task on timeout,
+                // so make sure all exceptions are observed
+                task.ContinueWith(t => t.Exception, TaskContinuationOptions.OnlyOnFaulted);
                 throw new TimeoutException();
             }
-            return task.Result;
+            return task.WaitAndUnwrapExceptions();
         }
 
         /// <summary>
