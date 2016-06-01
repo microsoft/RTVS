@@ -215,5 +215,5 @@
     <Content Include="SurveyNews\Feeds\NoItems.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>
