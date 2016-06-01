@@ -42,6 +42,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 if (childrenCount > 0) {
                     for (int i = 0; i < childrenCount; i++) {
                         var child = VisualTreeHelper.GetChild(o, i);
+                        // Skip tracks that change visible/hidden on different machines.
+                        // depending if touch device such as trackpad is present.
+                        var fe = child as FrameworkElement;
+                        if (fe != null && !string.IsNullOrEmpty(fe.Name) && fe.Name.EqualsOrdinal("PART_Track") && fe.DataContext == null) {
+                            continue;
+                        }
                         children.Add(Create(child));
                     }
                 }
