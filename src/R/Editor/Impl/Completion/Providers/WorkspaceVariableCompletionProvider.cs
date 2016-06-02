@@ -40,25 +40,15 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
             ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
-            Selector selector = Selector.Dollar;
 
             string variableName = context.Session.TextView.GetVariableNameBeforeCaret();
-            if (variableName.IndexOfAny(new char[] { '$', '@' }) < 0) {
-                variableName = string.Empty;
-                selector = Selector.None;
-            } else if (variableName.EndsWith("@", StringComparison.Ordinal)) {
-                selector = Selector.At;
-            }
 
             VariablesProvider.Initialize();
             int memberCount = VariablesProvider.GetMemberCount(variableName);
             IReadOnlyCollection<INamedItemInfo> members = VariablesProvider.GetMembers(variableName, 200);
-            var filteredList = FilterList(members, selector);
-
             // Get list of functions in the package
-            foreach (INamedItemInfo v in filteredList) {
+            foreach (var v in members) {
                 Debug.Assert(v != null);
-
                 if (v.Name.Length > 0 && v.Name[0] != '[') {
                     ImageSource glyph = v.ItemType == NamedItemType.Variable ? variableGlyph : functionGlyph;
                     var completion = new RCompletion(v.Name, CompletionUtilities.BacktickName(v.Name), v.Description, glyph);
@@ -69,28 +59,5 @@ namespace Microsoft.R.Editor.Completion.Providers {
             return completions;
         }
         #endregion
-
-        private IEnumerable<INamedItemInfo> FilterList(IReadOnlyCollection<INamedItemInfo> items, Selector selector) {
-            switch (selector) {
-                case Selector.Dollar:
-                    return items.Where(x => !x.Name.StartsWith("@", StringComparison.Ordinal));
-                case Selector.At:
-                    return items.Where(x => x.Name.StartsWith("@", StringComparison.Ordinal))
-                                .Select(x => new ReplacementItemInfo(x, x.Name.Substring(1)));
-            }
-            return items;
-        }
-
-        class ReplacementItemInfo : INamedItemInfo {
-            public ReplacementItemInfo(INamedItemInfo item, string newName) {
-                Description = item.Description;
-                ItemType = item.ItemType;
-                Name = newName;
-            }
-
-            public string Description { get; }
-            public NamedItemType ItemType { get; }
-            public string Name { get; }
-        }
     }
 }

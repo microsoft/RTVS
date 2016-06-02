@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 // the variable should have been removed
                 SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
             } else if (_evaluation == null
-                || (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1])) {
+                || (wrapper.Dimensions.Count == 2 && (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1]))) {
                 // matrix size changed. Reset the evaluation
                 ClearError();
                 VariableGrid.Initialize(new GridDataProvider(wrapper));

@@ -333,4 +333,7 @@
   <data name="Plots_TransportError" xml:space="preserve">
     <value>Connection to R host process failed.</value>
   </data>
+  <data name="Error_InstallTimeout_Format" xml:space="preserve">
+    <value>Timeout installing package {0}</value>
+  </data>
 </root>

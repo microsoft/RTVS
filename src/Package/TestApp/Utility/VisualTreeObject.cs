@@ -6,29 +6,26 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
     public class VisualTreeObject {
-        public VisualTreeObject() {
-            Properties = new List<VisualTreeProperty>();
-            Children = new List<VisualTreeObject>();
-        }
-
         public string Name { get; set; }
 
         public List<VisualTreeProperty> Properties { get; set; }
 
         public List<VisualTreeObject> Children { get; set; }
 
+        private VisualTreeObject() { }
+
         public static VisualTreeObject Create(DependencyObject o) {
             VisualTreeObject visualTreeObj = null;
 
             UIThreadHelper.Instance.Invoke(() => {
                 visualTreeObj = new VisualTreeObject();
-
                 visualTreeObj.Name = o.GetType().Name;
                 visualTreeObj.Properties = VisualTreeProperty.GetProperties(o).Where(p => SupportedWpfProperties.IsSupported(p.Name)).ToList();
                 visualTreeObj.Children = GetChildren(o);
@@ -45,6 +42,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 if (childrenCount > 0) {
                     for (int i = 0; i < childrenCount; i++) {
                         var child = VisualTreeHelper.GetChild(o, i);
+                        // Skip tracks that change visible/hidden on different machines.
+                        // depending if touch device such as trackpad is present.
+                        var fe = child as FrameworkElement;
+                        if (fe != null && !string.IsNullOrEmpty(fe.Name) && fe.Name.EqualsOrdinal("PART_Track") && fe.DataContext == null) {
+                            continue;
+                        }
                         children.Add(Create(child));
                     }
                 }

@@ -24,8 +24,16 @@ namespace Microsoft.Common.Core.OS {
             return _key != null ? _key.GetValue(name) : null;
         }
 
-        public IRegistryKey OpenSubKey(string name) {
-            return new RegistryKeyImpl(_key.OpenSubKey(name));
+        public void SetValue(string name, object value) {
+            _key?.SetValue(name, value);
+        }
+
+        public IRegistryKey OpenSubKey(string name, bool writable = false) {
+            var key = _key.OpenSubKey(name, writable);
+            if(key == null && writable) {
+                key = _key.CreateSubKey(name, true);
+            }
+            return new RegistryKeyImpl(key);
         }
     }
 }

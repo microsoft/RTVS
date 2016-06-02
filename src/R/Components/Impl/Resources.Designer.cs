@@ -97,6 +97,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timeout installing package {0}.
+        /// </summary>
+        public static string Error_InstallTimeout_Format {
+            get {
+                return ResourceManager.GetString("Error_InstallTimeout_Format", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {

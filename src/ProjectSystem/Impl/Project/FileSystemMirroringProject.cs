@@ -12,7 +12,7 @@ using System.Xml;
 using Microsoft.Build.Construction;
 using Microsoft.Build.Evaluation;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild;

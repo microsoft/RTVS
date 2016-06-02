@@ -25,6 +25,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
+        private static readonly char[] _selectors = new char[] { '$', '@' };
+        private const int _maxWaitTime = 2000;
+        private const int _maxResults = 100;
+
         /// <summary>
         /// Collection of top-level variables
         /// </summary>
@@ -43,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             // TODO: do estimate
-            return 100;
+            return _maxResults;
         }
 
         /// <summary>
@@ -59,14 +63,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public IReadOnlyCollection<INamedItemInfo> GetMembers(string variableName, int maxCount) {
             try {
                 // Split abc$def$g into parts. String may also be empty or end with $ or @.
-                string[] parts = variableName.Split(new char[] { '$', '@' });
+                string[] parts = variableName.Split(_selectors);
 
-                if (parts.Length == 0 || parts[0].Length == 0) {
-                    if (variableName.Length > 0) {
+                if ((parts.Length == 0 || parts[0].Length == 0) && variableName.Length > 0) {
                         // Something odd like $$ or $@ so we got empty parts
                         // and yet variable name is not empty. Don't show anything.
                         return new INamedItemInfo[0];
-                    }
+                }
+
+                if (parts.Length == 0 || parts[0].Length == 0 || variableName.IndexOfAny(_selectors) < 0) {
                     // Global scope
                     return _topLevelVariables.Values
                         .Where(x => !x.IsHidden)
@@ -75,48 +80,49 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         .ToArray();
                 }
 
-                // Last member name may be empty or partially typed
-                string lastMemberName = parts[parts.Length - 1];
-                // in abc$def$ or in abc$def$g we need to retrieve members of 'def' 
-                // so the last part doesn't matter.
-                int partCount = parts.Length - 1;
-                IRSessionDataObject eval;
+                // May be a package object line mtcars$
+                variableName = TrimToTrailingSelector(variableName);
+                var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                IReadOnlyList<IREvaluationResultInfo> infoList = null;
+                try {
+                    infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
+                               variableName, 
+                               REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
+                               null, _maxResults).WaitTimeout(_maxWaitTime);
+                } catch(TimeoutException) { }
 
-                // Go by parts and drill into members
-                if (_topLevelVariables.TryGetValue(parts[0], out eval)) {
-                    for (int i = 1; i < partCount; i++) {
-                        string part = parts[i];
-
-                        if (string.IsNullOrEmpty(part)) {
-                            // Something looks like abc$$def
-                            break;
-                        }
-
-                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                        if (children != null) {
-                            eval = children.FirstOrDefault((x) => x != null && x.Name == part && !x.IsHidden);
-                            if (eval == null) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (eval != null) {
-                        var children = eval.GetChildrenAsync().WaitAndUnwrapExceptions();   // TODO: discuss wait is fine here. If not, how to fix?
-                        if (children != null) {
-                            return children
-                                    .Where(x => !x.IsHidden)
-                                    .Take(maxCount)
-                                    .Select(m => new VariableInfo(m))
-                                    .ToArray();
-                        }
-                    }
+                if (infoList != null) {
+                    return infoList
+                                .Where(m => m is IRValueInfo && 
+                                               (((IRValueInfo)m).AccessorKind == RChildAccessorKind.At ||
+                                                ((IRValueInfo)m).AccessorKind == RChildAccessorKind.Dollar))
+                                .Take(maxCount)
+                                .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
+                                .ToArray();
                 }
-            } catch (OperationCanceledException) {
-            }
+            } catch (OperationCanceledException) { } catch (RException) { } catch (MessageTransportException) { }
+
             return new VariableInfo[0];
         }
         #endregion
+
+        private static string TrimToTrailingSelector(string name) {
+            int i = name.Length - 1;
+            for (; i >= 0; i--) {
+                if(_selectors.Contains(name[i])) {
+                    return name.Substring(0, i);
+                }
+            }
+            return string.Empty;
+        }
+
+        private static string TrimLeadingSelector(string name) {
+            if (name.StartsWithOrdinal("$") || name.StartsWithOrdinal("@")) {
+                return name.Substring(1);
+            }
+            return name;
+        }
 
         protected override void SessionMutated() {
             UpdateList().DoNotWait();
@@ -166,9 +172,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         class VariableInfo : INamedItemInfo {
-            public VariableInfo(IRSessionDataObject e) {
-                this.Name = e.Name;
-                if (e.TypeName == "closure") {
+            public VariableInfo(IRSessionDataObject e) :
+                this(e.Name, e.TypeName) { }
+
+            public VariableInfo(string name, string typeName) {
+                this.Name = name;
+                if (typeName.EqualsOrdinal("closure") || typeName.EqualsOrdinal("builtin")) {
                     ItemType = NamedItemType.Function;
                 } else {
                     ItemType = NamedItemType.Variable;

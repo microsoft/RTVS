@@ -55,6 +55,11 @@
     <Compile Include="Disposables\DisposableTest.cs" />
     <Compile Include="EnumerableExtensionsTest.cs" />
     <Compile Include="Fakes\TestCoreShell.cs" />
+    <Compile Include="Install\RegistryBaseKeyMock.cs" />
+    <Compile Include="Install\RegistryKeyMock.cs" />
+    <Compile Include="Install\RegistryMocks.cs" />
+    <Compile Include="Install\RInstallationTest.cs" />
+    <Compile Include="Logging\LoggerTest.cs" />
     <Compile Include="Match\MatchElements.cs" />
     <Compile Include="Match\MatchNull.cs" />
     <Compile Include="Match\MatchRange.cs" />
@@ -101,5 +106,5 @@
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>

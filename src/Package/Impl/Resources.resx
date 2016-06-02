@@ -465,9 +465,6 @@
   <data name="RPathChangedRestartVS" xml:space="preserve">
     <value>You must restart Visual Studio after changing path to the R installation.</value>
   </data>
-  <data name="Error_UnsupportedRVersion" xml:space="preserve">
-    <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.</value>
-  </data>
   <data name="ChooseDirectory" xml:space="preserve">
     <value>Choose Directory</value>
   </data>
@@ -476,9 +473,6 @@
   </data>
   <data name="OpenFunctionHelp" xml:space="preserve">
     <value>Help on {0}</value>
-  </data>
-  <data name="Error_UnableToFindR" xml:space="preserve">
-    <value>Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R.</value>
   </data>
   <data name="HistoryWindowCaption" xml:space="preserve">
     <value>R History</value>
@@ -497,9 +491,6 @@
   </data>
   <data name="Settings_HistoryCategory" xml:space="preserve">
     <value>History</value>
-  </data>
-  <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
-    <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
   </data>
   <data name="Warning_SettingsReset" xml:space="preserve">
     <value>This will reset Visual Studio window layout to the Data Scientist profile. If you prefer to save existing Visual Studio settings please use Tools &gt; Import/Export Settings instead to switch profiles. You can also go back to the original VS settings profile via Import/Export Settings. Proceed?</value>
@@ -724,5 +715,29 @@ Additional information:
   </data>
   <data name="HelpSearchWatermark" xml:space="preserve">
     <value>Type search term</value>
+  </data>
+  <data name="Error_UnableToDownloadRClient" xml:space="preserve">
+    <value>Unable to download Microsoft R Client. Exception {0}.</value>
+  </data>
+  <data name="Warning_RStudioKeyboardShortcuts" xml:space="preserve">
+    <value>Do you want to reset keyboard shortcuts to be compatible with the RStudio where possible?</value>
+  </data>
+  <data name="Message_RClientIsAlreadySet" xml:space="preserve">
+    <value>Current R engine is already set to the Microsoft R Client.</value>
+  </data>
+  <data name="Prompt_RClientNotInstalled" xml:space="preserve">
+    <value>Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete.</value>
+  </data>
+  <data name="Message_RClientIsAlreadyInstalled" xml:space="preserve">
+    <value>Microsoft R Client is already installed.</value>
+  </data>
+  <data name="DownloadingRClientInstaller" xml:space="preserve">
+    <value>Downloading Microsoft R Client setup application...</value>
+  </data>
+  <data name="Error_UnableToDownloadRClient_Timeout" xml:space="preserve">
+    <value>Timeout downloading Microsoft R Client installer executable.</value>
+  </data>
+  <data name="PleaseRestartVisualStudioAfterRClientSetup" xml:space="preserve">
+    <value>Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete.</value>
   </data>
 </root>

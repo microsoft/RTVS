@@ -245,6 +245,10 @@
       </Group>
 
       <!-- Main menu groups-->
+      <Group guid="guidRToolsCmdSet" id="rClientGroup" priority="0x0850">
+        <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="docsGroup" priority="0x900">
         <Parent guid="guidRToolsCmdSet" id="TopLevelMenu"/>
       </Group>
@@ -980,21 +984,43 @@
         </Strings>
       </Button>
 
+      <!-- Install Microsoft R Client -->
+      <Button guid="guidRToolsCmdSet" id="icmdInstallRClient" priority="0x0450" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ClientStatistics"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Install Microsoft &amp;R Client...</ButtonText>
+          <CommandName>Install Microsoft R Client</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Switch R to Microsoft R Client -->
+      <Button guid="guidRToolsCmdSet" id="icmdSwitchToRClient" priority="0x0450" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
+        <Icon guid="ImageCatalogGuid" id="RedChannel"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <Strings>
+          <ButtonText>Chan&amp;ge R to Microsoft R Open</ButtonText>
+          <CommandName>Change R to Microsoft R Open</CommandName>
+        </Strings>
+      </Button>
+
+      <!-- Microsoft R Products -->
+      <Button guid="guidRToolsCmdSet" id="icmdMicrosoftRProducts" priority="0x0500" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="rClientGroup"/>
+        <Strings>
+          <ButtonText>&amp;Microsoft R Products...</ButtonText>
+          <CommandName>Microsoft R Products</CommandName>
+        </Strings>
+      </Button>
+
       <!-- Check for Updates -->
       <Button guid="guidRToolsCmdSet" id="icmdCheckForUpdates" priority="0x0400" type="Button">
         <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
         <Strings>
           <ButtonText>&amp;Check for Updates...</ButtonText>
           <CommandName>Check for Updates</CommandName>
-        </Strings>
-      </Button>
-
-      <!-- Microsoft R Products -->
-      <Button guid="guidRToolsCmdSet" id="icmdMicrosoftRProducts" priority="0x0500" type="Button">
-        <Parent guid="guidRToolsCmdSet" id="docsGroup"/>
-        <Strings>
-          <ButtonText>&amp;Microsoft R Products...</ButtonText>
-          <CommandName>Microsoft R Products</CommandName>
         </Strings>
       </Button>
 
@@ -2075,6 +2101,8 @@
       <IDSymbol name="icmdRDocsWritingRExtensions" value="1405" />
       <IDSymbol name="icmdMicrosoftRProducts" value="1406" />
       <IDSymbol name="icmdCheckForUpdates" value="1407" />
+      <IDSymbol name="icmdInstallRClient" value="1408" />
+      <IDSymbol name="icmdSwitchToRClient" value="1409" />
 
       <!-- Project -->
       <IDSymbol name="icmdSetDirectoryHere" value="1500"/>
@@ -2110,6 +2138,7 @@
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
       <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
       <IDSymbol name="docsGroup" value="0x2302"/>
+      <IDSymbol name="rClientGroup" value="0x2303"/>
       <IDSymbol name="windowsSubMenuGroup" value="0x2310"/>
       <IDSymbol name="windowsSubMenuGroup2" value="0x2311"/>
       <IDSymbol name="packagesSubMenuGroup" value="0x2320"/>
@@ -2141,6 +2170,7 @@
     <GuidSymbol name="rIconGuid" value="{56CF3C9B-3C54-455C-BECE-D88563300B99}">
       <IDSymbol name="rFileIcon" value="1" />
     </GuidSymbol>
+
 
     <!-- InteractiveWindow Guid -->
     <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">

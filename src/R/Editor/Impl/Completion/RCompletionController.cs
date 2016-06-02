@@ -161,18 +161,11 @@ namespace Microsoft.R.Editor.Completion {
                         return completionSet.SelectionStatus.IsUnique;
                 }
 
-                if (typedChar == ' ' && !REditorSettings.CommitOnSpace)
+                if (typedChar == ' ' && !REditorSettings.CommitOnSpace) {
                     return false;
-
-                if (char.IsWhiteSpace(typedChar)) {
-                    if (typedChar.IsLineBreak()) {
-                        if (REditorSettings.CommitOnEnter)
-                            return true;
-
-                        return !IsAutoShownCompletion();
-                    }
-                    return true;
                 }
+
+                return char.IsWhiteSpace(typedChar);
             }
 
             return false;

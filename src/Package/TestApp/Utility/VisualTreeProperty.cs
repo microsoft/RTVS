@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
@@ -27,11 +26,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
                 return false;
             }
 
-            if (Name == other.Name && Value == other.Value) {
-                return true;
-            }
-
-            return false;
+            return Name == other.Name && Value == other.Value;
         }
 
         public override int GetHashCode() {
@@ -62,16 +57,12 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
         private static IList<DependencyProperty> GetAttachedProperties(DependencyObject obj) {
             List<DependencyProperty> result = new List<DependencyProperty>();
 
-            foreach (PropertyDescriptor pd in TypeDescriptor.GetProperties(obj,
-                new Attribute[] { new PropertyFilterAttribute(PropertyFilterOptions.All) })) {
-                DependencyPropertyDescriptor dpd =
-                    DependencyPropertyDescriptor.FromProperty(pd);
-
+            foreach (PropertyDescriptor pd in TypeDescriptor.GetProperties(obj.GetType())) {
+                var dpd = DependencyPropertyDescriptor.FromProperty(pd);
                 if (dpd != null) {
                     result.Add(dpd.DependencyProperty);
                 }
             }
-
             return result;
         }
     }

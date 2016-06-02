@@ -6,7 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Support.Settings.Definitions;
 using static System.FormattableString;
 

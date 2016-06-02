@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
-using Microsoft.R.Actions.Utility;
+using Microsoft.Common.Core.Install;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -223,7 +223,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             // If path is null, folder selector dialog was canceled
             if (path != null) {
                 path = RInstallation.NormalizeRPath(path);
-                bool valid = RInstallationHelper.VerifyRIsInstalled(VsAppShell.Current, path, showErrors: !_allowLoadingFromStorage);
+                bool valid = RInstallation.VerifyRIsInstalled(VsAppShell.Current, null, path, showErrors: !_allowLoadingFromStorage);
                 if (!valid) {
                     path = null; // Prevents assignment of bad values to the property.
                 }

@@ -3,8 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Actions.Utility;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -106,7 +106,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ActiveWindow;
             }
 
-            var evaluator = RInstallationHelper.VerifyRIsInstalled(Shell, _settings.RBasePath)
+            var svl = new SupportedRVersionRange();
+            var evaluator = RInstallation.VerifyRIsInstalled(Shell, svl, _settings.RBasePath)
                 ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
                 : (IInteractiveEvaluator) new NullInteractiveEvaluator();
 

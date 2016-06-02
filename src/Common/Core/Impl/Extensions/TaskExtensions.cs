@@ -117,6 +117,25 @@ namespace Microsoft.Common.Core {
         }
 
         /// <summary>
+        /// Waits for a task to complete within a given timeout. 
+        /// Returns task result or default(T) if task did not complete
+        /// within the timeout specified.
+        /// </summary>
+        public static T WaitTimeout<T>(this Task<T> task, int msTimeout) {
+            try {
+                task.Wait(msTimeout);
+            } catch(AggregateException) { }
+
+            if(!task.IsCompleted) {
+                // Caller most probably will abandon the task on timeout,
+                // so make sure all exceptions are observed
+                task.ContinueWith(t => t.Exception, TaskContinuationOptions.OnlyOnFaulted);
+                throw new TimeoutException();
+            }
+            return task.WaitAndUnwrapExceptions();
+        }
+
+        /// <summary>
         /// Silently handles the specified exception.
         /// </summary>
         public static Task SilenceException<T>(this Task task) where T : Exception {

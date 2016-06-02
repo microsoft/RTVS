@@ -34,16 +34,13 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.Interactive]
-        public void SimpleDataTest() {
+        public async Task SimpleDataTest() {
             VisualTreeObject actual = null;
             using (var hostScript = new VsRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableView))) {
                     DoIdle(100);
-                    Task.Run(async () => {
-                        await hostScript.Session.ExecuteAsync("x <- c(1:10)");
-                    }).Wait();
-
-                    DoIdle(2000);
+                    await hostScript.Session.ExecuteAsync("x <- c(1:10)");
+                    DoIdle(1000);
                     actual = VisualTreeObject.Create(script.Control);
                 }
             }
@@ -61,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                         await hostScript.Session.ExecuteAsync("x <- lm");
                     }).Wait();
 
-                    DoIdle(2000);
+                    DoIdle(1000);
                     actual = VisualTreeObject.Create(script.Control);
                 }
             }

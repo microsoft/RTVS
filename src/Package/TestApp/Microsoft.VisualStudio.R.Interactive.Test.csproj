@@ -51,6 +51,7 @@
     <Compile Include="Utility\IdleTime.cs" />
     <Compile Include="TestFilesFixture.cs" />
     <Compile Include="Utility\ViewTreeDump.cs" />
+    <Compile Include="Utility\VisualTreeExtensions.cs" />
     <Compile Include="Utility\VisualTreeObject.cs" />
     <Compile Include="Utility\VisualTreeProperty.cs" />
   </ItemGroup>
@@ -63,6 +64,8 @@
     <None Include="Files\VariableExplorer04.tree" />
     <None Include="Files\VariableGrid02.tree" />
     <AppDesigner Include="Properties\" />
+    <None Include="Files\VariableGridSorted01.tree" />
+    <None Include="Files\VariableGridSorted02.tree" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -157,7 +160,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(RootDirectory)\src\R.Build.Version.targets" />
+  <Import Project="$(SourceDirectory)R.Build.Version.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

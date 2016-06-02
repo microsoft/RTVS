@@ -187,8 +187,10 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             int result;
 
             var oleButtons = GetOleButtonFlags(buttons);
+            var oleIcon = oleButtons == OLEMSGBUTTON.OLEMSGBUTTON_OK ? OLEMSGICON.OLEMSGICON_WARNING : OLEMSGICON.OLEMSGICON_QUERY;
+
             shell.ShowMessageBox(0, Guid.Empty, null, message, null, 0,
-                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
+                oleButtons, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, oleIcon, 0, out result);
 
             switch (result) {
                 case NativeMethods.IDYES:
