@@ -19,6 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
         private string _errorMessage;
 
         public void LaunchRClientSetup(ICoreShell coreShell) {
+            _errorMessage = null;
             var rClientExe = Path.Combine(Path.GetTempPath(), "RClientSetup.exe");
 
             LongOperationNotification.ShowWaitingPopup(Resources.DownloadingRClientInstaller, new LongAction[] {
