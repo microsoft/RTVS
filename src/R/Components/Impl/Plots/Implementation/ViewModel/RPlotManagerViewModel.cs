@@ -81,8 +81,5 @@ namespace Microsoft.R.Components.Plots.Implementation.ViewModel {
                 _plotManager.EndLocatorMode(result);
             }
         }
-
-        public void Dispose() {
-        }
     }
 }

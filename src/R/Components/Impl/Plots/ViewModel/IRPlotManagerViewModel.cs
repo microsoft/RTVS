@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace Microsoft.R.Components.Plots.ViewModel {
-    public interface IRPlotManagerViewModel : IDisposable {
+    public interface IRPlotManagerViewModel {
         BitmapImage PlotImage { get; }
         bool LocatorMode { get; }
         bool ShowWatermark { get; }
