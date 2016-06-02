@@ -88,24 +88,6 @@ namespace Microsoft.Common.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to download Microsoft R Client. Exception: {0}..
-        /// </summary>
-        internal static string Error_UnableToDownloadRClient {
-            get {
-                return ResourceManager.GetString("Error_UnableToDownloadRClient", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Timeout downloading Microsoft R Client installer executable..
-        /// </summary>
-        internal static string Error_UnableToDownloadRClient_Timeout {
-            get {
-                return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify path to R engine in  R Tools | Options. If R is not installed, Visual Studio can launch setup of the Microsoft R Client.{0}Would you like to start installation of the Microsoft R Client now? Visual Studio will close when the setup application starts..
         /// </summary>
         internal static string Error_UnableToFindR {

@@ -4,7 +4,7 @@
 using System;
 
 namespace Microsoft.Common.Core.Install {
-    public sealed class SupportedRVersionList : ISupportedRVersionList {
+    public sealed class SupportedRVersionRange : ISupportedRVersionRange {
         // TODO: this probably needs configuration file
         // or another dynamic source of supported versions.
         public int MinMajorVersion { get; }
@@ -12,21 +12,13 @@ namespace Microsoft.Common.Core.Install {
         public int MaxMajorVersion { get; }
         public int MaxMinorVersion { get; }
 
-        public SupportedRVersionList() : this(3, 2, 3, 9) { }
+        public SupportedRVersionRange() : this(3, 2, 3, 9) { }
 
-        public SupportedRVersionList(int minVersionMajorPart, int minVersionMinorPart, int maxVersionMajorPart, int maxVersionMinorPart) {
+        public SupportedRVersionRange(int minVersionMajorPart, int minVersionMinorPart, int maxVersionMajorPart, int maxVersionMinorPart) {
             MinMajorVersion = minVersionMajorPart;
             MinMinorVersion = minVersionMinorPart;
             MaxMajorVersion = maxVersionMajorPart;
             MaxMinorVersion = maxVersionMinorPart;
-        }
-
-        public bool IsCompatibleVersion(Version v) {
-            var minVersion = new Version(MinMajorVersion, MinMinorVersion);
-            var maxVersion = new Version(MaxMajorVersion, MaxMinorVersion);
-
-            var verMajorMinor = new Version(v.Major, v.Minor);
-            return verMajorMinor >= minVersion && verMajorMinor <= maxVersion;
         }
     }
 }

@@ -770,4 +770,13 @@ Additional information:
   <data name="Message_RClientIsAlreadyInstalled" xml:space="preserve">
     <value>Microsoft R Client is already installed.</value>
   </data>
+  <data name="DownloadingRClientInstaller" xml:space="preserve">
+    <value>Downloading Microsoft R Client setup application...</value>
+  </data>
+  <data name="Error_UnableToDownloadRClient_Timeout" xml:space="preserve">
+    <value>Timeout downloading Microsoft R Client installer executable.</value>
+  </data>
+  <data name="PleaseRestartVisualStudioAfterRClientSetup" xml:space="preserve">
+    <value>Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete.</value>
+  </data>
 </root>
