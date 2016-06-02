@@ -470,6 +470,10 @@
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Templates\Sql\Create Procedure R.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Templates\Sql\Create Procedure R.vstemplate">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

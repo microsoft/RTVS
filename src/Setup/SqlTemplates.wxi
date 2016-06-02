@@ -9,6 +9,7 @@
   <DirectoryRef Id="SqlItemsFolder">
     <Component Id="SqlRItems" Guid="{08892896-DFA1-4DB8-973C-7E4FBF1274B6}">
       <File Source="$(var.BinDir)\Templates\Sql\Create Procedure R.vstemplate" />
+      <File Source="$(var.BinDir)\Templates\Sql\Create Procedure R.sql" />
       <File Id="ScriptRForSql" Source="$(var.BinDir)\Templates\NewItem\Script.r" />
     </Component>
   </DirectoryRef>
