@@ -230,6 +230,7 @@
     <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.Designer.cs">
       <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Rules\Run.cs" />

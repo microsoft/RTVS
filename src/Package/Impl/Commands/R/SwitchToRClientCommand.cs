@@ -25,7 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
             var rClientPath = RInstallation.GetRClientPath();
             if (string.IsNullOrEmpty(rClientPath)) {
                 if (_shell.ShowMessage(Resources.Prompt_RClientNotInstalled, MessageButtons.YesNo) == MessageButtons.Yes) {
-                    RInstallation.LaunchRClientSetup();
+                    var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
+                    installer.LaunchRClientSetup(_shell);
                     return;
                 }
             }

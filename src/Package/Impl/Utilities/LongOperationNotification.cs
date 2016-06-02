@@ -13,7 +13,7 @@ using Task = System.Threading.Tasks.Task;
 namespace Microsoft.VisualStudio.R.Package.Utilities {
     internal sealed class LongAction {
         public string Name { get; set; }
-        public Action<object> Action { get; set; }
+        public Action<object, CancellationToken> Action { get; set; }
         public object Data { get; set; }
     }
 
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
                     } else {
                         msgPump.ProgressText = string.Format(CultureInfo.InvariantCulture, Resources.LongOperationProgressMessage2, i + 1, msgPump.TotalSteps, actions[i].Name);
                     }
-                    actions[i].Action(actions[i].Data);
+                    actions[i].Action(actions[i].Data, cts.Token);
                 }
             }, cts.Token);
 

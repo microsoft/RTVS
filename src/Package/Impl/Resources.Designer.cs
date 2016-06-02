@@ -259,6 +259,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloading Microsoft R Client setup application....
+        /// </summary>
+        public static string DownloadingRClientInstaller {
+            get {
+                return ResourceManager.GetString("DownloadingRClientInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
         public static string EditorName {
@@ -391,6 +400,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnableToDownloadRClient {
             get {
                 return ResourceManager.GetString("Error_UnableToDownloadRClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout downloading Microsoft R Client installer executable..
+        /// </summary>
+        public static string Error_UnableToDownloadRClient_Timeout {
+            get {
+                return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
             }
         }
         
@@ -842,6 +860,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PackageManagerWindowCaption {
             get {
                 return ResourceManager.GetString("PackageManagerWindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete..
+        /// </summary>
+        public static string PleaseRestartVisualStudioAfterRClientSetup {
+            get {
+                return ResourceManager.GetString("PleaseRestartVisualStudioAfterRClientSetup", resourceCulture);
             }
         }
         

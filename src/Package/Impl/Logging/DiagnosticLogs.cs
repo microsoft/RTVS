@@ -10,6 +10,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Install;
 using Microsoft.R.Host.Client;
@@ -74,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             return zipPath;
         }
 
-        private static void CollectRTVSLogs(object o) {
+        private static void CollectRTVSLogs(object o, CancellationToken ct) {
             IEnumerable<string> logs;
 
             logs = GetRecentLogFiles(GeneralLogPattern);
@@ -93,17 +94,17 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
             }
         }
 
-        private static void CollectSystemLogs(object o) {
+        private static void CollectSystemLogs(object o, CancellationToken ct) {
             string systemEventsLog = CollectSystemEvents();
             _logFiles.Add(systemEventsLog);
         }
 
-        private static void CollectGeneralLogs(object o) {
+        private static void CollectGeneralLogs(object o, CancellationToken ct) {
             string generalDataLog = CollectGeneralData();
             _logFiles.Add(generalDataLog);
         }
 
-        private static void CreateArchive(object o) {
+        private static void CreateArchive(object o, CancellationToken ct) {
             ZipFiles(_logFiles);
         }
 

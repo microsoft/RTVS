@@ -4,7 +4,7 @@
 using System;
 
 namespace Microsoft.Common.Core.Install {
-    public interface ISupportedRVersionList {
+    public interface ISupportedRVersionRange {
         /// <summary>
         /// Minimal supported R version major part such as 3 in 3.2
         /// </summary>
@@ -21,12 +21,20 @@ namespace Microsoft.Common.Core.Install {
         /// Maximal supported R version minor part such as 5 in 4.5
         /// </summary>
         int MaxMinorVersion { get; }
+    }
 
+    public static class SupportedRVersionRangeExtensions {
         /// <summary>
         /// Determines if given version falls into the supported range.
         /// </summary>
         /// <param name="v"></param>
         /// <returns></returns>
-        bool IsCompatibleVersion(Version v);
+        public static bool IsCompatibleVersion(this ISupportedRVersionRange svr, Version v) {
+            var minVersion = new Version(svr.MinMajorVersion, svr.MinMinorVersion);
+            var maxVersion = new Version(svr.MaxMajorVersion, svr.MaxMinorVersion);
+
+            var verMajorMinor = new Version(v.Major, v.Minor);
+            return verMajorMinor >= minVersion && verMajorMinor <= maxVersion;
+        }
     }
 }

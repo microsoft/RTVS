@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Test.Install {
         [Test]
         [Category.R.Install]
         public void Test01() {
-            var svl = new SupportedRVersionList(0, 0, 0, 0);
+            var svl = new SupportedRVersionRange(0, 0, 0, 0);
             RInstallData data = RInstallation.GetInstallationData(null, svl);
             data.Status.Should().BeEither(RInstallStatus.PathNotSpecified, RInstallStatus.UnsupportedVersion);
         }
@@ -42,7 +42,7 @@ namespace Microsoft.Common.Core.Test.Install {
             RInstallation.Registry = null;
             RInstallation.FileSystem = null;
 
-            var svl = new SupportedRVersionList(3, 2, 3, 2);
+            var svl = new SupportedRVersionRange(3, 2, 3, 2);
             RInstallData data = RInstallation.GetInstallationData(null, svl);
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
@@ -68,7 +68,7 @@ namespace Microsoft.Common.Core.Test.Install {
             fs.GetVersionInfo(dir64 + "R.dll").Returns(fvi);
 
             RInstallation.FileSystem = fs;
-            var svl = new SupportedRVersionList(3, 2, 3, 2);
+            var svl = new SupportedRVersionRange(3, 2, 3, 2);
             RInstallData data = RInstallation.GetInstallationData(null, svl);
 
             data.Status.Should().Be(RInstallStatus.OK);
@@ -101,7 +101,7 @@ namespace Microsoft.Common.Core.Test.Install {
         public void Test04() {
             var tr = new RegistryMock(SimulateRegistry04());
             RInstallation.Registry = tr;
-            var svl = new SupportedRVersionList(3, 2, 3, 9);
+            var svl = new SupportedRVersionRange(3, 2, 3, 9);
 
             RInstallation.GetCompatibleEnginePathFromRegistry(svl).Should().BeNullOrEmpty();
 
@@ -137,7 +137,7 @@ namespace Microsoft.Common.Core.Test.Install {
             fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
 
             RInstallation.FileSystem = fs;
-            var svl = new SupportedRVersionList(3, 2, 3, 2);
+            var svl = new SupportedRVersionRange(3, 2, 3, 2);
             RInstallData data = RInstallation.GetInstallationData(dir, svl);
             data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
         }

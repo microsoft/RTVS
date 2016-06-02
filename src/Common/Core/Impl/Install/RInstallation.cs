@@ -3,12 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Threading;
-using Microsoft.Common.Core.Interop;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
@@ -70,7 +68,7 @@ namespace Microsoft.Common.Core.Install {
         /// <returns></returns>
         public static RInstallData GetInstallationData(
             string basePath, 
-            ISupportedRVersionList svl,
+            ISupportedRVersionRange svl,
             ICoreShell coreShell = null) {
 
             string path = GetRInstallPath(basePath, svl, coreShell);
@@ -144,36 +142,12 @@ namespace Microsoft.Common.Core.Install {
             return path;
         }
 
-        public static Exception LaunchRClientSetup() {
-            var rClientExe = Path.Combine(Path.GetTempPath(), "RClientSetup.exe");
-            try {
-                using (var client = new WebClient()) {
-                    client.DownloadFileAsync(
-                        new Uri("http://go.microsoft.com/fwlink/?LinkId=800048", UriKind.Absolute), rClientExe);
-
-                    var startTime = DateTime.Now;
-                    while (client.IsBusy && (DateTime.Now - startTime).TotalMilliseconds < 5000) {
-                        Thread.Sleep(200);
-                    }
-                    if (!FileSystem.FileExists(rClientExe)) {
-                        return new TimeoutException(Resources.Error_UnableToDownloadRClient_Timeout);
-                    }
-                }
-            } catch (WebException ex) {
-                return ex;
-            }
-
-            ProcessServices.Start(rClientExe);
-            NativeMethods.PostQuitMessage(0);
-            return null;
-        }
-
         /// <summary>
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath, ISupportedRVersionList svl = null, ICoreShell coreShell = null) {
-            svl = svl ?? new SupportedRVersionList();
+        public static string GetRInstallPath(string basePath, ISupportedRVersionRange svl = null, ICoreShell coreShell = null) {
+            svl = svl ?? new SupportedRVersionRange();
             // First check if Microsoft R Client was just installed.
             var rClientPath = GetRClientPath();
             if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
@@ -204,7 +178,7 @@ namespace Microsoft.Common.Core.Install {
                         }
                     }
                 }
-            } catch (Exception) { }
+            } catch (Exception ex) when (!ex.IsCriticalException()) { }
 
             return false;
         }
@@ -267,7 +241,7 @@ namespace Microsoft.Common.Core.Install {
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder(string basePath, ISupportedRVersionList svl, ICoreShell coreShell = null) {
+        public static string GetBinariesFolder(string basePath, ISupportedRVersionRange svl, ICoreShell coreShell = null) {
             string binFolder = null;
             string installPath = RInstallation.GetRInstallPath(basePath, svl, coreShell);
 
@@ -300,8 +274,8 @@ namespace Microsoft.Common.Core.Install {
         /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
         /// Selects highest from compatible versions, not just the highest.
         /// </summary>
-        public static string GetCompatibleEnginePathFromRegistry(ISupportedRVersionList svl = null) {
-            svl = svl ?? new SupportedRVersionList();
+        public static string GetCompatibleEnginePathFromRegistry(ISupportedRVersionRange svl = null) {
+            svl = svl ?? new SupportedRVersionRange();
             string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
             string highestVersionName = String.Empty;
             Version highest = null;
@@ -396,7 +370,7 @@ namespace Microsoft.Common.Core.Install {
             return new Version(0, 0);
         }
 
-        private static string TryFindRInProgramFiles(string folder, ISupportedRVersionList supportedVersions) {
+        private static string TryFindRInProgramFiles(string folder, ISupportedRVersionRange supportedVersions) {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
@@ -406,11 +380,8 @@ namespace Microsoft.Common.Core.Install {
                                                                 .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
                 foreach (IFileSystemInfo fsi in directories) {
                     string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
-                    Version v = GetRVersionFromFolderName(subFolderName);
-                    if (v.Major >= supportedVersions.MinMajorVersion &&
-                        v.Minor >= supportedVersions.MinMinorVersion &&
-                        v.Major <= supportedVersions.MaxMajorVersion &&
-                        v.Minor <= supportedVersions.MaxMinorVersion) {
+                    Version v = GetRVersionFromFolderName(subFolderName);                   
+                    if (supportedVersions.IsCompatibleVersion(v)) {
                         versions.Add(v);
                     }
                 }
@@ -425,6 +396,55 @@ namespace Microsoft.Common.Core.Install {
             }
 
             return string.Empty;
+        }
+
+        public static bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionRange svl, string path, bool showErrors = true) {
+            svl = svl ?? new SupportedRVersionRange();
+            var data = RInstallation.GetInstallationData(path, svl, coreShell);
+            if (data.Status == RInstallStatus.OK) {
+                return true;
+            }
+
+            if (showErrors) {
+                if (ShowMessage(coreShell, data, svl) == MessageButtons.Yes) {
+                    var installer = coreShell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
+                    installer.LaunchRClientSetup(coreShell);
+                }
+            }
+
+            return false;
+        }
+
+        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data, ISupportedRVersionRange svl) {
+            Debug.Assert(data.Status != RInstallStatus.OK);
+
+            switch (data.Status) {
+                case RInstallStatus.UnsupportedVersion:
+                    return coreShell.ShowMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
+                        data.Version.Major, data.Version.Minor, data.Version.Build,
+                        svl.MinMajorVersion, svl.MinMinorVersion, "*",
+                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*",
+                        Environment.NewLine + Environment.NewLine),
+                        MessageButtons.YesNo);
+
+                case RInstallStatus.ExceptionAccessingPath:
+                    coreShell.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath,
+                        data.Path, data.Exception.Message));
+                    return MessageButtons.OK;
+
+                case RInstallStatus.NoRBinaries:
+                    coreShell.ShowErrorMessage(
+                        string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat,
+                        data.Path));
+                    return MessageButtons.OK;
+
+                case RInstallStatus.PathNotSpecified:
+                    return coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
+                        Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine), MessageButtons.YesNo);
+            }
+            return MessageButtons.OK;
         }
     }
 }
