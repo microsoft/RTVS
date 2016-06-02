@@ -153,7 +153,9 @@ eval_and_describe <- function(expr, env, kind, fields, obj, repr = NULL) {
 # `count` specifies the maximum number of children to report. If NULL, then all children are reported.
 #
 # `fields` and `repr` are passed to `describe_object` as is.
-describe_children <- function(obj, env, fields, count = NULL, repr = NULL) {
+#
+# `evaluateActiveBindings` evaluates active bindings if set to `TRUE` in RTools options > debugger.
+describe_children <- function(obj, env, fields, count = NULL, repr = NULL, evaluateActiveBindings = FALSE) {
   if (!missing(env)) {
     expr <- obj;
     obj <- safe_eval(parse(text = obj), env);
@@ -201,7 +203,12 @@ describe_children <- function(obj, env, fields, count = NULL, repr = NULL) {
         value <- list(promise = deparse_str(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
-        value <- list(active_binding = TRUE, expression = item_expr);
+        binding_res <- NULL
+        if(evaluateActiveBindings){
+            binding_res <- eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr);
+        } 
+
+        value <- list(active_binding = TRUE, expression = item_expr, binding_result = binding_res);
       } else {
         # It's just a regular binding, so get the actual value, but check for missing() first.
 

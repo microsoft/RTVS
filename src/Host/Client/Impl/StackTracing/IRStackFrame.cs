@@ -89,10 +89,11 @@ namespace Microsoft.R.StackTracing {
             this IRStackFrame frame,
             REvaluationResultProperties properties,
             string repr,
+            bool evalauateActiveBindings,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            frame.Session.DescribeChildrenAsync(frame.EnvironmentExpression, "base::environment()", properties, repr, maxCount, cancellationToken);
+            frame.Session.DescribeChildrenAsync(frame.EnvironmentExpression, "base::environment()", properties, repr, evalauateActiveBindings, maxCount, cancellationToken);
 
         /// <summary>
         /// Produces an object describing this frame's environment. <see cref="REvaluationResultInfoExtensions.DescribeChildrenAsync"/>

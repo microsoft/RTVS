@@ -59,12 +59,12 @@ namespace Microsoft.R.DataInspection.Test {
             var stackFrames = (await _session.TracebackAsync()).ToArray();
             stackFrames.Should().NotBeEmpty();
 
-            var children = await stackFrames.Last().DescribeChildrenAsync(ExpressionProperty | LengthProperty, RValueRepresentations.Deparse());
+            var children = await stackFrames.Last().DescribeChildrenAsync(ExpressionProperty | LengthProperty, RValueRepresentations.Deparse(), false);
             var parent = children.Should().Contain(er => er.Name == "`123`")
                 .Which.Should().BeAssignableTo<IRValueInfo>().Which;
             parent.Expression.Should().Be("`123`");
 
-            children = await parent.DescribeChildrenAsync(ExpressionProperty, RValueRepresentations.Deparse());
+            children = await parent.DescribeChildrenAsync(ExpressionProperty, RValueRepresentations.Deparse(), false);
             children.Should().Contain(er => er.Name == "$`name with spaces`")
                 .Which.Should().BeAssignableTo<IRValueInfo>()
                 .Which.Expression.Should().Be("`123`$`name with spaces`");
@@ -92,7 +92,7 @@ namespace Microsoft.R.DataInspection.Test {
                 stackFrames.Should().NotBeEmpty();
                 var frame = stackFrames.Last();
 
-                var children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
+                var children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse(), false);
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRPromiseInfo>()
                     .Which.Code.Should().Be("1 + 2");
@@ -100,7 +100,7 @@ namespace Microsoft.R.DataInspection.Test {
                 await tracer.ContinueAsync();
                 await _session.NextPromptShouldBeBrowseAsync();
 
-                children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
+                children = await frame.DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse(), false);
                 children.Should().ContainSingle(er => er.Name == "p")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which.Representation.Should().Be("3");
@@ -126,9 +126,34 @@ namespace Microsoft.R.DataInspection.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
+                var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse(), false);
                 children.Should().ContainSingle(er => er.Name == "x")
-                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>()
+                    .Which.Value.Should().BeNull();
+            }
+        }
+
+        [Test]
+        [Category.R.DataInspection]
+        public async Task ActiveBindingEvaluate() {
+            const string code =
+@"makeActiveBinding('x', function() 42, environment())
+  browser();
+";
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await tracer.EnableBreakpointsAsync(true);
+
+                await sf.Source(_session);
+                await _session.NextPromptShouldBeBrowseAsync();
+
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse(), true);
+                children.Should().ContainSingle(er => er.Name == "x")
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>()
+                    .Which.Value.Representation.Should().Be("42");
             }
         }
 
@@ -153,7 +178,7 @@ namespace Microsoft.R.DataInspection.Test {
                 var stackFrames = (await _session.TracebackAsync()).ToArray();
                 stackFrames.Should().NotBeEmpty();
 
-                var children = (await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse()));
+                var children = (await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse(), false));
                 var d = children.Should().ContainSingle(er => er.Name == "d")
                     .Which.Should().BeAssignableTo<IRValueInfo>()
                     .Which;
@@ -444,7 +469,7 @@ namespace Microsoft.R.DataInspection.Test {
             res.AttributeCount.Should().Be(row.AttrCount);
             res.SlotCount.Should().Be(row.SlotCount);
 
-            var actualChildren = (await res.DescribeChildrenAsync(AllFields, RValueRepresentations.Deparse()))
+            var actualChildren = (await res.DescribeChildrenAsync(AllFields, RValueRepresentations.Deparse(), false))
                 .Cast<IRValueInfo>()
                 .ToArray();
             res.HasChildren.Should().Be(children.Any());

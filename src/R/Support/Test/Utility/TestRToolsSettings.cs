@@ -118,5 +118,7 @@ namespace Microsoft.R.Support.Test.Utility {
             get { return 1252; }
             set { }
         }
+
+        public bool EvaluateActiveBindings { get; set; } = false;
     }
 }

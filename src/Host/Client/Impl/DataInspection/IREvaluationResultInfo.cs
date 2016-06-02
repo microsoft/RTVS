@@ -58,10 +58,11 @@ namespace Microsoft.R.DataInspection {
             this IREvaluationResultInfo info,
             REvaluationResultProperties properties,
             string repr,
+            bool evaluateActiveBindings,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) =>
-            info.Session.DescribeChildrenAsync(info.EnvironmentExpression, info.Expression, properties, repr, maxCount, cancellationToken);
+            info.Session.DescribeChildrenAsync(info.EnvironmentExpression, info.Expression, properties, repr, evaluateActiveBindings, maxCount, cancellationToken);
 
         /// <summary>
         /// If this evaluation result corresponds to an expression that is a valid assignment target (i.e. valid on the

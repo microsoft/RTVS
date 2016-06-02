@@ -743,4 +743,10 @@ Additional information:
   <data name="Prompt_MsRClientJustInstalled" xml:space="preserve">
     <value>Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?</value>
   </data>
+  <data name="Settings_EvaluateActiveBindings" xml:space="preserve">
+    <value>Evalaute active bindings.</value>
+  </data>
+  <data name="Settings_EvaluateActiveBindings_Description" xml:space="preserve">
+    <value>Show result of active binding evaluation in Variable Explorer and debugger tool windows. </value>
+  </data>
 </root>

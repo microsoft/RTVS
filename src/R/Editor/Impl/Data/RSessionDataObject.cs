@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Editor.Data {
@@ -63,12 +64,33 @@ namespace Microsoft.R.Editor.Data {
                 Value = promiseInfo.Code;
                 Class = TypeName = "<promise>";
             } else if (DebugEvaluation is IRActiveBindingInfo) {
-                const string ActiveBindingValue = "<active binding>";
+                const string ActiveBindingText = "<active binding>";
                 var activeBinding = (IRActiveBindingInfo)DebugEvaluation;
+                var activeBindingValue = activeBinding.Value;
 
-                Value = ActiveBindingValue;
-                TypeName = ActiveBindingValue;
-                Class = ActiveBindingValue;
+                if(activeBindingValue != null) {
+                    Value = GetValue(activeBindingValue)?.Trim();
+                    TypeName = activeBindingValue.TypeName;
+
+                    if (activeBindingValue.Classes != null) {
+                        var escaped = activeBindingValue.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                        Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+                    }
+
+                    HasChildren = activeBindingValue.HasChildren;
+
+                    if (activeBindingValue.Dim != null) {
+                        Dimensions = activeBindingValue.Dim;
+                    } else if (activeBindingValue.Length.HasValue) {
+                        Dimensions = new List<int>() { activeBindingValue.Length.Value, 1 };
+                    } else {
+                        Dimensions = new List<int>();
+                    }
+                } else {
+                    Value = ActiveBindingText;
+                    TypeName = ActiveBindingText;
+                    Class = ActiveBindingText;
+                }
             }
 
             if (Dimensions == null) Dimensions = new List<int>();
@@ -116,7 +138,7 @@ namespace Microsoft.R.Editor.Data {
                     AttributeCountProperty |
                     DimProperty |
                     FlagsProperty;
-                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
+                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), RToolsSettings.Current.EvaluateActiveBindings, MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
 

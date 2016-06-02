@@ -117,15 +117,17 @@ namespace Microsoft.R.DataInspection {
         /// evaluation objects describing each child.
         /// See <see cref="RSessionExtensions.TryEvaluateAndDescribeAsync"/> for the meaning of other parameters.
         /// </summary>
+        /// <param name="evaluateActiveBindings">Passes a flag to R to evalaute bindings based on RTools Settings.</param>
         /// <param name="maxCount">If not <see langword="null"/>, return at most that many children.</param>
         /// <remarks>
         /// <para>
         /// The resulting collection has an item for every child. If the child could be retrieved, and represents
         /// a value, the corresponding item is an <see cref="IRValueInfo"/> instance. If the child represents
         /// a promise, the promise is not forced, and the item is an <see cref="IRPromiseInfo"/> instance. If the
-        /// child represents an active binding, the binding is not evaluated to retrieve the value, and the item is
-        /// an <see cref="IRActiveBindingInfo"/> instance. If the child could not be retrieved, the item is an
-        /// <see cref="IRErrorInfo"/> instance describing the error that prevented its retrieval.
+        /// child represents an active binding, the binding may be evaluated to retrieve the value, and the item is
+        /// an <see cref="IRActiveBindingInfo"/> instance (see <paramref name="evaluateActiveBindings"/>.) If the child 
+        /// could not be retrieved, the item is an <see cref="IRErrorInfo"/> instance describing the error that 
+        /// prevented its retrieval.
         /// </para>
         /// <para>
         /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
@@ -144,12 +146,14 @@ namespace Microsoft.R.DataInspection {
             string expression,
             REvaluationResultProperties properties,
             string repr,
+            bool evaluateActiveBindings,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            var call = Invariant($"rtvs:::describe_children({expression.ToRStringLiteral()}, {environmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
+            string evalActiveBindings = (evaluateActiveBindings ? "TRUE" : "FALSE");
+            var call = Invariant($"rtvs:::describe_children({expression.ToRStringLiteral()}, {environmentExpression}, {properties.ToRVector()}, {maxCount}, {repr}, evaluateActiveBindings = {evalActiveBindings})");
             var jChildren = await session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),

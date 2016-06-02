@@ -1218,6 +1218,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Evalaute active bindings..
+        /// </summary>
+        public static string Settings_EvaluateActiveBindings {
+            get {
+                return ResourceManager.GetString("Settings_EvaluateActiveBindings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show result of active binding evaluation in Variable Explorer and debugger tool windows. .
+        /// </summary>
+        public static string Settings_EvaluateActiveBindings_Description {
+            get {
+                return ResourceManager.GetString("Settings_EvaluateActiveBindings_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format on paste.
         /// </summary>
         public static string Settings_FormatOnPaste {

@@ -6,5 +6,9 @@ namespace Microsoft.R.DataInspection {
     /// Describes the result of evaluating an expression that references an active binding. 
     /// </summary>
     public interface IRActiveBindingInfo : IREvaluationResultInfo {
+        /// <summary>
+        /// Value of the active binding after evaluation.
+        /// </summary>
+        IRValueInfo Value { get; }
     }
 }
