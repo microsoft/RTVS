@@ -46,6 +46,7 @@
     <Compile Include="Product.wxs" />
     <Content Include="Assemblies.wxi" />
     <Content Include="Associations.wxi" />
+    <Content Include="SqlTemplates.wxi" />
     <Content Include="project.json" />
     <Content Include="SurveyNews.wxi" />
     <Content Include="Snippets.wxi" />

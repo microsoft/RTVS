@@ -89,6 +89,18 @@
               <Directory Id="CommonIdeFolder" Name="IDE">
                 <Directory Id="ExtensionsFolder" Name="Extensions">
                   <Directory Id="MicrosoftFolder" Name="Microsoft">
+                    
+                    <Directory Id="SqlFolder" Name="SQLDB">
+                      <Directory Id="SqlExtensionsFolder" Name="Extensions">
+                        <Directory Id="SqlServerFolder" Name="SqlServer">
+                          <Directory Id="SqlItemTemplatesFolder" Name="ItemTemplates">
+                            <Directory Id="SqlRTemplatesFolder" Name="SQL R" />
+                          </Directory>
+                          <Directory Id="SqlItemsFolder" Name="Items" />
+                        </Directory>
+                      </Directory>
+                    </Directory>
+                    
                     <Directory Id="INSTALLFOLDER" Name="R Tools for Visual Studio">
 
                       <?ifdef LabBuild?>
@@ -155,6 +167,7 @@
                     <?endforeach?>-->
                   </Directory>
                 </Directory>
+
                 <Directory Id="ProfilesFolder" Name="Profiles" />
               </Directory>
             </Directory>
@@ -175,7 +188,6 @@
       </Directory>
 
     </Directory>
-
   </Fragment>
 
   <Fragment>
@@ -184,6 +196,7 @@
     <?include CpsRules.wxi ?>
     <?include ItemTemplates.wxi ?>
     <?include ProjectTemplates.wxi ?>
+    <?include SqlTemplates.wxi ?>
     <?include Profiles.wxi ?>
     <?include SurveyNews.wxi ?>
     <?include Themes.wxi ?>
