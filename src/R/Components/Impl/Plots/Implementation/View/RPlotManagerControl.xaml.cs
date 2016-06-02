@@ -28,7 +28,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
             int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
 
-            Model.ResizePlotAfterDelay(pixelWidth, pixelHeight, resolution);
+            Model?.ResizePlotAfterDelay(pixelWidth, pixelHeight, resolution);
         }
 
         private void Image_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -36,7 +36,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             var pos = e.GetPosition(image);
             var pixelSize = WpfUnitsConversion.ToPixels(image as Visual, pos);
 
-            Model.ClickPlot((int)pixelSize.X, (int)pixelSize.Y);
+            Model?.ClickPlot((int)pixelSize.X, (int)pixelSize.Y);
         }
     }
 }
