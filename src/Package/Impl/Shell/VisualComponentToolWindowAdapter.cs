@@ -6,6 +6,7 @@ using System.Windows;
 using Microsoft.R.Components.View;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.R.Components.Extensions;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     public class VisualComponentToolWindowAdapter<T> : IVisualComponentContainer<T> where T : IVisualComponent {
@@ -40,18 +41,16 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string StatusText
         {
             get {
+                VsAppShell.Current.AssertIsOnMainThread();
                 string text = string.Empty;
-                VsAppShell.Current.DispatchOnUIThread(() => {
-                    var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-                    ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
-                });
+                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                ErrorHandler.ThrowOnFailure(statusBar.GetText(out text));
                 return text;
             }
             set {
-                VsAppShell.Current.DispatchOnUIThread(() => {
-                    var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
-                    statusBar.SetText(value);
-                });
+                VsAppShell.Current.AssertIsOnMainThread();
+                var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
+                statusBar.SetText(value);
             }
         }
 
