@@ -7,8 +7,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Test.StubFactories;
-using Microsoft.R.Actions.Logging;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -16,8 +16,7 @@ using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO
-{
+namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
     public partial class MsBuildFileSystemWatcherTest
     {
         private const string ProjectDirectory = @"Z:\abc\";

@@ -3,7 +3,7 @@
 
 using System.Diagnostics;
 using System.Text;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {

@@ -4,7 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Shell;

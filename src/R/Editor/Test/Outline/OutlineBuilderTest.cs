@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -19,10 +20,10 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class ROutlineBuilderTest {
+    public class ROutlineBuilderTest01 {
         private readonly EditorTestFilesFixture _testFiles;
 
-        public ROutlineBuilderTest(EditorTestFilesFixture testFiles) {
+        public ROutlineBuilderTest01(EditorTestFilesFixture testFiles) {
             _testFiles = testFiles;
         }
 
@@ -94,44 +95,51 @@ namespace Microsoft.R.Editor.Test.Outline {
             Action a = () => OutlineTest.OutlineFile(_testFiles, name);
             a.ShouldNotThrow();
         }
+    }
 
-        [Test(ThreadType.UI)]
+    [ExcludeFromCodeCoverage]
+    [Category.R.Outlining]
+    [Collection(CollectionNames.NonParallel)]
+    public class ROutlineBuilderTest02 {
+        [Test]
         public void Sections() {
             string content =
 @"# NAME1 -----
 x <- 1
 # NAME2 -----
 ";
-
-            TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            EditorTree tree = new EditorTree(textBuffer);
-            tree.Build();
-            EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
-
-            var ob = new ROutlineRegionBuilder(editorDocument);
-            var rc1 = new OutlineRegionCollection(0);
-            ob.BuildRegions(rc1);
-
-            rc1.Should().HaveCount(2);
-            rc1[0].DisplayText.Should().Be("# NAME1");
-            rc1[1].DisplayText.Should().Be("# NAME2");
-
+            TextBufferMock textBuffer = null;
             int calls = 0;
             OutlineRegionsChangedEventArgs args = null;
-            ob.RegionsChanged += (s, e) => {
-                calls++;
-                args = e;
-            };
 
-            textBuffer.Insert(2, "A");
-            editorDocument.EditorTree.EnsureTreeReady();
-            EditorShell.Current.DoIdle();
+            UIThreadHelper.Instance.Invoke(() => {
+                textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+                var tree = new EditorTree(textBuffer);
+                tree.Build();
+                var editorDocument = new EditorDocumentMock(tree);
 
-            // Wait for background/idle tasks to complete
-            var start = DateTime.Now;
-            while(calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                EditorShell.Current.DoIdle();
-            }
+                var ob = new ROutlineRegionBuilder(editorDocument);
+                var rc1 = new OutlineRegionCollection(0);
+                ob.BuildRegions(rc1);
+
+                rc1.Should().HaveCount(2);
+                rc1[0].DisplayText.Should().Be("# NAME1");
+                rc1[1].DisplayText.Should().Be("# NAME2");
+
+                ob.RegionsChanged += (s, e) => {
+                    calls++;
+                    args = e;
+                };
+
+                textBuffer.Insert(2, "A");
+                editorDocument.EditorTree.EnsureTreeReady();
+
+                // Wait for background/idle tasks to complete
+                var start = DateTime.Now;
+                while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                    EditorShell.Current.DoIdle();
+                }
+            });
 
             calls.Should().Be(1);
             args.Should().NotBeNull();

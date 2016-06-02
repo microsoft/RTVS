@@ -61,24 +61,6 @@ namespace SetupCustomActions {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Data Scientist profile provides window layout and keyboard shortcuts similar to RStudio. Would you like setup to apply this profile to the Visual Studio?.
-        /// </summary>
-        internal static string DSProfilePromptText {
-            get {
-                return ResourceManager.GetString("DSProfilePromptText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Setup was unable to locate the R language engine. Would you like setup to open a Web page where you can download and install Microsoft R Open?.
-        /// </summary>
-        internal static string MicrosoftROpenQuestion {
-            get {
-                return ResourceManager.GetString("MicrosoftROpenQuestion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
         internal static string No {

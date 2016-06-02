@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 
 namespace Microsoft.VisualStudio.R.Package.Logging {
     public sealed class PackagesInstallLog : LinesLog {

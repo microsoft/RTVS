@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Logging;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;

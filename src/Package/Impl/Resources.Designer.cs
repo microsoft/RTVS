@@ -259,6 +259,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloading Microsoft R Client setup application....
+        /// </summary>
+        public static string DownloadingRClientInstaller {
+            get {
+                return ResourceManager.GetString("DownloadingRClientInstaller", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to R Language Editor.
         /// </summary>
         public static string EditorName {
@@ -386,11 +395,20 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to detect the location of the R interpreter.  If you have installed R, please specify the path in Tools | Options | R Tools. If R is not installed, please install one from CRAN or install Microsoft R Open from http://mran.revolutionanalytics.com/open.{0}Pressing OK will take you to the download page for Microsoft R Open. You should close Visual Studio before you start installing R..
+        ///   Looks up a localized string similar to Unable to download Microsoft R Client. Exception {0}..
         /// </summary>
-        public static string Error_UnableToFindR {
+        public static string Error_UnableToDownloadRClient {
             get {
-                return ResourceManager.GetString("Error_UnableToFindR", resourceCulture);
+                return ResourceManager.GetString("Error_UnableToDownloadRClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timeout downloading Microsoft R Client installer executable..
+        /// </summary>
+        public static string Error_UnableToDownloadRClient_Timeout {
+            get {
+                return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
             }
         }
         
@@ -400,15 +418,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnknownMirror {
             get {
                 return ResourceManager.GetString("Error_UnknownMirror", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}..
-        /// </summary>
-        public static string Error_UnsupportedRVersion {
-            get {
-                return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
         
@@ -720,6 +729,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client is already installed..
+        /// </summary>
+        public static string Message_RClientIsAlreadyInstalled {
+            get {
+                return ResourceManager.GetString("Message_RClientIsAlreadyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Current R engine is already set to the Microsoft R Client..
+        /// </summary>
+        public static string Message_RClientIsAlreadySet {
+            get {
+                return ResourceManager.GetString("Message_RClientIsAlreadySet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting R Session....
         /// </summary>
         public static string MicrosoftRHostStarting {
@@ -837,6 +864,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client setup is about to start. Please close Visual Studio now and reopen it when setup is complete..
+        /// </summary>
+        public static string PleaseRestartVisualStudioAfterRClientSetup {
+            get {
+                return ResourceManager.GetString("PleaseRestartVisualStudioAfterRClientSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Error copying plot to the clipboard.
         ///{0}.
         /// </summary>
@@ -908,6 +944,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string PlotWindowStatusLocatorActive {
             get {
                 return ResourceManager.GetString("PlotWindowStatusLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft R Client is not installed. Click Yes if you would you like to start installation of the Microsoft R Client now. Please close Visual Studio when the setup application starts and reopen it when Microsoft R Client installation is complete..
+        /// </summary>
+        public static string Prompt_RClientNotInstalled {
+            get {
+                return ResourceManager.GetString("Prompt_RClientNotInstalled", resourceCulture);
             }
         }
         

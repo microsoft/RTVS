@@ -8,14 +8,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.Logging;
+using Microsoft.Common.Core.Test.StubFactories;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using NSubstitute;
-using Xunit;
-using Microsoft.Common.Core.Test.StubFactories;
-using Microsoft.R.Actions.Logging;
 using NSubstitute.ExceptionExtensions;
+using Xunit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
     public partial class MsBuildFileSystemWatcherTest {

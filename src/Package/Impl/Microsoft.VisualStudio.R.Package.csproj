@@ -61,6 +61,7 @@
     </Compile>
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
+    <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
     <Compile Include="DataInspect\Commands\DeleteAllVariablesCommand.cs" />
     <Compile Include="DataInspect\Commands\SessionCommand.cs" />
     <Compile Include="DataInspect\DataImport\EnterUrl.xaml.cs">
@@ -134,6 +135,7 @@
     <Compile Include="Documentation\OpenDocumentationCommand.cs" />
     <Compile Include="Expansions\SnippetInformationSourceProvider.cs" />
     <Compile Include="Feedback\ReportIssueCommand.cs" />
+    <Compile Include="Commands\R\InstallRClientCommand.cs" />
     <Compile Include="Feedback\SendMailFallbackWindow.xaml.cs">
       <DependentUpon>SendMailFallbackWindow.xaml</DependentUpon>
     </Compile>
@@ -228,6 +230,7 @@
     <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.Designer.cs">
       <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Rules\Run.cs" />
@@ -972,10 +975,6 @@
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
       <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
       <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\R\Actions\Impl\Microsoft.R.Actions.csproj">
-      <Project>{b68d4ad2-2dc2-473e-ab06-408172c4fb92}</Project>
-      <Name>Microsoft.R.Actions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>

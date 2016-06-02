@@ -4,7 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using Microsoft.Common.Core;
-using Microsoft.R.Actions.Logging;
+using Microsoft.Common.Core.Logging;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.SurveyNews;

@@ -45,6 +45,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new GoToOptionsCommand(),
                 new GoToEditorOptionsCommand(),
                 new ImportRSettingsCommand(),
+                new InstallRClientCommand(appShell),
+                new SwitchToRClientCommand(appShell),
                 new SurveyNewsCommand(),
 
                 new ReportIssueCommand(),

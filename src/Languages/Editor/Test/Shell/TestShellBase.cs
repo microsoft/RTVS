@@ -28,10 +28,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
         public void DoIdle() {
-            UIThreadHelper.Instance.Invoke(() => {
-                Idle?.Invoke(null, EventArgs.Empty);
-                DoEvents();
-            });
+            Idle?.Invoke(null, EventArgs.Empty);
+            DoEvents();
         }
 
         public void DispatchOnUIThread(Action action) {
