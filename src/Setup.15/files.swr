@@ -20,6 +20,7 @@ folder InstallFolder:$(MsExtensionsFolder)\R Tools for Visual Studio
     file source=$(BinPath)\Microsoft.R.Components.dll
     file source=$(BinPath)\Microsoft.R.Debugger.dll
     file source=$(BinPath)\Microsoft.R.Editor.dll
+    file source=$(BinPath)\Microsoft.R.Host.exe
     file source=$(BinPath)\Microsoft.R.Host.Client.dll
     file source=$(BinPath)\Microsoft.R.Support.dll
     file source=$(BinPath)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll
