@@ -74,7 +74,6 @@
   </Target>
 
   <Target Name="Build">
-    <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Build" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
@@ -85,7 +84,6 @@
   </Target>
 
   <Target Name="Rebuild">
-    <Error Text="DevEnvDir property should be specified" Condition="'$(DevEnvDir)' == ''" />
     <Message Text="SolutionProperties: $(SolutionProperties)" Importance="high" />
     <Message Text="SetupProperties: $(SetupProperties)" Importance="high" />
     <MSBuild Targets="Rebuild" Projects="$(Solution)" Properties="$(SolutionProperties)" BuildInParallel="true" />
