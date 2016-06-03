@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IThreadHandling;
 #endif
 #if VS15
+using Microsoft.VisualStudio.ProjectSystem.VS;
 using IThreadHandling = Microsoft.VisualStudio.ProjectSystem.IProjectThreadingService;
 #endif
 
