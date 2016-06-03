@@ -19,6 +19,8 @@
     <ComponentRef Id="ProductAssembliesDebugData" />
     <?endif?>
     <ComponentRef Id="FileNewTemplates" />
+    <ComponentRef Id="SqlRItemTemplates" />
+    <ComponentRef Id="SqlRItems" />
 
     <ComponentRef Id="Profiles" />
     <ComponentRef Id="SurveyNews" />
