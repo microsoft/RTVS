@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -12,7 +11,6 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -20,10 +18,10 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class ROutlineBuilderTest01 {
+    public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
 
-        public ROutlineBuilderTest01(EditorTestFilesFixture testFiles) {
+        public ROutlineBuilderTest(EditorTestFilesFixture testFiles) {
             _testFiles = testFiles;
         }
 
@@ -95,13 +93,8 @@ namespace Microsoft.R.Editor.Test.Outline {
             Action a = () => OutlineTest.OutlineFile(_testFiles, name);
             a.ShouldNotThrow();
         }
-    }
 
-    [ExcludeFromCodeCoverage]
-    [Category.R.Outlining]
-    [Collection(CollectionNames.NonParallel)]
-    public class ROutlineBuilderTest02 {
-        [Test(ThreadType = ThreadType.UI)]
+        [Test]
         public void Sections() {
             string content =
 @"# NAME1 -----
