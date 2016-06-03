@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
@@ -20,7 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     public sealed class ExpansionClient : IVsExpansionClient {
         private static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
         private static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
-        private const string _replContentTypeName = "Interactive Content";
 
         private IVsExpansionManager _expansionManager;
         private IVsExpansionSession _expansionSession;
@@ -249,7 +249,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         private ITextBuffer GetTargetBuffer() {
-            if (IsRepl) {
+            if (TextView.IsRepl()) {
                 var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
                 return document?.TextBuffer;
             }
@@ -258,7 +258,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         private Span? SpanFromViewSpan(Span span) {
             var textBuffer = GetTargetBuffer();
-            if (IsRepl) {
+            if (TextView.IsRepl()) {
                 // Map it down to R buffer
                 var start = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.Start));
                 var end = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.End));
@@ -276,7 +276,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         /// </summary>
         private TextSpan? TextSpanFromViewSpan(Span span) {
             var textBuffer = GetTargetBuffer();
-            if (IsRepl) {
+            if (TextView.IsRepl()) {
                 // Map it down to R buffer
                 var start = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.Start));
                 var end = TextView.MapDownToR(new SnapshotPoint(TextView.TextBuffer.CurrentSnapshot, span.End));
@@ -287,7 +287,5 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             }
             return TextSpanFromSpan(textBuffer, span);
         }
-
-        private bool IsRepl => TextView.TextBuffer.ContentType.TypeName.EqualsIgnoreCase(_replContentTypeName);
     }
 }
