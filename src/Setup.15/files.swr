@@ -1,7 +1,7 @@
 use vs
 
 package name=RTVS
-        version=$(Version)
+        version=$(BuildVersion)
         vs.package.chip=x64
         vs.package.language=neutral
         lcid=1033
@@ -28,6 +28,15 @@ folder InstallFolder:$(MsExtensionsFolder)\R Tools for Visual Studio
     file source=$(BinPath)\Newtonsoft.Json.dll
     file source=$(BinPath)\websocket-sharp.dll
     file source=$(BinPath)\Images\RFile.ico
+
+folder MSBuildFolder:\MSBuild\Microsoft\VisualStudio\$(VsVersion)\RTVS\Rules
+    file source=$(BinPath)Rules\Content.xaml
+    file source=$(BinPath)Rules\Folder.xaml
+    file source=$(BinPath)Rules\General.BrowseObject.xaml
+    file source=$(BinPath)Rules\None.xaml
+    file source=$(BinPath)Rules\ProjectItemsSchema.xaml
+    file source=$(BinPath)Rules\Scc.xaml
+    file source=$(BinPath)Rules\rtvs.rules.props
 
 folder NewItemTemplatesFolder:$(InstallFolder)\Templates\NewItem
     file source=$(BinPath)\Templates\NewItem\markdown.rmd
