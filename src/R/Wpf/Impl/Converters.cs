@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.Common.Wpf;
 
 namespace Microsoft.R.Wpf {
@@ -25,6 +26,7 @@ namespace Microsoft.R.Wpf {
         public static IValueConverter NullIsCollapsed { get; } = LambdaConverter.Create<object>(x => x == null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullIsVisible { get; } = LambdaConverter.Create<object>(x => x != null ? Visibility.Collapsed : Visibility.Visible);
         public static IValueConverter NullOrEmptyIsCollapsed { get; } = LambdaConverter.Create<IEnumerable>(x => x == null || !x.GetEnumerator().MoveNext() ? Visibility.Collapsed : Visibility.Visible);
+        public static IValueConverter TrueIsCrossCursor { get; } = LambdaConverter.Create<bool>(x => x ? Cursors.Cross : Cursors.Arrow);
 
         public static IMultiValueConverter Any { get; } = LambdaConverter.CreateMulti<bool>(x => x.Any());
         public static IMultiValueConverter AnyIsNotHidden { get; } = LambdaConverter.CreateMulti<bool>(args => args.Any(x => x) ? Visibility.Visible : Visibility.Hidden);

@@ -8,6 +8,8 @@ using Microsoft.R.Components.View;
 namespace Microsoft.R.Components.Test.Stubs.VisualComponents {
     public class VisualComponentContainerStub<T> : IVisualComponentContainer<T> where T : IVisualComponent {
         public T Component { get; set; }
+        public string CaptionText { get; set; }
+        public string StatusText { get; set; }
         public bool IsOnScreen { get; set; }
         public void Show(bool focus) {
             IsOnScreen = IsOnScreen | focus;

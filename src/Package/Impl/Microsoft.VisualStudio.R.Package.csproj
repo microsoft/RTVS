@@ -199,10 +199,11 @@
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="Packages\R\RProjLanguageService.cs" />
     <Compile Include="Packages\R\RProjEditorFactory.cs" />
+    <Compile Include="Plots\PlotManagerWindowPane.cs" />
+    <Compile Include="Plots\VsRPlotManagerVisualComponent.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
-    <Compile Include="Plots\Commands\EndLocatorCommand.cs" />
     <Compile Include="ProjectSystem\ConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\IConfiguredRProjectExportProvider.cs" />
@@ -253,16 +254,6 @@
     <Compile Include="Packages\Definitions\IRPackage.cs" />
     <Compile Include="Packages\Attributes\ProvideNewFileTemplatesAttribute.cs" />
     <Compile Include="Packages\R\RPackageToolWindowProvider.cs" />
-    <Compile Include="Plots\Commands\CopyPlotAsMetafileCommand.cs" />
-    <Compile Include="Plots\Commands\ExportPlotAsPdfCommand.cs" />
-    <Compile Include="Plots\Commands\RemovePlotCommand.cs" />
-    <Compile Include="Plots\Commands\ClearPlotsCommand.cs" />
-    <Compile Include="Plots\Commands\HistoryNextPlotCommand.cs" />
-    <Compile Include="Plots\Commands\HistoryPreviousPlotCommand.cs" />
-    <Compile Include="Plots\Commands\PlotWindowCommand.cs" />
-    <Compile Include="Plots\PlotContentProvider.cs" />
-    <Compile Include="Plots\PlotHistory.cs" />
-    <Compile Include="Plots\PlotHistoryProvider.cs" />
     <Compile Include="ProjectSystem\Commands\AddItemCommand.cs" />
     <Compile Include="ProjectSystem\Commands\AddRMarkdownCommand.cs" />
     <Compile Include="ProjectSystem\Commands\CommandPromptCommand.cs" />
@@ -315,7 +306,6 @@
     <Compile Include="Commands\ShowContextMenuCommand.cs" />
     <Compile Include="Commands\R\VsRCommandFactory.cs" />
     <Compile Include="Commands\R\VsRTextViewConnectionListener.cs" />
-    <Compile Include="Plots\PlotWindowPane.cs" />
     <Compile Include="DataInspect\VariableNode.cs" />
     <Compile Include="DataInspect\VariableView.xaml.cs">
       <DependentUpon>VariableView.xaml</DependentUpon>
@@ -328,8 +318,6 @@
     <Compile Include="Editors\IObjectInstanceFactory.cs" />
     <Compile Include="Logging\OutputWindowLog.cs" />
     <Compile Include="Packages\R\PackageCommands.cs" />
-    <Compile Include="Plots\Commands\ExportPlotAsImageCommand.cs" />
-    <Compile Include="Plots\Commands\CopyPlotAsBitmapCommand.cs" />
     <Compile Include="Plots\Commands\ShowPlotWindowsCommand.cs" />
     <Compile Include="Publishing\Definitions\IMarkdownFlavorPublishHandler.cs" />
     <Compile Include="Publishing\Handlers\RmdPublishHandler.cs" />
@@ -347,9 +335,6 @@
     <Compile Include="Packages\Attributes\ProvideDebugPortSupplierAttribute.cs" />
     <Compile Include="Packages\Attributes\ShowBraceCompletionAttribute.cs" />
     <Compile Include="DataInspect\VariableWindowPane.cs" />
-    <Compile Include="Plots\XamlPresenter.xaml.cs">
-      <DependentUpon>XamlPresenter.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
@@ -1230,10 +1215,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Plots\XamlPresenter.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="DataInspect\VariableView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1262,9 +1243,7 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Plots\Definitions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\Common\BuildTasks\Microsoft.Common.BuildTasks.targets" />
   <Target Name="AddToVsixSources" AfterTargets="GetVsixSourceItems">

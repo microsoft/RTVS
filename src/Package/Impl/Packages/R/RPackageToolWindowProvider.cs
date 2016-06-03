@@ -8,11 +8,13 @@ using Microsoft.R.Components.Help;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Help;
 using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.PackageManager;
+using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.R.Packages.R {
@@ -28,6 +30,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private Lazy<IRPackageManagerVisualComponentContainerFactory> PackageManagerComponentContainerFactory { get; set; }
         [Import]
         private Lazy<IHelpVisualComponentContainerFactory> HelpVisualComponentContainerFactory { get; set; }
+        [Import]
+        private Lazy<IRPlotManagerVisualComponentContainerFactory> PlotManagerVisualComponentContainerFactory { get; set; }
 
         public bool TryCreateToolWindow(Guid toolWindowType, int id) {
             if (toolWindowType == RGuidList.ReplInteractiveWindowProviderGuid) {
@@ -42,6 +46,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             if (toolWindowType == PackageManagerWindowPane.WindowGuid) {
                 CreatePackageManagerToolWindow(id);
+                return true;
+            }
+
+            if (toolWindowType == PlotManagerWindowPane.WindowGuid) {
+                CreatePlotToolWindow(id);
                 return true;
             }
 
@@ -70,6 +79,10 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 return CreatePackageManagerToolWindow(id).Container;
             }
 
+            if (toolWindowType == PlotManagerWindowPane.WindowGuid) {
+                return CreatePlotToolWindow(id).Container;
+            }
+
             if (toolWindowType == HelpWindowPane.WindowGuid) {
                 return CreateHelpToolWindow(id).Container;
             }
@@ -90,6 +103,11 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private IRPackageManagerVisualComponent CreatePackageManagerToolWindow(int id) {
             var workflow = WorkflowProvider.Value.GetOrCreate();
             return workflow.Packages.GetOrCreateVisualComponent(PackageManagerComponentContainerFactory.Value, id);
+        }
+
+        private IRPlotManagerVisualComponent CreatePlotToolWindow(int id) {
+            var workflow = WorkflowProvider.Value.GetOrCreate();
+            return workflow.Plots.GetOrCreateVisualComponent(PlotManagerVisualComponentContainerFactory.Value, id);
         }
 
         private IHelpVisualComponent CreateHelpToolWindow(int id) {

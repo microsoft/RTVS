@@ -32,9 +32,20 @@ namespace Microsoft.R.Host.Client {
         /// Displays error message
         /// </summary>
         Task ShowMessage(string s, CancellationToken ct);
+
         Task Busy(bool which, CancellationToken ct);
-        Task Plot(string filePath, CancellationToken ct);
+
+        /// <summary>
+        /// Graphics device sends new plot information.
+        /// </summary>
+        Task Plot(PlotMessage plot, CancellationToken ct);
+
+        /// <summary>
+        /// Set locator mode in the plot window.
+        /// </summary>
+        /// <returns>Location where the user clicked.</returns>
         Task<LocatorResult> Locator(CancellationToken ct);
+
         /// <summary>
         /// Asks VS to open specified URL in the help window browser
         /// </summary>

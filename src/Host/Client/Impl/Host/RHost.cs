@@ -417,7 +417,12 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "Plot":
-                                await _callbacks.Plot(message.GetString(0, "xaml_file_path"), ct);
+                                await _callbacks.Plot(
+                                    new PlotMessage(
+                                        message.GetString(0, "xaml_file_path"),
+                                        message.GetInt32(1, "active_plot_index"),
+                                        message.GetInt32(2, "plot_count")),
+                                    ct);
                                 break;
 
                             case "Locator":

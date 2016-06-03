@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,11 +9,11 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
@@ -56,20 +57,26 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        public async Task Plot(string filePath, CancellationToken ct) {
+        public async Task Plot(PlotMessage plot, CancellationToken ct) {
+            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotManagerVisualComponentContainerFactory>();
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
             await _coreShell.SwitchToMainThreadAsync();
-            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
-            var history = historyProvider.GetPlotHistory(_session);
-            history.PlotContentProvider.LoadFile(filePath);
+            workflow.Plots.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(false);
+
+            await workflow.Plots.LoadPlotAsync(plot);
         }
 
         public async Task<LocatorResult> Locator(CancellationToken ct) {
-            var historyProvider = _coreShell.ExportProvider.GetExportedValue<IPlotHistoryProvider>();
-            var history = historyProvider.GetPlotHistory(_session);
-            if (history.PlotContentProvider.Locator != null) {
-                return await history.PlotContentProvider.Locator.StartLocatorModeAsync(ct);
-            }
-            return LocatorResult.CreateNotClicked();
+            var containerFactory = _coreShell.ExportProvider.GetExportedValue<IRPlotManagerVisualComponentContainerFactory>();
+            var provider = _coreShell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
+            var workflow = provider.GetOrCreate();
+
+            await _coreShell.SwitchToMainThreadAsync();
+            workflow.Plots.GetOrCreateVisualComponent(containerFactory, 0).Container.Show(false);
+
+            return await workflow.Plots.StartLocatorModeAsync(ct);
         }
 
         public Task<string> ReadUserInput(string prompt, int maximumLength, CancellationToken ct) {

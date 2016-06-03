@@ -72,6 +72,24 @@ namespace Microsoft.Common.Core.Shell {
         string SaveFileIfDirty(string fullPath);
 
         /// <summary>
+        /// Shows the open file dialog.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
+        string ShowOpenFileDialog(string filter, string initialPath = null, string title = null);
+
+        /// <summary>
+        /// Shows the save file dialog.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
+        string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
+
+        /// <summary>
         /// Application telemetry service
         /// </summary>
         ITelemetryService TelemetryService { get; }

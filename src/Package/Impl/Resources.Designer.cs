@@ -232,24 +232,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
-        /// </summary>
-        public static string DeleteAllPlots {
-            get {
-                return ResourceManager.GetString("DeleteAllPlots", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
-        /// </summary>
-        public static string DeletePlot {
-            get {
-                return ResourceManager.GetString("DeletePlot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to remove the selected entries from the history?.
         /// </summary>
         public static string DeleteSelectedHistoryEntries {
@@ -418,24 +400,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnknownMirror {
             get {
                 return ResourceManager.GetString("Error_UnknownMirror", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Export Plot As Image.
-        /// </summary>
-        public static string ExportPlotAsImageDialogTitle {
-            get {
-                return ResourceManager.GetString("ExportPlotAsImageDialogTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Export Plot As PDF.
-        /// </summary>
-        public static string ExportPlotAsPdfDialogTitle {
-            get {
-                return ResourceManager.GetString("ExportPlotAsPdfDialogTitle", resourceCulture);
             }
         }
         
@@ -873,77 +837,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error copying plot to the clipboard.
-        ///{0}.
-        /// </summary>
-        public static string PlotCopyToClipboardError {
-            get {
-                return ResourceManager.GetString("PlotCopyToClipboardError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
-        /// </summary>
-        public static string PlotExportAsImageFilter {
-            get {
-                return ResourceManager.GetString("PlotExportAsImageFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to PDF (*.pdf)|*.pdf|All Files (*.*)|*.*.
-        /// </summary>
-        public static string PlotExportAsPdfFilter {
-            get {
-                return ResourceManager.GetString("PlotExportAsPdfFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File extension &apos;{0}&apos; is not supported.
-        ///
-        ///Supported formats are: jpg/jpeg, png, tif/tiff, bmp..
-        /// </summary>
-        public static string PlotExportUnsupportedImageFormat {
-            get {
-                return ResourceManager.GetString("PlotExportUnsupportedImageFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error loading plot from file &apos;{0}&apos;..
-        /// </summary>
-        public static string PlotLoadError {
-            get {
-                return ResourceManager.GetString("PlotLoadError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to R Plot.
         /// </summary>
         public static string PlotWindowCaption {
             get {
                 return ResourceManager.GetString("PlotWindowCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to R Plot - Locator is Active.
-        /// </summary>
-        public static string PlotWindowCaptionLocatorActive {
-            get {
-                return ResourceManager.GetString("PlotWindowCaptionLocatorActive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Locator is active. Click in the plot window to select points then choose End Locator..
-        /// </summary>
-        public static string PlotWindowStatusLocatorActive {
-            get {
-                return ResourceManager.GetString("PlotWindowStatusLocatorActive", resourceCulture);
             }
         }
         
@@ -1093,15 +991,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SaveHistoryAsTitle {
             get {
                 return ResourceManager.GetString("SaveHistoryAsTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save R Plot File.
-        /// </summary>
-        public static string SavePlotDialogTitle {
-            get {
-                return ResourceManager.GetString("SavePlotDialogTitle", resourceCulture);
             }
         }
         

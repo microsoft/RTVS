@@ -91,8 +91,8 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task Plot(string filePath, CancellationToken ct) {
-            await Console.Error.WriteLineAsync(filePath);
+        public async Task Plot(PlotMessage plot, CancellationToken ct) {
+            await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
         public async Task Browser(string url) {
