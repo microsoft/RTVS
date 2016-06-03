@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Microsoft.Common.Core.Install;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 

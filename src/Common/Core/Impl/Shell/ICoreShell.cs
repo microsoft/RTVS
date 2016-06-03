@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -69,5 +70,10 @@ namespace Microsoft.Common.Core.Shell {
         /// <param name="fullPath">The full path to the document to be saved.</param>
         /// <returns> The path to which the file was saved. This is either the original path or a new path specified by the user.</returns>
         string SaveFileIfDirty(string fullPath);
+
+        /// <summary>
+        /// Application telemetry service
+        /// </summary>
+        ITelemetryService TelemetryService { get; }
     }
 }

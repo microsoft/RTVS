@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -12,6 +11,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {

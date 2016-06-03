@@ -4,8 +4,8 @@
 using Microsoft.Common.Core.OS;
 using Microsoft.Win32;
 
-namespace Microsoft.Common.Core.Test.Install {
-    internal sealed class RegistryMock : IRegistry {
+namespace Microsoft.Common.Core.Test.Registry {
+    public sealed class RegistryMock : IRegistry {
         private readonly RegistryKeyMock[] _keys;
 
         public RegistryMock(RegistryKeyMock[] keys) {

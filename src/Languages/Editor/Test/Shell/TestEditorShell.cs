@@ -7,6 +7,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -54,6 +55,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;
+        public ITelemetryService TelemetryService { get; }
         #endregion
 
         #region IEditorShell

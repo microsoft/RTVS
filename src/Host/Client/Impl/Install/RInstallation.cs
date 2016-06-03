@@ -7,12 +7,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
+using Microsoft.R.Host.Client.Telemetry;
 using Microsoft.Win32;
 
-namespace Microsoft.Common.Core.Install {
+namespace Microsoft.R.Host.Client.Install {
     /// <summary>
     /// Verifies that R is installed in the folder
     /// specified in settings. If nothing is specified
@@ -407,6 +410,7 @@ namespace Microsoft.Common.Core.Install {
 
             if (showErrors) {
                 if (ShowMessage(coreShell, data, svl) == MessageButtons.Yes) {
+                    coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, MrcTelemetryEvents.RClientInstallPrompt);
                     var installer = coreShell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
                     installer.LaunchRClientSetup(coreShell);
                 }

@@ -2,18 +2,22 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
-using Microsoft.Common.Core.Install;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Test.Registry;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.Common.Core.Test.Install {
+namespace Microsoft.R.Host.Client.Test.Install {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class RInstallationTest {
