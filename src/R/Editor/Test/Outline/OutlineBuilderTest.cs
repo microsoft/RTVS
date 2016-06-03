@@ -101,7 +101,7 @@ namespace Microsoft.R.Editor.Test.Outline {
     [Category.R.Outlining]
     [Collection(CollectionNames.NonParallel)]
     public class ROutlineBuilderTest02 {
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         public void Sections() {
             string content =
 @"# NAME1 -----
@@ -112,34 +112,32 @@ x <- 1
             int calls = 0;
             OutlineRegionsChangedEventArgs args = null;
 
-            UIThreadHelper.Instance.Invoke(() => {
-                textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-                var tree = new EditorTree(textBuffer);
-                tree.Build();
-                var editorDocument = new EditorDocumentMock(tree);
+            textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var tree = new EditorTree(textBuffer);
+            tree.Build();
+            var editorDocument = new EditorDocumentMock(tree);
 
-                var ob = new ROutlineRegionBuilder(editorDocument);
-                var rc1 = new OutlineRegionCollection(0);
-                ob.BuildRegions(rc1);
+            var ob = new ROutlineRegionBuilder(editorDocument);
+            var rc1 = new OutlineRegionCollection(0);
+            ob.BuildRegions(rc1);
 
-                rc1.Should().HaveCount(2);
-                rc1[0].DisplayText.Should().Be("# NAME1");
-                rc1[1].DisplayText.Should().Be("# NAME2");
+            rc1.Should().HaveCount(2);
+            rc1[0].DisplayText.Should().Be("# NAME1");
+            rc1[1].DisplayText.Should().Be("# NAME2");
 
-                ob.RegionsChanged += (s, e) => {
-                    calls++;
-                    args = e;
-                };
+            ob.RegionsChanged += (s, e) => {
+                calls++;
+                args = e;
+            };
 
-                textBuffer.Insert(2, "A");
-                editorDocument.EditorTree.EnsureTreeReady();
+            textBuffer.Insert(2, "A");
+            editorDocument.EditorTree.EnsureTreeReady();
 
-                // Wait for background/idle tasks to complete
-                var start = DateTime.Now;
-                while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                    EditorShell.Current.DoIdle();
-                }
-            });
+            // Wait for background/idle tasks to complete
+            var start = DateTime.Now;
+            while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                EditorShell.Current.DoIdle();
+            }
 
             calls.Should().Be(1);
             args.Should().NotBeNull();

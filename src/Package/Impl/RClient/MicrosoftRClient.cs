@@ -38,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
             }
         }
 
-        private static string CheckMicrosoftRClientInstall(ICoreShell coreShell) {
+        internal static string CheckMicrosoftRClientInstall(ICoreShell coreShell) {
             var rClientPath = GetRClientPath();
             if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
                 // Get R Client path

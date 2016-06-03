@@ -88,10 +88,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             var shell = Substitute.For<ICoreShell>();
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
 
-            RInstallation.GetRInstallPath(null, null).Should().Be(rClientRPath);
+            MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
             shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
 
-            RInstallation.GetRInstallPath(null, null).Should().Be(rClientRPath);
+            MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
             shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
         }
 
