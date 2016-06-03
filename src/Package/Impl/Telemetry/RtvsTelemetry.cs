@@ -12,6 +12,7 @@ using Microsoft.Common.Core.Telemetry;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
+using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry.Data;
 using Microsoft.VisualStudio.R.Package.Telemetry.Definitions;
 using Microsoft.VisualStudio.R.Package.Telemetry.Windows;
@@ -34,10 +35,10 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string MROEngine = "MRO Engine";
             public const string RBasePackages = "R Base Package";
             public const string RUserPackages = "R User Package";
-            public const string RClientInstallYes = "Microsoft R Client Install Yes";
-            public const string RClientInstallCancel = "Microsoft R Client Install Cancel";
-            public const string RClientActive = "Microsoft R Client Active";
-            public const string RClientDownloadFailed = "Microsoft R Client Download Failed";
+            public const string RClientInstallYes = "MRC Install Yes";
+            public const string RClientInstallCancel = "MRC Install Canceled";
+            public const string RClientActive = "MRC Active";
+            public const string RClientDownloadFailed = "MRC Download Failed";
         }
 
         internal class SettingEvents {
@@ -69,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
 
-                    string rClientPath = RInstallation.GetRClientPath();
+                    string rClientPath = MicrosoftRClient.GetRClientPath();
                     if (rClientPath != null && rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
                         TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
                     }

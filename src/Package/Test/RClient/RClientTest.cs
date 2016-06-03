@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
@@ -72,6 +73,52 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             telemetryEvents.Should().HaveCount(2);
             telemetryEvents[0].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
             telemetryEvents[1].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);
+        }
+
+        [Test]
+        [Category.R.Install]
+        public void MsRClient() {
+            var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
+            var rClientRPath = @"C:\Program Files\Microsoft\R Client\R_SERVER\";
+            var tr = new RegistryMock(SimulateRegistryMsRClient(rClientInstallPath, rClientRPath));
+            MicrosoftRClient.Registry = tr;
+
+            MicrosoftRClient.GetRClientPath().Should().Be(rClientRPath);
+
+            var shell = Substitute.For<ICoreShell>();
+            shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+
+            RInstallation.GetRInstallPath(null, null).Should().Be(rClientRPath);
+            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+
+            RInstallation.GetRInstallPath(null, null).Should().Be(rClientRPath);
+            shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
+        }
+
+        private RegistryKeyMock[] SimulateRegistryMsRClient(string rClientInstallPath, string rClientRPath) {
+            return new RegistryKeyMock[] {
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\R Client",
+                        subkeys: null,
+                        valueNames: new string[] {"Path"},
+                        values: new string[] {rClientInstallPath}),
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\R Tools\" + Toolset.Version),
+                new RegistryKeyMock(
+                        name: @"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr",
+                        subkeys: null,
+                        valueNames: new string[] {"Path"},
+                        values: new string[] {rClientRPath}),
+                new RegistryKeyMock(
+                       @"SOFTWARE\R-core\R64",
+                        new RegistryKeyMock[] {
+                            new RegistryKeyMock(
+                                name: "3.2.5",
+                                subkeys: null,
+                                valueNames: new string[] {"InstallPath"},
+                                values: new string[] {rClientRPath}),
+                        })
+             };
         }
     }
 }

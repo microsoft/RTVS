@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
@@ -70,11 +69,10 @@ namespace Microsoft.R.Host.Client.Install {
         /// <param name="basePath">Path as specified by the user settings</param>
         /// <returns></returns>
         public static RInstallData GetInstallationData(
-            string basePath, 
-            ISupportedRVersionRange svl,
-            ICoreShell coreShell = null) {
+            string basePath,
+            ISupportedRVersionRange svl) {
 
-            string path = GetRInstallPath(basePath, svl, coreShell);
+            string path = GetRInstallPath(basePath, svl);
 
             // If nothing is found, look into the file system
             if (string.IsNullOrEmpty(path)) {
@@ -149,56 +147,15 @@ namespace Microsoft.R.Host.Client.Install {
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath, ISupportedRVersionRange svl = null, ICoreShell coreShell = null) {
+        public static string GetRInstallPath(string basePath, ISupportedRVersionRange svl = null) {
             svl = svl ?? new SupportedRVersionRange();
-            // First check if Microsoft R Client was just installed.
-            var rClientPath = GetRClientPath();
-            if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
-                // Get R Client path
-                if (MessageButtons.Yes == coreShell.ShowMessage(Resources.Prompt_MsRClientJustInstalled, MessageButtons.YesNo)) {
-                    return GetRClientPath();
-                }
-            }
-
             if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = GetRPathFromMRS();
                 if (string.IsNullOrEmpty(basePath)) {
                     basePath = GetCompatibleEnginePathFromRegistry(svl);
                 }
             }
-
             return basePath;
-        }
-
-        private static bool AskUserSwitchToRClient() {
-            try {
-                using (var hkcu = Registry.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64)) {
-                    using (var key = hkcu.OpenSubKey(rtvsKey + "\\" + Toolset.Version, writable: true)) {
-                        object value = key.GetValue("RClientPrompt");
-                        if (value == null) {
-                            key.SetValue("RClientPrompt", 0);
-                            return true;
-                        }
-                    }
-                }
-            } catch (Exception ex) when (!ex.IsCriticalException()) { }
-
-            return false;
-        }
-
-        public static string GetRClientPath() {
-            try {
-                using (var hkcu = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
-                    using (var key = hkcu.OpenSubKey(rClientKey)) {
-                        string path = (string)key.GetValue("Path");
-                        if (!string.IsNullOrEmpty(path)) {
-                            return Path.Combine(path, rServer + "\\");
-                        }
-                    }
-                }
-            } catch (Exception) { }
-
-            return string.Empty;
         }
 
         private static string GetRPathFromMRS() {
@@ -244,9 +201,9 @@ namespace Microsoft.R.Host.Client.Install {
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder(string basePath, ISupportedRVersionRange svl, ICoreShell coreShell = null) {
+        public static string GetBinariesFolder(string basePath, ISupportedRVersionRange svl) {
             string binFolder = null;
-            string installPath = RInstallation.GetRInstallPath(basePath, svl, coreShell);
+            string installPath = RInstallation.GetRInstallPath(basePath, svl);
 
             if (!String.IsNullOrEmpty(installPath)) {
                 binFolder = Path.Combine(installPath, @"bin\x64");
@@ -383,7 +340,7 @@ namespace Microsoft.R.Host.Client.Install {
                                                                 .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
                 foreach (IFileSystemInfo fsi in directories) {
                     string subFolderName = fsi.FullName.Substring(baseRFolder.Length + 1);
-                    Version v = GetRVersionFromFolderName(subFolderName);                   
+                    Version v = GetRVersionFromFolderName(subFolderName);
                     if (supportedVersions.IsCompatibleVersion(v)) {
                         versions.Add(v);
                     }
@@ -403,7 +360,7 @@ namespace Microsoft.R.Host.Client.Install {
 
         public static bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionRange svl, string path, bool showErrors = true) {
             svl = svl ?? new SupportedRVersionRange();
-            var data = RInstallation.GetInstallationData(path, svl, coreShell);
+            var data = RInstallation.GetInstallationData(path, svl);
             if (data.Status == RInstallStatus.OK) {
                 return true;
             }

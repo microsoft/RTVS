@@ -2,13 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition;
 using System.Net;
 using System.Threading;
 
 namespace Microsoft.Common.Core.Net {
-    [Export(typeof(IFileDownloader))]
-    internal sealed class FileDownloader : IFileDownloader {
+    public sealed class FileDownloader : IFileDownloader {
         public string Download(string url, string dstPath, CancellationToken ct) {
             try {
                 using (var client = new WebClient()) {

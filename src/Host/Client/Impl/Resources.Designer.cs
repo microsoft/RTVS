@@ -104,14 +104,5 @@ namespace Microsoft.R.Host.Client {
                 return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?.
-        /// </summary>
-        internal static string Prompt_MsRClientJustInstalled {
-            get {
-                return ResourceManager.GetString("Prompt_MsRClientJustInstalled", resourceCulture);
-            }
-        }
     }
 }

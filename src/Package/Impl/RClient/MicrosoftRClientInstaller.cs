@@ -3,7 +3,6 @@
 
 using System.ComponentModel;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Microsoft.Common.Core.Logging;
@@ -20,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
     internal sealed class MicrosoftRClientInstaller : IMicrosoftRClientInstaller {
         public void LaunchRClientSetup(ICoreShell coreShell, IFileDownloader downloader = null) {
             coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, RtvsTelemetry.ConfigurationEvents.RClientInstallYes);
-            downloader = downloader ?? coreShell.ExportProvider.GetExportedValue<IFileDownloader>();
+            downloader = downloader ?? new FileDownloader();
 
             string downloadError = null;
             var rClientExe = Path.Combine(Path.GetTempPath(), "RClientSetup.exe");
