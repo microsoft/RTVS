@@ -31,10 +31,6 @@ graphics.ide.previousplot <- function() {
    invisible(external_embedded('ide_graphicsdevice_previous_plot'))
 }
 
-graphics.ide.historyinfo <- function() {
-   external_embedded('ide_graphicsdevice_history_info')
-}
-
 graphics.ide.clearplots <- function() {
    invisible(external_embedded('ide_graphicsdevice_clear_plots'))
 }

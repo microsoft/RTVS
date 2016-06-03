@@ -54,10 +54,20 @@ namespace Microsoft.Common.Core.Test.Fakes {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
+            return OpenFilePath;
+        }
+
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
+            return SaveFilePath;
+        }
+
         public int LocaleId => 1033;
 
         public string LastShownMessage { get; private set; }
         public string LastShownErrorMessage { get; private set; }
         public CommandID LastShownContextMenu { get; private set; }
+        public string OpenFilePath { get; set; }
+        public string SaveFilePath { get; set; }
     }
 }

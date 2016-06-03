@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.Test {
         private const int DefaultExportResolution = 96;
 
         public List<string> PlotFilePaths { get; } = new List<string>();
-        public List<string> OriginalPlotFilePaths { get; } = new List<string>();
+        public List<PlotMessage> OriginalPlotMessages { get; } = new List<PlotMessage>();
 
         public IdeGraphicsDeviceTest(GraphicsDeviceTestFilesFixture files, TestMethodFixture testMethod) {
             _files = files;
@@ -363,16 +363,12 @@ plot(3:4)
 
         [Test]
         [Category.Plots]
-        public async Task HistoryInfo() {
-            var outputFilePath = _files.HistoryInfoResultPath;
-            var code = string.Format(@"
+        public async Task Previous() {
+            var code = @"
 plot(0:10)
 plot(5:15)
 rtvs:::graphics.ide.previousplot()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = (await GraphicsTestAsync(inputs)).ToArray();
@@ -381,112 +377,99 @@ write(info, {0})
             File.ReadAllBytes(actualPlotFilePaths[2]).Should().Equal(File.ReadAllBytes(actualPlotFilePaths[0]));
             File.ReadAllBytes(actualPlotFilePaths[1]).Should().NotEqual(File.ReadAllBytes(actualPlotFilePaths[0]));
 
-            CheckHistoryResult(outputFilePath, expectedActive: 0, expectedCount: 2);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(0);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(2);
         }
+
 
         [Test]
         [Category.Plots]
         public async Task ClearPlots() {
-            var outputFilePath = _files.ClearPlotsResultPath;
-            var code = string.Format(@"
+            var code = @"
 plot(0:10)
 plot(0:15)
 rtvs:::graphics.ide.clearplots()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(2);
 
-            CheckHistoryResult(outputFilePath, expectedActive: -1, expectedCount: 0);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(-1);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(0);
         }
 
         [Test]
         [Category.Plots]
         public async Task RemovePlotFirst() {
-            var outputFilePath = _files.ClearPlotsResultPath;
-            var code = string.Format(@"
+            var code = @"
 plot(0:10)
 plot(0:20)
 plot(0:30)
 rtvs:::graphics.ide.previousplot()
 rtvs:::graphics.ide.previousplot()
 rtvs:::graphics.ide.removeplot()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(6);
 
-            CheckHistoryResult(outputFilePath, expectedActive: 0, expectedCount: 2);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(0);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(2);
         }
 
         [Test]
         [Category.Plots]
         public async Task RemovePlotLast() {
-            var outputFilePath = _files.ClearPlotsResultPath;
-            var code = string.Format(@"
+            var code = @"
 plot(0:10)
 plot(0:20)
 plot(0:30)
 rtvs:::graphics.ide.removeplot()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(4);
 
-            CheckHistoryResult(outputFilePath, expectedActive: 1, expectedCount: 2);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(1);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(2);
         }
 
         [Test]
         [Category.Plots]
         public async Task RemovePlotMiddle() {
-            var outputFilePath = _files.ClearPlotsResultPath;
-            var code = string.Format(@"
+            var code = @"
 plot(0:10)
 plot(0:20)
 plot(0:30)
 rtvs:::graphics.ide.previousplot()
 rtvs:::graphics.ide.removeplot()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(5);
 
-            CheckHistoryResult(outputFilePath, expectedActive: 1, expectedCount: 2);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(1);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(2);
         }
 
         [Test]
         [Category.Plots]
         public async Task RemovePlotSingle() {
-            var outputFilePath = _files.ClearPlotsResultPath;
-            var code = string.Format(@"
+            var code = @"
 plot(0:10)
 rtvs:::graphics.ide.removeplot()
-info <- rtvs:::toJSON(rtvs:::graphics.ide.historyinfo())
-write(info, {0})
-",
-                QuotedRPath(outputFilePath));
+";
 
             var inputs = Interactive(code);
             var actualPlotFilePaths = await GraphicsTestAsync(inputs);
             actualPlotFilePaths.Should().HaveCount(1);
 
-            CheckHistoryResult(outputFilePath, expectedActive: -1, expectedCount: 0);
+            OriginalPlotMessages.Last().ActivePlotIndex.Should().Be(-1);
+            OriginalPlotMessages.Last().PlotCount.Should().Be(0);
         }
 
         [Test]
@@ -540,11 +523,6 @@ write.csv(res, {0})
             actualPlotPaths.Select(f => File.ReadAllBytes(f)).ShouldBeEquivalentTo(expectedPlotPaths.Select(f => File.ReadAllBytes(f)));
         }
 
-        private void CheckHistoryResult(string historyInfoFilePath, int expectedActive, int expectedCount) {
-            string json = File.ReadAllText(historyInfoFilePath).Trim();
-            json.Should().Be($"[{expectedActive},{expectedCount}]");
-        }
-
         private void CheckLocatorResult(string locatorFilePath, double[] x, double[] y) {
             // Example result:
             //"","x","y"
@@ -586,8 +564,8 @@ dev.off()
             await ExecuteInSession(inputs, new RHostClientTestApp { PlotHandler = OnPlot, LocatorHandler = locatorHandler });
 
             // Ensure that all plot files created by the graphics device have been deleted
-            foreach (var deletedFilePath in OriginalPlotFilePaths) {
-                File.Exists(deletedFilePath).Should().BeFalse();
+            foreach (var plot in OriginalPlotMessages) {
+                File.Exists(plot.FilePath).Should().BeFalse();
             }
 
             return PlotFilePaths.AsReadOnly();
@@ -623,8 +601,12 @@ dev.off()
             return new[] { code };
         }
 
-        private void OnPlot(string filePath) {
-            if (filePath.Length <= 0) {
+        private void OnPlot(PlotMessage plot) {
+            // We also store the original plot messages, so we can 
+            // validate that the files have been deleted when the host goes away
+            OriginalPlotMessages.Add(plot);
+
+            if (plot.FilePath.Length <= 0) {
                 return;
             }
 
@@ -632,11 +614,7 @@ dev.off()
             // When the R code finishes executing, the graphics device is destructed,
             // which destructs all the plots which deletes the original plot files
             int index = PlotFilePaths.Count;
-            PlotFilePaths.Add(SavePlotFile(filePath, index));
-
-            // We also store the original plot file paths, so we can 
-            // validate that they have been deleted when the host goes away
-            OriginalPlotFilePaths.Add(filePath);
+            PlotFilePaths.Add(SavePlotFile(plot.FilePath, index));
         }
 
         class TestLocatorResultProvider {

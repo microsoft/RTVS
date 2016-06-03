@@ -11,6 +11,8 @@ namespace Microsoft.R.Components.View {
     /// </summary>
     public interface IVisualComponentContainer<out T> where T : IVisualComponent {
         T Component { get; }
+        string CaptionText { get; set; }
+        string StatusText { get; set; }
         bool IsOnScreen { get; }
 
         void Show(bool focus);

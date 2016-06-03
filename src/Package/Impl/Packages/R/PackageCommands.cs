@@ -6,6 +6,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
+using Microsoft.R.Components.Plots.Implementation.Commands;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
@@ -16,7 +17,6 @@ using Microsoft.VisualStudio.R.Package.History;
 using Microsoft.VisualStudio.R.Package.Options.R.Tools;
 using Microsoft.VisualStudio.R.Package.PackageManager;
 using Microsoft.VisualStudio.R.Package.Plots.Commands;
-using Microsoft.VisualStudio.R.Package.Plots.Definitions;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Repl.Debugger;
 using Microsoft.VisualStudio.R.Package.Repl.Shiny;
@@ -34,8 +34,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var interactiveWorkflowComponentContainerFactory = exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var projectServiceAccessor = exportProvider.GetExportedValue<IProjectServiceAccessor>();
-            var plotHistoryProvider = exportProvider.GetExportedValue<IPlotHistoryProvider>();
-            var plotHistory = plotHistoryProvider.GetPlotHistory(interactiveWorkflow.RSession);
             var textViewTracker = exportProvider.GetExportedValue<IActiveWpfTextViewTracker>();
             var replTracker = exportProvider.GetExportedValue<IActiveRInteractiveWindowTracker>();
             var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
@@ -105,15 +103,33 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowPackageManagerWindowCommand(),
 
                 // Plot commands
-                new ExportPlotAsImageCommand(appShell, plotHistory),
-                new ExportPlotAsPdfCommand(appShell, plotHistory),
-                new CopyPlotAsBitmapCommand(plotHistory),
-                new CopyPlotAsMetafileCommand(plotHistory),
-                new HistoryNextPlotCommand(plotHistory),
-                new HistoryPreviousPlotCommand(plotHistory),
-                new ClearPlotsCommand(plotHistory),
-                new RemovePlotCommand(plotHistory),
-                new EndLocatorCommand(plotHistory),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsImage,
+                    interactiveWorkflow.Plots.Commands.ExportAsImage),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdExportPlotAsPdf,
+                    interactiveWorkflow.Plots.Commands.ExportAsPdf),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsBitmap,
+                    interactiveWorkflow.Plots.Commands.CopyAsBitmap),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdCopyPlotAsMetafile,
+                    interactiveWorkflow.Plots.Commands.CopyAsMetafile),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdNextPlot,
+                    interactiveWorkflow.Plots.Commands.Next),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdPrevPlot,
+                    interactiveWorkflow.Plots.Commands.Previous),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdClearPlots,
+                    interactiveWorkflow.Plots.Commands.RemoveAll),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdRemovePlot,
+                    interactiveWorkflow.Plots.Commands.RemoveCurrent),
+                new CommandAsyncToOleMenuCommandShim(
+                    RGuidList.RCmdSetGuid, RPackageCommandId.icmdEndLocator,
+                    interactiveWorkflow.Plots.Commands.EndLocator),
             };
         }
     }

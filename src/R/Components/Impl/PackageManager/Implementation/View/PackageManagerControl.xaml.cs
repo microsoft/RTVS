@@ -12,7 +12,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.View {
     /// Interaction logic for PackageManagerControl.xaml
     /// </summary>
     public partial class PackageManagerControl : UserControl {
-        private IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
+        public IRPackageManagerViewModel Model => DataContext as IRPackageManagerViewModel;
 
         public PackageManagerControl() {
             InitializeComponent();

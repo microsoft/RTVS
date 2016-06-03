@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.InteractiveWorkflow {
@@ -14,6 +15,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow {
         IRHistory History { get; }
         IRSession RSession { get; }
         IRPackageManager Packages { get; }
+        IRPlotManager Plots { get; }
         IRInteractiveWorkflowOperations Operations { get; }
         IInteractiveWindowVisualComponent ActiveWindow { get; }
 

@@ -206,6 +206,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public string SaveFileIfDirty(string fullPath) =>
             new RunningDocumentTable(RPackage.Current).SaveFileIfDirty(fullPath);
 
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
+            return BrowseForFileOpen(IntPtr.Zero, filter, initialPath, title);
+        }
+
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
+            return BrowseForFileSave(IntPtr.Zero, filter, initialPath, title);
+        }
+
         /// <summary>
         /// Returns host locale ID
         /// </summary>

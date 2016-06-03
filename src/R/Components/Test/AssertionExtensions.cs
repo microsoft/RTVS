@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Windows.Media.Imaging;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Test.Assertions;
 
@@ -10,6 +11,10 @@ namespace Microsoft.R.Components.Test {
     public static class AssertionExtensions {
         public static AsyncCommandAssertions Should(this IAsyncCommand command) {
             return new AsyncCommandAssertions(command);
+        }
+
+        public static BitmapSourceAssertions Should(this BitmapSource image) {
+            return new BitmapSourceAssertions(image);
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// Displays R plot in the host app-provided window
         /// </summary>
-        Task Plot(string filePath, CancellationToken ct);
+        Task Plot(PlotMessage plot, CancellationToken ct);
 
         /// <summary>
         /// Set locator mode in the plot window

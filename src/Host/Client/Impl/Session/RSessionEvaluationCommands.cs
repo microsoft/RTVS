@@ -1,12 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Microsoft.Common.Core;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -50,34 +46,29 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.ExecuteAsync(script);
         }
 
-        public static Task ResizePlotAsync(this IRSessionInteraction evaluation, int width, int height, int resolution) {
+        public static Task ResizePlotAsync(this IRExpressionEvaluator evaluation, int width, int height, int resolution) {
             var script = Invariant($"rtvs:::graphics.ide.resize({width}, {height}, {resolution})\n");
-            return evaluation.RespondAsync(script);
+            return evaluation.ExecuteAsync(script);
         }
 
-        public static Task NextPlotAsync(this IRSessionInteraction evaluation) {
+        public static Task NextPlotAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::graphics.ide.nextplot()\n";
-            return evaluation.RespondAsync(script);
+            return evaluation.ExecuteAsync(script);
         }
 
-        public static Task PreviousPlotAsync(this IRSessionInteraction evaluation) {
+        public static Task PreviousPlotAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::graphics.ide.previousplot()\n";
-            return evaluation.RespondAsync(script);
+            return evaluation.ExecuteAsync(script);
         }
 
-        public static Task ClearPlotHistoryAsync(this IRSessionInteraction evaluation) {
+        public static Task ClearPlotHistoryAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::graphics.ide.clearplots()\n";
-            return evaluation.RespondAsync(script);
+            return evaluation.ExecuteAsync(script);
         }
 
-        public static Task RemoveCurrentPlotAsync(this IRSessionInteraction evaluation) {
+        public static Task RemoveCurrentPlotAsync(this IRExpressionEvaluator evaluation) {
             var script = "rtvs:::graphics.ide.removeplot()\n";
-            return evaluation.RespondAsync(script);
-        }
-
-        public static Task<int[]> PlotHistoryInfoAsync(this IRExpressionEvaluator evaluation) {
-            var script = @"rtvs:::graphics.ide.historyinfo()";
-            return evaluation.EvaluateAsync<int[]>(script, REvaluationKind.Normal);
+            return evaluation.ExecuteAsync(script);
         }
 
         public static Task InstallPackageAsync(this IRSessionInteraction interaction, string name) {

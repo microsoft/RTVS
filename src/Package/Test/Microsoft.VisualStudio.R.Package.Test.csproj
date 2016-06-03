@@ -175,8 +175,6 @@
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Mocks\RHistoryVisualComponentContainerFactoryMock.cs" />
-    <Compile Include="Plots\PlotHistoryTest.cs" />
-    <Compile Include="Plots\PlotCommandsTest.cs" />
     <Compile Include="ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
     <Compile Include="Project\CommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

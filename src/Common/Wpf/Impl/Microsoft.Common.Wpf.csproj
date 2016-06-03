@@ -36,6 +36,7 @@
     </Compile>
     <Compile Include="BindableBase.cs" />
     <Compile Include="Collections\BatchObservableCollection.cs" />
+    <Compile Include="Imaging\BitmapImageFactory.cs" />
     <Compile Include="LambdaConverter\ILambdaConverterProvider.cs" />
     <Compile Include="LambdaConverter\LambdaConverter.cs" />
     <Compile Include="LambdaConverter\LambdaExtension.cs" />

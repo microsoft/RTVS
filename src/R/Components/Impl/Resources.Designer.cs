@@ -574,6 +574,123 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error copying plot to the clipboard.\n{0}.
+        /// </summary>
+        public static string Plots_CopyToClipboardError {
+            get {
+                return ResourceManager.GetString("Plots_CopyToClipboardError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error: {0}.
+        /// </summary>
+        public static string Plots_EvalError {
+            get {
+                return ResourceManager.GetString("Plots_EvalError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Plot As Image.
+        /// </summary>
+        public static string Plots_ExportAsImageDialogTitle {
+            get {
+                return ResourceManager.GetString("Plots_ExportAsImageDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PNG (*.png)|*.png|JPEG (*.jpg;*.jpeg)|*.jpg;*.jpeg|BMP (*.bmp)|*.bmp|TIFF (*.tif;*.tiff)|*.tif;*.tiff|All Files (*.*)|*.*.
+        /// </summary>
+        public static string Plots_ExportAsImageFilter {
+            get {
+                return ResourceManager.GetString("Plots_ExportAsImageFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Export Plot As PDF.
+        /// </summary>
+        public static string Plots_ExportAsPdfDialogTitle {
+            get {
+                return ResourceManager.GetString("Plots_ExportAsPdfDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PDF (*.pdf)|*.pdf|All Files (*.*)|*.*.
+        /// </summary>
+        public static string Plots_ExportAsPdfFilter {
+            get {
+                return ResourceManager.GetString("Plots_ExportAsPdfFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File extension &apos;{0}&apos; is not a supported image file format..
+        /// </summary>
+        public static string Plots_ExportUnsupportedImageFormat {
+            get {
+                return ResourceManager.GetString("Plots_ExportUnsupportedImageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove all plots?.
+        /// </summary>
+        public static string Plots_RemoveAllPlotsWarning {
+            get {
+                return ResourceManager.GetString("Plots_RemoveAllPlotsWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to remove the current plot?.
+        /// </summary>
+        public static string Plots_RemoveCurrentPlotWarning {
+            get {
+                return ResourceManager.GetString("Plots_RemoveCurrentPlotWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Locator is active. Click in the plot window to select points then choose End Locator..
+        /// </summary>
+        public static string Plots_StatusLocatorActive {
+            get {
+                return ResourceManager.GetString("Plots_StatusLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection to R host process failed..
+        /// </summary>
+        public static string Plots_TransportError {
+            get {
+                return ResourceManager.GetString("Plots_TransportError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot.
+        /// </summary>
+        public static string Plots_WindowCaption {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Plot - Locator is Active.
+        /// </summary>
+        public static string Plots_WindowCaptionLocatorActive {
+            get {
+                return ResourceManager.GetString("Plots_WindowCaptionLocatorActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ready.
         /// </summary>
         public static string Ready {

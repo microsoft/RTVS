@@ -10,6 +10,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
+using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.InteractiveWindow;
@@ -29,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public IRHistory History { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
+        public IRPlotManager Plots { get; }
 
         public IRInteractiveWorkflowOperations Operations => _operations;
 
@@ -37,6 +39,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
         public RInteractiveWorkflow(IRSessionProvider sessionProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
+            , IRPlotManagerProvider plotsProvider
             , IActiveWpfTextViewTracker activeTextViewTracker
             , IDebuggerModeTracker debuggerModeTracker
             , ICoreShell coreShell
@@ -52,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
+            Plots = plotsProvider.CreatePlotManager(sessionProvider, settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;

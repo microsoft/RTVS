@@ -69,5 +69,23 @@ namespace Microsoft.Common.Core.Shell {
         /// <param name="fullPath">The full path to the document to be saved.</param>
         /// <returns> The path to which the file was saved. This is either the original path or a new path specified by the user.</returns>
         string SaveFileIfDirty(string fullPath);
+
+        /// <summary>
+        /// Shows the open file dialog.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
+        string ShowOpenFileDialog(string filter, string initialPath = null, string title = null);
+
+        /// <summary>
+        /// Shows the save file dialog.
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <param name="initialPath"></param>
+        /// <param name="title"></param>
+        /// <returns>Full path to the file selected, or <c>null</c>.</returns>
+        string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
     }
 }
