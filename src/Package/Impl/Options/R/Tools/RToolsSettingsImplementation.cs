@@ -103,7 +103,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public DateTime SurveyNewsLastCheck { get; set; }
         public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
         public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
-        public bool EvaluateActiveBindings { get; set; }
+        public bool EvaluateActiveBindings { get; set; } = true;
 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual

@@ -1218,7 +1218,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Evalaute active bindings..
+        ///   Looks up a localized string similar to Evaluate active bindings.
         /// </summary>
         public static string Settings_EvaluateActiveBindings {
             get {
@@ -1227,7 +1227,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Show result of active binding evaluation in Variable Explorer and debugger tool windows. .
+        ///   Looks up a localized string similar to Automatically evaluate active bindings and display the resulting value. Warning: when this option is on, inspecting active bindings in Variable Explorer and debugger tool windows may change program state.
         /// </summary>
         public static string Settings_EvaluateActiveBindings_Description {
             get {

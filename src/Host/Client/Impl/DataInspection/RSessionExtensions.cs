@@ -125,9 +125,8 @@ namespace Microsoft.R.DataInspection {
         /// a value, the corresponding item is an <see cref="IRValueInfo"/> instance. If the child represents
         /// a promise, the promise is not forced, and the item is an <see cref="IRPromiseInfo"/> instance. If the
         /// child represents an active binding, the binding may be evaluated to retrieve the value, and the item is
-        /// an <see cref="IRActiveBindingInfo"/> instance (see <paramref name="evaluateActiveBindings"/>.) If the child 
-        /// could not be retrieved, the item is an <see cref="IRErrorInfo"/> instance describing the error that 
-        /// prevented its retrieval.
+        /// an <see cref="IRActiveBindingInfo"/> instance. If the child could not be retrieved, the item is an 
+        /// <see cref="IRErrorInfo"/> instance describing the error that prevented its retrieval.
         /// </para>
         /// <para>
         /// Where order matters (e.g. for children of atomic vectors and lists), children are returned in that order.
@@ -146,14 +145,12 @@ namespace Microsoft.R.DataInspection {
             string expression,
             REvaluationResultProperties properties,
             string repr,
-            bool evaluateActiveBindings,
             int? maxCount = null,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            string evalActiveBindings = (evaluateActiveBindings ? "TRUE" : "FALSE");
-            var call = Invariant($"rtvs:::describe_children({expression.ToRStringLiteral()}, {environmentExpression}, {properties.ToRVector()}, {maxCount}, {repr}, evaluateActiveBindings = {evalActiveBindings})");
+            var call = Invariant($"rtvs:::describe_children({expression.ToRStringLiteral()}, {environmentExpression}, {properties.ToRVector()}, {maxCount}, {repr})");
             var jChildren = await session.EvaluateAsync<JArray>(call, REvaluationKind.Normal, cancellationToken);
             Trace.Assert(
                 jChildren.Children().All(t => t is JObject),

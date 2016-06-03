@@ -119,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_DebuggingCategory")]
         [CustomLocDisplayName("Settings_EvaluateActiveBindings")]
         [LocDescription("Settings_EvaluateActiveBindings_Description")]
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         public bool EvaluateActiveBindings {
             get { return RToolsSettings.Current.EvaluateActiveBindings; }
             set { RToolsSettings.Current.EvaluateActiveBindings = value; }

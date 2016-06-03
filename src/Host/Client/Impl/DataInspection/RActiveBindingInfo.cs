@@ -6,15 +6,15 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.DataInspection {
     internal sealed class RActiveBindingInfo : REvaluationResultInfo, IRActiveBindingInfo {
-        public IRValueInfo Value { get; }
+        public IRValueInfo ComputedValue { get; }
 
         internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
-            JObject bindingResultJson = json.Value<JObject>("binding_result");
+            JObject bindingResultJson = json.Value<JObject>("computed_value");
             if(bindingResultJson == null) {
-                Value = null;
+                ComputedValue = null;
             } else {
-                Value = new RValueInfo(session, environmentExpression, expression, name, bindingResultJson);
+                ComputedValue = new RValueInfo(session, environmentExpression, expression, name, bindingResultJson);
             }    
         }
     }

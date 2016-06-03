@@ -7,8 +7,9 @@ namespace Microsoft.R.DataInspection {
     /// </summary>
     public interface IRActiveBindingInfo : IREvaluationResultInfo {
         /// <summary>
-        /// Value of the active binding after evaluation.
+        /// This is null if evaluate active bindings in RTools Options is set 
+        /// to False.
         /// </summary>
-        IRValueInfo Value { get; }
+        IRValueInfo ComputedValue { get; }
     }
 }

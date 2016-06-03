@@ -99,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties properties =
+                REvaluationResultProperties properties =
                     ExpressionProperty |
                     AccessorKindProperty |
                     TypeNameProperty |
@@ -108,8 +108,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     SlotCountProperty |
                     AttributeCountProperty |
                     DimProperty |
-                    FlagsProperty;
-                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, RToolsSettings.Current.EvaluateActiveBindings, MaxChildrenCount);
+                    FlagsProperty |
+                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();
                 var aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();

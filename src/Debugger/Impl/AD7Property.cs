@@ -64,7 +64,9 @@ namespace Microsoft.R.Debugger {
                     return new IREvaluationResultInfo[0];
                 }
 
-                var children = await valueResult.DescribeChildrenAsync(PrefetchedProperties, Repr, RToolsSettings.Current.EvaluateActiveBindings, ChildrenMaxCount, ct);
+                REvaluationResultProperties properties = RToolsSettings.Current.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
+                properties |= PrefetchedProperties;
+                var children = await valueResult.DescribeChildrenAsync(properties, Repr, ChildrenMaxCount, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {
@@ -309,10 +311,10 @@ namespace Microsoft.R.Debugger {
                     dpi.bstrType = "<promise>";
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
                 } else if (activeBindingInfo != null) {
-                    if (activeBindingInfo.Value != null) {
-                        dpi.bstrType = activeBindingInfo.Value.TypeName;
-                        if (activeBindingInfo.Value.Classes != null && activeBindingInfo.Value.Classes.Count > 0) {
-                            dpi.bstrType += " (" + string.Join(", ", activeBindingInfo.Value.Classes) + ")";
+                    if (activeBindingInfo.ComputedValue != null) {
+                        dpi.bstrType = activeBindingInfo.ComputedValue.TypeName;
+                        if (activeBindingInfo.ComputedValue.Classes != null && activeBindingInfo.ComputedValue.Classes.Count > 0) {
+                            dpi.bstrType += " (" + string.Join(", ", activeBindingInfo.ComputedValue.Classes) + ")";
                         }
                     } else {
                         dpi.bstrType = "<active binding>";
@@ -334,8 +336,8 @@ namespace Microsoft.R.Debugger {
                     dpi.bstrValue = errorInfo.ErrorText;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                 } else if (activeBindingInfo != null) {
-                    if (activeBindingInfo.Value != null) {
-                        dpi.bstrValue = activeBindingInfo.Value.Representation;
+                    if (activeBindingInfo.ComputedValue != null) {
+                        dpi.bstrValue = activeBindingInfo.ComputedValue.Representation;
                         dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
                     }
                 }

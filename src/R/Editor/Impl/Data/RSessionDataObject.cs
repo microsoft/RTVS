@@ -41,24 +41,7 @@ namespace Microsoft.R.Editor.Data {
 
             if (DebugEvaluation is IRValueInfo) {
                 var valueEvaluation = (IRValueInfo)DebugEvaluation;
-
-                Value = GetValue(valueEvaluation)?.Trim();
-                TypeName = valueEvaluation.TypeName;
-
-                if (valueEvaluation.Classes != null) {
-                    var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                    Class = string.Join(", ", escaped); // TODO: escape ',' in class names
-                }
-
-                HasChildren = valueEvaluation.HasChildren;
-
-                if (valueEvaluation.Dim != null) {
-                    Dimensions = valueEvaluation.Dim;
-                } else if(valueEvaluation.Length.HasValue) {
-                    Dimensions = new List<int>() { valueEvaluation.Length.Value, 1 };
-                } else {
-                    Dimensions = new List<int>();
-                }
+                Initalize(valueEvaluation);
             } else if (DebugEvaluation is IRPromiseInfo) {
                 var promiseInfo = (IRPromiseInfo)DebugEvaluation;
                 Value = promiseInfo.Code;
@@ -66,26 +49,8 @@ namespace Microsoft.R.Editor.Data {
             } else if (DebugEvaluation is IRActiveBindingInfo) {
                 const string ActiveBindingText = "<active binding>";
                 var activeBinding = (IRActiveBindingInfo)DebugEvaluation;
-                var activeBindingValue = activeBinding.Value;
-
-                if(activeBindingValue != null) {
-                    Value = GetValue(activeBindingValue)?.Trim();
-                    TypeName = activeBindingValue.TypeName;
-
-                    if (activeBindingValue.Classes != null) {
-                        var escaped = activeBindingValue.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                        Class = string.Join(", ", escaped); // TODO: escape ',' in class names
-                    }
-
-                    HasChildren = activeBindingValue.HasChildren;
-
-                    if (activeBindingValue.Dim != null) {
-                        Dimensions = activeBindingValue.Dim;
-                    } else if (activeBindingValue.Length.HasValue) {
-                        Dimensions = new List<int>() { activeBindingValue.Length.Value, 1 };
-                    } else {
-                        Dimensions = new List<int>();
-                    }
+                if(activeBinding.ComputedValue != null) {
+                    Initalize(activeBinding.ComputedValue);
                 } else {
                     Value = ActiveBindingText;
                     TypeName = ActiveBindingText;
@@ -96,6 +61,26 @@ namespace Microsoft.R.Editor.Data {
             if (Dimensions == null) Dimensions = new List<int>();
 
             MaxChildrenCount = maxChildrenCount;
+        }
+
+        private void Initalize(IRValueInfo valueInfo) {
+            Value = GetValue(valueInfo)?.Trim();
+            TypeName = valueInfo.TypeName;
+
+            if (valueInfo.Classes != null) {
+                var escaped = valueInfo.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+            }
+
+            HasChildren = valueInfo.HasChildren;
+
+            if (valueInfo.Dim != null) {
+                Dimensions = valueInfo.Dim;
+            } else if (valueInfo.Length.HasValue) {
+                Dimensions = new List<int>() { valueInfo.Length.Value, 1 };
+            } else {
+                Dimensions = new List<int>();
+            }
         }
 
         protected int? MaxChildrenCount { get; set; }
@@ -128,7 +113,7 @@ namespace Microsoft.R.Editor.Data {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties properties =
+                REvaluationResultProperties properties =
                     ExpressionProperty |
                     AccessorKindProperty |
                     TypeNameProperty |
@@ -137,8 +122,9 @@ namespace Microsoft.R.Editor.Data {
                     SlotCountProperty |
                     AttributeCountProperty |
                     DimProperty |
-                    FlagsProperty;
-                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), RToolsSettings.Current.EvaluateActiveBindings, MaxChildrenCount);
+                    FlagsProperty |
+                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
+                var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }
 
