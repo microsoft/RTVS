@@ -1,0 +1,22 @@
+<VSTemplate Type="Item" Version="3.0.0"
+    xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name>Stored Procedure</Name>
+    <Description>SQL script for Stored Procedure with R</Description>
+    <Icon></Icon>
+    <ProjectType>Database Projects</ProjectType>
+    <SortOrder>10</SortOrder>
+    <DefaultName>$(Procedure)Procedure</DefaultName>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem ReplaceParameters="true" TargetFileName="$changedFilename$">Create Procedure R.sql</ProjectItem>
+  </TemplateContent>
+  <WizardExtension>
+    <Assembly>Microsoft.VisualStudio.Data.Tools.Package, Version=14.0.0.0, Culture=Neutral, PublicKeyToken=b03f5f7f11d50a3a, Custom=null</Assembly>
+    <FullClassName>Microsoft.VisualStudio.Data.Tools.Package.Project.TemplateWizard</FullClassName>
+  </WizardExtension>
+  <WizardData>
+    <SqlItemType>Procedure</SqlItemType>
+  </WizardData>
+</VSTemplate>
