@@ -1,10 +1,13 @@
 use vs
 
 package name=RTVS
+        manufacturer="Microsoft Corporation"
         version=$(BuildVersion)
         vs.package.chip=x64
         vs.package.language=neutral
         lcid=1033
+
+prerequisite minOsVersion=6.2
 
 folder IdeFolder:\Common7\IDE
 folder MsExtensionsFolder:$(IdeFolder)\Extensions\Microsoft
