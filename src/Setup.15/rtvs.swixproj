@@ -30,12 +30,12 @@
   </PropertyGroup>
 
   <!-- Needed for the MicroBuild signing plugin -->
-  <!--<ItemGroup>
-    <SigningTarget Include="$(OutDir)\$(OutputName)"/>
+  <ItemGroup>
+    <SigningTarget Include="$(OutputPath)\$(OutputName).$(OutputType)"/>
     <FilesToSign Include="@(SigningTarget)">
       <Authenticode>Vsix</Authenticode>
     </FilesToSign>
-  </ItemGroup>-->
+  </ItemGroup>
 
   <ItemGroup>
     <Package Include="files.swr" />
