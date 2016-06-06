@@ -8,6 +8,7 @@ using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Common.Core.Test.Fakes {
@@ -69,5 +70,6 @@ namespace Microsoft.Common.Core.Test.Fakes {
         public CommandID LastShownContextMenu { get; private set; }
         public string OpenFilePath { get; set; }
         public string SaveFilePath { get; set; }
+        public ITelemetryService TelemetryService { get; }
     }
 }

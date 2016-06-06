@@ -329,7 +329,7 @@ namespace Microsoft.R.Editor.Tree {
         /// Idle time event handler. Kicks background parsing if there are pending changes
         /// </summary>
         private void OnIdle(object sender, EventArgs e) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId && !EditorShell.Current.IsUnitTestEnvironment)
                 throw new ThreadStateException("Method should only be called on the main thread");
 
             if (TextBuffer == null || TextBuffer.EditInProgress)

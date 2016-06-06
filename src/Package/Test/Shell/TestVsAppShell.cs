@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -81,6 +82,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
 
         public bool IsUnitTestEnvironment { get; set; } = true;
         public bool IsUITestEnvironment { get; set; } = false;
+        public ITelemetryService TelemetryService { get; }
         #endregion
     }
 }

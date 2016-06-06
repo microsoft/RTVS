@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
-using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Install;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 

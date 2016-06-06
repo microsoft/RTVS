@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Common.Core {
+namespace Microsoft.R.Host.Client {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.Common.Core {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.Common.Core.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.R.Host.Client.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -102,15 +102,6 @@ namespace Microsoft.Common.Core {
         internal static string Error_UnsupportedRVersion {
             get {
                 return ResourceManager.GetString("Error_UnsupportedRVersion", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?.
-        /// </summary>
-        internal static string Prompt_MsRClientJustInstalled {
-            get {
-                return ResourceManager.GetString("Prompt_MsRClientJustInstalled", resourceCulture);
             }
         }
     }

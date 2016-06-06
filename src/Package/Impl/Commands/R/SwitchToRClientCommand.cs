@@ -2,10 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Install;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.R;
+using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         }
 
         protected override void Handle() {
-            var rClientPath = RInstallation.GetRClientPath();
+            var rClientPath = MicrosoftRClient.GetRClientPath();
             if (string.IsNullOrEmpty(rClientPath)) {
                 if (_shell.ShowMessage(Resources.Prompt_RClientNotInstalled, MessageButtons.YesNo) == MessageButtons.Yes) {
                     var installer = _shell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();

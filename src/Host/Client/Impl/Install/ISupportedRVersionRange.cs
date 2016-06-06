@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Common.Core.Install {
+namespace Microsoft.R.Host.Client.Install {
     public interface ISupportedRVersionRange {
         /// <summary>
         /// Minimal supported R version major part such as 3 in 3.2

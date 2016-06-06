@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Common.Core.OS;
 
-namespace Microsoft.Common.Core.Test.Install {
-    internal sealed class RegistryKeyMock : IRegistryKey {
+namespace Microsoft.Common.Core.Test.Registry {
+    public sealed class RegistryKeyMock : IRegistryKey {
         private readonly RegistryKeyMock[] _subkeys;
         private Dictionary<string, string> _values = new Dictionary<string, string>();
 

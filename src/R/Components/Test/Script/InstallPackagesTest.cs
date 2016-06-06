@@ -4,9 +4,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Common.Core.Install;
-using Microsoft.Common.Core.Test.Install;
 using Microsoft.R.Components.Script;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 

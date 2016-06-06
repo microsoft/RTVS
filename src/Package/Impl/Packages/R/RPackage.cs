@@ -10,7 +10,9 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -29,6 +31,7 @@ using Microsoft.VisualStudio.R.Package.Packages;
 using Microsoft.VisualStudio.R.Package.Plots;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages;
+using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -124,6 +127,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 p.LoadSettings();
             }
 
+            MicrosoftRClient.CheckInstall(VsAppShell.Current);
             base.Initialize();
 
             ProjectIconProvider.LoadProjectImages();
@@ -206,5 +210,5 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             }
             return false;
         }
-    }
+     }
 }

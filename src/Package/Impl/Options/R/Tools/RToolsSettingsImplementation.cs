@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Enums;
-using Microsoft.Common.Core.Install;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
             // settings (if any) when settings are loaded from storage
-            RBasePath = RInstallation.GetRInstallPath(null, null, VsAppShell.Current);
+            RBasePath = RInstallation.GetRInstallPath(null, null);
             _workingDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         }
 

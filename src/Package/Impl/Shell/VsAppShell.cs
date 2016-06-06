@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -21,6 +22,7 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Interop;
+using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -227,6 +229,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return 0;
             }
         }
+
+        public ITelemetryService TelemetryService => RtvsTelemetry.Current.TelemetryService;
 
         public bool IsUnitTestEnvironment { get; set; }
         public bool IsUITestEnvironment { get; set; }

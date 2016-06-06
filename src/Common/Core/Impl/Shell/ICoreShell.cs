@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Threading;
+using Microsoft.Common.Core.Telemetry;
 
 namespace Microsoft.Common.Core.Shell {
     /// <summary>
@@ -87,5 +88,10 @@ namespace Microsoft.Common.Core.Shell {
         /// <param name="title"></param>
         /// <returns>Full path to the file selected, or <c>null</c>.</returns>
         string ShowSaveFileDialog(string filter, string initialPath = null, string title = null);
+
+        /// <summary>
+        /// Application telemetry service
+        /// </summary>
+        ITelemetryService TelemetryService { get; }
     }
 }

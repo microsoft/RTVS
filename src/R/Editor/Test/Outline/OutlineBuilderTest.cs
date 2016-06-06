@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -12,7 +11,6 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -20,10 +18,10 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class ROutlineBuilderTest01 {
+    public class ROutlineBuilderTest {
         private readonly EditorTestFilesFixture _testFiles;
 
-        public ROutlineBuilderTest01(EditorTestFilesFixture testFiles) {
+        public ROutlineBuilderTest(EditorTestFilesFixture testFiles) {
             _testFiles = testFiles;
         }
 
@@ -95,12 +93,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             Action a = () => OutlineTest.OutlineFile(_testFiles, name);
             a.ShouldNotThrow();
         }
-    }
 
-    [ExcludeFromCodeCoverage]
-    [Category.R.Outlining]
-    [Collection(CollectionNames.NonParallel)]
-    public class ROutlineBuilderTest02 {
         [Test]
         public void Sections() {
             string content =
@@ -112,34 +105,32 @@ x <- 1
             int calls = 0;
             OutlineRegionsChangedEventArgs args = null;
 
-            UIThreadHelper.Instance.Invoke(() => {
-                textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-                var tree = new EditorTree(textBuffer);
-                tree.Build();
-                var editorDocument = new EditorDocumentMock(tree);
+            textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
+            var tree = new EditorTree(textBuffer);
+            tree.Build();
+            var editorDocument = new EditorDocumentMock(tree);
 
-                var ob = new ROutlineRegionBuilder(editorDocument);
-                var rc1 = new OutlineRegionCollection(0);
-                ob.BuildRegions(rc1);
+            var ob = new ROutlineRegionBuilder(editorDocument);
+            var rc1 = new OutlineRegionCollection(0);
+            ob.BuildRegions(rc1);
 
-                rc1.Should().HaveCount(2);
-                rc1[0].DisplayText.Should().Be("# NAME1");
-                rc1[1].DisplayText.Should().Be("# NAME2");
+            rc1.Should().HaveCount(2);
+            rc1[0].DisplayText.Should().Be("# NAME1");
+            rc1[1].DisplayText.Should().Be("# NAME2");
 
-                ob.RegionsChanged += (s, e) => {
-                    calls++;
-                    args = e;
-                };
+            ob.RegionsChanged += (s, e) => {
+                calls++;
+                args = e;
+            };
 
-                textBuffer.Insert(2, "A");
-                editorDocument.EditorTree.EnsureTreeReady();
+            textBuffer.Insert(2, "A");
+            editorDocument.EditorTree.EnsureTreeReady();
 
-                // Wait for background/idle tasks to complete
-                var start = DateTime.Now;
-                while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                    EditorShell.Current.DoIdle();
-                }
-            });
+            // Wait for background/idle tasks to complete
+            var start = DateTime.Now;
+            while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                EditorShell.Current.DoIdle();
+            }
 
             calls.Should().Be(1);
             args.Should().NotBeNull();

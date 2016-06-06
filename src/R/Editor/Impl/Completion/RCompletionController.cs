@@ -165,6 +165,15 @@ namespace Microsoft.R.Editor.Completion {
                     return false;
                 }
 
+                if(CharExtensions.IsLineBreak(typedChar)) {
+                    // Complete on Enter but only if selection does not exactly match
+                    // applicable span. for example, if span is X and selection is X123
+                    // then we do complete. However, if selection is X then text is already
+                    // fully typed and Enter should be adding new line as with regular typing.
+                    var typedText = completionSet.ApplicableTo.GetText(_textBuffer.CurrentSnapshot);
+                    return !completionText.EqualsOrdinal(typedText);
+                }
+
                 return char.IsWhiteSpace(typedChar);
             }
 

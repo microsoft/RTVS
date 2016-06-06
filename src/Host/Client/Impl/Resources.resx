@@ -132,7 +132,4 @@
   <data name="Error_UnsupportedRVersion" xml:space="preserve">
     <value>R {0}.{1}.{2} is not compatible with R Tools for Visual Studio. Supported versions are {3}.{4}.{5} - {6}.{7}.{8}.{9}Visual Studio can launch setup of the Microsoft R Client. Click Yes if you would you like to start installation of Microsoft R Client now. Visual Studio will close when the setup application starts.</value>
   </data>
-  <data name="Prompt_MsRClientJustInstalled" xml:space="preserve">
-    <value>Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?</value>
-  </data>
 </root>
