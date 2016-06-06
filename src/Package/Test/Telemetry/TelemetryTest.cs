@@ -28,7 +28,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Telemetry {
             log.Length.Should().BeGreaterThan(0);
             log.Should().Contain(TelemetryTestService.EventNamePrefixString);
             log.Should().Contain(RtvsTelemetry.ConfigurationEvents.RBasePackages);
-            log.Should().Contain(RtvsTelemetry.ConfigurationEvents.RUserPackages);
         }
 
         [Test]

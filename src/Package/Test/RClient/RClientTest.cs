@@ -12,7 +12,9 @@ using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Core.Test.Registry;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Host.Client.Install;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Package.Telemetry;
@@ -75,7 +77,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
             telemetryEvents[1].Should().Be(RtvsTelemetry.ConfigurationEvents.RClientInstallCancel);
         }
 
-        [Test]
+        [Test(ThreadType = ThreadType.UI)]
         [Category.R.Install]
         public void MsRClient() {
             var rClientInstallPath = @"C:\Program Files\Microsoft\R Client\";
@@ -87,6 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.RClient {
 
             var shell = Substitute.For<ICoreShell>();
             shell.ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>()).Returns(MessageButtons.Yes);
+            shell.MainThread.Returns(Thread.CurrentThread);
 
             MicrosoftRClient.CheckMicrosoftRClientInstall(shell);
             shell.Received(1).ShowMessage(Arg.Any<string>(), Arg.Any<MessageButtons>());
