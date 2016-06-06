@@ -37,14 +37,14 @@ folder "InstallFolder:\"
             file source=$(BinPath)\Profiles\R.vssettings
             file source=$(BinPath)\Profiles\RCombined.vssettings
         folder Extensions\Microsoft
-    #        folder SQLDB\Extensions\SqlServer
-    #            folder "ItemTemplates\SQL R"
-    #                file source="$(BinPath)\Templates\Sql\Create Procedure R.vsdir"
-    #                file source="$(BinPath)\Templates\Sql\R Script.vsdir"
-    #            folder Items
-    #                file source="$(BinPath)\Templates\Sql\Create Procedure R.vstemplate"
-    #                file source="$(BinPath)\Templates\Sql\Create Procedure R.sql"
-    #                file source=$(BinPath)\Templates\NewItem\Script.r
+            folder SQLDB\Extensions\SqlServer
+                folder "ItemTemplates\SQL R"
+                    file source="$(BinPath)\Templates\Sql\Create Procedure R.vsdir"
+                    file source="$(BinPath)\Templates\Sql\R Script.vsdir"
+                folder Items
+                    file source="$(BinPath)\Templates\Sql\Create Procedure R.vstemplate"
+                    file source="$(BinPath)\Templates\Sql\Create Procedure R.sql"
+                    file source=$(BinPath)\Templates\NewItem\Script.r
             folder "R Tools for Visual Studio"
                 file source=$(BinPath)\extension.vsixmanifest
                 file source=$(BinPath)\Microsoft.Languages.Core.dll
@@ -69,9 +69,9 @@ folder "InstallFolder:\"
                 folder Templates\NewItem
                     file source=$(BinPath)\Templates\NewItem\markdown.rmd
                     file source=$(BinPath)\Templates\NewItem\script.r
-    #                file source=$(BinPath)\Templates\NewItem\dataset.rd
-    #                file source=$(BinPath)\Templates\NewItem\document.rd
-    #                file source=$(BinPath)\Templates\NewItem\function.rd
+                    file source=$(BinPath)\Templates\NewItem\dataset.rd
+                    file source=$(BinPath)\Templates\NewItem\document.rd
+                    file source=$(BinPath)\Templates\NewItem\function.rd
                     file source=$(BinPath)\Templates\NewItem\NewRItems.vsdir
                 folder Help\Themes
                     file source=$(BinPath)\Help\Themes\Light.css
