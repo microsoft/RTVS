@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            var settings = (SearchSettingsDataSource)pSearchSettings;
+            dynamic settings = pSearchSettings;
             settings.SearchWatermark = Resources.HelpSearchWatermark;
             settings.SearchTooltip = Resources.HelpSearchTooltip;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_ONDEMAND;

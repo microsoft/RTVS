@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            var settings = (SearchSettingsDataSource)pSearchSettings;
+            dynamic settings = pSearchSettings;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_INSTANT;
             base.ProvideSearchSettings(pSearchSettings);
         }
