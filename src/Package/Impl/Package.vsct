@@ -1001,8 +1001,8 @@
         <Icon guid="ImageCatalogGuid" id="RedChannel"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <Strings>
-          <ButtonText>Chan&amp;ge R to Microsoft R Open</ButtonText>
-          <CommandName>Change R to Microsoft R Open</CommandName>
+          <ButtonText>Chan&amp;ge R to Microsoft R Client</ButtonText>
+          <CommandName>Change R to Microsoft R Client</CommandName>
         </Strings>
       </Button>
 
