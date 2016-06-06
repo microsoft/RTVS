@@ -6,6 +6,8 @@ package name="R Tools for Visual Studio"
         vs.package.chip=x64
         vs.package.language=neutral
 
+vs.requirements supportedOS=[6.2,)
+
 folder "InstallFolder:\Common7\IDE"
     folder ItemTemplates\R
         file source=$(BinPath)\ItemTemplates\R\1033\datasetrd.zip
@@ -55,7 +57,7 @@ folder "InstallFolder:\Common7\IDE"
             file source=$(BinPath)\Newtonsoft.Json.dll
             file source=$(BinPath)\websocket-sharp.dll
             file source=$(BinPath)\Images\RFile.ico
-            folder MSBuild\Rules
+            folder MSBuild
                 file source=$(BinPath)Rules\Content.xaml
                 file source=$(BinPath)Rules\Folder.xaml
                 file source=$(BinPath)Rules\General.BrowseObject.xaml
