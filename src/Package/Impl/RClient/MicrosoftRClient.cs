@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Options.R;
 using Microsoft.VisualStudio.R.Packages.R;
@@ -29,6 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
         }
 
         public static void CheckInstall(ICoreShell coreShell) {
+            coreShell.AssertIsOnMainThread();
+
             string rClientPath = CheckMicrosoftRClientInstall(coreShell);
             if (rClientPath != null) {
                 RToolsSettings.Current.RBasePath = rClientPath;
@@ -39,6 +42,8 @@ namespace Microsoft.VisualStudio.R.Package.RClient {
         }
 
         internal static string CheckMicrosoftRClientInstall(ICoreShell coreShell) {
+            coreShell.AssertIsOnMainThread();
+
             var rClientPath = GetRClientPath();
             if (!string.IsNullOrEmpty(rClientPath) && AskUserSwitchToRClient()) {
                 // Get R Client path
