@@ -7,8 +7,8 @@ namespace Microsoft.R.DataInspection {
     /// </summary>
     public interface IRActiveBindingInfo : IREvaluationResultInfo {
         /// <summary>
-        /// This is null if evaluate active bindings in RTools Options is set 
-        /// to False.
+        /// This property is set to an instance of <see cref="RValueInfo"/> if <see cref="REvaluationResultProperties.ComputedValueProperty"/> 
+        /// is used while evaluating active bindings. This is null otherwise.
         /// </summary>
         IRValueInfo ComputedValue { get; }
     }
