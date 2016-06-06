@@ -201,7 +201,14 @@ describe_children <- function(obj, env, fields, count = NULL, repr = NULL) {
         value <- list(promise = deparse_str(code), expression = item_expr);
       } else if (bindingIsActive(name, obj)) {
         # It's an active binding - we don't want to read it to avoid inadvertently changing program state.
-        value <- list(active_binding = TRUE, expression = item_expr);
+        eval_res <- 
+          if('computed_value' %in% fields){
+            eval_and_describe(item_expr, environment(), '$', fields, get(name, envir = obj), repr);
+          } else {
+            NULL
+          }
+
+        value <- list(active_binding = TRUE, expression = item_expr, computed_value = eval_res);
       } else {
         # It's just a regular binding, so get the actual value, but check for missing() first.
 

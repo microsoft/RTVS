@@ -128,7 +128,32 @@ namespace Microsoft.R.DataInspection.Test {
 
                 var children = await stackFrames.Last().DescribeChildrenAsync(REvaluationResultProperties.None, RValueRepresentations.Deparse());
                 children.Should().ContainSingle(er => er.Name == "x")
-                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>();
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>()
+                    .Which.ComputedValue.Should().BeNull();
+            }
+        }
+
+        [Test]
+        [Category.R.DataInspection]
+        public async Task ActiveBindingEvaluate() {
+            const string code =
+@"makeActiveBinding('x', function() 42, environment())
+  browser();
+";
+            var tracer = await _session.TraceExecutionAsync();
+            using (var sf = new SourceFile(code)) {
+                await tracer.EnableBreakpointsAsync(true);
+
+                await sf.Source(_session);
+                await _session.NextPromptShouldBeBrowseAsync();
+
+                var stackFrames = (await _session.TracebackAsync()).ToArray();
+                stackFrames.Should().NotBeEmpty();
+
+                var children = await stackFrames.Last().DescribeChildrenAsync(ComputedValueProperty, RValueRepresentations.Deparse());
+                children.Should().ContainSingle(er => er.Name == "x")
+                    .Which.Should().BeAssignableTo<IRActiveBindingInfo>()
+                    .Which.ComputedValue.Representation.Should().Be("42");
             }
         }
 

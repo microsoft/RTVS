@@ -12,6 +12,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -98,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties properties =
+                REvaluationResultProperties properties =
                     ExpressionProperty |
                     AccessorKindProperty |
                     TypeNameProperty |
@@ -107,7 +108,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     SlotCountProperty |
                     AttributeCountProperty |
                     DimProperty |
-                    FlagsProperty;
+                    FlagsProperty |
+                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
                 result = new List<IRSessionDataObject>();

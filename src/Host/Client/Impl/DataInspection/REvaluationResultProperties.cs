@@ -39,6 +39,8 @@ namespace Microsoft.R.DataInspection {
         DimProperty = 1 << 9,
         /// <seealso cref="IRValueInfo.Flags"/>
         FlagsProperty = 1 << 10,
+        /// <seealso cref="IRActiveBindingInfo.ComputedValue"/>
+        ComputedValueProperty = 1 << 11,
         /// <seealso cref="IRValueInfo.HasChildren"/>
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
     }
@@ -55,6 +57,7 @@ namespace Microsoft.R.DataInspection {
             [NameCountProperty] = "name_count",
             [DimProperty] = "dim",
             [FlagsProperty] = "flags",
+            [ComputedValueProperty] = "computed_value",
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {
