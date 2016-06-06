@@ -22,11 +22,14 @@
     </PropertyGroup>
 
     <PropertyGroup>
+        <!-- RTVS uses BuildVersion as 'major.minor.build.revision' and BuildNumber is 'build.revision'.
+             But VS Manifest task wants BuildNumber to be 'major.minor.build.revision' -->
+        <BuildNumber>$(BuildVersion)</BuildNumber>
         <OutputPath>$(BinDirectory)\$(Configuration)\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="rtvs.swixproj" />
+        <ProjectReference Include="RTVS.swixproj" />
     </ItemGroup>
 
     <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets"

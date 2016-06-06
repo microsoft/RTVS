@@ -1,6 +1,6 @@
 use vs
 
-package name=RTVS
+package name="R Tools for Visual Studio"
         manufacturer="Microsoft Corporation"
         version=$(BuildVersion)
         vs.package.chip=x64
