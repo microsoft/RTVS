@@ -9,7 +9,7 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>{a5265b92-029a-423e-9006-a7c1f52476ed}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>RHost</OutputName>
+    <OutputName Condition=" '$(OutputName)' == '' ">RHost</OutputName>
     <OutputType>Package</OutputType>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
@@ -46,6 +46,11 @@
     <Compile Include="Product.wxs" />
     <Content Include="Definitions.wxi" />
     <Content Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)\$(OutputName).msi">
+      <Authenticode>Microsoft400</Authenticode>
+    </FilesToSign>
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
 </Project>
