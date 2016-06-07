@@ -54,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal void SetEvaluation(VariableViewModel wrapper) {
             VsAppShell.Current.AssertIsOnMainThread();
 
-            if (wrapper.TypeName == "NULL" && wrapper.Value == "NULL") {
+            if (wrapper.TypeName == null && wrapper.Value == null) {
                 // the variable should have been removed
                 SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
             } else if (_evaluation == null
