@@ -9,7 +9,7 @@
     <ProductVersion>3.7</ProductVersion>
     <ProjectGuid>B86E0BA1-82AF-45F8-9BE8-FDDCB8EF7F13</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>RTVS</OutputName>
+    <OutputName Condition="'$(OutputName)' == ''">RTVS</OutputName>
     <OutputType>Package</OutputType>
     <SccProjectName>SAK</SccProjectName>
     <SccProvider>SAK</SccProvider>
@@ -17,6 +17,7 @@
     <SccLocalPath>SAK</SccLocalPath>
   </PropertyGroup>
   <PropertyGroup>
+    <NuGetPackageRoot Condition="'$(NuGetPackageRoot)' == ''">$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
     <VsVersion Condition="'$(VsVersion)' == ''">$(VisualStudioVersion)</VsVersion>
     <BinDirectory Condition="'$(BinDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\bin\</BinDirectory>
     <ObjDirectory Condition="'$(ObjDirectory)' == ''">$(MSBuildThisFileDirectory)..\..\obj\</ObjDirectory>
@@ -80,5 +81,11 @@
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <FilesToSign Include="$(OutputPath)$(OutputName).msi">
+      <Authenticode>Microsoft400</Authenticode>
+    </FilesToSign>
+  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
+  <Import Project="$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets" Condition="Exists('$(NuGetPackageRoot)\MicroBuild.Core\0.2.0\build\MicroBuild.Core.targets')" />
 </Project>
