@@ -517,6 +517,23 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             }
         }
 
+        [Test]
+        [Category.Variable.Explorer]
+        public async Task DoesNotExist() {
+            // This is the equivalent of what we get when we fetch a variable
+            // for a data grid after that variable is no longer available (rm or reset).
+            var script = "idonotexist";
+            using (var hostScript = new VariableRHostScript()) {
+                var evaluationResult = await hostScript.EvaluateAsync(script);
+                evaluationResult.Name.Should().BeNull();
+                evaluationResult.Expression.Should().Be("idonotexist");
+
+                var model = new VariableViewModel(evaluationResult, null);
+                model.TypeName.Should().BeNull();
+                model.Value.Should().BeNull();
+            }
+        }
+
         object[,] arrayTestData = new object[,] {
             { "array.empty <- array();", new VariableExpectation() { Name = "array.empty", Value = "NA", TypeName = "logical", Class = "array", HasChildren = false, CanShowDetail = false } },
             { "array.10 <- array(1:10);", new VariableExpectation() { Name = "array.10", Value = "int [1:10(1d)] 1 2 3 4 5 6 7 8 9 10", TypeName = "integer", Class = "array", HasChildren = true, CanShowDetail = true } },
