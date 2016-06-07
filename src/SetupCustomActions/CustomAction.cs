@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Deployment.WindowsInstaller;
 using Microsoft.Win32;
+using System.IO;
 
 namespace SetupCustomActions {
     public class CustomActions {
@@ -58,6 +59,19 @@ namespace SetupCustomActions {
             session.Log("Start ShowMicrosoftROfferings action");
             Process.Start("http://microsoft.github.io/RTVS-docs/installer.html");
             session.Log("End ShowMicrosoftROfferings action");
+            return ActionResult.Success;
+        }
+
+        [CustomAction]
+        public static ActionResult UpdateMefCatalogAction(Session session) {
+            session.Log("Start UpdateMefCatalogAction action");
+            var appDataLocal = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            var mefCatalog = Path.Combine(appDataLocal, @"Microsoft\VisualStudio\", vsVersion, "ComponentModelCache");
+            try {
+                Directory.Delete(mefCatalog, recursive: true);
+            } catch (IOException) { } catch (AccessViolationException) { }
+
+            session.Log("End UpdateMefCatalogAction action");
             return ActionResult.Success;
         }
 

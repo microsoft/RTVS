@@ -4,21 +4,17 @@
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 
-namespace Microsoft.R.Components.ContentTypes
-{
+namespace Microsoft.R.Components.ContentTypes {
     /// <summary>
     /// Exports the R content type and file extension
     /// </summary>
-    public sealed class RContentTypeDefinition
-    {
+    public sealed class RContentTypeDefinition {
         public const string LanguageName = "R";
         public const string ContentType = "R";
         public const string FileExtension = ".r";
 
         public const string RStudioProjectExtensionNoDot = "rproj";
-        public const string RStudioProjectExtension = "." + RStudioProjectExtensionNoDot;
         public const string VsRProjectExtension = ".rxproj";
-        public const string RProjectName = "RProject";
 
         /// <summary>
         /// Exports the R content type
