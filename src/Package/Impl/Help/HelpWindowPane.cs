@@ -73,6 +73,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     try {
                         var session = _workflowProvider.GetOrCreate().RSession;
                         await session.ExecuteAsync($"rtvs:::show_help({searchString.ToRStringLiteral()})");
+                    } catch (OperationCanceledException) {
                     } catch (RException) {
                     } catch (MessageTransportException) {
                     }
