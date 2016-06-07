@@ -23,5 +23,10 @@ namespace Microsoft.Languages.Editor.EditorFactory {
         /// Document text buffer
         /// </summary>
         ITextBuffer TextBuffer { get; }
+
+        /// <summary>
+        /// Full path to the document file. May be null or empty in transient documents.
+        /// </summary>
+        string FilePath { get; }
     }
 }

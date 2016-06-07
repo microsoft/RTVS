@@ -55,12 +55,12 @@ namespace Microsoft.R.Editor.Formatting {
                     IREditorDocument document = REditorDocument.TryFromTextBuffer(targetSpan.Snapshot.TextBuffer);
                     if (document != null) {
                         int insertionPoint = targetSpan.Start;
-                        targetSpan.Snapshot.TextBuffer.Replace(targetSpan, text);
+                        document.TextBuffer.Replace(targetSpan, text);
                         document.EditorTree.EnsureTreeReady();
 
                         // We don't want to format inside strings
                         if (!document.EditorTree.AstRoot.IsPositionInsideString(insertionPoint)) {
-                            RangeFormatter.FormatRange(TextView, targetSpan.Snapshot.TextBuffer,
+                            RangeFormatter.FormatRange(TextView, document.TextBuffer,
                                 new TextRange(insertionPoint, text.Length), REditorSettings.FormatOptions);
                         }
                     }

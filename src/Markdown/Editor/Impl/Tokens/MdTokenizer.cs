@@ -160,6 +160,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
             while (!_cs.IsEndOfStream()) {
                 // End of R block: <line_break>```
                 bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+                endOfBlock |= _cs.Position == _cs.Length - 1; // handle unclosed code block as if it ends at EOF
 
                 if (endOfBlock) {
                     _cs.SkipLineBreak();

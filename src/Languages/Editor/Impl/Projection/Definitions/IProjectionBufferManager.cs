@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
@@ -27,6 +28,11 @@ namespace Microsoft.Languages.Editor.Projection {
         /// or to inert text.
         /// </summary>
         IProjectionBuffer ContainedLanguageBuffer { get; }
+
+        /// <summary>
+        /// Buffer that contains original document that was loaded from disk.
+        /// </summary>
+        ITextBuffer DiskBuffer { get; }
 
         /// <summary>
         /// Sets projections for the secondary language

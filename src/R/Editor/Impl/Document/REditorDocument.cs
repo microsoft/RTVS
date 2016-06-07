@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
@@ -34,6 +35,29 @@ namespace Microsoft.R.Editor.Document {
 
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
+
+        /// <summary>
+        /// Full path to the document file. May be null or empty in transient documents.
+        /// </summary>
+        public string FilePath {
+            get {
+                var path = TextBuffer.GetFilePath();
+                if(string.IsNullOrEmpty(path)) {
+                    var textView = TextViewConnectionListener.GetFirstViewForBuffer(TextBuffer);
+                    if(textView != null) {
+                        if (textView.IsRepl()) {
+                            return Resources.ReplWindowName;
+                        }
+                        path = textView.TextBuffer.GetFilePath();
+                        if(string.IsNullOrEmpty(path)) {
+                            var pbm = ProjectionBufferManager.FromTextBuffer(textView.TextBuffer);
+                            path = pbm?.DiskBuffer.GetFilePath();
+                        }
+                    }
+                }
+                return path;
+            }
+        }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> DocumentClosing;

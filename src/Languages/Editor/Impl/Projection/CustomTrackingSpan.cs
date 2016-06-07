@@ -16,9 +16,9 @@ namespace Microsoft.Languages.Editor.Projection {
         private readonly ITrackingPoint _start;
         private readonly ITrackingPoint _end;
 
-        public CustomTrackingSpan(ITextSnapshot snapshot, Span span, bool canAppend = false) {
-            _start = snapshot.CreateTrackingPoint(span.Start, PointTrackingMode.Negative);
-            _end = snapshot.CreateTrackingPoint(span.End, canAppend ? PointTrackingMode.Positive : PointTrackingMode.Negative);
+        public CustomTrackingSpan(ITextSnapshot snapshot, Span span, PointTrackingMode startTracking, PointTrackingMode endTracking) {
+            _start = snapshot.CreateTrackingPoint(span.Start, startTracking);
+            _end = snapshot.CreateTrackingPoint(span.End, endTracking);
         }
 
         #region ITrackingSpan Members

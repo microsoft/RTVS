@@ -10,6 +10,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.Utilities;
@@ -38,15 +39,22 @@ namespace Microsoft.Markdown.Editor.Document {
         }
         #endregion
 
-        #region IMdEditorDocument
+        #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
+
+        /// <summary>
+        /// Full path to the document file. May be null or empty in transient documents.
+        /// </summary>
+        public string FilePath => TextBuffer.GetFilePath();
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> DocumentClosing;
 #pragma warning restore 67
 
         public virtual void Close() { }
+        #endregion
 
+        #region IMdEditorDocument
         public IContainedLanguageHandler ContainedLanguageHandler { get; }
         #endregion
 

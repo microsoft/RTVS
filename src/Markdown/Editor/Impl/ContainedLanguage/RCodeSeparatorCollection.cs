@@ -20,14 +20,14 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             ITextProvider oldText, ITextProvider newText) {
 
             var index = GetItemAtPosition(start);
-            if (index >= 0 && newLength > 0 && newText[start + newLength - 1] == '`') {
-                // Typing ` right before the ```
+            if (index >= 0) {
+                // Changing anything right before the ``` is destructive
                 return true;
             }
 
             index = GetFirstItemBeforePosition(start);
             if (index >= 0 && Items[index].End == start && newLength > 0 && newText[start] == '`') {
-                // Typing ` right after the ```
+                // Typing ` right after the ``` is destructive
                 return true;
             }
 

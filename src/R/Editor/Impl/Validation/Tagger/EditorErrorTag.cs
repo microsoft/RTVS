@@ -3,10 +3,8 @@
 
 using System;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.TaskList.Definitions;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
@@ -28,6 +26,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             : base(GetErrorType(error), error.Message) {
             _textBuffer = editorTree.TextBuffer;
 
+            var document = REditorDocument.FromTextBuffer(editorTree.TextBuffer);
+            FileName = document?.FilePath;
+
             Description = error.Message;
             TaskType = GetTaskType(error);
 
@@ -38,9 +39,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         }
 
         #region ITagSpan<IErrorTag> Members
-        public IErrorTag Tag {
-            get { return this; }
-        }
+        public IErrorTag Tag => this;
 
         public SnapshotSpan Span {
             get {
@@ -126,45 +125,29 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 expandable.Expand(startOffset, endOffset);
         }
 
-        public bool AllowZeroLength {
-            get {
-                return false;
-            }
-        }
-
-        public bool IsStartInclusive {
-            get {
-                return true;
-            }
-        }
-
-        public bool IsEndInclusive {
-            get {
-                return false;
-            }
-        }
+        public bool AllowZeroLength => false;
+        public bool IsStartInclusive => true;
+        public bool IsEndInclusive => false;
 
         public bool ContainsUsingInclusion(int position) {
             return Contains(position);
         }
-
-        public bool IsWellFormed {
-            get { return true; }
-        }
+        public bool IsWellFormed => true;
         #endregion
 
         #region IEditorTaskListItem
-        public string Description { get; private set; }
-        public TaskType TaskType { get; private set; }
+        public string Description { get; }
+        public TaskType TaskType { get; }
 
         public int Line {
             get {
                 if (Span.Start < Span.Snapshot.Length) {
-                    // Add 1 for WebMatrix compatability, 
-                    // remember to subtract 1 in VS-specific code
-                    return Span.Snapshot.GetLineNumberFromPosition(Span.Start) + 1;
+                    var textView = TextViewConnectionListener.GetFirstViewForBuffer(_textBuffer);
+                    var viewPoint = textView?.MapUpToView(new SnapshotPoint(_textBuffer.CurrentSnapshot, Span.Start));
+                    if (viewPoint.HasValue) {
+                        return textView.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(viewPoint.Value) + 1;
+                    }
                 }
-
                 return 0;
             }
         }
@@ -173,26 +156,14 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             get {
                 if (Span.Start < Span.Snapshot.Length) {
                     var line = Span.Snapshot.GetLineFromPosition(Span.Start);
-                    // Add 1 for WebMatrix compatability, 
-                    // remember to subtract 1 in VS-specific code
                     return Span.Start.Position - line.Start + 1;
                 }
-
                 return 0;
             }
         }
 
-        public string FileName {
-            get {
-                return _textBuffer.GetFilePath();
-            }
-        }
-
-        public string HelpKeyword {
-            get {
-                return "vs.r.validationerror";
-            }
-        }
+        public string FileName { get; }
+        public string HelpKeyword => "vs.r.validationerror";
         #endregion
     }
 }

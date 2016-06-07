@@ -67,6 +67,7 @@
     <Compile Include="Outline\OutliningTagger.cs" />
     <Compile Include="Projection\CustomTrackingSpan.cs" />
     <Compile Include="Projection\Definitions\IProjectionBufferManager.cs" />
+    <Compile Include="Projection\LanguageEditResolver.cs" />
     <Compile Include="Projection\ProjectionBufferManager.cs" />
     <Compile Include="Projection\ProjectionMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
