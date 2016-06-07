@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.Collections.Generic;
+using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
@@ -29,6 +30,20 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             if (index >= 0 && Items[index].End == start && newLength > 0 && newText[start] == '`') {
                 // Typing ` right after the ``` is destructive
                 return true;
+            }
+
+            // If technically sequence is not currently a separator (such as ``` that is not after line break),
+            // text change may turn it into a valid separator.
+            if (start <= oldText.Length - LeftSeparator.Length) {
+                if(oldText.GetText(new TextRange(start, LeftSeparator.Length)).EqualsOrdinal(LeftSeparator)) {
+                    return true;
+                }
+            }
+
+            if (start <= oldText.Length - RightSeparator.Length) {
+                if (oldText.GetText(new TextRange(start, RightSeparator.Length)).EqualsOrdinal(RightSeparator)) {
+                    return true;
+                }
             }
 
             return base.IsDestructiveChangeForSeparator(separatorInfo, itemsInRange, start, oldLength, newLength, oldText, newText);

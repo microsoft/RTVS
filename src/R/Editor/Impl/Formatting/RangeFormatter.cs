@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
@@ -18,11 +19,14 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Formatting {
     internal static class RangeFormatter {
-        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer,
-                                      ITextRange formatRange, RFormatOptions options) {
+        public static bool FormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, RFormatOptions options) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
             int start = formatRange.Start;
             int end = formatRange.End;
+
+            if(!CanFormatRange(textView, textBuffer, formatRange)) {
+                return false;
+            }
 
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent formatting
@@ -175,6 +179,24 @@ namespace Microsoft.R.Editor.Formatting {
             }
 
             return position;
+        }
+
+        private static bool CanFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange) {
+            // Make sure we are not formatting damaging the projected range in R Markdown
+            // which looks like ```{r. 'r' should not separate from {.
+            var host = ContainedLanguageHost.GetHost(textView, textBuffer);
+            if (host != null) {
+                ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
+
+                int startLine = snapshot.GetLineNumberFromPosition(formatRange.Start);
+                int endLine = snapshot.GetLineNumberFromPosition(formatRange.End);
+                for(int i = startLine; i<= endLine; i++) {
+                    if (!host.CanFormatLine(textView, textBuffer, i)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }

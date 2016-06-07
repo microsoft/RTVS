@@ -20,13 +20,6 @@ namespace Microsoft.R.Editor.Document.Definitions
         bool IsClosed { get; }
 
         /// <summary>
-        /// Tells of document does not have associated disk file
-        /// such as when document is based off projection buffer
-        /// created elsewhere as in VS Interactive Window case.
-        /// </summary>
-        bool IsTransient { get; }
-
-        /// <summary>
         /// Tells document that massive change to text buffer is about to commence.
         /// Document will then stop tracking text buffer changes, will suspend
         /// it's parser and the classifier and remove all elements. Document 

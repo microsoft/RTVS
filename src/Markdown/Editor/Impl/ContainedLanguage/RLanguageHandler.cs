@@ -5,6 +5,8 @@ using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
 using Microsoft.R.Components.Controller;
@@ -38,7 +40,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             foreach (var c in changes) {
                 var destructive = _separators.IsDestructiveChange(c.OldStart, c.OldLength, c.NewLength, c.OldText, c.NewText);
                 if (destructive) {
-                    UpdateProjections();
+                    // Allow existing command call to complete so we don't yank projections
+                    // from underneath code that expects text buffer to exist, such as formatter.
+                    IdleTimeAction.Cancel(this.GetType());
+                    IdleTimeAction.Create(() => UpdateProjections(), 0, this.GetType());
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);

@@ -6,8 +6,11 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
+using Microsoft.Languages.Editor.Controller;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
@@ -159,15 +162,15 @@ namespace Microsoft.R.Editor.Validation {
                 StartValidation();
             }
 
-            if (Cleared != null)
-                Cleared(this, EventArgs.Empty);
+            Cleared?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 
         public static bool IsSyntaxCheckEnabled(ITextBuffer textBuffer) {
-            IREditorDocument document = REditorDocument.FromTextBuffer(textBuffer);
+            var document = REditorDocument.FromTextBuffer(textBuffer);
             if (document != null) {
-                return document.IsTransient ? REditorSettings.SyntaxCheckInRepl : REditorSettings.SyntaxCheck;
+                var view = document.GetFirstView();
+                return view != null && view.IsRepl() ? REditorSettings.SyntaxCheckInRepl : REditorSettings.SyntaxCheck;
             }
             return false;
         }
