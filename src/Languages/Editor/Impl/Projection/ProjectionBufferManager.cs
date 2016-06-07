@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Languages.Editor.EditorFactory;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
@@ -57,6 +59,8 @@ namespace Microsoft.Languages.Editor.Projection {
         public event EventHandler MappingsChanged;
 
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
+            SaveCaretPosition();
+
             mappings = mappings ?? new List<ProjectionMapping>();
             MapEverythingToView();
 
@@ -71,6 +75,7 @@ namespace Microsoft.Languages.Editor.Projection {
                 ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
             }
 
+            RestoreCaretPosition();
             MappingsChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -83,6 +88,7 @@ namespace Microsoft.Languages.Editor.Projection {
 
         public void Dispose() {
             ServiceManager.RemoveService<IProjectionBufferManager>(DiskBuffer);
+            ServiceManager.RemoveService<IProjectionBufferManager>(ViewBuffer);
         }
         #endregion
 
@@ -124,7 +130,7 @@ namespace Microsoft.Languages.Editor.Projection {
                 ProjectionMapping mapping = mappings[i];
                 if (mapping.Length > 0) {
                     span = Span.FromBounds(primaryIndex, mapping.SourceStart);
-                    spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
+                    spans.Add(new CustomTrackingSpan(diskSnapshot, span, i == 0 ? PointTrackingMode.Negative : PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
                     primaryIndex = mapping.SourceRange.End;
 
                     span = new Span(mapping.ProjectionStart, mapping.Length);
@@ -137,6 +143,22 @@ namespace Microsoft.Languages.Editor.Projection {
                 spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
             }
             return spans;
+        }
+
+        private int? _position;
+        private void SaveCaretPosition() {
+            var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
+            var textView = document?.TextBuffer.GetFirstView();
+            _position = textView?.Caret.Position.BufferPosition.Position;
+        }
+
+        private void RestoreCaretPosition() {
+            if (_position.HasValue) {
+                var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
+                var textView = document?.TextBuffer.GetFirstView();
+                textView?.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot,_position.Value));
+                _position = null;
+            }
         }
     }
 }

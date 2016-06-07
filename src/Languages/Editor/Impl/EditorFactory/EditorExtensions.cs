@@ -55,7 +55,11 @@ namespace Microsoft.Languages.Editor.Extensions {
         }
 
         public static ITextView GetFirstView(this IEditorDocument document) {
-            return TextViewConnectionListener.GetFirstViewForBuffer(document.TextBuffer);
+            return document.TextBuffer.GetFirstView();
+        }
+
+        public static ITextView GetFirstView(this ITextBuffer textBuffer) {
+            return TextViewConnectionListener.GetFirstViewForBuffer(textBuffer);
         }
     }
 }

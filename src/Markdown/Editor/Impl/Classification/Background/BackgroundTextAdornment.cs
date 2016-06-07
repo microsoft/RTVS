@@ -65,6 +65,7 @@ namespace Microsoft.Markdown.Editor.Classification {
             // since removal or addition of server code separators, changing
             // script or style blocks may affect highlight in dramatic ways.
             _reprocessFrom = 0;
+            ReprocessEntireView();
         }
 
         private void OnClosed(object sender, EventArgs e) {
@@ -99,8 +100,11 @@ namespace Microsoft.Markdown.Editor.Classification {
         private void OnViewWidthChanged() {
             // View width has changed - reprocess the entire view
             _lastWidth = _layer.TextView.ViewportRight + 100;
-            _layer.RemoveAllAdornments();
+            ReprocessEntireView();
+        }
 
+        private void ReprocessEntireView() { 
+            _layer.RemoveAllAdornments();
             foreach (var line in _view.TextViewLines) {
                 ProcessLine(line);
             }
