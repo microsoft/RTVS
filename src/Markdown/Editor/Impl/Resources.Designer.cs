@@ -106,6 +106,15 @@ namespace Microsoft.Markdown.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Markdown Code Background.
+        /// </summary>
+        internal static string ColorName_MD_CodeBackground {
+            get {
+                return ResourceManager.GetString("ColorName_MD_CodeBackground", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Markdown Heading.
         /// </summary>
         internal static string ColorName_MD_Heading {

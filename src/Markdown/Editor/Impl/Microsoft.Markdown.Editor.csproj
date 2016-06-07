@@ -36,6 +36,8 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Classification\Background\BackgroundTextAdornment.cs" />
+    <Compile Include="Classification\Background\BackgroundTextAdornmentFactory.cs" />
     <Compile Include="Classification\MarkdownClassificationDefinitions.cs" />
     <Compile Include="Classification\MarkdownClassificationNameProvider.cs" />
     <Compile Include="Classification\MarkdownClassificationTypes.cs" />

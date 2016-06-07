@@ -35,7 +35,7 @@ namespace Microsoft.Markdown.Editor.Commands {
                 var caretPosition = TextView.Caret.Position.BufferPosition;
                 var document = MdEditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
                 var handler = document?.ContainedLanguageHandler;
-                var codeRange = handler?.GetCodeBlockOfLocation(TextView, caretPosition);
+                var codeRange = handler?.GetCodeBlockOfLocation(caretPosition);
                 if (codeRange != null) {
                     var code = TextView.TextBuffer.CurrentSnapshot.GetText(new Span(codeRange.Start, codeRange.Length));
                     code = MarkdownUtility.GetRContentFromMarkdownCodeBlock(code).Trim();

@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
+using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
@@ -53,6 +54,8 @@ namespace Microsoft.Languages.Editor.Projection {
         public IProjectionBuffer ContainedLanguageBuffer { get; }
         public ITextBuffer DiskBuffer { get; }
 
+        public event EventHandler MappingsChanged;
+
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
             mappings = mappings ?? new List<ProjectionMapping>();
             MapEverythingToView();
@@ -67,6 +70,8 @@ namespace Microsoft.Languages.Editor.Projection {
             if (viewSpans.Count > 0) {
                 ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
             }
+
+            MappingsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void MapEverythingToView() {

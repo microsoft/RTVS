@@ -18,6 +18,6 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         /// Locates contained language block for a given location.
         /// </summary>
         /// <returns>block range or null if no secondary block found</returns>
-        ITextRange GetCodeBlockOfLocation(ITextView textView, int bufferPosition);
+        ITextRange GetCodeBlockOfLocation(int bufferPosition);
     }
 }

@@ -40,5 +40,7 @@ namespace Microsoft.Languages.Editor.Projection {
         /// <param name="secondaryContent">Contained language buffer content</param>
         /// <param name="mappings">Mappings that describe projections of contained language buffer to the view</param>
         void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
+
+        event EventHandler MappingsChanged;
     }
 }
