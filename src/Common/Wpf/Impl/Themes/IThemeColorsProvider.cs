@@ -8,6 +8,8 @@ namespace Microsoft.Common.Wpf.Themes {
     public interface IThemeColorsProvider {
         event EventHandler ThemeChanged;
 
+        bool IsDarkTheme { get; }
+
         Color CodeBackgroundColor { get; }
     }
 }

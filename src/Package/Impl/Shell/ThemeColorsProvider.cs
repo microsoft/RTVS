@@ -18,10 +18,15 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ThemeChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        public bool IsDarkTheme {
+            get {
+                var defaultBackground = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                return defaultBackground.GetBrightness() < 0.5;
+            }
+        }
         public Color CodeBackgroundColor {
             get {
-                var color = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
-                return Color.FromArgb(color.A, color.R, color.G, color.B);
+                return IsDarkTheme ? Color.FromArgb(0xFF, 0x0C, 0x0C, 0x0C) : Color.FromArgb(0xFF, 0xFA, 0xFA, 0xFA);
             }
         }
 
