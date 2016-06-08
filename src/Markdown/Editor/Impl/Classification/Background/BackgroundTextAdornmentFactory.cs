@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Languages.Editor.Classification;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -21,13 +22,16 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
         public AdornmentLayerDefinition editorAdornmentLayer = null;
 
         [Import]
-        public IClassificationTypeRegistryService ClassificationTypeRegistry { get; set; }
+        private IClassificationTypeRegistryService ClassificationTypeRegistry { get; set; }
 
         [Import]
-        public IClassificationFormatMapService ClassificationFormatMap { get; set; }
+        private IClassificationFormatMapService ClassificationFormatMap { get; set; }
+
+        [Import]
+        private IThemeColorsProvider ThemeColorProvider { get; set; }
 
         public void TextViewCreated(IWpfTextView textView) {
-            new CodeBackgroundTextAdornment(textView, ClassificationFormatMap, ClassificationTypeRegistry);
+            new CodeBackgroundTextAdornment(textView, ThemeColorProvider, ClassificationFormatMap, ClassificationTypeRegistry);
         }
     }
 }

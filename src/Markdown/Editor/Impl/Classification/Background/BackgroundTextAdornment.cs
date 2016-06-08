@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Microsoft.Languages.Editor.Classification;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
@@ -38,7 +39,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         private int _reprocessFrom = -1;
         private VisualToolset _codeTools;
 
-        public CodeBackgroundTextAdornment(IWpfTextView view, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
+        public CodeBackgroundTextAdornment(IWpfTextView view, IThemeColorsProvider colorProvider, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
 
             _view = view;
             _layer = view.GetAdornmentLayer("CodeBackgroundTextAdornment");

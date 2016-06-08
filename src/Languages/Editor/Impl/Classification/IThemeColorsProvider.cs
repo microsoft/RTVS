@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Windows.Media;
+using System.Drawing;
 
 namespace Microsoft.Languages.Editor.Classification {
     public interface IThemeColorsProvider {
         event EventHandler ThemeChanged;
 
-        Brush CodeBackgroundColor { get; }
+        Color CodeBackgroundColor { get; }
     }
 }
