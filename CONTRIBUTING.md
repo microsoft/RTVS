@@ -53,7 +53,6 @@ This step is required before first build and every time R.sln is opened in the d
 ### Building and running the product
 1. Open `R.sln` solution file in Visual Studio 2015 or Visual Studio 15 Preview.
 1. Set `Microsoft.VisualStudio.R.Package` as a startup project.
-1. Unload `SetupBundle` project - it has some internal dependencies, and cannot be built by third parties.
 1. If you are not planning to build the installer MSI (see next section), you can also unload `Setup`, `SetupRHost` and `SetupCustomActions` projects.
 1. Build the solution. Note that this will _not_ build `Setup` by default.
 1. Start Debugging (F5).
