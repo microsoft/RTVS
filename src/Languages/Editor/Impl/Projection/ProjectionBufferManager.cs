@@ -19,6 +19,7 @@ namespace Microsoft.Languages.Editor.Projection {
 
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private readonly IProjectionEditResolver _editResolver;
+        private int? _savedCaretPosition;
 
         public ProjectionBufferManager(ITextBuffer diskBuffer,
                                        IProjectionBufferFactoryService projectionBufferFactoryService,
@@ -59,8 +60,12 @@ namespace Microsoft.Languages.Editor.Projection {
         public event EventHandler MappingsChanged;
 
         public void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings) {
+            // Changing projections can move caret to a visible area unexpectedly.
+            // Save caret position so we can place it at the same location when 
+            // projections are re-established.
             SaveCaretPosition();
 
+            // While we are changing mappings map everything to the view
             mappings = mappings ?? new List<ProjectionMapping>();
             MapEverythingToView();
 
@@ -145,19 +150,18 @@ namespace Microsoft.Languages.Editor.Projection {
             return spans;
         }
 
-        private int? _position;
         private void SaveCaretPosition() {
             var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
             var textView = document?.TextBuffer.GetFirstView();
-            _position = textView?.Caret.Position.BufferPosition.Position;
+            _savedCaretPosition = textView?.Caret.Position.BufferPosition.Position;
         }
 
         private void RestoreCaretPosition() {
-            if (_position.HasValue) {
+            if (_savedCaretPosition.HasValue) {
                 var document = ServiceManager.GetService<IEditorDocument>(DiskBuffer);
                 var textView = document?.TextBuffer.GetFirstView();
-                textView?.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot,_position.Value));
-                _position = null;
+                textView?.Caret.MoveTo(new SnapshotPoint(textView.TextBuffer.CurrentSnapshot, _savedCaretPosition.Value));
+                _savedCaretPosition = null;
             }
         }
     }

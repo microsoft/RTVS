@@ -5,7 +5,6 @@ using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
@@ -68,7 +67,10 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             // TODO: incremental updates
             Blocks.Clear();
             _separators.Clear();
+
             foreach (var t in rCodeTokens) {
+                // Verify that code block is properly terminated.
+                // If not, it ends at the end of the buffer.
                 _separators.Add(new TextRange(t.Start, 5));
                 if (t.End < TextBuffer.CurrentSnapshot.Length) {
                     Blocks.Add(new TextRange(t.Start + 3, t.Length - 6));
