@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.Collections.Generic;
-using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 
 namespace Microsoft.Markdown.Editor.ContainedLanguage {
@@ -14,43 +13,36 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         public override string RightSeparator => "```";
         #endregion
 
-        protected override bool IsDestructiveChangeForSeparator(
-            ISensitiveFragmentSeparatorsInfo separatorInfo,
-            IReadOnlyList<ITextRange> itemsInRange,
-            int start, int oldLength, int newLength,
-            ITextProvider oldText, ITextProvider newText) {
+        public override bool IsDestructiveChange(int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText) {
+            if (oldText.Length > 0) {
+                if (start < oldText.Length && oldText[start] == '`') {
+                    // Changing anything right before the ` is destructive
+                    return true;
+                }
 
-            if (GetItemAtPosition(start) >= 0) {
-                // Changing anything right before the ``` is destructive
-                return true;
-            }
+                if (start > 0 && oldText[start - 1] == '`') {
+                    // Changing anything right after the ` is destructive
+                    return true;
+                }
 
-            if (oldLength > 0 && GetItemAtPosition(start + oldLength) >= 0) {
-                // Changing anything right before the ``` is destructive
-                return true;
-            }
+                int end = start + oldLength;
+                if (end < oldText.Length && oldText[end] == '`') {
+                    // Changing anything right before the ` is destructive
+                    return true;
+                }
 
-            var index = GetFirstItemBeforePosition(start);
-            if (index >= 0 && Items[index].End == start && newLength > 0 && newText[start] == '`') {
-                // Typing ` right after the ``` is destructive
-                return true;
-            }
-
-            // If technically sequence is not currently a separator (such as ``` that is not after line break),
-            // text change may turn it into a valid separator.
-            if (start <= oldText.Length - LeftSeparator.Length) {
-                if (oldText.GetText(new TextRange(start, LeftSeparator.Length)).EqualsOrdinal(LeftSeparator)) {
+                if (end >= 0 && oldText[end] == '`') {
+                    // Changing anything right after the ` is destructive
                     return true;
                 }
             }
 
-            if (start <= oldText.Length - RightSeparator.Length) {
-                if (oldText.GetText(new TextRange(start, RightSeparator.Length)).EqualsOrdinal(RightSeparator)) {
-                    return true;
-                }
+            // Deleting or adding backticks is destructive
+            if (oldText.IndexOf('`', new TextRange(start, oldLength)) >= 0 || newText.IndexOf('`', new TextRange(start, newLength)) >= 0) {
+                return true;
             }
 
-            return base.IsDestructiveChangeForSeparator(separatorInfo, itemsInRange, start, oldLength, newLength, oldText, newText);
+            return base.IsDestructiveChange(start, oldLength, newLength, oldText, newText);
         }
     }
 }
