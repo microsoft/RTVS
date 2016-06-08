@@ -192,7 +192,8 @@
                   AutoGenerateColumns="False"
                   ScrollViewer.VerticalScrollBarVisibility="Visible"
                   IsReadOnly="True"
-                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}">
+                  RowHeight="{Binding Path=FontSize, ElementName=Self, Converter={x:Static rwpf:Converters.Scale190}}"
+                  vsui:ImageThemingUtilities.ThemeScrollBars="True">
             <DataGrid.RowStyle>
                 <Style TargetType="{x:Type DataGridRow}">
                     <EventSetter Event="MouseDoubleClick" Handler="GridRow_MouseDoubleClick" />

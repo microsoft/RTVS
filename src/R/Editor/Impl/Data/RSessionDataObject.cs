@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Settings;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.R.Editor.Data {
@@ -40,40 +41,46 @@ namespace Microsoft.R.Editor.Data {
 
             if (DebugEvaluation is IRValueInfo) {
                 var valueEvaluation = (IRValueInfo)DebugEvaluation;
-
-                Value = GetValue(valueEvaluation)?.Trim();
-                TypeName = valueEvaluation.TypeName;
-
-                if (valueEvaluation.Classes != null) {
-                    var escaped = valueEvaluation.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
-                    Class = string.Join(", ", escaped); // TODO: escape ',' in class names
-                }
-
-                HasChildren = valueEvaluation.HasChildren;
-
-                if (valueEvaluation.Dim != null) {
-                    Dimensions = valueEvaluation.Dim;
-                } else if(valueEvaluation.Length.HasValue) {
-                    Dimensions = new List<int>() { valueEvaluation.Length.Value, 1 };
-                } else {
-                    Dimensions = new List<int>();
-                }
+                Initalize(valueEvaluation);
             } else if (DebugEvaluation is IRPromiseInfo) {
                 var promiseInfo = (IRPromiseInfo)DebugEvaluation;
                 Value = promiseInfo.Code;
                 Class = TypeName = "<promise>";
             } else if (DebugEvaluation is IRActiveBindingInfo) {
-                const string ActiveBindingValue = "<active binding>";
+                const string ActiveBindingText = "<active binding>";
                 var activeBinding = (IRActiveBindingInfo)DebugEvaluation;
-
-                Value = ActiveBindingValue;
-                TypeName = ActiveBindingValue;
-                Class = ActiveBindingValue;
+                if(activeBinding.ComputedValue != null) {
+                    Initalize(activeBinding.ComputedValue);
+                } else {
+                    Value = ActiveBindingText;
+                    TypeName = ActiveBindingText;
+                    Class = ActiveBindingText;
+                }
             }
 
             if (Dimensions == null) Dimensions = new List<int>();
 
             MaxChildrenCount = maxChildrenCount;
+        }
+
+        private void Initalize(IRValueInfo valueInfo) {
+            Value = GetValue(valueInfo)?.Trim();
+            TypeName = valueInfo.TypeName;
+
+            if (valueInfo.Classes != null) {
+                var escaped = valueInfo.Classes.Select((x) => x.IndexOf(' ') >= 0 ? "'" + x + "'" : x);
+                Class = string.Join(", ", escaped); // TODO: escape ',' in class names
+            }
+
+            HasChildren = valueInfo.HasChildren;
+
+            if (valueInfo.Dim != null) {
+                Dimensions = valueInfo.Dim;
+            } else if (valueInfo.Length.HasValue) {
+                Dimensions = new List<int>() { valueInfo.Length.Value, 1 };
+            } else {
+                Dimensions = new List<int>();
+            }
         }
 
         protected int? MaxChildrenCount { get; set; }
@@ -106,7 +113,7 @@ namespace Microsoft.R.Editor.Data {
             if (valueEvaluation.HasChildren) {
                 await TaskUtilities.SwitchToBackgroundThread();
 
-                const REvaluationResultProperties properties =
+                REvaluationResultProperties properties =
                     ExpressionProperty |
                     AccessorKindProperty |
                     TypeNameProperty |
@@ -115,7 +122,8 @@ namespace Microsoft.R.Editor.Data {
                     SlotCountProperty |
                     AttributeCountProperty |
                     DimProperty |
-                    FlagsProperty;
+                    FlagsProperty |
+                    (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
                 var children = await valueEvaluation.DescribeChildrenAsync(properties, RValueRepresentations.Str(MaxReprLength), MaxChildrenCount);
                 result = EvaluateChildren(children);
             }

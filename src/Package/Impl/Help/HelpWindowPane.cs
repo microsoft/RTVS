@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public override bool SearchEnabled => true;
 
         public override void ProvideSearchSettings(IVsUIDataSource pSearchSettings) {
-            var settings = (SearchSettingsDataSource)pSearchSettings;
+            dynamic settings = pSearchSettings;
             settings.SearchWatermark = Resources.HelpSearchWatermark;
             settings.SearchTooltip = Resources.HelpSearchTooltip;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_ONDEMAND;
@@ -70,9 +70,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
                 var searchString = SearchQuery.SearchString;
                 if (!string.IsNullOrWhiteSpace(searchString)) {
-                    var session = _workflowProvider.GetOrCreate().RSession;
-                    using (var inter = await session.BeginInteractionAsync()) {
-                        await inter.RespondAsync("?" + searchString.ToRName() + Environment.NewLine);
+                    try {
+                        var session = _workflowProvider.GetOrCreate().RSession;
+                        await session.ExecuteAsync($"rtvs:::show_help({searchString.ToRStringLiteral()})");
+                    } catch (OperationCanceledException) {
+                    } catch (RException) {
+                    } catch (MessageTransportException) {
                     }
                 }
             }

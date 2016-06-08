@@ -64,7 +64,9 @@ namespace Microsoft.R.Debugger {
                     return new IREvaluationResultInfo[0];
                 }
 
-                var children = await valueResult.DescribeChildrenAsync(PrefetchedProperties, Repr, ChildrenMaxCount, ct);
+                REvaluationResultProperties properties = RToolsSettings.Current.EvaluateActiveBindings ? REvaluationResultProperties.ComputedValueProperty : 0;
+                properties |= PrefetchedProperties;
+                var children = await valueResult.DescribeChildrenAsync(properties, Repr, ChildrenMaxCount, ct);
 
                 // Children of environments do not have any meaningful order, so sort them by name.
                 if (valueResult.TypeName == "environment") {
@@ -283,6 +285,7 @@ namespace Microsoft.R.Debugger {
             var valueInfo = EvaluationResult as IRValueInfo;
             var errorInfo = EvaluationResult as IRErrorInfo;
             var promiseInfo = EvaluationResult as IRPromiseInfo;
+            var activeBindingInfo = EvaluationResult as IRActiveBindingInfo;
 
             if (fields.HasFlag(enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_FULLNAME)) {
                 dpi.bstrFullName = EvaluationResult.Expression;
@@ -307,8 +310,16 @@ namespace Microsoft.R.Debugger {
                 } else if (promiseInfo != null) {
                     dpi.bstrType = "<promise>";
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
-                } else if (EvaluationResult is IRActiveBindingInfo) {
-                    dpi.bstrType = "<active binding>";
+                } else if (activeBindingInfo != null) {
+                    if (activeBindingInfo.ComputedValue != null) {
+                        dpi.bstrType = activeBindingInfo.ComputedValue.TypeName;
+                        if (activeBindingInfo.ComputedValue.Classes != null && activeBindingInfo.ComputedValue.Classes.Count > 0) {
+                            dpi.bstrType += " (" + string.Join(", ", activeBindingInfo.ComputedValue.Classes) + ")";
+                        }
+                    } else {
+                        dpi.bstrType = "<active binding>";
+                    }
+                    
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_TYPE;
                 }
             }
@@ -324,6 +335,11 @@ namespace Microsoft.R.Debugger {
                 } else if (errorInfo != null) {
                     dpi.bstrValue = errorInfo.ErrorText;
                     dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                } else if (activeBindingInfo != null) {
+                    if (activeBindingInfo.ComputedValue != null) {
+                        dpi.bstrValue = activeBindingInfo.ComputedValue.Representation;
+                        dpi.dwFields |= enum_DEBUGPROP_INFO_FLAGS.DEBUGPROP_INFO_VALUE;
+                    }
                 }
             }
 
@@ -364,7 +380,7 @@ namespace Microsoft.R.Debugger {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_ERROR;
                 } else if (promiseInfo != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_SIDE_EFFECT;
-                } else if (EvaluationResult is IRActiveBindingInfo) {
+                } else if (activeBindingInfo != null) {
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_PROPERTY;
                     dpi.dwAttrib |= enum_DBG_ATTRIB_FLAGS.DBG_ATTRIB_VALUE_SIDE_EFFECT;
                 }

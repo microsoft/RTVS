@@ -44,7 +44,7 @@ namespace Microsoft.R.DataInspection {
 
             var isActiveBinding = json.Value<bool?>("active_binding");
             if (isActiveBinding == true) {
-                return new RActiveBindingInfo(session, environmentExpression, expression, name);
+                return new RActiveBindingInfo(session, environmentExpression, expression, name, json);
             }
 
             return new RValueInfo(session, environmentExpression, expression, name, json);

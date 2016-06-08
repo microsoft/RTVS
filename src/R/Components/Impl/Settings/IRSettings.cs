@@ -45,5 +45,11 @@ namespace Microsoft.R.Components.Settings {
         /// R code page (LC_CTYPE)
         /// </summary>
         int RCodePage { get; set; }
+
+        /// <summary>
+        /// This is used in describe_children to evaluate active bindings. This
+        /// is false by default.
+        /// </summary>
+        bool EvaluateActiveBindings { get; set; }
     }
 }
