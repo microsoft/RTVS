@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Languages.Editor.Classification;
+using Microsoft.Common.Wpf.Themes;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
@@ -22,22 +22,16 @@ namespace Microsoft.Markdown.Editor.Classification {
     /// across the view, including empty lines.
     /// </summary>
     internal sealed class CodeBackgroundTextAdornment {
-        class VisualToolset {
-            public IClassificationType ClassificationType { get; set; }
-            public Brush Brush { get; set; }
-            public Pen Pen { get; set; }
-
-        }
-
         private readonly IAdornmentLayer _layer;
         private readonly IWpfTextView _view;
         private readonly IClassificationFormatMap _classificationFormatMap;
         private readonly IClassificationTypeRegistryService _classificationTypeRegistry;
         private readonly IContainedLanguageHandler _contanedLanguageHandler;
+        private readonly IThemeColorsProvider _colorProvider;
 
         private double _lastWidth = 0;
         private int _reprocessFrom = -1;
-        private VisualToolset _codeTools;
+        private Brush _backgroudColorBlush;
 
         public CodeBackgroundTextAdornment(IWpfTextView view, IThemeColorsProvider colorProvider, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
 
@@ -47,6 +41,8 @@ namespace Microsoft.Markdown.Editor.Classification {
             _classificationTypeRegistry = classificationTypeRegistry;
             _classificationFormatMap = classificationFormatMapService.GetClassificationFormatMap(view);
 
+            _colorProvider = colorProvider;
+            _colorProvider.ThemeChanged += OnColorThemeChanged;
             // Advise to events
             _classificationFormatMap.ClassificationFormatMappingChanged += OnClassificationFormatMappingChanged;
             _view.LayoutChanged += OnLayoutChanged;
@@ -58,7 +54,11 @@ namespace Microsoft.Markdown.Editor.Classification {
                 _contanedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer);
             }
 
-            InitializeVisualTools();
+            FetchColors();
+        }
+
+        private void OnColorThemeChanged(object sender, EventArgs e) {
+            FetchColors();
         }
 
         private void OnMappingsChanged(object sender, EventArgs e) {
@@ -126,7 +126,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         }
 
         private void OnClassificationFormatMappingChanged(object sender, EventArgs e) {
-            InitializeVisualTools();
+            FetchColors();
         }
 
         private void CreateVisuals(IWpfTextViewLine line) {
@@ -134,7 +134,7 @@ namespace Microsoft.Markdown.Editor.Classification {
                 IWpfTextViewLineCollection textViewLines = _view.TextViewLines;
                 var g = new RectangleGeometry(new Rect(0, line.TextTop, _lastWidth, (double)(int)(line.Height + 0.5)));
                 SnapshotSpan span = new SnapshotSpan(line.Snapshot, new Span(line.Start, line.Length));
-                CreateHighlight(line, g, GetVisualTools(), span);
+                CreateHighlight(line, g, span);
             }
         }
 
@@ -143,13 +143,13 @@ namespace Microsoft.Markdown.Editor.Classification {
                    _contanedLanguageHandler.GetCodeBlockOfLocation(line.End.Position) != null;
         }
 
-        private void CreateHighlight(IWpfTextViewLine line, Geometry g, VisualToolset visualTools, SnapshotSpan span) {
+        private void CreateHighlight(IWpfTextViewLine line, Geometry g, SnapshotSpan span) {
             if (g != null) {
                 var uiElement = new Rectangle();
 
                 uiElement.Width = g.Bounds.Width;
                 uiElement.Height = g.Bounds.Height;
-                uiElement.Fill = visualTools.Brush;
+                uiElement.Fill = _backgroudColorBlush;
 
                 //Align the image with the top of the bounds of the text geometry
                 Canvas.SetLeft(uiElement, g.Bounds.Left);
@@ -160,21 +160,8 @@ namespace Microsoft.Markdown.Editor.Classification {
             }
         }
 
-        private void InitializeVisualTools() {
-            _codeTools = new VisualToolset();
-            _codeTools.ClassificationType = _classificationTypeRegistry.GetClassificationType(MarkdownClassificationTypes.CodeBackground);
-
-            TextFormattingRunProperties formattingProps = _classificationFormatMap.GetTextProperties(_codeTools.ClassificationType);
-
-            _codeTools.Brush = formattingProps.BackgroundBrush;
-            _codeTools.Pen = new Pen(formattingProps.BackgroundBrush, 0.5);
-            _codeTools.Pen.Freeze();
-
-            formattingProps = _classificationFormatMap.GetTextProperties(_codeTools.ClassificationType);
-        }
-
-        private VisualToolset GetVisualTools() {
-            return _codeTools;
+        private void FetchColors() {
+            _backgroudColorBlush = new SolidColorBrush(_colorProvider.CodeBackgroundColor);
         }
     }
 }

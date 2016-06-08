@@ -3,7 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Languages.Editor.Classification;
+using Microsoft.Common.Wpf.Themes;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
@@ -31,7 +31,7 @@ namespace Microsoft.Markdown.Editor.Classification.Background {
         private IThemeColorsProvider ThemeColorProvider { get; set; }
 
         public void TextViewCreated(IWpfTextView textView) {
-            new CodeBackgroundTextAdornment(textView, ThemeColorProvider, ClassificationFormatMap, ClassificationTypeRegistry);
+            textView.Properties.GetOrCreateSingletonProperty(() => new CodeBackgroundTextAdornment(textView, ThemeColorProvider, ClassificationFormatMap, ClassificationTypeRegistry));
         }
     }
 }

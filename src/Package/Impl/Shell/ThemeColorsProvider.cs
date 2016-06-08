@@ -3,8 +3,8 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Drawing;
-using Microsoft.Languages.Editor.Classification;
+using System.Windows.Media;
+using Microsoft.Common.Wpf.Themes;
 using Microsoft.VisualStudio.PlatformUI;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -18,7 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             ThemeChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        public Color CodeBackgroundColor => VSColorTheme.GetThemedColor(EnvironmentColors.AccentDarkBrushKey);
+        public Color CodeBackgroundColor {
+            get {
+                var color = VSColorTheme.GetThemedColor(EnvironmentColors.ToolWindowBackgroundColorKey);
+                return Color.FromArgb(color.A, color.R, color.G, color.B);
+            }
+        }
 
         public event EventHandler ThemeChanged;
     }

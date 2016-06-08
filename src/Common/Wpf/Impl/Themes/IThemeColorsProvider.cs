@@ -2,9 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Drawing;
+using System.Windows.Media;
 
-namespace Microsoft.Languages.Editor.Classification {
+namespace Microsoft.Common.Wpf.Themes {
     public interface IThemeColorsProvider {
         event EventHandler ThemeChanged;
 
