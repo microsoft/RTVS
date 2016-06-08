@@ -15,6 +15,22 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
     public class RCodeSeparatorCollectionTest {
         [CompositeTest]
         [Category.Md.RCode]
+        [InlineData("", 0)]
+        [InlineData("```", 0)]
+        [InlineData("a```", 0)]
+        [InlineData("```{r}", 1)]
+        [InlineData("a\n```{r}\n", 1)]
+        [InlineData("a\n```{r}\n", 1)]
+        [InlineData("a\n```{r}\n```\n```{r}\n", 2)]
+        public void BuildTest(string content, int expectedTokens) {
+            var tokenizer = new MdTokenizer();
+            var tokens = tokenizer.Tokenize(content);
+            var rCodeTokens = tokens.Where(t => t.TokenType == MarkdownTokenType.Code);
+            rCodeTokens.Should().HaveCount(expectedTokens);
+        }
+
+        [CompositeTest]
+        [Category.Md.RCode]
         [InlineData(0, 0, "a", false)]
         [InlineData(0, 0, "`", true)]
         [InlineData(1, 1, "a", true)]
@@ -49,6 +65,20 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [InlineData(16, 1, "```{r}", true)]
         public void DestructiveTest02(int start, int oldLength, string newText, bool expected) {
             var markdown = "```{r}\nx<-1\n```\n\n```{r}\ny<-2\n```";
+            var coll = BuildCollection(markdown);
+            var newCode = markdown.Remove(start, oldLength).Insert(start, newText);
+            var result = coll.IsDestructiveChange(start, oldLength, newText.Length, new TextStream(markdown), new TextStream(newCode));
+            result.Should().Be(expected);
+        }
+
+        [CompositeTest]
+        [Category.Md.RCode]
+        [InlineData("abc```{r}\n\n```", 0, 3, "", true)]
+        [InlineData("```{r}\n\n```", 0, 0, "a", true)]
+        [InlineData("```{r}\n\n```", 8, 0, "a", true)]
+        [InlineData("```{r}\n\na```", 8, 1, "", true)]
+        public void DestructiveTest03(string content, int start, int oldLength, string newText, bool expected) {
+            var markdown = "```{r}\n\n```";
             var coll = BuildCollection(markdown);
             var newCode = markdown.Remove(start, oldLength).Insert(start, newText);
             var result = coll.IsDestructiveChange(start, oldLength, newText.Length, new TextStream(markdown), new TextStream(newCode));

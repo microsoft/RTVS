@@ -20,13 +20,17 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             int start, int oldLength, int newLength,
             ITextProvider oldText, ITextProvider newText) {
 
-            var index = GetItemAtPosition(start);
-            if (index >= 0) {
+            if (GetItemAtPosition(start) >= 0) {
                 // Changing anything right before the ``` is destructive
                 return true;
             }
 
-            index = GetFirstItemBeforePosition(start);
+            if (oldLength > 0 && GetItemAtPosition(start + oldLength) >= 0) {
+                // Changing anything right before the ``` is destructive
+                return true;
+            }
+
+            var index = GetFirstItemBeforePosition(start);
             if (index >= 0 && Items[index].End == start && newLength > 0 && newText[start] == '`') {
                 // Typing ` right after the ``` is destructive
                 return true;
@@ -35,7 +39,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             // If technically sequence is not currently a separator (such as ``` that is not after line break),
             // text change may turn it into a valid separator.
             if (start <= oldText.Length - LeftSeparator.Length) {
-                if(oldText.GetText(new TextRange(start, LeftSeparator.Length)).EqualsOrdinal(LeftSeparator)) {
+                if (oldText.GetText(new TextRange(start, LeftSeparator.Length)).EqualsOrdinal(LeftSeparator)) {
                     return true;
                 }
             }
