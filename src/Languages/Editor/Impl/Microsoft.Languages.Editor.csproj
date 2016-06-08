@@ -42,6 +42,7 @@
     <Compile Include="BraceMatch\Definitions\IBraceMatcherProvider.cs" />
     <Compile Include="BraceMatch\GotoBraceCommand.cs" />
     <Compile Include="BraceMatch\BraceTokenPair.cs" />
+    <Compile Include="Classification\IThemeColorsProvider.cs" />
     <Compile Include="Classification\TokenBasedClassifier.cs" />
     <Compile Include="Completion\CompletionList.cs" />
     <Compile Include="ContainedLanguage\BufferGenerator.cs" />
