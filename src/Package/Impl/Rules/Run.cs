@@ -13,7 +13,7 @@
 // 0. Make desired changes to Run.xaml
 // 1. Apply the XamlPropertyRule build action on Run.xaml and rebuild
 // 2. Take the generated run.cs from obj/debug/ folder and replace contents of this file
-// 3. Change GetManifestResourceStream("XamlRuleToCode:Run.xaml") to GetManifestResourceStream("Microsoft.VisualStudio.R.Package.Run.xaml")
+// 3. Change GetManifestResourceStream("XamlRuleToCode:Run.xaml") to GetManifestResourceStream("Microsoft.VisualStudio.R.Package.Rules.Run.xaml")
 // 4. Apply the EmbeddedResource build action on Run.xaml
 //
 // Ideally, we would keep the XamlPropertyRule build action ON, and remove Run.cs from the project.
@@ -225,7 +225,7 @@ namespace Microsoft.VisualStudio.R.Package {
 				System.Reflection.Assembly thisAssembly = System.Reflection.Assembly.GetExecutingAssembly();
 				try {
 					//xamlStream = thisAssembly.GetManifestResourceStream("XamlRuleToCode:Run.xaml");
-					xamlStream = thisAssembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.Run.xaml");
+					xamlStream = thisAssembly.GetManifestResourceStream("Microsoft.VisualStudio.R.Package.Rules.Run.xaml");
 					Microsoft.Build.Framework.XamlTypes.IProjectSchemaNode root = ((Microsoft.Build.Framework.XamlTypes.IProjectSchemaNode)(System.Xaml.XamlServices.Load(xamlStream)));
 					System.Collections.Generic.IEnumerator<System.Object> ruleEnumerator = root.GetSchemaObjects(typeof(Microsoft.Build.Framework.XamlTypes.Rule)).GetEnumerator();
 					for (
