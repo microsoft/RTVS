@@ -8,7 +8,6 @@ using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.Markdown.Editor.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text.Projection;

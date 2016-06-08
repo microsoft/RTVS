@@ -72,11 +72,11 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                 // Verify that code block is properly terminated.
                 // If not, it ends at the end of the buffer.
                 _separators.Add(new TextRange(t.Start, 5));
-                if (t.End < TextBuffer.CurrentSnapshot.Length) {
-                    Blocks.Add(new TextRange(t.Start + 3, t.Length - 6));
+                if (t.IsWellFormed) {
+                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End - 3));
                     _separators.Add(new TextRange(t.End - 3, 3));
                 } else {
-                    Blocks.Add(new TextRange(t.Start + 3, t.Length - 3));
+                    Blocks.Add(TextRange.FromBounds(t.Start + 3, t.End));
                 }
             }
         }

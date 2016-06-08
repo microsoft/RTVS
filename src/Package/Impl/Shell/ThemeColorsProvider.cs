@@ -31,5 +31,9 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         public event EventHandler ThemeChanged;
+
+        public void Dispose() {
+            VSColorTheme.ThemeChanged -= OnThemeChanged;
+        }
     }
 }

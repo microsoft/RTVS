@@ -5,7 +5,7 @@ using System;
 using System.Windows.Media;
 
 namespace Microsoft.Common.Wpf.Themes {
-    public interface IThemeColorsProvider {
+    public interface IThemeColorsProvider: IDisposable {
         event EventHandler ThemeChanged;
 
         bool IsDarkTheme { get; }

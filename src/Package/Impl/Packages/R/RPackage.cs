@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Wpf.Themes;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
@@ -150,6 +151,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p.SaveSettings();
             }
+
+            var tp = VsAppShell.Current.ExportProvider.GetExportedValue<IThemeColorsProvider>();
+            tp?.Dispose();
 
             base.Dispose(disposing);
         }
