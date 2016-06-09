@@ -1447,7 +1447,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Pre&amp;view</ButtonText>
+          <ButtonText>Previe&amp;w</ButtonText>
         </Strings>
       </Button>
 
@@ -1530,6 +1530,9 @@
       <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
     </CommandPlacement>
     <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0300">
       <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
     </CommandPlacement>
     <!-- End toolbar -->
