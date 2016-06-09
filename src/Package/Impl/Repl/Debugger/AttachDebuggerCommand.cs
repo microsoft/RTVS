@@ -42,20 +42,14 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Debugger {
 
             var debugTarget = new VsDebugTargetInfo2 {
                 cbSize = (uint)Marshal.SizeOf<VsDebugTargetInfo2>(),
-
                 dlo = (uint)DEBUG_LAUNCH_OPERATION.DLO_AlreadyRunning,
                 guidPortSupplier = DebuggerGuids.PortSupplier,
-                bstrPortName = "dummy", // doesn't actually matter, but must not be an empty string
+                bstrPortName = RDebugPortSupplier.PortName,
                 guidLaunchDebugEngine = DebuggerGuids.DebugEngine,
                 dwDebugEngineCount = 1,
                 pDebugEngines = (IntPtr)pDebugEngines,
-                //LaunchFlags = (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_DetachOnStop,
-
-                // R debug port provider represents sessions as pseudo-processes with process ID mapped
-                // to session ID. For LaunchDebugTargets2 to attach a process by ID rather than by name,
-                // dwProcessId must be set accordingly, _and_ bstrExe must be set to \0 + hex ID.
                 dwProcessId = pid,
-                bstrExe = (char)0 + "0x" + pid.ToString("X", CultureInfo.InvariantCulture),
+                bstrExe = RDebugPortSupplier.GetExecutableForAttach(pid),
             };
 
             var pDebugTarget = stackalloc byte[Marshal.SizeOf(debugTarget)];

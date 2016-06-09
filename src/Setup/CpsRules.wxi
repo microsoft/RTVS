@@ -3,6 +3,7 @@
   <DirectoryRef Id="CpsRulesInstallFolder">
     <Component Id="CpsRules" Guid="{4009DAEB-C178-4A65-B1F3-725D01A690F6}">
       <File Source="$(var.CpsRulesDir)\Content.xaml" />
+      <File Source="$(var.CpsRulesDir)\Debugger.xaml" />
       <File Source="$(var.CpsRulesDir)\Folder.xaml" />
       <File Source="$(var.CpsRulesDir)\General.BrowseObject.xaml" />
       <File Source="$(var.CpsRulesDir)\None.xaml" />

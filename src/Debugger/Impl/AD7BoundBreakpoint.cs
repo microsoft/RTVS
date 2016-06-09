@@ -97,7 +97,7 @@ namespace Microsoft.R.Debugger {
                         return VSConstants.E_ABORT;
                     }
 
-                    DebugBreakpoint = TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.DebugSession.CreateBreakpointAsync(Location, ct));
+                    DebugBreakpoint = TaskExtensions.RunSynchronouslyOnUIThread(ct => Engine.Tracer.CreateBreakpointAsync(Location, ct));
                     DebugBreakpoint.BreakpointHit += DebugBreakpoint_BreakpointHit;
                 }
             }

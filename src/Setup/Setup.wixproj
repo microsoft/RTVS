@@ -56,6 +56,7 @@
     <Content Include="RtvsPackage.wxi" />
     <Content Include="Profiles.wxi" />
     <Content Include="CpsRules.wxi" />
+    <Content Include="MSBuildTargets.wxi" />
     <Content Include="ItemTemplates.wxi" />
     <Content Include="LocalizedResources.wxi" />
     <Content Include="ProjectTemplates.wxi" />

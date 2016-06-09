@@ -9,8 +9,13 @@ using Microsoft.VisualStudio.R.Packages.R;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Guid(RGuidList.ProjectFileGeneratorGuidString)]
     internal sealed class RProjectFileGenerator : FileSystemMirroringProjectFileGenerator {
+        private static readonly string[] _imports = {
+             Constants.RtvsRulesPropsRelativePath,
+             Constants.RtvsTargetsRelativePath,
+        };
+
         public RProjectFileGenerator()
-            : base(RGuidList.CpsProjectFactoryGuid, null, RContentTypeDefinition.VsRProjectExtension, new[] { Constants.RtvsRulesPropsRelativePath }) {
+            : base(RGuidList.CpsProjectFactoryGuid, null, RContentTypeDefinition.VsRProjectExtension, _imports) {
         }
     }
 }

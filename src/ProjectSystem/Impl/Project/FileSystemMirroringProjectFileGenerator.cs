@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.MsBuild;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -63,6 +64,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                             new XProjElement("UserProperties")
                         )
                     ),
+                    new XProjElement("Target", new XAttribute("Name", "Build")),
                     _msBuildImports.SelectMany(CreateMsBuildExtensionXImports),
                     new XImportExisting(inMemoryTargetsFile)
                 )
