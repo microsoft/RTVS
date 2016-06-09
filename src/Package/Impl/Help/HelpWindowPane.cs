@@ -45,6 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             settings.SearchWatermark = Resources.HelpSearchWatermark;
             settings.SearchTooltip = Resources.HelpSearchTooltip;
             settings.SearchStartType = VSSEARCHSTARTTYPE.SST_ONDEMAND;
+            settings.RestartSearchIfUnchanged = true;
             base.ProvideSearchSettings(pSearchSettings);
         }
 
