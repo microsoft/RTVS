@@ -412,6 +412,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Interactive Window.
+        /// </summary>
+        internal static string ReplWindowName {
+            get {
+                return ResourceManager.GetString("ReplWindowName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Install package.
         /// </summary>
         internal static string SmartTagName_InstallPackage {

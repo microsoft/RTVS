@@ -135,7 +135,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                 var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
                 // Document may be null in tests
-                var textBuffer = document != null ? document.TextBuffer : TextView.TextBuffer;
+                var textBuffer = document != null && TextView.IsRepl() ? document.TextBuffer : TextView.TextBuffer;
+
                 var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
 

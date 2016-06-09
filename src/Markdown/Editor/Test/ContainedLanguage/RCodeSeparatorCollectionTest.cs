@@ -15,7 +15,23 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
     public class RCodeSeparatorCollectionTest {
         [CompositeTest]
         [Category.Md.RCode]
-        [InlineData(0, 0, "a", false)]
+        [InlineData("", 0)]
+        [InlineData("```", 0)]
+        [InlineData("a```", 0)]
+        [InlineData("```{r}", 1)]
+        [InlineData("a\n```{r}\n", 1)]
+        [InlineData("a\n```{r}\n", 1)]
+        [InlineData("a\n```{r}\n```\n```{r}\n", 2)]
+        public void BuildTest(string content, int expectedTokens) {
+            var tokenizer = new MdTokenizer();
+            var tokens = tokenizer.Tokenize(content);
+            var rCodeTokens = tokens.Where(t => t.TokenType == MarkdownTokenType.Code);
+            rCodeTokens.Should().HaveCount(expectedTokens);
+        }
+
+        [CompositeTest]
+        [Category.Md.RCode]
+        [InlineData(0, 0, "a", true)]
         [InlineData(0, 0, "`", true)]
         [InlineData(1, 1, "a", true)]
         [InlineData(0, 1, "", true)]
@@ -26,12 +42,14 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [InlineData(6, 0, "a", false)]
         [InlineData(6, 1, "", false)]
         [InlineData(11, 0, "a", false)]
-        [InlineData(12, 0, " ", false)]
+        [InlineData(12, 0, " ", true)]
         [InlineData(12, 1, "a", true)]
-        [InlineData(15, 0, "a", false)]
-        [InlineData(15, 1, "", false)]
+        [InlineData(15, 0, "a", true)]
+        [InlineData(15, 1, "", true)]
+        [InlineData(16, 0, "a", false)]
+        [InlineData(16, 1, "", false)]
         public void DestructiveTest01(int start, int oldLength, string newText, bool expected) {
-            var markdown = "```{r}\nx<-1\n```\n";
+            var markdown = "```{r}\nx<-1\n```\na";
             var coll = BuildCollection(markdown);
             var newCode = markdown.Remove(start, oldLength).Insert(start, newText);
             var result = coll.IsDestructiveChange(start, oldLength, newText.Length, new TextStream(markdown), new TextStream(newCode));
@@ -43,8 +61,8 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
         [InlineData(13, 4, "a", true)]
         [InlineData(15, 0, "`", true)]
         [InlineData(15, 0, "``", true)]
-        [InlineData(16, 0, "`", false)]
-        [InlineData(16, 0, "`'", false)]
+        [InlineData(16, 0, "`", true)]
+        [InlineData(16, 0, "`'", true)]
         [InlineData(16, 0, "```", true)]
         [InlineData(16, 1, "```{r}", true)]
         public void DestructiveTest02(int start, int oldLength, string newText, bool expected) {
@@ -52,6 +70,20 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             var coll = BuildCollection(markdown);
             var newCode = markdown.Remove(start, oldLength).Insert(start, newText);
             var result = coll.IsDestructiveChange(start, oldLength, newText.Length, new TextStream(markdown), new TextStream(newCode));
+            result.Should().Be(expected);
+        }
+
+        [CompositeTest]
+        [Category.Md.RCode]
+        [InlineData("abc```{r}\n\n```", 0, 3, "", true)]
+        [InlineData("```{r}\n\n```", 0, 0, "a", true)]
+        [InlineData("```{r}\n\n```", 8, 0, "a", true)]
+        [InlineData("```{r}\n\na```", 8, 1, "", true)]
+        [InlineData("```", 2, 1, "", true)]
+        public void DestructiveTest03(string content, int start, int oldLength, string newText, bool expected) {
+            var coll = BuildCollection(content);
+            var newCode = content.Remove(start, oldLength).Insert(start, newText);
+            var result = coll.IsDestructiveChange(start, oldLength, newText.Length, new TextStream(content), new TextStream(newCode));
             result.Should().Be(expected);
         }
 

@@ -19,6 +19,8 @@ namespace Microsoft.Markdown.Editor.Tokens {
             : base(tokenType, range) {
         }
 
+        public bool IsWellFormed { get; set; } = true;
+
         public int CompareTo(MarkdownToken other) {
             if (other == null)
                 return -1;

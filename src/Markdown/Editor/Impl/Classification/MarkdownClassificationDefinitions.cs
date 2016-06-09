@@ -17,13 +17,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// ## The second largest heading (an <h2> tag)
         /// </summary>
         [Export]
-        [Name("Markdown Heading")]
+        [Name(MarkdownClassificationTypes.Heading)]
         internal ClassificationTypeDefinition MdHeadingClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Heading")]
-        [Name("Markdown Heading")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.Heading)]
+        [Name(MarkdownClassificationTypes.Heading)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition {
             public MdHeadingClassificationFormat() {
@@ -36,13 +36,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// > Pardon my french
         /// </summary>
         [Export]
-        [Name("Markdown Blockquote")]
+        [Name(MarkdownClassificationTypes.Blockquote)]
         internal ClassificationTypeDefinition MdBlockquoteClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Blockquote")]
-        [Name("Markdown Blockquote")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.Blockquote)]
+        [Name(MarkdownClassificationTypes.Blockquote)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdBlockquoteClassificationFormat : ClassificationFormatDefinition {
             public MdBlockquoteClassificationFormat() {
@@ -55,13 +55,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// **This text will be bold**
         /// </summary>
         [Export]
-        [Name("Markdown Bold Text")]
+        [Name(MarkdownClassificationTypes.Bold)]
         internal ClassificationTypeDefinition MdBoldClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Bold Text")]
-        [Name("Markdown Bold Text")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.Bold)]
+        [Name(MarkdownClassificationTypes.Bold)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdBoldClassificationFormat : ClassificationFormatDefinition {
             public MdBoldClassificationFormat() {
@@ -75,13 +75,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// *This text will be italic*
         /// </summary>
         [Export]
-        [Name("Markdown Italic Text")]
+        [Name(MarkdownClassificationTypes.Italic)]
         internal ClassificationTypeDefinition MdItalicClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Italic Text")]
-        [Name("Markdown Italic Text")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.Italic)]
+        [Name(MarkdownClassificationTypes.Italic)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdItalicClassificationFormat : ClassificationFormatDefinition {
             public MdItalicClassificationFormat() {
@@ -92,13 +92,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         }
 
         [Export]
-        [Name("Markdown Bold Italic Text")]
+        [Name(MarkdownClassificationTypes.BoldItalic)]
         internal ClassificationTypeDefinition MdBoldItalicClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Bold Italic Text")]
-        [Name("Markdown Bold Italic Text")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.BoldItalic)]
+        [Name(MarkdownClassificationTypes.BoldItalic)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdBoldItalicClassificationFormat : ClassificationFormatDefinition {
             public MdBoldItalicClassificationFormat() {
@@ -115,13 +115,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// N. Item [line break]
         /// </summary>
         [Export]
-        [Name("Markdown List Item")]
+        [Name(MarkdownClassificationTypes.ListItem)]
         internal ClassificationTypeDefinition MdListItemClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown List Item")]
-        [Name("Markdown List Item")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.ListItem)]
+        [Name(MarkdownClassificationTypes.ListItem)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdListItemClassificationFormat : ClassificationFormatDefinition {
             public MdListItemClassificationFormat() {
@@ -134,13 +134,13 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// `monospace`
         /// </summary>
         [Export]
-        [Name("Markdown Monospace")]
+        [Name(MarkdownClassificationTypes.Monospace)]
         internal ClassificationTypeDefinition MdMonospaceClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Monospace")]
-        [Name("Markdown Monospace")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.Monospace)]
+        [Name(MarkdownClassificationTypes.Monospace)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition {
             public MdMonospaceClassificationFormat() {
@@ -153,18 +153,36 @@ namespace Microsoft.Markdown.Editor.Classification {
         /// `monospace`
         /// </summary>
         [Export]
-        [Name("Markdown Alt Text")]
+        [Name(MarkdownClassificationTypes.AltText)]
         internal ClassificationTypeDefinition MdAltTextClassificationType { get; set; }
 
         [Export(typeof(EditorFormatDefinition))]
         [UserVisible(true)]
-        [ClassificationType(ClassificationTypeNames = "Markdown Alt Text")]
-        [Name("Markdown Alt Text")]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.AltText)]
+        [Name(MarkdownClassificationTypes.AltText)]
         [ExcludeFromCodeCoverage]
         internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition {
             public MdAltTextClassificationFormat() {
                 ForegroundColor = Colors.DarkMagenta;
                 this.DisplayName = Resources.ColorName_MD_AltText;
+            }
+        }
+
+        /// <summary>
+        /// ```{r} ... ``` block background
+        /// </summary>
+        [Export]
+        [Name(MarkdownClassificationTypes.CodeBackground)]
+        internal ClassificationTypeDefinition MdCodeBackgroundClassificationType { get; set; }
+
+        [Export(typeof(EditorFormatDefinition))]
+        [UserVisible(true)]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.CodeBackground)]
+        [Name(MarkdownClassificationTypes.CodeBackground)]
+        [ExcludeFromCodeCoverage]
+        internal sealed class MdCodeBackgroundClassificationFormat : ClassificationFormatDefinition {
+            public MdCodeBackgroundClassificationFormat() {
+                this.DisplayName = Resources.ColorName_MD_CodeBackground;
             }
         }
     }

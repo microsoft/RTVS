@@ -11,5 +11,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         public const string Italic = "Markdown Italic Text";
         public const string Blockquote = "Markdown Blockquote";
         public const string Heading = "Markdown Heading";
+        public const string CodeBackground = "Markdown Code Background";
     }
 }

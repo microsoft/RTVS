@@ -132,6 +132,9 @@
   <data name="ColorName_MD_Code" xml:space="preserve">
     <value>Markdown Code Block</value>
   </data>
+  <data name="ColorName_MD_CodeBackground" xml:space="preserve">
+    <value>Markdown Code Background</value>
+  </data>
   <data name="ColorName_MD_Heading" xml:space="preserve">
     <value>Markdown Heading</value>
   </data>

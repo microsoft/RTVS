@@ -66,7 +66,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             var viewPoint = textView.MapUpToView(line.Start);
             if (viewPoint.HasValue) {
                 var lineText = textView.TextBuffer.CurrentSnapshot.GetLineFromPosition(viewPoint.Value).GetText();
-                return !lineText.TrimStart().StartsWithIgnoreCase("```{r");
+                return lineText.IndexOfOrdinal("```") < 0 && !lineText.TrimStart().StartsWithIgnoreCase("```{r");
             }
             return false;
         }

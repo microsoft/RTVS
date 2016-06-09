@@ -160,6 +160,8 @@ namespace Microsoft.Markdown.Editor.Tokens {
             while (!_cs.IsEndOfStream()) {
                 // End of R block: <line_break>```
                 bool endOfBlock = block && _cs.IsAtNewLine() && _cs.NextChar == '`' && _cs.LookAhead(2) == '`' && _cs.LookAhead(3) == '`';
+                bool eof = _cs.Position == _cs.Length - 1; // handle unclosed code block as if it ends at EOF
+                endOfBlock |= eof;
 
                 if (endOfBlock) {
                     _cs.SkipLineBreak();
@@ -180,6 +182,7 @@ namespace Microsoft.Markdown.Editor.Tokens {
                     } else {
                         AddToken(MarkdownTokenType.Monospace, ticksStart, _cs.Position - ticksStart);
                     }
+                    _tokens[_tokens.Count - 1].IsWellFormed = !eof;
                     return true;
                 }
                 _cs.MoveToNextChar();

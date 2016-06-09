@@ -14,18 +14,16 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     [Export(typeof(ITaggerProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     [TagType(typeof(ErrorTag))]
-    internal sealed class EditorErrorTaggerProvider : ITaggerProvider
-    {
-        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag
-        {
+    internal sealed class EditorErrorTaggerProvider : ITaggerProvider {
+        public ITagger<T> CreateTagger<T>(ITextBuffer textBuffer) where T : ITag {
             IREditorDocument document = REditorDocument.TryFromTextBuffer(textBuffer);
             EditorErrorTagger tagger = null;
 
-            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer))
-            {
+            if (document != null && TreeValidator.IsSyntaxCheckEnabled(textBuffer)) {
                 tagger = ServiceManager.GetService<EditorErrorTagger>(textBuffer);
-                if (tagger == null)
+                if (tagger == null) {
                     tagger = new EditorErrorTagger(textBuffer);
+                }
             }
 
             return tagger as ITagger<T>;

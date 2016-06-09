@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
@@ -34,6 +35,29 @@ namespace Microsoft.R.Editor.Document {
 
         #region IEditorDocument
         public ITextBuffer TextBuffer { get; private set; }
+
+        /// <summary>
+        /// Full path to the document file. May be null or empty in transient documents.
+        /// </summary>
+        public string FilePath {
+            get {
+                string path = null;
+                var textView = this.GetFirstView();
+                if (textView != null) {
+                    if (textView.IsRepl()) {
+                        return Resources.ReplWindowName;
+                    }
+
+                    if (textView.TextBuffer != TextBuffer) {
+                        var pbm = ProjectionBufferManager.FromTextBuffer(textView.TextBuffer);
+                        path = pbm?.DiskBuffer.GetFilePath();
+                    } else {
+                        path = TextBuffer.GetFilePath();
+                    }
+                }
+                return path;
+            }
+        }
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> DocumentClosing;
@@ -175,6 +199,7 @@ namespace Microsoft.R.Editor.Document {
 
         #region IDisposable
         protected virtual void Dispose(bool disposing) {
+            Close();
         }
 
         public void Dispose() {
@@ -228,18 +253,6 @@ namespace Microsoft.R.Editor.Document {
         /// If trie the document is closed.
         /// </summary>
         public bool IsClosed { get; private set; }
-
-        /// <summary>
-        /// Tells of document does not have associated disk file
-        /// such as when document is based off projection buffer
-        /// created elsewhere as in VS Interactive Window case.
-        /// </summary>
-        public bool IsTransient {
-            get {
-                var textView = TextViewConnectionListener.GetFirstViewForBuffer(TextBuffer);
-                return textView != null && textView.IsRepl();
-            }
-        }
 
         /// <summary>
         /// Tells document that massive change to text buffer is about to commence.
@@ -298,7 +311,7 @@ namespace Microsoft.R.Editor.Document {
         /// Indicates if massive change to the document is in progress. If massive change
         /// is in progress, tree updates and colorizer are suspended.
         /// </summary>
-        public bool IsMassiveChangeInProgress  => _inMassiveChange > 0;
+        public bool IsMassiveChangeInProgress => _inMassiveChange > 0;
 
 #pragma warning disable 67
         public event EventHandler<EventArgs> MassiveChangeBegun;

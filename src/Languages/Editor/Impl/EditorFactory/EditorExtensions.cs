@@ -6,6 +6,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Extensions {
@@ -51,6 +52,14 @@ namespace Microsoft.Languages.Editor.Extensions {
                 }
             }
             return document;
+        }
+
+        public static ITextView GetFirstView(this IEditorDocument document) {
+            return document.TextBuffer.GetFirstView();
+        }
+
+        public static ITextView GetFirstView(this ITextBuffer textBuffer) {
+            return TextViewConnectionListener.GetFirstViewForBuffer(textBuffer);
         }
     }
 }

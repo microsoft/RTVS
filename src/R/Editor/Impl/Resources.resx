@@ -243,4 +243,7 @@
   <data name="SmartTagName_LoadLibrary" xml:space="preserve">
     <value>Load library</value>
   </data>
+  <data name="ReplWindowName" xml:space="preserve">
+    <value>Interactive Window</value>
+  </data>
 </root>

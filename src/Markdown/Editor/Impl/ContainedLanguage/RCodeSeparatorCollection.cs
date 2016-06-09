@@ -13,25 +13,36 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         public override string RightSeparator => "```";
         #endregion
 
-        protected override bool IsDestructiveChangeForSeparator(
-            ISensitiveFragmentSeparatorsInfo separatorInfo,
-            IReadOnlyList<ITextRange> itemsInRange,
-            int start, int oldLength, int newLength,
-            ITextProvider oldText, ITextProvider newText) {
+        public override bool IsDestructiveChange(int start, int oldLength, int newLength, ITextProvider oldText, ITextProvider newText) {
+            if (oldText.Length > 0) {
+                if (start < oldText.Length && oldText[start] == '`') {
+                    // Changing anything right before the ` is destructive
+                    return true;
+                }
 
-            var index = GetItemAtPosition(start);
-            if (index >= 0 && newLength > 0 && newText[start + newLength - 1] == '`') {
-                // Typing ` right before the ```
+                if (start > 0 && oldText[start - 1] == '`') {
+                    // Changing anything right after the ` is destructive
+                    return true;
+                }
+
+                int end = start + oldLength;
+                if (end < oldText.Length && oldText[end] == '`') {
+                    // Changing anything right before the ` is destructive
+                    return true;
+                }
+
+                if (end >= 0 && oldText[end] == '`') {
+                    // Changing anything right after the ` is destructive
+                    return true;
+                }
+            }
+
+            // Deleting or adding backticks is destructive
+            if (oldText.IndexOf('`', new TextRange(start, oldLength)) >= 0 || newText.IndexOf('`', new TextRange(start, newLength)) >= 0) {
                 return true;
             }
 
-            index = GetFirstItemBeforePosition(start);
-            if (index >= 0 && Items[index].End == start && newLength > 0 && newText[start] == '`') {
-                // Typing ` right after the ```
-                return true;
-            }
-
-            return base.IsDestructiveChangeForSeparator(separatorInfo, itemsInRange, start, oldLength, newLength, oldText, newText);
+            return base.IsDestructiveChange(start, oldLength, newLength, oldText, newText);
         }
     }
 }

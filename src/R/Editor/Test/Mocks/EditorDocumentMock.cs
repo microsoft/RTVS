@@ -14,19 +14,17 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Mocks {
     [ExcludeFromCodeCoverage]
-    public sealed class EditorDocumentMock : IREditorDocument
-    {
+    public sealed class EditorDocumentMock : IREditorDocument {
         public EditorDocumentMock(string content, string filePath = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
             ServiceManager.AddService<IREditorDocument>(this, tb);
-            if(!string.IsNullOrEmpty(filePath)) {
+            if (!string.IsNullOrEmpty(filePath)) {
                 tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
             }
         }
 
-        public EditorDocumentMock(IEditorTree tree)
-        {
+        public EditorDocumentMock(IEditorTree tree) {
             EditorTree = tree;
             ServiceManager.AddService<IREditorDocument>(this, tree.TextBuffer);
         }
@@ -35,22 +33,15 @@ namespace Microsoft.R.Editor.Test.Mocks {
 
         public void Close() { }
 
-        public bool IsTransient
-        {
-            get { return false; }
-        }
+        public bool IsTransient => false;
 
         public bool IsClosed { get; private set; }
 
-        public bool IsMassiveChangeInProgress
-        {
-            get { return false; }
-        }
+        public bool IsMassiveChangeInProgress => false;
 
-        public ITextBuffer TextBuffer
-        {
-            get { return EditorTree.TextBuffer; }
-        }
+        public ITextBuffer TextBuffer => EditorTree.TextBuffer;
+
+        public string FilePath { get; set; }
 
 #pragma warning disable 67
         private readonly object _syncObj = new object();
@@ -75,17 +66,10 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public event EventHandler<EventArgs> MassiveChangeBegun;
         public event EventHandler<EventArgs> MassiveChangeEnded;
 
-        public void BeginMassiveChange()
-        {
-        }
+        public void BeginMassiveChange() { }
 
-        public void Dispose()
-        {
-        }
+        public void Dispose() { }
 
-        public bool EndMassiveChange()
-        {
-            return true;
-        }
+        public bool EndMassiveChange() => true;
     }
 }

@@ -9,7 +9,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.R {
     internal class VsREditorDocument : REditorDocument {
         private IEditorInstance _editorInstance;
 
-        public VsREditorDocument(IEditorInstance editorInstance) 
+        public VsREditorDocument(IEditorInstance editorInstance)
             : base(editorInstance.ViewBuffer) {
 
             _editorInstance = editorInstance;
@@ -18,13 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.Document.R {
 
         public override void Close() {
             ServiceManager.RemoveService<VsREditorDocument>(TextBuffer);
-
             base.Close();
 
-            if (_editorInstance != null) {
-                _editorInstance.Dispose();
-                _editorInstance = null;
-            }
+            // Prevent stack overflow
+            var instance = _editorInstance;
+            _editorInstance = null;
+            instance?.Dispose();
         }
     }
 }

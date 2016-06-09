@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -85,18 +86,18 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         }
 
         protected override void OnNavigate(EventArgs e) {
-            if (_source.TextBuffer != null) {
-                var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
-                var textLines = _source.TextBuffer.GetBufferAdapter<IVsTextLines>();
-
-                if (_item.Line > 0 && _item.Column > 0) {
-                    var snapshot = _source.TextBuffer.CurrentSnapshot;
-
+            if (_source.TextBuffer != null && _item.Line > 0 && _item.Column > 0) {
+                var textView = TextViewConnectionListener.GetFirstViewForBuffer(_source.TextBuffer);
+                if (textView != null) {
+                    var snapshot = textView.TextBuffer.CurrentSnapshot;
                     try {
                         int start = snapshot.GetLineFromLineNumber(_item.Line - 1).Start + _item.Column - 1;
                         int end = start + _item.Length;
 
                         var endLine = snapshot.GetLineFromPosition(end);
+
+                        var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager>(typeof(SVsTextManager));
+                        var textLines = textView.TextBuffer.GetBufferAdapter<IVsTextLines>();
 
                         textManager.NavigateToLineAndColumn(textLines, VSConstants.LOGVIEWID_TextView,
                             _item.Line - 1, _item.Column - 1,

@@ -7,10 +7,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.Languages.Editor.Text;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
@@ -61,8 +63,11 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
-            if (TaskList != null && !_document.IsTransient) {
-                TaskList.AddTaskSource(this);
+            if (TaskList != null) {
+                var view = _document.GetFirstView();
+                if (view != null && !view.IsRepl()) {
+                    TaskList.AddTaskSource(this);
+                }
             }
 
             TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree);

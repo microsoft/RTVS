@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Projection;
 
 namespace Microsoft.Languages.Editor.Projection {
@@ -29,10 +30,17 @@ namespace Microsoft.Languages.Editor.Projection {
         IProjectionBuffer ContainedLanguageBuffer { get; }
 
         /// <summary>
+        /// Buffer that contains original document that was loaded from disk.
+        /// </summary>
+        ITextBuffer DiskBuffer { get; }
+
+        /// <summary>
         /// Sets projections for the secondary language
         /// </summary>
         /// <param name="secondaryContent">Contained language buffer content</param>
         /// <param name="mappings">Mappings that describe projections of contained language buffer to the view</param>
         void SetProjectionMappings(string secondaryContent, IReadOnlyList<ProjectionMapping> mappings);
+
+        event EventHandler MappingsChanged;
     }
 }

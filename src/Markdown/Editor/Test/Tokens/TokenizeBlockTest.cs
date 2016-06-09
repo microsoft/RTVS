@@ -50,16 +50,6 @@ block
         }
 
         [CompositeTest]
-        [InlineData(@"```block```")]
-        [InlineData(@"```block")]
-        [InlineData(@"```block` ```")]
-        [Category.Md.Tokenizer]
-        public void TokenizeMd_BlockEmpty(string text) {
-            var tokens = Tokenize(text, new MdTokenizer());
-            tokens.Should().BeEmpty();
-        }
-
-        [CompositeTest]
         [Category.Md.Tokenizer]
         [InlineData(@"`r x <- 1`")]
         [InlineData(@"`rtoken`")]
@@ -67,6 +57,16 @@ block
             var tokens = Tokenize(@"`r x <- 1`", new MdTokenizer());
             tokens.Should().HaveCount(1);
             tokens[0].Should().HaveType(MarkdownTokenType.Code);
+        }
+
+        [CompositeTest]
+        [InlineData(@"```block```")]
+        [InlineData(@"```block")]
+        [InlineData(@"```block` ```")]
+        [Category.Md.Tokenizer]
+        public void CodeBlock04(string text) {
+            var tokens = Tokenize(text, new MdTokenizer());
+            tokens.Should().HaveCount(1);
         }
     }
 }
