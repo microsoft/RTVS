@@ -21,6 +21,7 @@
       <File Source="$(var.BinDir)\Newtonsoft.Json.dll" />
       <File Source="$(var.BinDir)\websocket-sharp.dll" />
       <File Source="$(var.BinDir)\Images\RFile.ico" />
+      <File Source="$(var.BinDir)\vstheme.pkgdef" />
     </Component>
     <?ifdef Debug?>
       <Component Id="ProductAssembliesDebugData" Guid="{320E46DF-665F-492C-A0D6-9CE7DE21036D}">
