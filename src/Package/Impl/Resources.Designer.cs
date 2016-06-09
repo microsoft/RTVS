@@ -638,6 +638,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No startup file specified for the startup project. Startup file can be specified in project properties..
+        /// </summary>
+        public static string Launch_NoStartupFile {
+            get {
+                return ResourceManager.GetString("Launch_NoStartupFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load History.
         /// </summary>
         public static string LoadHistoryTitle {

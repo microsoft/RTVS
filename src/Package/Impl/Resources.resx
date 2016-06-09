@@ -749,4 +749,7 @@ Additional information:
   <data name="Settings_EvaluateActiveBindings_Description" xml:space="preserve">
     <value>Automatically evaluate active bindings and display the resulting value. Warning: when this option is on, inspecting active bindings in Variable Explorer and debugger tool windows may change program state</value>
   </data>
+  <data name="Launch_NoStartupFile" xml:space="preserve">
+    <value>No startup file specified for the startup project. Startup file can be specified in project properties.</value>
+  </data>
 </root>

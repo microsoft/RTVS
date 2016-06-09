@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Debuggers;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     // ExportDebugger must match rule name in ..\Rules\Debugger.xaml.
-    [ExportDebugger("RDebugger")] 
+    [ExportDebugger("RDebugger")]
     [AppliesTo(Constants.RtvsProjectCapability)]
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
@@ -33,8 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
         private IRSession Session => _interactiveWorkflow.RSession;
 
-        public override async Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
-            return Session.IsHostRunning && !string.IsNullOrEmpty(await _properties.GetStartupFileAsync());
+        public override Task<bool> CanLaunchAsync(DebugLaunchOptions launchOptions) {
+            return Task.FromResult(true);
         }
 
         public override Task<IReadOnlyList<IDebugLaunchSettings>> QueryDebugTargetsAsync(DebugLaunchOptions launchOptions) {
@@ -59,19 +59,29 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public override async Task LaunchAsync(DebugLaunchOptions launchOptions) {
+            // Reset first, before attaching debugger via LaunchAsync (since it'll detach on reset).
+            if (await _properties.GetResetReplOnRunAsync()) {
+                await _interactiveWorkflow.Operations.ResetAsync();
+            }
+
             // Base implementation will try to launch or attach via the debugger, but there's nothing to launch
             // in case of Ctrl+F5 - we only want to source the file. So only invoke base if we intend to debug.
             if (!launchOptions.HasFlag(DebugLaunchOptions.NoDebug)) {
                 await base.LaunchAsync(launchOptions);
             }
 
+            _interactiveWorkflow.ActiveWindow?.Container.Show(false);
+
             string startupFile = await _properties.GetStartupFileAsync();
-            if (!string.IsNullOrEmpty(startupFile)) {
-                _interactiveWorkflow.ActiveWindow?.Container.Show(false);
-                _interactiveWorkflow.Operations.SourceFileAsync(startupFile, echo: false)
-                    .SilenceException<Exception>()
-                    .DoNotWait();
+
+            if (string.IsNullOrEmpty(startupFile)) {
+                _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(Resources.Launch_NoStartupFile);
+                return;
             }
+
+            _interactiveWorkflow.Operations.SourceFileAsync(startupFile, echo: false)
+                .SilenceException<Exception>()
+                .DoNotWait();
         }
     }
 }
