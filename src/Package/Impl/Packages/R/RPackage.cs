@@ -5,15 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Wpf.Themes;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
-using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Help.Functions;
-using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -151,9 +148,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
                 p.SaveSettings();
             }
-
-            var tp = VsAppShell.Current.ExportProvider.GetExportedValue<IThemeColorsProvider>();
-            tp?.Dispose();
 
             base.Dispose(disposing);
         }

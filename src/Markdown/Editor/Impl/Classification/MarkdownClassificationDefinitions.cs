@@ -167,5 +167,23 @@ namespace Microsoft.Markdown.Editor.Classification {
                 this.DisplayName = Resources.ColorName_MD_AltText;
             }
         }
+
+        /// <summary>
+        /// ```{r} ... ``` block background
+        /// </summary>
+        [Export]
+        [Name(MarkdownClassificationTypes.CodeBackground)]
+        internal ClassificationTypeDefinition MdCodeBackgroundClassificationType { get; set; }
+
+        [Export(typeof(EditorFormatDefinition))]
+        [UserVisible(true)]
+        [ClassificationType(ClassificationTypeNames = MarkdownClassificationTypes.CodeBackground)]
+        [Name(MarkdownClassificationTypes.CodeBackground)]
+        [ExcludeFromCodeCoverage]
+        internal sealed class MdCodeBackgroundClassificationFormat : ClassificationFormatDefinition {
+            public MdCodeBackgroundClassificationFormat() {
+                this.DisplayName = Resources.ColorName_MD_CodeBackground;
+            }
+        }
     }
 }

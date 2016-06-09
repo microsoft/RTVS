@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.Common.Wpf.Themes;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
@@ -27,13 +26,12 @@ namespace Microsoft.Markdown.Editor.Classification {
         private readonly IClassificationFormatMap _classificationFormatMap;
         private readonly IClassificationTypeRegistryService _classificationTypeRegistry;
         private readonly IContainedLanguageHandler _contanedLanguageHandler;
-        private readonly IThemeColorsProvider _colorProvider;
 
         private double _lastWidth = 0;
         private int _reprocessFrom = -1;
         private Brush _backgroudColorBlush;
 
-        public CodeBackgroundTextAdornment(IWpfTextView view, IThemeColorsProvider colorProvider, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
+        public CodeBackgroundTextAdornment(IWpfTextView view, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
 
             _view = view;
             _layer = view.GetAdornmentLayer("CodeBackgroundTextAdornment");
@@ -41,8 +39,6 @@ namespace Microsoft.Markdown.Editor.Classification {
             _classificationTypeRegistry = classificationTypeRegistry;
             _classificationFormatMap = classificationFormatMapService.GetClassificationFormatMap(view);
 
-            _colorProvider = colorProvider;
-            _colorProvider.ThemeChanged += OnColorThemeChanged;
             // Advise to events
             _classificationFormatMap.ClassificationFormatMappingChanged += OnClassificationFormatMappingChanged;
             _view.LayoutChanged += OnLayoutChanged;
@@ -54,10 +50,6 @@ namespace Microsoft.Markdown.Editor.Classification {
                 _contanedLanguageHandler = ServiceManager.GetService<IContainedLanguageHandler>(projectionBufferManager.DiskBuffer);
             }
 
-            FetchColors();
-        }
-
-        private void OnColorThemeChanged(object sender, EventArgs e) {
             FetchColors();
         }
 
@@ -161,7 +153,9 @@ namespace Microsoft.Markdown.Editor.Classification {
         }
 
         private void FetchColors() {
-            _backgroudColorBlush = new SolidColorBrush(_colorProvider.CodeBackgroundColor);
+            var ct = _classificationTypeRegistry.GetClassificationType(MarkdownClassificationTypes.CodeBackground);
+            var props = _classificationFormatMap.GetTextProperties(ct);
+            _backgroudColorBlush = props.BackgroundBrush;
         }
     }
 }
