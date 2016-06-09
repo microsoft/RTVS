@@ -331,7 +331,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Click OK to open download link in the default browser..
+        ///   Looks up a localized string similar to Microsoft.R.Host.exe is missing. Please reinstall or repair R Tools for Visual Studio..
         /// </summary>
         public static string Error_Microsoft_R_Host_Missing {
             get {
