@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,8 +30,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
             { "factor.gender <- factor(c('male','female','male','male','female'))", new VariableExpectation() { Name = "factor.gender", Value = "Factor w/ 2 levels \"female\",\"male\": 2 1 2 2 1", TypeName = "integer", Class = "factor", HasChildren = true, CanShowDetail = false } },
         };
 
-        object[,] formulaTestData = new object[,] {
+        object[,] formulaTestData32 = new object[,] {
             { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula' length 3 y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = true } },
+        };
+
+        object[,] formulaTestData33 = new object[,] {
+            { "class(fo <- y~x1 * x2)", new VariableExpectation() { Name = "fo", Value = "Class 'formula'  language y ~ x1 * x2", TypeName = "language", Class = "formula", HasChildren = true, CanShowDetail = true } },
         };
 
         object[,] expressionTestData = new object[,] {
@@ -85,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
         [Test]
         [Category.Variable.Explorer]
         public Task FormulaTest() {
-            return RunTest(formulaTestData);
+            return RunTest(VariableRHostScript.RVersion < new Version(3, 3) ? formulaTestData32 : formulaTestData33);
         }
 
         [Test]
