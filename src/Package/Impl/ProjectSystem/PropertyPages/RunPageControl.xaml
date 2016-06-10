@@ -38,6 +38,7 @@
             MinHeight="23"
             Text="{Binding Path=StartupFile, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         </TextBox>
+        <!-- Temporarily hiding command line args, as F5/CTRL-F5 doesn't support them yet
         <Label
             Grid.Row="1"
             Grid.Column="0"
@@ -59,6 +60,7 @@
             MinHeight="23"
             Text="{Binding Path=CommandLineArgs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         </TextBox>
+        -->
         <CheckBox 
             Grid.Row="2"
             Grid.ColumnSpan="2"
