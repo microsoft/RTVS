@@ -139,13 +139,13 @@ namespace Microsoft.Languages.Editor.Projection {
                     primaryIndex = mapping.SourceRange.End;
 
                     span = new Span(mapping.ProjectionStart, mapping.Length);
-                    spans.Add(new CustomTrackingSpan(ContainedLanguageBuffer.CurrentSnapshot, span, PointTrackingMode.Negative, PointTrackingMode.Positive)); // R
+                    spans.Add(new CustomTrackingSpan(ContainedLanguageBuffer.CurrentSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // R
                 }
             }
             // Add the final section after the last span
             span = Span.FromBounds(primaryIndex, diskSnapshot.Length);
             if (!span.IsEmpty) {
-                spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Negative, PointTrackingMode.Positive)); // Markdown
+                spans.Add(new CustomTrackingSpan(diskSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // Markdown
             }
             return spans;
         }
