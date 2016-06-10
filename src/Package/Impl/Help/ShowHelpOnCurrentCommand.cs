@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (activeReplWindow != null && _activeReplTracker.IsActive) {
                 return activeReplWindow.InteractiveWindow.TextView;
             }
-            return _textViewTracker.GetLastActiveTextView(RContentTypeDefinition.ContentType);
+            return _textViewTracker.LastActiveTextView;
         }
     }
 }
