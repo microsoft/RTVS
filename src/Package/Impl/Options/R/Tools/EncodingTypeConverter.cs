@@ -27,6 +27,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
             var codePageList = new List<int>() { 0 };
             var codePages = Encoding.GetEncodings()
+                                    .Where(e => !e.DisplayName.ContainsIgnoreCase("ISCII") && !e.DisplayName.ContainsIgnoreCase("EBCDIC"))
+                                    .Where(e => e.CodePage < 50000)
+                                    .Distinct()
                                     .OrderBy(e => e.DisplayName)
                                     .Select(e => e.CodePage)
                                     .Except(_unicodePages);
