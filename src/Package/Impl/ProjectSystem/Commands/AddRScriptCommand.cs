@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
 
         [ImportingConstructor]
         public AddRScriptCommand(UnconfiguredProject unconfiguredProject):
-            base(unconfiguredProject, RPackageCommandId.icmdAddRScript, "rscript", "Script", "R") {
+            base(unconfiguredProject, RPackageCommandId.icmdAddRScript, "rscript", "Script", "r") {
         }
     }
 }
