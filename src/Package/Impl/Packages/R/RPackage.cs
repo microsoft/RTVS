@@ -55,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
     [ProvideLanguageEditorOptionPage(typeof(REditorOptionsDialog), RContentTypeDefinition.LanguageName, "", "Advanced", "#20136")]
     [ProvideKeyBindingTable(RGuidList.REditorFactoryGuidString, 200)]
     [ProvideProjectFileGenerator(typeof(RProjectFileGenerator), RGuidList.CpsProjectFactoryGuidString, FileExtensions = RContentTypeDefinition.RStudioProjectExtensionNoDot, DisplayGeneratorFilter = 300)]
-    [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 9)]
+    [DeveloperActivity(RContentTypeDefinition.LanguageName, RGuidList.RPackageGuidString, sortPriority: 40)]
     [ProvideCpsProjectFactory(RGuidList.CpsProjectFactoryGuidString, RContentTypeDefinition.LanguageName)]
     [ProvideOptionPage(typeof(RToolsOptionsPage), "R Tools", "Advanced", 20116, 20136, true)]
     //[ProvideOptionPage(typeof(PackageSourceOptionsPage), "R Tools", "Package Sources", 20116, 20135, true)]
