@@ -37,6 +37,7 @@ namespace Microsoft.R.Editor.Outline {
         private const int _minLinesToOutline = 3;
         private readonly object _threadLock = new object();
         private RSectionsCollection _sections;
+        private bool _forceRegionsChange = false;
 
         internal IREditorDocument EditorDocument { get; }
         internal IEditorTree EditorTree { get; }
@@ -51,14 +52,14 @@ namespace Microsoft.R.Editor.Outline {
         }
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
-            if (e.Before.LineCount != e.After.LineCount || (_sections != null && _sections.Changed(e.After))) {
+            if (e.Before.LineCount != e.After.LineCount) {
                 BackgroundTask.DoTaskOnIdle();
             }
             base.OnTextBufferChanged(sender, e);
         }
 
         private void OnTreeUpdateCompleted(object sender, TreeUpdatedEventArgs e) {
-            if (e.UpdateType != TreeUpdateType.PositionsOnly) {
+            if (e.UpdateType != TreeUpdateType.PositionsOnly || (_sections != null && _sections.Changed)) {
                 BackgroundTask.DoTaskOnIdle();
             }
         }
@@ -104,6 +105,7 @@ namespace Microsoft.R.Editor.Outline {
             }
         }
 
+
         protected override void MainThreadAction(object backgroundProcessingResult) {
             if (!IsDisposed) {
                 base.MainThreadAction(backgroundProcessingResult);
@@ -114,10 +116,10 @@ namespace Microsoft.R.Editor.Outline {
             // Determine if we must force change on the editor if section name(s) changed.
             // Regular change may or may not re-create collapsible regions since if regions
             // positions and lengths match optimization will not be rebuilding regions.
-            var sectionsChanged = _sections != null && _sections.Changed(EditorTree.TextBuffer.CurrentSnapshot);
-            if (!sectionsChanged) {
+            if (!_forceRegionsChange) {
                 return base.CompareRegions(newRegions, oldRegions, upperBound);
             }
+            _forceRegionsChange = false;
             return new TextRange(0, EditorTree.TextBuffer.CurrentSnapshot.Length);
         }
 
@@ -185,7 +187,10 @@ namespace Microsoft.R.Editor.Outline {
             }
 
             // Track changes in section names
-            _sections = new RSectionsCollection(EditorDocument.TextBuffer.CurrentSnapshot, ranges);
+            _forceRegionsChange = _sections != null && _sections.Changed;
+
+            _sections?.Dispose();
+            _sections = new RSectionsCollection(EditorTree, ranges);
         }
 
 
@@ -224,6 +229,7 @@ namespace Microsoft.R.Editor.Outline {
                 EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
             }
 
+            _sections?.Dispose();
             base.Dispose(disposing);
         }
         #endregion

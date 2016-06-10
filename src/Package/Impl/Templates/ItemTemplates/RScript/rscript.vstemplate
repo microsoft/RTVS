@@ -9,7 +9,7 @@
     <ShowByDefault>false</ShowByDefault>
     <AppliesTo>RTools</AppliesTo>
     <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
-    <DefaultName>script.R</DefaultName>
+    <DefaultName>script.r</DefaultName>
     <SortOrder>0</SortOrder>
   </TemplateData>
   <TemplateContent>

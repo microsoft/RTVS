@@ -346,6 +346,10 @@
         <Parent guid="guidRToolsCmdSet" id="publishSubMenu"/>
       </Group>
 
+      <Group guid="guidRToolsCmdSet" id="publishPreviewSubMenuGroup" priority="0x0110">
+        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
+      </Group>
+
       <Group guid="guidRToolsCmdSet" id="feedbackSubMenuGroup" priority="0x0000">
         <Parent guid="guidRToolsCmdSet" id="feedbackSubMenu"/>
       </Group>
@@ -803,7 +807,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Preview HTML</ButtonText>
+          <ButtonText>Preview &amp;HTML</ButtonText>
           <CommandName>Preview HTML</CommandName>
         </Strings>
       </Button>
@@ -814,7 +818,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Preview PDF</ButtonText>
+          <ButtonText>Preview &amp;PDF</ButtonText>
           <CommandName>Preview PDF</CommandName>
         </Strings>
       </Button>
@@ -826,7 +830,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Preview Word</ButtonText>
+          <ButtonText>Preview &amp;Word</ButtonText>
           <CommandName>Preview Word</CommandName>
         </Strings>
       </Button>
@@ -1400,11 +1404,12 @@
         </Strings>
       </Menu>
 
-      <!-- Preview flyout -->
+      <!-- Entry for the Preview flyout in markdown context menu, 
+           includes 'Preview HTML', 'Preview PDF', ... -->
       <Menu guid="guidMdToolsCmdSet" id="previewSubMenu" type="Menu" priority="0x100">
         <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
         <Strings>
-          <ButtonText>Preview</ButtonText>
+          <ButtonText>Pre&amp;view</ButtonText>
         </Strings>
       </Menu>
       <!-- RD editor context menu -->
@@ -1424,10 +1429,6 @@
         <Parent guid="guidMdToolsCmdSet" id="mdEditorContextMenu"/>
       </Group>
       <!-- End MD code editor context menu groups -->
-
-      <Group guid="guidMdToolsCmdSet" id="groupPreviewSubMenu" priority="0x0100">
-        <Parent guid="guidMdToolsCmdSet" id="previewSubMenu"/>
-      </Group>
     </Groups>
 
     <Buttons>
@@ -1440,45 +1441,6 @@
           <ButtonText>E&amp;xecute Current Chunk</ButtonText>
         </Strings>
       </Button>
-
-      <!-- Preview menu item (in MD/RMD with flyout submenu -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreview" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreview"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Previe&amp;w</ButtonText>
-        </Strings>
-      </Button>
-
-      <!-- Preview flyout menu items -->
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewHtml" priority="0x0101" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>HTML</ButtonText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewPdf" priority="0x0102" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>PDF</ButtonText>
-        </Strings>
-      </Button>
-
-      <Button guid="guidMdToolsCmdSet" id="cmdidPreviewWord" priority="0x0103" type="Button">
-        <Parent guid="guidMdToolsCmdSet" id="groupPreviewSubMenu"/>
-        <CommandFlag>DefaultInvisible</CommandFlag>
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <Strings>
-          <ButtonText>Word</ButtonText>
-        </Strings>
-      </Button>
-      <!-- End Preview flyout menu items -->
 
       <Button guid="guidMdToolsCmdSet" id="cmdidPublish" priority="0x0104" type="Button">
         <!-- Actual publishing is not yet supported -->
@@ -1569,6 +1531,11 @@
     </CommandPlacement>
 
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_NAVIGATETOLOCATION" priority="0x0600">
+      <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
+    </CommandPlacement>
+
+    <!-- Markdown group (when R is in RMD) -->
+    <CommandPlacement guid="guidMdToolsCmdSet" id="groupPreview" priority="0x0875">
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
 
@@ -1938,7 +1905,6 @@
       <IDSymbol name="groupPreview" value="135" />
       <IDSymbol name="groupRmdRepl" value="136" />
       <IDSymbol name="groupPublish" value="145" />
-      <IDSymbol name="groupPreviewSubMenu" value="200" />
 
       <!-- Preview in RD/RDM -->
       <IDSymbol name="cmdidPreview" value="600" />

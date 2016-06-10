@@ -1051,7 +1051,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\NewItem\script.R">
+    <Content Include="Templates\NewItem\script.r">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -1101,7 +1101,7 @@
     <VSTemplate Include="Templates\ProjectTemplates\EmptyProject\EmptyProject.vstemplate" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\ItemTemplates\RScript\script.R" />
+    <None Include="Templates\ItemTemplates\RScript\script.r" />
     <VSTemplate Include="Templates\ItemTemplates\RScript\rscript.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
