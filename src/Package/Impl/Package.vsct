@@ -105,6 +105,17 @@
         </Strings>
       </Menu>
 
+      <!-- Variable Explorer context menu -->
+      <Menu guid="guidRToolsCmdSet" id="variableExplorerContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Variable Explorer Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- End Variable Explorer context menu -->
+
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
@@ -234,6 +245,11 @@
       </Group>
       <!-- End R code editor context menu groups -->
 
+      <!--`Variable Explorer groups -->
+      <Group guid="guidRToolsCmdSet" id="veCommandGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="variableExplorerContextMenu"/>
+      </Group>
+      
       <!-- R debugger Autos/Locals/Watch context menu group -->
       <Group guid="guidRToolsCmdSet" id="groupRContextDebugger" priority="0x0000">
         <Parent guid="guidRToolsCmdSet" id="debuggerRContextMenu"/>
@@ -1392,6 +1408,27 @@
       </Button>
       <!-- End of project context menu -->
 
+      <!-- Variable Explorer commands -->
+      <Button guid="guidRToolsCmdSet" id="icmdShowDetails" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DetailDataView"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Show Details</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenInCsvApp" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
+        <Icon guid="ImageCatalogGuid" id="OfficeExcel2013"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Open in CSV &amp;App</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
   </Commands>
 
@@ -1498,6 +1535,11 @@
       <Parent guid="guidRToolsCmdSet" id="rToolbarMarkdownGroup"/>
     </CommandPlacement>
     <!-- End toolbar -->
+
+    <!-- Variable Explorer context menu -->
+    <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="variableExplorerContextMenu"/>
+    </CommandPlacement>
 
     <!-- R code editor context menu -->
     <!-- Clipboard group -->
@@ -1923,7 +1965,8 @@
       <IDSymbol name="rHistoryContextMenu" value="102" />
       <!-- R debugger Autos/Locals/Watch context menu. -->
       <IDSymbol name="debuggerRContextMenu" value="103" />
-
+      <IDSymbol name="variableExplorerContextMenu" value="104"/>
+      
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
       <!-- R code editor context menu R group: cmdidSendToRepl, ... -->
@@ -1931,6 +1974,7 @@
       <IDSymbol name="groupRContextHelp" value="124"/>
       <!-- R debugger Autos/Locals/Watch context menu group. -->
       <IDSymbol name="groupRContextDebugger" value="125"/>
+      <IDSymbol name="veCommandGroup" value="126"/>
 
       <!-- RTVS Command IDs -->
       <!-- General -->
@@ -2008,6 +2052,8 @@
       <IDSymbol name="icmdImportDatasetTextFile" value="803" />
       <!--<IDSymbol name="icmdDeleteVariable" value="804" />-->
       <IDSymbol name="icmdDeleteAllVariables" value="805" />
+      <IDSymbol name="icmdShowDetails" value="806" />
+      <IDSymbol name="icmdOpenInCsvApp" value="807" />
 
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />

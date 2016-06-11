@@ -62,6 +62,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdImportDatasetTextFile = 803;
         public const int icmdDeleteVariable = 804;
         public const int icmdDeleteAllVariables = 805;
+        public const int icmdShowDetails = 806;
+        public const int icmdOpenInCsvApp = 807;
 
         // Window management
         public const int icmdShowReplWindow = 901;

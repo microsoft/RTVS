@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -16,18 +18,21 @@ using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public partial class VariableView : UserControl, IDisposable {
+    public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         private ObservableTreeNode _rootNode;
-
         private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
         public VariableView() : this(null) { }
@@ -117,6 +122,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HandleDefaultAction();
         }
 
+        private void GridRow_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var row = sender as DataGridRow;
+            if (row != null) {
+                row.IsSelected = true;
+                var pt = PointToScreen(e.GetPosition(this));
+                VsContextMenu.Show(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer, this, pt);
+                e.Handled = true;
+            }
+        }
+
         protected override void OnPreviewKeyDown(KeyEventArgs e) {
             if (e.Key == Key.Enter || e.Key == Key.Return) {
                 e.Handled = true;
@@ -165,6 +180,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
         }
 
+        #region Icons
         private ImageMoniker GetVariableIcon(IREvaluationResultInfo info) {
             if (info is IRActiveBindingInfo) {
                 return KnownMonikers.Property;
@@ -219,5 +235,58 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     return KnownMonikers.BulletList;
             }
         }
+        #endregion
+
+        #region ICommandTarget
+        public CommandStatus Status(Guid group, int id) {
+            if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                switch ((VSConstants.VSStd97CmdID)id) {
+                    case VSConstants.VSStd97CmdID.Copy:
+                    case VSConstants.VSStd97CmdID.Delete:
+                        return CommandStatus.SupportedAndEnabled;
+                }
+            } else if (group == RGuidList.RCmdSetGuid) {
+                var selection = RootTreeGrid.SelectedItem as ObservableTreeNode;
+                var model = selection?.Model?.Content as VariableViewModel;
+                switch (id) {
+                    case (int)RContextMenuId.VariableExplorer:
+                        return CommandStatus.SupportedAndEnabled;
+                    case RPackageCommandId.icmdShowDetails:
+                        return model != null && model.CanShowDetail ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                    case RPackageCommandId.icmdOpenInCsvApp:
+                        return model != null && model.CanShowOpenCsv ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                }
+            }
+            return CommandStatus.Invisible;
+        }
+
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                switch ((VSConstants.VSStd97CmdID)id) {
+                    case VSConstants.VSStd97CmdID.Copy:
+                        break;
+                    case VSConstants.VSStd97CmdID.Delete:
+                        DeleteCurrentVariableAsync().DoNotWait();
+                        break;
+                }
+            } else if (group == RGuidList.RCmdSetGuid) {
+                var selection = RootTreeGrid.SelectedItem as ObservableTreeNode;
+                var model = selection?.Model?.Content as VariableViewModel;
+                switch (id) {
+                    case RPackageCommandId.icmdShowDetails:
+                        model?.ShowDetailCommand.Execute(null);
+                        break;
+                    case RPackageCommandId.icmdOpenInCsvApp:
+                        model?.OpenInCsvAppCommand.Execute(null);
+                        break;
+                }
+            }
+            return CommandResult.Executed;
+        }
+
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
+            throw new NotImplementedException();
+        }
+        #endregion
     }
 }
