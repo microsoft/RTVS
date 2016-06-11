@@ -11,28 +11,30 @@ using Microsoft.Common.Core;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
     internal sealed class EncodingTypeConverter : TypeConverter {
-        private static readonly int[] _unicodePages = new int[] {
-            Encoding.UTF7.CodePage ,
-            Encoding.UTF8.CodePage,
-            Encoding.Unicode.CodePage,
-            Encoding.UTF32.CodePage,
-            Encoding.BigEndianUnicode.CodePage,
-            12001 // Big Endian UTF32
+        private static readonly int[] _supportedCodePages = new int[] {
+            708,720, 737, 775,
+            850, 852, 855, 857, 860, 861, 862,
+            863, 864, 865, 866, 869, 874,
+            932, 936, 949, 950,
+            1250, 1251, 1252, 1253,1254, 1255, 1256, 1257, 1258,
+            20000, 20127, 20866, 20932, 20936, 20949, 21866,
+            28591, 28592, 28593, 28594, 28595, 28596, 28597,
+            28598, 28599, 28603, 28605,
+            38598
         };
 
-        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) {
-            return true;
-        }
+        public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
+            var encList = new List<Encoding>();
+            foreach(var cp in _supportedCodePages) {
+                encList.Add(Encoding.GetEncoding(cp));
+            }
+
+            var codePages = encList.OrderBy(e => e.EncodingName)
+                                   .Select(e => e.CodePage);
+
             var codePageList = new List<int>() { 0 };
-            var codePages = Encoding.GetEncodings()
-                                    .Where(e => !e.DisplayName.ContainsIgnoreCase("ISCII") && !e.DisplayName.ContainsIgnoreCase("EBCDIC"))
-                                    .Where(e => e.CodePage < 50000)
-                                    .Distinct()
-                                    .OrderBy(e => e.DisplayName)
-                                    .Select(e => e.CodePage)
-                                    .Except(_unicodePages);
             codePageList.AddRange(codePages);
             return new StandardValuesCollection(codePageList);
         }
@@ -47,7 +49,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) {
             if (value.GetType() == typeof(string)) {
                 return ConvertToCodePage(value as string);
-            } else if(value.GetType() == typeof(int)) {
+            } else if (value.GetType() == typeof(int)) {
                 return ConvertToEncodingName((int)value);
             }
             return null;
@@ -70,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         private int ConvertToCodePage(string encodingName) {
-            if(encodingName.EqualsOrdinal(Resources.Settings_DefaultValue)) {
+            if (encodingName.EqualsOrdinal(Resources.Settings_DefaultValue)) {
                 return 0;
             }
             var enc = Encoding.GetEncodings().FirstOrDefault(e => e.DisplayName.EqualsOrdinal(encodingName));
