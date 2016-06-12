@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
+using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
@@ -246,47 +246,67 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         return CommandStatus.SupportedAndEnabled;
                 }
             } else if (group == RGuidList.RCmdSetGuid) {
-                var selection = RootTreeGrid.SelectedItem as ObservableTreeNode;
+                var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
                 var model = selection?.Model?.Content as VariableViewModel;
-                switch (id) {
-                    case (int)RContextMenuId.VariableExplorer:
-                        return CommandStatus.SupportedAndEnabled;
-                    case RPackageCommandId.icmdShowDetails:
-                        return model != null && model.CanShowDetail ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
-                    case RPackageCommandId.icmdOpenInCsvApp:
-                        return model != null && model.CanShowOpenCsv ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                if (model != null) {
+                    switch (id) {
+                        case (int)RContextMenuId.VariableExplorer:
+                        case RPackageCommandId.icmdCopyValue:
+                            return CommandStatus.SupportedAndEnabled;
+                        case RPackageCommandId.icmdShowDetails:
+                            return model.CanShowDetail ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                        case RPackageCommandId.icmdOpenInCsvApp:
+                            return model.CanShowOpenCsv ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                    }
                 }
             }
             return CommandStatus.Invisible;
         }
 
         public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
-            if (group == VSConstants.GUID_VSStandardCommandSet97) {
-                switch ((VSConstants.VSStd97CmdID)id) {
-                    case VSConstants.VSStd97CmdID.Copy:
-                        break;
-                    case VSConstants.VSStd97CmdID.Delete:
-                        DeleteCurrentVariableAsync().DoNotWait();
-                        break;
-                }
-            } else if (group == RGuidList.RCmdSetGuid) {
-                var selection = RootTreeGrid.SelectedItem as ObservableTreeNode;
-                var model = selection?.Model?.Content as VariableViewModel;
-                switch (id) {
-                    case RPackageCommandId.icmdShowDetails:
-                        model?.ShowDetailCommand.Execute(null);
-                        break;
-                    case RPackageCommandId.icmdOpenInCsvApp:
-                        model?.OpenInCsvAppCommand.Execute(null);
-                        break;
+            var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
+            var model = selection?.Model?.Content as VariableViewModel;
+            if (model != null) {
+                if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                    switch ((VSConstants.VSStd97CmdID)id) {
+                        case VSConstants.VSStd97CmdID.Copy:
+                            CopyEntry(model);
+                            break;
+                        case VSConstants.VSStd97CmdID.Delete:
+                            DeleteCurrentVariableAsync().DoNotWait();
+                            break;
+                    }
+                } else if (group == RGuidList.RCmdSetGuid) {
+                    switch (id) {
+                        case RPackageCommandId.icmdCopyValue:
+                            CopyValue(model);
+                            break;
+                        case RPackageCommandId.icmdShowDetails:
+                            model?.ShowDetailCommand.Execute(null);
+                            break;
+                        case RPackageCommandId.icmdOpenInCsvApp:
+                            model?.OpenInCsvAppCommand.Execute(null);
+                            break;
+                    }
                 }
             }
             return CommandResult.Executed;
         }
 
-        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) {
-            throw new NotImplementedException();
-        }
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) { }
         #endregion
+
+        private void CopyEntry(VariableViewModel model) {
+            string data = Invariant($"{model.Name} {model.Value} {model.Class} {model.TypeName}");
+            SetClipboardData(data);
+        }
+
+        private void CopyValue(VariableViewModel model) {
+            SetClipboardData(model.Value);
+        }
+        private void SetClipboardData(string text) {
+            Clipboard.Clear();
+            Clipboard.SetText(text);
+         }
     }
 }

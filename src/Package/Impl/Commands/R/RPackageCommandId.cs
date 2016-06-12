@@ -64,6 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdDeleteAllVariables = 805;
         public const int icmdShowDetails = 806;
         public const int icmdOpenInCsvApp = 807;
+        public const int icmdCopyValue = 808;
 
         // Window management
         public const int icmdShowReplWindow = 901;
