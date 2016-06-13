@@ -185,6 +185,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             // pull data from provider
             try {
                 var data = await DataProvider.GetAsync(newViewport, sortOrder);
+                if (data == null) {
+                    throw new InvalidOperationException("Couldn't fetch grid data");
+                }
+
                 if (!data.Grid.Range.Contains(newViewport)
                     || !data.ColumnHeader.Range.Contains(newViewport.Columns)
                     || !data.RowHeader.Range.Contains(newViewport.Rows)) {

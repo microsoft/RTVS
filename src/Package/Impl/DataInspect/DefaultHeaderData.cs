@@ -11,24 +11,35 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             Row,
         }
 
-        private Mode _mode;
-        public DefaultHeaderData(Range range, Mode columnMode) {
+        private readonly Mode _mode;
+        private readonly bool _is1D;
+
+        public DefaultHeaderData(Range range, Mode columnMode, bool is1D) {
             Range = range;
             _mode = columnMode;
+            _is1D = is1D;
         }
 
         public string this[int index] {
             get {
-                int rIndex = index;
-
-                checked {
-                    rIndex = index + 1; // R index is 1-based
+                int rIndex = checked(index + 1);
+                if (_is1D) {
+                    switch (_mode) {
+                        case Mode.Column:
+                            return Invariant($"[]");
+                        case Mode.Row:
+                            return Invariant($"[{rIndex}]");
+                    }
+                } else {
+                    switch (_mode) {
+                        case Mode.Column:
+                            return Invariant($"[,{rIndex}]");
+                        case Mode.Row:
+                            return Invariant($"[{rIndex},]");
+                    }
                 }
 
-                if (_mode == Mode.Column) {
-                    return Invariant($"[,{rIndex}]");
-                }
-                return Invariant($"[{rIndex},]");
+                throw new InvalidOperationException(nameof(DefaultHeaderData) + ": unknown mode " + _mode);
             }
 
             set {

@@ -54,14 +54,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
         }
 
-        /// <summary>
-        /// Constructs expression to evaluate in R when ordering a data frame.
+        /// <remarks>
         /// Complete expression looks like:
         /// <code>
-        /// function(x) order(x['col_name1'], -x['col_name2'], ...)
+        /// function(x) order(x[,col_idx1], -x[,col_idx1], ...)
         /// </code>
         /// where minus tells R that the column sort order is descending rather than ascending.
-        /// </summary>
+        /// </remarks>
         public string GetRowSelector() {
             var sb = new StringBuilder("function(x) order(");
 
@@ -77,7 +76,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     sb.Append('-');
                 }
 
-                sb.Append(Invariant($"x[{s.ColumnIndex + 1}]"));
+                sb.Append(Invariant($"x[,{s.ColumnIndex + 1}]"));
             }
 
             sb.Append(")");

@@ -9,6 +9,9 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [DataContract]
     internal class GridData : IGridData<string> {
+        [DataMember(Name = "is_1d")]
+        bool Is1D { get; set; }
+
         [DataMember(Name = "row.start")]
         int RowStart { get; set; }
 
@@ -41,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             new Range(ColumnStart - 1, ColumnCount),
                             ColumnNames.Select(s => s.ConvertCharacterCodes()).ToList());
                     } else {
-                        _columnHeader = new DefaultHeaderData(new Range(ColumnStart - 1, ColumnCount), DefaultHeaderData.Mode.Column);
+                        _columnHeader = new DefaultHeaderData(new Range(ColumnStart - 1, ColumnCount), DefaultHeaderData.Mode.Column, Is1D);
                     }
                 }
                 return _columnHeader;
@@ -57,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             new Range(RowStart - 1, RowCount),
                             RowNames.Select(s => s.ConvertCharacterCodes()).ToList());
                     } else {
-                        _rowHeader = new DefaultHeaderData(new Range(RowStart - 1, RowCount), DefaultHeaderData.Mode.Row);
+                        _rowHeader = new DefaultHeaderData(new Range(RowStart - 1, RowCount), DefaultHeaderData.Mode.Row, Is1D);
                     }
                 }
 
