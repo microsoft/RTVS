@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <param name="v"></param>
         public void ResetTo(HeaderTextVisual v) {
             _sortOrderList.Clear();
-            _sortOrderList.Add(new ColumnSortOrder(v.Name, v.SortOrder == SortOrderType.Descending));
+            _sortOrderList.Add(new ColumnSortOrder(v.ColumnIndex, v.SortOrder == SortOrderType.Descending));
         }
 
         /// <summary>
@@ -46,23 +46,25 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         /// <param name="v"></param>
         public void Add(HeaderTextVisual v) {
-            var existing = _sortOrderList.FirstOrDefault(x => x.ColumnName.EqualsOrdinal(v.Name));
+            var existing = _sortOrderList.FirstOrDefault(x => x.ColumnIndex == v.ColumnIndex);
             if (existing == null) {
-                _sortOrderList.Add(new ColumnSortOrder(v.Name, v.SortOrder == SortOrderType.Descending));
+                _sortOrderList.Add(new ColumnSortOrder(v.ColumnIndex, v.SortOrder == SortOrderType.Descending));
             } else {
                 existing.Descending = v.SortOrder == SortOrderType.Descending;
             }
         }
 
         /// <summary>
-        /// Constructs expression to evaluate in R when ordering the data frame.
-        /// Complete expression looks like 
-        /// 'do.call(order, c(x.df['col_name1'], -x.df['col_name2'], ...))'
-        /// where x.df is name of the data frame in grid.r and minus tells R
-        /// that the column sort order is descending rather than ascending.
+        /// Constructs expression to evaluate in R when ordering a data frame.
+        /// Complete expression looks like:
+        /// <code>
+        /// function(x) order(x['col_name1'], -x['col_name2'], ...)
+        /// </code>
+        /// where minus tells R that the column sort order is descending rather than ascending.
         /// </summary>
-        public string GetDataFrameSortFunction() {
-            var sb = new StringBuilder("function(x) { do.call(order, c(");
+        public string GetRowSelector() {
+            var sb = new StringBuilder("function(x) order(");
+
             bool first = true;
             foreach (var s in _sortOrderList) {
                 if (!first) {
@@ -70,13 +72,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 } else {
                     first = false;
                 }
+
                 if (s.Descending) {
                     sb.Append('-');
                 }
-                // NOTE: name must match name of the data frame in grid.r
-                sb.Append(Invariant($"x[{s.ColumnName.ToRStringLiteral()}]"));
+
+                sb.Append(Invariant($"x[{s.ColumnIndex + 1}]"));
             }
-            sb.Append(")) }");
+
+            sb.Append(")");
             return sb.ToString();
         }
     }

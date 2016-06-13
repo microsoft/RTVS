@@ -29,6 +29,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
         #endregion
 
+        public HeaderTextVisual(int columnIndex) {
+            ColumnIndex = columnIndex;
+        }
+
+        public int ColumnIndex { get; }
+
         /// <summary>
         /// Name of the column
         /// </summary>

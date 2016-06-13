@@ -13,20 +13,19 @@ grid_format <- function(x) {
   sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
 }
 
-grid_sort_df <- function(x, rows, cols, df_sort_function_text) {
-  if(missing(df_sort_function_text)) {
+grid_sort_df <- function(x, rows, cols, row_selector) {
+  if (missing(row_selector)) {
     x.df <- as.data.frame(x)[rows, cols];
   } else {
     x.df <- as.data.frame(x)
-    df_sort_function = eval(parse(text = df_sort_function_text))
-    x.df <- x.df[df_sort_function(x.df),][rows, cols];
+    x.df <- x.df[row_selector(x.df),][rows, cols];
   }
   x.df
 }
 
 grid_sort_vector <- function(x, vector_sort_type) {
-  if(!missing(vector_sort_type) && vector_sort_type > 0) {
-    if(vector_sort_type == 1) {
+  if (!missing(vector_sort_type) && vector_sort_type > 0) {
+    if (vector_sort_type == 1) {
         x <- sort(x)
     } else {
         x <- sort(x, decreasing = TRUE)
@@ -35,7 +34,7 @@ grid_sort_vector <- function(x, vector_sort_type) {
   x
 }
 
-grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
+grid_data <- function(x, rows, cols, row_selector, vector_sort_type) {
   d <- dim(x);
   if (missing(rows)) {
     rows <- 1:d[[1]];
@@ -47,9 +46,9 @@ grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
   # get values for column/row names and data
   if (length(rows) == 1 || length(cols) == 1) {
     # one-dimension objects
-    if(is(x, 'vector') || is.ts(x)) {
+    if (is(x, 'vector') || is.ts(x)) {
       x <- grid_sort_vector(x, vector_sort_type)
-      if(length(cols) == 1) {
+      if (length(cols) == 1) {
         data <- grid_format(x[rows]);
       } else {
         data <- grid_format(x[cols]);
@@ -61,7 +60,7 @@ grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
     cn <- colnames(x)[cols];
   } else {
     x <- as.data.frame(x)
-    x.df <- grid_sort_df(x, rows, cols, df_sort_function_text);
+    x.df <- grid_sort_df(x, rows, cols, row_selector);
     data <- sapply(x.df, grid_format, USE.NAMES = FALSE);
     rn <- row.names(x.df);
     cn <- colnames(x.df);

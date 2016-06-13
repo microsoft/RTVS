@@ -24,8 +24,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                     string exp;
                     if (sortOrder != null && !sortOrder.IsEmpty) {
                         if (gridRange.Value.Columns.Count > 1) {
-                            string dataFrameSortExpression = sortOrder.GetDataFrameSortFunction();
-                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {dataFrameSortExpression.ToRStringLiteral()})");
+                            string orderFunction = sortOrder.GetRowSelector();
+                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {orderFunction})");
                         } else {
                             int sortType = sortOrder.IsPrimaryDescending ? 2 : 1;
                             exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, NULL, {sortType})");

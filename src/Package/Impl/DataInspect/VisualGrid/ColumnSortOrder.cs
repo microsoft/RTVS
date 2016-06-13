@@ -3,10 +3,10 @@
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
     public class ColumnSortOrder {
-        public string ColumnName { get; }
+        public int ColumnIndex { get; }
         public bool Descending { get; set; }
-        public ColumnSortOrder(string columnName, bool descending) {
-            ColumnName = columnName;
+        public ColumnSortOrder(int columnIndex, bool descending) {
+            ColumnIndex = columnIndex;
             Descending = descending;
         }
     }
