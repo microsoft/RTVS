@@ -26,17 +26,10 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         public override bool GetStandardValuesSupported(ITypeDescriptorContext context) => true;
 
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context) {
-            var encList = new List<Encoding>();
-            foreach(var cp in _supportedCodePages) {
-                encList.Add(Encoding.GetEncoding(cp));
-            }
-
-            var codePages = encList.OrderBy(e => e.EncodingName)
-                                   .Select(e => e.CodePage);
-
-            var codePageList = new List<int>() { 0 };
-            codePageList.AddRange(codePages);
-            return new StandardValuesCollection(codePageList);
+            var encodings = _supportedCodePages.Select(cp => Encoding.GetEncoding(cp));
+            var codePages = encodings.OrderBy(e => e.EncodingName).Select(e => e.CodePage).ToList();
+            codePages.Insert(0, 0);
+            return new StandardValuesCollection(codePages);
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) {
