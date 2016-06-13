@@ -58,28 +58,24 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public void OnActiveFrameChanged(IVsWindowFrame oldFrame, IVsWindowFrame newFrame) {
-            var wpfTextView = GetWpfTextView(oldFrame);
-            if (wpfTextView != null) {
-                UpdateTextViewIfRequired(wpfTextView);
+            var oldTextView = GetWpfTextView(oldFrame);
+            if (oldTextView != null) {
+                UpdateTextViewIfRequired(oldTextView);
             }
 
-            wpfTextView = GetWpfTextView(newFrame);
-            if (wpfTextView != null) {
-                UpdateTextViewIfRequired(wpfTextView);
+            var newTextView = GetWpfTextView(newFrame);
+            if (newTextView != null) {
+                UpdateTextViewIfRequired(newTextView);
             }
+
+            LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldTextView, newTextView));
         }
 
         private void UpdateTextViewIfRequired(IWpfTextView wpfTextView) {
             LastActiveTextView = wpfTextView;
 
             var contentType = wpfTextView.TextBuffer.ContentType;
-            IWpfTextView oldValue;
-            if (_textViews.TryGetValue(contentType, out oldValue) && oldValue.Equals(wpfTextView)) {
-                return;
-            }
-
             _textViews[contentType] = wpfTextView;
-            LastActiveTextViewChanged?.Invoke(this, new ActiveTextViewChangedEventArgs(oldValue, wpfTextView));
         }
 
         private IWpfTextView GetWpfTextView(IVsWindowFrame frame) {
