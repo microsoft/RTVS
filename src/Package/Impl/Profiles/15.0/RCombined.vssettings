@@ -739,7 +739,7 @@
       </NoToolWin>
     </Category>
     <Category name="Environment_KeyBindings" Category="{F09035F1-80D2-4312-8EC4-4D354A4BCB4C}" Package="{DA9FB551-C724-11d0-AE1F-00A0C90FFFC3}" RegisteredName="Environment_KeyBindings" PackageName="Visual Studio Environment Package">
-      <Version>14.0.0.0</Version>
+      <Version>15.0.0.0</Version>
       <KeyboardShortcuts>
         <ScopeDefinitions>
           <Scope Name="Team Explorer" ID="{7AA20502-9463-47B7-BF43-341BAF51157C}"/>
