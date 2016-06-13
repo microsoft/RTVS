@@ -44,8 +44,8 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             using (var hostScript = new VariableRHostScript()) {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- matrix(1:10, 2, 5)");
-                    var header = await VisualTreeExtensions.FindChildAsync<HeaderTextVisual>(script.Control);
-                    var grid = await VisualTreeExtensions.FindChildAsync<VisualGrid>(script.Control);
+                    var header = await VisualTreeTestExtensions.FindChildAsync<HeaderTextVisual>(script.Control);
+                    var grid = await VisualTreeTestExtensions.FindChildAsync<VisualGrid>(script.Control);
                     header.Should().NotBeNull();
                     await UIThreadHelper.Instance.InvokeAsync(() => {
                         grid.ToggleSort(header, false);
@@ -66,17 +66,17 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
                 using (var script = new ControlTestScript(typeof(VariableGridHost))) {
                     await PrepareControl(hostScript, script, "grid.test <- mtcars");
                     await UIThreadHelper.Instance.InvokeAsync(async () => {
-                        var grid = await VisualTreeExtensions.FindChildAsync<VisualGrid>(script.Control);
+                        var grid = await VisualTreeTestExtensions.FindChildAsync<VisualGrid>(script.Control);
 
-                        var header = await VisualTreeExtensions.FindChildAsync<HeaderTextVisual>(script.Control); // mpg
-                        header = await VisualTreeExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // cyl
+                        var header = await VisualTreeTestExtensions.FindChildAsync<HeaderTextVisual>(script.Control); // mpg
+                        header = await VisualTreeTestExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // cyl
                         header.Should().NotBeNull();
 
                         grid.ToggleSort(header, false);
                         DoIdle(200);
 
-                        header = await VisualTreeExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // disp
-                        header = await VisualTreeExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // hp
+                        header = await VisualTreeTestExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // disp
+                        header = await VisualTreeTestExtensions.FindNextSiblingAsync<HeaderTextVisual>(header); // hp
 
                         grid.ToggleSort(header, add: true);
                         grid.ToggleSort(header, add: true);

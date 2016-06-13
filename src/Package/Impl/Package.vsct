@@ -1934,6 +1934,7 @@
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
   </KeyBindings>
 
   <UsedCommands>
