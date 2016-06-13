@@ -175,6 +175,7 @@
     <Compile Include="Mocks\ActiveTextViewTrackerMock.cs" />
     <Compile Include="Mocks\ReplWindowMock.cs" />
     <Compile Include="Mocks\RHistoryVisualComponentContainerFactoryMock.cs" />
+    <Compile Include="Options\EncodingsTest.cs" />
     <Compile Include="ProjectSystem\PropertyPages\RunPageViewModelTest.cs" />
     <Compile Include="Project\CommandsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -213,6 +214,7 @@
     <Content Include="SurveyNews\Feeds\Items.txt" />
     <Content Include="SurveyNews\Feeds\NoItems.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />
 </Project>

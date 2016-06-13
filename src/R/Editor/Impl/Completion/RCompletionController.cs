@@ -170,8 +170,10 @@ namespace Microsoft.R.Editor.Completion {
                     // applicable span. for example, if span is X and selection is X123
                     // then we do complete. However, if selection is X then text is already
                     // fully typed and Enter should be adding new line as with regular typing.
-                    var typedText = completionSet.ApplicableTo.GetText(_textBuffer.CurrentSnapshot);
-                    return !completionText.EqualsOrdinal(typedText);
+                    if (completionSet.SelectionStatus.IsSelected) {
+                        var typedText = completionSet.ApplicableTo.GetText(_textBuffer.CurrentSnapshot).Trim();
+                        return completionText.Length > typedText.Length;
+                    }
                 }
 
                 return char.IsWhiteSpace(typedChar);
