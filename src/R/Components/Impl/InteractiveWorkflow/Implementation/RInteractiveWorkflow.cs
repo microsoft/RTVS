@@ -67,27 +67,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return;
             }
 
-            if (ActiveWindow.TextView.Equals(e.Old) && !ActiveWindow.TextView.Equals(e.New)) {
+            // Check if REPL lost focus and focus moved to the editor
+            if (!ActiveWindow.TextView.HasAggregateFocus && !string.IsNullOrEmpty(e.New?.TextBuffer?.GetFilePath())) {
                 _replLostFocus = true;
                 Shell.DispatchOnUIThread(CheckPossibleBreakModeFocusChange);
             }
 
-            if (ActiveWindow.TextView.Equals(e.New)) {
+            if (ActiveWindow.TextView.HasAggregateFocus) {
                 Shell.DispatchOnUIThread(Operations.PositionCaretAtPrompt);
             }
         }
 
         private void CheckPossibleBreakModeFocusChange() {
-            if (ActiveWindow == null || !_debuggerModeTracker.IsEnteredBreakMode || !_replLostFocus) {
-                return;
-            }
 
-            // When debugger hits a breakpoint it typically activates the editor.
-            // This is not desirable when focus was in the interactive window
-            // i.e. user worked in the REPL and not in the editor. Pull 
-            // the focus back here. 
-            ActiveWindow.Container.Show(true);
-            _replLostFocus = false;
+            if (ActiveWindow != null && _debuggerModeTracker.IsEnteredBreakMode && _replLostFocus) {
+                // When debugger hits a breakpoint it typically activates the editor.
+                // This is not desirable when focus was in the interactive window
+                // i.e. user worked in the REPL and not in the editor. Pull 
+                // the focus back here. 
+                _replLostFocus = false;
+                ActiveWindow.Container.Show(true);
+            }
         }
 
         private void RSessionDisconnected(object o, EventArgs eventArgs) {

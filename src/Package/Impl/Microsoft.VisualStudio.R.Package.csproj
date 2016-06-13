@@ -456,6 +456,18 @@
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Profiles\15.0\R.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Profiles\15.0\RCombined.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Profiles\15.0\RStudioKeyboard.vssettings">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Templates\Sql\Create Procedure R.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1015,12 +1027,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Profiles\RCombined.vssettings">
+    <Content Include="Profiles\14.0\RCombined.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Profiles\RStudioKeyboard.vssettings">
+    <Content Include="Profiles\14.0\RStudioKeyboard.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1042,7 +1054,7 @@
     <Content Include="Templates\ItemTemplates\FunctionRD\RdFile.png" />
     <Content Include="Templates\ProjectTemplates\EmptyProject\script.R" />
     <Content Include="Templates\ItemTemplates\EmptyMD\MdFile.png" />
-    <Content Include="Profiles\R.vssettings">
+    <Content Include="Profiles\14.0\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

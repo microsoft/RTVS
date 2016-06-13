@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
         [Test]
-        public async Task ValidateEncodings() {
+        public void ValidateEncodings() {
             var etc = new EncodingTypeConverter();
             var codePages = etc.GetStandardValues();
             using(var script = new VsRHostScript()) {
