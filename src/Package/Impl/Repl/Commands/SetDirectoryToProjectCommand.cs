@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void SetStatus() {
             Supported = true;
-            Enabled = _pss.GetSelectedProject() != null;
+            Enabled = _pss.GetActiveProject() != null;
         }
 
         protected override void Handle() {

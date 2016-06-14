@@ -18,6 +18,11 @@ using static System.FormattableString;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSystemServices))]
     internal sealed class ProjectSystemServices: IProjectSystemServices {
+        public EnvDTE.Solution GetSolution() {
+            DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
+            return dte.Solution;
+        }
+
         public EnvDTE.Project GetActiveProject() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             if (dte.Solution.Projects.Count > 0) {

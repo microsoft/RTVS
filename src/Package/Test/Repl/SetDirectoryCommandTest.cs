@@ -63,6 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
             var pss = Substitute.For<IProjectSystemServices>();
             pss.GetSelectedProject().Returns((EnvDTE.Project)null);
+            pss.GetActiveProject().Returns((EnvDTE.Project)null);
 
             var cmd = new SetDirectoryToProjectCommand(workflow, pss);
             var status = cmd.OleStatus;
@@ -74,6 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
 
             pss = Substitute.For<IProjectSystemServices>();
             pss.GetSelectedProject().Returns(proj);
+            pss.GetActiveProject().Returns(proj);
 
             cmd = new SetDirectoryToProjectCommand(workflow, pss);
             status = cmd.OleStatus;

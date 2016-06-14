@@ -4,6 +4,12 @@
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     public interface IProjectSystemServices {
         /// <summary>
+        /// Locates current solution instance
+        /// </summary>
+        /// <returns></returns>
+        EnvDTE.Solution GetSolution();
+
+        /// <summary>
         /// Locates project that is currently selected in Solution Explorer
         /// </summary>
         EnvDTE.Project GetSelectedProject();

@@ -161,7 +161,7 @@
       <Menu guid="guidRToolsCmdSet" id="directorySubMenu" type="Menu" priority="0x0450">
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
-          <ButtonText>Director&amp;y</ButtonText>
+          <ButtonText>Working Director&amp;y</ButtonText>
         </Strings>
       </Menu>
 
@@ -317,7 +317,7 @@
       </Group>
       
       <!-- File EZ MDI tab menu -->
-      <Group guid="guidRToolsCmdSet" id="directoryEzMdiGroup" priority="0x0010">
+      <Group guid="guidRToolsCmdSet" id="directoryEzMdiGroup" priority="0x0210">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_EZDOCWINTAB"/>
       </Group>
       
@@ -655,7 +655,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Set Directory to &amp;Source File Location</ButtonText>
+          <ButtonText>Set Working Directory to &amp;Source File Location</ButtonText>
         </Strings>
       </Button>
 
@@ -665,7 +665,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Set Directory to &amp;Project Location</ButtonText>
+          <ButtonText>Set Working Directory to &amp;Project Location</ButtonText>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
