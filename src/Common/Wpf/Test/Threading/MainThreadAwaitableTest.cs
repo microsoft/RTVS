@@ -2,69 +2,81 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Core.Threading;
 using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 
-namespace Microsoft.Common.Wpf.Test.Threading {
+namespace Microsoft.Common.Core.Test.Threading {
     public class MainThreadAwaitableTest {
-        private readonly Thread _dispatcherThread;
-        private readonly Dispatcher _dispatcher;
+        private readonly IMainThread _mainThread;
 
         public MainThreadAwaitableTest() {
-            _dispatcherThread = UIThreadHelper.Instance.Thread;
-            _dispatcher = Dispatcher.FromThread(_dispatcherThread);
+            _mainThread = new TestMainThread(UIThreadHelper.Instance);
         }
 
         [Test]
         public void IsCompleleted_BackgroundThread() {
-            var awaitable = new MainThreadAwaitable(_dispatcher);
+            var awaitable = new MainThreadAwaitable(_mainThread);
 
-            Thread.CurrentThread.Should().NotBe(_dispatcherThread);
+            Thread.CurrentThread.ManagedThreadId.Should().NotBe(_mainThread.ThreadId);
             awaitable.GetAwaiter().IsCompleted.Should().Be(false);
         }
 
         [Test(ThreadType.UI)]
         public void IsCompleleted_DispatcherThread() {
-            var awaitable = new MainThreadAwaitable(_dispatcher);
+            var awaitable = new MainThreadAwaitable(_mainThread);
 
-            Thread.CurrentThread.Should().Be(_dispatcherThread);
+            Thread.CurrentThread.ManagedThreadId.Should().Be(_mainThread.ThreadId);
             awaitable.GetAwaiter().IsCompleted.Should().Be(true);
         }
 
         [Test]
         public async Task Await_BackgroundThread() {
-            var awaitable = new MainThreadAwaitable(_dispatcher);
+            var awaitable = new MainThreadAwaitable(_mainThread);
 
             await awaitable;
 
-            Thread.CurrentThread.Should().Be(_dispatcherThread);
+            Thread.CurrentThread.ManagedThreadId.Should().Be(_mainThread.ThreadId);
             Action a = () => awaitable.GetAwaiter().GetResult();
             a.ShouldNotThrow();
         }
 
         [Test(ThreadType.UI)]
         public async Task Await_OnDispatcherThread() {
-            var awaitable = new MainThreadAwaitable(_dispatcher);
+            var awaitable = new MainThreadAwaitable(_mainThread);
 
             await awaitable;
 
-            Thread.CurrentThread.Should().Be(_dispatcherThread);
+            Thread.CurrentThread.ManagedThreadId.Should().Be(_mainThread.ThreadId);
             Action a = () => awaitable.GetAwaiter().GetResult();
             a.ShouldNotThrow();
         }
 
         [Test]
         public void GetResult_ThrowOnBackgroundThread() {
-            var thread = Dispatcher.FromThread(UIThreadHelper.Instance.Thread);
-            var awaitable = new MainThreadAwaitable(thread);
+            var awaitable = new MainThreadAwaitable(_mainThread);
 
             Action a = () => awaitable.GetAwaiter().GetResult();
             a.ShouldThrow<InvalidOperationException>();
+        }
+        
+        private sealed class TestMainThread : IMainThread {
+            private readonly UIThreadHelper _threadHelper;
+
+            public TestMainThread(UIThreadHelper threadHelper) {
+                _threadHelper = threadHelper;
+            }
+
+            public int ThreadId => _threadHelper.Thread.ManagedThreadId;
+            public void Post(Action action) => _threadHelper.InvokeAsync(action).DoNotWait();
         }
     }
 }

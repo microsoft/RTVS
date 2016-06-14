@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Wpf.Threading;
 using Microsoft.Languages.Editor.Host;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// services and so on.
     /// </summary>
     [Export(typeof(IApplicationShell))]
-    public sealed class VsAppShell : IApplicationShell, IIdleTimeService, IDisposable {
+    public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
         private static readonly Lazy<VsAppShell> _instance = Lazy.Create(() =>  new VsAppShell());
 
         private static IApplicationShell _testShell;
@@ -371,6 +372,14 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
         #endregion
 
+        #region
+        public int ThreadId => MainThread.ManagedThreadId;
+        public void Post(Action action) => ThreadHelper.JoinableTaskFactory
+                    .SwitchToMainThreadAsync()
+                    .GetAwaiter()
+                    .OnCompleted(action);
+        #endregion
+
         public void Dispose() {
         }
 
@@ -379,9 +388,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
         private void OnTerminateApp(object sender, EventArgs args) {
-            if(Terminating != null) {
-                Terminating(null, EventArgs.Empty);
-            }
+            Terminating?.Invoke(null, EventArgs.Empty);
             Dispose();
         }
 
