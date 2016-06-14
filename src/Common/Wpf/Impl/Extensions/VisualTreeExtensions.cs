@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Media;
 
 namespace Microsoft.Common.Wpf.Extensions {
-    [ExcludeFromCodeCoverage]
     public static class VisualTreeExtensions {
         public static T FindChild<T>(DependencyObject o) where T : DependencyObject {
             if (o is T) {
