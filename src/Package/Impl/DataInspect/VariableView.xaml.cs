@@ -147,6 +147,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected override void OnPreviewKeyDown(KeyEventArgs e) {
             switch (e.Key) {
                 case Key.Enter:
+                    // Track that we've seen key down here so when key up
+                    // comes we can tell if it is a real one or a leftover
+                    // notification from the just closed context menu when
+                    // user hit Enter to execute command in the context menu.
                     _keyDownSeen = true;
                     e.Handled = true;
                     return;
@@ -160,6 +164,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     }
                     break;
                 case Key.C:
+                    // Actual binding theorerically can be fetched from DTE.
+                    // However, DTE gives binding string which needs to be parsed
+                    // and since Copy rarely changes from Ctrl+C we'll leave it alone for now.
                     if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
                         CopyEntry(GetCurrentSelectedModel());
                         e.Handled = true;
@@ -171,6 +178,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         protected override void OnPreviewKeyUp(KeyEventArgs e) {
+            // Prevent Enter from being passed to WPF control
+            // when user hits it in the context menu
             if (e.Key == Key.Enter && _keyDownSeen) {
                 HandleDefaultAction();
                 e.Handled = true;
