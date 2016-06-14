@@ -9,6 +9,9 @@ grid_trim <- function(str, max_length = 100) {
   }
 }
 
+grid_header_format <- function(x)
+	if (is.na(x)) NULL else format(x)
+
 grid_format <- function(x) {
   sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
 }
@@ -41,13 +44,13 @@ grid_data <- function(x, rows, cols, row_selector) {
   # Format row names
   x.rownames <- NULL;
   if (length(rn) > 0) {
-    x.rownames <- sapply(rn, format, USE.NAMES = FALSE);
+    x.rownames <- sapply(rn, grid_header_format, USE.NAMES = FALSE);
   }
 
   # Format column names
   x.colnames <- NULL;
-  if (!is.null(cn) && (length(cn)>0)) {
-    x.colnames <- sapply(cn, format, USE.NAMES = FALSE);
+  if (!is.null(cn) && (length(cn) > 0)) {
+    x.colnames <- sapply(cn, grid_header_format, USE.NAMES = FALSE);
   }
 
   # assign return value
