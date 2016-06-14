@@ -135,7 +135,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                             if (updateType != GridUpdateType.Refresh && _dataViewport.Contains(r, c)) {
                                 return orgGrid[r, c];
                             }
-                            var visual = new HeaderTextVisual();
+                            var visual = new HeaderTextVisual(c);
                             InitVisual(r, c, data, visual);
                             return visual;
                         });

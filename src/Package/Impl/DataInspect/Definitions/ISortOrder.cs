@@ -17,8 +17,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         bool IsPrimaryDescending { get; }
 
         /// <summary>
-        /// Returns expression to evaluate in R when ordering the data frame
+        /// Returns an R expression  function that takes a data frame or a matrix, and returns the result of
+        /// invoking <c>order()</c> that corresponds to this sort order, applied to the argument. The returned
+        /// string is suitable for passing as the <c>row_selector</c> argument of <c>rtvs:::grid_data</c>.
         /// </summary>
-        string GetDataFrameSortFunction();
+        string GetRowSelector();
     }
 }

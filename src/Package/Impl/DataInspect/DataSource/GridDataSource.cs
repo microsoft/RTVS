@@ -18,22 +18,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
 
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
+            string rowSelector = (sortOrder != null && !sortOrder.IsEmpty) ? sortOrder.GetRowSelector() : "";
+            string expr = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {rowSelector})");
 
             using (var evaluator = await rSession.BeginEvaluationAsync()) {
                 try {
-                    string exp;
-                    if (sortOrder != null && !sortOrder.IsEmpty) {
-                        if (gridRange.Value.Columns.Count > 1) {
-                            string dataFrameSortExpression = sortOrder.GetDataFrameSortFunction();
-                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, {dataFrameSortExpression.ToRStringLiteral()})");
-                        } else {
-                            int sortType = sortOrder.IsPrimaryDescending ? 2 : 1;
-                            exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns}, NULL, {sortType})");
-                        }
-                    } else {
-                        exp = Invariant($"rtvs:::grid_data({expression}, {rows}, {columns})");
-                    }
-                    return await evaluator.EvaluateAsync<GridData>(exp, REvaluationKind.Normal);
+                    return await evaluator.EvaluateAsync<GridData>(expr, REvaluationKind.Normal);
                 } catch (RException ex) {
                     var message = Invariant($"Grid data evaluation failed:{Environment.NewLine}{ex.Message}");
                     GeneralLog.Write(message);
