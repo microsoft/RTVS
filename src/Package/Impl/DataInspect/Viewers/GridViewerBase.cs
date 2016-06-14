@@ -43,10 +43,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                     frame.Show();
                 } else {
                     VariableGridWindowPane pane = ToolWindowUtilities.ShowWindowPane<VariableGridWindowPane>(id, true);
-                    frame = (IVsWindowFrame)pane.Frame;
-                    frame.SetProperty((int)__VSFPROPID.VSFPROPID_IsWindowTabbed, true);
-                    frame.SetFramePos(VSSETFRAMEPOS.SFP_fDock, typeof(VariableGridWindowPane).GUID, 0, 0, 0, 0);
-
                     title = !string.IsNullOrEmpty(title) ? title : evaluation.Expression;
                     pane.SetEvaluation(new VariableViewModel(evaluation, _aggregator), title);
                 }
