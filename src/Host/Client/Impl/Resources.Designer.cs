@@ -61,7 +61,7 @@ namespace Microsoft.R.Host.Client {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please verify path to the R installation folder. It typically looks like C:\Program Files\R\R-3.2.x..
+        ///   Looks up a localized string similar to Cannot find R binaries in {0}.{1}Click Yes to install latest Microsoft R Client (recommended).{2}Click No to set path to R engine in R Tools | Options dialog yourself..
         /// </summary>
         internal static string Error_CannotFindRBinariesFormat {
             get {

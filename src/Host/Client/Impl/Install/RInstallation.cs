@@ -396,10 +396,10 @@ namespace Microsoft.R.Host.Client.Install {
                     return MessageButtons.OK;
 
                 case RInstallStatus.NoRBinaries:
-                    coreShell.ShowErrorMessage(
+                    return coreShell.ShowMessage(
                         string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat,
-                        data.Path));
-                    return MessageButtons.OK;
+                            data.Path, Environment.NewLine + Environment.NewLine, Environment.NewLine),
+                        MessageButtons.YesNo);
 
                 case RInstallStatus.PathNotSpecified:
                     return coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
