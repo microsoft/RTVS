@@ -9,34 +9,22 @@ grid_trim <- function(str, max_length = 100) {
   }
 }
 
+grid_header_format <- function(x)
+	if (is.na(x)) NULL else format(x)
+
 grid_format <- function(x) {
   sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
 }
 
-grid_sort_df <- function(x, rows, cols, df_sort_function_text) {
-  if(missing(df_sort_function_text)) {
-    x.df <- as.data.frame(x)[rows, cols];
-  } else {
-    x.df <- as.data.frame(x)
-    df_sort_function = eval(parse(text = df_sort_function_text))
-    x.df <- x.df[df_sort_function(x.df),][rows, cols];
-  }
-  x.df
-}
-
-grid_sort_vector <- function(x, vector_sort_type) {
-  if(!missing(vector_sort_type) && vector_sort_type > 0) {
-    if(vector_sort_type == 1) {
-        x <- sort(x)
-    } else {
-        x <- sort(x, decreasing = TRUE)
-    }
-  }
-  x
-}
-
-grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
+grid_data <- function(x, rows, cols, row_selector) {
+  # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
   d <- dim(x);
+  if (is.null(d) || length(d) == 1) {
+    vp <- grid_data(matrix(x), rows, cols, row_selector)
+    vp$is_1d <- TRUE;
+    return(vp);
+  }
+
   if (missing(rows)) {
     rows <- 1:d[[1]];
   }
@@ -44,43 +32,29 @@ grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
     cols <- 1:d[[2]];
   }
 
-  # get values for column/row names and data
-  if (length(rows) == 1 || length(cols) == 1) {
-    # one-dimension objects
-    if(is(x, 'vector') || is.ts(x)) {
-      x <- grid_sort_vector(x, vector_sort_type)
-      if(length(cols) == 1) {
-        data <- grid_format(x[rows]);
-      } else {
-        data <- grid_format(x[cols]);
-      }
-    } else {
-      data <- grid_format(x[rows, cols]);
-    }
-    rn <- row.names(x)[rows];
-    cn <- colnames(x)[cols];
-  } else {
-    x <- as.data.frame(x)
-    x.df <- grid_sort_df(x, rows, cols, df_sort_function_text);
-    data <- sapply(x.df, grid_format, USE.NAMES = FALSE);
-    rn <- row.names(x.df);
-    cn <- colnames(x.df);
+  if (!missing(row_selector)) {
+      x <- x[row_selector(x),, drop = FALSE]
   }
+  x <- x[rows, cols]
 
-  # format row names
+  data <- sapply(x, grid_format, USE.NAMES = FALSE);
+  rn <- row.names(x);
+  cn <- colnames(x);
+
+  # Format row names
   x.rownames <- NULL;
   if (length(rn) > 0) {
-    x.rownames <- sapply(rn, format, USE.NAMES = FALSE);
+    x.rownames <- sapply(rn, grid_header_format, USE.NAMES = FALSE);
   }
 
-  #format column names
+  # Format column names
   x.colnames <- NULL;
-  if (!is.null(cn) && (length(cn)>0)) {
-    x.colnames <- sapply(cn, format, USE.NAMES = FALSE);
+  if (!is.null(cn) && (length(cn) > 0)) {
+    x.colnames <- sapply(cn, grid_header_format, USE.NAMES = FALSE);
   }
 
   # assign return value
-  vp<-list();
+  vp <- list();
   vp$row.start <- rows[1];
   vp$row.count <- length(rows);
   vp$row.names <- as.list(x.rownames);
@@ -91,6 +65,6 @@ grid_data <- function(x, rows, cols, df_sort_function_text, vector_sort_type) {
   for (i in data) {
      data.list[length(data.list) + 1] <- as.list(i);
   }
-  vp$data<-data.list;
+  vp$data <- data.list;
   vp;
 }

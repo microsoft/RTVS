@@ -520,7 +520,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "V1"
+                                          "Value": "[,1]"
                                         }
                                       ],
                                       "Children": []
@@ -530,7 +530,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "V2"
+                                          "Value": "[,2]"
                                         }
                                       ],
                                       "Children": []
@@ -540,7 +540,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "V3"
+                                          "Value": "[,3]"
                                         }
                                       ],
                                       "Children": []
@@ -550,7 +550,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "V4"
+                                          "Value": "[,4]"
                                         }
                                       ],
                                       "Children": []
@@ -560,7 +560,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "V5"
+                                          "Value": "[,5]"
                                         }
                                       ],
                                       "Children": []
@@ -652,7 +652,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "1"
+                                          "Value": "[1,]"
                                         }
                                       ],
                                       "Children": []
@@ -662,7 +662,7 @@
                                       "Properties": [
                                         {
                                           "Name": "Text",
-                                          "Value": "2"
+                                          "Value": "[2,]"
                                         }
                                       ],
                                       "Children": []
