@@ -15,6 +15,7 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -44,7 +45,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
 
             var variableName = result.Name ?? _variableNameReplacement;
             var csvFileName = MakeCsvFileName(variableName);
-            var file = ProjectUtilities.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
+
+            var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
+            var file = pss.GetUniqueFileName(folder, csvFileName, "csv", appendUnderscore: true);
 
             string currentStatusText;
             var statusBar = VsAppShell.Current.GetGlobalService<IVsStatusbar>(typeof(SVsStatusbar));
@@ -95,7 +98,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
         }
 
         private static string MakeCsvFileName(string variableName) {
-            var project = ProjectUtilities.GetActiveProject();
+            var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
+            var project = pss.GetActiveProject();
             var projectName = project?.FileName;
 
             var contentTypeService = VsAppShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();

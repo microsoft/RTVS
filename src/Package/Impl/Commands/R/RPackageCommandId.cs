@@ -37,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAttachToRInteractive = 516;
         public const int icmdClearRepl = 517;
         public const int icmdSourceRScriptWithEcho = 518;
+        public const int icmdSetDirectoryToSourceCommand = 519;
+        public const int icmdSetDirectoryToProjectCommand = 520;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;

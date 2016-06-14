@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -131,7 +132,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             if (row != null) {
                 SelectRow(row);
                 var pt = PointToScreen(e.GetPosition(this));
-                VsContextMenu.Show(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer, this, pt);
+                VsAppShell.Current.ShowContextMenu(
+                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                 e.Handled = true;
             }
         }
@@ -139,7 +141,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private void SelectRow(DataGridRow row) {
             RootTreeGrid.SelectedItem = row;
             row.IsSelected = true;
-            var presenter = VisualTreeExtensions.FindChild<DataGridCellsPresenter>(row);
+            var presenter = VisualTreeExtensions.FindFirstVisualChildOfType<DataGridCellsPresenter>(row);
             var cell = presenter.ItemContainerGenerator.ContainerFromIndex(0) as DataGridCell;
             cell.Focus();
         }
@@ -159,7 +161,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         var focus = Keyboard.FocusedElement as FrameworkElement;
                         if (focus != null) {
                             var pt = focus.PointToScreen(new Point(1, 1));
-                            VsContextMenu.Show(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer, this, pt);
+                            VsAppShell.Current.ShowContextMenu(
+                                new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                         }
                     }
                     break;

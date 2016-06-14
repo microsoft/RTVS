@@ -10,17 +10,17 @@ using Microsoft.UnitTests.Core.Threading;
 namespace Microsoft.VisualStudio.R.Interactive.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class VisualTreeTestExtensions {
-        public static async Task<T> FindChildAsync<T>(DependencyObject o) where T : DependencyObject {
+        public static T FindFirstVisualChildOfType<T>(DependencyObject o) where T : DependencyObject {
             if (o is T) {
                 return o as T;
             }
-            return await UIThreadHelper.Instance.InvokeAsync(() => {
-                return VisualTreeExtensions.FindChild<T>(o);
+            return UIThreadHelper.Instance.Invoke(() => {
+                return VisualTreeExtensions.FindFirstVisualChildOfType<T>(o);
             });
         }
-        public static async Task<T> FindNextSiblingAsync<T>(DependencyObject o) where T : DependencyObject {
-            return await UIThreadHelper.Instance.InvokeAsync(() => {
-                return VisualTreeExtensions.FindNextSibling<T>(o);
+        public static T FindNextVisualSiblingOfType<T>(DependencyObject o) where T : DependencyObject {
+            return UIThreadHelper.Instance.Invoke(() => {
+                return VisualTreeExtensions.FindNextVisualSiblingOfType<T>(o);
             });
         }
     }
