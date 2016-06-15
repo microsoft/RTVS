@@ -277,15 +277,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot find R binaries in {0}. Please specify valid path to R installation directory such as &apos;Program Files\R\R-3.2.x&apos; or &apos;Program Files\MRO\R-3.2.x&apos;..
-        /// </summary>
-        public static string Error_CannotFindRBinariesFormat {
-            get {
-                return ResourceManager.GetString("Error_CannotFindRBinariesFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to open CSV file. Exception: {0}..
         /// </summary>
         public static string Error_CannotOpenCsv {

@@ -8,8 +8,10 @@ using Microsoft.Common.Core.Disposables;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
-        private IRSessionEvaluation _eval;
         private IRSessionInteraction _inter;
+
+        public string LastExpression { get; private set; }
+        public RSessionEvaluationMock Evaluation { get; private set; }
 
         public int Id { get; set; }
         public int? ProcessId { get; set; }
@@ -20,6 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public string Prompt { get; set; } = ">";
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
+            LastExpression = expression;
             if (kind.HasFlag(REvaluationKind.Mutating)) {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
@@ -27,12 +30,12 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
-            _eval = new RSessionEvaluationMock();
-            BeforeRequest?.Invoke(this, new RRequestEventArgs(_eval.Contexts, Prompt, 4096, true));
-            if (_eval.IsMutating) {
+            Evaluation = new RSessionEvaluationMock();
+            BeforeRequest?.Invoke(this, new RRequestEventArgs(Evaluation.Contexts, Prompt, 4096, true));
+            if (Evaluation.IsMutating) {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
-            return Task.FromResult(_eval);
+            return Task.FromResult((IRSessionEvaluation)Evaluation);
         }
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default (CancellationToken)) {
@@ -42,9 +45,9 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task CancelAllAsync() {
-            if (_eval != null) {
-                AfterRequest?.Invoke(this, new RRequestEventArgs(_eval.Contexts, Prompt, 4096, true));
-                _eval = null;
+            if (Evaluation != null) {
+                AfterRequest?.Invoke(this, new RRequestEventArgs(Evaluation.Contexts, Prompt, 4096, true));
+                Evaluation = null;
             }
             else if (_inter != null) {
                 AfterRequest?.Invoke(this, new RRequestEventArgs(_inter.Contexts, Prompt, 4096, true));

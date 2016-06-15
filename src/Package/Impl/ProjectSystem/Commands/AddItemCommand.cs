@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Utilities;
+using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -37,7 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == _commandId) {
                 var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
-                    ProjectUtilities.AddNewItem(_templateName, _fileName, _extension, path);
+                    var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
+                    pss.AddNewItem(_templateName, _fileName, _extension, path);
                     return true;
                 }
             }

@@ -37,6 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAttachToRInteractive = 516;
         public const int icmdClearRepl = 517;
         public const int icmdSourceRScriptWithEcho = 518;
+        public const int icmdSetDirectoryToSourceCommand = 519;
+        public const int icmdSetDirectoryToProjectCommand = 520;
 
         public const int icmdRexecuteReplCmd = 571;
         public const int icmdPasteReplCmd = 572;
@@ -62,6 +64,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdImportDatasetTextFile = 803;
         public const int icmdDeleteVariable = 804;
         public const int icmdDeleteAllVariables = 805;
+        public const int icmdShowDetails = 806;
+        public const int icmdOpenInCsvApp = 807;
+        public const int icmdCopyValue = 808;
 
         // Window management
         public const int icmdShowReplWindow = 901;

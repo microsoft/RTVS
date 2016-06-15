@@ -23,7 +23,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return MessageButtons.OK;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y) { }
+        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) { }
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 

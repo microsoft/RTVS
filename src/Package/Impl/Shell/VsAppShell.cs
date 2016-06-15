@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
@@ -28,9 +27,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using static System.FormattableString;
 using IServiceProvider = System.IServiceProvider;
-using Task = System.Threading.Tasks.Task;
-using TaskExtensions = Microsoft.Common.Core.TaskExtensions;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
     /// <summary>
@@ -173,11 +171,23 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST, OLEMSGICON.OLEMSGICON_CRITICAL, 0, out result);
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y) {
-            var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
-            if (package != null) {
-                var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
-                menuService.ShowContextMenu(commandId, x, y);
+        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null) {
+            if (commandTarget == null) {
+                var package = EnsurePackageLoaded(RGuidList.RPackageGuid);
+                if (package != null) {
+                    var menuService = (IMenuCommandService)((IServiceProvider)package).GetService(typeof(IMenuCommandService));
+                    menuService.ShowContextMenu(commandId, x, y);
+                }
+            } else {
+                var target = commandTarget as ICommandTarget;
+                if(target == null) {
+                    throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
+                }
+                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>();
+                var pts = new POINTS[1];
+                pts[0].x = (short)x;
+                pts[0].y = (short)y;
+                shell.ShowContextMenu(0, commandId.Guid, commandId.ID, pts, new CommandTargetToOleShim(null, target));
             }
         }
 

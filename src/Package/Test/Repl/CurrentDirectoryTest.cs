@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             var plotsProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRPlotManagerProvider>();
             var activeTextViewTracker = new ActiveTextViewTrackerMock(string.Empty, string.Empty);
             var debuggerModeTracker = new TestDebuggerModeTracker();
-            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, () => {});
+            _interactiveWorkflow = new RInteractiveWorkflow(sessionProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, VsAppShell.Current, RToolsSettings.Current, () => { });
         }
 
         public void Dispose() {
@@ -88,7 +88,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
         public void GetFriendlyNameTest02() {
             string actual;
             using (new VsRHostScript()) {
-                WorkingDirectoryCommand cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
+                var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
                 actual = cmd.GetFriendlyDirectoryName("c:\\");
             };

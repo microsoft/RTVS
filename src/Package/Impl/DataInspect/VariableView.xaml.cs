@@ -4,11 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Wpf.Extensions;
+using Microsoft.R.Components.Controller;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -16,18 +22,22 @@ using Microsoft.R.StackTracing;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Imaging.Interop;
+using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
+using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect {
-    public partial class VariableView : UserControl, IDisposable {
+    public partial class VariableView : UserControl, ICommandTarget, IDisposable {
         private readonly IRToolsSettings _settings;
         private readonly IRSession _session;
         private readonly IREnvironmentProvider _environmentProvider;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
+        private bool _keyDownSeen;
         private ObservableTreeNode _rootNode;
-
         private static List<REnvironment> _defaultEnvironments = new List<REnvironment>() { new REnvironment(Package.Resources.VariableExplorer_EnvironmentName) };
 
         public VariableView() : this(null) { }
@@ -117,18 +127,66 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HandleDefaultAction();
         }
 
-        protected override void OnPreviewKeyDown(KeyEventArgs e) {
-            if (e.Key == Key.Enter || e.Key == Key.Return) {
+        private void GridRow_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            var row = sender as DataGridRow;
+            if (row != null) {
+                SelectRow(row);
+                var pt = PointToScreen(e.GetPosition(this));
+                VsAppShell.Current.ShowContextMenu(
+                    new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
                 e.Handled = true;
-                return;
+            }
+        }
+
+        private void SelectRow(DataGridRow row) {
+            RootTreeGrid.SelectedItem = row;
+            row.IsSelected = true;
+            var presenter = VisualTreeExtensions.FindFirstVisualChildOfType<DataGridCellsPresenter>(row);
+            var cell = presenter.ItemContainerGenerator.ContainerFromIndex(0) as DataGridCell;
+            cell.Focus();
+        }
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e) {
+            switch (e.Key) {
+                case Key.Enter:
+                    // Track that we've seen key down here so when key up
+                    // comes we can tell if it is a real one or a leftover
+                    // notification from the just closed context menu when
+                    // user hit Enter to execute command in the context menu.
+                    _keyDownSeen = true;
+                    e.Handled = true;
+                    return;
+                case Key.System:
+                    if (e.SystemKey == Key.F10 && (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift) {
+                        var focus = Keyboard.FocusedElement as FrameworkElement;
+                        if (focus != null) {
+                            var pt = focus.PointToScreen(new Point(1, 1));
+                            VsAppShell.Current.ShowContextMenu(
+                                new CommandID(RGuidList.RCmdSetGuid, (int)RContextMenuId.VariableExplorer), (int)pt.X, (int)pt.Y, this);
+                        }
+                    }
+                    break;
+                case Key.C:
+                    // Actual binding theorerically can be fetched from DTE.
+                    // However, DTE gives binding string which needs to be parsed
+                    // and since Copy rarely changes from Ctrl+C we'll leave it alone for now.
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                        CopyEntry(GetCurrentSelectedModel());
+                        e.Handled = true;
+                        return;
+                    }
+                    break;
             }
             base.OnPreviewKeyDown(e);
         }
 
         protected override void OnPreviewKeyUp(KeyEventArgs e) {
-            if (e.Key == Key.Enter || e.Key == Key.Return) {
+            // Prevent Enter from being passed to WPF control
+            // when user hits it in the context menu
+            if (e.Key == Key.Enter && _keyDownSeen) {
                 HandleDefaultAction();
                 e.Handled = true;
+                _keyDownSeen = false;
                 return;
             } else if (e.Key == Key.Delete || e.Key == Key.Back) {
                 DeleteCurrentVariableAsync().DoNotWait();
@@ -138,33 +196,32 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         protected override void OnKeyDown(KeyEventArgs e) {
             // Suppress Enter navigation
-            if (e.Key == Key.Enter || e.Key == Key.Return) {
+            if (e.Key == Key.Enter) {
                 return;
             }
             base.OnKeyDown(e);
         }
 
         protected override void OnKeyUp(KeyEventArgs e) {
-            if (e.Key == Key.Enter || e.Key == Key.Return) {
+            if (e.Key == Key.Enter) {
                 return;
             }
             base.OnKeyUp(e);
         }
 
         private void HandleDefaultAction() {
-            var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
-            var ew = node?.Model?.Content as VariableViewModel;
-            if (ew != null && ew.CanShowDetail) {
-                ew.ShowDetailCommand.Execute(ew);
+            var model = GetCurrentSelectedModel();
+            if (model != null && model.CanShowDetail) {
+                model.ShowDetailCommand.Execute(model);
             }
         }
 
         private Task DeleteCurrentVariableAsync() {
-            var node = RootTreeGrid.SelectedItem as ObservableTreeNode;
-            var ew = node?.Model?.Content as VariableViewModel;
-            return ew != null ? ew.DeleteAsync() : Task.CompletedTask;
+            var model = GetCurrentSelectedModel();
+            return model != null ? model.DeleteAsync() : Task.CompletedTask;
         }
 
+        #region Icons
         private ImageMoniker GetVariableIcon(IREvaluationResultInfo info) {
             if (info is IRActiveBindingInfo) {
                 return KnownMonikers.Property;
@@ -218,6 +275,86 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 default:
                     return KnownMonikers.BulletList;
             }
+        }
+        #endregion
+
+        #region ICommandTarget
+        public CommandStatus Status(Guid group, int id) {
+            if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                switch ((VSConstants.VSStd97CmdID)id) {
+                    case VSConstants.VSStd97CmdID.Copy:
+                    case VSConstants.VSStd97CmdID.Delete:
+                        return CommandStatus.SupportedAndEnabled;
+                }
+            } else if (group == RGuidList.RCmdSetGuid) {
+                var model = GetCurrentSelectedModel();
+                if (model != null) {
+                    switch (id) {
+                        case (int)RContextMenuId.VariableExplorer:
+                        case RPackageCommandId.icmdCopyValue:
+                            return CommandStatus.SupportedAndEnabled;
+                        case RPackageCommandId.icmdShowDetails:
+                            return model.CanShowDetail ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                        case RPackageCommandId.icmdOpenInCsvApp:
+                            return model.CanShowOpenCsv ? CommandStatus.SupportedAndEnabled : CommandStatus.Invisible;
+                    }
+                }
+            }
+            return CommandStatus.Invisible;
+        }
+
+        public CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
+            var model = GetCurrentSelectedModel();
+            if (model != null) {
+                if (group == VSConstants.GUID_VSStandardCommandSet97) {
+                    switch ((VSConstants.VSStd97CmdID)id) {
+                        case VSConstants.VSStd97CmdID.Copy:
+                            CopyEntry(model);
+                            break;
+                        case VSConstants.VSStd97CmdID.Delete:
+                            DeleteCurrentVariableAsync().DoNotWait();
+                            break;
+                    }
+                } else if (group == RGuidList.RCmdSetGuid) {
+                    switch (id) {
+                        case RPackageCommandId.icmdCopyValue:
+                            CopyValue(model);
+                            break;
+                        case RPackageCommandId.icmdShowDetails:
+                            model?.ShowDetailCommand.Execute(model);
+                            break;
+                        case RPackageCommandId.icmdOpenInCsvApp:
+                            model?.OpenInCsvAppCommand.Execute(model);
+                            break;
+                    }
+                }
+            }
+            return CommandResult.Executed;
+        }
+
+        public void PostProcessInvoke(CommandResult result, Guid group, int id, object inputArg, ref object outputArg) { }
+        #endregion
+
+        private VariableViewModel GetCurrentSelectedModel() {
+            var selection = RootTreeGrid?.SelectedItem as ObservableTreeNode;
+            return selection?.Model?.Content as VariableViewModel;
+        }
+
+        private void CopyEntry(VariableViewModel model) {
+            if (model != null) {
+                string data = Invariant($"{model.Name} {model.Value} {model.Class} {model.TypeName}");
+                SetClipboardData(data);
+            }
+        }
+
+        private void CopyValue(VariableViewModel model) {
+            if (model != null) {
+                SetClipboardData(model.Value);
+            }
+        }
+        private void SetClipboardData(string text) {
+            Clipboard.Clear();
+            Clipboard.SetText(text);
         }
     }
 }
