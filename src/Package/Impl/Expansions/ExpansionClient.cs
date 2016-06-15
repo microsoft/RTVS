@@ -31,6 +31,13 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         private int _markerCount;
         private bool _earlyEndExpansionHappened = false;
 
+        class Marker : TextRange {
+            public IVsTextStreamMarker StreamMarker { get; }
+            public Marker(IVsTextStreamMarker m, int start, int length) :
+                base(start, length) {
+                StreamMarker = m;
+            }
+        }
         public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
             TextView = textView;
             TextBuffer = textBuffer;
@@ -86,18 +93,25 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                     promptText,
                     "\t");
             }
-
             return VSConstants.E_UNEXPECTED;
         }
 
         public int GoToNextExpansionField() {
-            var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
-            return PositionCaretInField(index);
+            int hr = Session.GoToNextExpansionField(0);
+            if (VSConstants.S_OK != hr) {
+                var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
+                hr = PositionCaretInField(index);
+            }
+            return hr;
         }
 
         public int GoToPreviousExpansionField() {
-            var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
-            return PositionCaretInField(index);
+            int hr = Session.GoToPreviousExpansionField();
+            if (VSConstants.S_OK != hr) {
+                var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
+                hr = PositionCaretInField(index);
+            }
+            return hr;
         }
 
         public int EndExpansionSession(bool leaveCaretWhereItIs) => Session.EndCurrentExpansion(leaveCaretWhereItIs ? 1 : 0);
@@ -257,29 +271,52 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         private int PositionCaretInField(int index) {
             var markers = GetFieldMarkers();
             if (index >= 0 && index <= markers.Count) {
-                var prevMarker = markers[index];
-                var viewPoint = TextView.MapUpToView(new SnapshotPoint(GetTargetBuffer().CurrentSnapshot, prevMarker.Start));
-                if (viewPoint.HasValue) {
-                    TextView.Caret.MoveTo(viewPoint.Value);
-                    _currentFieldIndex = index;
-                    return VSConstants.S_OK;
-                }
+                SelectMarker(markers, index);
+                return VSConstants.S_OK;
             }
             return VSConstants.E_FAIL;
+        }
+
+        private void SelectMarker(TextRangeCollection<Marker> markers, int selectIndex) {
+            if (_currentFieldIndex >= 0) {
+                // Unselect marker. It changes style and no longer tracks editing.
+                markers[_currentFieldIndex].StreamMarker.SetType(15); // 'Unselected legacy snippet field'
+                markers[_currentFieldIndex].StreamMarker.SetBehavior(
+                    (uint)(MARKERBEHAVIORFLAGS2.MB_INHERIT_FOREGROUND | MARKERBEHAVIORFLAGS2.MB_DONT_DELETE_IF_ZEROLEN)); // 48
+            }
+
+            _currentFieldIndex = selectIndex;
+            var marker = markers[selectIndex];
+
+            // Flip stream marker into selected state. 
+            // It will change style and new behavior will cause it to expand with editing
+            marker.StreamMarker.SetType(16); // 'Selected legacy snippet field'
+            marker.StreamMarker.SetBehavior(
+                 (uint)(MARKERBEHAVIORFLAGS2.MB_INHERIT_FOREGROUND | MARKERBEHAVIORFLAGS2.MB_DONT_DELETE_IF_ZEROLEN) |
+                 (uint)(MARKERBEHAVIORFLAGS.MB_LEFTEDGE_LEFTTRACK | MARKERBEHAVIORFLAGS.MB_RIGHTEDGE_RIGHTTRACK)); // 54
+
+            var viewPoint = TextView.MapUpToView(new SnapshotPoint(GetTargetBuffer().CurrentSnapshot, marker.Start));
+            if (viewPoint.HasValue) {
+                TextView.Selection.Select(
+                    new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot,
+                        new Span(viewPoint.Value.Position, marker.Length)),
+                    isReversed: false);
+                TextView.Caret.MoveTo(viewPoint.Value + marker.Length);
+            }
         }
 
         private int GetCurrentFieldIndex() {
             var rPosition = TextView.MapDownToR(TextView.Caret.Position.BufferPosition);
             var markers = GetFieldMarkers();
             var index = markers.GetItemAtPosition(rPosition.Value);
-            if(index < 0) {
+            if (index < 0) {
                 index = markers.GetItemAtPosition(rPosition.Value);
             }
             return index;
         }
 
-        private TextRangeCollection<ITextRange> GetFieldMarkers() {
-            var markers = new List<ITextRange>();
+        private TextRangeCollection<Marker> GetFieldMarkers() {
+            var markers = new List<Marker>();
 
             TextSpan[] pts = new TextSpan[1];
             ErrorHandler.ThrowOnFailure(Session.GetSnippetSpan(pts));
@@ -303,14 +340,14 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         int markerType;
                         if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
                             if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
-                                markers.Add(new TextRange(curMarkerPos, curMarkerLen));
+                                markers.Add(new Marker(curMarker, curMarkerPos, curMarkerLen));
                             }
                         }
                     }
                 }
             }
             _markerCount = markers.Count;
-            return new TextRangeCollection<ITextRange>(markers);
+            return new TextRangeCollection<Marker>(markers);
         }
     }
 }
