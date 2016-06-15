@@ -33,22 +33,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return null;
         }
 
-        public EnvDTE.Project GetSelectedProject() {
+        public IVsProject GetSelectedProject() {
             var monSel = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
             uint itemid;
             IVsMultiItemSelect ms;
-            EnvDTE.Project project = null;
 
             try {
                 if (VSConstants.S_OK == monSel.GetCurrentSelection(out hierarchy, out itemid, out ms, out selectionContainer)) {
-                    var hier = Marshal.GetObjectForIUnknown(hierarchy) as IVsHierarchy;
-                    if (hier != null) {
-                        object selectedObject;
-                        if (VSConstants.S_OK == hier.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out selectedObject)) {
-                            project = selectedObject as EnvDTE.Project;
-                        }
-                    }
+                    return Marshal.GetObjectForIUnknown(hierarchy) as IVsProject;
                 }
             } finally {
                 if (hierarchy != IntPtr.Zero) {
@@ -58,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     Marshal.Release(selectionContainer);
                 }
             }
-            return project;
+            return null;
         }
 
         public void AddNewItem(string templateName, string name, string extension, string destinationPath) {

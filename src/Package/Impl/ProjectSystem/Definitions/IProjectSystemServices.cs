@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.VisualStudio.Shell.Interop;
+
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     public interface IProjectSystemServices {
         /// <summary>
@@ -12,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// <summary>
         /// Locates project that is currently selected in Solution Explorer
         /// </summary>
-        EnvDTE.Project GetSelectedProject();
+        IVsProject GetSelectedProject();
 
         /// <summary>
         /// Locates project that is currently active in Solution Explorer
