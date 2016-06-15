@@ -27,6 +27,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         int ColumnCount { get; }
 
+        bool CanSort { get; }
+
         /// <summary>
         /// Fetches range or tabular data
         /// </summary>

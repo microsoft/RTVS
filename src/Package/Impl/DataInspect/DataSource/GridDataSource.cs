@@ -12,9 +12,8 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
     internal sealed class GridDataSource {
-        public static async Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
+        public static async Task<IGridData<string>> GetGridDataAsync(IRSession rSession, string expression, GridRange? gridRange, ISortOrder sortOrder = null) {
             await TaskUtilities.SwitchToBackgroundThread();
-            var rSession = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
 
             string rows = gridRange?.Rows.ToRString();
             string columns = gridRange?.Columns.ToRString();
@@ -31,5 +30,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.DataSource {
                 }
             }
         }
+
+        public static Task<IGridData<string>> GetGridDataAsync(string expression, GridRange? gridRange, ISortOrder sortOrder = null) =>
+            GetGridDataAsync(
+                VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession(),
+                expression, gridRange, sortOrder);
     }
 }

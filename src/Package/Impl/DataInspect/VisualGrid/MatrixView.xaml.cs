@@ -26,6 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public MatrixView() {
             InitializeComponent();
+            DataContext = this;
         }
 
         internal void Initialize(IGridProvider<string> dataProvider) {
@@ -50,6 +51,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             HorizontalScrollBar.Value = HorizontalScrollBar.Minimum;
             VerticalScrollBar.Value = VerticalScrollBar.Minimum;
             SetScrollBar(ScrollDirection.Both);
+
+            CanSort = dataProvider.CanSort;
         }
 
         public void Refresh() {
@@ -62,6 +65,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal GridPoints Points { get; set; }
 
         internal IGridProvider<string> DataProvider { get; set; }
+
+        public bool CanSort {
+            get { return (bool)GetValue(CanSortProperty); }
+            set { SetValue(CanSortProperty, value); }
+        }
+
+        public static readonly DependencyProperty CanSortProperty =
+            DependencyProperty.Register("CanSort", typeof(bool), typeof(MatrixView), new PropertyMetadata(false));
 
         #region Foreground
 
