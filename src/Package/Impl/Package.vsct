@@ -1466,7 +1466,7 @@
       <!-- Variable Explorer commands -->
       <Button guid="guidRToolsCmdSet" id="icmdShowDetails" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
-        <Icon guid="ImageCatalogGuid" id="DetailDataView"/>
+        <Icon guid="ImageCatalogGuid" id="Zoom"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
