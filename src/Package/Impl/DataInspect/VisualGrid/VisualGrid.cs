@@ -36,7 +36,13 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// If true, the object is assumed to be a grid header and clicking
         /// on fields changes sorting for the actual data grid.
         /// </summary>
-        public bool Header { get; set; }
+        public bool Header {
+            get { return (bool)GetValue(HeaderProperty); }
+            set { SetValue(HeaderProperty, value); }
+        }
+
+        public static readonly DependencyProperty HeaderProperty =
+            DependencyProperty.Register("Header", typeof(bool), typeof(VisualGrid), new PropertyMetadata(false));
 
         /// <summary>
         /// Fires when sorting order changes

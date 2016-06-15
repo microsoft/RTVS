@@ -1,20 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See LICENSE in the project root for license information.
 
-grid_trim <- function(str, max_length = 100) {
-  if (nchar(str) > (100 - 3)) {
-    paste(substr(str, 1, 97), '...', sep='');
-  } else {
-    str;
-  }
-}
-
 grid_header_format <- function(x)
 	if (is.na(x)) NULL else format(x)
-
-grid_format <- function(x) {
-  sapply(format(x, trim = TRUE, justify = "none"), grid_trim);
-}
 
 grid_data <- function(x, rows, cols, row_selector) {
   # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
@@ -35,9 +23,19 @@ grid_data <- function(x, rows, cols, row_selector) {
   if (!missing(row_selector)) {
       x <- x[row_selector(x),, drop = FALSE]
   }
-  x <- x[rows, cols]
+  x <- x[rows, cols, drop = FALSE]
 
-  data <- sapply(x, grid_format, USE.NAMES = FALSE);
+  # Process and format values column by column, then flatten the resulting list of character vectors.
+  max_length <- 100 - 3
+  data <- c(lapply(1:ncol(x), function(i) {
+    lapply(format(x[,i], trim = TRUE, justify = "none"), function(s) {
+      if (nchar(s) <= max_length) s else paste0(substr(s, 1, max_length), '...', collapse = '')
+    })
+  }), recursive = TRUE)
+
+  # Any names in the original data will flow through, but we don't want them.
+  names(data) <- NULL;
+
   rn <- row.names(x);
   cn <- colnames(x);
 
@@ -61,10 +59,6 @@ grid_data <- function(x, rows, cols, row_selector) {
   vp$col.start <- cols[1];
   vp$col.count <- length(cols);
   vp$col.names <- as.list(x.colnames);
-  data.list <- list();
-  for (i in data) {
-     data.list[length(data.list) + 1] <- as.list(i);
-  }
-  vp$data <- data.list;
+  vp$data <- as.list(data);
   vp;
 }

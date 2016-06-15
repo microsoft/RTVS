@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.R.DataInspection;
 using Microsoft.VisualStudio.R.Package.DataInspect.DataSource;
 using static System.FormattableString;
 
@@ -18,11 +20,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             RowCount = evaluation.Dimensions[0];
             ColumnCount = evaluation.Dimensions.Count >= 2 ? evaluation.Dimensions[1] : 1;
+            CanSort = true;
+
+            // Lists cannot be sorted, except when the list is a dataframe.
+            if (evaluation.TypeName == "list") {
+                var er = evaluation.DebugEvaluation as IRValueInfo;
+                CanSort = er?.Classes.Contains("data.frame") == true;
+            }
         }
 
         public int ColumnCount { get; }
 
         public int RowCount { get; }
+
+        public bool CanSort { get; }
 
         public Task<IGridData<string>> GetAsync(GridRange gridRange, ISortOrder sortOrder = null) {
             var t = GridDataSource.GetGridDataAsync(_evaluation.Expression, gridRange, sortOrder);

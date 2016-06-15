@@ -117,6 +117,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DataGridAttribute : CategoryAttribute {
+                public DataGridAttribute() : base("R.DataGrid") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class DocumentationAttribute : CategoryAttribute {
                 public DocumentationAttribute() : base("R.Documentation") { }
             }

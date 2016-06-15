@@ -237,7 +237,7 @@
                     },
                     {
                       "Name": "DataContext",
-                      "Value": "null"
+                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                     },
                     {
                       "Name": "Name",
@@ -278,7 +278,7 @@
                         },
                         {
                           "Name": "DataContext",
-                          "Value": "null"
+                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                         },
                         {
                           "Name": "Name",
@@ -323,7 +323,7 @@
                             },
                             {
                               "Name": "DataContext",
-                              "Value": "null"
+                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                             },
                             {
                               "Name": "Name",
@@ -360,7 +360,7 @@
                               "Properties": [
                                 {
                                   "Name": "DataContext",
-                                  "Value": "null"
+                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                 },
                                 {
                                   "Name": "Name",
@@ -401,7 +401,7 @@
                                     },
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -438,7 +438,7 @@
                                       "Properties": [
                                         {
                                           "Name": "DataContext",
-                                          "Value": "null"
+                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                         },
                                         {
                                           "Name": "Name",
@@ -478,7 +478,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -632,7 +632,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -670,7 +670,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -944,7 +944,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -3522,7 +3522,7 @@
                                     },
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -3559,7 +3559,7 @@
                                       "Properties": [
                                         {
                                           "Name": "DataContext",
-                                          "Value": "null"
+                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                         },
                                         {
                                           "Name": "Name",
@@ -3600,7 +3600,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -3650,7 +3650,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -3691,7 +3691,7 @@
                                                 },
                                                 {
                                                   "Name": "DataContext",
-                                                  "Value": "null"
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                 },
                                                 {
                                                   "Name": "Name",
@@ -3736,7 +3736,7 @@
                                                     },
                                                     {
                                                       "Name": "DataContext",
-                                                      "Value": "null"
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                     },
                                                     {
                                                       "Name": "Name",
@@ -3777,7 +3777,7 @@
                                                         },
                                                         {
                                                           "Name": "DataContext",
-                                                          "Value": "null"
+                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                         },
                                                         {
                                                           "Name": "Name",
@@ -3817,6 +3817,304 @@
                                           ]
                                         },
                                         {
+                                          "Name": "Track",
+                                          "Properties": [
+                                            {
+                                              "Name": "DataContext",
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                            },
+                                            {
+                                              "Name": "Name",
+                                              "Value": "PART_Track"
+                                            },
+                                            {
+                                              "Name": "Margin",
+                                              "Value": "0,0,0,0"
+                                            },
+                                            {
+                                              "Name": "HorizontalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "VerticalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "ToolTip",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "ContextMenu",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "Visibility",
+                                              "Value": "Visible"
+                                            }
+                                          ],
+                                          "Children": [
+                                            {
+                                              "Name": "RepeatButton",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Content",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContentTemplate",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": ""
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Name": "RepeatButton",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Content",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContentTemplate",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": ""
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Name": "Thumb",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": "rectangle"
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
                                           "Name": "RepeatButton",
                                           "Properties": [
                                             {
@@ -3833,7 +4131,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -3874,7 +4172,7 @@
                                                 },
                                                 {
                                                   "Name": "DataContext",
-                                                  "Value": "null"
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                 },
                                                 {
                                                   "Name": "Name",
@@ -3919,7 +4217,7 @@
                                                     },
                                                     {
                                                       "Name": "DataContext",
-                                                      "Value": "null"
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                     },
                                                     {
                                                       "Name": "Name",
@@ -3960,7 +4258,7 @@
                                                         },
                                                         {
                                                           "Name": "DataContext",
-                                                          "Value": "null"
+                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                         },
                                                         {
                                                           "Name": "Name",
@@ -4008,7 +4306,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -4050,7 +4348,7 @@
                                     },
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",
@@ -4087,7 +4385,7 @@
                                       "Properties": [
                                         {
                                           "Name": "DataContext",
-                                          "Value": "null"
+                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                         },
                                         {
                                           "Name": "Name",
@@ -4128,7 +4426,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -4178,7 +4476,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -4219,7 +4517,7 @@
                                                 },
                                                 {
                                                   "Name": "DataContext",
-                                                  "Value": "null"
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                 },
                                                 {
                                                   "Name": "Name",
@@ -4264,7 +4562,7 @@
                                                     },
                                                     {
                                                       "Name": "DataContext",
-                                                      "Value": "null"
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                     },
                                                     {
                                                       "Name": "Name",
@@ -4305,7 +4603,7 @@
                                                         },
                                                         {
                                                           "Name": "DataContext",
-                                                          "Value": "null"
+                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                         },
                                                         {
                                                           "Name": "Name",
@@ -4345,6 +4643,304 @@
                                           ]
                                         },
                                         {
+                                          "Name": "Track",
+                                          "Properties": [
+                                            {
+                                              "Name": "DataContext",
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                            },
+                                            {
+                                              "Name": "Name",
+                                              "Value": "PART_Track"
+                                            },
+                                            {
+                                              "Name": "Margin",
+                                              "Value": "0,0,0,0"
+                                            },
+                                            {
+                                              "Name": "HorizontalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "VerticalAlignment",
+                                              "Value": "Stretch"
+                                            },
+                                            {
+                                              "Name": "ToolTip",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "ContextMenu",
+                                              "Value": "null"
+                                            },
+                                            {
+                                              "Name": "Visibility",
+                                              "Value": "Hidden"
+                                            }
+                                          ],
+                                          "Children": [
+                                            {
+                                              "Name": "RepeatButton",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Content",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContentTemplate",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": ""
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Name": "RepeatButton",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Content",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContentTemplate",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": ""
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "Name": "Thumb",
+                                              "Properties": [
+                                                {
+                                                  "Name": "Padding",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "DataContext",
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                },
+                                                {
+                                                  "Name": "Name",
+                                                  "Value": ""
+                                                },
+                                                {
+                                                  "Name": "Margin",
+                                                  "Value": "0,0,0,0"
+                                                },
+                                                {
+                                                  "Name": "HorizontalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "VerticalAlignment",
+                                                  "Value": "Stretch"
+                                                },
+                                                {
+                                                  "Name": "ToolTip",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "ContextMenu",
+                                                  "Value": "null"
+                                                },
+                                                {
+                                                  "Name": "Visibility",
+                                                  "Value": "Visible"
+                                                }
+                                              ],
+                                              "Children": [
+                                                {
+                                                  "Name": "Rectangle",
+                                                  "Properties": [
+                                                    {
+                                                      "Name": "DataContext",
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
+                                                    },
+                                                    {
+                                                      "Name": "Name",
+                                                      "Value": "rectangle"
+                                                    },
+                                                    {
+                                                      "Name": "Margin",
+                                                      "Value": "0,0,0,0"
+                                                    },
+                                                    {
+                                                      "Name": "HorizontalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "VerticalAlignment",
+                                                      "Value": "Stretch"
+                                                    },
+                                                    {
+                                                      "Name": "ToolTip",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "ContextMenu",
+                                                      "Value": "null"
+                                                    },
+                                                    {
+                                                      "Name": "Visibility",
+                                                      "Value": "Visible"
+                                                    }
+                                                  ],
+                                                  "Children": []
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
                                           "Name": "RepeatButton",
                                           "Properties": [
                                             {
@@ -4361,7 +4957,7 @@
                                             },
                                             {
                                               "Name": "DataContext",
-                                              "Value": "null"
+                                              "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                             },
                                             {
                                               "Name": "Name",
@@ -4402,7 +4998,7 @@
                                                 },
                                                 {
                                                   "Name": "DataContext",
-                                                  "Value": "null"
+                                                  "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                 },
                                                 {
                                                   "Name": "Name",
@@ -4447,7 +5043,7 @@
                                                     },
                                                     {
                                                       "Name": "DataContext",
-                                                      "Value": "null"
+                                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                     },
                                                     {
                                                       "Name": "Name",
@@ -4488,7 +5084,7 @@
                                                         },
                                                         {
                                                           "Name": "DataContext",
-                                                          "Value": "null"
+                                                          "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                                         },
                                                         {
                                                           "Name": "Name",
@@ -4536,7 +5132,7 @@
                                   "Properties": [
                                     {
                                       "Name": "DataContext",
-                                      "Value": "null"
+                                      "Value": "Microsoft.VisualStudio.R.Package.DataInspect.MatrixView"
                                     },
                                     {
                                       "Name": "Name",

@@ -21,13 +21,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public bool IsEmpty => _sortOrderList.Count == 0;
 
         /// <summary>
-        /// Returns sort direction of the primary column
-        /// </summary>
-        public bool IsPrimaryDescending {
-            get { return !IsEmpty ? _sortOrderList[0].Descending : false; }
-        }
-
-        /// <summary>
         /// Resets sort to one column assuming default (ascending) order.
         /// Typically called as a result of click on one of the column
         /// headers which clears current sort across all columns and sets
@@ -52,6 +45,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             } else {
                 existing.Descending = v.SortOrder == SortOrderType.Descending;
             }
+        }
+
+        public void Add(ColumnSortOrder order) {
+            _sortOrderList.Add(order);
         }
 
         /// <remarks>
