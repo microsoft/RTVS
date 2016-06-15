@@ -1,6 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.Extensions;
@@ -22,10 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         private static readonly string[] AllStandardSnippetTypes = { "Expansion", "SurroundsWith" };
         private static readonly string[] SurroundWithSnippetTypes = { "SurroundsWith" };
 
-        private IVsExpansionManager _expansionManager;
-        private IVsExpansionSession _expansionSession;
-        private IExpansionsCache _cache;
+        private readonly IVsExpansionManager _expansionManager;
+        private readonly IExpansionsCache _cache;
 
+        private IVsExpansionSession _expansionSession;
+        private int _currentFieldIndex = -1;
+        private int _markerCount;
         private bool _earlyEndExpansionHappened = false;
 
         public ExpansionClient(ITextView textView, ITextBuffer textBuffer, IVsExpansionManager expansionManager, IExpansionsCache cache) {
@@ -49,40 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 return false;
             }
 
-            // Get the snippet span
-            TextSpan[] pts = new TextSpan[1];
-            ErrorHandler.ThrowOnFailure(Session.GetSnippetSpan(pts));
-            TextSpan snippetSpan = pts[0];
-
-            // Convert text span to stream positions
-            int snippetStart, snippetEnd;
-            var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>();
-            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
-            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
-
-            var textStream = (IVsTextStream)vsTextLines;
-
-            // check to see if the caret position is inside one of the snippet fields
-            IVsEnumStreamMarkers enumMarkers;
-            if (VSConstants.S_OK == textStream.EnumMarkers(snippetStart, snippetEnd - snippetStart, 0, (uint)(ENUMMARKERFLAGS.EM_ALLTYPES | ENUMMARKERFLAGS.EM_INCLUDEINVISIBLE | ENUMMARKERFLAGS.EM_CONTAINED), out enumMarkers)) {
-                IVsTextStreamMarker curMarker;
-                var span = SpanFromViewSpan(new Span(TextView.Caret.Position.BufferPosition, 0));
-                if(span.HasValue) { 
-                while (VSConstants.S_OK == enumMarkers.Next(out curMarker)) {
-                    int curMarkerPos;
-                    int curMarkerLen;
-                        if (VSConstants.S_OK == curMarker.GetCurrentSpan(out curMarkerPos, out curMarkerLen)) {
-                            if (span.Value.Start >= curMarkerPos && span.Value.Start <= curMarkerPos + curMarkerLen) {
-                                int markerType;
-                                if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
-                                    if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            var rPoint = TextView.MapDownToR(TextView.Caret.Position.BufferPosition);
+            if (rPoint.HasValue) {
+                var markers = GetFieldMarkers();
+                return markers.GetItemContaining(rPoint.Value.Position) >= 0 || markers.GetItemAtPosition(rPoint.Value.Position) >= 0;
             }
             return false;
         }
@@ -117,8 +90,16 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             return VSConstants.E_UNEXPECTED;
         }
 
-        public int GoToNextExpansionField() => Session.GoToNextExpansionField(0 /* fCommitIfLast - so don't commit */);
-        public int GoToPreviousExpansionField() => Session.GoToPreviousExpansionField();
+        public int GoToNextExpansionField() {
+            var index = _currentFieldIndex < _markerCount - 1 ? _currentFieldIndex + 1 : 0;
+            return PositionCaretInField(index);
+        }
+
+        public int GoToPreviousExpansionField() {
+            var index = _currentFieldIndex > 0 ? _currentFieldIndex - 1 : _markerCount - 1;
+            return PositionCaretInField(index);
+        }
+
         public int EndExpansionSession(bool leaveCaretWhereItIs) => Session.EndCurrentExpansion(leaveCaretWhereItIs ? 1 : 0);
 
         /// <summary>
@@ -133,10 +114,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
             if (!TextView.Caret.InVirtualSpace) {
                 SnapshotPoint caretPoint = TextView.Caret.Position.BufferPosition;
 
-                var document = REditorDocument.FindInProjectedBuffers(TextView.TextBuffer);
-                // Document may be null in tests
-                var textBuffer = document != null && TextView.IsRepl() ? document.TextBuffer : TextView.TextBuffer;
-
+                var textBuffer = GetTargetBuffer();
                 var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
                 _earlyEndExpansionHappened = false;
 
@@ -155,6 +133,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         _expansionSession = null;
                         _earlyEndExpansionHappened = false;
                     }
+                    PositionCaretInField(0);
                     ErrorHandler.ThrowOnFailure(hr);
                     snippetInserted = true;
                     return hr;
@@ -231,23 +210,9 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         public int PositionCaretForEditing(IVsTextLines pBuffer, TextSpan[] ts) {
-            return VSConstants.S_OK;
+            return PositionCaretInField(0);
         }
         #endregion
-
-        /// <summary>
-        /// Converts Span to [legacy] TextSpan structure that is used in IVs* interfaces
-        /// </summary>
-        private static TextSpan TextSpanFromSpan(ITextBuffer textBuffer, Span span) {
-            var ts = new TextSpan();
-            var startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
-            var endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.End);
-            ts.iStartLine = startLine.LineNumber;
-            ts.iEndLine = endLine.LineNumber;
-            ts.iStartIndex = span.Start - startLine.Start;
-            ts.iEndIndex = span.End - endLine.Start;
-            return ts;
-        }
 
         private ITextBuffer GetTargetBuffer() {
             if (TextView.IsRepl()) {
@@ -286,7 +251,66 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 }
                 span = Span.FromBounds(start.Value, end.Value);
             }
-            return TextSpanFromSpan(textBuffer, span);
+            return span.ToTextSpan(textBuffer);
+        }
+
+        private int PositionCaretInField(int index) {
+            var markers = GetFieldMarkers();
+            if (index >= 0 && index <= markers.Count) {
+                var prevMarker = markers[index];
+                var viewPoint = TextView.MapUpToView(new SnapshotPoint(GetTargetBuffer().CurrentSnapshot, prevMarker.Start));
+                if (viewPoint.HasValue) {
+                    TextView.Caret.MoveTo(viewPoint.Value);
+                    _currentFieldIndex = index;
+                    return VSConstants.S_OK;
+                }
+            }
+            return VSConstants.E_FAIL;
+        }
+
+        private int GetCurrentFieldIndex() {
+            var rPosition = TextView.MapDownToR(TextView.Caret.Position.BufferPosition);
+            var markers = GetFieldMarkers();
+            var index = markers.GetItemAtPosition(rPosition.Value);
+            if(index < 0) {
+                index = markers.GetItemAtPosition(rPosition.Value);
+            }
+            return index;
+        }
+
+        private TextRangeCollection<ITextRange> GetFieldMarkers() {
+            var markers = new List<ITextRange>();
+
+            TextSpan[] pts = new TextSpan[1];
+            ErrorHandler.ThrowOnFailure(Session.GetSnippetSpan(pts));
+            TextSpan snippetSpan = pts[0];
+
+            // Convert text span to stream positions
+            int snippetStart, snippetEnd;
+            var vsTextLines = GetTargetBuffer().GetBufferAdapter<IVsTextLines>();
+            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iStartLine, snippetSpan.iStartIndex, out snippetStart));
+            ErrorHandler.ThrowOnFailure(vsTextLines.GetPositionOfLineIndex(snippetSpan.iEndLine, snippetSpan.iEndIndex, out snippetEnd));
+
+            var textStream = (IVsTextStream)vsTextLines;
+
+            IVsEnumStreamMarkers enumMarkers;
+            if (VSConstants.S_OK == textStream.EnumMarkers(snippetStart, snippetEnd - snippetStart, 0, (uint)(ENUMMARKERFLAGS.EM_ALLTYPES | ENUMMARKERFLAGS.EM_INCLUDEINVISIBLE | ENUMMARKERFLAGS.EM_CONTAINED), out enumMarkers)) {
+                IVsTextStreamMarker curMarker;
+                while (VSConstants.S_OK == enumMarkers.Next(out curMarker)) {
+                    int curMarkerPos;
+                    int curMarkerLen;
+                    if (VSConstants.S_OK == curMarker.GetCurrentSpan(out curMarkerPos, out curMarkerLen)) {
+                        int markerType;
+                        if (VSConstants.S_OK == curMarker.GetType(out markerType)) {
+                            if (markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL || markerType == (int)MARKERTYPE2.MARKER_EXSTENCIL_SELECTED) {
+                                markers.Add(new TextRange(curMarkerPos, curMarkerLen));
+                            }
+                        }
+                    }
+                }
+            }
+            _markerCount = markers.Count;
+            return new TextRangeCollection<ITextRange>(markers);
         }
     }
 }
