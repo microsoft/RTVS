@@ -1023,6 +1023,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search Web for {0}.
+        /// </summary>
+        public static string SearchWebFor {
+            get {
+                return ResourceManager.GetString("SearchWebFor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please briefly describe what you were doing that led to the issue, if applicable:
         ///
         ///...
@@ -1304,6 +1313,33 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_HelpBrowser_Description {
             get {
                 return ResourceManager.GetString("Settings_HelpBrowser_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Settings_HelpCategory {
+            get {
+                return ResourceManager.GetString("Settings_HelpCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Site to search.
+        /// </summary>
+        public static string Settings_HelpSearchSite {
+            get {
+                return ResourceManager.GetString("Settings_HelpSearchSite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Site to search for help on selected item(s).
+        /// </summary>
+        public static string Settings_HelpSearchSite_Description {
+            get {
+                return ResourceManager.GetString("Settings_HelpSearchSite_Description", resourceCulture);
             }
         }
         

@@ -94,5 +94,19 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
             return path;
         }
+
+        /// <summary>
+        /// Converts Span to [legacy] TextSpan structure that is used in IVs* interfaces
+        /// </summary>
+        public static TextSpan ToTextSpan(this Span span, ITextBuffer textBuffer) {
+            var ts = new TextSpan();
+            var startLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.Start);
+            var endLine = textBuffer.CurrentSnapshot.GetLineFromPosition(span.End);
+            ts.iStartLine = startLine.LineNumber;
+            ts.iEndLine = endLine.LineNumber;
+            ts.iStartIndex = span.Start - startLine.Start;
+            ts.iEndIndex = span.End - endLine.Start;
+            return ts;
+        }
     }
 }

@@ -119,6 +119,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public string HelpSearchSite {
+            get { return "stackoverflow.com"; }
+            set { }
+        }
+
         public bool EvaluateActiveBindings { get; set; } = false;
     }
 }

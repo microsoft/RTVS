@@ -1317,6 +1317,17 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" priority="0x0200" type="Button">
+        <Icon guid="ImageCatalogGuid" id="Web"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Search Web For Current</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="rEditorDocumentationGroup"/>
         <Icon guid="ImageCatalogGuid" id="AddComment"/>
@@ -1850,6 +1861,15 @@
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup"/>
     </CommandPlacement>
 
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="groupRContextHelp"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="interactiveWindowHelpGroup"/>
+    </CommandPlacement>
+
+    <!-- Snippets -->
     <CommandPlacement guid="guidVSStd2K" id="ECMD_INSERTSNIPPET" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
@@ -2009,6 +2029,14 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1"  mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
   </KeyBindings>
@@ -2170,7 +2198,8 @@
       <IDSymbol name="icmdHelpHome" value="1102" />
       <IDSymbol name="icmdHelpRefresh" value="1103" />
       <IDSymbol name="icmdHelpOnCurrent" value="1104"/>
-
+      <IDSymbol name="icmdSearchWebForCurrent" value="1105"/>
+      
       <!-- History -->
       <IDSymbol name="icmdLoadHistory" value="1200" />
       <IDSymbol name="icmdSaveHistory" value="1201" />

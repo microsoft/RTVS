@@ -184,7 +184,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 if(target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
-                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>();
+                var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
                 var pts = new POINTS[1];
                 pts[0].x = (short)x;
                 pts[0].y = (short)y;
