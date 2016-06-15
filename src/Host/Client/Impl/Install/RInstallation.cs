@@ -21,8 +21,6 @@ namespace Microsoft.R.Host.Client.Install {
     /// settings try and find highest version.
     /// </summary>
     public static class RInstallation {
-        private const string rtvsKey = @"SOFTWARE\Microsoft\R Tools";
-        private const string rClientKey = @"SOFTWARE\Microsoft\R Client";
         private const string rServer = "R_SERVER";
         private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
         private static IRegistry _registry;

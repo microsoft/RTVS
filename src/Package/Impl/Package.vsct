@@ -1466,7 +1466,7 @@
       <!-- Variable Explorer commands -->
       <Button guid="guidRToolsCmdSet" id="icmdShowDetails" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
-        <Icon guid="ImageCatalogGuid" id="DetailDataView"/>
+        <Icon guid="ImageCatalogGuid" id="Zoom"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -2032,10 +2032,12 @@
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="RmdEditor" key1="VK_F1" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1"  mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="RmdEditor" key1="VK_F1"  mod1="Control"/>
     <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control"/>
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
