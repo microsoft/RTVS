@@ -10,6 +10,6 @@
     <Grid>
         <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}" Foreground="DarkGray" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">Run plotting command in R Interactive Window</TextBlock>
         <TextBlock Visibility="{Binding Path=ShowError, Converter={x:Static rwpf:Converters.FalseIsHidden}}" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">Error rendering plot</TextBlock>
-        <Image Cursor="{Binding Path=LocatorMode, Converter={x:Static rwpf:Converters.TrueIsCrossCursor}}" Source="{Binding Path=PlotImage}" Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" MouseLeftButtonUp="Image_MouseLeftButtonUp"></Image>
+        <Image x:Name="plotImage" Cursor="{Binding Path=LocatorMode, Converter={x:Static rwpf:Converters.TrueIsCrossCursor}}" Source="{Binding Path=PlotImage}" Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" MouseLeftButtonUp="Image_MouseLeftButtonUp"></Image>
     </Grid>
 </UserControl>

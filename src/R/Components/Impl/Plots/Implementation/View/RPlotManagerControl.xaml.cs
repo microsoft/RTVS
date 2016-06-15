@@ -27,7 +27,7 @@ namespace Microsoft.R.Components.Plots.Implementation.View {
             int pixelWidth = Math.Max((int)unadjustedPixelSize.Width, MinPixelWidth);
             int pixelHeight = Math.Max((int)unadjustedPixelSize.Height, MinPixelHeight);
             int resolution = WpfUnitsConversion.GetResolution(Content as Visual);
-            this.ToolTip = string.Format($"{pixelWidth} x {pixelHeight}px");
+            plotImage.ToolTip = string.Format($"{pixelWidth} x {pixelHeight}px");
 
             Model?.ResizePlotAfterDelay(pixelWidth, pixelHeight, resolution);
         }
