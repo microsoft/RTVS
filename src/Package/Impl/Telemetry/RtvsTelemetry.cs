@@ -35,6 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
             public const string MROEngine = "MRO Engine";
             public const string RBasePackages = "R Base Package";
             public const string RUserPackages = "R User Package";
+            public const string RClientFound = "MRC Found";
             public const string RClientInstallYes = "MRC Install Yes";
             public const string RClientInstallCancel = "MRC Install Canceled";
             public const string RClientActive = "MRC Active";
@@ -71,8 +72,11 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
 
                     string rClientPath = MicrosoftRClient.GetRClientPath();
-                    if (rClientPath != null && rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
-                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
+                    if (rClientPath != null) {
+                        TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientFound);
+                        if (rInstallPath != null && rInstallPath.EqualsIgnoreCase(rClientPath)) {
+                            TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RClientActive);
+                        }
                     }
 
                     var rEngines = GetRSubfolders("R");
