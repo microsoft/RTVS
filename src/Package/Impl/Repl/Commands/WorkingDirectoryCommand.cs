@@ -11,12 +11,8 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
-using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudioTools;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -30,7 +26,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public WorkingDirectoryCommand(IRInteractiveWorkflow interactiveWorkflow) :
             base(new[] {
-                new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSelectWorkingDirectory),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdGetDirectoryList),
                 new CommandId(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSetWorkingDirectory)
             }, false) {
@@ -76,16 +71,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         public override Microsoft.R.Components.Controller.CommandStatus Status(Guid group, int id) {
             return _interactiveWorkflow.ActiveWindow != null ?
-                Microsoft.R.Components.Controller.CommandStatus.SupportedAndEnabled :
-                Microsoft.R.Components.Controller.CommandStatus.Invisible;
+                CommandStatus.SupportedAndEnabled :
+                CommandStatus.Invisible;
         }
 
         public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             switch (id) {
-                case RPackageCommandId.icmdSelectWorkingDirectory:
-                    SelectDirectory();
-                    break;
-
                 case RPackageCommandId.icmdGetDirectoryList:
                     // Return complete list
                     outputArg = GetFriendlyDirectoryNames();
@@ -119,16 +110,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             }
 
             return Task.CompletedTask;
-        }
-
-        internal void SelectDirectory() {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            IntPtr dialogOwner;
-            uiShell.GetDialogOwnerHwnd(out dialogOwner);
-
-            string currentDirectory = RToolsSettings.Current.WorkingDirectory;
-            string newDirectory = Dialogs.BrowseForDirectory(dialogOwner, currentDirectory, Resources.ChooseDirectory);
-            SetDirectory(newDirectory);
         }
 
         internal string[] GetFriendlyDirectoryNames() {

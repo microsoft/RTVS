@@ -3,6 +3,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.Languages.Editor.Projection;
 using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Utilities {
@@ -80,13 +82,17 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static string GetFilePath(this ITextView textView) {
+            string path = null;
             if (textView != null && !textView.IsClosed) {
-                ITextDocument document;
-                if (textView.TextBuffer.Properties.TryGetProperty(typeof(ITextDocument), out document)) {
-                    return document.FilePath;
+                if (textView.TextBuffer is IProjectionBuffer) {
+                    var pbm = ProjectionBufferManager.FromTextBuffer(textView.TextBuffer);
+                    path = pbm?.DiskBuffer.GetFilePath();
+                }
+                if(string.IsNullOrEmpty(path)) {
+                    path = textView.TextBuffer.GetFilePath();
                 }
             }
-            return string.Empty;
+            return path;
         }
     }
 }

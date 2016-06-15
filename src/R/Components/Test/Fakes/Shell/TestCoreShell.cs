@@ -42,7 +42,7 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
             LastShownErrorMessage = message;
         }
 
-        public void ShowContextMenu(CommandID commandId, int x, int y) {
+        public void ShowContextMenu(CommandID commandId, int x, int y, object commandTaget = null) {
             LastShownContextMenu = commandId;
         }
 

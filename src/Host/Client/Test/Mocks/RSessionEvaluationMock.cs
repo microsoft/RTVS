@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionEvaluationMock : IRSessionEvaluation {
+        public string LastExpression { get; private set; }
+
         public IReadOnlyList<IRContext> Contexts {
             get {
                 return new List<IRContext>() { new RContextMock(), new RContextMock() };
@@ -19,6 +21,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
+            LastExpression = expression;
+
             if (kind.HasFlag(REvaluationKind.Mutating)) {
                 IsMutating = true;
             }

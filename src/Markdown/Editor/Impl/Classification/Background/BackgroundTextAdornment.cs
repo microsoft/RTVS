@@ -29,7 +29,7 @@ namespace Microsoft.Markdown.Editor.Classification {
 
         private double _lastWidth = 0;
         private int _reprocessFrom = -1;
-        private Brush _backgroudColorBlush;
+        private Brush _backgroudColorBrush;
 
         public CodeBackgroundTextAdornment(IWpfTextView view, IClassificationFormatMapService classificationFormatMapService, IClassificationTypeRegistryService classificationTypeRegistry) {
 
@@ -119,6 +119,7 @@ namespace Microsoft.Markdown.Editor.Classification {
 
         private void OnClassificationFormatMappingChanged(object sender, EventArgs e) {
             FetchColors();
+            ReprocessEntireView();
         }
 
         private void CreateVisuals(IWpfTextViewLine line) {
@@ -141,7 +142,7 @@ namespace Microsoft.Markdown.Editor.Classification {
 
                 uiElement.Width = g.Bounds.Width;
                 uiElement.Height = g.Bounds.Height;
-                uiElement.Fill = _backgroudColorBlush;
+                uiElement.Fill = _backgroudColorBrush;
 
                 //Align the image with the top of the bounds of the text geometry
                 Canvas.SetLeft(uiElement, g.Bounds.Left);
@@ -155,7 +156,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         private void FetchColors() {
             var ct = _classificationTypeRegistry.GetClassificationType(MarkdownClassificationTypes.CodeBackground);
             var props = _classificationFormatMap.GetTextProperties(ct);
-            _backgroudColorBlush = props.BackgroundBrush;
+            _backgroudColorBrush = props.BackgroundBrush;
         }
     }
 }

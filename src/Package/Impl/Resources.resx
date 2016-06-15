@@ -456,9 +456,6 @@
   <data name="ChooseRInstallFolder" xml:space="preserve">
     <value>Choose R Install Folder</value>
   </data>
-  <data name="Error_CannotFindRBinariesFormat" xml:space="preserve">
-    <value>Cannot find R binaries in {0}. Please specify valid path to R installation directory such as 'Program Files\R\R-3.2.x' or 'Program Files\MRO\R-3.2.x'.</value>
-  </data>
   <data name="Error_ExceptionAccessingPath" xml:space="preserve">
     <value>Unable to access path {0}. Exception: {1}.</value>
   </data>

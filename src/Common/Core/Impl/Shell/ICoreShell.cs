@@ -53,7 +53,7 @@ namespace Microsoft.Common.Core.Shell {
         /// <param name="commandId"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        void ShowContextMenu(CommandID commandId, int x, int y);
+        void ShowContextMenu(CommandID commandId, int x, int y, object commandTarget = null);
 
         /// <summary>
         /// Displays message with specified buttons in a host-specific UI

@@ -200,13 +200,15 @@
     <Compile Include="Plots\PlotManagerWindowPane.cs" />
     <Compile Include="Plots\VsRPlotManagerVisualComponent.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
+    <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
+    <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
     <Compile Include="ProjectSystem\ConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Exports.cs" />
-    <Compile Include="ProjectSystem\IConfiguredRProjectExportProvider.cs" />
-    <Compile Include="ProjectSystem\IRProjectProperties.cs" />
-    <Compile Include="ProjectSystem\IVsHierarchyExtensions.cs" />
+    <Compile Include="ProjectSystem\Definitions\IConfiguredRProjectExportProvider.cs" />
+    <Compile Include="ProjectSystem\Definitions\IRProjectProperties.cs" />
+    <Compile Include="ProjectSystem\Definitions\IVsHierarchyExtensions.cs" />
     <Compile Include="ProjectSystem\ProjectProperties.cs" />
     <Compile Include="ProjectSystem\PropertyPages\PropertyPage.cs">
       <SubType>UserControl</SubType>
@@ -232,6 +234,9 @@
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
+    <Compile Include="Repl\Commands\SetDirectoryToProjectCommand.cs" />
+    <Compile Include="Repl\Commands\SetDirectoryToSourceCommand.cs" />
+    <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Rules\Run.cs" />
@@ -277,7 +282,7 @@
     <Compile Include="Repl\Commands\HistoryNavigationCommand.cs" />
     <Compile Include="Repl\Commands\ReplFormatDocumentCommand.cs" />
     <Compile Include="Repl\Commands\ClearReplCommand.cs" />
-    <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
+    <Compile Include="Repl\Commands\SelectWorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Commands\RExecuteCommand.cs" />
     <Compile Include="Repl\Debugger\AttachToRInteractiveCommand.cs" />
     <Compile Include="Repl\Debugger\DebuggerCommandVisibility.cs" />

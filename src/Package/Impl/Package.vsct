@@ -105,6 +105,17 @@
         </Strings>
       </Menu>
 
+      <!-- Variable Explorer context menu -->
+      <Menu guid="guidRToolsCmdSet" id="variableExplorerContextMenu" type="Context">
+        <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Variable Explorer Context</ButtonText>
+        </Strings>
+      </Menu>
+      <!-- End Variable Explorer context menu -->
+
       <!-- Top Level 'R Tools' menu -->
       <Menu guid="guidRToolsCmdSet" id="TopLevelMenu" priority="0x1000" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
@@ -143,6 +154,14 @@
         <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
         <Strings>
           <ButtonText>&amp;Data</ButtonText>
+        </Strings>
+      </Menu>
+
+      <!-- Directory flyout -->
+      <Menu guid="guidRToolsCmdSet" id="directorySubMenu" type="Menu" priority="0x0450">
+        <Parent guid="guidRToolsCmdSet" id="mainMenuGroup"/>
+        <Strings>
+          <ButtonText>Working Director&amp;y</ButtonText>
         </Strings>
       </Menu>
 
@@ -234,6 +253,15 @@
       </Group>
       <!-- End R code editor context menu groups -->
 
+      <!--`Variable Explorer groups -->
+      <Group guid="guidRToolsCmdSet" id="veEditGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="variableExplorerContextMenu"/>
+      </Group>
+
+      <Group guid="guidRToolsCmdSet" id="veCommandGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="variableExplorerContextMenu"/>
+      </Group>
+
       <!-- R debugger Autos/Locals/Watch context menu group -->
       <Group guid="guidRToolsCmdSet" id="groupRContextDebugger" priority="0x0000">
         <Parent guid="guidRToolsCmdSet" id="debuggerRContextMenu"/>
@@ -279,6 +307,20 @@
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
 
+      <!-- Directory flyout -->
+      <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
+        <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
+      </Group>
+      
+        <Group guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup" priority="0x0200">
+        <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
+      </Group>
+      
+      <!-- File EZ MDI tab menu -->
+      <Group guid="guidRToolsCmdSet" id="directoryEzMdiGroup" priority="0x0210">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_EZDOCWINTAB"/>
+      </Group>
+      
       <Group guid="guidRToolsCmdSet" id="plotSubMenuNavGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="plotSubMenu"/>
       </Group>
@@ -598,14 +640,32 @@
       </Button>
 
       <Button guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0400" type="Button">
+        <Icon guid="ImageCatalogGuid" id="SwitchFolders"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Select Working &amp;Directory...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0500" type="Button">
         <Icon guid="ImageCatalogGuid" id="DocumentsFolder"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
-          <ButtonText>Select Working Directory...</ButtonText>
-          <MenuText>Select Working &amp;Directory...</MenuText>
-          <CommandName>Select Working Directory</CommandName>
+          <ButtonText>Set Working Directory to &amp;Source File Location</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" priority="0x0600" type="Button">
+        <Icon guid="ImageCatalogGuid" id="OpenProjectFolder"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Set Working Directory to &amp;Project Location</ButtonText>
         </Strings>
       </Button>
       <!-- End Workspace flyout -->
@@ -1392,6 +1452,36 @@
       </Button>
       <!-- End of project context menu -->
 
+      <!-- Variable Explorer commands -->
+      <Button guid="guidRToolsCmdSet" id="icmdShowDetails" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DetailDataView"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Show Details</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdOpenInCsvApp" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="veCommandGroup"/>
+        <Icon guid="ImageCatalogGuid" id="OfficeExcel2013"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Open in CSV &amp;App</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdCopyValue" priority="0x0100" type="Button">
+        <Icon guid="ImageCatalogGuid" id="CopyDynamicValue"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Copy &amp;Value</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
   </Commands>
 
@@ -1499,6 +1589,17 @@
     </CommandPlacement>
     <!-- End toolbar -->
 
+    <!-- Variable Explorer context menu -->
+    <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="veEditGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdCopyValue" priority="0x200">
+      <Parent guid="guidRToolsCmdSet" id="veEditGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidVSStd97" id="cmdidDelete" priority="0x300">
+      <Parent guid="guidRToolsCmdSet" id="veEditGroup"/>
+    </CommandPlacement>
+
     <!-- R code editor context menu -->
     <!-- Clipboard group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_EDIT_CUTCOPY" priority="0x0100">
@@ -1521,7 +1622,7 @@
       <Parent guid="guidRToolsCmdSet" id="groupRContextRepl"/>
     </CommandPlacement>
 
-      <!-- Snippets group -->
+    <!-- Snippets group -->
     <CommandPlacement guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS" priority="0x0500">
       <Parent guid="guidRToolsCmdSet" id="rCodeEditorContextMenu"/>
     </CommandPlacement>
@@ -1571,7 +1672,6 @@
     <CommandPlacement guid="guidVSStd97" id="cmdidCopy" priority="0x0100">
       <Parent guid="guidRToolsCmdSet" id="historyCopySelectedGroup"/>
     </CommandPlacement>
-
     <!-- End R history context menu -->
 
     <!-- RD/RDM code editor context menu -->
@@ -1723,8 +1823,22 @@
       <Parent guid="guidRToolsCmdSet" id="sessionRDebugGroup"/>
     </CommandPlacement>
 
+    <!-- Directory management REPL toobar -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0A0">
+      <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
+    </CommandPlacement>
+    
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" priority="0x0B0">
+      <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
+    </CommandPlacement>
+    
     <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x200">
       <Parent guid="guidRToolsCmdSet" id="sessionToolbarDirectoryGroup"/>
+    </CommandPlacement>
+    
+    <!-- Directory management in Easy MDI -->
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0010">
+      <Parent guid="guidRToolsCmdSet" id="directoryEzMdiGroup"/>
     </CommandPlacement>
 
     <!-- Contextual help -->
@@ -1744,7 +1858,7 @@
       <Parent guid="guidRToolsCmdSet" id="interactiveWindowSnippetsGroup"/>
     </CommandPlacement>
 
-
+    <!-- Project context menu -->
     <CommandPlacement guid="guidRToolsCmdSet" id="projectNodeContextMenuGroup" priority="0x0000">
       <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE"/>
     </CommandPlacement>
@@ -1781,6 +1895,16 @@
     </CommandPlacement>
     <CommandPlacement guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
       <Parent guid="guidRToolsCmdSet" id="variableWindowToolBarId"/>
+    </CommandPlacement>
+
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="directorySubMenuGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" priority="0x0200">
+      <Parent guid="guidRToolsCmdSet" id="directorySubMenuGroup"/>
+    </CommandPlacement>
+    <CommandPlacement guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" priority="0x0100">
+      <Parent guid="guidRToolsCmdSet" id="directorySelectSubMenuGroup"/>
     </CommandPlacement>
   </CommandPlacements>
 
@@ -1868,11 +1992,25 @@
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="InteractiveWindow" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="SolutionExplorer" key1="VK_RETURN" mod1="CONTROL SHIFT" />
     <KeyBinding guid="guidRToolsCmdSet" id="icmdSourceRScriptWithEcho" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
+    
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="guidRToolsCmdSet" key1="E" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="REditor" key1="E" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="InteractiveWindow" key1="E" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToSourceCommand" editor="RmdEditor" key1="E" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" editor="guidRToolsCmdSet" key1="P" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" editor="InteractiveWindow" key1="P" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSetDirectoryToProjectCommand" editor="REditor" key1="P" mod1="CONTROL SHIFT" />
+
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="guidRToolsCmdSet" key1="W" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="REditor" key1="W" mod1="CONTROL SHIFT" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSelectWorkingDirectory" editor="InteractiveWindow" key1="W" mod1="CONTROL SHIFT" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdInsertRoxygenBlock" editor="REditor" key1="R" mod1="CONTROL SHIFT ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
   </KeyBindings>
 
   <UsedCommands>
@@ -1923,6 +2061,7 @@
       <IDSymbol name="rHistoryContextMenu" value="102" />
       <!-- R debugger Autos/Locals/Watch context menu. -->
       <IDSymbol name="debuggerRContextMenu" value="103" />
+      <IDSymbol name="variableExplorerContextMenu" value="104"/>
 
       <!-- R code editor context menu formatting group: ECMD_FORMATSELECTION, icmdGoToFormattingOptions -->
       <IDSymbol name="groupRContextFormat" value="120" />
@@ -1931,6 +2070,8 @@
       <IDSymbol name="groupRContextHelp" value="124"/>
       <!-- R debugger Autos/Locals/Watch context menu group. -->
       <IDSymbol name="groupRContextDebugger" value="125"/>
+      <IDSymbol name="veCommandGroup" value="126"/>
+      <IDSymbol name="veEditGroup" value="127"/>
 
       <!-- RTVS Command IDs -->
       <!-- General -->
@@ -1962,6 +2103,8 @@
       <IDSymbol name="icmdAttachToRInteractive" value="516" />
       <IDSymbol name="icmdClearRepl" value="517" />
       <IDSymbol name="icmdSourceRScriptWithEcho" value="518" />
+      <IDSymbol name="icmdSetDirectoryToSourceCommand" value="519"/>
+      <IDSymbol name="icmdSetDirectoryToProjectCommand" value="520"/>
 
       <IDSymbol name="sessionSubMenuFileGroup" value="551"/>
       <IDSymbol name="sessionSubMenuRGroup" value="552"/>
@@ -2006,8 +2149,10 @@
       <IDSymbol name="icmdImportDataset" value="801" />
       <IDSymbol name="icmdImportDatasetUrl" value="802" />
       <IDSymbol name="icmdImportDatasetTextFile" value="803" />
-      <!--<IDSymbol name="icmdDeleteVariable" value="804" />-->
       <IDSymbol name="icmdDeleteAllVariables" value="805" />
+      <IDSymbol name="icmdShowDetails" value="806" />
+      <IDSymbol name="icmdOpenInCsvApp" value="807" />
+      <IDSymbol name="icmdCopyValue" value="808" />
 
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
@@ -2104,6 +2249,7 @@
       <IDSymbol name="dataSubMenu" value="0x2130"/>
       <IDSymbol name="publishSubMenu" value="0x2150"/>
       <IDSymbol name="windowsSubMenu" value="0x2200"/>
+      <IDSymbol name="directorySubMenu" value="0x2210"/>
       <IDSymbol name="toolsOptionsGroup" value="0x2300"/>
       <IDSymbol name="dataScienceSettingsGroup" value="0x2301"/>
       <IDSymbol name="docsGroup" value="0x2302"/>
@@ -2123,6 +2269,9 @@
       <IDSymbol name="rDocsSubMenu" value="0x2393"/>
       <IDSymbol name="rDocsSubMenuGroup" value="0x2394"/>
       <IDSymbol name="rEditorDocumentationGroup" value="0x2395"/>
+      <IDSymbol name="directorySubMenuGroup" value="0x2400"/>
+      <IDSymbol name="directorySelectSubMenuGroup" value="0x2401"/>
+      <IDSymbol name="directoryEzMdiGroup" value="0x2402"/>
     </GuidSymbol>
 
     <!-- Context Guids -->
