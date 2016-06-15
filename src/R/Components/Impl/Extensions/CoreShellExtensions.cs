@@ -11,7 +11,7 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Components.Extensions {
     public static class CoreShellExtensions {
-        public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell) => new MainThreadAwaitable(coreShell.MainThread);
+        public static MainThreadAwaitable SwitchToMainThreadAsync(this ICoreShell coreShell) => new MainThreadAwaitable((IMainThread)coreShell);
 
         public static async Task ShowErrorMessageAsync(this ICoreShell coreShell, string message) {
             await coreShell.SwitchToMainThreadAsync();

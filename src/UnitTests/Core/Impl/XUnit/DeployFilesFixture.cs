@@ -29,7 +29,7 @@ namespace Microsoft.UnitTests.Core.XUnit {
             return Path.GetDirectoryName(Path.GetDirectoryName(directory));
         });
 
-        private static readonly Lazy<string> TestFilesRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "TestFiles", DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss")));
+        private static readonly Lazy<string> TestFilesRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "TestFiles", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")));
         private static readonly Lazy<string> SolutionRootLazy = new Lazy<string>(() => Path.Combine(RepoRootLazy.Value, "src"));
         private static readonly object CopyFilesLock = new object();
 

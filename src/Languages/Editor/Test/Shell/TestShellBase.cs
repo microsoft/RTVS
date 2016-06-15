@@ -5,11 +5,13 @@ using System;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
-    public class TestShellBase {
+    public class TestShellBase : IMainThread {
         public Thread MainThread { get; set; }
         public int LocaleId => 1033;
 
@@ -69,5 +71,10 @@ namespace Microsoft.Languages.Editor.Test.Shell {
 #pragma warning disable 0067
         public event EventHandler<EventArgs> Terminating;
 #pragma warning restore 0067
+
+        #region IMainThread
+        public int ThreadId => MainThread.ManagedThreadId;
+        public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
+        #endregion
     }
 }
