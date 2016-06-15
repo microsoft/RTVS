@@ -270,7 +270,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         private int PositionCaretInField(int index) {
             var markers = GetFieldMarkers();
-            if (index >= 0 && index <= markers.Count) {
+            if (index >= 0 && index < markers.Count) {
                 SelectMarker(markers, index);
                 return VSConstants.S_OK;
             }
@@ -278,30 +278,32 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         }
 
         private void SelectMarker(TextRangeCollection<Marker> markers, int selectIndex) {
-            if (_currentFieldIndex >= 0) {
+            if (_currentFieldIndex >= 0 && _currentFieldIndex < markers.Count) {
                 // Unselect marker. It changes style and no longer tracks editing.
                 markers[_currentFieldIndex].StreamMarker.SetType(15); // 'Unselected legacy snippet field'
                 markers[_currentFieldIndex].StreamMarker.SetBehavior(
                     (uint)(MARKERBEHAVIORFLAGS2.MB_INHERIT_FOREGROUND | MARKERBEHAVIORFLAGS2.MB_DONT_DELETE_IF_ZEROLEN)); // 48
             }
 
-            _currentFieldIndex = selectIndex;
-            var marker = markers[selectIndex];
+            if (selectIndex >= 0 && selectIndex < markers.Count) {
+                _currentFieldIndex = selectIndex;
+                var marker = markers[selectIndex];
 
-            // Flip stream marker into selected state. 
-            // It will change style and new behavior will cause it to expand with editing
-            marker.StreamMarker.SetType(16); // 'Selected legacy snippet field'
-            marker.StreamMarker.SetBehavior(
-                 (uint)(MARKERBEHAVIORFLAGS2.MB_INHERIT_FOREGROUND | MARKERBEHAVIORFLAGS2.MB_DONT_DELETE_IF_ZEROLEN) |
-                 (uint)(MARKERBEHAVIORFLAGS.MB_LEFTEDGE_LEFTTRACK | MARKERBEHAVIORFLAGS.MB_RIGHTEDGE_RIGHTTRACK)); // 54
+                // Flip stream marker into selected state. 
+                // It will change style and new behavior will cause it to expand with editing
+                marker.StreamMarker.SetType(16); // 'Selected legacy snippet field'
+                marker.StreamMarker.SetBehavior(
+                     (uint)(MARKERBEHAVIORFLAGS2.MB_INHERIT_FOREGROUND | MARKERBEHAVIORFLAGS2.MB_DONT_DELETE_IF_ZEROLEN) |
+                     (uint)(MARKERBEHAVIORFLAGS.MB_LEFTEDGE_LEFTTRACK | MARKERBEHAVIORFLAGS.MB_RIGHTEDGE_RIGHTTRACK)); // 54
 
-            var viewPoint = TextView.MapUpToView(new SnapshotPoint(GetTargetBuffer().CurrentSnapshot, marker.Start));
-            if (viewPoint.HasValue) {
-                TextView.Selection.Select(
-                    new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot,
-                        new Span(viewPoint.Value.Position, marker.Length)),
-                    isReversed: false);
-                TextView.Caret.MoveTo(viewPoint.Value + marker.Length);
+                var viewPoint = TextView.MapUpToView(new SnapshotPoint(GetTargetBuffer().CurrentSnapshot, marker.Start));
+                if (viewPoint.HasValue) {
+                    TextView.Selection.Select(
+                        new SnapshotSpan(TextView.TextBuffer.CurrentSnapshot,
+                            new Span(viewPoint.Value.Position, marker.Length)),
+                        isReversed: false);
+                    TextView.Caret.MoveTo(viewPoint.Value + marker.Length);
+                }
             }
         }
 
