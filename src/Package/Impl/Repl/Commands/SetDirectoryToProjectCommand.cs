@@ -27,12 +27,15 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         }
 
         protected override void Handle() {
-            var projectFile = _pss.GetSelectedProject()?.FullName;
-            if (!string.IsNullOrEmpty(projectFile)) {
-                _interactiveWorkflow.RSession.SetWorkingDirectoryAsync(Path.GetDirectoryName(projectFile))
-                    .SilenceException<RException>()
-                    .SilenceException<MessageTransportException>()
-                    .DoNotWait();
+            string projectFile = null;
+            var project = _pss.GetSelectedProject();
+            if (VSConstants.S_OK == project?.GetMkDocument((uint)VSConstants.VSITEMID.Root, out projectFile)) {
+                if (!string.IsNullOrEmpty(projectFile)) {
+                    _interactiveWorkflow.RSession.SetWorkingDirectoryAsync(Path.GetDirectoryName(projectFile))
+                        .SilenceException<RException>()
+                        .SilenceException<MessageTransportException>()
+                        .DoNotWait();
+                }
             }
         }
     }
