@@ -150,13 +150,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[1].Should().Be("V2");
-                grid.ColumnHeader[2].Should().Be("V3");
-                grid.ColumnHeader[3].Should().Be("V4");
+                grid.ColumnHeader[1].Should().Be("[,2]");
+                grid.ColumnHeader[2].Should().Be("[,3]");
+                grid.ColumnHeader[3].Should().Be("[,4]");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("1");
-                grid.RowHeader[1].Should().Be("2");
+                grid.RowHeader[0].Should().Be("[1,]");
+                grid.RowHeader[1].Should().Be("[2,]");
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 1].Should().Be("11");
@@ -220,13 +220,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[2].Should().Be("NA");
+                grid.ColumnHeader[2].Should().Be("[,1]");
                 grid.ColumnHeader[3].Should().Be("d");
-                grid.ColumnHeader[4].Should().Be("NA.1");
+                grid.ColumnHeader[4].Should().Be("[,3]");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
                 grid.RowHeader[0].Should().Be("r1");
-                grid.RowHeader[1].Should().Be("NA");
+                grid.RowHeader[1].Should().Be("[2,]");
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 2].Should().Be("NA");
@@ -326,11 +326,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
                 var grid = await GridDataSource.GetGridDataAsync(evaluation.Expression, new GridRange(rowRange, columnRange));
 
                 grid.ColumnHeader.Range.Should().Be(columnRange);
-                grid.ColumnHeader[0].Should().Be("V1");
-                grid.ColumnHeader[1].Should().Be("V2");
+                grid.ColumnHeader[0].Should().Be("[,1]");
+                grid.ColumnHeader[1].Should().Be("[,2]");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("NA");
+                grid.RowHeader[0].Should().Be("[1,]");
                 grid.RowHeader[1].Should().Be("row2");
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
@@ -359,12 +359,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
 
                 grid.ColumnHeader.Range.Should().Be(columnRange);
                 grid.ColumnHeader[0].Should().Be("col1");
-                grid.ColumnHeader[1].Should().Be("NA");
+                grid.ColumnHeader[1].Should().Be("[,2]");
                 grid.ColumnHeader[2].Should().Be("col3");
 
                 grid.RowHeader.Range.Should().Be(rowRange);
-                grid.RowHeader[0].Should().Be("1");
-                grid.RowHeader[1].Should().Be("2");
+                grid.RowHeader[0].Should().Be("[1,]");
+                grid.RowHeader[1].Should().Be("[2,]");
 
                 grid.Grid.Range.Should().Be(new GridRange(rowRange, columnRange));
                 grid.Grid[0, 0].Should().Be("1");

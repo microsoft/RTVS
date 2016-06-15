@@ -7,12 +7,14 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
 
-namespace Microsoft.Common.Core.Test.Fakes {
-    public sealed class TestCoreShell : ICoreShell {
+namespace Microsoft.R.Components.Test.Fakes.Shell {
+    public sealed class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
 
         public TestCoreShell(CompositionContainer container) {
@@ -24,10 +26,6 @@ namespace Microsoft.Common.Core.Test.Fakes {
 
         public void DispatchOnUIThread(Action action) {
             UIThreadHelper.Instance.Invoke(action);
-        }
-        
-        public async Task DispatchOnMainThreadAsync(Action action, CancellationToken cancellationToken = default(CancellationToken)) {
-            await UIThreadHelper.Instance.InvokeAsync(action);
         }
 
         public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = default(CancellationToken)) {
@@ -71,5 +69,10 @@ namespace Microsoft.Common.Core.Test.Fakes {
         public string OpenFilePath { get; set; }
         public string SaveFilePath { get; set; }
         public ITelemetryService TelemetryService { get; }
+
+        #region IMainThread
+        public int ThreadId => MainThread.ManagedThreadId;
+        public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
+        #endregion
     }
 }

@@ -53,6 +53,7 @@
     <Compile Include="Fakes\InteractiveWindow\TestWaitIndicator.cs" />
     <Compile Include="Fakes\Search\TestSearchControl.cs" />
     <Compile Include="Fakes\Search\TestSearchControlProvider.cs" />
+    <Compile Include="Fakes\Shell\TestCoreShell.cs" />
     <Compile Include="Fakes\Trackers\TestActiveWpfTextViewTracker.cs" />
     <Compile Include="Fakes\Trackers\TestDebuggerModeTracker.cs" />
     <Compile Include="Fakes\Undo\AutoEnclose.cs" />
