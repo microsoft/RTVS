@@ -749,4 +749,16 @@ Additional information:
   <data name="Launch_NoStartupFile" xml:space="preserve">
     <value>No startup file specified for the startup project. Startup file can be specified in project properties.</value>
   </data>
+  <data name="SearchWebFor" xml:space="preserve">
+    <value>Search Web for {0}</value>
+  </data>
+  <data name="Settings_HelpCategory" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Settings_HelpSearchSite" xml:space="preserve">
+    <value>Site to search</value>
+  </data>
+  <data name="Settings_HelpSearchSite_Description" xml:space="preserve">
+    <value>Site to search for help on selected item(s)</value>
+  </data>
 </root>

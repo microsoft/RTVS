@@ -105,6 +105,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
+                new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
                 new ShowHistoryWindowCommand(),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
                 new GotoSolutionExplorerCommand(),

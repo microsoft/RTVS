@@ -134,7 +134,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.ShowDotPrefixedVariables = value; }
         }
 
-        [LocCategory("Settings_GeneralCategory")]
+        [LocCategory("Settings_HelpCategory")]
         [CustomLocDisplayName("Settings_HelpBrowser")]
         [LocDescription("Settings_HelpBrowser_Description")]
         [TypeConverter(typeof(HelpBrowserTypeConverter))]
@@ -142,6 +142,15 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public HelpBrowserType HelpBrowser {
             get { return RToolsSettings.Current.HelpBrowserType; }
             set { RToolsSettings.Current.HelpBrowserType = value; }
+        }
+
+        [LocCategory("Settings_HelpCategory")]
+        [CustomLocDisplayName("Settings_HelpSearchSite")]
+        [LocDescription("Settings_HelpSearchSite_Description")]
+        [DefaultValue("stackoverflow.com")]
+        public string HelpSearchSite {
+            get { return RToolsSettings.Current.HelpSearchSite; }
+            set { RToolsSettings.Current.HelpSearchSite = value; }
         }
 
         [LocCategory("Settings_GeneralCategory")]

@@ -30,5 +30,10 @@ namespace Microsoft.R.Support.Settings.Definitions {
         string SurveyNewsFeedUrl { get; set; }
 
         string SurveyNewsIndexUrl { get; set; }
+
+        /// <summary>
+        /// Site to search in 'Search Web for'... commands
+        /// </summary>
+        string HelpSearchSite { get; set; }
     }
 }

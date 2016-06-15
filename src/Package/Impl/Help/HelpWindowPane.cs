@@ -2,17 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Interop;
 using Microsoft.VisualStudio.R.Package.Shell;

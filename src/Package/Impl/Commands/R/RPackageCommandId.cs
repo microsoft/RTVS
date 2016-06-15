@@ -90,6 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdHelpHome = 1102;
         public const int icmdHelpRefresh = 1103;
         public const int icmdHelpOnCurrent = 1104;
+        public const int icmdSearchWebForCurrent = 1105;
 
         // History
         public const int icmdLoadHistory = 1200;
