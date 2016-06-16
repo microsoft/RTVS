@@ -1668,7 +1668,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to F1 Web search browser.
+        ///   Looks up a localized string similar to F1 Web browser.
         /// </summary>
         public static string Settings_WebHelpSearchBrowserType {
             get {
@@ -1695,7 +1695,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to String to pass to the browser when perfoming Web searching for the item under caret. Current item is added to the query as a primary search term..
+        ///   Looks up a localized string similar to String to append to the F1 Web search query after the search item..
         /// </summary>
         public static string Settings_WebHelpSearchString_Description {
             get {

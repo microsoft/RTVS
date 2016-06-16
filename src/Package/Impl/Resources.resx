@@ -759,10 +759,10 @@ Additional information:
     <value>F1 Web search string</value>
   </data>
   <data name="Settings_WebHelpSearchString_Description" xml:space="preserve">
-    <value>String to pass to the browser when perfoming Web searching for the item under caret. Current item is added to the query as a primary search term.</value>
+    <value>String to append to the F1 Web search query after the search item.</value>
   </data>
   <data name="Settings_WebHelpSearchBrowserType" xml:space="preserve">
-    <value>F1 Web search browser</value>
+    <value>F1 Web browser</value>
   </data>
   <data name="Settings_WebHelpSearchBrowserType_Description" xml:space="preserve">
     <value>Defines if F1 Web search should be using internal Visual Studio Web browser or an external Web browser.</value>
