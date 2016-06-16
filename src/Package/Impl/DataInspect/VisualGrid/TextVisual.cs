@@ -60,6 +60,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Size Size { get; set; }
 
+        public Rect CellBounds { get; set; }
+
         private bool _drawValid = false;
         public bool Draw() {
             if (_drawValid) {
