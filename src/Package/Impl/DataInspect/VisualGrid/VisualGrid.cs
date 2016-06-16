@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     internal sealed class VisualGrid : FrameworkElement {
         private readonly GridLineVisual _gridLine;
         private readonly VisualCollection _visualChildren;
-        private readonly SortOrder _sortOrder = new SortOrder();
+        private SortOrder _sortOrder = new SortOrder();
         private GridRange _dataViewport;
         private Grid<TextVisual> _visualGrid;
 
@@ -106,7 +106,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public Brush Foreground { get; set; } = Brushes.Black;
         public Brush Background { get; set; } = Brushes.Transparent;
 
-        public void Clear() => _visualChildren.Clear();
+        public void Clear() {
+            _visualChildren.Clear();
+            _sortOrder = new SortOrder();
+        }
 
         public ISortOrder SortOrder => _sortOrder;
 

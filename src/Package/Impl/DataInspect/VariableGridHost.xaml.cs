@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -54,20 +55,24 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         internal void SetEvaluation(VariableViewModel wrapper) {
             VsAppShell.Current.AssertIsOnMainThread();
 
+            // Is the variable gone?
             if (wrapper.TypeName == null) {
-                // the variable should have been removed
                 SetError(string.Format(CultureInfo.InvariantCulture, Package.Resources.VariableGrid_Missing, wrapper.Expression));
-            } else if (_evaluation == null
-                || (wrapper.Dimensions.Count == 2 && (wrapper.Dimensions[0] != _evaluation.Dimensions[0] || wrapper.Dimensions[1] != _evaluation.Dimensions[1]))) {
-                // matrix size changed. Reset the evaluation
-                ClearError();
-                VariableGrid.Initialize(new GridDataProvider(wrapper));
-                _evaluation = wrapper;
-            } else {
-                ClearError();
-                // size stays same. Refresh
-                VariableGrid.Refresh();
+                _evaluation = null;
+                return;
             }
+
+            ClearError();
+
+            // Does it have the same size and shape? If so, can update in-place (without losing scrolling etc).
+            if (_evaluation?.Dimensions.SequenceEqual(wrapper.Dimensions) == true) {
+                VariableGrid.Refresh();
+                return;
+            }
+
+            // Otherwise, need to refresh the whole thing from scratch.
+            VariableGrid.Initialize(new GridDataProvider(wrapper));
+            _evaluation = wrapper;
         }
 
         private void SetError(string text) {
