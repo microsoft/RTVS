@@ -1,9 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Diagnostics;
+using System.Text;
 using System.Web;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -32,11 +36,26 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
-            var encoded = HttpUtility.HtmlEncode(item);
-            var search = "http://" + Invariant($"www.bing.com/search?q={encoded}+R+site%3A{RToolsSettings.Current.WebHelpSearchString}");
-            var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
-            IVsWindowFrame frame;
-            browser.Navigate(search, (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
+            var tokens = RToolsSettings.Current.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            bool siteSet = false;
+
+            var sb = new StringBuilder("http://" + Invariant($"www.bing.com/search?q={HttpUtility.HtmlEncode(item)}"));
+            foreach (var t in tokens) {
+                sb.Append('+');
+                if (!siteSet && t.IndexOf('.') > 0) {
+                    sb.Append("site:");
+                    siteSet = true;
+                }
+                sb.Append(t);
+            }
+
+            if (RToolsSettings.Current.WebHelpSearchBrowserType == WebHelpSearchBrowserType.Internal) {
+                IVsWindowFrame frame;
+                var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+                browser.Navigate(sb.ToString(), (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
+            } else {
+                Process.Start(sb.ToString());
+            }
         }
     }
 }

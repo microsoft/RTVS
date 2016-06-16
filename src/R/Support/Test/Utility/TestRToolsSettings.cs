@@ -120,7 +120,12 @@ namespace Microsoft.R.Support.Test.Utility {
         }
 
         public string WebHelpSearchString {
-            get { return "stackoverflow.com"; }
+            get { return "R stackoverflow.com"; }
+            set { }
+        }
+
+        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
+            get { return WebHelpSearchBrowserType.Internal; }
             set { }
         }
 

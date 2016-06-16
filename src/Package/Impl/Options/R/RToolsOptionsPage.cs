@@ -153,6 +153,16 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
             set { RToolsSettings.Current.WebHelpSearchString = value; }
         }
 
+        [LocCategory("Settings_HelpCategory")]
+        [CustomLocDisplayName("Settings_WebHelpSearchBrowserType")]
+        [LocDescription("Settings_WebHelpSearchBrowserType_Description")]
+        [TypeConverter(typeof(WebHelpSearchBrowserTypeConverter))]
+        [DefaultValue(WebHelpSearchBrowserType.Internal)]
+        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
+            get { return RToolsSettings.Current.WebHelpSearchBrowserType; }
+            set { RToolsSettings.Current.WebHelpSearchBrowserType = value; }
+        }
+
         [LocCategory("Settings_GeneralCategory")]
         [CustomLocDisplayName("Settings_SurveyNewsCheck")]
         [LocDescription("Settings_SurveyNewsCheck_Description")]

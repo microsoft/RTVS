@@ -499,10 +499,10 @@
     <value>External</value>
   </data>
   <data name="Settings_HelpBrowser" xml:space="preserve">
-    <value>Help Browser</value>
+    <value>R Help Browser</value>
   </data>
   <data name="Settings_HelpBrowser_Description" xml:space="preserve">
-    <value>Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser.</value>
+    <value>Determines if R Tools should always be using external Web browser or try and send R Help pages to the R Help tool window. This setting does not affect F1 Web search.</value>
   </data>
   <data name="VariableExplorer_Truncated" xml:space="preserve">
     <value>[truncated]</value>
@@ -759,6 +759,18 @@ Additional information:
     <value>F1 Web search string</value>
   </data>
   <data name="Settings_WebHelpSearchString_Description" xml:space="preserve">
-    <value>String to pass to the browser when perfoming Web searching item under the caret. Final string looks like "[item] [this_string]</value>
+    <value>String to pass to the browser when perfoming Web searching for the item under caret. Current item is added to the query as a primary search term.</value>
+  </data>
+  <data name="Settings_WebHelpSearchBrowserType" xml:space="preserve">
+    <value>F1 Web search browser</value>
+  </data>
+  <data name="Settings_WebHelpSearchBrowserType_Description" xml:space="preserve">
+    <value>Defines if F1 Web search should be using internal Visual Studio Web browser or an external Web browser.</value>
+  </data>
+  <data name="WebHelpSearchBrowserType_External" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="WebHelpSearchBrowserType_Internal" xml:space="preserve">
+    <value>Internal</value>
   </data>
 </root>
