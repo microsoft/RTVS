@@ -25,6 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private bool _replLostFocus;
         private bool _disposed;
+        private bool _debuggerJustEnteredBreakMode;
 
         public ICoreShell Shell { get; }
         public IRHistory History { get; }
@@ -60,6 +61,17 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
             RSession.Disconnected += RSessionDisconnected;
+
+            _debuggerModeTracker.EnterBreakMode += DebuggerEnteredBreakMode;
+            _debuggerModeTracker.LeaveBreakMode += DebuggerLeftBreakMode;
+        }
+
+        private void DebuggerEnteredBreakMode(object sender, EventArgs e) {
+            _debuggerJustEnteredBreakMode = true;
+        }
+
+        private void DebuggerLeftBreakMode(object sender, EventArgs e) {
+            _debuggerJustEnteredBreakMode = false;
         }
 
         private void LastActiveTextViewChanged(object sender, ActiveTextViewChangedEventArgs e) {
@@ -80,13 +92,16 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
 
         private void CheckPossibleBreakModeFocusChange() {
 
-            if (ActiveWindow != null && _debuggerModeTracker.IsEnteredBreakMode && _replLostFocus) {
+            if (ActiveWindow != null && _debuggerJustEnteredBreakMode && _replLostFocus) {
                 // When debugger hits a breakpoint it typically activates the editor.
                 // This is not desirable when focus was in the interactive window
                 // i.e. user worked in the REPL and not in the editor. Pull 
                 // the focus back here. 
                 _replLostFocus = false;
                 ActiveWindow.Container.Show(true);
+
+                // Reset the flag, so that further focus changes are not affected until the next debugger break occurs.
+                _debuggerJustEnteredBreakMode = false;
             }
         }
 
@@ -126,6 +141,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
             }
             _disposed = true;
 
+            _debuggerModeTracker.EnterBreakMode -= DebuggerEnteredBreakMode;
+            _debuggerModeTracker.LeaveBreakMode -= DebuggerLeftBreakMode;
             _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged;
             RSession.Disconnected -= RSessionDisconnected;
             Operations.Dispose();
