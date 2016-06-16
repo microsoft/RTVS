@@ -156,14 +156,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// <summary>
         /// Deletes variable represented by this mode
         /// </summary>
-        public async Task DeleteAsync() {
+        public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
                 var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
                 var session = sessionProvider.GetInteractiveWindowRSession();
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
-                        await e.RespondAsync(Invariant($"rm({Name})"));
+                        string rmText = string.IsNullOrWhiteSpace(envExpr) ? Invariant($"rm({Name})") : Invariant($"rm({Name}, envir = {envExpr})");
+                        await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
                     VsAppShell.Current.ShowErrorMessage(
