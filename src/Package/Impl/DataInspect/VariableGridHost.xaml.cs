@@ -31,6 +31,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _rSession.Mutated += RSession_Mutated;
         }
 
+        public void CleanUp() {
+            _rSession.Mutated -= RSession_Mutated;
+        }
+
         private void RSession_Mutated(object sender, System.EventArgs e) {
             if (_evaluation != null) {
                 EvaluateAsync().DoNotWait();
