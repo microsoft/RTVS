@@ -217,8 +217,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         }
 
         private Task DeleteCurrentVariableAsync() {
+            var env = EnvironmentComboBox.SelectedItem as REnvironment;
             var model = GetCurrentSelectedModel();
-            return model != null ? model.DeleteAsync() : Task.CompletedTask;
+            return model != null ? model.DeleteAsync(env?.EnvironmentExpression) : Task.CompletedTask;
         }
 
         #region Icons
