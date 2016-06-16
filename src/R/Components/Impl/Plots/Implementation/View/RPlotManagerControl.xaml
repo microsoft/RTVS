@@ -10,6 +10,15 @@
     <Grid>
         <TextBlock Visibility="{Binding Path=ShowWatermark, Converter={x:Static rwpf:Converters.FalseIsHidden}}" Foreground="DarkGray" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">Run plotting command in R Interactive Window</TextBlock>
         <TextBlock Visibility="{Binding Path=ShowError, Converter={x:Static rwpf:Converters.FalseIsHidden}}" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap">Error rendering plot</TextBlock>
-        <Image x:Name="plotImage" Cursor="{Binding Path=LocatorMode, Converter={x:Static rwpf:Converters.TrueIsCrossCursor}}" Source="{Binding Path=PlotImage}" Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" MouseLeftButtonUp="Image_MouseLeftButtonUp"></Image>
+        <Image x:Name="plotImage" Cursor="{Binding Path=LocatorMode, Converter={x:Static rwpf:Converters.TrueIsCrossCursor}}" Source="{Binding Path=PlotImage}" Visibility="{Binding Path=PlotImage, Converter={x:Static rwpf:Converters.NullIsCollapsed}}" MouseLeftButtonUp="Image_MouseLeftButtonUp">
+            <Image.ToolTip>
+                <TextBlock>
+                    <Run Text="{Binding Path=PlotImage.PixelWidth, Mode=OneWay}"/>
+                    <Run Text=" x "/>
+                    <Run Text="{Binding Path=PlotImage.PixelHeight, Mode=OneWay}"/>
+                    <Run Text=" px"/>
+                </TextBlock>
+            </Image.ToolTip>
+        </Image>
     </Grid>
 </UserControl>
