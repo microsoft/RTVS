@@ -10,7 +10,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     public abstract class ViewerBase {
         protected IDataObjectEvaluator Evaluator { get; }
 
-        public ViewerBase(IDataObjectEvaluator evaluator) {
+        protected ViewerBase(IDataObjectEvaluator evaluator) {
              Evaluator = evaluator;
         }
 

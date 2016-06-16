@@ -18,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
     [ContentType(RHistoryContentTypeDefinition.ContentType)]
     internal class VsRHistoryCommandFactory : ICommandFactory {
         private readonly IRHistoryProvider _historyProvider;
-        private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
         private readonly IContentTypeRegistryService _contentTypeRegistry;
         private readonly IActiveWpfTextViewTracker _textViewTracker;
 
@@ -29,33 +29,34 @@ namespace Microsoft.VisualStudio.R.Package.Commands.RHistory {
             IActiveWpfTextViewTracker textViewTracker) {
 
             _historyProvider = historyProvider;
-            _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+            _interactiveWorkflowProvider = interactiveWorkflowProvider;
             _contentTypeRegistry = contentTypeRegistry;
             _textViewTracker = textViewTracker;
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, _interactiveWorkflow);
-            var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, _interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
+            var interactiveWorkflow = _interactiveWorkflowProvider.GetOrCreate();
+            var sendToReplCommand = new SendHistoryToReplCommand(textView, _historyProvider, interactiveWorkflow);
+            var sendToSourceCommand = new SendHistoryToSourceCommand(textView, _historyProvider, interactiveWorkflow, _contentTypeRegistry, _textViewTracker);
             var appShell = VsAppShell.Current;
 
             return new ICommand[] {
-                new LoadHistoryCommand(appShell, textView, _historyProvider, _interactiveWorkflow),
-                new SaveHistoryCommand(appShell, textView, _historyProvider, _interactiveWorkflow),
+                new LoadHistoryCommand(appShell, textView, _historyProvider, interactiveWorkflow),
+                new SaveHistoryCommand(appShell, textView, _historyProvider, interactiveWorkflow),
                 sendToReplCommand,
                 sendToSourceCommand,
-                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, _interactiveWorkflow),
-                new DeleteAllHistoryEntriesCommand(textView, _historyProvider, _interactiveWorkflow),
+                new DeleteSelectedHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
+                new DeleteAllHistoryEntriesCommand(textView, _historyProvider, interactiveWorkflow),
                 new HistoryWindowVsStd2KCmdIdReturnCommand(textView, sendToReplCommand, sendToSourceCommand),
-                new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider, _interactiveWorkflow),
+                new HistoryWindowVsStd97CmdIdSelectAllCommand(textView, _historyProvider, interactiveWorkflow),
                 new HistoryWindowVsStd2KCmdIdUp(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdDown(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdHome(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdEnd(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageUp(textView, _historyProvider), 
                 new HistoryWindowVsStd2KCmdIdPageDown(textView, _historyProvider), 
-                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, _interactiveWorkflow, RToolsSettings.Current), 
-                new CopySelectedHistoryCommand(textView, _historyProvider, _interactiveWorkflow)
+                new ToggleMultilineHistorySelectionCommand(textView, _historyProvider, interactiveWorkflow, RToolsSettings.Current), 
+                new CopySelectedHistoryCommand(textView, _historyProvider, interactiveWorkflow)
             };
         }
     }

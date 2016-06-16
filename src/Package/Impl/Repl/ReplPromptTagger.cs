@@ -19,23 +19,27 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     [ContentType(PredefinedInteractiveContentTypes.InteractiveContentTypeName)]
     [TagType(typeof(ClassificationTag))]
     class ReplPromptTagger : IViewTaggerProvider {
-        private readonly ClassificationTag _tag;
+        private readonly IClassificationTypeRegistryService _classificationTypeRegistryService;
+        private readonly Lazy<ClassificationTag> _tagLazy;
 
         [ImportingConstructor]
         public ReplPromptTagger(IClassificationTypeRegistryService classificationTypeRegistryService) {
-            var classificationType = classificationTypeRegistryService.GetClassificationType(ReplClassificationTypes.ReplPromptClassification);
-            _tag = new ClassificationTag(classificationType);
+            _classificationTypeRegistryService = classificationTypeRegistryService;
+            _tagLazy = new Lazy<ClassificationTag>(() => {
+                var classificationType = _classificationTypeRegistryService.GetClassificationType(ReplClassificationTypes.ReplPromptClassification);
+                return new ClassificationTag(classificationType);
+            });
         }
 
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag {
-            return new Tagger(textView, _tag) as ITagger<T>;
+            return new Tagger(textView, _tagLazy.Value) as ITagger<T>;
         }
 
         class Tagger : ITagger<ClassificationTag> {
             private readonly ITextView _view;
             private readonly ClassificationTag _tag;
-            private static readonly char[] _trimChars = new[] { ' ' };
+            private static readonly char[] _trimChars = { ' ' };
 
             public Tagger(ITextView view, ClassificationTag tag) {
                 _view = view;

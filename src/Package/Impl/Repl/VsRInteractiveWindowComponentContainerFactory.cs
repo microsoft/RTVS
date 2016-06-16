@@ -18,20 +18,21 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal class VsRInteractiveWindowComponentContainerFactory : IInteractiveWindowComponentContainerFactory {
-        private readonly IContentType _contentType;
         private readonly Lazy<IVsInteractiveWindowFactory> _vsInteractiveWindowFactoryLazy;
+        private readonly IContentTypeRegistryService _contentTypeRegistryService;
 
         [ImportingConstructor]
         public VsRInteractiveWindowComponentContainerFactory(Lazy<IVsInteractiveWindowFactory> vsInteractiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService) {
             _vsInteractiveWindowFactoryLazy = vsInteractiveWindowFactory;
-            _contentType = contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
+            _contentTypeRegistryService = contentTypeRegistryService;
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
             VsAppShell.Current.AssertIsOnMainThread();
 
             var vsWindow = _vsInteractiveWindowFactoryLazy.Value.Create(RGuidList.ReplInteractiveWindowProviderGuid, instanceId, Resources.ReplWindowName, evaluator);
-            vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, _contentType);
+            var contentType = _contentTypeRegistryService.GetContentType(RContentTypeDefinition.ContentType);
+            vsWindow.SetLanguage(RGuidList.RLanguageServiceGuid, contentType);
 
             var toolWindow = (ToolWindowPane) vsWindow;
             var frame = (IVsWindowFrame)toolWindow.Frame;

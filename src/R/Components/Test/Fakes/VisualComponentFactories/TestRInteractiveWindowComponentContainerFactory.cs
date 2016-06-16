@@ -12,20 +12,21 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal sealed class TestRInteractiveWindowComponentContainerFactory : ContainerFactoryBase<IInteractiveWindowVisualComponent>, IInteractiveWindowComponentContainerFactory {
-        private readonly IContentType _contentType;
+        private readonly IContentTypeRegistryService _contentTypeRegistryService;
         private IInteractiveWindowFactoryService InteractiveWindowFactory { get; }
 
         [ImportingConstructor]
         public TestRInteractiveWindowComponentContainerFactory(IInteractiveWindowFactoryService interactiveWindowFactory, IContentTypeRegistryService contentTypeRegistryService) {
+            _contentTypeRegistryService = contentTypeRegistryService;
             InteractiveWindowFactory = interactiveWindowFactory;
-            _contentType = contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
         }
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
             return GetOrCreate(instanceId, container => {
                 var window = InteractiveWindowFactory.CreateWindow(evaluator);
-                window.Properties[typeof(IContentType)] = _contentType;
-                window.CurrentLanguageBuffer?.ChangeContentType(_contentType, null);
+                var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
+                window.Properties[typeof(IContentType)] = contentType;
+                window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
                 window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
 
                 return new RInteractiveWindowVisualComponent(window, container);

@@ -11,7 +11,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell;
 using Task = System.Threading.Tasks.Task;
@@ -24,16 +23,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class OpenRDataCommandGroupHandler : IAsyncCommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly long[] _commandIds;
-        private readonly IRSession _session;
+        private readonly IRSessionProvider _sessionProvider;
 
         public OpenRDataCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider, params long[] commandIds) {
             _unconfiguredProject = unconfiguredProject;
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            _sessionProvider = sessionProvider;
             _commandIds = commandIds;
         }
 
         public Task<CommandStatusResult> GetCommandStatusAsync(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus status) {
-            if (_session.IsHostRunning && _commandIds.Contains(commandId)) {
+            var session = _sessionProvider.GetInteractiveWindowRSession();
+            if (session.IsHostRunning && _commandIds.Contains(commandId)) {
                 if (nodes.Any(IsRData)) {
                     status |= CommandStatus.Supported | CommandStatus.Enabled;
                     return Task.FromResult(new CommandStatusResult(true, commandText, status));
@@ -64,7 +64,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                 return true;
             }
 
-            using (var evaluation = await _session.BeginEvaluationAsync()) {
+            var session = _sessionProvider.GetInteractiveWindowRSession();
+            using (var evaluation = await session.BeginEvaluationAsync()) {
                 try {
                     await evaluation.LoadWorkspaceAsync(rDataNode.FilePath);
                 } catch (RException ex) {
