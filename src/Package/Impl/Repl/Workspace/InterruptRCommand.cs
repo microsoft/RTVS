@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             var window = _interactiveWorkflow.ActiveWindow;
             if (window != null) {
                 Visible = true;
-                Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsEnteredBreakMode;
+                Enabled = _session.IsHostRunning && _enabled && !_debuggerModeTracker.IsInBreakMode;
             } else {
                 Visible = false;
                 Enabled = false;
