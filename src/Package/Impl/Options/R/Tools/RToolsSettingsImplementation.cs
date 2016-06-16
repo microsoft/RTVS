@@ -104,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string SurveyNewsFeedUrl { get; set; } = SurveyNewsUrls.Feed;
         public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
         public bool EvaluateActiveBindings { get; set; } = true;
-        public string WebHelpSearchString { get; set; } = "R stackoverflow.com";
+        public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
         public WebHelpSearchBrowserType WebHelpSearchBrowserType { get; set; } = WebHelpSearchBrowserType.Internal;
 
         public RToolsSettingsImplementation() {

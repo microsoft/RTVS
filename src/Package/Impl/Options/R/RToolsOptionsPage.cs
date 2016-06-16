@@ -147,7 +147,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_HelpCategory")]
         [CustomLocDisplayName("Settings_WebHelpSearchString")]
         [LocDescription("Settings_WebHelpSearchString_Description")]
-        [DefaultValue("R stackoverflow.com")]
+        [DefaultValue("R site:stackoverflow.com")]
         public string WebHelpSearchString {
             get { return RToolsSettings.Current.WebHelpSearchString; }
             set { RToolsSettings.Current.WebHelpSearchString = value; }
