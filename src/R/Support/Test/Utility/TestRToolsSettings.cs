@@ -119,8 +119,13 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public string HelpSearchSite {
-            get { return "stackoverflow.com"; }
+        public string WebHelpSearchString {
+            get { return "R site:stackoverflow.com"; }
+            set { }
+        }
+
+        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
+            get { return WebHelpSearchBrowserType.Internal; }
             set { }
         }
 

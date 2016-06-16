@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Web;
+using System;
+using System.Diagnostics;
+using System.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -32,11 +35,21 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
-            var encoded = HttpUtility.HtmlEncode(item);
-            var search = "http://" + Invariant($"www.bing.com/search?q={encoded}+R+site%3A{RToolsSettings.Current.HelpSearchSite}");
-            var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
-            IVsWindowFrame frame;
-            browser.Navigate(search, (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
+            var tokens = RToolsSettings.Current.WebHelpSearchString.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+            var sb = new StringBuilder("http://" + Invariant($"www.bing.com/search?q={Uri.EscapeUriString(item)}"));
+            foreach (var t in tokens) {
+                sb.Append('+');
+                sb.Append(Uri.EscapeUriString(t));
+            }
+
+            if (RToolsSettings.Current.WebHelpSearchBrowserType == WebHelpSearchBrowserType.Internal) {
+                IVsWindowFrame frame;
+                var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+                browser.Navigate(sb.ToString(), (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
+            } else {
+                Process.Start(sb.ToString());
+            }
         }
     }
 }

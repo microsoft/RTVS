@@ -145,12 +145,22 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory("Settings_HelpCategory")]
-        [CustomLocDisplayName("Settings_HelpSearchSite")]
-        [LocDescription("Settings_HelpSearchSite_Description")]
-        [DefaultValue("stackoverflow.com")]
-        public string HelpSearchSite {
-            get { return RToolsSettings.Current.HelpSearchSite; }
-            set { RToolsSettings.Current.HelpSearchSite = value; }
+        [CustomLocDisplayName("Settings_WebHelpSearchString")]
+        [LocDescription("Settings_WebHelpSearchString_Description")]
+        [DefaultValue("R site:stackoverflow.com")]
+        public string WebHelpSearchString {
+            get { return RToolsSettings.Current.WebHelpSearchString; }
+            set { RToolsSettings.Current.WebHelpSearchString = value; }
+        }
+
+        [LocCategory("Settings_HelpCategory")]
+        [CustomLocDisplayName("Settings_WebHelpSearchBrowserType")]
+        [LocDescription("Settings_WebHelpSearchBrowserType_Description")]
+        [TypeConverter(typeof(WebHelpSearchBrowserTypeConverter))]
+        [DefaultValue(WebHelpSearchBrowserType.Internal)]
+        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
+            get { return RToolsSettings.Current.WebHelpSearchBrowserType; }
+            set { RToolsSettings.Current.WebHelpSearchBrowserType = value; }
         }
 
         [LocCategory("Settings_GeneralCategory")]

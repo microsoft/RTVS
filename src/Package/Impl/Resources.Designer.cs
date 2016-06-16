@@ -1299,7 +1299,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Help Browser.
+        ///   Looks up a localized string similar to R Help Browser.
         /// </summary>
         public static string Settings_HelpBrowser {
             get {
@@ -1308,7 +1308,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Determines if R Tools should always be using external Web browser or try and send Help pages to the Help window and other Web requests to the external default Web browser..
+        ///   Looks up a localized string similar to Determines if R Tools should always be using external Web browser or try and send R Help pages to the R Help tool window. This setting does not affect F1 Web search..
         /// </summary>
         public static string Settings_HelpBrowser_Description {
             get {
@@ -1322,24 +1322,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_HelpCategory {
             get {
                 return ResourceManager.GetString("Settings_HelpCategory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Site to search.
-        /// </summary>
-        public static string Settings_HelpSearchSite {
-            get {
-                return ResourceManager.GetString("Settings_HelpSearchSite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Site to search for help on selected item(s).
-        /// </summary>
-        public static string Settings_HelpSearchSite_Description {
-            get {
-                return ResourceManager.GetString("Settings_HelpSearchSite_Description", resourceCulture);
             }
         }
         
@@ -1686,6 +1668,42 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to F1 Web browser.
+        /// </summary>
+        public static string Settings_WebHelpSearchBrowserType {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchBrowserType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines if F1 Web search should be using internal Visual Studio Web browser or an external Web browser..
+        /// </summary>
+        public static string Settings_WebHelpSearchBrowserType_Description {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchBrowserType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to F1 Web search string.
+        /// </summary>
+        public static string Settings_WebHelpSearchString {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String to append to the F1 Web search query after the search item..
+        /// </summary>
+        public static string Settings_WebHelpSearchString_Description {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchString_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Workspace.
         /// </summary>
         public static string Settings_WorkspaceCategory {
@@ -1916,6 +1934,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Warning_UncPath {
             get {
                 return ResourceManager.GetString("Warning_UncPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External.
+        /// </summary>
+        public static string WebHelpSearchBrowserType_External {
+            get {
+                return ResourceManager.GetString("WebHelpSearchBrowserType_External", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal.
+        /// </summary>
+        public static string WebHelpSearchBrowserType_Internal {
+            get {
+                return ResourceManager.GetString("WebHelpSearchBrowserType_Internal", resourceCulture);
             }
         }
         
