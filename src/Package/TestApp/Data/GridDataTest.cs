@@ -211,6 +211,15 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
 
         [Test]
         [Category.R.DataGrid]
+        public Task MatrixCharSortedGrid() => Test("matrix(c('a', 'b', 'c', 1, 1, 2), 3, 2)", 1, 1, new[,] {
+            { null,     "[,1]",     "[,2]" },
+            { "[1,]",   "c",        "2" },
+            { "[2,]",   "b",        "1" },
+            { "[3,]",   "a",        "1" },
+        }, sort: new[] { -2, -1 });
+
+        [Test]
+        [Category.R.DataGrid]
         public Task VectorGrid() => Test("1:10", 2, 1, new[,] {
             { null,     "[]" },
             { "[2]",    "2"  },
@@ -253,5 +262,16 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
             { "[3]",    "8"  },
             { "[4]",    "7"  },
         }, sort: new[] { -1 });
+
+
+        [Test]
+        [Category.R.DataGrid]
+        public Task GridUnsortableColumn() => Test("matrix(list(2, 'a', 1, 20, 10, 20), 3, 2)", 1, 1, new[,] {
+            { null,     "[,1]",     "[,2]" },
+            { "[1,]",   "2",        "20" },
+            { "[2,]",   "a",        "10" },
+            { "[3,]",   "1",        "20" },
+        }, sort: new[] { 1, 2 });
+
     }
 }

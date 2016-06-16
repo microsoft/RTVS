@@ -59,21 +59,16 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// where minus tells R that the column sort order is descending rather than ascending.
         /// </remarks>
         public string GetRowSelector() {
-            var sb = new StringBuilder("function(x) order(");
+            var sb = new StringBuilder("function(x) rtvs:::grid_order(x");
 
-            bool first = true;
             foreach (var s in _sortOrderList) {
-                if (!first) {
-                    sb.Append(", ");
-                } else {
-                    first = false;
-                }
+                sb.Append(", ");
 
                 if (s.Descending) {
                     sb.Append('-');
                 }
 
-                sb.Append(Invariant($"x[,{s.ColumnIndex + 1}]"));
+                sb.Append(s.ColumnIndex + 1);
             }
 
             sb.Append(")");

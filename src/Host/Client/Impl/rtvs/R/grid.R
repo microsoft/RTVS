@@ -4,6 +4,30 @@
 grid_header_format <- function(x)
 	if (is.na(x)) NULL else format(x)
 
+# Given a 2D data object and indices of columns, returns a vector of row indices indicating the appropriate order
+# of rows if the data is sorted by the columns specified. A positive column index indicates ascending order, and
+# a positive index indicates descending order. If a column cannot be sorted (e.g. because it contains values of
+# different types, or otherwise incomparable), it is ignored.
+grid_order <- function(x, ...) {
+	col_idxs <- c(...)
+
+	# order() will do the heavy lifting, but we need to prepare the arguments for it.
+	# Use xtfrm() to get a vector of integers that will sort in the same order as the original data -
+	# this allows us to negate those integers to obtain descending order.
+	# If the column is a list (and hence can contain heterogenous values that cannot be meaningfully
+	# compared), xtfrm will raise an error; handle that by producing a vector of zeroes, which will
+	# make that column a no-op for order().
+	args <- list()
+	for (col_idx in col_idxs) {
+		col <- x[, abs(col_idx)]
+		args[[length(args) + 1]] <- tryCatch(
+			xtfrm(col) * sign(col_idx),
+			error = function(e) replicate(length(col), 0))
+	}
+
+	do.call(order, args)
+}
+
 grid_data <- function(x, rows, cols, row_selector) {
   # If it's a 1D vector, turn it into a single-column 2D matrix, then process as such.
   d <- dim(x);

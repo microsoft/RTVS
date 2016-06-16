@@ -178,8 +178,14 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     Debug.Assert(r == visual.Row && c == visual.Column);
                     Debug.Assert(points.Width[c] >= visual.Size.Width && points.Height[r] >= visual.Size.Height);
 
-                    double x = points.xPosition[c] + (alignRight ? (points.Width[c] - visual.Size.Width - visual.Margin - GridLineThickness) : 0.0);
-                    double y = points.yPosition[r];
+                    double cellX = points.xPosition[c];
+                    double cellY = points.yPosition[r];
+                    double cellW = points.Width[c];
+                    double cellH = points.Height[r];
+                    visual.CellBounds = new Rect(cellX, cellY, cellW, cellH);
+
+                    double x = cellX + (alignRight ? (cellW - visual.Size.Width - visual.Margin - GridLineThickness) : 0.0);
+                    double y = cellY;
 
                     var transform = visual.Transform as TranslateTransform;
                     if (transform == null) {
@@ -231,12 +237,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var pt = e.GetPosition(this);
                 foreach (var viz in _visualChildren) {
                     var v = viz as HeaderTextVisual;
-                    if (v != null) {
-                        Rect rc = new Rect(v.X, v.Y, v.Size.Width, v.Size.Height);
-                        if (rc.Contains(pt)) {
-                            ToggleSort(v, Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
-                            break;
-                        }
+                    if (v?.CellBounds.Contains(pt) == true) {
+                        ToggleSort(v, Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
+                        break;
                     }
                 }
             }
