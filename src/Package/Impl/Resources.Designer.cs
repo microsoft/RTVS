@@ -1326,24 +1326,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Site to search.
-        /// </summary>
-        public static string Settings_HelpSearchSite {
-            get {
-                return ResourceManager.GetString("Settings_HelpSearchSite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Site to search for help on selected item(s).
-        /// </summary>
-        public static string Settings_HelpSearchSite_Description {
-            get {
-                return ResourceManager.GetString("Settings_HelpSearchSite_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to History.
         /// </summary>
         public static string Settings_HistoryCategory {
@@ -1682,6 +1664,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_TriggerOnTab_Description {
             get {
                 return ResourceManager.GetString("Settings_TriggerOnTab_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to F1 Web search string.
+        /// </summary>
+        public static string Settings_WebHelpSearchString {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String to pass to the browser when perfoming Web searching item under the caret. Final string looks like &quot;[item] [this_string].
+        /// </summary>
+        public static string Settings_WebHelpSearchString_Description {
+            get {
+                return ResourceManager.GetString("Settings_WebHelpSearchString_Description", resourceCulture);
             }
         }
         

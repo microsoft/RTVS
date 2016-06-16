@@ -145,12 +145,12 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         }
 
         [LocCategory("Settings_HelpCategory")]
-        [CustomLocDisplayName("Settings_HelpSearchSite")]
-        [LocDescription("Settings_HelpSearchSite_Description")]
-        [DefaultValue("stackoverflow.com")]
-        public string HelpSearchSite {
-            get { return RToolsSettings.Current.HelpSearchSite; }
-            set { RToolsSettings.Current.HelpSearchSite = value; }
+        [CustomLocDisplayName("Settings_WebHelpSearchString")]
+        [LocDescription("Settings_WebHelpSearchString_Description")]
+        [DefaultValue("R stackoverflow.com")]
+        public string WebHelpSearchString {
+            get { return RToolsSettings.Current.WebHelpSearchString; }
+            set { RToolsSettings.Current.WebHelpSearchString = value; }
         }
 
         [LocCategory("Settings_GeneralCategory")]

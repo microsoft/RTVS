@@ -119,7 +119,7 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public string HelpSearchSite {
+        public string WebHelpSearchString {
             get { return "stackoverflow.com"; }
             set { }
         }

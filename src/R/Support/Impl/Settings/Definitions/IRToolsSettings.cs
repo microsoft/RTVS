@@ -34,6 +34,6 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// <summary>
         /// Site to search in 'Search Web for'... commands
         /// </summary>
-        string HelpSearchSite { get; set; }
+        string WebHelpSearchString { get; set; }
     }
 }

@@ -33,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         protected override void Handle(string item) {
             // Bing: search?q=item+site%3Astackoverflow.com
             var encoded = HttpUtility.HtmlEncode(item);
-            var search = "http://" + Invariant($"www.bing.com/search?q={encoded}+R+site%3A{RToolsSettings.Current.HelpSearchSite}");
+            var search = "http://" + Invariant($"www.bing.com/search?q={encoded}+R+site%3A{RToolsSettings.Current.WebHelpSearchString}");
             var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
             IVsWindowFrame frame;
             browser.Navigate(search, (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
