@@ -415,8 +415,8 @@
     <Compile Include="SurveyNews\ISurveyNewsFeedClient.cs" />
     <Compile Include="SurveyNews\ISurveyNewsOptions.cs" />
     <Compile Include="SurveyNews\ISurveyNewsService.cs" />
-    <Compile Include="SurveyNews\ISurveyNewsBrowserLauncher.cs" />
-    <Compile Include="SurveyNews\SurveyNewsBrowserLauncher.cs" />
+    <Compile Include="Browsers\IWebBrowserServices.cs" />
+    <Compile Include="Browsers\WebBrowserServices.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeed.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedClient.cs" />
     <Compile Include="SurveyNews\SurveyNewsFeedException.cs" />

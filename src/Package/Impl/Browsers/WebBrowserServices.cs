@@ -9,9 +9,9 @@ using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace Microsoft.VisualStudio.R.Package.SurveyNews {
-    [Export(typeof(ISurveyNewsBrowserLauncher))]
-    internal class SurveyNewsBrowserLauncher : ISurveyNewsBrowserLauncher {
+namespace Microsoft.VisualStudio.R.Package.Browsers {
+    [Export(typeof(IWebBrowserServices))]
+    internal class WebBrowserServices : IWebBrowserServices {
         public void Navigate(string url) {
             OpenVsBrowser(url);
         }
@@ -20,17 +20,17 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
                     Navigate(url);
-                }, 100, typeof(SurveyNewsBrowserLauncher));
+                }, 100, typeof(WebBrowserServices));
             }
         }
 
-        private static void OpenExternalBrowser(string url) {
+        public void OpenExternalBrowser(string url) {
             var uri = new Uri(url);
             Process.Start(new ProcessStartInfo(uri.AbsoluteUri));
             return;
         }
 
-        private static void OpenVsBrowser(string url) {
+        public void OpenVsBrowser(string url) {
             VsAppShell.Current.DispatchOnUIThread(() => {
                 IVsWebBrowsingService web = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
                 if (web == null) {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Xunit;
 
@@ -298,7 +299,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             public DateTime SurveyNewsLastCheck { get; set; }
         }
 
-        private class MockSurveyNewsBrowserLauncher : ISurveyNewsBrowserLauncher {
+        private class MockSurveyNewsBrowserLauncher : IWebBrowserServices {
             public string NavigatedUrl { get; private set; }
 
             public void Navigate(string url) {
@@ -308,6 +309,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             public void NavigateOnIdle(string url) {
                 NavigatedUrl = url;
             }
+
+            public void OpenExternalBrowser(string url) { }
+            public void OpenVsBrowser(string url) { }
         }
     }
 }

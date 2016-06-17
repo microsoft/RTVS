@@ -8,20 +8,21 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
     [Export(typeof(ISurveyNewsService))]
     internal class SurveyNewsService : ISurveyNewsService {
-        private ISurveyNewsFeedClient _feedClient;
-        private ISurveyNewsOptions _options;
-        private ISurveyNewsBrowserLauncher _browserLauncher;
+        private readonly ISurveyNewsFeedClient _feedClient;
+        private readonly ISurveyNewsOptions _options;
+        private readonly IWebBrowserServices _browserServices;
 
         [ImportingConstructor]
-        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options, ISurveyNewsBrowserLauncher browserLauncher) {
+        public SurveyNewsService(ISurveyNewsFeedClient feedClient, ISurveyNewsOptions options, IWebBrowserServices browserServices) {
             _feedClient = feedClient;
             _options = options;
-            _browserLauncher = browserLauncher;
+            _browserServices = browserServices;
         }
 
         public async Task CheckSurveyNewsAsync(bool forceCheck) {
@@ -91,9 +92,9 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
             try {
                 if (!string.IsNullOrEmpty(url)) {
                     if (forceCheck) {
-                        _browserLauncher.Navigate(url);
+                        _browserServices.Navigate(url);
                     } else {
-                        _browserLauncher.NavigateOnIdle(url);
+                        _browserServices.NavigateOnIdle(url);
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {

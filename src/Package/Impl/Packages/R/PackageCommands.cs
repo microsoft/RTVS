@@ -8,6 +8,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Plots.Implementation.Commands;
 using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.DataInspect.Commands;
 using Microsoft.VisualStudio.R.Package.Documentation;
@@ -41,6 +42,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             var debuggerModeTracker = exportProvider.GetExportedValue<IDebuggerModeTracker>();
             var contentTypeRegistryService = exportProvider.GetExportedValue<IContentTypeRegistryService>();
             var pss = exportProvider.GetExportedValue<IProjectSystemServices>();
+            var wbs = exportProvider.GetExportedValue<IWebBrowserServices>();
 
             return new List<MenuCommand> {
                 new GoToOptionsCommand(),
@@ -105,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ShowVariableWindowCommand(),
                 new ShowHelpWindowCommand(),
                 new ShowHelpOnCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
-                new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker),
+                new SearchWebForCurrentCommand(interactiveWorkflow, textViewTracker, replTracker, wbs),
                 new ShowHistoryWindowCommand(),
                 new GotoEditorWindowCommand(textViewTracker, contentTypeRegistryService),
                 new GotoSolutionExplorerCommand(),

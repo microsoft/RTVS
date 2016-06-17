@@ -2,16 +2,15 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Text;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Repl;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
-using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
@@ -25,12 +24,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
     /// with OLECMDTEXTF_NAME requesting changing names.
     /// </remarks>
     internal sealed class SearchWebForCurrentCommand : HelpOnCurrentCommandBase {
+        private readonly IWebBrowserServices _webBrowserServices;
+
         public SearchWebForCurrentCommand(
             IRInteractiveWorkflow workflow,
             IActiveWpfTextViewTracker textViewTracker,
-            IActiveRInteractiveWindowTracker activeReplTracker) :
+            IActiveRInteractiveWindowTracker activeReplTracker,
+            IWebBrowserServices webBrowserServices) :
             base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdSearchWebForCurrent,
                 workflow, textViewTracker, activeReplTracker, Resources.SearchWebFor) {
+            _webBrowserServices = webBrowserServices;
         }
 
         protected override void Handle(string item) {
@@ -43,12 +46,12 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 sb.Append(Uri.EscapeUriString(t));
             }
 
+            var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+            var url = sb.ToString();
             if (RToolsSettings.Current.WebHelpSearchBrowserType == WebHelpSearchBrowserType.Internal) {
-                IVsWindowFrame frame;
-                var browser = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
-                browser.Navigate(sb.ToString(), (uint)__VSWBNAVIGATEFLAGS.VSNWB_WebURLOnly, out frame);
+                wbs.OpenVsBrowser(url);
             } else {
-                Process.Start(sb.ToString());
+                wbs.OpenExternalBrowser(url);
             }
         }
     }
