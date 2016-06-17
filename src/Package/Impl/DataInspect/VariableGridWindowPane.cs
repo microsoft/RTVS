@@ -24,5 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
             _gridHost.SetEvaluation(evaluation);
         }
+
+        protected override void OnClose() {
+            base.OnClose();
+            _gridHost.CleanUp();
+        }
     }
 }
