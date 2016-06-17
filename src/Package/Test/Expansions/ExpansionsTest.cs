@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
             TextBufferUtilities.AdaptersFactoryService = null;
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1962")]
+        [Test]
        public void ExpansionClientTest() {
             var textBuffer = new TextBufferMock("if", RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
@@ -74,7 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Package {
             client.IsCaretInsideSnippetFields().Should().BeFalse();
         }
 
-        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1962")]
+        [Test]
         public void ExpansionControllerTest() {
             var textBuffer = new TextBufferMock("if", RContentTypeDefinition.ContentType);
             var textView = new TextViewMock(textBuffer);
