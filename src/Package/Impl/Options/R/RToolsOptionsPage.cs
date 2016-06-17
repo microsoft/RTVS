@@ -167,7 +167,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_ShinyBrowserType")]
         [LocDescription("Settings_ShinyBrowserType_Description")]
         [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.Internal)]
+        [DefaultValue(BrowserType.External)]
         public BrowserType ShinyBrowserType {
             get { return RToolsSettings.Current.ShinyBrowserType; }
             set { RToolsSettings.Current.ShinyBrowserType = value; }
