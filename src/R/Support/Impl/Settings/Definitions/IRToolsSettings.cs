@@ -36,6 +36,7 @@ namespace Microsoft.R.Support.Settings.Definitions {
         /// </summary>
         string WebHelpSearchString { get; set; }
 
-        WebHelpSearchBrowserType WebHelpSearchBrowserType { get; set; }
+        BrowserType WebHelpSearchBrowserType { get; set; }
+        BrowserType ShinyBrowserType { get; set; }
     }
 }

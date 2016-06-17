@@ -21,6 +21,7 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using mshtml;
@@ -79,7 +80,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (RToolsSettings.Current.HelpBrowserType == HelpBrowserType.Automatic && IsHelpUrl(url)) {
                 NavigateTo(url);
             } else {
-                Process.Start(url);
+                var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+                wbs.OpenBrowser(WebBrowserRole.Shiny, url);
             }
         }
 
@@ -161,7 +163,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
                 e.Cancel = true;
-                Process.Start(url);
+                var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
+                wbs.OpenBrowser(WebBrowserRole.External, url);
             }
         }
 

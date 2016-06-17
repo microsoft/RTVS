@@ -105,7 +105,8 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string SurveyNewsIndexUrl { get; set; } = SurveyNewsUrls.Index;
         public bool EvaluateActiveBindings { get; set; } = true;
         public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
-        public WebHelpSearchBrowserType WebHelpSearchBrowserType { get; set; } = WebHelpSearchBrowserType.Internal;
+        public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
+        public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual

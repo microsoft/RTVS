@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;

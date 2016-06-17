@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
@@ -175,8 +177,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
 
         private async Task CheckSurveyNews(SurveyNewsFeed feed, SurveyNewsPolicy policy,
             DateTime lastChecked, bool forceCheck, string expectedNavigatedUrl, DateTime? expectedLastChecked) {
+            string navigatedUrl = null;
+            WebBrowserRole role = WebBrowserRole.Other;
+
             // Create the test objects
-            MockSurveyNewsBrowserLauncher browser = new MockSurveyNewsBrowserLauncher();
+            var browser = Substitute.For<IWebBrowserServices>();
+            browser.When(x => x.OpenBrowser(Arg.Any<WebBrowserRole>(), Arg.Any<string>(), Arg.Any<bool>())).Do(x => {
+                ((WebBrowserRole)x.Args()[0]).Should().Be(WebBrowserRole.News);
+                navigatedUrl = (string)x.Args()[1];
+            });
+
             var options = new MockSurveyNewsOptions(policy, lastChecked);
             var feedClient = new MockSurveyNewsFeedClient(feed);
 
@@ -185,7 +195,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             await service.CheckSurveyNewsAsync(forceCheck);
 
             // Check that we navigated to the right url (or didn't navigate at all)
-            browser.NavigatedUrl.Should().Be(expectedNavigatedUrl);
+            navigatedUrl.Should().Be(expectedNavigatedUrl);
 
             // Check that the last checked date has been updated (or not updated at all)
             if (expectedLastChecked.HasValue) {
@@ -296,18 +306,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
             public SurveyNewsPolicy SurveyNewsCheck { get; private set; }
 
             public DateTime SurveyNewsLastCheck { get; set; }
-        }
-
-        private class MockSurveyNewsBrowserLauncher : ISurveyNewsBrowserLauncher {
-            public string NavigatedUrl { get; private set; }
-
-            public void Navigate(string url) {
-                NavigatedUrl = url;
-            }
-
-            public void NavigateOnIdle(string url) {
-                NavigatedUrl = url;
-            }
         }
     }
 }
