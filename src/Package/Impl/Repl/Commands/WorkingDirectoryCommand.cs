@@ -16,6 +16,9 @@ using Microsoft.VisualStudio.R.Packages.R;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
+#if VS15
+using PathHelper = Microsoft.VisualStudio.ProjectSystem.PathHelper;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     public sealed class WorkingDirectoryCommand : Command, IDisposable {
