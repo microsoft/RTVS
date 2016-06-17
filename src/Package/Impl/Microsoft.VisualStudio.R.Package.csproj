@@ -345,7 +345,7 @@
     <Compile Include="Packages\Markdown\MdPackage.cs" />
     <Compile Include="Packages\Markdown\MdGuidList.cs" />
     <Compile Include="ProjectSystem\RMsBuildFileSystemFilter.cs" />
-    <Compile Include="ProjectSystem\RProjectFactory.cs" />
+    <Compile Include="ProjectSystem\RProjectFileGenerator.cs" />
     <Compile Include="Interop\CommandTargetToOleShim.cs" />
     <Compile Include="Interop\CommandTargetToOleShimVariantStacks.cs" />
     <Compile Include="Interop\ConnectionPoint.cs" />
@@ -946,6 +946,7 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>

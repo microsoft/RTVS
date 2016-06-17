@@ -58,6 +58,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
                         new XDefaultValueProperty("Configuration", "Debug"),
                         new XDefaultValueProperty("Platform", "AnyCPU")
                     ),
+                    CreateProjectSpecificPropertyGroup(cpsProjFileName),
                     CreateProjectUiSubcaption(),
                     new XProjElement("ProjectExtensions",
                         new XProjElement("VisualStudio",
@@ -73,6 +74,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             using (var writer = fileInfo.CreateText()) {
                 xProjDocument.Save(writer);
             }
+        }
+
+        protected virtual XPropertyGroup CreateProjectSpecificPropertyGroup(string cpsProjFileName) {
+            return null;
         }
 
         private XPropertyGroup CreateProjectUiSubcaption() {
