@@ -3,9 +3,6 @@
 
 namespace Microsoft.VisualStudio.R.Package.Browsers {
     internal interface IWebBrowserServices {
-        void Navigate(string url);
-        void NavigateOnIdle(string url);
-        void OpenExternalBrowser(string url);
-        void OpenVsBrowser(string url);
+        void OpenBrowser(WebBrowserRole role, string url, bool onIdle = false);
     }
 }

@@ -47,12 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
 
             var wbs = VsAppShell.Current.ExportProvider.GetExportedValue<IWebBrowserServices>();
-            var url = sb.ToString();
-            if (RToolsSettings.Current.WebHelpSearchBrowserType == WebHelpSearchBrowserType.Internal) {
-                wbs.OpenVsBrowser(url);
-            } else {
-                wbs.OpenExternalBrowser(url);
-            }
+            wbs.OpenBrowser(WebBrowserRole.Help, sb.ToString());
         }
     }
 }

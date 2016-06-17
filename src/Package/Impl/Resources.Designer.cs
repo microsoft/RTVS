@@ -115,6 +115,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to External.
+        /// </summary>
+        public static string BrowserType_External {
+            get {
+                return ResourceManager.GetString("BrowserType_External", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal.
+        /// </summary>
+        public static string BrowserType_Internal {
+            get {
+                return ResourceManager.GetString("BrowserType_Internal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Choose Directory.
         /// </summary>
         public static string ChooseDirectory {
@@ -734,6 +752,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string MicrosoftRHostStopping {
             get {
                 return ResourceManager.GetString("MicrosoftRHostStopping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Tools News.
+        /// </summary>
+        public static string NewsWindowTitle {
+            get {
+                return ResourceManager.GetString("NewsWindowTitle", resourceCulture);
             }
         }
         
@@ -1515,6 +1542,33 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shiny pages browser.
+        /// </summary>
+        public static string Settings_ShinyBrowserType {
+            get {
+                return ResourceManager.GetString("Settings_ShinyBrowserType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines if Shiny pages should be opened in internal Visual Studio browser or in the external Web browser..
+        /// </summary>
+        public static string Settings_ShinyBrowserType_Description {
+            get {
+                return ResourceManager.GetString("Settings_ShinyBrowserType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shiny.
+        /// </summary>
+        public static string Settings_ShinyCategory {
+            get {
+                return ResourceManager.GetString("Settings_ShinyCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Show dot-prefixed variables.
         /// </summary>
         public static string Settings_ShowDotPrefixedVariables {
@@ -1709,6 +1763,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_WorkspaceCategory {
             get {
                 return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R Shiny.
+        /// </summary>
+        public static string ShinyWindowTitle {
+            get {
+                return ResourceManager.GetString("ShinyWindowTitle", resourceCulture);
             }
         }
         
@@ -1938,20 +2001,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to External.
+        ///   Looks up a localized string similar to R Web Help.
         /// </summary>
-        public static string WebHelpSearchBrowserType_External {
+        public static string WebHelpWindowTitle {
             get {
-                return ResourceManager.GetString("WebHelpSearchBrowserType_External", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Internal.
-        /// </summary>
-        public static string WebHelpSearchBrowserType_Internal {
-            get {
-                return ResourceManager.GetString("WebHelpSearchBrowserType_Internal", resourceCulture);
+                return ResourceManager.GetString("WebHelpWindowTitle", resourceCulture);
             }
         }
         

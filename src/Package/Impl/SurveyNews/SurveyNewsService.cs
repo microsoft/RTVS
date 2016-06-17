@@ -9,6 +9,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Browsers;
+using Microsoft.VisualStudio.R.Package.Shell;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.SurveyNews {
@@ -92,9 +93,9 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
             try {
                 if (!string.IsNullOrEmpty(url)) {
                     if (forceCheck) {
-                        _browserServices.Navigate(url);
+                        _browserServices.OpenBrowser(WebBrowserRole.News, url);
                     } else {
-                        _browserServices.NavigateOnIdle(url);
+                        _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: true);
                     }
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {

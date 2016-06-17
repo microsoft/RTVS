@@ -310,8 +310,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
                 NavigatedUrl = url;
             }
 
-            public void OpenExternalBrowser(string url) { }
-            public void OpenVsBrowser(string url) { }
+            public void OpenBrowser(WebBrowserRole role, string url, bool onIdle = false) { }
         }
     }
 }

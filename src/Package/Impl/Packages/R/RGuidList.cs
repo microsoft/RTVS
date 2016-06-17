@@ -33,7 +33,12 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string VariableGridWindowGuidString = "3F6855E6-E2DB-46F2-9820-EDC794FE8AFE";
         public const string VariableGridWindowBracedGuidString = "{3F6855E6-E2DB-46F2-9820-EDC794FE8AFE}";
         public static readonly Guid VariableGridWindowGuid = new Guid(VariableGridWindowGuidString);
-        
+
+        public const string WebHelpWindowGuidString = "153D83A7-016A-43A7-871F-D52525E82B9D";
+        public const string ShinyWindowGuidString = "662EEE61-51CD-442E-B08C-D0A95DF1EC94";
+        public static readonly Guid WebHelpWindowGuid = new Guid(WebHelpWindowGuidString);
+        public static readonly Guid ShinyWindowGuid = new Guid(ShinyWindowGuidString);
+
         /// <summary>
         /// Miscellanious files project (no project is opened in IDE)
         /// </summary>

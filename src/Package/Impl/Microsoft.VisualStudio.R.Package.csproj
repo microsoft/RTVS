@@ -59,6 +59,7 @@
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Browsers\WebBrowserRole.cs" />
     <Compile Include="Commands\CommandAsyncToOleMenuCommandShim.cs" />
     <Compile Include="Commands\OleControllerChain.cs" />
     <Compile Include="Commands\R\SwitchToRClientCommand.cs" />
@@ -185,7 +186,7 @@
     <Compile Include="History\Commands\SaveHistoryCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToReplCommand.cs" />
     <Compile Include="History\Commands\SendHistoryToSourceCommand.cs" />
-    <Compile Include="Options\Attributes\WebHelpSearchBrowserTypeConverter.cs" />
+    <Compile Include="Options\Attributes\BrowserTypeConverter.cs" />
     <Compile Include="Options\PackageManager\PackageSourceOptionsPage.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -156,11 +156,21 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [LocCategory("Settings_HelpCategory")]
         [CustomLocDisplayName("Settings_WebHelpSearchBrowserType")]
         [LocDescription("Settings_WebHelpSearchBrowserType_Description")]
-        [TypeConverter(typeof(WebHelpSearchBrowserTypeConverter))]
-        [DefaultValue(WebHelpSearchBrowserType.Internal)]
-        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
+        [TypeConverter(typeof(BrowserTypeConverter))]
+        [DefaultValue(BrowserType.Internal)]
+        public BrowserType WebHelpSearchBrowserType {
             get { return RToolsSettings.Current.WebHelpSearchBrowserType; }
             set { RToolsSettings.Current.WebHelpSearchBrowserType = value; }
+        }
+
+        [LocCategory("Settings_ShinyCategory")]
+        [CustomLocDisplayName("Settings_ShinyBrowserType")]
+        [LocDescription("Settings_ShinyBrowserType_Description")]
+        [TypeConverter(typeof(BrowserTypeConverter))]
+        [DefaultValue(BrowserType.Internal)]
+        public BrowserType ShinyBrowserType {
+            get { return RToolsSettings.Current.ShinyBrowserType; }
+            set { RToolsSettings.Current.ShinyBrowserType = value; }
         }
 
         [LocCategory("Settings_GeneralCategory")]

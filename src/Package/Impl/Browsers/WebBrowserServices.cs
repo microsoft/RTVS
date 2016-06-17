@@ -3,49 +3,93 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using Microsoft.Common.Core.OS;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Settings.Definitions;
 using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Browsers {
     [Export(typeof(IWebBrowserServices))]
     internal class WebBrowserServices : IWebBrowserServices {
-        public void Navigate(string url) {
-            OpenVsBrowser(url);
+
+        #region IWebBrowserServices
+        public void OpenBrowser(WebBrowserRole role, string url, bool onIdle = false) {
+            if(role == WebBrowserRole.External || IsExternal(role)) {
+                ProcessServices.Current.Start(url);
+            } else {
+                if (onIdle) {
+                    NavigateOnIdle(role, url);
+                } else {
+                    OpenVsBrowser(role, url);
+                }
+            }
+        }
+        #endregion
+
+        private void OpenVsBrowser(WebBrowserRole role, string url) {
+            VsAppShell.Current.DispatchOnUIThread(() => {
+                DoOpenVsBrowser(role, url);
+            });
         }
 
-        public void NavigateOnIdle(string url) {
+        private void NavigateOnIdle(WebBrowserRole role, string url) {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
-                    Navigate(url);
+                    OpenVsBrowser(role, url);
                 }, 100, typeof(WebBrowserServices));
             }
         }
 
-        public void OpenExternalBrowser(string url) {
-            var uri = new Uri(url);
-            Process.Start(new ProcessStartInfo(uri.AbsoluteUri));
-            return;
+        private void DoOpenVsBrowser(WebBrowserRole role, string url) {
+            IVsWindowFrame frame;
+            IVsWebBrowser wb;
+            var wbs = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+            var guid = GetRoleGuid(role);
+            if(guid == Guid.Empty) {
+                wbs.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
+            } else {
+                var flags = (uint)(__VSCREATEWEBBROWSER.VSCWB_AutoShow | 
+                                   __VSCREATEWEBBROWSER.VSCWB_ForceNew | 
+                                   __VSCREATEWEBBROWSER.VSCWB_StartCustom |
+                                   __VSCREATEWEBBROWSER.VSCWB_ReuseExisting);
+                var title = GetRoleWindowTitle(role);
+                wbs.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
+            }
         }
 
-        public void OpenVsBrowser(string url) {
-            VsAppShell.Current.DispatchOnUIThread(() => {
-                IVsWebBrowsingService web = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
-                if (web == null) {
-                    OpenExternalBrowser(url);
-                    return;
-                }
+        private Guid GetRoleGuid(WebBrowserRole role) {
+            switch(role) {
+                case WebBrowserRole.Help:
+                    return RGuidList.WebHelpWindowGuid;
+                case WebBrowserRole.Shiny:
+                    return RGuidList.ShinyWindowGuid;
+            }
+            return Guid.Empty;
+        }
 
-                try {
-                    IVsWindowFrame frame;
-                    ErrorHandler.ThrowOnFailure(web.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame));
-                    frame.Show();
-                } catch (COMException) {
-                    OpenExternalBrowser(url);
-                }
-            });
+        private string GetRoleWindowTitle(WebBrowserRole role) {
+            switch (role) {
+                case WebBrowserRole.Help:
+                    return Resources.WebHelpWindowTitle;
+                case WebBrowserRole.News:
+                    return Resources.NewsWindowTitle;
+                case WebBrowserRole.Shiny:
+                    return Resources.ShinyWindowTitle;
+            }
+            return null;
+        }
+
+        private bool IsExternal(WebBrowserRole role) {
+            switch (role) {
+                case WebBrowserRole.Help:
+                    return RToolsSettings.Current.WebHelpSearchBrowserType == BrowserType.External;
+                case WebBrowserRole.Shiny:
+                    return RToolsSettings.Current.ShinyBrowserType == BrowserType.External;
+            }
+            return false;
         }
     }
 }

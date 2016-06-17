@@ -124,8 +124,13 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
-        public WebHelpSearchBrowserType WebHelpSearchBrowserType {
-            get { return WebHelpSearchBrowserType.Internal; }
+        public BrowserType WebHelpSearchBrowserType {
+            get { return BrowserType.Internal; }
+            set { }
+        }
+
+        public BrowserType ShinyBrowserType {
+            get { return BrowserType.Internal; }
             set { }
         }
 

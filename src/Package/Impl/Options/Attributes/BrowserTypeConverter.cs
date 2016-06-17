@@ -4,8 +4,8 @@
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Options.Attributes {
-    internal class WebHelpSearchBrowserTypeConverter : EnumTypeConverter<WebHelpSearchBrowserType> {
-        public WebHelpSearchBrowserTypeConverter() :
-            base(Resources.WebHelpSearchBrowserType_Internal, Resources.WebHelpSearchBrowserType_External) { }
+    internal class BrowserTypeConverter : EnumTypeConverter<BrowserType> {
+        public BrowserTypeConverter() :
+            base(Resources.BrowserType_Internal, Resources.BrowserType_External) { }
     }
 }
