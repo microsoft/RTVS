@@ -108,6 +108,7 @@
     <Compile Include="VSConstants.cs" />
     <Compile Include="VsDebuggerMock.cs" />
     <Compile Include="VsEditorAdaptersFactoryServiceMock.cs" />
+    <Compile Include="VsEnumStreamMarkersMock.cs" />
     <Compile Include="VsExpansionEnumerationMock.cs" />
     <Compile Include="VsExpansionManagerMock.cs" />
     <Compile Include="VsExpansionSessionMock.cs" />
@@ -120,6 +121,7 @@
     <Compile Include="VsSettingsStoreMock.cs" />
     <Compile Include="VsTextBufferMock.cs" />
     <Compile Include="VsTextLinesMock.cs" />
+    <Compile Include="VsTextStreamMarker.cs" />
     <Compile Include="VsTextViewMock.cs" />
     <Compile Include="VsToolWindowToolbarHostMock.cs" />
     <Compile Include="VsUiObjectMock.cs" />

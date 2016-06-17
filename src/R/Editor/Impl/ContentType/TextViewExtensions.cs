@@ -92,7 +92,11 @@ namespace Microsoft.R.Editor {
                     }
                     line = line ?? position.GetContainingLine();
                     caretPosition = caretPosition >= 0 ? caretPosition : position.Position;
-                    return GetItemAtPosition(line, caretPosition, (x) => x == RTokenType.Identifier, out span);
+                    var item = GetItemAtPosition(line, caretPosition, x => x == RTokenType.Identifier, out span);
+                    if(string.IsNullOrEmpty(item)) {
+                        item = textView.GetItemBeforeCaret(out span, x => x == RTokenType.Identifier);
+                    }
+                    return item;
                 }
             }
             span = Span.FromBounds(0, 0);

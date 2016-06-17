@@ -40,7 +40,8 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
         }
 
         public int GetSnippetSpan(TextSpan[] pts) {
-            throw new NotImplementedException();
+            pts[0] = new TextSpan();
+            return VSConstants.S_OK;
         }
 
         public int GoToNextExpansionField(int fCommitIfLast) {

@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Text;
@@ -12,7 +13,7 @@ using MSXML;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {
     [ExcludeFromCodeCoverage]
-    public class VsTextBufferMock : IVsTextBuffer, IVsExpansion {
+    public class VsTextBufferMock : IVsTextBuffer, IVsTextLines, IVsTextStream, IVsExpansion {
         private Guid _guidLangService = Guid.Empty;
 
         public ITextBuffer TextBuffer { get; internal set; }
@@ -235,6 +236,93 @@ namespace Microsoft.VisualStudio.Shell.Mocks {
             TextBuffer.Insert(0, "specific-expansion");
             pSession = new VsExpansionSessionMock();
             return VSConstants.S_OK;
+        }
+
+        public int CopyLineText(int iStartLine, int iStartIndex, int iEndLine, int iEndIndex, IntPtr pszBuf, ref int pcchBuf) {
+            throw new NotImplementedException();
+        }
+
+        public int CanReplaceLines(int iStartLine, int iStartIndex, int iEndLine, int iEndIndex, int iNewLen) {
+            throw new NotImplementedException();
+        }
+
+        public int CreateLineMarker(int iMarkerType, int iStartLine, int iStartIndex, int iEndLine, int iEndIndex, IVsTextMarkerClient pClient, IVsTextLineMarker[] ppMarker) {
+            throw new NotImplementedException();
+        }
+
+        public int EnumMarkers(int iStartLine, int iStartIndex, int iEndLine, int iEndIndex, int iMarkerType, uint dwFlags, out IVsEnumLineMarkers ppEnum) {
+            throw new NotImplementedException();
+        }
+
+        public int FindMarkerByLineIndex(int iMarkerType, int iStartingLine, int iStartingIndex, uint dwFlags, out IVsTextLineMarker ppMarker) {
+            throw new NotImplementedException();
+        }
+
+        public int AdviseTextLinesEvents(IVsTextLinesEvents pSink, out uint pdwCookie) {
+            throw new NotImplementedException();
+        }
+
+        public int CreateEditPoint(int iLine, int iIndex, out object ppEditPoint) {
+            throw new NotImplementedException();
+        }
+
+        public int CreateTextPoint(int iLine, int iIndex, out object ppTextPoint) {
+            throw new NotImplementedException();
+        }
+
+        public int GetStream(int iPos, int iLength, IntPtr pszDest) {
+            throw new NotImplementedException();
+        }
+
+        public int ReplaceStream(int iPos, int iOldLen, IntPtr pszText, int iNewLen) {
+            if (pszText != IntPtr.Zero) {
+                var str = Marshal.PtrToStringBSTR(pszText);
+                TextBuffer.Replace(new Span(iPos, iOldLen), str);
+            } else {
+                TextBuffer.Delete(new Span(iPos, iOldLen));
+            }
+            return VSConstants.S_OK;
+        }
+
+        public int CanReplaceStream(int iPos, int iOldLen, int iNewLen) {
+            return VSConstants.S_OK;
+        }
+
+        public int CreateStreamMarker(int iMarkerType, int iPos, int iLength, IVsTextMarkerClient pClient, IVsTextStreamMarker[] ppMarker) {
+            throw new NotImplementedException();
+        }
+
+        public int EnumMarkers(int iPos, int iLen, int iMarkerType, uint dwFlags, out IVsEnumStreamMarkers ppEnum) {
+            ppEnum = new VsEnumStreamMarkersMock(new IVsTextStreamMarker[1] { new VsTextStreamMarker(this, iPos, 1) });
+            return VSConstants.S_OK;
+        }
+
+        public int FindMarkerByPosition(int iMarkerType, int iStartingPos, uint dwFlags, out IVsTextStreamMarker ppMarker) {
+            throw new NotImplementedException();
+        }
+
+        public int AdviseTextStreamEvents(IVsTextStreamEvents pSink, out uint pdwCookie) {
+            throw new NotImplementedException();
+        }
+
+        public int UnadviseTextStreamEvents(uint dwCookie) {
+            throw new NotImplementedException();
+        }
+
+        public int ReloadStream(int iPos, int iOldLen, IntPtr pszText, int iNewLen) {
+            throw new NotImplementedException();
+        }
+
+        public int CreateEditPoint(int iPosition, out object ppEditPoint) {
+            throw new NotImplementedException();
+        }
+
+        public int ReplaceStreamEx(uint dwFlags, int iPos, int iOldLen, IntPtr pszText, int iNewLen, out int piActualLen) {
+            throw new NotImplementedException();
+        }
+
+        public int CreateTextPoint(int iPosition, out object ppTextPoint) {
+            throw new NotImplementedException();
         }
         #endregion
     }
