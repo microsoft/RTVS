@@ -107,12 +107,8 @@ namespace Microsoft.R.Host.Client.Install {
                 if (FileSystem.FileExists(rDllPath) && FileSystem.FileExists(rTermPath) &&
                     FileSystem.FileExists(rScriptPath) && FileSystem.FileExists(rGraphAppPath) &&
                     FileSystem.FileExists(rGuiPath)) {
-                    IFileVersionInfo fvi = FileSystem.GetVersionInfo(rDllPath);
-                    int minor, revision;
 
-                    GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
-                    data.Version = new Version(fvi.FileMajorPart, minor, revision);
-
+                    data.Version = GetRVersion(path);
                     if (!svl.IsCompatibleVersion(data.Version)) {
                         data.Status = RInstallStatus.UnsupportedVersion;
                     }
@@ -128,6 +124,15 @@ namespace Microsoft.R.Host.Client.Install {
             }
 
             return data;
+        }
+
+        public static Version GetRVersion(string basePath) {
+            string rDllPath = Path.Combine(basePath, @"bin\x64\R.dll");
+            IFileVersionInfo fvi = FileSystem.GetVersionInfo(rDllPath);
+            int minor, revision;
+
+            GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
+            return new Version(fvi.FileMajorPart, minor, revision);
         }
 
         public static string NormalizeRPath(string path) {
