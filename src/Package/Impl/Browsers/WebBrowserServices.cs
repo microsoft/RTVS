@@ -14,11 +14,25 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Browsers {
     [Export(typeof(IWebBrowserServices))]
     internal class WebBrowserServices : IWebBrowserServices {
+        private readonly IVsWebBrowsingService _wbs;
+        private readonly IProcessServices _ps;
+        private readonly IRToolsSettings _settings;
+
+        public WebBrowserServices() : 
+            this(VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService)),
+                 ProcessServices.Current, RToolsSettings.Current) {
+        }
+
+        public WebBrowserServices(IVsWebBrowsingService wbs, IProcessServices ps, IRToolsSettings settings) {
+            _wbs = wbs;
+            _ps = ps;
+            _settings = settings;
+        }
 
         #region IWebBrowserServices
         public void OpenBrowser(WebBrowserRole role, string url, bool onIdle = false) {
             if(role == WebBrowserRole.External || IsExternal(role)) {
-                ProcessServices.Current.Start(url);
+                _ps.Start(url);
             } else {
                 if (onIdle) {
                     NavigateOnIdle(role, url);
@@ -46,17 +60,16 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private void DoOpenVsBrowser(WebBrowserRole role, string url) {
             IVsWindowFrame frame;
             IVsWebBrowser wb;
-            var wbs = VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
             var guid = GetRoleGuid(role);
             if(guid == Guid.Empty) {
-                wbs.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
+                _wbs.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
             } else {
                 var flags = (uint)(__VSCREATEWEBBROWSER.VSCWB_AutoShow | 
                                    __VSCREATEWEBBROWSER.VSCWB_ForceNew | 
                                    __VSCREATEWEBBROWSER.VSCWB_StartCustom |
                                    __VSCREATEWEBBROWSER.VSCWB_ReuseExisting);
                 var title = GetRoleWindowTitle(role);
-                wbs.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
+                _wbs.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
             }
         }
 
@@ -85,9 +98,9 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private bool IsExternal(WebBrowserRole role) {
             switch (role) {
                 case WebBrowserRole.Help:
-                    return RToolsSettings.Current.WebHelpSearchBrowserType == BrowserType.External;
+                    return _settings.WebHelpSearchBrowserType == BrowserType.External;
                 case WebBrowserRole.Shiny:
-                    return RToolsSettings.Current.ShinyBrowserType == BrowserType.External;
+                    return _settings.ShinyBrowserType == BrowserType.External;
             }
             return false;
         }
