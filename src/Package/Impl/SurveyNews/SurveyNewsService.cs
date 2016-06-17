@@ -92,11 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.SurveyNews {
 
             try {
                 if (!string.IsNullOrEmpty(url)) {
-                    if (forceCheck) {
-                        _browserServices.OpenBrowser(WebBrowserRole.News, url);
-                    } else {
-                        _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: true);
-                    }
+                    _browserServices.OpenBrowser(WebBrowserRole.News, url, onIdle: !forceCheck);
                 }
             } catch (Exception ex) when (!ex.IsCriticalException()) {
                 GeneralLog.Write(ex);
