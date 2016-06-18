@@ -4,9 +4,12 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands.Markdown;
 using Microsoft.VisualStudio.R.Package.Publishing.Commands;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
@@ -22,11 +25,16 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
     internal class VsMdCommandFactory : ICommandFactory {
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
+        private readonly IWebBrowserServices _wbs;
 
         [ImportingConstructor]
-        public VsMdCommandFactory(IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory) {
+        public VsMdCommandFactory(
+            IRInteractiveWorkflowProvider workflowProvider, 
+            IInteractiveWindowComponentContainerFactory componentContainerFactory,
+            IWebBrowserServices wbs) {
             _workflowProvider = workflowProvider;
             _componentContainerFactory = componentContainerFactory;
+            _wbs = wbs;
         }
 
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
@@ -39,9 +47,9 @@ namespace Microsoft.VisualStudio.R.Package.Commands.MD {
             }
 
             return new ICommand[] {
-                new PreviewHtmlCommand(textView, _workflowProvider),
-                new PreviewPdfCommand(textView, _workflowProvider),
-                new PreviewWordCommand(textView, _workflowProvider),
+                new PreviewHtmlCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem(), _wbs),
+                new PreviewPdfCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem()),
+                new PreviewWordCommand(textView, _workflowProvider, VsAppShell.Current, new ProcessServices(), new FileSystem()),
                 new ClearReplCommand(textView, workflow),
                 new ShowContextMenuCommand(textView, MdGuidList.MdPackageGuid, MdGuidList.MdCmdSetGuid, (int) MarkdownContextMenuId.MD)
             };

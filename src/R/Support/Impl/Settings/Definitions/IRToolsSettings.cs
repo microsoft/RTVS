@@ -38,5 +38,6 @@ namespace Microsoft.R.Support.Settings.Definitions {
 
         BrowserType WebHelpSearchBrowserType { get; set; }
         BrowserType ShinyBrowserType { get; set; }
+        BrowserType MarkdownBrowserType { get; set; }
     }
 }

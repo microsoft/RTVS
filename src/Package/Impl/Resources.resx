@@ -791,4 +791,16 @@ Additional information:
   <data name="ShinyWindowTitle" xml:space="preserve">
     <value>R Shiny</value>
   </data>
+  <data name="MarkdownWindowTitle" xml:space="preserve">
+    <value>R Markdown</value>
+  </data>
+  <data name="Settings_MarkdownBrowserType" xml:space="preserve">
+    <value>Markdown preview browser</value>
+  </data>
+  <data name="Settings_MarkdownBrowserType_Description" xml:space="preserve">
+    <value>Defines if generated R Markdown pages should be opened in internal Visual Studio browser or in the external Web browser.</value>
+  </data>
+  <data name="Settings_MarkdownCategory" xml:space="preserve">
+    <value>Markdown</value>
+  </data>
 </root>

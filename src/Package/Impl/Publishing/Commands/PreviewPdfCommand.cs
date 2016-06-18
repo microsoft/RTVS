@@ -3,6 +3,9 @@
 
 using System.Diagnostics;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
@@ -11,17 +14,16 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
     internal sealed class PreviewPdfCommand : PreviewCommand {
-        public PreviewPdfCommand(ITextView textView, IRInteractiveWorkflowProvider workflowProvider)
-            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider) {
-        }
+        public PreviewPdfCommand(
+            ITextView textView,
+            IRInteractiveWorkflowProvider workflowProvider,
+            ICoreShell coreShell,
+            IProcessServices pss,
+            IFileSystem fs)
+            : base(textView, (int)MdPackageCommandId.icmdPreviewPdf, workflowProvider, coreShell, pss, fs) { }
 
-        protected override string FileExtension {
-            get { return "pdf"; }
-        }
-
-        protected override PublishFormat Format {
-            get { return PublishFormat.Pdf; }
-        }
+        protected override string FileExtension => "pdf";
+         protected override PublishFormat Format => PublishFormat.Pdf;
 
         protected override bool CheckPrerequisites() {
             if (!base.CheckPrerequisites()) {

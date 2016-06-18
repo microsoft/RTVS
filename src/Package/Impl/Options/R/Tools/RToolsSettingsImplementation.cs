@@ -107,6 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         public string WebHelpSearchString { get; set; } = "R site:stackoverflow.com";
         public BrowserType WebHelpSearchBrowserType { get; set; } = BrowserType.Internal;
         public BrowserType ShinyBrowserType { get; set; } = BrowserType.Internal;
+        public BrowserType MarkdownBrowserType { get; set; } = BrowserType.External;
 
         public RToolsSettingsImplementation() {
             // Default settings. Will be overwritten with actual
