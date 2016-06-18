@@ -101,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                 _outputFilePath = Path.ChangeExtension(inputFilePath, FileExtension);
 
                 try {
-                    File.Delete(_outputFilePath);
+                    _fs.DeleteFile(_outputFilePath);
                 } catch (IOException ex) {
                     _coreShell.ShowErrorMessage(ex.Message);
                     return CommandResult.Executed;

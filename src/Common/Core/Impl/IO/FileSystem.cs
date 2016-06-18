@@ -38,5 +38,9 @@ namespace Microsoft.Common.Core.IO {
             var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
             return new FileVersionInfo(fvi.FileMajorPart, fvi.FileMinorPart);
         }
+
+        public void DeleteFile(string path) {
+            File.Delete(path);
+        }
     }
 }
