@@ -42,15 +42,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         public void AddDirectory(string relativePath, string shortPath) {
-            relativePath = PathHelper.EnsureTrailingSlash(relativePath);
-            AddEntry(relativePath, shortPath, Directory);
+             AddEntry(relativePath, shortPath, Directory);
         }
 
         public void DeleteDirectory(string relativePath) {
             try {
                 relativePath = PathHelper.EnsureTrailingSlash(relativePath);
                 foreach (var entry in _entries.Values.Where(v => v.RelativePath.StartsWithIgnoreCase(relativePath) ||
-                                                            v.ShortPath.StartsWithIgnoreCase(relativePath)).ToList()) {
+                                                                 v.ShortPath.StartsWithIgnoreCase(relativePath)).ToList()) {
                     DeleteEntry(entry);
                 }
             } catch (InvalidStateException) {
@@ -102,6 +101,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         private Entry AddEntry(string relativeFilePath, string shortPath, EntryType type) {
+            relativeFilePath = PathHelper.EnsureTrailingSlash(relativeFilePath);
+            shortPath = PathHelper.EnsureTrailingSlash(shortPath);
+
             Entry entry;
             if (!_entries.TryGetValue(relativeFilePath, out entry)) {
                 entry = new Entry(relativeFilePath, shortPath, type) {

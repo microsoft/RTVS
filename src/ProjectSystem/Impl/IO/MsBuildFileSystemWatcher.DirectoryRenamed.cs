@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     return;
                 }
 
-                var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
+                var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
                 var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
             }
 
@@ -49,9 +49,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
-
-                var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
-                _entries.DeleteDirectory(relativePath);
+                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _fullPath));
             }
 
             public override string ToString() {

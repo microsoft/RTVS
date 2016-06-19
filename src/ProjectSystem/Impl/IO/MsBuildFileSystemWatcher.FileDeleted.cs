@@ -28,9 +28,6 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
                 var relativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
                 _entries.DeleteFile(relativePath);
-
-                var shortPath = PathHelper.MakeRelative(_rootDirectory.ToShortPath(), _fullPath.ToShortPath());
-                _entries.DeleteFile(shortPath);
             }
 
             public override string ToString() {

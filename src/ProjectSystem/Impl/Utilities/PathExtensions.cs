@@ -22,7 +22,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities {
         }
 
         public static string ToShortRelativePath(this string path, string rootFolder) {
-            return PathHelper.MakeRelative(path.ToShortPath(), rootFolder.ToShortPath());
+            var shortPath = path.ToShortPath();
+            var rootShortPath = rootFolder.ToShortPath();
+            return PathHelper.MakeRelative(rootShortPath, shortPath);
         }
     }
 }

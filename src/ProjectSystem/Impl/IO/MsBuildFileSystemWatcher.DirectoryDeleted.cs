@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     return;
                 }
 
-                var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
+                var relativePath = PathHelper.MakeRelative(_rootDirectory, _fullPath);
                 _entries.DeleteDirectory(relativePath);
             }
 
