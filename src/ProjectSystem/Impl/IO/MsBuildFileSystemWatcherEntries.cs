@@ -18,8 +18,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         public bool RescanRequired { get; private set; }
 
-        public void AddFile(string relativeFilePath) {
-            AddEntry(relativeFilePath, File);
+        public void AddFile(string relativeFilePath, string shortPath) {
+            AddEntry(relativeFilePath, shortPath, File);
         }
 
         public void DeleteFile(string relativeFilePath) {
@@ -33,23 +33,24 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
         }
 
-        public void RenameFile(string previousRelativePath, string relativeFilePath) {
+        public void RenameFile(string previousRelativePath, string relativeFilePath, string shortPath) {
             try {
-                RenameEntry(previousRelativePath, relativeFilePath, File);
+                RenameEntry(previousRelativePath, relativeFilePath, shortPath, File);
             } catch (InvalidStateException) {
                 RescanRequired = true;
             }
         }
 
-        public void AddDirectory(string relativePath) {
+        public void AddDirectory(string relativePath, string shortPath) {
             relativePath = PathHelper.EnsureTrailingSlash(relativePath);
-            AddEntry(relativePath, Directory);
+            AddEntry(relativePath, shortPath, Directory);
         }
 
         public void DeleteDirectory(string relativePath) {
             try {
                 relativePath = PathHelper.EnsureTrailingSlash(relativePath);
-                foreach (var entry in _entries.Values.Where(v => v.RelativePath.StartsWithIgnoreCase(relativePath)).ToList()) {
+                foreach (var entry in _entries.Values.Where(v => v.RelativePath.StartsWithIgnoreCase(relativePath) ||
+                                                            v.ShortPath.StartsWithIgnoreCase(relativePath)).ToList()) {
                     DeleteEntry(entry);
                 }
             } catch (InvalidStateException) {
@@ -57,17 +58,18 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
         }
 
-        public ISet<string> RenameDirectory(string previousRelativePath, string relativePath) {
+        public ISet<string> RenameDirectory(string previousRelativePath, string relativePath, string shortPath) {
             try {
                 previousRelativePath = PathHelper.EnsureTrailingSlash(previousRelativePath);
                 relativePath = PathHelper.EnsureTrailingSlash(relativePath);
                 var newPaths = new HashSet<string>();
                 var entriesToRename = _entries.Values
                     .Where(v => v.State == Unchanged || v.State == Added || v.State == RenamedThenAdded)
-                    .Where(v => v.RelativePath.StartsWithIgnoreCase(previousRelativePath)).ToList();
+                    .Where(v => v.RelativePath.StartsWithIgnoreCase(previousRelativePath) |
+                                v.ShortPath.StartsWithIgnoreCase(previousRelativePath)).ToList();
                 foreach (var entry in entriesToRename) {
                     var newEntryPath = entry.RelativePath.Replace(previousRelativePath, relativePath, 0, previousRelativePath.Length);
-                    RenameEntry(entry.RelativePath, newEntryPath, entry.Type);
+                    RenameEntry(entry.RelativePath, newEntryPath, shortPath, entry.Type);
                     newPaths.Add(newEntryPath);
                 }
                 return newPaths;
@@ -99,10 +101,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             RescanRequired = false;
         }
 
-        private Entry AddEntry(string relativeFilePath, EntryType type) {
+        private Entry AddEntry(string relativeFilePath, string shortPath, EntryType type) {
             Entry entry;
             if (!_entries.TryGetValue(relativeFilePath, out entry)) {
-                entry = new Entry(relativeFilePath, type) {
+                entry = new Entry(relativeFilePath, shortPath, type) {
                     State = Added
                 };
 
@@ -150,29 +152,29 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
         }
 
-        private void RenameEntry(string previousRelativePath, string relativePath, EntryType type) {
+        private void RenameEntry(string previousRelativePath, string relativePath, string shortPath, EntryType type) {
             Entry renamedEntry;
             if (_entries.TryGetValue(previousRelativePath, out renamedEntry)) {
                 switch (renamedEntry.State) {
                     case Unchanged:
                         renamedEntry.State = Renamed;
-                        var entry = AddEntry(relativePath, type);
+                        var entry = AddEntry(relativePath, shortPath, type);
                         entry.PreviousRelativePath = previousRelativePath;
                         return;
                     case Added:
                         _entries.Remove(previousRelativePath);
                         if (renamedEntry.PreviousRelativePath == null) {
-                            AddEntry(relativePath, type);
+                            AddEntry(relativePath, shortPath, type);
                         } else {
-                            UpdateRenamingChain(renamedEntry, relativePath, type);
+                            UpdateRenamingChain(renamedEntry, relativePath, shortPath, type);
                         }
                         return;
                     case RenamedThenAdded:
                         renamedEntry.State = Renamed;
                         if (renamedEntry.PreviousRelativePath == null) {
-                            AddEntry(relativePath, type);
+                            AddEntry(relativePath, shortPath, type);
                         } else {
-                            UpdateRenamingChain(renamedEntry, relativePath, type);
+                            UpdateRenamingChain(renamedEntry, relativePath, shortPath, type);
                             renamedEntry.PreviousRelativePath = null;
                         }
                         return;
@@ -185,7 +187,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             }
         }
 
-        private void UpdateRenamingChain(Entry renamedEntry, string relativePath, EntryType type) {
+        private void UpdateRenamingChain(Entry renamedEntry, string relativePath, string shortPath, EntryType type) {
             var previouslyRenamedEntryPath = renamedEntry.PreviousRelativePath;
             Entry previouslyRenamedEntry;
             if (!_entries.TryGetValue(previouslyRenamedEntryPath, out previouslyRenamedEntry)) {
@@ -207,7 +209,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 }
             }
 
-            var entry = AddEntry(relativePath, type);
+            var entry = AddEntry(relativePath, shortPath, type);
             entry.PreviousRelativePath = previouslyRenamedEntryPath;
         }
 
@@ -295,8 +297,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         [DebuggerDisplay("{Type} {PreviousRelativePath == null ? RelativePath : PreviousRelativePath + \" -> \" + RelativePath}, {State}")]
         private class Entry {
-            public Entry(string relativePath, EntryType type) {
+            public Entry(string relativePath, string shortPath, EntryType type) {
                 RelativePath = relativePath;
+                ShortPath = shortPath;
                 Type = type;
             }
 
@@ -305,6 +308,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
             public string PreviousRelativePath { get; set; }
             public EntryState State { get; set; } = Unchanged;
+
+            public string ShortPath { get; }
         }
 
         private class InvalidStateException : Exception {

@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -41,7 +42,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 }
 
                 var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
-                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath);
+                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
             }
 
             private void DeleteInsteadOfRename() {
