@@ -38,10 +38,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// unchanged and only replace browser that is inside it.
         /// </summary>
         private readonly ContentControl _windowContentControl;
+        private readonly IVignetteCodeColorBuilder _codeColorBuilder;
         private IRSession _session;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
+            _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
+
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
@@ -54,6 +57,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
+
         }
 
         private void OnColorThemeChanged(ThemeChangedEventArgs e) {
@@ -115,14 +119,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
                     if (doc != null) {
                         if (doc.styleSheets.length > 0) {
-                            object index = 0;
-                            var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
-                            ss.cssText = cssText;
-                        } else {
-                            IHTMLStyleSheet ss = doc.createStyleSheet();
-                            if (ss != null) {
-                                ss.cssText = cssText;
+                            var styleSheets = new List<dynamic>();
+                            foreach (IHTMLStyleSheet s in doc.styleSheets) {
+                                s.disabled = true;
                             }
+                        }
+
+                        IHTMLStyleSheet ss = doc.createStyleSheet();
+                        if (ss != null) {
+                            ss.cssText = cssText;
+                        }
+
+                        ss = doc.createStyleSheet();
+                        if (ss != null) {
+                            ss.cssText = _codeColorBuilder.GetCodeColorsCss();
                         }
                     }
                 }
@@ -251,5 +261,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Browser = null;
             }
         }
+
     }
 }
