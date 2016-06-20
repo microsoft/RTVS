@@ -63,14 +63,14 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             IVsWebBrowser wb;
             var guid = GetRoleGuid(role);
             if(guid == Guid.Empty) {
-                _wbs.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
+                WebBrowserService.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
             } else {
                 var flags = (uint)(__VSCREATEWEBBROWSER.VSCWB_AutoShow | 
                                    __VSCREATEWEBBROWSER.VSCWB_ForceNew | 
                                    __VSCREATEWEBBROWSER.VSCWB_StartCustom |
                                    __VSCREATEWEBBROWSER.VSCWB_ReuseExisting);
                 var title = GetRoleWindowTitle(role);
-                _wbs.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
+                WebBrowserService.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
             }
         }
 
