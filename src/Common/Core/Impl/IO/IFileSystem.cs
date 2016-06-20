@@ -16,5 +16,6 @@ namespace Microsoft.Common.Core.IO {
         void FileWriteAllLines(string path, IEnumerable<string> contents);
 
         IFileVersionInfo GetVersionInfo(string path);
+        void DeleteFile(string path);
     }
 }

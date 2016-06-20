@@ -178,7 +178,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
         private async Task CheckSurveyNews(SurveyNewsFeed feed, SurveyNewsPolicy policy,
             DateTime lastChecked, bool forceCheck, string expectedNavigatedUrl, DateTime? expectedLastChecked) {
             string navigatedUrl = null;
-            WebBrowserRole role = WebBrowserRole.Other;
 
             // Create the test objects
             var browser = Substitute.For<IWebBrowserServices>();

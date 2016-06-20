@@ -79,6 +79,8 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
                     return RGuidList.WebHelpWindowGuid;
                 case WebBrowserRole.Shiny:
                     return RGuidList.ShinyWindowGuid;
+                case WebBrowserRole.Markdown:
+                    return RGuidList.MarkdownWindowGuid;
             }
             return Guid.Empty;
         }
@@ -91,6 +93,8 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
                     return Resources.NewsWindowTitle;
                 case WebBrowserRole.Shiny:
                     return Resources.ShinyWindowTitle;
+                case WebBrowserRole.Markdown:
+                    return Resources.MarkdownWindowTitle;
             }
             return null;
         }
@@ -101,6 +105,8 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
                     return _settings.WebHelpSearchBrowserType == BrowserType.External;
                 case WebBrowserRole.Shiny:
                     return _settings.ShinyBrowserType == BrowserType.External;
+                case WebBrowserRole.Markdown:
+                    return _settings.MarkdownBrowserType == BrowserType.External;
             }
             return false;
         }

@@ -134,6 +134,11 @@ namespace Microsoft.R.Support.Test.Utility {
             set { }
         }
 
+        public BrowserType MarkdownBrowserType {
+            get { return BrowserType.External; }
+            set { }
+        }
+
         public bool EvaluateActiveBindings { get; set; } = false;
     }
 }

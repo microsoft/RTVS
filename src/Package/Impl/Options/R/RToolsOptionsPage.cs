@@ -167,10 +167,20 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         [CustomLocDisplayName("Settings_ShinyBrowserType")]
         [LocDescription("Settings_ShinyBrowserType_Description")]
         [TypeConverter(typeof(BrowserTypeConverter))]
-        [DefaultValue(BrowserType.External)]
+        [DefaultValue(BrowserType.Internal)]
         public BrowserType ShinyBrowserType {
             get { return RToolsSettings.Current.ShinyBrowserType; }
             set { RToolsSettings.Current.ShinyBrowserType = value; }
+        }
+
+        [LocCategory("Settings_MarkdownCategory")]
+        [CustomLocDisplayName("Settings_MarkdownBrowserType")]
+        [LocDescription("Settings_MarkdownBrowserType_Description")]
+        [TypeConverter(typeof(BrowserTypeConverter))]
+        [DefaultValue(BrowserType.External)]
+        public BrowserType MarkdownBrowserType {
+            get { return RToolsSettings.Current.MarkdownBrowserType; }
+            set { RToolsSettings.Current.MarkdownBrowserType = value; }
         }
 
         [LocCategory("Settings_GeneralCategory")]

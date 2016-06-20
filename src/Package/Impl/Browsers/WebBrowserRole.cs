@@ -7,6 +7,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         Help,
         Shiny,
         News,
+        Markdown,
         Other
     }
 }

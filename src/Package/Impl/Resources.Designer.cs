@@ -711,6 +711,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to R Markdown.
+        /// </summary>
+        public static string MarkdownWindowTitle {
+            get {
+                return ResourceManager.GetString("MarkdownWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft R Client is already installed..
         /// </summary>
         public static string Message_RClientIsAlreadyInstalled {
@@ -1385,6 +1394,33 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_LoadRDataOnProjectLoad_Description {
             get {
                 return ResourceManager.GetString("Settings_LoadRDataOnProjectLoad_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown preview browser.
+        /// </summary>
+        public static string Settings_MarkdownBrowserType {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownBrowserType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defines if generated R Markdown pages should be opened in internal Visual Studio browser or in the external Web browser..
+        /// </summary>
+        public static string Settings_MarkdownBrowserType_Description {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownBrowserType_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Markdown.
+        /// </summary>
+        public static string Settings_MarkdownCategory {
+            get {
+                return ResourceManager.GetString("Settings_MarkdownCategory", resourceCulture);
             }
         }
         
