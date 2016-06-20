@@ -14,13 +14,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Browsers {
     [Export(typeof(IWebBrowserServices))]
     internal class WebBrowserServices : IWebBrowserServices {
-        private readonly IVsWebBrowsingService _wbs;
         private readonly IProcessServices _ps;
         private readonly IRToolsSettings _settings;
 
+        private readonly IVsWebBrowsingService _wbs;
+        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+
         public WebBrowserServices() : 
-            this(VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService)),
-                 ProcessServices.Current, RToolsSettings.Current) {
+            this(null, ProcessServices.Current, RToolsSettings.Current) {
         }
 
         public WebBrowserServices(IVsWebBrowsingService wbs, IProcessServices ps, IRToolsSettings settings) {
