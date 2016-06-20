@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 }
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
-                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
+                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
             }
 
             private void DeleteInsteadOfRename() {
