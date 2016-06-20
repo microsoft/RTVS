@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -40,17 +41,15 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     return;
                 }
 
-                var oldRelativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _oldFullPath));
-                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath);
+                var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
+                var newRelativePaths = _entries.RenameDirectory(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
             }
 
             private void DeleteInsteadOfRename() {
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     return;
                 }
-
-                var relativePath = PathHelper.EnsureTrailingSlash(PathHelper.MakeRelative(_rootDirectory, _fullPath));
-                _entries.DeleteDirectory(relativePath);
+                _entries.DeleteDirectory(PathHelper.MakeRelative(_rootDirectory, _fullPath));
             }
 
             public override string ToString() {

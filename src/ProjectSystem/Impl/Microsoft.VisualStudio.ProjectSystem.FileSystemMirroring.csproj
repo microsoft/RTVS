@@ -29,6 +29,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Extensions\ProjectTreeExtensions.cs" />
+    <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="IO\IMsBuildFileSystemFilter.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.AttributesChanged.cs" />
     <Compile Include="IO\MsBuildFileSystemWatcher.DirectoryCreated.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Shell\IVsProjectGenerator.cs" />
     <Compile Include="Shell\IVsRegisterProjectGenerators.cs" />
     <Compile Include="Utilities\DictionaryExtensions.cs" />
+    <Compile Include="Utilities\PathExtensions.cs" />
     <Compile Include="Utilities\ServiceProviderExtensions.cs" />
     <Compile Include="Utilities\VsSolutionBuildManagerExtensions.cs" />
   </ItemGroup>

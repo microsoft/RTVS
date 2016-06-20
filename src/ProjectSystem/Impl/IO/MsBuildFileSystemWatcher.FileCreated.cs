@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.IO;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
@@ -27,7 +28,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     return;
                 }
 
-                _entries.AddFile(relativePath);
+                _entries.AddFile(relativePath, _fullPath.ToShortRelativePath(_rootDirectory));
             }
 
             public override string ToString() {

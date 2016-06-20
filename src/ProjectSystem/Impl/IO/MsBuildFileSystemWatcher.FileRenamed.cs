@@ -3,6 +3,7 @@
 
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
+using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Utilities;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -31,7 +32,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 string newRelativePath;
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                        _entries.AddFile(newRelativePath);
+                        _entries.AddFile(newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
                     }
 
                     return;
@@ -39,7 +40,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
                 if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                    _entries.RenameFile(oldRelativePath, newRelativePath);
+                    _entries.RenameFile(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
                 } else {
                     _entries.DeleteFile(oldRelativePath);
                 }
