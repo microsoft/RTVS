@@ -32,6 +32,8 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             public NoDelayNoFiltering() {
                 _fileSystem = Substitute.For<IFileSystem>();
                 _fileSystem.GetFileAttributes(Arg.Any<string>()).Throws<FileNotFoundException>();
+                _fileSystem.ToLongPath(Arg.Any<string>()).Returns(ci => ci[0]);
+                _fileSystem.ToShortPath(Arg.Any<string>()).Returns(ci => ci[0]);
                 var watchers = GetWatchersFromMsBuildFileSystemWatcher(_fileSystem);
 
                 var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();

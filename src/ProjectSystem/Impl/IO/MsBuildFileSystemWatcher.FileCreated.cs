@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                     return;
                 }
 
-                _entries.AddFile(relativePath, _fullPath.ToShortRelativePath(_rootDirectory));
+                _entries.AddFile(relativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
             }
 
             public override string ToString() {

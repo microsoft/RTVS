@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                             continue;
                         }
 
-                        _entries.AddDirectory(relativeDirectoryPath, directoryPath.ToShortRelativePath(_rootDirectory));
+                        _entries.AddDirectory(relativeDirectoryPath, _fileSystem.ToShortRelativePath(directoryPath, _rootDirectory));
                     }
 
                     foreach (var entry in directory.EnumerateFileSystemInfos()) {
@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                             var relativeFilePath = PathHelper.MakeRelative(_rootDirectory, entry.FullName);
 
                             if (_fileSystemFilter.IsFileAllowed(relativeFilePath, entry.Attributes)) {
-                                _entries.AddFile(relativeFilePath, entry.FullName.ToShortRelativePath(_rootDirectory));
+                                _entries.AddFile(relativeFilePath, _fileSystem.ToShortRelativePath(entry.FullName, _rootDirectory));
                             }
                         }
                     }

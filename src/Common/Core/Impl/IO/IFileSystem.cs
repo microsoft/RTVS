@@ -11,6 +11,8 @@ namespace Microsoft.Common.Core.IO {
         bool FileExists(string fullPath);
         bool DirectoryExists(string fullPath);
         FileAttributes GetFileAttributes(string fullPath);
+        string ToLongPath(string path);
+        string ToShortPath(string path);
 
         IEnumerable<string> FileReadAllLines(string path);
         void FileWriteAllLines(string path, IEnumerable<string> contents);

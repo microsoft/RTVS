@@ -2,8 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Microsoft.Common.Core.IO {
     public sealed class FileSystem : IFileSystem {
@@ -34,6 +35,19 @@ namespace Microsoft.Common.Core.IO {
         public FileAttributes GetFileAttributes(string path) {
             return File.GetAttributes(path);
         }
+
+        public string ToLongPath(string path) {
+            var sb = new StringBuilder(NativeMethods.MAX_PATH);
+            NativeMethods.GetLongPathName(path, sb, sb.Capacity);
+            return sb.ToString();
+        }
+
+        public string ToShortPath(string path) {
+            var sb = new StringBuilder(NativeMethods.MAX_PATH);
+            NativeMethods.GetShortPathName(path, sb, sb.Capacity);
+            return sb.ToString();
+        }
+
         public IFileVersionInfo GetVersionInfo(string path) {
             var fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(path);
             return new FileVersionInfo(fvi.FileMajorPart, fvi.FileMinorPart);
@@ -41,6 +55,20 @@ namespace Microsoft.Common.Core.IO {
 
         public void DeleteFile(string path) {
             File.Delete(path);
+        }
+
+        private static class NativeMethods {
+            public const int MAX_PATH = 260;
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            public static extern uint GetLongPathName([MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
+                                                      [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpBuffer,
+                                                      int nBufferLength);
+
+            [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+            public static extern uint GetShortPathName([MarshalAs(UnmanagedType.LPWStr)] string lpFileName,
+                                                       [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpBuffer,
+                                                       int nBufferLength);
         }
     }
 }

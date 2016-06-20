@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                 string newRelativePath;
                 if (!_oldFullPath.StartsWithIgnoreCase(_rootDirectory)) {
                     if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                        _entries.AddFile(newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
+                        _entries.AddFile(newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
                     }
 
                     return;
@@ -40,7 +40,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
                 var oldRelativePath = PathHelper.MakeRelative(_rootDirectory, _oldFullPath);
                 if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out newRelativePath)) {
-                    _entries.RenameFile(oldRelativePath, newRelativePath, _fullPath.ToShortRelativePath(_rootDirectory));
+                    _entries.RenameFile(oldRelativePath, newRelativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
                 } else {
                     _entries.DeleteFile(oldRelativePath);
                 }
