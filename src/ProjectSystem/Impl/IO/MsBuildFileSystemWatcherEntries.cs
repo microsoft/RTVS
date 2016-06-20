@@ -61,10 +61,11 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
             try {
                 previousRelativePath = PathHelper.EnsureTrailingSlash(previousRelativePath);
                 relativePath = PathHelper.EnsureTrailingSlash(relativePath);
+                shortPath = PathHelper.EnsureTrailingSlash(shortPath);
                 var newPaths = new HashSet<string>();
                 var entriesToRename = _entries.Values
                     .Where(v => v.State == Unchanged || v.State == Added || v.State == RenamedThenAdded)
-                    .Where(v => v.RelativePath.StartsWithIgnoreCase(previousRelativePath) |
+                    .Where(v => v.RelativePath.StartsWithIgnoreCase(previousRelativePath) ||
                                 v.ShortPath.StartsWithIgnoreCase(previousRelativePath)).ToList();
                 foreach (var entry in entriesToRename) {
                     var newEntryPath = entry.RelativePath.Replace(previousRelativePath, relativePath, 0, previousRelativePath.Length);
@@ -101,8 +102,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         private Entry AddEntry(string relativeFilePath, string shortPath, EntryType type) {
-            relativeFilePath = PathHelper.EnsureTrailingSlash(relativeFilePath);
-            shortPath = PathHelper.EnsureTrailingSlash(shortPath);
+            if (type == EntryType.Directory) {
+                relativeFilePath = PathHelper.EnsureTrailingSlash(relativeFilePath);
+                shortPath = PathHelper.EnsureTrailingSlash(shortPath);
+            }
 
             Entry entry;
             if (!_entries.TryGetValue(relativeFilePath, out entry)) {

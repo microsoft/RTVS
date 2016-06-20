@@ -47,39 +47,39 @@ Basic relative path structure
 ├─.x
 └─.y
 */
-            _entries.AddDirectory(@"A");
-            _entries.AddDirectory(@"A\A");
-            _entries.AddDirectory(@"A\A\A");
-            _entries.AddDirectory(@"A\A\B");
-            _entries.AddDirectory(@"A\B");
-            _entries.AddDirectory(@"A\B\A");
-            _entries.AddDirectory(@"B");
-            _entries.AddDirectory(@"B\A");
-            _entries.AddDirectory(@"B\A\A");
-            _entries.AddDirectory(@"B\A\B");
-            _entries.AddDirectory(@"B\B");
-            _entries.AddDirectory(@"B\B\A");
+            _entries.AddDirectory(@"A", @"A");
+            _entries.AddDirectory(@"A\A", @"A\A");
+            _entries.AddDirectory(@"A\A\A", @"A\A\A");
+            _entries.AddDirectory(@"A\A\B", @"A\A\B");
+            _entries.AddDirectory(@"A\B", @"A\B");
+            _entries.AddDirectory(@"A\B\A", @"A\B\A");
+            _entries.AddDirectory(@"B", @"B");
+            _entries.AddDirectory(@"B\A", @"B\A");
+            _entries.AddDirectory(@"B\A\A", @"B\A\A");
+            _entries.AddDirectory(@"B\A\B", @"B\A\B");
+            _entries.AddDirectory(@"B\B", @"B\B");
+            _entries.AddDirectory(@"B\B\A", @"B\B\A");
 
-            _entries.AddFile(@"A\A\A\a.x");
-            _entries.AddFile(@"A\A\A\a.y");
-            _entries.AddFile(@"A\A\B\a.x");
-            _entries.AddFile(@"A\A\B\a.y");
-            _entries.AddFile(@"A\A\c.x");
-            _entries.AddFile(@"A\A\c.y");
-            _entries.AddFile(@"A\B\b.x");
-            _entries.AddFile(@"A\B\b.y");
-            _entries.AddFile(@"A\c.x");
-            _entries.AddFile(@"A\c.y");
-            _entries.AddFile(@"B\A\A\a.x");
-            _entries.AddFile(@"B\A\A\a.y");
-            _entries.AddFile(@"B\A\B\a.x");
-            _entries.AddFile(@"B\A\B\a.y");
-            _entries.AddFile(@"B\A\c.x");
-            _entries.AddFile(@"B\A\c.y");
-            _entries.AddFile(@"B\B\b.x");
-            _entries.AddFile(@"B\B\b.y");
-            _entries.AddFile(@".x");
-            _entries.AddFile(@".y");
+            _entries.AddFile(@"A\A\A\a.x", @"A\A\A\a.x");
+            _entries.AddFile(@"A\A\A\a.y", @"A\A\A\a.y");
+            _entries.AddFile(@"A\A\B\a.x", @"A\A\B\a.x");
+            _entries.AddFile(@"A\A\B\a.y", @"A\A\B\a.y");
+            _entries.AddFile(@"A\A\c.x", @"A\A\c.x");
+            _entries.AddFile(@"A\A\c.y", @"A\A\c.y");
+            _entries.AddFile(@"A\B\b.x", @"A\B\b.x");
+            _entries.AddFile(@"A\B\b.y", @"A\B\b.y");
+            _entries.AddFile(@"A\c.x", @"A\c.x");
+            _entries.AddFile(@"A\c.y", @"A\c.y");
+            _entries.AddFile(@"B\A\A\a.x", @"B\A\A\a.x");
+            _entries.AddFile(@"B\A\A\a.y", @"B\A\A\a.y");
+            _entries.AddFile(@"B\A\B\a.x", @"B\A\B\a.x");
+            _entries.AddFile(@"B\A\B\a.y", @"B\A\B\a.y");
+            _entries.AddFile(@"B\A\c.x", @"B\A\c.x");
+            _entries.AddFile(@"B\A\c.y", @"B\A\c.y");
+            _entries.AddFile(@"B\B\b.x", @"B\B\b.x");
+            _entries.AddFile(@"B\B\b.y", @"B\B\b.y");
+            _entries.AddFile(@".x", @".x");
+            _entries.AddFile(@".y", @".y");
 
             _entries.ProduceChangeset();
         }
@@ -89,9 +89,9 @@ Basic relative path structure
         [InlineArray(@".x", @"a.x", @"A\D\b.y", @"A\D\.y")]
         public void FileRenameRoundtrip(string[] renames) {
             for (var i = 0; i < renames.Length - 1; i++) {
-                _entries.RenameFile(renames[i], renames[i + 1]);
+                _entries.RenameFile(renames[i], renames[i + 1], renames[i + 1]);
             }
-            _entries.RenameFile(renames[renames.Length - 1], renames[0]);
+            _entries.RenameFile(renames[renames.Length - 1], renames[0], renames[0]);
 
             var changeset = _entries.ProduceChangeset();
             changeset.Should().NotBeNull().And.NoOtherChanges();
@@ -103,9 +103,9 @@ Basic relative path structure
         [InlineArray(@"A\B", @"A\C", @"B\C")]
         public void DirectoryRenameRoundtrip(string[] renames) {
             for (var i = 0; i < renames.Length - 1; i++) {
-                _entries.RenameDirectory(renames[i], renames[i + 1]);
+                _entries.RenameDirectory(renames[i], renames[i + 1], renames[i + 1]);
             }
-            _entries.RenameDirectory(renames[renames.Length - 1], renames[0]);
+            _entries.RenameDirectory(renames[renames.Length - 1], renames[0], renames[0]);
 
             var changeset = _entries.ProduceChangeset();
             changeset.Should().NotBeNull().And.NoOtherChanges();
@@ -132,7 +132,7 @@ Basic relative path structure
                     new[] { @"D\A\a.x", @"D\A\a.y", @"D\B\a.x", @"D\B\a.y", @"D\C\b.x", @"D\C\b.y", @"D\c.x", @"D\c.y" })]
         public void RenameDirectoryMultipleTimes(string[] from, string[] to, string[] expectedFromDirectories, string[] expectedToDirectories, string[] expectedFromFiles, string[] expectedToFiles) {
             for (var i = 0; i < from.Length; i++) {
-                _entries.RenameDirectory(from[i], to[i]);
+                _entries.RenameDirectory(from[i], to[i], to[i]);
             }
 
             var changeset = _entries.ProduceChangeset();
@@ -144,10 +144,10 @@ Basic relative path structure
 
         [Test]
         public void Directory_RenameAddRenameRename() {
-            _entries.RenameDirectory(@"B\B", @"C");
-            _entries.AddDirectory(@"B\B");
-            _entries.RenameDirectory(@"B\B", @"B\D");
-            _entries.RenameDirectory(@"A\B", @"B\B");
+            _entries.RenameDirectory(@"B\B", @"C", @"C");
+            _entries.AddDirectory(@"B\B", @"B\B");
+            _entries.RenameDirectory(@"B\B", @"B\D", @"B\D");
+            _entries.RenameDirectory(@"A\B", @"B\B", @"B\D");
 
             var changeset = _entries.ProduceChangeset();
             changeset.Should().NotBeNull()
@@ -159,12 +159,12 @@ Basic relative path structure
 
         [Test]
         public void TripleDirectoryRenameAdd() {
-            _entries.RenameDirectory(@"B\B", @"B\C");
-            _entries.AddDirectory(@"B\B");
-            _entries.RenameDirectory(@"B\B", @"B\D");
-            _entries.AddDirectory(@"B\B");
-            _entries.RenameDirectory(@"B\C", @"A\C");
-            _entries.AddDirectory(@"B\C");
+            _entries.RenameDirectory(@"B\B", @"B\C", @"B\C");
+            _entries.AddDirectory(@"B\B", @"B\B");
+            _entries.RenameDirectory(@"B\B", @"B\D", @"B\D");
+            _entries.AddDirectory(@"B\B", @"B\B");
+            _entries.RenameDirectory(@"B\C", @"A\C", @"A\C");
+            _entries.AddDirectory(@"B\C", @"B\C");
 
             var changeset = _entries.ProduceChangeset();
             changeset.Should().NotBeNull()
@@ -177,11 +177,11 @@ Basic relative path structure
         [Test]
         public void File_DeleteAddRenameRenameAddRename() {
             _entries.DeleteFile(@".x");
-            _entries.AddFile(@"C\a.x");
-            _entries.RenameFile(@"C\a.x", @".x");
-            _entries.RenameFile(@".x", @"D\a.x");
-            _entries.AddFile(@"D\b.y");
-            _entries.RenameFile(@"D\b.y", @".x");
+            _entries.AddFile(@"C\a.x", @"C\a.x");
+            _entries.RenameFile(@"C\a.x", @".x", @".x");
+            _entries.RenameFile(@".x", @"D\a.x", @"D\a.x");
+            _entries.AddFile(@"D\b.y", @"D\b.y");
+            _entries.RenameFile(@"D\b.y", @".x", @".x");
 
             var changeset = _entries.ProduceChangeset();
             changeset.Should().NotBeNull()
