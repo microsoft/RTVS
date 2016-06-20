@@ -14,13 +14,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.Browsers {
     [Export(typeof(IWebBrowserServices))]
     internal class WebBrowserServices : IWebBrowserServices {
-        private readonly IVsWebBrowsingService _wbs;
         private readonly IProcessServices _ps;
         private readonly IRToolsSettings _settings;
 
+        private readonly IVsWebBrowsingService _wbs;
+        private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
+
         public WebBrowserServices() : 
-            this(VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService)),
-                 ProcessServices.Current, RToolsSettings.Current) {
+            this(null, ProcessServices.Current, RToolsSettings.Current) {
         }
 
         public WebBrowserServices(IVsWebBrowsingService wbs, IProcessServices ps, IRToolsSettings settings) {
@@ -62,14 +63,14 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             IVsWebBrowser wb;
             var guid = GetRoleGuid(role);
             if(guid == Guid.Empty) {
-                _wbs.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
+                WebBrowserService.Navigate(url, (uint)__VSWBNAVIGATEFLAGS.VSNWB_ForceNew, out frame);
             } else {
                 var flags = (uint)(__VSCREATEWEBBROWSER.VSCWB_AutoShow | 
                                    __VSCREATEWEBBROWSER.VSCWB_ForceNew | 
                                    __VSCREATEWEBBROWSER.VSCWB_StartCustom |
                                    __VSCREATEWEBBROWSER.VSCWB_ReuseExisting);
                 var title = GetRoleWindowTitle(role);
-                _wbs.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
+                WebBrowserService.CreateWebBrowser(flags, guid, title, url, null, out wb, out frame);
             }
         }
 
