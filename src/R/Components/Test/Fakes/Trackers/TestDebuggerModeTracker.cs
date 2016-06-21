@@ -13,8 +13,8 @@ namespace Microsoft.R.Components.Test.Fakes.Trackers {
 
         public bool IsDebugging { get; set; }
 
+#pragma warning disable 67
         public event EventHandler EnterBreakMode;
-
         public event EventHandler LeaveBreakMode;
     }
 }

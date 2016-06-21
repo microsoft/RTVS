@@ -13,6 +13,7 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Options {
     [ExcludeFromCodeCoverage]
+    [Category.Repl]
     [Collection(CollectionNames.NonParallel)]
     public class EncodingsTest {
         [Test]
