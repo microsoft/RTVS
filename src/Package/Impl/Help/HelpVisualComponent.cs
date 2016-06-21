@@ -209,9 +209,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Disconnect browser from the tool window so it does not
             // flicker when we change page and element styling.
             _host.Child = null;
-
-            if (Browser?.Document?.Window != null) {
-                Browser.Document.Window.Unload -= OnWindowUnload;
+            var window = Browser?.Document?.Window;
+            if(window != null) {
+                window.Unload -= OnWindowUnload;
             }
 
             string url = e.Url.ToString();
@@ -238,15 +238,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Refresh button clicked. Current document state is 'complete'.
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
-            Browser.Document.Window.Unload -= OnWindowUnload;
-            // Disconnect browser from the tool window so it does not
-            // flicker when we change page and element styling.
-            _host.Child = null;
+            var window = Browser?.Document?.Window;
+            if (window != null) {
+                window.Unload -= OnWindowUnload;
+                // Disconnect browser from the tool window so it does not
+                // flicker when we change page and element styling.
+                _host.Child = null;
+            }
         }
 
         private void SetThemeColorsWhenReady() {
-            var doc = Browser.Document.DomDocument as IHTMLDocument2;
-            if (Browser.ReadyState == WebBrowserReadyState.Complete && doc.body != null) {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc?.body != null && Browser.ReadyState == WebBrowserReadyState.Complete) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
                 // Reconnect browser control to the window
@@ -301,8 +304,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _windowContentControl.Content = null;
 
             if (Browser != null) {
-                if (Browser.Document != null && Browser.Document.Window != null) {
-                    Browser.Document.Window.Unload += OnWindowUnload;
+                var window = Browser.Document?.Window;
+                if (window != null) {
+                    window.Unload -= OnWindowUnload;
                 }
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
