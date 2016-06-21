@@ -32,9 +32,21 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             new CssCodeProperty("va", PredefinedClassificationTypeNames.Identifier),
             new CssCodeProperty("ot", PredefinedClassificationTypeNames.Other),
             new CssCodeProperty("cn", PredefinedClassificationTypeNames.Number),
+            new CssCodeProperty("dv", PredefinedClassificationTypeNames.Number),
             new CssCodeProperty("cf", PredefinedClassificationTypeNames.Keyword),
             new CssCodeProperty("op", PredefinedClassificationTypeNames.Operator),
             new CssCodeProperty("pp", PredefinedClassificationTypeNames.PreprocessorKeyword),
+        };
+
+        private static readonly CssCodeProperty[] _prePropertyMap = new CssCodeProperty[] {
+            new CssCodeProperty("keyword", PredefinedClassificationTypeNames.Keyword),
+            new CssCodeProperty("number", PredefinedClassificationTypeNames.Number),
+            new CssCodeProperty("string", PredefinedClassificationTypeNames.String),
+            new CssCodeProperty("literal", PredefinedClassificationTypeNames.Literal),
+            new CssCodeProperty("comment", PredefinedClassificationTypeNames.Comment),
+            new CssCodeProperty("identifier", PredefinedClassificationTypeNames.Identifier),
+            new CssCodeProperty("operator", PredefinedClassificationTypeNames.Operator),
+            new CssCodeProperty("paren", PredefinedClassificationTypeNames.Operator),
         };
 
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
@@ -60,6 +72,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     var props = map.GetTextProperties(_classificationRegistryService.GetClassificationType(cssCodeProp.ClassificationTypeName));
 
                     sb.AppendLine(Invariant($"code > span.{cssCodeProp.CssClassName} {{"));
+                    sb.AppendLine(Invariant($"color: {CssColorFromBrush(props.ForegroundBrush)};"));
+                    sb.AppendLine("}");
+                    sb.AppendLine(string.Empty);
+                }
+                foreach (var cssCodeProp in _prePropertyMap) {
+                    var props = map.GetTextProperties(_classificationRegistryService.GetClassificationType(cssCodeProp.ClassificationTypeName));
+
+                    sb.AppendLine(Invariant($"pre .{cssCodeProp.CssClassName} {{"));
                     sb.AppendLine(Invariant($"color: {CssColorFromBrush(props.ForegroundBrush)};"));
                     sb.AppendLine("}");
                     sb.AppendLine(string.Empty);

@@ -57,7 +57,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
 
             CreateBrowser();
             VSColorTheme.ThemeChanged += OnColorThemeChanged;
-
         }
 
         private void OnColorThemeChanged(ThemeChangedEventArgs e) {
@@ -113,27 +112,58 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void SetThemeColors() {
-            if (Browser != null) {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+
+            RemoveExistingStyles();
+            AttachStandardStyles();
+            AttachCodeStyles();
+
+            if(doc?.body == null) {
+                SetThemeColorsWhenReady();
+            }
+        }
+
+        private void AttachStandardStyles() {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc != null) {
                 string cssText = GetCssText();
-                if (!string.IsNullOrEmpty(cssText) && Browser.Document != null) {
-                    IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
-                    if (doc != null) {
-                        if (doc.styleSheets.length > 0) {
-                            var styleSheets = new List<dynamic>();
-                            foreach (IHTMLStyleSheet s in doc.styleSheets) {
-                                s.disabled = true;
-                            }
-                        }
+                if (!string.IsNullOrEmpty(cssText)) {
+                    IHTMLStyleSheet ss = doc.createStyleSheet();
+                    if (ss != null) {
+                        ss.cssText = cssText;
+                    }
 
-                        IHTMLStyleSheet ss = doc.createStyleSheet();
-                        if (ss != null) {
-                            ss.cssText = cssText;
-                        }
+                    ss = doc.createStyleSheet();
+                    if (ss != null) {
+                        ss.cssText = _codeColorBuilder.GetCodeColorsCss();
+                    }
+                }
+            }
+        }
 
-                        ss = doc.createStyleSheet();
-                        if (ss != null) {
-                            ss.cssText = _codeColorBuilder.GetCodeColorsCss();
-                        }
+        private void AttachCodeStyles() {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc != null) {
+                var ss = doc.createStyleSheet();
+                if (ss != null) {
+                    ss.cssText = _codeColorBuilder.GetCodeColorsCss();
+                }
+            }
+        }
+
+        private void RemoveExistingStyles() {
+            var doc = Browser?.Document?.DomDocument as dynamic;
+            if (doc != null) {
+                if (doc.styleSheets.length > 0) {
+                    var styleSheets = new List<dynamic>();
+                    foreach (IHTMLStyleSheet s in doc.styleSheets) {
+                        s.disabled = true;
+                    }
+                }
+
+                foreach (var node in doc.head.childNodes) {
+                    if (node is IHTMLStyleElement) {
+                        doc.head.removeChild(node);
                     }
                 }
             }
@@ -166,7 +196,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
-            if (Browser.Document != null && Browser.Document.Window != null) {
+            _host.Child = null;
+
+            if (Browser?.Document?.Window != null) {
                 Browser.Document.Window.Unload -= OnWindowUnload;
             }
 
@@ -179,12 +211,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
-            SetThemeColors();
-            _host.Child = Browser;
-            Browser.Document.Window.Unload += OnWindowUnload;
-
-            // Upon vavigation we need to ask VS to update UI so 
-            // Back /Forward buttons become properly enabled or disabled.
+            SetThemeColorsWhenReady();
+ 
+            // Upon navigation we need to ask VS to update UI so 
+            // Back/Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
@@ -194,14 +224,15 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
             Browser.Document.Window.Unload -= OnWindowUnload;
-            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+            _host.Child = null;
         }
 
         private void SetThemeColorsWhenReady() {
-            var domDoc = Browser.Document.DomDocument as IHTMLDocument2;
-            if (Browser.ReadyState == WebBrowserReadyState.Complete) {
+            var doc = Browser.Document.DomDocument as IHTMLDocument2;
+            if (Browser.ReadyState == WebBrowserReadyState.Complete && doc.body != null) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
+                _host.Child = Browser;
             } else {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
@@ -261,6 +292,5 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 Browser = null;
             }
         }
-
     }
 }

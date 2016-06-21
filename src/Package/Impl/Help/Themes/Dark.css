@@ -122,6 +122,7 @@ code {
 img {
     border: 1px solid;
     border-color: rgb(196, 196, 196);
+    align-content: stretch;
 }
 
 div.sourceCode {
@@ -131,4 +132,16 @@ div.sourceCode {
     padding-right: 4px;
     padding-top: 2px;
     padding-bottom: 2px;
+}
+
+code[class] {
+    background: rgb(36,36,36);
+}
+
+pre {
+    background: rgb(12, 12, 12);
+    padding-left: 16px;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
 }
