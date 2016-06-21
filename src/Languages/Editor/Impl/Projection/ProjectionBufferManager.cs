@@ -72,12 +72,13 @@ namespace Microsoft.Languages.Editor.Projection {
             // Now update language spans
             var secondarySpans = CreateSecondarySpans(secondaryContent, mappings);
             ContainedLanguageBuffer.ReplaceSpans(0, ContainedLanguageBuffer.CurrentSnapshot.SpanCount, secondarySpans, EditOptions.DefaultMinimalChange, this);
-
-            // Update primary (view) buffer projected spans. View buffer spans are all tracking spans:
-            // they either come from primary content or secondary content. Inert spans do not participate.
-            var viewSpans = CreateViewSpans(mappings);
-            if (viewSpans.Count > 0) {
-                ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
+            if (secondarySpans.Count > 0) {
+                // Update primary (view) buffer projected spans. View buffer spans are all tracking spans:
+                // they either come from primary content or secondary content. Inert spans do not participate.
+                var viewSpans = CreateViewSpans(mappings);
+                if (viewSpans.Count > 0) {
+                    ViewBuffer.ReplaceSpans(0, ViewBuffer.CurrentSnapshot.SpanCount, viewSpans, EditOptions.DefaultMinimalChange, this);
+                }
             }
 
             RestoreCaretPosition();

@@ -38,10 +38,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         /// unchanged and only replace browser that is inside it.
         /// </summary>
         private readonly ContentControl _windowContentControl;
+        private readonly IVignetteCodeColorBuilder _codeColorBuilder;
         private IRSession _session;
         private WindowsFormsHost _host;
 
         public HelpVisualComponent() {
+            _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
+
             _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
             _session.Disconnected += OnRSessionDisconnected;
 
@@ -109,26 +112,73 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void SetThemeColors() {
-            if (Browser != null) {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+
+            RemoveExistingStyles();
+            AttachStandardStyles();
+            AttachCodeStyles();
+
+            // The body may become null after styles are modified.
+            // this happens if browser decides to re-render document.
+            if(doc?.body == null) {
+                SetThemeColorsWhenReady();
+            }
+        }
+
+        /// <summary>
+        /// Attaches theme-specific styles to the help page.
+        /// </summary>
+        private void AttachStandardStyles() {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc != null) {
                 string cssText = GetCssText();
-                if (!string.IsNullOrEmpty(cssText) && Browser.Document != null) {
-                    IHTMLDocument2 doc = Browser.Document.DomDocument as IHTMLDocument2;
-                    if (doc != null) {
-                        if (doc.styleSheets.length > 0) {
-                            object index = 0;
-                            var ss = doc.styleSheets.item(ref index) as IHTMLStyleSheet;
-                            ss.cssText = cssText;
-                        } else {
-                            IHTMLStyleSheet ss = doc.createStyleSheet();
-                            if (ss != null) {
-                                ss.cssText = cssText;
-                            }
-                        }
+                if (!string.IsNullOrEmpty(cssText)) {
+                    IHTMLStyleSheet ss = doc.createStyleSheet();
+                    if (ss != null) {
+                        ss.cssText = cssText;
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Attaches code colorization styles to vignettes.
+        /// </summary>
+        private void AttachCodeStyles() {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc != null) {
+                var ss = doc.createStyleSheet();
+                if (ss != null) {
+                    ss.cssText = _codeColorBuilder.GetCodeColorsCss();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes existing styles from the help page or vignette.
+        /// </summary>
+        private void RemoveExistingStyles() {
+            var doc = Browser?.Document?.DomDocument as dynamic;
+            if (doc != null) {
+                if (doc.styleSheets.length > 0) {
+                    // Remove stylesheets
+                    var styleSheets = new List<dynamic>();
+                    foreach (IHTMLStyleSheet s in doc.styleSheets) {
+                        s.disabled = true;
+                    }
+                }
+                // Remove style blocks
+                foreach (var node in doc.head.childNodes) {
+                    if (node is IHTMLStyleElement) {
+                        doc.head.removeChild(node);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fetches theme-specific stylesheet from disk
+        /// </summary>
         private string GetCssText() {
             string cssfileName = null;
 
@@ -156,7 +206,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
-            if (Browser.Document != null && Browser.Document.Window != null) {
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
+            _host.Child = null;
+
+            if (Browser?.Document?.Window != null) {
                 Browser.Document.Window.Unload -= OnWindowUnload;
             }
 
@@ -169,12 +223,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
-            SetThemeColors();
-            _host.Child = Browser;
-            Browser.Document.Window.Unload += OnWindowUnload;
-
-            // Upon vavigation we need to ask VS to update UI so 
-            // Back /Forward buttons become properly enabled or disabled.
+            // Page may be loaded, but body may still be null of scripts
+            // are running. For example, in 3.2.2 code colorization script
+            // tends to damage body content so browser may have to to re-create it.
+            SetThemeColorsWhenReady();
+ 
+            // Upon navigation we need to ask VS to update UI so 
+            // Back/Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
             shell.UpdateCommandUI(0);
         }
@@ -184,14 +239,18 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
             Browser.Document.Window.Unload -= OnWindowUnload;
-            IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
+            _host.Child = null;
         }
 
         private void SetThemeColorsWhenReady() {
-            var domDoc = Browser.Document.DomDocument as IHTMLDocument2;
-            if (Browser.ReadyState == WebBrowserReadyState.Complete) {
+            var doc = Browser.Document.DomDocument as IHTMLDocument2;
+            if (Browser.ReadyState == WebBrowserReadyState.Complete && doc.body != null) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
+                // Reconnect browser control to the window
+                _host.Child = Browser;
             } else {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
