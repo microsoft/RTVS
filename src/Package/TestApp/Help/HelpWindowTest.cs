@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
     public class HelpWindowTest : InteractiveTest {
         private const string darkThemeCssColor = "rgb(36,36,36)";
 
-        [Test]
+        [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1983")]
         [Category.Interactive]
         public void HelpTest() {
             var clientApp = new RHostClientHelpTestApp();
