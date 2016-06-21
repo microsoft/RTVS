@@ -241,10 +241,10 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             var window = Browser?.Document?.Window;
             if (window != null) {
                 window.Unload -= OnWindowUnload;
-                // Disconnect browser from the tool window so it does not
-                // flicker when we change page and element styling.
-                _host.Child = null;
             }
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
+            _host.Child = null;
         }
 
         private void SetThemeColorsWhenReady() {
