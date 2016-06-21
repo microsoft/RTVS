@@ -70,19 +70,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 var map = _formatMapService.GetClassificationFormatMap(workflow.ActiveWindow.TextView);
                 foreach (var cssCodeProp in _cssPropertyMap) {
                     var props = map.GetTextProperties(_classificationRegistryService.GetClassificationType(cssCodeProp.ClassificationTypeName));
-
-                    sb.AppendLine(Invariant($"code > span.{cssCodeProp.CssClassName} {{"));
-                    sb.AppendLine(Invariant($"color: {CssColorFromBrush(props.ForegroundBrush)};"));
-                    sb.AppendLine("}");
-                    sb.AppendLine(string.Empty);
+                    sb.AppendLine(Invariant(
+$@"code > span.{cssCodeProp.CssClassName} {{
+    color: {CssColorFromBrush(props.ForegroundBrush)};
+}}
+"));
                 }
+
                 foreach (var cssCodeProp in _prePropertyMap) {
                     var props = map.GetTextProperties(_classificationRegistryService.GetClassificationType(cssCodeProp.ClassificationTypeName));
-
-                    sb.AppendLine(Invariant($"pre .{cssCodeProp.CssClassName} {{"));
-                    sb.AppendLine(Invariant($"color: {CssColorFromBrush(props.ForegroundBrush)};"));
-                    sb.AppendLine("}");
-                    sb.AppendLine(string.Empty);
+                    sb.AppendLine(Invariant(
+$@"pre .{cssCodeProp.CssClassName} {{
+    color: {CssColorFromBrush(props.ForegroundBrush)};
+}}"
+));
                 }
             }
             return sb.ToString();
