@@ -15,13 +15,15 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
     [Export(typeof(IWebBrowserServices))]
     internal class WebBrowserServices : IWebBrowserServices {
         private readonly IProcessServices _ps;
-        private readonly IRToolsSettings _settings;
 
         private readonly IVsWebBrowsingService _wbs;
         private IVsWebBrowsingService WebBrowserService => _wbs ?? VsAppShell.Current.GetGlobalService<IVsWebBrowsingService>(typeof(SVsWebBrowsingService));
 
+        private readonly IRToolsSettings _settings;
+        private IRToolsSettings Settings => _settings ?? RToolsSettings.Current;
+
         public WebBrowserServices() : 
-            this(null, ProcessServices.Current, RToolsSettings.Current) {
+            this(null, ProcessServices.Current, null) {
         }
 
         public WebBrowserServices(IVsWebBrowsingService wbs, IProcessServices ps, IRToolsSettings settings) {
@@ -103,11 +105,11 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
         private bool IsExternal(WebBrowserRole role) {
             switch (role) {
                 case WebBrowserRole.Help:
-                    return _settings.WebHelpSearchBrowserType == BrowserType.External;
+                    return Settings.WebHelpSearchBrowserType == BrowserType.External;
                 case WebBrowserRole.Shiny:
-                    return _settings.ShinyBrowserType == BrowserType.External;
+                    return Settings.ShinyBrowserType == BrowserType.External;
                 case WebBrowserRole.Markdown:
-                    return _settings.MarkdownBrowserType == BrowserType.External;
+                    return Settings.MarkdownBrowserType == BrowserType.External;
             }
             return false;
         }

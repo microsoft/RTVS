@@ -112,15 +112,14 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void SetThemeColors() {
-            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
-
             RemoveExistingStyles();
             AttachStandardStyles();
             AttachCodeStyles();
 
             // The body may become null after styles are modified.
             // this happens if browser decides to re-render document.
-            if(doc?.body == null) {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc?.body == null) {
                 SetThemeColorsWhenReady();
             }
         }
@@ -208,11 +207,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
             // Disconnect browser from the tool window so it does not
             // flicker when we change page and element styling.
-            _host.Child = null;
-            var window = Browser?.Document?.Window;
-            if(window != null) {
-                window.Unload -= OnWindowUnload;
-            }
+            DisconnectBrowser();
 
             string url = e.Url.ToString();
             if (!IsHelpUrl(url)) {
@@ -227,7 +222,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // are running. For example, in 3.2.2 code colorization script
             // tends to damage body content so browser may have to to re-create it.
             SetThemeColorsWhenReady();
- 
+
             // Upon navigation we need to ask VS to update UI so 
             // Back/Forward buttons become properly enabled or disabled.
             IVsUIShell shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
@@ -238,23 +233,11 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // Refresh button clicked. Current document state is 'complete'.
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
-            var window = Browser?.Document?.Window;
-            if (window != null) {
-                window.Unload -= OnWindowUnload;
-            }
-            // Disconnect browser from the tool window so it does not
-            // flicker when we change page and element styling.
-            _host.Child = null;
+            DisconnectBrowser();
         }
 
         private void SetThemeColorsWhenReady() {
-            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
-            if (doc?.body != null && Browser.ReadyState == WebBrowserReadyState.Complete) {
-                SetThemeColors();
-                Browser.Document.Window.Unload += OnWindowUnload;
-                // Reconnect browser control to the window
-                _host.Child = Browser;
-            } else {
+            if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
                 IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
@@ -304,14 +287,37 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             _windowContentControl.Content = null;
 
             if (Browser != null) {
-                var window = Browser.Document?.Window;
-                if (window != null) {
-                    window.Unload -= OnWindowUnload;
-                }
+                DisconnectWindowEvents();
                 Browser.Navigating -= OnNavigating;
                 Browser.Navigated -= OnNavigated;
                 Browser.Dispose();
                 Browser = null;
+            }
+        }
+
+        private bool ConnectBrowser() {
+            var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
+            if (doc?.body != null && Browser.ReadyState == WebBrowserReadyState.Complete) {
+                SetThemeColors();
+                Browser.Document.Window.Unload += OnWindowUnload;
+                // Reconnect browser control to the window
+                _host.Child = Browser;
+                return true;
+            }
+            return false;
+        }
+
+        private void DisconnectBrowser() {
+            DisconnectWindowEvents();
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
+            _host.Child = null;
+        }
+
+        private void DisconnectWindowEvents() {
+            var window = Browser?.Document?.Window;
+            if (window != null) {
+                window.Unload -= OnWindowUnload;
             }
         }
     }
