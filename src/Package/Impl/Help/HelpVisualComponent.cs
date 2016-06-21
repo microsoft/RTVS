@@ -118,11 +118,16 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             AttachStandardStyles();
             AttachCodeStyles();
 
+            // The body may become null after styles are modified.
+            // this happens if browser decides to re-render document.
             if(doc?.body == null) {
                 SetThemeColorsWhenReady();
             }
         }
 
+        /// <summary>
+        /// Attaches theme-specific styles to the help page.
+        /// </summary>
         private void AttachStandardStyles() {
             var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
             if (doc != null) {
@@ -132,15 +137,13 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                     if (ss != null) {
                         ss.cssText = cssText;
                     }
-
-                    ss = doc.createStyleSheet();
-                    if (ss != null) {
-                        ss.cssText = _codeColorBuilder.GetCodeColorsCss();
-                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Attaches code colorization styles to vignettes.
+        /// </summary>
         private void AttachCodeStyles() {
             var doc = Browser?.Document?.DomDocument as IHTMLDocument2;
             if (doc != null) {
@@ -151,16 +154,20 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
+        /// <summary>
+        /// Removes existing styles from the help page or vignette.
+        /// </summary>
         private void RemoveExistingStyles() {
             var doc = Browser?.Document?.DomDocument as dynamic;
             if (doc != null) {
                 if (doc.styleSheets.length > 0) {
+                    // Remove stylesheets
                     var styleSheets = new List<dynamic>();
                     foreach (IHTMLStyleSheet s in doc.styleSheets) {
                         s.disabled = true;
                     }
                 }
-
+                // Remove style blocks
                 foreach (var node in doc.head.childNodes) {
                     if (node is IHTMLStyleElement) {
                         doc.head.removeChild(node);
@@ -169,6 +176,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             }
         }
 
+        /// <summary>
+        /// Fetches theme-specific stylesheet from disk
+        /// </summary>
         private string GetCssText() {
             string cssfileName = null;
 
@@ -196,6 +206,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigating(object sender, WebBrowserNavigatingEventArgs e) {
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
             _host.Child = null;
 
             if (Browser?.Document?.Window != null) {
@@ -211,6 +223,9 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private void OnNavigated(object sender, WebBrowserNavigatedEventArgs e) {
+            // Page may be loaded, but body may still be null of scripts
+            // are running. For example, in 3.2.2 code colorization script
+            // tends to damage body content so browser may have to to re-create it.
             SetThemeColorsWhenReady();
  
             // Upon navigation we need to ask VS to update UI so 
@@ -224,6 +239,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             // We need to delay until it changes to 'loading' and then
             // delay again until it changes again to 'complete'.
             Browser.Document.Window.Unload -= OnWindowUnload;
+            // Disconnect browser from the tool window so it does not
+            // flicker when we change page and element styling.
             _host.Child = null;
         }
 
@@ -232,6 +249,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (Browser.ReadyState == WebBrowserReadyState.Complete && doc.body != null) {
                 SetThemeColors();
                 Browser.Document.Window.Unload += OnWindowUnload;
+                // Reconnect browser control to the window
                 _host.Child = Browser;
             } else {
                 // The browser document is not ready yet. Create another idle 

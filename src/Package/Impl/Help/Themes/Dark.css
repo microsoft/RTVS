@@ -122,7 +122,6 @@ code {
 img {
     border: 1px solid;
     border-color: rgb(196, 196, 196);
-    align-content: stretch;
 }
 
 div.sourceCode {
