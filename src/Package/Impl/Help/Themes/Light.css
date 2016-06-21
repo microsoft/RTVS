@@ -111,6 +111,31 @@ code {
 }
 
 pre {
-    font-family: Consolas
+    font-family: Consolas;
 }
 
+img {
+    border: 1px solid;
+    border-color: rgb(196, 196, 196);
+}
+
+div.sourceCode {
+    background-color: whitesmoke;
+    line-height: 150%;
+    padding-left: 12px;
+    padding-right: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+code[class] {
+    background: whitesmoke;
+}
+
+pre {
+    background: whitesmoke;
+    padding-left: 16px;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+}

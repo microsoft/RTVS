@@ -142,7 +142,9 @@
     </Compile>
     <Compile Include="Help\HelpVisualComponent.cs" />
     <Compile Include="Help\HelpOnCurrentCommandBase.cs" />
+    <Compile Include="Help\IVignetteCodeColorBuilder.cs" />
     <Compile Include="Help\SearchWebForCurrentCommand.cs" />
+    <Compile Include="Help\VignetteCodeColorBuilder.cs" />
     <Compile Include="Help\VsHelpVisualComponentContainerFactory.cs" />
     <Compile Include="History\Commands\DeleteAllHistoryEntriesCommand.cs" />
     <Compile Include="History\Commands\DeleteSelectedHistoryEntriesCommand.cs" />
