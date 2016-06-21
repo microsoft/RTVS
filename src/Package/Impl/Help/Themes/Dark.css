@@ -132,3 +132,15 @@ div.sourceCode {
     padding-top: 2px;
     padding-bottom: 2px;
 }
+
+code[class] {
+    background: rgb(36,36,36);
+}
+
+pre {
+    background: rgb(12, 12, 12);
+    padding-left: 16px;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
+}

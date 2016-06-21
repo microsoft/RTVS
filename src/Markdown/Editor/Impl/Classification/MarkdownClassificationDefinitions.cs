@@ -27,7 +27,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdHeadingClassificationFormat : ClassificationFormatDefinition {
             public MdHeadingClassificationFormat() {
-                ForegroundColor = Colors.Blue;
                 this.DisplayName = Resources.ColorName_MD_Heading;
             }
         }
@@ -144,8 +143,7 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdMonospaceClassificationFormat : ClassificationFormatDefinition {
             public MdMonospaceClassificationFormat() {
-                ForegroundColor = Color.FromArgb(0xFF, 0x60, 0x60, 0x60);
-                this.DisplayName = Resources.ColorName_MD_Monospace;
+                 this.DisplayName = Resources.ColorName_MD_Monospace;
             }
         }
 
@@ -163,7 +161,6 @@ namespace Microsoft.Markdown.Editor.Classification {
         [ExcludeFromCodeCoverage]
         internal sealed class MdAltTextClassificationFormat : ClassificationFormatDefinition {
             public MdAltTextClassificationFormat() {
-                ForegroundColor = Colors.DarkMagenta;
                 this.DisplayName = Resources.ColorName_MD_AltText;
             }
         }

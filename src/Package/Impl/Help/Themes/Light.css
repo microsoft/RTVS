@@ -111,7 +111,7 @@ code {
 }
 
 pre {
-    font-family: Consolas
+    font-family: Consolas;
 }
 
 img {
@@ -126,4 +126,16 @@ div.sourceCode {
     padding-right: 1px;
     padding-top: 1px;
     padding-bottom: 1px;
+}
+
+code[class] {
+    background: white;
+}
+
+pre {
+    background: whitesmoke;
+    padding-left: 16px;
+    padding-top: 16px;
+    padding-right: 16px;
+    padding-bottom: 16px;
 }
