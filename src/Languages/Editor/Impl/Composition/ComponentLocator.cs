@@ -6,26 +6,22 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Composition {
     public static class ComponentLocator<TComponent> where TComponent : class {
-        public static TComponent Import() {
-            SingleImporter importer = new SingleImporter();
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(importer);
-
+        public static TComponent Import(ICompositionService compositionService) {
+            var importer = new SingleImporter();
+            compositionService.SatisfyImportsOnce(importer);
             return importer.Import;
-        }
-
-        public static IEnumerable<Lazy<TComponent>> ImportMany() {
-            return ImportMany(EditorShell.Current.CompositionService);
         }
 
         public static IEnumerable<Lazy<TComponent>> ImportMany(ICompositionService compositionService) {
             ManyImporter importer = new ManyImporter();
             compositionService.SatisfyImportsOnce(importer);
-
             return importer.Imports;
         }
 
@@ -43,10 +39,6 @@ namespace Microsoft.Languages.Editor.Composition {
     public static class ComponentLocatorWithMetadata<TComponent, TMetadata>
         where TComponent : class
         where TMetadata : class {
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany() {
-            return ImportMany(EditorShell.Current.CompositionService);
-        }
-
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService) {
             ManyImporter importer = new ManyImporter();
             compositionService.SatisfyImportsOnce(importer);
@@ -66,10 +58,6 @@ namespace Microsoft.Languages.Editor.Composition {
     public static class ComponentLocatorWithOrdering<TComponent, TMetadata>
         where TComponent : class
         where TMetadata : IOrderable {
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany() {
-            return ImportMany(EditorShell.Current.CompositionService);
-        }
-
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService) {
             ManyImporter importer = new ManyImporter();
             compositionService.SatisfyImportsOnce(importer);
@@ -90,13 +78,6 @@ namespace Microsoft.Languages.Editor.Composition {
             return reversedList;
         }
 
-        /// <summary>
-        /// Reverses the order of imported items
-        /// </summary>
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ReverseImportMany() {
-            return ReverseImportMany(EditorShell.Current.CompositionService);
-        }
-
         private class ManyImporter {
             [ImportMany]
             public IEnumerable<Lazy<TComponent, TMetadata>> Imports { get; set; }
@@ -110,29 +91,9 @@ namespace Microsoft.Languages.Editor.Composition {
         public static IEnumerable<Lazy<TComponent, IOrderable>> ImportMany(ICompositionService compositionService) {
             return ComponentLocatorWithOrdering<TComponent, IOrderable>.ImportMany(compositionService);
         }
-
-        public static IEnumerable<Lazy<TComponent, IOrderable>> ImportMany() {
-            return ComponentLocatorWithOrdering<TComponent, IOrderable>.ImportMany();
-        }
-
+        
         public static IEnumerable<Lazy<TComponent, IOrderable>> ReverseImportMany(ICompositionService compositionService) {
             return ComponentLocatorWithOrdering<TComponent, IOrderable>.ReverseImportMany(compositionService);
-        }
-
-        public static IEnumerable<Lazy<TComponent, IOrderable>> ReverseImportMany() {
-            return ComponentLocatorWithOrdering<TComponent, IOrderable>.ReverseImportMany();
-        }
-
-        /// <summary>
-        /// Returns the topmost component within the ordered set
-        /// </summary>
-        public static TComponent GetFirst() {
-            var enumerator = ComponentLocatorWithOrdering<TComponent, IOrderable>.ImportMany().GetEnumerator();
-
-            if (enumerator.MoveNext())
-                return enumerator.Current.Value;
-
-            return default(TComponent);
         }
     }
 
@@ -145,22 +106,19 @@ namespace Microsoft.Languages.Editor.Composition {
         /// <summary>
         /// Locates all components exported with a given content type or with any of the content type base types
         /// </summary>
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(string contentTypeName) {
-            Lazy<IContentTypeRegistryService> lazy = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>();
+        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionCatalog catalog, string contentTypeName) {
+            Lazy<IContentTypeRegistryService> lazy = catalog.ExportProvider.GetExport<IContentTypeRegistryService>();
             Debug.Assert(lazy != null);
 
             var contentTypeRegistry = lazy.Value;
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
 
-            return ImportMany(EditorShell.Current.CompositionService, contentType);
+            return ImportMany(catalog.CompositionService, contentType);
         }
 
         /// <summary>
         /// Locates all components exported with a given content type or with any of the content type base types
         /// </summary>
-        public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(IContentType contentType) {
-            return ImportMany(EditorShell.Current.CompositionService, contentType);
-        }
 
         public static IEnumerable<Lazy<TComponent, TMetadata>> ImportMany(ICompositionService compositionService, IContentType contentType) {
             IEnumerable<Lazy<TComponent, TMetadata>> components =
@@ -229,10 +187,6 @@ namespace Microsoft.Languages.Editor.Composition {
     /// Maintains specified order within the content type.
     /// </summary>
     public static class ComponentLocatorForOrderedContentType<TComponent> where TComponent : class {
-        public static IEnumerable<Lazy<TComponent>> ImportMany(IContentType contentType) {
-            return ImportMany(EditorShell.Current.CompositionService, contentType);
-        }
-
         public static IEnumerable<Lazy<TComponent>> ImportMany(ICompositionService compositionService, IContentType contentType) {
             var components = ComponentLocatorForContentType<TComponent, IOrderedComponentContentTypes>.ImportMany(compositionService, contentType);
 
@@ -242,24 +196,20 @@ namespace Microsoft.Languages.Editor.Composition {
         /// <summary>
         /// Locates first component withing ordered components of a particular content type.
         /// </summary>
-        public static TComponent FindFirstOrderedComponent(IContentType contentType) {
-            IEnumerable<Lazy<TComponent>> components = ImportMany(contentType);
+        public static TComponent FindFirstOrderedComponent(ICompositionService compositionService, IContentType contentType) {
+            IEnumerable<Lazy<TComponent>> components = ImportMany(compositionService, contentType);
 
-            foreach (Lazy<TComponent> pair in components) {
-                return pair.Value;
-            }
-
-            return default(TComponent);
+            return components.Select(pair => pair.Value).FirstOrDefault();
         }
 
         /// <summary>
         /// Locates first component withing ordered components of a particular content type.
         /// </summary>
-        public static TComponent FindFirstOrderedComponent(string contentTypeName) {
-            var contentTypeRegistryService = EditorShell.Current.ExportProvider.GetExport<IContentTypeRegistryService>().Value;
+        public static TComponent FindFirstOrderedComponent(ICompositionCatalog catalog, string contentTypeName) {
+            var contentTypeRegistryService = catalog.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
             var contentType = contentTypeRegistryService.GetContentType(contentTypeName);
 
-            return FindFirstOrderedComponent(contentType);
+            return FindFirstOrderedComponent(catalog.CompositionService, contentType);
         }
     }
 }

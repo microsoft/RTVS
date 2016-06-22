@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -20,7 +21,7 @@ namespace Microsoft.Languages.Editor.Test.BraceMatch {
             string content = "if(x<1) {x<-2}";
             ITextBuffer textBuffer = new TextBufferMock(content, "R");
             ITextView textView = new TextViewMock(textBuffer);
-            var command = new GotoBraceCommand(textView, textBuffer);
+            var command = new GotoBraceCommand(textView, textBuffer, EditorShell.Current);
             object o = new object();
 
             var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.GOTOBRACE);

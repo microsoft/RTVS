@@ -3,9 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
@@ -22,10 +24,12 @@ using static System.FormattableString;
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
         ITextBuffer _textBuffer;
+        private readonly IEditorShell _editorShell;
 
-        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer)
+        internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
             : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
             _textBuffer = textBuffer;
+            _editorShell = editorShell;
         }
 
         public virtual ITextBuffer TargetBuffer => _textBuffer;
@@ -79,7 +83,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker);
+                            Resources.FormatDocument, selectionTracker, _editorShell);
                     }
                 } finally {
                     selectionTracker.EndTracking();

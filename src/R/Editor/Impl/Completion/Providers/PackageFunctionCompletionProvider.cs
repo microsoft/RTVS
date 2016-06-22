@@ -6,6 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
@@ -23,8 +24,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        private static readonly string[] _preloadPackages = new string[]
-        {
+        private readonly ILoadedPackagesProvider _loadedPackagesProvider;
+        private readonly ISnippetInformationSourceProvider _snippetInformationSource;
+        private readonly ICoreShell _shell;
+
+        private static readonly string[] _preloadPackages = {
             "stats",
             "graphics",
             "grDevices",
@@ -34,21 +38,22 @@ namespace Microsoft.R.Editor.Completion.Providers {
             "base"
         };
 
-        [Import]
-        private ILoadedPackagesProvider LoadedPackagesProvider { get; set; }
-
-        [Import(AllowDefault = true)]
-        private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
+        [ImportingConstructor]
+        public PackageFunctionCompletionProvider(ILoadedPackagesProvider loadedPackagesProvider, [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell shell) {
+            _loadedPackagesProvider = loadedPackagesProvider;
+            _snippetInformationSource = snippetInformationSource;
+            _shell = shell;
+        }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
-            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
-            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
-            var infoSource = SnippetInformationSource?.InformationSource;
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _shell);
+            var infoSource = _snippetInformationSource.InformationSource;
 
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
@@ -150,11 +155,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// <returns></returns>
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
             List<IPackageInfo> packages = new List<IPackageInfo>();
-            LoadedPackagesProvider?.Initialize();
+            _loadedPackagesProvider?.Initialize();
 
-            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages));
+            IEnumerable<string> allPackageNames = _preloadPackages.Union(filePackageNames).Union(loadedPackages);
 
             foreach (string packageName in allPackageNames) {
                 IPackageInfo p = PackageIndex.GetPackageByName(packageName);

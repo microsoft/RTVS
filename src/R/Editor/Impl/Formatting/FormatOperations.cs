@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Formatting {
                     throw new ArgumentException(nameof(limit));
                 }
                 ITextRange range = limit < 0 ? node as ITextRange : TextRange.FromBounds(node.Start, limit);
-                UndoableFormatRange(textView, textBuffer, range);
+                UndoableFormatRange(textView, textBuffer, range, EditorShell.Current);
             }
         }
 
@@ -69,7 +69,7 @@ namespace Microsoft.R.Editor.Formatting {
                 using (var undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer)) {
                     undoAction.Open(Resources.AutoFormat);
                     // Now format the scope
-                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions);
+                    bool changed = RangeFormatter.FormatRange(textView, textBuffer, scope, REditorSettings.FormatOptions, EditorShell.Current);
                     if (indentCaret) {
                         // Formatting may change AST and the caret position so we need to reacquire both
                         caretPoint = REditorDocument.MapCaretPositionFromView(textView);
@@ -101,17 +101,17 @@ namespace Microsoft.R.Editor.Formatting {
             ITextSnapshotLine line = snapshot.GetLineFromLineNumber(lineNumber);
             ITextRange formatRange = new TextRange(line.Start, line.Length);
 
-            UndoableFormatRange(textView, textBuffer, formatRange, exactRange: true);
+            UndoableFormatRange(textView, textBuffer, formatRange, EditorShell.Current, exactRange: true);
         }
 
-        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, bool exactRange = false) {
+        public static void UndoableFormatRange(ITextView textView, ITextBuffer textBuffer, ITextRange formatRange, IEditorShell editorShell, bool exactRange = false) {
             using (var undoAction = EditorShell.Current.CreateCompoundAction(textView, textView.TextBuffer)) {
                 undoAction.Open(Resources.AutoFormat);
                 bool result;
                 if (exactRange) {
-                    result = RangeFormatter.FormatRangeExact(textView, textBuffer, formatRange, REditorSettings.FormatOptions);
+                    result = RangeFormatter.FormatRangeExact(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell);
                 } else {
-                    result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions);
+                    result = RangeFormatter.FormatRange(textView, textBuffer, formatRange, REditorSettings.FormatOptions, editorShell);
                 }
                 if (result) {
                     undoAction.Commit();

@@ -6,14 +6,17 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.Extensions;
 
 namespace Microsoft.Languages.Editor.Tasks {
     /// <summary>
     /// Asynchronous task that start on next idle slot
     /// </summary>
     public sealed class IdleTimeAsyncTask : IDisposable {
+        private readonly IEditorShell _shell;
         private Func<object> _taskAction;
         private Action<object> _callbackAction;
         private Action<object> _cancelAction;
@@ -26,7 +29,9 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         public object Tag { get; private set; }
 
-        public IdleTimeAsyncTask() { }
+        public IdleTimeAsyncTask(IEditorShell shell) {
+            _shell = shell;
+        }
 
         /// <summary>
         /// Asynchronous idle time task constructor
@@ -34,8 +39,9 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
         /// <param name="cancelAction">Callback to invoke if task is canceled</param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction)
-            : this() {
+        /// <param name="shell"></param>
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, IEditorShell shell)
+            : this(shell) {
             Debug.Assert(taskAction != null);
 
             if (taskAction == null)
@@ -51,16 +57,18 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
         /// <param name="callbackAction">Callback to invoke when task completes</param>
-        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction)
-            : this(taskAction, callbackAction, null) {
+        /// <param name="shell"></param>
+        public IdleTimeAsyncTask(Func<object> taskAction, Action<object> callbackAction, IEditorShell shell)
+            : this(taskAction, callbackAction, null, shell) {
         }
 
         /// <summary>
         /// Asynchronous idle time task constructor
         /// </summary>
         /// <param name="taskAction">Task to perform in a background thread</param>
-        public IdleTimeAsyncTask(Func<object> taskAction)
-            : this(taskAction, null, null) {
+        /// <param name="shell"></param>
+        public IdleTimeAsyncTask(Func<object> taskAction, IEditorShell shell)
+            : this(taskAction, null, null, shell) {
         }
 
         /// <summary>
@@ -206,8 +214,8 @@ namespace Microsoft.Languages.Editor.Tasks {
                 _connectedToIdle = true;
                 _idleConnectTime = DateTime.UtcNow;
 
-                EditorShell.Current.Idle += OnIdle;
-                EditorShell.Current.Terminating += OnTerminate;
+                _shell.Idle += OnIdle;
+                _shell.Terminating += OnTerminate;
             }
         }
 
@@ -217,14 +225,16 @@ namespace Microsoft.Languages.Editor.Tasks {
             if (_connectedToIdle) {
                 _connectedToIdle = false;
 
-                EditorShell.Current.Idle -= OnIdle;
-                EditorShell.Current.Terminating -= OnTerminate;
+                _shell.Idle -= OnIdle;
+                _shell.Terminating -= OnTerminate;
             }
         }
 
         [Conditional("DEBUG")]
         private void AssertIsMainThread() {
-            Debug.Assert(EditorShell.Current.IsUnitTestEnvironment || EditorShell.IsUIThread);
+            if (!_shell.IsUnitTestEnvironment) {
+                _shell.AssertIsOnMainThread();
+            }
         }
 
         private bool IsDisposed {

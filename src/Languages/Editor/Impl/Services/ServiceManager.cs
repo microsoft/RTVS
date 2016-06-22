@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Services;
 using Microsoft.VisualStudio.Text;
@@ -61,9 +62,7 @@ namespace Microsoft.Languages.Editor.Services {
         private static void DisposeServiceManagerOnIdle(IPropertyOwner propertyOwner) {
             var sm = FromPropertyOwner(propertyOwner, null);
             if (sm != null) {
-                IdleTimeAction.Create(() => {
-                    sm.Dispose();
-                }, 150, new object());
+                IdleTimeAction.Create(() => sm.Dispose(), 150, new object(), EditorShell.Current);
             }
         }
 

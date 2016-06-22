@@ -31,7 +31,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             EditorTree tree = new EditorTree(textBuffer);
             EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
 
-            ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument);
+            ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument, EditorShell.Current);
 
             ob.EditorDocument.Should().NotBeNull();
             ob.EditorTree.Should().NotBeNull();
@@ -110,7 +110,7 @@ x <- 1
             tree.Build();
             var editorDocument = new EditorDocumentMock(tree);
 
-            var ob = new ROutlineRegionBuilder(editorDocument);
+            var ob = new ROutlineRegionBuilder(editorDocument, EditorShell.Current);
             var rc1 = new OutlineRegionCollection(0);
             ob.BuildRegions(rc1);
 

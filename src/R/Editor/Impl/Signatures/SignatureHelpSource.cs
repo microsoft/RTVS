@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
@@ -20,9 +21,11 @@ using Microsoft.VisualStudio.Text.Editor;
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
         private ITextBuffer _textBuffer;
+        private readonly ICoreShell _shell;
 
-        public SignatureHelpSource(ITextBuffer textBuffer) {
+        public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
             _textBuffer = textBuffer;
+            _shell = shell;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
 
         }
@@ -83,7 +86,7 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         private void TriggerSignatureHelp(object o) {
-            SignatureHelp.TriggerSignatureHelp(o as ITextView);
+            SignatureHelp.TriggerSignatureHelp(o as ITextView, _shell);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
@@ -108,7 +111,7 @@ namespace Microsoft.R.Editor.Signatures {
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
                                        ITrackingSpan span, AstRoot ast, int position) {
-            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo);
+            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo, _shell);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)

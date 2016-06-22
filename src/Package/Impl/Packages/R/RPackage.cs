@@ -128,7 +128,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             System.Threading.Tasks.Task.Run(() => RtvsTelemetry.Current.ReportConfiguration());
 
-            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache));
+            IdleTimeAction.Create(ExpansionsCache.Load, 200, typeof(ExpansionsCache), VsAppShell.Current);
         }
 
         protected override void Dispose(bool disposing) {

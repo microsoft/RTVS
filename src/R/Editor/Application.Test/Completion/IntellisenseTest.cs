@@ -374,7 +374,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                 script.Type("whil");
                 script.DoIdle(300);
 
-                EditorShell.Current.DispatchOnUIThread(() => {
+                script.Shell.DispatchOnUIThread(() => {
                     var session = script.GetCompletionSession();
                     session.Should().NotBeNull();
 
@@ -386,7 +386,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     isSnippet.Should().BeTrue();
 
                     var glyph = completion.IconSource;
-                    var snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
+                    var snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, script.Shell);
                     glyph.Should().Be(snippetGlyph);
                 });
             }
@@ -396,7 +396,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         [Category.Interactive]
         public async Task R_DeclaredVariablesCompletion01() {
             using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
-                var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var provider = script.Shell.ExportProvider.GetExportedValue<IRSessionProvider>();
                 using (var hostScript = new RHostScript(provider)) {
 
                     await ExecuteRCode(hostScript.Session, "zzz111 <- 1\r\n");

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
@@ -40,8 +41,9 @@ namespace Microsoft.R.Editor.Completion {
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker)
-            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker) {
+            ISignatureHelpBroker signatureBroker,
+            ICoreShell shell)
+            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
             _textBuffer = subjectBuffers[0];
 
             ServiceManager.AddService<RCompletionController>(this, TextView);
@@ -75,12 +77,13 @@ namespace Microsoft.R.Editor.Completion {
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker) {
-            RCompletionController completionController = null;
+            ISignatureHelpBroker signatureBroker,
+            ICoreShell shell) {
+            RCompletionController completionController;
 
             completionController = ServiceManager.GetService<RCompletionController>(textView);
             if (completionController == null) {
-                completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker);
+                completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell);
             }
 
             return completionController;

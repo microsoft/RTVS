@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
@@ -41,8 +42,8 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                 if (destructive) {
                     // Allow existing command call to complete so we don't yank projections
                     // from underneath code that expects text buffer to exist, such as formatter.
-                    IdleTimeAction.Cancel(this.GetType());
-                    IdleTimeAction.Create(() => UpdateProjections(), 0, this.GetType());
+                    IdleTimeAction.Cancel(GetType());
+                    IdleTimeAction.Create(UpdateProjections, 0, GetType(), EditorShell.Current);
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);

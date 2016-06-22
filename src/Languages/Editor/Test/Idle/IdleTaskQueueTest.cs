@@ -1,17 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Utilities;
-using Xunit;
 
 namespace Microsoft.Languages.Editor.Test.Services {
     /// <summary>
@@ -22,16 +18,17 @@ namespace Microsoft.Languages.Editor.Test.Services {
         [Test]
         [Category.Languages.Core]
         public void OperationsTest() {
-            List<Result> results = new List<Result>();
+            var results = new List<Result>();
+            var queue = new IdleTimeAsyncTaskQueue(EditorShell.Current);
 
             var ta = new TaskAction(1, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             ta = new TaskAction(2, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             ta = new TaskAction(3, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             RunThreads();
 
@@ -44,17 +41,17 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
             ta = new TaskAction(1, results);
             object o1 = 1;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o1);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o1);
 
             ta = new TaskAction(2, results);
             object o2 = 2;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o2);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o2);
 
             ta = new TaskAction(3, results);
             object o3 = 3;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o3);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o3);
 
-            IdleTimeAsyncTaskQueue.IncreasePriority(o3);
+            queue.IncreasePriority(o3);
             RunThreads();
 
             results.Count.Should().Be(3);

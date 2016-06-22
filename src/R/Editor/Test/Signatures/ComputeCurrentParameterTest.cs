@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Signatures;
@@ -34,7 +35,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
         [Test]
         public async Task ParameterTest_ComputeCurrentParameter01() {
             ITextBuffer textBuffer = new TextBufferMock("aov(", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
@@ -89,7 +90,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             REditorSettings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(bty=1, lt=3)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
@@ -123,7 +124,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             REditorSettings.PartialArgumentNameMatch = false;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();
@@ -152,7 +153,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             REditorSettings.PartialArgumentNameMatch = true;
 
             ITextBuffer textBuffer = new TextBufferMock("legend(an=1)", RContentTypeDefinition.ContentType);
-            SignatureHelpSource source = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource source = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock session = new SignatureHelpSessionMock(textBuffer, 0);
             TextViewMock textView = session.TextView as TextViewMock;
             List<ISignature> signatures = new List<ISignature>();

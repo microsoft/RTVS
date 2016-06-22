@@ -20,15 +20,17 @@ using Microsoft.VisualStudio.Text.Tagging;
 namespace Microsoft.R.Editor.Application.Test.TestShell {
     [ExcludeFromCodeCoverage]
     public sealed partial class TestScript : IDisposable {
+        public IEditorShell Shell => EditorShell.Current;
+
         /// <summary>
         /// Text content of the editor document
         /// </summary>
-        public string EditorText { get { return EditorWindow.CoreEditor.Text; } }
+        public string EditorText => EditorWindow.CoreEditor.Text;
 
         /// <summary>
         /// Editor text document object
         /// </summary>
-        public ITextDocument TextDocument { get { return EditorWindow.CoreEditor.TextDocument; } }
+        public ITextDocument TextDocument => EditorWindow.CoreEditor.TextDocument;
 
         /// <summary>
         /// Editor text buffer
@@ -128,7 +130,7 @@ namespace Microsoft.R.Editor.Application.Test.TestShell {
         }
 
         public IEnumerable<ClassificationSpan> GetClassificationSpans() {
-            var svc = EditorShell.Current.ExportProvider.GetExport<IViewTagAggregatorFactoryService>().Value;
+            var svc = Shell.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
             var aggregator = svc.CreateTagAggregator<IClassificationTag>(EditorWindow.CoreEditor.View);
             var textBuffer = EditorWindow.CoreEditor.View.TextBuffer;
             var snapshot = textBuffer.CurrentSnapshot;

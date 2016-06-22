@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -37,7 +38,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             AstRoot ast = RParser.Parse(content);
             int caretPosition = 15;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 
@@ -62,7 +63,7 @@ x( )
             AstRoot ast = RParser.Parse(content);
             int caretPosition = content.IndexOf("( )")+1;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, EditorShell.Current);
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 

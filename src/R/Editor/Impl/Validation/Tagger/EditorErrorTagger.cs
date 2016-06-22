@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
@@ -28,6 +29,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     /// As the stylesheet changes, this class keeps the list of syntax errors up to date.
     /// </summary>
     public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource {
+        private readonly ICoreShell _shell;
+
         [Import(AllowDefault = true)]
         internal IEditorTaskList TaskList { get; set; }
 
@@ -46,8 +49,9 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         ErrorTagCollection _errorTags;
         private bool _fireCodeMarkerUponCompletion;
 
-        public EditorErrorTagger(ITextBuffer textBuffer) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+        public EditorErrorTagger(ITextBuffer textBuffer, ICoreShell shell) {
+            _shell = shell;
+            _shell.CompositionService.SatisfyImportsOnce(this);
 
             _document = REditorDocument.FromTextBuffer(textBuffer);
             _document.DocumentClosing += OnDocumentClosing;
@@ -74,7 +78,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
             validator.Cleared += OnCleared;
             ResultsQueue = validator.ValidationResults;
-            EditorShell.Current.Idle += OnIdle;
+            _shell.Idle += OnIdle;
 
             ServiceManager.AddService<EditorErrorTagger>(this, textBuffer);
         }
@@ -145,7 +149,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         #region Tree event handlers
         private void OnDocumentClosing(object sender, EventArgs e) {
             if (_textBuffer != null) {
-                EditorShell.Current.Idle -= OnIdle;
+                _shell.Idle -= OnIdle;
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;

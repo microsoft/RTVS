@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.History;
 using Microsoft.R.Editor.Commands;

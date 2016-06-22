@@ -4,9 +4,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Selection;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Operations;
 
 namespace Microsoft.Languages.Editor.Text {
     public static class IncrementalTextChangeApplication {
@@ -69,12 +73,13 @@ namespace Microsoft.Languages.Editor.Text {
             ITextRange formatRange,
             string transactionName,
             ISelectionTracker selectionTracker,
+            IEditorShell editorShell,
             Action additionalAction = null) {
 
             Debug.Assert(oldTokens.Count == newTokens.Count);
             if (oldTokens.Count == newTokens.Count) {
                 ITextSnapshot snapshot = textBuffer.CurrentSnapshot;
-                using (var selectionUndo = new SelectionUndo(selectionTracker, transactionName, automaticTracking: false)) {
+                using (CreateSelectionUndo(selectionTracker, editorShell, transactionName)) {
                     using (ITextEdit edit = textBuffer.CreateEdit()) {
                         if (oldTokens.Count > 0) {
                             // Replace whitespace between tokens in reverse so relative positions match
@@ -101,6 +106,15 @@ namespace Microsoft.Languages.Editor.Text {
                     }
                 }
             }
+        }
+
+        private static IDisposable CreateSelectionUndo(ISelectionTracker selectionTracker, IEditorShell editorShell, string transactionName) {
+            if (editorShell.IsUnitTestEnvironment) {
+                return Disposable.Empty;
+            }
+
+            var textBufferUndoManagerProvider = editorShell.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
+            return new SelectionUndo(selectionTracker, textBufferUndoManagerProvider, transactionName, automaticTracking: false);
         }
     }
 }

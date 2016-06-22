@@ -30,7 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer) {
+            : base(textView, textBuffer, VsAppShell.Current) {
             ServiceManager.AddService(this, textView);
 
             var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));

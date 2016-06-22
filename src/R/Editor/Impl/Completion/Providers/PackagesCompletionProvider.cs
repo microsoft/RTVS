@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Support.Help.Definitions;
@@ -19,13 +20,19 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackagesCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public PackagesCompletionProvider(ICoreShell shell) {
+            _shell = shell;
+        }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic);
+            ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic, _shell);
 
             IEnumerable<IPackageInfo> packages = PackageIndex.Packages;
             foreach (var packageInfo in packages) {

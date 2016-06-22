@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Editor.Formatting {
             return ch == '}';
         }
 
-        public static void HandleAutoformat(ITextView textView, char typedChar) {
+        public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
             if (!REditorSettings.AutoFormat) {
                 return;
             }
@@ -41,7 +42,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer);
+            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, shell);
             if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }

@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Test.Utility;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
@@ -21,7 +22,7 @@ namespace Microsoft.R.Editor.Test.Outline {
                 tree.Build();
 
                 EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
-                ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument);
+                ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument, EditorShell.Current);
                 OutlineRegionCollection rc = new OutlineRegionCollection(0);
                 ob.BuildRegions(rc);
 

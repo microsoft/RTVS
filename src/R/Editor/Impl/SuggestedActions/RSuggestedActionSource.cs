@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
@@ -36,10 +37,10 @@ namespace Microsoft.R.Editor.SuggestedActions {
             ServiceManager.AddService(this, _textView);
         }
 
-        public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer) {
+        public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
             var suggestedActionsSource = ServiceManager.GetService<RSuggestedActionSource>(textView);
             if (suggestedActionsSource == null) {
-                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany().Select(p => p.Value);
+                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany(coreShell.CompositionService).Select(p => p.Value);
                 suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders);
             }
             return suggestedActionsSource;

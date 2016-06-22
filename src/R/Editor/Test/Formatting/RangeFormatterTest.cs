@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Formatting;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(string.Empty, out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             actual.Should().BeEmpty();
@@ -33,7 +34,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c(,,)", out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c(,,)";
 
@@ -45,7 +46,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[,,]", out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[,,]";
 
@@ -57,7 +58,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[,,]]", out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[,,]]";
 
@@ -69,7 +70,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,,]]", out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[a,,]]";
 
@@ -81,7 +82,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("c[[a,b,]]", out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.EmptyRange, new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected = "c[[a, b,]]";
 
@@ -94,7 +95,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
         public void FormatConditional(string original, int start, int end, string expected) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(start, end), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(start, end), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
@@ -110,7 +111,7 @@ x<-1
 }";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('x'), 1), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('x'), 1), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             string expected =
@@ -128,7 +129,7 @@ x<-1
             string original = "if (x > 1)\r\ny<-2";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('y'), 0), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf('y'), 0), new RFormatOptions(), EditorShell.Current);
 
             string expected = "if (x > 1)\r\n    y <- 2";
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
@@ -141,7 +142,7 @@ x<-1
             AstRoot ast;
             string original = "if(true){\n} else {}\n";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             string expected = "if(true){\n} else { }\n";
@@ -157,7 +158,7 @@ x<-1
 } else {}
 ";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("else"), 0), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             string expected =
@@ -176,7 +177,7 @@ x<-1
 foo(cache=TRUE)
 ";
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, original.LastIndexOf("foo", StringComparison.Ordinal)), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(0, original.LastIndexOf("foo", StringComparison.Ordinal)), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
 
             string expected =
@@ -195,7 +196,7 @@ foo(cache=TRUE)
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(start, end), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(start, end), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             actual.Should().Be(expected);
         }
@@ -212,7 +213,7 @@ if (x != nrx)
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
-            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("if (z"), 0), new RFormatOptions());
+            RangeFormatter.FormatRange(textView, textView.TextBuffer, new TextRange(original.IndexOf("if (z"), 0), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected =
 @"
@@ -234,7 +235,7 @@ if (z < ncx)
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(
-                                  original.IndexOf("z"), original.IndexOf("a") + 1), new RFormatOptions());
+                                  original.IndexOf("z"), original.IndexOf("a") + 1), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected =
 @"x %>% y %>%
@@ -251,7 +252,7 @@ if (z < ncx)
             ITextView textView = TextViewTest.MakeTextView(original, out ast);
 
             RangeFormatter.FormatRange(textView, textView.TextBuffer, TextRange.FromBounds(
-                                  original.IndexOf("%>% z"), original.IndexOf("a") + 2), new RFormatOptions());
+                                  original.IndexOf("%>% z"), original.IndexOf("a") + 2), new RFormatOptions(), EditorShell.Current);
             string actual = textView.TextBuffer.CurrentSnapshot.GetText();
             string expected =
 @"((x %>% y)

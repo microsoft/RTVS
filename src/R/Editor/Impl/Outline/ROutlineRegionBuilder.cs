@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Outline;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Definitions;
@@ -42,8 +43,8 @@ namespace Microsoft.R.Editor.Outline {
         internal IREditorDocument EditorDocument { get; }
         internal IEditorTree EditorTree { get; }
 
-        public ROutlineRegionBuilder(IREditorDocument document)
-            : base(document.EditorTree.TextBuffer) {
+        public ROutlineRegionBuilder(IREditorDocument document, IEditorShell shell)
+            : base(document.EditorTree.TextBuffer, shell) {
             EditorDocument = document;
             EditorDocument.DocumentClosing += OnDocumentClosing;
 

@@ -72,7 +72,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
                                 try { File.Delete(tempFile); } catch(IOException) { } catch(AccessViolationException) { }
                             }
-                        }, 50, this.GetType());
+                        }, 50, GetType(), EditorShell.Current);
 
                         return _result;
                      }

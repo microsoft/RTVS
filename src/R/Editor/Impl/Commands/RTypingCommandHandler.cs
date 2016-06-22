@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Services;
@@ -17,9 +18,11 @@ namespace Microsoft.R.Editor.Commands {
     /// to receive typing as commands
     /// </summary>
     internal class RTypingCommandHandler : TypingCommandHandler {
+        private readonly ICoreShell _shell;
 
-        public RTypingCommandHandler(ITextView textView)
+        public RTypingCommandHandler(ITextView textView, ICoreShell shell)
             : base(textView) {
+            _shell = shell;
         }
 
         #region ICommand
@@ -28,7 +31,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 char typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, typedChar);
+                    AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
                 }
             }
             return base.Invoke(group, id, inputArg, ref outputArg);
@@ -38,7 +41,7 @@ namespace Microsoft.R.Editor.Commands {
             if (group == VSConstants.VSStd2K) {
                 char typedChar = GetTypedChar(group, id, inputArg);
                 if (AutoFormat.IsPostProcessAutoformatTriggerCharacter(typedChar)) {
-                    AutoFormat.HandleAutoformat(TextView, typedChar);
+                    AutoFormat.HandleAutoformat(TextView, _shell, typedChar);
                 }
 
                 base.PostProcessInvoke(result, group, id, inputArg, ref outputArg);
@@ -46,9 +49,6 @@ namespace Microsoft.R.Editor.Commands {
         }
         #endregion
 
-        protected override CompletionController CompletionController {
-            get { return ServiceManager.GetService<RCompletionController>(TextView); }
-        }
-
+        protected override CompletionController CompletionController => ServiceManager.GetService<RCompletionController>(TextView);
     }
 }

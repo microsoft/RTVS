@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -18,6 +19,7 @@ namespace Microsoft.Languages.Editor.Completion {
     /// Base completion controller. Not language specific.
     /// </summary>
     public abstract class CompletionController : IIntellisenseController {
+        private readonly ICoreShell _shell;
         public const string AutoShownCompletion = "AutoShownCompletion";
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
@@ -34,7 +36,9 @@ namespace Microsoft.Languages.Editor.Completion {
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker) {
+            ISignatureHelpBroker signatureBroker,
+            ICoreShell shell) {
+            _shell = shell;
             TextView = textView;
 
             SubjectBuffers = subjectBuffers;
@@ -150,7 +154,7 @@ namespace Microsoft.Languages.Editor.Completion {
         /// Called when the user executes a command that should show the signature help tooltip
         /// </summary>
         public virtual void OnShowSignatureHelp() {
-            DismissSignatureSession(TextView);
+            DismissSignatureSession(TextView, _shell);
             ShowSignature(autoShown: false);
         }
 
@@ -181,7 +185,7 @@ namespace Microsoft.Languages.Editor.Completion {
                 }
 
                 if (HasActiveSignatureSession(TextView) && CanDismissSignatureOnCommit()) {
-                    DismissSignatureSession(TextView);
+                    DismissSignatureSession(TextView, _shell);
                 }
             }
 
@@ -224,15 +228,15 @@ namespace Microsoft.Languages.Editor.Completion {
         /// <summary>
         /// Is there an active completion session? (is the dropdown showing?)
         /// </summary>
-        public virtual bool HasActiveCompletionSession {
-            get { return CompletionSession != null && !CompletionSession.IsDismissed; }
-        }
+        public virtual bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
+
+        protected bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, _shell);
 
         /// <summary>
         /// Is there an active signature help session? (is the tooltip showing?)
         /// </summary>
-        public static bool HasActiveSignatureSession(ITextView textView) {
-            ISignatureHelpBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+        public static bool HasActiveSignatureSession(ITextView textView, ICoreShell shell) {
+            ISignatureHelpBroker broker = shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
             return broker.IsSignatureHelpActive(textView);
         }
 
@@ -241,12 +245,12 @@ namespace Microsoft.Languages.Editor.Completion {
         /// </summary>
         public virtual void DismissAllSessions() {
             DismissCompletionSession();
-            DismissSignatureSession(TextView);
+            DismissSignatureSession(TextView, _shell);
             DismissQuickInfoSession(TextView);
         }
 
-        public static void DismissQuickInfoSession(ITextView textView) {
-            IQuickInfoBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<IQuickInfoBroker>();
+        public void DismissQuickInfoSession(ITextView textView) {
+            IQuickInfoBroker broker = _shell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
             var sessions = broker.GetSessions(textView);
             foreach (var s in sessions) {
                 s.Dismiss();
@@ -447,9 +451,9 @@ namespace Microsoft.Languages.Editor.Completion {
             ShowCompletion(autoShownCompletion);
         }
 
-        public static void DismissSignatureSession(ITextView textView) {
-            if (HasActiveSignatureSession(textView)) {
-                ISignatureHelpBroker broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+        public static void DismissSignatureSession(ITextView textView, ICoreShell shell) {
+            if (HasActiveSignatureSession(textView, shell)) {
+                ISignatureHelpBroker broker = shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
                 broker.DismissAllSessions(textView);
             }
         }

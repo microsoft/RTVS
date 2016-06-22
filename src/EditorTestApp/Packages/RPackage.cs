@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
@@ -23,9 +24,6 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
-        public TestRTextViewConnectionListener() {
-        }
-
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
             InitEditorInstance(textBuffer);
             base.OnTextBufferCreated(textBuffer);

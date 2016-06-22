@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
@@ -366,7 +367,7 @@ aaa(a
             }
 
             CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer);
+            RCompletionSource completionSource = new RCompletionSource(textBuffer, EditorShell.Current);
 
             completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }

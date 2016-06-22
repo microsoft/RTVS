@@ -11,7 +11,7 @@ namespace Microsoft.Languages.Editor.Tasks {
     /// pool tasks only start on idle and queued task may be canceled if needed.
     /// There may be one or more tasks running in parallel depending on number of CPUs avaialable.
     /// </summary>
-    public static class IdleTimeAsyncTaskQueue {
+    public class IdleTimeAsyncTaskQueue {
         class TaskQueueEntry {
             public Func<object> TaskAction { get; private set; }
             public Action<object> CallbackAction { get; private set; }
@@ -26,11 +26,13 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        private static List<TaskQueueEntry> _taskQueue = new List<TaskQueueEntry>();
-        private static IdleTimeAsyncTask[] _workerTasks;
-        private static bool _connectedToIdle = false;
+        private readonly IEditorShell _shell;
+        private readonly List<TaskQueueEntry> _taskQueue = new List<TaskQueueEntry>();
+        private readonly IdleTimeAsyncTask[] _workerTasks;
+        private bool _connectedToIdle = false;
 
-        static IdleTimeAsyncTaskQueue() {
+        public IdleTimeAsyncTaskQueue(IEditorShell shell) {
+            _shell = shell;
             var logicalCpuCount = Environment.ProcessorCount;
 
             var taskCount = logicalCpuCount / 4;
@@ -40,7 +42,7 @@ namespace Microsoft.Languages.Editor.Tasks {
             _workerTasks = new IdleTimeAsyncTask[taskCount];
 
             for (int i = 0; i < _workerTasks.Length; i++) {
-                _workerTasks[i] = new IdleTimeAsyncTask();
+                _workerTasks[i] = new IdleTimeAsyncTask(_shell);
             }
         }
 
@@ -49,7 +51,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// On next idle time if thread is available it will take task from the head of the queue and execute it. 
         /// There may be one or more tasks running in parallel depending on number of CPUs avaialable.
         /// </summary>
-        public static void Enqueue(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, object tag) {
+        public void Enqueue(Func<object> taskAction, Action<object> callbackAction, Action<object> cancelAction, object tag) {
             _taskQueue.Add(new TaskQueueEntry(taskAction, callbackAction, cancelAction, tag));
             ConnectToIdle();
         }
@@ -59,7 +61,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// On next idle time if thread is available it will take task from the head of the queue and execute it. 
         /// There may be one or more tasks running in parallel depending on number of CPUs avaialable.
         /// </summary>
-        public static void Enqueue(Func<object> taskAction, Action<object> callbackAction, object tag) {
+        public void Enqueue(Func<object> taskAction, Action<object> callbackAction, object tag) {
             Enqueue(taskAction, callbackAction, null, tag);
         }
 
@@ -67,7 +69,7 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// Removes tasks associated with a give callback
         /// </summary>
         /// <param name="taskAction"></param>
-        public static void CancelTasks(object tag) {
+        public void CancelTasks(object tag) {
             if (_taskQueue.Count > 0) {
                 for (int i = _taskQueue.Count - 1; i >= 0; i--) {
                     if (_taskQueue[i].Tag == tag)
@@ -79,7 +81,7 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        public static void IncreasePriority(object tag) {
+        public void IncreasePriority(object tag) {
             for (int i = 0; i < _taskQueue.Count; i++) {
                 var task = _taskQueue[i];
 
@@ -90,14 +92,14 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        private static void ConnectToIdle() {
+        private void ConnectToIdle() {
             if (!_connectedToIdle) {
                 _connectedToIdle = true;
-                EditorShell.Current.Idle += OnIdle;
+                _shell.Idle += OnIdle;
             }
         }
 
-        private static void DisconnectFromIdle() {
+        private void DisconnectFromIdle() {
             if (_connectedToIdle) {
                 _connectedToIdle = false;
 
@@ -105,14 +107,14 @@ namespace Microsoft.Languages.Editor.Tasks {
                 //   Otherwise, they could be pointing to closed documents/views
                 //   or other stale data that the Tag or callbacks hold onto.
                 for (int i = 0; i < _workerTasks.Length; i++) {
-                    _workerTasks[i] = new IdleTimeAsyncTask();
+                    _workerTasks[i] = new IdleTimeAsyncTask(_shell);
                 }
 
-                EditorShell.Current.Idle -= OnIdle;
+                _shell.Idle -= OnIdle;
             }
         }
 
-        private static void OnIdle(object sender, EventArgs e) {
+        private void OnIdle(object sender, EventArgs e) {
             for (int i = 0; i < _taskQueue.Count; i++) {
                 TaskQueueEntry taskEntry = _taskQueue[i];
                 IdleTimeAsyncTask worker;
@@ -133,7 +135,7 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        private static bool GetAvailableTask(object tag, out IdleTimeAsyncTask worker) {
+        private bool GetAvailableTask(object tag, out IdleTimeAsyncTask worker) {
             // Ensure no current workers are processing work items with the same tag.
             // This ensures object thread affinity so no two HTML validators 
             // will run in the same document.

@@ -3,9 +3,11 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Engine;
@@ -23,9 +25,11 @@ namespace Microsoft.R.Editor.Completion {
     /// </summary>
     public sealed class RCompletionSource : ICompletionSource {
         private ITextBuffer _textBuffer;
+        private readonly ICoreShell _shell;
 
-        public RCompletionSource(ITextBuffer textBuffer) {
+        public RCompletionSource(ITextBuffer textBuffer, ICoreShell shell) {
             _textBuffer = textBuffer;
+            _shell = shell;
         }
 
         /// <summary>
@@ -34,7 +38,7 @@ namespace Microsoft.R.Editor.Completion {
         /// <param name="session">Completion session</param>
         /// <param name="completionSets">Completion sets to populate</param>
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets) {
-            Debug.Assert(EditorShell.IsUIThread);
+            _shell.AssertIsOnMainThread();
 
             IREditorDocument doc = REditorDocument.TryFromTextBuffer(_textBuffer);
             if (doc == null) {
@@ -72,7 +76,7 @@ namespace Microsoft.R.Editor.Completion {
                 autoShownCompletion = session.TextView.Properties.GetProperty<bool>(CompletionController.AutoShownCompletion);
 
             IReadOnlyCollection<IRCompletionListProvider> providers =
-                RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion);
+                RCompletionEngine.GetCompletionForLocation(context, autoShownCompletion, _shell);
 
             // Position is in R as is the applicable spa, so no need to map down
             Span? applicableSpan = GetApplicableSpan(position, session);

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.ObjectModel;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -24,14 +25,15 @@ namespace Microsoft.R.Editor.Signatures {
         private IParameter _currentParameter;
         private ITrackingSpan _applicableToSpan;
         private int _initialPosition;
-        private ISignatureInfo _signatureInfo;
+        private readonly ISignatureInfo _signatureInfo;
+        private readonly ICoreShell _shell;
 
         public string FunctionName { get; private set; }
 
-        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName,
-                             string documentation, ISignatureInfo signatureInfo) {
+        public SignatureHelp(ISignatureHelpSession session, ITextBuffer subjectBuffer, string functionName, string documentation, ISignatureInfo signatureInfo, ICoreShell shell) {
             FunctionName = functionName;
             _signatureInfo = signatureInfo;
+            _shell = shell;
 
             Documentation = documentation;
             Parameters = null;
@@ -138,7 +140,7 @@ namespace Microsoft.R.Editor.Signatures {
 
                 int position = start + newLength;
                 if (position < _initialPosition) {
-                    SignatureHelp.DismissSession(TextView);
+                    DismissSession(TextView, _shell);
                 } else {
                     UpdateCurrentParameter();
                 }
@@ -150,7 +152,7 @@ namespace Microsoft.R.Editor.Signatures {
                 if (SignatureHelper.IsSameSignatureContext(TextView, SubjectBuffer)) {
                     UpdateCurrentParameter();
                 } else {
-                    SignatureHelp.DismissSession(TextView, retrigger: true);
+                    DismissSession(TextView, _shell, retrigger: true);
                 }
             }
             else {
@@ -174,7 +176,7 @@ namespace Microsoft.R.Editor.Signatures {
                             }
                         }, null, this.GetType());
                     } else {
-                        SignatureHelp.DismissSession(TextView);
+                        DismissSession(TextView, _shell);
                     }
                 }
             }

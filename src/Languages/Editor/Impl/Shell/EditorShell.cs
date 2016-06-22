@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
@@ -43,8 +42,6 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        public static bool IsUIThread => Current == null || Current.MainThread == Thread.CurrentThread;
-
         /// <summary>
         /// Provides a way to execute action on UI thread while
         /// UI thread is waiting for the completion of the action.
@@ -62,6 +59,7 @@ namespace Microsoft.Languages.Editor.Shell {
         }
 
         public static ISettingsStorage GetSettings(string contentTypeName) {
+            ICompositionCatalog shell = Current;
             ISettingsStorage settingsStorage = null;
 
             lock (_lock) {
@@ -72,26 +70,26 @@ namespace Microsoft.Languages.Editor.Shell {
 
             // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var contentTypeRegistry = shell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
 
             var contentType = contentTypeRegistry.GetContentType(contentTypeName);
             Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
+            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(shell.CompositionService, contentType);
 
             if (settingsStorage == null) {
-                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(contentType);
+                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(shell.CompositionService, contentType);
             }
 
             if (settingsStorage == null) {
-                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (storages.Count() > 0)
+                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(shell.CompositionService, contentType);
+                if (storages.Any())
                     settingsStorage = storages.First().Value;
             }
 
             if (settingsStorage == null) {
-                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (readonlyStorages.Count() > 0)
+                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(shell.CompositionService, contentType);
+                if (readonlyStorages.Any())
                     settingsStorage = readonlyStorages.First().Value;
             }
 

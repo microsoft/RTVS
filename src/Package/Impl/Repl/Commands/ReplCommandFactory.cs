@@ -18,22 +18,23 @@ using Microsoft.VisualStudio.Text.Operations;
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class ReplCommandFactory : ICommandFactory {
         public IEnumerable<ICommand> GetCommands(ITextView textView, ITextBuffer textBuffer) {
-            var exportProvider = VsAppShell.Current.ExportProvider;
+            var shell = VsAppShell.Current;
+            var exportProvider = shell.ExportProvider;
             var interactiveWorkflowProvider = exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             var interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
             var completionBroker = exportProvider.GetExportedValue<ICompletionBroker>();
             var editorFactory = exportProvider.GetExportedValue<IEditorOperationsFactoryService>();
 
             return new ICommand[] {
-                new GotoBraceCommand(textView, textBuffer),
+                new GotoBraceCommand(textView, textBuffer, shell),
                 new WorkingDirectoryCommand(interactiveWorkflow),
                 new HistoryNavigationCommand(textView, interactiveWorkflow, completionBroker, editorFactory),
-                new ReplFormatDocumentCommand(textView, textBuffer),
-                new FormatSelectionCommand(textView, textBuffer),
-                new FormatOnPasteCommand(textView, textBuffer),
+                new ReplFormatDocumentCommand(textView, textBuffer, shell),
+                new FormatSelectionCommand(textView, textBuffer, shell),
+                new FormatOnPasteCommand(textView, textBuffer, shell),
                 new SendToReplCommand(textView, interactiveWorkflow),
                 new ClearReplCommand(textView, interactiveWorkflow),
-                new RTypingCommandHandler(textView),
+                new RTypingCommandHandler(textView, shell),
                 new RCompletionCommandHandler(textView),
                 new ExecuteCurrentCodeCommand(textView, interactiveWorkflow),
                 new PasteCurrentCodeCommand(textView, interactiveWorkflow),

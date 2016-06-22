@@ -3,10 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch.Definitions;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -17,16 +17,18 @@ namespace Microsoft.Languages.Editor.BraceMatch {
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged;
 
         private ITextBuffer _textBuffer;
+        private readonly ICoreShell _shell;
         private ITextView _textView;
         private SnapshotPoint? _currentChar;
         private bool _highlighted = false;
         private IBraceMatcher _braceMatcher;
 
-        public BraceHighlighter(ITextView view, ITextBuffer textBuffer) {
+        public BraceHighlighter(ITextView view, ITextBuffer textBuffer, ICoreShell shell) {
             _textBuffer = textBuffer;
             _textView = view;
+            _shell = shell;
 
-            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(EditorShell.Current.CompositionService);
+            var importComposer = new ContentTypeImportComposer<IBraceMatcherProvider>(_shell.CompositionService);
             var braceMatcherProvider = importComposer.GetImport(textBuffer.ContentType.TypeName);
             if (braceMatcherProvider != null) {
                 _braceMatcher = braceMatcherProvider.CreateBraceMatcher(view, textBuffer);
@@ -40,14 +42,14 @@ namespace Microsoft.Languages.Editor.BraceMatch {
 
         void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             if (CanHighlight(_textView) || _highlighted) {
-                IdleTimeAction.Create(() => UpdateAtCaretPosition(), 150, this);
+                IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _shell);
             }
         }
 
         void OnViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e) {
             if (e.NewSnapshot != e.OldSnapshot) {
                 if (CanHighlight(_textView) || _highlighted) {
-                    IdleTimeAction.Create(() => UpdateAtCaretPosition(), 150, this);
+                    IdleTimeAction.Create(UpdateAtCaretPosition, 150, this, _shell);
                 }
             }
         }

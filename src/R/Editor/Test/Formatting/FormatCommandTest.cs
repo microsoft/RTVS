@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
@@ -30,7 +31,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextBuffer textBuffer = new TextBufferMock(original, RContentTypeDefinition.ContentType);
             ITextView textView = new TextViewMock(textBuffer);
 
-            using (var command = new FormatDocumentCommand(textView, textBuffer)) {
+            using (var command = new FormatDocumentCommand(textView, textBuffer, EditorShell.Current)) {
                 var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
                 status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -48,7 +49,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, EditorShell.Current)) {
                 command.ClipboardDataProvider = clipboard;
 
                 var status = command.Status(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste);
@@ -75,7 +76,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, EditorShell.Current)) {
                 command.ClipboardDataProvider = clipboard;
 
                 clipboard.Format = DataFormats.UnicodeText;

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Shell;
 
@@ -13,11 +14,13 @@ namespace Microsoft.Languages.Editor.Tasks {
     public class IdleTimeAction {
         static Dictionary<object, IdleTimeAction> _idleActions = new Dictionary<object, IdleTimeAction>();
 
-        Action _action;
-        int _delay = 100;
+        private readonly Action _action;
+        private readonly int _delay;
+        private readonly ICoreShell _shell;
         bool _connectedToIdle = false;
         DateTime _idleConnectTime;
         object _tag;
+
 
         /// <summary>
         /// Create delayed idle time action
@@ -25,11 +28,12 @@ namespace Microsoft.Languages.Editor.Tasks {
         /// <param name="action">Action to execute on idle</param>
         /// <param name="delay">Minimum number of milliseconds to wait before executing the action</param>
         /// <param name="tag">Object that uniquely identifies the action. Typically creator object.</param>
-        public static void Create(Action action, int delay, object tag) {
+        /// <param name="shell"></param>
+        public static void Create(Action action, int delay, object tag, ICoreShell shell) {
             IdleTimeAction existingAction;
 
             if (!_idleActions.TryGetValue(tag, out existingAction)) {
-                existingAction = new IdleTimeAction(action, delay, tag);
+                existingAction = new IdleTimeAction(action, delay, tag, shell);
                 _idleActions[tag] = existingAction;
             }
         }
@@ -47,10 +51,11 @@ namespace Microsoft.Languages.Editor.Tasks {
             }
         }
 
-        private IdleTimeAction(Action action, int delay, object tag) {
+        private IdleTimeAction(Action action, int delay, object tag, ICoreShell shell) {
             _action = action;
             _delay = delay;
             _tag = tag;
+            _shell = shell;
 
             ConnectToIdle();
         }
@@ -66,7 +71,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         void ConnectToIdle() {
             if (!_connectedToIdle) {
-                EditorShell.Current.Idle += OnIdle;
+                _shell.Idle += OnIdle;
 
                 _idleConnectTime = DateTime.UtcNow;
                 _connectedToIdle = true;
@@ -75,7 +80,7 @@ namespace Microsoft.Languages.Editor.Tasks {
 
         void DisconnectFromIdle() {
             if (_connectedToIdle) {
-                EditorShell.Current.Idle -= OnIdle;
+                _shell.Idle -= OnIdle;
                 _connectedToIdle = false;
             }
         }
