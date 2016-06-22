@@ -10,7 +10,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
@@ -29,7 +28,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
-using static Microsoft.VisualStudio.Shell.Package;
 using VsPackage = Microsoft.VisualStudio.Shell.Package;
 using IServiceProvider = System.IServiceProvider;
 
@@ -58,10 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         private void Initialize() {
             MainThread = Thread.CurrentThread;
             MainThreadDispatcher = Dispatcher.FromThread(MainThread);
-
-            IComponentModel componentModel = VsPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
-            CompositionService = componentModel.DefaultCompositionService;
-            ExportProvider = componentModel.DefaultExportProvider;
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
@@ -106,6 +100,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
             var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
             var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
+            instance.CompositionService = componentModel.DefaultCompositionService;
+            instance.ExportProvider = componentModel.DefaultExportProvider;
             return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
 
