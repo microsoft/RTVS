@@ -1,8 +1,9 @@
 # Contributing to RTVS
 
 ## Code of Conduct
-This project's code of conduct can be found in the [CODE_OF_CONDUCT.md file](CODE_OF_CONDUCT.md)
-(v1.4.0 of the http://contributor-covenant.org/ CoC).
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact
+[opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Contributor License Agreement
 If your contribution is large enough, you will be asked to sign the Microsoft CLA (the CLA bot will tell you if it's necessary).
@@ -30,7 +31,7 @@ git clone --recursive https://github.com/Microsoft/RTVS.git
 The remaining dependencies are referenced as NuGet packages, and will be automatically downloaded by VS during the build.
 
 ### First build and switching between Visual Studio versions
-RTVS can be built for *Visual Studio 2015* aka *VS14* and *Visual Studio 15 Preview* aka *VS15*. 	
+RTVS can be built for *Visual Studio 2015* aka *VS14* and *Visual Studio 15 Preview* aka *VS15*.    
 Accordingly, to build for the former, R.sln must be opened in VS14, and to build the latter, it has to be opened in VS15.
 
 Some of the nuget dependencies for VS14 and VS15 are incompatible:
