@@ -10,7 +10,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
@@ -29,6 +28,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using static System.FormattableString;
+using VsPackage = Microsoft.VisualStudio.Shell.Package;
 using IServiceProvider = System.IServiceProvider;
 
 namespace Microsoft.VisualStudio.R.Package.Shell {
@@ -37,27 +37,30 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
     /// such as composition container, export provider, global VS IDE
     /// services and so on.
     /// </summary>
+    [Export(typeof(ICoreShell))]
+    [Export(typeof(IEditorShell))]
     [Export(typeof(IApplicationShell))]
     public sealed class VsAppShell : IApplicationShell, IMainThread, IIdleTimeService, IDisposable {
-        private static readonly Lazy<VsAppShell> _instance = Lazy.Create(() =>  new VsAppShell());
-
+        private static VsAppShell _instance;
         private static IApplicationShell _testShell;
         private IdleTimeSource _idleTimeSource;
 
-        public VsAppShell() {
-            ThreadHelper.ThrowIfNotOnUIThread("VsEditorShell constructor");
+        public static void EnsureInitialized() {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var instance = GetInstance();
+            if (instance.MainThread == null) {
+                instance.Initialize();
+            }
+        }
+
+        private void Initialize() {
             MainThread = Thread.CurrentThread;
             MainThreadDispatcher = Dispatcher.FromThread(MainThread);
-
-            IComponentModel componentModel = RPackage.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
-            CompositionService = componentModel.DefaultCompositionService;
-            ExportProvider = componentModel.DefaultExportProvider;
 
             _idleTimeSource = new IdleTimeSource();
             _idleTimeSource.OnIdle += OnIdle;
             _idleTimeSource.OnTerminateApp += OnTerminateApp;
 
-            DetemineTestEnvironment();
             EditorShell.Current = this;
         }
 
@@ -68,11 +71,12 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static IApplicationShell Current {
             get {
-                if(_testShell == null && !_instance.IsValueCreated) {
+                if(_testShell == null && _instance == null) {
                     // Try test environment
                     CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
                 }
-                return _testShell ?? _instance.Value;
+
+                return _testShell ?? GetInstance();
             }
             internal set {
                 // Normally only called in test cases when package
@@ -80,13 +84,25 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 // In this case test code provides replacement shell
                 // which we then pass to any other shell-type objects
                 // to use.
-                if (_instance.IsValueCreated) {
+                if (_instance != null) {
                     throw new InvalidOperationException("Cannot set test shell when real one is already there.");
                 }
                 if (_testShell == null) {
                     _testShell = value;
                 }
             }
+        }
+
+        private static VsAppShell GetInstance() {
+            if (_instance != null) {
+                return _instance;
+            }
+
+            var componentModel = (IComponentModel)VsPackage.GetGlobalService(typeof(SComponentModel));
+            var instance = (VsAppShell)componentModel.DefaultExportProvider.GetExportedValue<IApplicationShell>();
+            instance.CompositionService = componentModel.DefaultCompositionService;
+            instance.ExportProvider = componentModel.DefaultExportProvider;
+            return Interlocked.CompareExchange(ref _instance, instance, null) ?? instance;
         }
 
         #region ICompositionCatalog
@@ -116,7 +132,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 return sp.GetService(type ?? typeof(T)) as T;
             }
 
-            return VisualStudio.Shell.Package.GetGlobalService(type ?? typeof(T)) as T;
+            return VsPackage.GetGlobalService(type ?? typeof(T)) as T;
         }
 
         /// <summary>
@@ -143,13 +159,13 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         }
 
 
-        private Dispatcher MainThreadDispatcher { get; }
+        private Dispatcher MainThreadDispatcher { get; set; }
 
         /// <summary>
         /// Provides access to the application main thread, so users can know if the task they are trying
         /// to execute is executing from the right thread.
         /// </summary>
-        public Thread MainThread { get; }
+        public Thread MainThread { get; private set; }
 
         /// <summary>
         /// Fires when host application enters idle state.
@@ -244,7 +260,6 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         public ITelemetryService TelemetryService => RtvsTelemetry.Current.TelemetryService;
 
         public bool IsUnitTestEnvironment { get; set; }
-        public bool IsUITestEnvironment { get; set; }
         #endregion
 
         #region IIdleTimeService
@@ -414,14 +429,8 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             return OLEMSGBUTTON.OLEMSGBUTTON_OK;
         }
 
-        // Check if test assemblies are loaded into the VS process
-        private void DetemineTestEnvironment() {
-            //TODO: check for VS Test host
-            this.IsUITestEnvironment = false;
-        }
-
         public static IVsPackage EnsurePackageLoaded(Guid guidPackage) {
-            var shell = (IVsShell)VisualStudio.Shell.Package.GetGlobalService(typeof(IVsShell));
+            var shell = (IVsShell)VsPackage.GetGlobalService(typeof(IVsShell));
             var guid = guidPackage;
             IVsPackage package;
             int hr = ErrorHandler.ThrowOnFailure(shell.IsPackageLoaded(ref guid, out package), VSConstants.E_FAIL);

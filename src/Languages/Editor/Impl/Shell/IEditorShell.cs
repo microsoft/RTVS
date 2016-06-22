@@ -45,11 +45,6 @@ namespace Microsoft.Languages.Editor.Shell {
         bool IsUnitTestEnvironment { get; }
 
         /// <summary>
-        /// Tells if code runs in UI test environment
-        /// </summary>
-        bool IsUITestEnvironment { get; }
-
-        /// <summary>
         /// Forces idle time processing
         /// </summary>
         void DoIdle();

@@ -100,8 +100,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override void Initialize() {
             Current = this;
 
-            // Force app shell creation before everything else
-            var shell = VsAppShell.Current;
+            VsAppShell.EnsureInitialized();
             if (IsCommandLineMode()) {
                 return;
             }

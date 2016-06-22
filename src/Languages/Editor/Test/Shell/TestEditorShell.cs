@@ -54,7 +54,6 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public bool IsUnitTestEnvironment { get; set; } = true;
-        public bool IsUITestEnvironment { get; set; } = false;
         public ITelemetryService TelemetryService { get; }
         #endregion
 
