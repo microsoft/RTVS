@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
@@ -15,14 +16,18 @@ namespace Microsoft.R.Editor.Signatures {
         public static void TriggerSignatureHelp(ITextView textView) {
             CompletionController.DismissSignatureSession(textView);
             var rcc = RCompletionController.FromTextView(textView);
-            rcc.TriggerSignatureHelp();
+            // Since this call may come async via dispatcher the editor
+            // window may be already closed at this point.
+            rcc?.TriggerSignatureHelp();
         }
 
         public static void DismissSession(ITextView textView, bool retrigger = false) {
             CompletionController.DismissSignatureSession(textView);
             if (retrigger) {
                 var rcc = RCompletionController.FromTextView(textView);
-                rcc.TriggerSignatureHelp();
+                // Since this call may come async via dispatcher the editor
+                // window may be already closed at this point.
+                rcc?.TriggerSignatureHelp();
             }
         }
 

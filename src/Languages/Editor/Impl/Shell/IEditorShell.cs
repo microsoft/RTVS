@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Controller;
@@ -47,6 +48,6 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <summary>
         /// Forces idle time processing
         /// </summary>
-        void DoIdle();
+        void DoIdle(Thread thread = null);
     }
 }

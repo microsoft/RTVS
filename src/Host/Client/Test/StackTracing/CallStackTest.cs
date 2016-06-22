@@ -97,6 +97,8 @@ namespace Microsoft.R.StackTracing.Test {
         [Category.R.StackTracing]
         public async Task FrameChildren() {
             var tracer = await _session.TraceExecutionAsync();
+            _session.IsHostRunning.Should().BeTrue(because: "Host is not running.");
+
             using (var sf = new SourceFile("x <- 1; y <- 2; browser()")) {
                 await sf.Source(_session);
                 await _session.NextPromptShouldBeBrowseAsync();

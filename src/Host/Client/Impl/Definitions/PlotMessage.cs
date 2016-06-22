@@ -17,11 +17,11 @@ namespace Microsoft.R.Host.Client {
 
         public bool IsClearAll => string.IsNullOrEmpty(FilePath);
 
-        public bool IsPlot => new FileInfo(FilePath).Length > 0;
+        public bool IsPlot => File.Exists(FilePath) && new FileInfo(FilePath).Length > 0;
 
         /// <summary>
         /// A zero-sized file means a blank image, ie. the plot could not be rendered.
         /// </summary>
-        public bool IsError => new FileInfo(FilePath).Length == 0;
+        public bool IsError => !File.Exists(FilePath) || new FileInfo(FilePath).Length == 0;
     }
 }

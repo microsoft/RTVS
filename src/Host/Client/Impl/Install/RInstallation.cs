@@ -167,7 +167,7 @@ namespace Microsoft.R.Host.Client.Install {
             try {
                 using (var hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                     using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
-                        var path = (string)key.GetValue("Path");
+                        var path = (string)key?.GetValue("Path");
                         if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
                             mrsInstalled = true;
                         }
@@ -184,7 +184,7 @@ namespace Microsoft.R.Host.Client.Install {
                             foreach (var keyName in key.GetSubKeyNames()) {
                                 using (var rsKey = key.OpenSubKey(keyName)) {
                                     try {
-                                        var path = (string)rsKey.GetValue("InstallPath");
+                                        var path = (string)rsKey?.GetValue("InstallPath");
                                         if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
                                             return path;
                                         }

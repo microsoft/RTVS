@@ -11,6 +11,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -94,7 +95,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             a.ShouldNotThrow();
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void Sections() {
             string content =
 @"# NAME1 -----
@@ -129,7 +130,7 @@ x <- 1
             // Wait for background/idle tasks to complete
             var start = DateTime.Now;
             while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                EditorShell.Current.DoIdle();
+                EditorShell.Current.DoIdle(UIThreadHelper.Instance.Thread);
             }
 
             calls.Should().Be(1);

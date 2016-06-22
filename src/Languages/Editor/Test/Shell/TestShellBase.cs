@@ -36,17 +36,30 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return null;
         }
 
-        public void DoIdle() {
+        public void DoIdle(Thread thread = null) {
+            var disp = GetDispatcher(thread);
+            if (disp != null) {
+                disp.BeginInvoke(DispatcherPriority.Background,
+                        new DispatcherOperationCallback((o) => {
+                            FireIdle();
+                            return null;
+                        }), null);
+            } else {
+                FireIdle();
+            }
+            DoEvents(thread);
+        }
+
+        private void FireIdle() {
             Idle?.Invoke(null, EventArgs.Empty);
-            DoEvents();
         }
 
         public void DispatchOnUIThread(Action action) {
             UIThreadHelper.Instance.Invoke(action);
         }
 
-        public void DoEvents() {
-            var disp = GetDispatcher();
+        public void DoEvents(Thread thread = null) {
+            var disp = GetDispatcher(thread);
             if (disp != null) {
                 DispatcherFrame frame = new DispatcherFrame();
                 disp.BeginInvoke(DispatcherPriority.Background,
@@ -60,9 +73,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return null;
         }
 
-        private Dispatcher GetDispatcher() {
-            if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
-                return Dispatcher.FromThread(MainThread);
+        private Dispatcher GetDispatcher(Thread thread = null) {
+            if (thread == null) {
+                if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
+                    return Dispatcher.FromThread(MainThread);
+                }
+            } else {
+                return Dispatcher.FromThread(thread);
             }
             return null;
         }
