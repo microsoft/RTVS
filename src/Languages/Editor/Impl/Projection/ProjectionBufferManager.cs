@@ -32,10 +32,10 @@ namespace Microsoft.Languages.Editor.Projection {
             _editResolver = new LanguageEditResolver(diskBuffer);
 
             var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
-            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.None, contentType);
+            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
 
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
-            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer);
             ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer);
@@ -113,7 +113,7 @@ namespace Microsoft.Languages.Editor.Projection {
                     }
                     span = new Span(mapping.SourceStart, mapping.Length);
                     // Active span comes from the disk buffer
-                    spans.Add(new CustomTrackingSpan(DiskBuffer.CurrentSnapshot, span, PointTrackingMode.Negative, PointTrackingMode.Positive)); // active
+                    spans.Add(new CustomTrackingSpan(DiskBuffer.CurrentSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // active
                     secondaryIndex = mapping.ProjectionRange.End;
                 }
             }
