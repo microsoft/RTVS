@@ -32,10 +32,10 @@ namespace Microsoft.Languages.Editor.Projection {
             _editResolver = new LanguageEditResolver(diskBuffer);
 
             var contentType = _contentTypeRegistryService.GetContentType(topLevelContentTypeName);
-            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.None, contentType);
+            ViewBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.None, contentType);
 
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
-            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(null, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
+            ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
             ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer);
             ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer);
