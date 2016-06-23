@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -130,7 +131,7 @@ x <- 1
             // Wait for background/idle tasks to complete
             var start = DateTime.Now;
             while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                EditorShell.Current.DoIdle(UIThreadHelper.Instance.Thread);
+                EditorShell.Current.DoIdle(Thread.CurrentThread);
             }
 
             calls.Should().Be(1);
