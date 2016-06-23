@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 

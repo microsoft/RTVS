@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;

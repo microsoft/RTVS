@@ -129,6 +129,10 @@
       <Project>{2aa8762f-3a84-4cd5-9aa0-77829a766769}</Project>
       <Name>Microsoft.R.Components.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
+      <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Editor\Impl\Microsoft.R.Editor.csproj">
       <Project>{d6eeef87-ce3a-4804-a409-39966b96c850}</Project>
       <Name>Microsoft.R.Editor</Name>

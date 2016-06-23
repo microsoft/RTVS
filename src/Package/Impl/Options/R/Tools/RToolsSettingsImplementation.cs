@@ -13,6 +13,7 @@ using Microsoft.Common.Core.Enums;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;

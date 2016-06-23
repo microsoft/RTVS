@@ -40,6 +40,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
@@ -96,6 +100,7 @@
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
     <Compile Include="Formatting\FormatMultilineTest.cs" />
+    <Compile Include="Install\RInstallationTest.cs" />
     <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />

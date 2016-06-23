@@ -11,10 +11,9 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Host.Client.Telemetry;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Host.Client.Install {
+namespace Microsoft.R.Core.Install {
     /// <summary>
     /// Verifies that R is installed in the folder
     /// specified in settings. If nothing is specified
@@ -338,56 +337,6 @@ namespace Microsoft.R.Host.Client.Install {
             }
 
             return string.Empty;
-        }
-
-        public bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionRange svl, string path, bool showErrors = true) {
-            svl = svl ?? new SupportedRVersionRange();
-            var data = GetInstallationData(path, svl);
-            if (data.Status == RInstallStatus.OK) {
-                return true;
-            }
-
-            if (showErrors) {
-                if (ShowMessage(coreShell, data, svl) == MessageButtons.Yes) {
-                    coreShell.TelemetryService.ReportEvent(TelemetryArea.Configuration, MrcTelemetryEvents.RClientInstallPrompt);
-                    var installer = coreShell.ExportProvider.GetExportedValue<IMicrosoftRClientInstaller>();
-                    installer.LaunchRClientSetup(coreShell);
-                }
-            }
-
-            return false;
-        }
-
-        private static MessageButtons ShowMessage(ICoreShell coreShell, RInstallData data, ISupportedRVersionRange svl) {
-            Debug.Assert(data.Status != RInstallStatus.OK);
-
-            switch (data.Status) {
-                case RInstallStatus.UnsupportedVersion:
-                    return coreShell.ShowMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnsupportedRVersion,
-                        data.Version.Major, data.Version.Minor, data.Version.Build,
-                        svl.MinMajorVersion, svl.MinMinorVersion, "*",
-                        svl.MaxMajorVersion, svl.MaxMinorVersion, "*",
-                        Environment.NewLine + Environment.NewLine),
-                        MessageButtons.YesNo);
-
-                case RInstallStatus.ExceptionAccessingPath:
-                    coreShell.ShowErrorMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_ExceptionAccessingPath,
-                        data.Path, data.Exception.Message));
-                    return MessageButtons.OK;
-
-                case RInstallStatus.NoRBinaries:
-                    return coreShell.ShowMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotFindRBinariesFormat,
-                            data.Path, Environment.NewLine + Environment.NewLine, Environment.NewLine),
-                        MessageButtons.YesNo);
-
-                case RInstallStatus.PathNotSpecified:
-                    return coreShell.ShowMessage(string.Format(CultureInfo.InvariantCulture,
-                        Resources.Error_UnableToFindR, Environment.NewLine + Environment.NewLine), MessageButtons.YesNo);
-            }
-            return MessageButtons.OK;
         }
     }
 }

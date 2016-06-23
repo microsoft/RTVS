@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;

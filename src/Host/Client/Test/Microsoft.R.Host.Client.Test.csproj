@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="BreakpointHitDetector.cs" />
     <Compile Include="ExecutionTracing\BreakpointsTest.cs" />
-    <Compile Include="Install\RInstallationTest.cs" />
     <Compile Include="RtvsPackage\BlobsTest.cs" />
     <Compile Include="StackTracing\CallStackTest.cs" />
     <Compile Include="ExecutionTracing\DebugReplTest.cs" />
@@ -74,6 +73,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{FC4AAD0A-13B9-49EE-A59C-F03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
+      <Name>Microsoft.R.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\UnitTests\Core\Impl\Microsoft.UnitTests.Core.csproj">
       <Project>{5EF2AD64-D6FE-446B-B350-8C7F0DF0834D}</Project>

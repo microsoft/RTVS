@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Logging;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client.Install;
 
 namespace Microsoft.R.Components.Script {

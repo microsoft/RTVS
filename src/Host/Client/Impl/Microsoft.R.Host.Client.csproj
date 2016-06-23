@@ -80,15 +80,10 @@
     <Compile Include="ExecutionTracing\RExecutionTracer.cs" />
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
+    <Compile Include="Install\RInstallationExtensions.cs" />
     <Compile Include="Extensions\RawEvalResultExtensions.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="Host\RHost.BlobRequest.cs" />
-    <Compile Include="Install\IMicrosoftRClientInstaller.cs" />
-    <Compile Include="Install\ISupportedRVersionRange.cs" />
-    <Compile Include="Install\RInstallation.cs" />
-    <Compile Include="Install\RInstallData.cs" />
-    <Compile Include="Install\RInstallStatus.cs" />
-    <Compile Include="Install\SupportedRVersionRange.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Definitions\GuidList.cs" />
@@ -206,6 +201,10 @@
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
       <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
       <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\R\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
+      <Name>Microsoft.R.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

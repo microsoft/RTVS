@@ -10,6 +10,7 @@ using Microsoft.Common.Core.Net;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.R.Package.Telemetry;
 using Microsoft.VisualStudio.R.Package.Utilities;

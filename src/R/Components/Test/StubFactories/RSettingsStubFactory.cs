@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Components.Test.Stubs;
+using Microsoft.R.Core.Install;
 using Microsoft.R.Host.Client.Install;
 
 namespace Microsoft.R.Components.Test.StubFactories {
