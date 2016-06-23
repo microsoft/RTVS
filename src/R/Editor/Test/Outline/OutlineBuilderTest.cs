@@ -108,40 +108,41 @@ x <- 1
             OutlineRegionsChangedEventArgs args = null;
 
             textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(textBuffer);
-            tree.Build();
-            var editorDocument = new EditorDocumentMock(tree);
+            using (var tree = new EditorTree(textBuffer)) {
+                tree.Build();
+                var editorDocument = new EditorDocumentMock(tree);
 
-            var ob = new ROutlineRegionBuilder(editorDocument);
-            var rc1 = new OutlineRegionCollection(0);
-            ob.BuildRegions(rc1);
+                var ob = new ROutlineRegionBuilder(editorDocument);
+                var rc1 = new OutlineRegionCollection(0);
+                ob.BuildRegions(rc1);
 
-            rc1.Should().HaveCount(2);
-            rc1[0].DisplayText.Should().Be("# NAME1");
-            rc1[1].DisplayText.Should().Be("# NAME2");
+                rc1.Should().HaveCount(2);
+                rc1[0].DisplayText.Should().Be("# NAME1");
+                rc1[1].DisplayText.Should().Be("# NAME2");
 
-            ob.RegionsChanged += (s, e) => {
-                calls++;
-                args = e;
-            };
+                ob.RegionsChanged += (s, e) => {
+                    calls++;
+                    args = e;
+                };
 
-            textBuffer.Insert(2, "A");
-            editorDocument.EditorTree.EnsureTreeReady();
+                textBuffer.Insert(2, "A");
+                editorDocument.EditorTree.EnsureTreeReady();
 
-            // Wait for background/idle tasks to complete
-            var start = DateTime.Now;
-            while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                EditorShell.Current.DoIdle(Thread.CurrentThread);
+                // Wait for background/idle tasks to complete
+                var start = DateTime.Now;
+                while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                    EditorShell.Current.DoIdle(Thread.CurrentThread);
+                }
+
+                calls.Should().Be(1);
+                args.Should().NotBeNull();
+                args.ChangedRange.Start.Should().Be(0);
+                args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
+                args.Regions.Should().HaveCount(2);
+
+                args.Regions[0].DisplayText.Should().Be("# ANAME1");
+                args.Regions[1].DisplayText.Should().Be("# NAME2");
             }
-
-            calls.Should().Be(1);
-            args.Should().NotBeNull();
-            args.ChangedRange.Start.Should().Be(0);
-            args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
-            args.Regions.Should().HaveCount(2);
-
-            args.Regions[0].DisplayText.Should().Be("# ANAME1");
-            args.Regions[1].DisplayText.Should().Be("# NAME2");
         }
     }
 }

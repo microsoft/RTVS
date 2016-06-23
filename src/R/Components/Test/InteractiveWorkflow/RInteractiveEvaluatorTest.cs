@@ -12,7 +12,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.R.Components.Test.History {
-    public class RInteractiveEvaluatorTest : IDisposable {
+    public class RInteractiveEvaluatorTest {
         private readonly ExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
@@ -122,10 +122,6 @@ namespace Microsoft.R.Components.Test.History {
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().Should().Be("[1] \"“абвг”\"");
             }
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
     }
 }

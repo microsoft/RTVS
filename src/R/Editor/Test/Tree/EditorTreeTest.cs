@@ -17,7 +17,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
 
-            EditorTree tree = new EditorTree(textBuffer);
+            var tree = new EditorTree(textBuffer);
             tree.Build();
 
             return tree;

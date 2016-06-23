@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Test.History {
-    public class RHistoryIntegrationTest : IDisposable {
+    public class RHistoryIntegrationTest {
         private readonly ExportProvider _exportProvider;
         private readonly ITextBufferFactoryService _textBufferFactory;
         private readonly ITextEditorFactoryService _textEditorFactory;
@@ -157,10 +157,6 @@ namespace Microsoft.R.Components.Test.History {
                 text = history.GetSelectedText();
                 text.Should().Be(string.Empty);
             }
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
     }
 }

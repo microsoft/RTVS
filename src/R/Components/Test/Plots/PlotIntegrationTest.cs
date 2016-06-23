@@ -23,7 +23,7 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.Plots {
-    public class PlotIntegrationTest : IAsyncLifetime {
+    public class PlotIntegrationTest {
         private readonly ExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly IRInteractiveWorkflow _workflow;
@@ -42,15 +42,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
         private TestCoreShell CoreShell {
             get { return _workflow.Shell as TestCoreShell; }
-        }
-
-        public Task InitializeAsync() {
-            return Task.CompletedTask;
-        }
-
-        public Task DisposeAsync() {
-            (_exportProvider as IDisposable)?.Dispose();
-            return Task.CompletedTask;
         }
 
         [Test(ThreadType.UI)]

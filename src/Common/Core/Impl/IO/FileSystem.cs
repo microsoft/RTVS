@@ -8,6 +8,9 @@ using System.Text;
 
 namespace Microsoft.Common.Core.IO {
     public sealed class FileSystem : IFileSystem {
+        private static FileSystem _instance = new FileSystem();
+        public static IFileSystem Current => _instance;
+
         public IFileSystemWatcher CreateFileSystemWatcher(string path, string filter) {
             return new FileSystemWatcherProxy(path, filter);
         }

@@ -55,7 +55,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public Task DisposeAsync() {
             _packageManagerComponent.Dispose();
-            (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
         }
 

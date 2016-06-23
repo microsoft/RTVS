@@ -21,7 +21,7 @@ using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.PackageManager {
-    public class PackageManagerIntegrationTest : IDisposable, IAsyncLifetime {
+    public class PackageManagerIntegrationTest : IAsyncLifetime {
         private readonly ExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly MethodInfo _testMethod;
@@ -337,10 +337,6 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         private static bool AllFilesExist(string[] filePaths) {
             return filePaths.All(File.Exists);
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
 
         public async Task InitializeAsync() {

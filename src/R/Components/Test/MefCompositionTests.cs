@@ -15,7 +15,7 @@ namespace Microsoft.R.Components.Test {
     /// <summary>
     /// These tests are basic markers that all required composition imports are available.
     /// </summary>
-    public class MefCompositionTests : IDisposable {
+    public class MefCompositionTests {
         private readonly ExportProvider _exportProvider;
 
         public MefCompositionTests(RComponentsMefCatalogFixture mefCatalog) {
@@ -55,10 +55,6 @@ namespace Microsoft.R.Components.Test {
         [Test]
         public void InteractiveWindowFactoryService() {
             _exportProvider.GetExportedValue<IInteractiveWindowFactoryService>().Should().NotBeNull();
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
     }
 }

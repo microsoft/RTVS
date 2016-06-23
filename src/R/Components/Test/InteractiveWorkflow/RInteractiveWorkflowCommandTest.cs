@@ -50,7 +50,6 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
 
         public Task DisposeAsync() {
-            (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
         }
 
