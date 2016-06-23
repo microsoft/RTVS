@@ -9,12 +9,12 @@ external_embedded <- function(name, ...) {
   .External(paste0('Microsoft.R.Host::External.', name, collapse = ''), ..., PACKAGE = '(embedding)')
 }
 
-send_message <- function(name, ...) {
-    call_embedded('send_message', name, list(...))
+send_notification <- function(name, ...) {
+    call_embedded('send_notification', name, list(...))
 }
 
-send_message_and_get_response <- function(name, ...) {
-    call_embedded('send_message_and_get_response', name, list(...))
+send_request_and_get_response <- function(name, ...) {
+    call_embedded('send_request_and_get_response', name, list(...))
 }
 
 memory_connection <- function(max_length = NA, expected_length = NA, overflow_suffix = '', eof_marker = '') {

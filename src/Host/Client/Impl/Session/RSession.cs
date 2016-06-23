@@ -514,7 +514,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        Task IRCallbacks.Browser(string url) {
+        Task IRCallbacks.WebBrowser(string url) {
             var callback = _callback;
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }
