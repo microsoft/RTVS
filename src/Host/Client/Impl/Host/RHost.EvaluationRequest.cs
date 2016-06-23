@@ -18,7 +18,7 @@ namespace Microsoft.R.Host.Client {
                 Expression = expression;
                 Kind = kind;
 
-                var nameBuilder = new StringBuilder("=");
+                var nameBuilder = new StringBuilder("?=");
                 if (kind.HasFlag(REvaluationKind.Reentrant)) {
                     nameBuilder.Append('@');
                 }

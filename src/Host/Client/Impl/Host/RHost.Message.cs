@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
@@ -29,14 +30,13 @@ namespace Microsoft.R.Host.Client {
                 Name = GetString(1, "name");
                 _argsOffset = 2;
 
-                if (Name == ":") {
-                    if (_body.Count < 4) {
-                        throw ProtocolError($"Response message must have form [id, ':', request_id, name, ...]:", token);
+                if (Name.StartsWithOrdinal(":")) {
+                    if (_body.Count < 3) {
+                        throw ProtocolError($"Response message must have form [id, name, request_id, ...]:", token);
                     }
 
                     RequestId = GetString(0, "request_id");
-                    Name = GetString(1, "request_name");
-                    _argsOffset += 2;
+                    ++_argsOffset;
                 }
             }
 

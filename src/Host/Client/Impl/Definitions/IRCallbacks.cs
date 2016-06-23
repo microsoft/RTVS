@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        Task Browser(string url);
+        Task WebBrowser(string url);
 
         /// <summary>
         /// Invoked in response of parameter-less library call

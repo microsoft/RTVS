@@ -95,7 +95,7 @@ namespace Microsoft.R.Host.Client {
             await Console.Error.WriteLineAsync(plot.FilePath);
         }
 
-        public async Task Browser(string url) {
+        public async Task WebBrowser(string url) {
             await Console.Error.WriteLineAsync("Browser: " + url);
         }
 
