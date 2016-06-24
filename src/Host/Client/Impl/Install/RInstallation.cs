@@ -150,7 +150,7 @@ namespace Microsoft.R.Host.Client.Install {
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath, ISupportedRVersionRange svl = null) {
+        public static string GetRInstallPath(string basePath = null, ISupportedRVersionRange svl = null) {
             svl = svl ?? new SupportedRVersionRange();
             if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
                 basePath = GetRPathFromMRS();

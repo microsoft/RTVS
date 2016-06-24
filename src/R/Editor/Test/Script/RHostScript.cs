@@ -25,7 +25,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
             Session.IsHostRunning.Should().BeFalse();
 
             Session.StartHostAsync(new RHostStartupInfo {
-                Name = "RHostScript",
+                Name = "RHostScript_Test_" + Guid.NewGuid().ToString(),
                 RBasePath = RToolsSettings.Current.RBasePath,
                 RHostCommandLineArguments = RToolsSettings.Current.RCommandLineArguments,
                 CranMirrorName = RToolsSettings.Current.CranMirror,

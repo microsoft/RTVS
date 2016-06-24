@@ -10,12 +10,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Xunit;
 
 namespace Microsoft.R.Host.Client.Test {
     [ExcludeFromCodeCoverage]
@@ -576,7 +575,7 @@ dev.off()
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RUtilities.FindExistingRBasePath()
+                    RBasePath = RInstallation.GetRInstallPath()
                 }, app, 50000);
 
                 foreach (var input in inputs) {

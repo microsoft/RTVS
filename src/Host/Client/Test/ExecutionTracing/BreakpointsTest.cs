@@ -7,8 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
@@ -32,7 +32,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = RInstallation.GetRInstallPath()
             }, new RHostClientTestApp(), 50000);
         }
 

@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
@@ -53,7 +52,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = RInstallation.GetRInstallPath()
             }, null, 50000);
 
             session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
@@ -71,7 +70,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = RInstallation.GetRInstallPath()
             }, null, 50000);
 
             Func<Task> f = () => ParallelTools.InvokeAsync(4, i => start());
@@ -89,7 +88,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
                 var session = new RSession(i, () => { });
-                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = RUtilities.FindExistingRBasePath()}, null, 50000);
+                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = RInstallation.GetRInstallPath() }, null, 50000);
                 return session;
             };
 

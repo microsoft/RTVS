@@ -7,18 +7,18 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
-using Microsoft.R.StackTracing;
+using Microsoft.R.DataInspection;
 using Microsoft.R.ExecutionTracing;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.R.StackTracing;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using NSubstitute;
 using Xunit;
-using Microsoft.R.DataInspection;
-using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 
 namespace Microsoft.R.StackTracing.Test {
     [ExcludeFromCodeCoverage]
@@ -36,7 +36,7 @@ namespace Microsoft.R.StackTracing.Test {
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = RInstallation.GetRInstallPath()
             }, new RHostClientTestApp(), 50000);
         }
 
