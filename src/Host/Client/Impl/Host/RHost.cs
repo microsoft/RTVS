@@ -614,7 +614,13 @@ namespace Microsoft.R.Host.Client {
                     throw;
                 } finally {
                     if (!_process.HasExited) {
-                        TerminateProcess(_process, 500);
+                        try {
+                            _process.WaitForExit(500);
+                            if (!_process.HasExited) {
+                                _process.Kill();
+                                _process.WaitForExit();
+                            }
+                        } catch (InvalidOperationException) { }
                     }
                     _log.RHostProcessExited();
                 }
@@ -622,20 +628,5 @@ namespace Microsoft.R.Host.Client {
         }
 
         internal Task GetRHostRunTask() => _runTask;
-
-        private void TerminateProcess(Process process, int ms) {
-            Task.Run(() => {
-                try {
-                    var start = DateTime.Now;
-                    while (!process.HasExited && (DateTime.Now - start).TotalMilliseconds < ms) {
-                        Thread.Sleep(50);
-                    }
-                } catch (InvalidOperationException) { }
-            }).Wait();
-            if (!process.HasExited) {
-                _process.Kill();
-            }
-            Debug.Assert(process.HasExited);
-        }
     }
 }

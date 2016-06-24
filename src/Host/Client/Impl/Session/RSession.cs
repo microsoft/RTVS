@@ -168,7 +168,11 @@ namespace Microsoft.R.Host.Client.Session {
             if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
-            Debug.Assert(!string.IsNullOrEmpty(startupInfo.RBasePath));
+
+            if (string.IsNullOrEmpty(startupInfo.RBasePath)) {
+                throw new ArgumentException("Path to R must be specified");
+            }
+
             Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
 
             await StartHostAsyncBackground(startupInfo, callback, timeout);
