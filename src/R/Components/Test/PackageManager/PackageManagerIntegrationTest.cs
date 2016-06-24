@@ -344,6 +344,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
         }
 
         public Task DisposeAsync() {
+            (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
         }
     }

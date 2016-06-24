@@ -12,7 +12,7 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.R.Components.Test.History {
-    public class RInteractiveEvaluatorTest {
+    public class RInteractiveEvaluatorTest : IDisposable {
         private readonly ExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
@@ -25,6 +25,10 @@ namespace Microsoft.R.Components.Test.History {
 
             _workflowProvider = _exportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
+        }
+
+        public void Dispose() {
+            (_exportProvider as IDisposable)?.Dispose();
         }
 
         [Test]
