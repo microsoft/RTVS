@@ -24,12 +24,10 @@ using static System.FormattableString;
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {
         ITextBuffer _textBuffer;
-        private readonly IEditorShell _editorShell;
 
         internal FormatDocumentCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
+            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT)) {
             _textBuffer = textBuffer;
-            _editorShell = editorShell;
         }
 
         public virtual ITextBuffer TargetBuffer => _textBuffer;
@@ -51,7 +49,7 @@ namespace Microsoft.R.Editor.Formatting {
                 selectionTracker.StartTracking(automaticTracking: false);
 
                 try {
-                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, Resources.FormatDocument)) {
+                    using (var massiveChange = new MassiveChange(TextView, TargetBuffer, EditorShell, Resources.FormatDocument)) {
                         IREditorDocument document = REditorDocument.TryFromTextBuffer(TargetBuffer);
                         if (document != null) {
                             document.EditorTree.Invalidate();
@@ -83,7 +81,7 @@ namespace Microsoft.R.Editor.Formatting {
                             new TextStream(oldText), new TextStream(formattedText),
                             oldTokens, newTokens,
                             TextRange.FromBounds(0, oldText.Length),
-                            Resources.FormatDocument, selectionTracker, _editorShell);
+                            Resources.FormatDocument, selectionTracker, EditorShell);
                     }
                 } finally {
                     selectionTracker.EndTracking();

@@ -1,16 +1,31 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Core.Test.Utility;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
-    public class ProcessChangesTest {
+    public class ProcessChangesTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
+
+        public ProcessChangesTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void ProcessChange_EditExpression01() {
             string expression = "if(true) x <- 1";
@@ -32,7 +47,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 3, 4, 5, "false");
+            EditorTree tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 3, 4, 5, "false");
             tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 
@@ -85,7 +100,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 15, 0, 1, "\n");
+            EditorTree tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 15, 0, 1, "\n");
             tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 
@@ -148,7 +163,7 @@ UnexpectedToken Token [17...21)
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 17, 0, 1, "\n");
+            EditorTree tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 17, 0, 1, "\n");
             tree.IsDirty.Should().BeTrue();
             tree.ProcessChanges();
 

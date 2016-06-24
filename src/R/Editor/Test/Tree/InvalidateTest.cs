@@ -1,25 +1,37 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Conditionals;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
     [Category.R.EditorTree]
-    public class EditorTreeInvalidateTest {
+    public class EditorTreeInvalidateTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _coreShell;
+
+        public EditorTreeInvalidateTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void InvalidateAll() {
-            EditorTree tree = EditorTreeTest.MakeTree("if(true) x <- a + b");
+            EditorTree tree = EditorTreeTest.MakeTree(_coreShell, "if(true) x <- a + b");
             tree.Invalidate();
             tree.AstRoot.Children.Should().ContainSingle();
             tree.AstRoot.Children[0].Children.Should().BeEmpty();
@@ -32,7 +44,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { }", 11, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 3)]
         public void InvalidateAllInRange(string content, int start, int length) {
-            EditorTree tree = EditorTreeTest.MakeTree(content);
+            EditorTree tree = EditorTreeTest.MakeTree(_coreShell, content);
 
             bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
             nodesChanged.Should().BeTrue();
@@ -47,7 +59,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 23, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 1)]
         public void InvalidatePartsInRange01(string content, int start, int length) {
-            EditorTree tree = EditorTreeTest.MakeTree(content);
+            EditorTree tree = EditorTreeTest.MakeTree(_coreShell, content);
 
             bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
             nodesChanged.Should().BeTrue();

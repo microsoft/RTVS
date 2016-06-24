@@ -19,10 +19,6 @@ namespace Microsoft.Languages.Editor.Controller.Command {
             : base(textView, Guid.Empty, id, true) {
         }
 
-        public EditingCommand(ITextView textView, CommandId id)
-            : base(textView, id, true) {
-        }
-
         public EditingCommand(ITextView textView, IEditorShell editorShell, CommandId id)
             : base(textView, id, true) {
             EditorShell = editorShell;

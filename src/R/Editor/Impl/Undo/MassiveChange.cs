@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Editor.Document;
@@ -18,11 +19,10 @@ namespace Microsoft.R.Editor.Undo
         private ITextUndoTransaction _transaction;
         private ITextBuffer _textBuffer;
  
-        public MassiveChange(ITextView textView, ITextBuffer textBuffer, string description)
-        {
+        public MassiveChange(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog catalog, string description) {
             _textBuffer = textBuffer;
 
-            var undoManagerProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+            var undoManagerProvider = catalog.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
             var undoManager = undoManagerProvider.GetTextBufferUndoManager(textView.TextBuffer);
 
             ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(description);
@@ -31,9 +31,7 @@ namespace Microsoft.R.Editor.Undo
             _transaction.AddUndo(new StartMassiveChangeUndoUnit(_textBuffer));
 
             IREditorDocument document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            if(document != null) {
-                document.BeginMassiveChange();
-            }
+            document?.BeginMassiveChange();
         }
 
         public void Dispose()

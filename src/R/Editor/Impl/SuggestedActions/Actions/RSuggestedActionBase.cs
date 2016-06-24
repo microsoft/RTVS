@@ -5,42 +5,42 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.SuggestedActions;
+using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SuggestedActions.Actions {
     public abstract class RSuggestedActionBase : SuggestedActionBase {
+        private readonly IRInteractiveWorkflow _workflow;
         private static Task _runningAction;
 
-        protected RSuggestedActionBase(ITextView textView, ITextBuffer textBuffer, int position, string displayText)
+        protected RSuggestedActionBase(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position, string displayText)
             : base(textBuffer, textView, position, displayText) {
+            _workflow = workflow;
         }
 
-        public override bool HasActionSets {
-            get {
-                return _runningAction == null && base.HasActionSets;
+        public override bool HasActionSets => _runningAction == null && base.HasActionSets;
+
+        protected void SubmitToInteractive(string command, CancellationToken cancellationToken) {
+            if (_workflow.RSession.IsHostRunning) {
+                _runningAction = SubmitToInteractiveAsync(command, cancellationToken);
             }
         }
 
-        protected void SubmitToInteractive(string command, CancellationToken cancellationToken) {
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
-            if (session != null && session.IsHostRunning) {
-                _runningAction = Task.Run(async () => {
-                    try {
-                        using (var eval = await session.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
-                            await eval.RespondAsync(command);
-                        }
-                    } finally {
-                        EditorShell.DispatchOnUIThread(() => _runningAction = null);
-                    }
-                });
-
-                _runningAction.SilenceException<OperationCanceledException>()
-                              .SilenceException<MessageTransportException>();
+        private async Task SubmitToInteractiveAsync(string command, CancellationToken cancellationToken) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            try {
+                using (var eval = await _workflow.RSession.BeginInteractionAsync(isVisible: true, cancellationToken: cancellationToken)) {
+                    await eval.RespondAsync(command);
+                }
+            } catch(OperationCanceledException) {
+            } catch(MessageTransportException) {
+            } finally {
+                await _workflow.Shell.SwitchToMainThreadAsync();
+                _runningAction = null;
             }
         }
     }

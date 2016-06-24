@@ -15,11 +15,11 @@ namespace Microsoft.R.Editor.Navigation.Commands {
         private readonly ITextBuffer _textBuffer;
         private readonly IPeekBroker _peekBroker;
 
-        public PeekDefinitionCommand(ITextView textView, ITextBuffer textBuffer) :
+        public PeekDefinitionCommand(ITextView textView, ITextBuffer textBuffer, IPeekBroker peekBroker) :
            base(textView, new CommandId(typeof(VSConstants.VSStd12CmdID).GUID,
                 (int)VSConstants.VSStd12CmdID.PeekDefinition), needCheckout: false) {
             _textBuffer = textBuffer;
-            _peekBroker = EditorShell.Current.ExportProvider.GetExportedValue<IPeekBroker>();
+            _peekBroker = peekBroker;
         }
 
         public override CommandStatus Status(Guid group, int id) {

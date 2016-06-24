@@ -60,10 +60,11 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
     <Compile Include="ContainedLanguage\CommandTargetProxyTest.cs" />
+    <Compile Include="Fakes\Shell\TestEditorShell.cs" />
     <Compile Include="Helpers\HelpersTest.cs" />
     <Compile Include="Idle\IdleTaskQueueTest.cs" />
+    <Compile Include="LanguagesEditorMefCatalogFixture.cs" />
     <Compile Include="Shell\AssemblyLocations.cs" />
     <Compile Include="Shell\TestAssemblyResolver.cs" />
     <Compile Include="Shell\TestShellBase.cs" />

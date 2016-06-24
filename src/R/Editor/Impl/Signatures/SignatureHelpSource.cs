@@ -40,7 +40,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
-                        var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                        var broker = _shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
                         broker.DismissAllSessions((ITextView)p);
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);

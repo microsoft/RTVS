@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.EditorHelpers;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
@@ -13,6 +14,8 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Services {
     public sealed class ServiceManager : ServiceManagerBase {
+        private readonly ICoreShell _shell;
+
         public static void AdviseServiceAdded<T>(IPropertyOwner propertyOwner, Action<T> callback) where T : class {
             var sm = FromPropertyOwner(propertyOwner);
 
@@ -47,31 +50,32 @@ namespace Microsoft.Languages.Editor.Services {
         }
 
         private ServiceManager(IPropertyOwner propertyOwner) : base(propertyOwner) {
-
+            _shell = EditorShell.Current;
             var textView = propertyOwner as ITextView;
             if (textView != null) {
+
                 textView.Closed += TextViewClosed;
             } else if (propertyOwner is ITextBuffer) {
                 var textBuffer = (ITextBuffer) propertyOwner;
 
                 // Need to wait to idle as the TextViewConnectListener.OnTextBufferDisposing hasn't fired yet.
-                textBuffer.AddBufferDisposedAction(DisposeServiceManagerOnIdle);
+                textBuffer.AddBufferDisposedAction(_shell, DisposeServiceManagerOnIdle);
             }
         }
 
-        private static void DisposeServiceManagerOnIdle(IPropertyOwner propertyOwner) {
+        private static void DisposeServiceManagerOnIdle(IPropertyOwner propertyOwner, ICoreShell shell) {
             var sm = FromPropertyOwner(propertyOwner, null);
             if (sm != null) {
-                IdleTimeAction.Create(() => sm.Dispose(), 150, new object(), EditorShell.Current);
+                IdleTimeAction.Create(() => sm.Dispose(), 150, new object(), shell);
             }
         }
 
-        private static void TextViewClosed(object sender, EventArgs e) {
+        private void TextViewClosed(object sender, EventArgs e) {
             var textView = (ITextView) sender;
             textView.Closed -= TextViewClosed;
 
             // Need to wait to idle as taggers can also get disposed during TextView.Closed notifications
-            DisposeServiceManagerOnIdle(textView);
+            DisposeServiceManagerOnIdle(textView, _shell);
         }
 
         /// <summary>

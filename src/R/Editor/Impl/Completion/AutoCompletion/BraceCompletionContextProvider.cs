@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -22,6 +23,13 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     [BracePair('\"', '\"')]
     [BracePair('`', '`')]
     internal sealed class BraceCompletionContextProvider : IBraceCompletionContextProvider {
+        private readonly IEditorShell _shell;
+
+        [ImportingConstructor]
+        public BraceCompletionContextProvider(IEditorShell shell) {
+            _shell = shell;
+        }
+
         /// <summary>
         /// Creates an <see cref="IBraceCompletionContext"/> to handle 
         /// language-specific actions such as parsing and formatting.
@@ -55,7 +63,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
                     return false;
                 }
             }
-            context = new BraceCompletionContext();
+            context = new BraceCompletionContext(_shell);
             return true;
         }
     }

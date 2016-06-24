@@ -117,6 +117,22 @@ namespace Microsoft.UnitTests.Core.Threading {
             return args.Exception;
         }
 
+        public void DoEvents() {
+            if (TaskUtilities.IsOnBackgroundThread()) {
+                _application.Dispatcher.Invoke(DoEvents);
+                return;
+            }
+
+            DispatcherFrame frame = new DispatcherFrame();
+            _application.Dispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+            Dispatcher.PushFrame(frame);
+        }
+
+        private object ExitFrame(object f) {
+            ((DispatcherFrame)f).Continue = false;
+            return null;
+        }
+
         public Task DoEventsAsync() {
             return TaskUtilities.IsOnBackgroundThread()
                 ? _application.Dispatcher.InvokeAsync(() => { }, DispatcherPriority.Background).Task

@@ -133,9 +133,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return false;
         }
 
-        private static IEnumerable<Lazy<IRCompletionListProvider>> GetCompletionProviders(ICoreShell shell) {
-            return _completionProviders ?? (_completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany(shell.CompositionService));
-        }
+        private static IEnumerable<Lazy<IRCompletionListProvider>> GetCompletionProviders(ICoreShell shell) => ComponentLocator<IRCompletionListProvider>.ImportMany(shell.CompositionService);
 
         internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;

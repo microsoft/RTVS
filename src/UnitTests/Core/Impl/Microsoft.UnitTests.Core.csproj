@@ -75,6 +75,7 @@
     <Compile Include="XUnit\CompositeTestDiscoverer.cs" />
     <Compile Include="XUnit\DeployFilesFixture.cs" />
     <Compile Include="XUnit\AssemblyFixtureAttribute.cs" />
+    <Compile Include="Mef\IExportProvider.cs" />
     <Compile Include="XUnit\IMethodFixture.cs" />
     <Compile Include="XUnit\InlineArrayAttribute.cs" />
     <Compile Include="XUnit\InlineArrayDiscoverer.cs" />

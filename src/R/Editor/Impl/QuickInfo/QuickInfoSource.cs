@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
@@ -25,10 +26,12 @@ namespace Microsoft.R.Editor.QuickInfo {
         internal ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
         private ITextBuffer _subjectBuffer;
+        private readonly ICompositionCatalog _catalog;
         private int _lastPosition = -1;
 
-        public QuickInfoSource(ITextBuffer subjectBuffer) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+        public QuickInfoSource(ITextBuffer subjectBuffer, ICompositionCatalog catalog) {
+            _catalog = catalog;
+            _catalog.CompositionService.SatisfyImportsOnce(this);
 
             _subjectBuffer = subjectBuffer;
             _subjectBuffer.Changed += OnTextBufferChanged;
@@ -115,7 +118,7 @@ namespace Microsoft.R.Editor.QuickInfo {
             }
 
             _lastPosition = -1;
-            IQuickInfoBroker broker = EditorShell.Current.ExportProvider.GetExport<IQuickInfoBroker>().Value;
+            IQuickInfoBroker broker = _catalog.ExportProvider.GetExport<IQuickInfoBroker>().Value;
             broker.TriggerQuickInfo(session.TextView, session.GetTriggerPoint(session.TextView.TextBuffer), session.TrackMouse);
         }
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;
@@ -24,9 +25,7 @@ namespace Microsoft.Markdown.Editor.Document {
         private readonly IProjectionBufferManager _projectionBufferManager;
 
         #region Constructors
-        public MdEditorDocument(ITextBuffer textBuffer, 
-            IProjectionBufferFactoryService projectionBufferFactoryService, 
-            IContentTypeRegistryService contentTypeRegistryService) {
+        public MdEditorDocument(ITextBuffer textBuffer, IProjectionBufferFactoryService projectionBufferFactoryService, IContentTypeRegistryService contentTypeRegistryService, ICoreShell coreShell) {
 
             this.TextBuffer = textBuffer;
             ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
@@ -35,7 +34,7 @@ namespace Microsoft.Markdown.Editor.Document {
                         projectionBufferFactoryService, contentTypeRegistryService,
                         MdProjectionContentTypeDefinition.ContentType,
                         RContentTypeDefinition.ContentType);
-            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager);
+            ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, coreShell);
         }
         #endregion
 

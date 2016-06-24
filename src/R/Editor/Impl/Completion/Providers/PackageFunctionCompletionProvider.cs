@@ -53,7 +53,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
             ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _shell);
             ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic, _shell);
             ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _shell);
-            var infoSource = _snippetInformationSource.InformationSource;
+            var infoSource = _snippetInformationSource?.InformationSource;
 
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 

@@ -4,10 +4,11 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Markdown.Editor.ContainedLanguage;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text.Projection;
@@ -15,15 +16,19 @@ using Microsoft.VisualStudio.Utilities;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.Markdown.Editor.Test.Classification {
+namespace Microsoft.Markdown.Editor.Test.ContainedLanguage {
     [ExcludeFromCodeCoverage]
-    public class RLanguageHandlerTest {
-        private readonly IProjectionBufferFactoryService _projectionBufferFactoryService;
-        private readonly IContentTypeRegistryService _ctrs;
+    public class RLanguageHandlerTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
 
-        public RLanguageHandlerTest() {
-            _projectionBufferFactoryService = EditorShell.Current.ExportProvider.GetExportedValue<IProjectionBufferFactoryService>();
-            _ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+        public RLanguageHandlerTest(MarkdownEditorMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _exportProvider.GetExportedValue<IProjectionBufferFactoryService>();
+            _exportProvider.GetExportedValue<IContentTypeRegistryService>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
         }
 
         [CompositeTest]
@@ -45,7 +50,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             });
 
             var expectedSecondaryBuffer = markdown.Replace("```", string.Empty) + Environment.NewLine;
-            var handler = new RLanguageHandler(tb, pbm);
+            var handler = new RLanguageHandler(tb, pbm, _exportProvider.GetExportedValue<ICoreShell>());
             secondaryBuffer.Should().Be(expectedSecondaryBuffer);
 
             mappings.Should().HaveCount(1);

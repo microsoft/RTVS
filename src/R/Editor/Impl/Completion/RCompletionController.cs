@@ -294,7 +294,7 @@ namespace Microsoft.R.Editor.Completion {
                 // Check if caret moved into a different functions such as when
                 // user types a sequence of nested function calls. If so,
                 // dismiss current signature session and start a new one.
-                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer)) {
+                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer, SignatureBroker)) {
                     DismissAllSessions();
                     TriggerSignatureHelp();
                 }
@@ -398,30 +398,6 @@ namespace Microsoft.R.Editor.Completion {
         public override void TriggerSignatureHelp() {
             DismissAllSessions();
             SignatureBroker.TriggerSignatureHelp(TextView);
-        }
-
-        private async Task<bool> IsFunction(string name) {
-            if (Keywords.IsKeyword(name)) {
-                return false;
-            }
-
-            string expression = $"tryCatch(is.function({name}), error = function(e) {{ }})";
-            AstRoot ast = RParser.Parse(expression);
-            if (ast.Errors.Count > 0) {
-                return false;
-            }
-
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
-            if (session != null) {
-                using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
-                    try {
-                        return await eval.EvaluateAsync<bool>(expression, REvaluationKind.Normal);
-                    } catch (RException) {
-                    }
-                }
-            }
-            return false;
         }
 
         private bool TryInsertRoxygenBlock() {

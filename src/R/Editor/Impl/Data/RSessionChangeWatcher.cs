@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Data {
@@ -10,8 +9,8 @@ namespace Microsoft.R.Editor.Data {
         protected IRSessionProvider SessionProvider { get; }
         protected IRSession Session { get; private set; }
 
-        public RSessionChangeWatcher() {
-            SessionProvider = EditorShell.Current.ExportProvider.GetExport<IRSessionProvider>().Value;
+        protected RSessionChangeWatcher(IRSessionProvider sessionProvider) {
+            SessionProvider = sessionProvider;
         }
 
         public void Initialize() {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
@@ -19,19 +20,19 @@ namespace Microsoft.R.Editor.Comments {
         /// Continues adding commentcharacter even if line is already commented.
         /// # -> ## -> ### and so on. Matches C# behavior.
         /// </summary>
-        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range) {
-            DoActionOnLines(textView, textBuffer, range, CommentLine, Resources.CommentSelection);
+        public static void CommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
+            DoActionOnLines(textView, textBuffer, range, editorShell, CommentLine, Resources.CommentSelection);
         }
 
         /// <summary>
         /// Uncomments selected lines or current line if range has zero length.
         /// Only removes single comment. ### -> ## -> # and so on. Matches C# behavior.
         /// </summary>
-        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range) {
-            DoActionOnLines(textView, textBuffer, range, UncommentLine, Resources.UncommentSelection);
+        public static void UncommentBlock(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell) {
+            DoActionOnLines(textView, textBuffer, range, editorShell, UncommentLine, Resources.UncommentSelection);
         }
 
-        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, Func<ITextSnapshotLine, bool> action, string actionName) {
+        public static void DoActionOnLines(ITextView textView, ITextBuffer textBuffer, ITextRange range, IEditorShell editorShell, Func<ITextSnapshotLine, bool> action, string actionName) {
             // When user clicks editor margin to select a line, selection actually
             // ends in the beginning of the next line. In order to prevent commenting
             // of the next line that user did not select, we need to shrink span to
@@ -54,7 +55,7 @@ namespace Microsoft.R.Editor.Comments {
             int startLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(start);
             int endLineNumber = textBuffer.CurrentSnapshot.GetLineNumberFromPosition(end);
 
-            using (var undoAction = EditorShell.Current.CreateCompoundAction(textView, textBuffer)) {
+            using (var undoAction = editorShell.CreateCompoundAction(textView, textBuffer)) {
                 undoAction.Open(actionName);
                 bool changed = false;
                 for (int i = startLineNumber; i <= endLineNumber; i++) {

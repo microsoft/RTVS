@@ -19,7 +19,7 @@ namespace Microsoft.Languages.Editor.Completion {
     /// Base completion controller. Not language specific.
     /// </summary>
     public abstract class CompletionController : IIntellisenseController {
-        private readonly ICoreShell _shell;
+
         public const string AutoShownCompletion = "AutoShownCompletion";
 
         public IList<ITextBuffer> SubjectBuffers { get; private set; }
@@ -29,6 +29,7 @@ namespace Microsoft.Languages.Editor.Completion {
         protected IQuickInfoBroker QuickInfoBroker { get; set; }
         public ICompletionSession CompletionSession { get; protected set; }
         protected ICompletionBroker CompletionBroker { get; set; }
+        protected ICoreShell Shell { get; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected CompletionController(
@@ -38,7 +39,7 @@ namespace Microsoft.Languages.Editor.Completion {
             IQuickInfoBroker quickInfoBroker,
             ISignatureHelpBroker signatureBroker,
             ICoreShell shell) {
-            _shell = shell;
+            Shell = shell;
             TextView = textView;
 
             SubjectBuffers = subjectBuffers;
@@ -154,7 +155,7 @@ namespace Microsoft.Languages.Editor.Completion {
         /// Called when the user executes a command that should show the signature help tooltip
         /// </summary>
         public virtual void OnShowSignatureHelp() {
-            DismissSignatureSession(TextView, _shell);
+            DismissSignatureSession(TextView, Shell);
             ShowSignature(autoShown: false);
         }
 
@@ -185,7 +186,7 @@ namespace Microsoft.Languages.Editor.Completion {
                 }
 
                 if (HasActiveSignatureSession(TextView) && CanDismissSignatureOnCommit()) {
-                    DismissSignatureSession(TextView, _shell);
+                    DismissSignatureSession(TextView, Shell);
                 }
             }
 
@@ -230,7 +231,7 @@ namespace Microsoft.Languages.Editor.Completion {
         /// </summary>
         public virtual bool HasActiveCompletionSession => CompletionSession != null && !CompletionSession.IsDismissed;
 
-        protected bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, _shell);
+        protected bool HasActiveSignatureSession(ITextView textView) => HasActiveSignatureSession(textView, Shell);
 
         /// <summary>
         /// Is there an active signature help session? (is the tooltip showing?)
@@ -245,12 +246,12 @@ namespace Microsoft.Languages.Editor.Completion {
         /// </summary>
         public virtual void DismissAllSessions() {
             DismissCompletionSession();
-            DismissSignatureSession(TextView, _shell);
+            DismissSignatureSession(TextView, Shell);
             DismissQuickInfoSession(TextView);
         }
 
         public void DismissQuickInfoSession(ITextView textView) {
-            IQuickInfoBroker broker = _shell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
+            IQuickInfoBroker broker = Shell.ExportProvider.GetExportedValue<IQuickInfoBroker>();
             var sessions = broker.GetSessions(textView);
             foreach (var s in sessions) {
                 s.Dismiss();

@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
@@ -14,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -26,7 +25,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     [ExcludeFromCodeCoverage]
     public class RInteractiveWorkflowCommandTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
@@ -50,7 +49,7 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
 
 
         public Task DisposeAsync() {
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

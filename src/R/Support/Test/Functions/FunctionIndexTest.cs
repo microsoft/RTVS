@@ -1,24 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
-    [Collection(CollectionNames.NonParallel)]
     public class FunctionIndexTest : IAsyncLifetime {
+        private readonly IExportProvider _exportProvider;
+
+        public FunctionIndexTest(RSupportMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+        }
+
         public Task InitializeAsync() {
             return FunctionIndexUtility.InitializeAsync();
         }
 
-        public Task DisposeAsync() {
-            return FunctionIndexUtility.DisposeAsync();
+        public async Task DisposeAsync() {
+            await FunctionIndexUtility.DisposeAsync(_exportProvider);
+            _exportProvider.Dispose();
         }
 
         [Test]

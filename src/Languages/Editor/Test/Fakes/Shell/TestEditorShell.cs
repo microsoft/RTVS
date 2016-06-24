@@ -11,13 +11,18 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Common.Wpf.Threading;
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.Controller;
 using Microsoft.UnitTests.Core.Threading;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Components.Test.Fakes.Shell {
-    public class TestCoreShell : ICoreShell, IMainThread {
+namespace Microsoft.Languages.Editor.Test.Fakes.Shell {
+    public class TestEditorShell : IEditorShell, IMainThread {
         private readonly CompositionContainer _container;
 
-        public TestCoreShell(CompositionContainer container) {
+        public TestEditorShell(CompositionContainer container) {
             _container = container;
         }
 
@@ -26,10 +31,6 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
 
         public void DispatchOnUIThread(Action action) {
             UIThreadHelper.Instance.Invoke(action);
-        }
-
-        public Task<TResult> DispatchOnMainThreadAsync<TResult>(Func<TResult> callback, CancellationToken cancellationToken = default(CancellationToken)) {
-            return UIThreadHelper.Instance.InvokeAsync(callback);
         }
 
         public Thread MainThread => UIThreadHelper.Instance.Thread;
@@ -53,11 +54,13 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
 
         public string SaveFileIfDirty(string fullPath) => fullPath;
 
-        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null) {
+        public string ShowOpenFileDialog(string filter, string initialPath = null, string title = null)
+        {
             return OpenFilePath;
         }
 
-        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null) {
+        public string ShowSaveFileDialog(string filter, string initialPath = null, string title = null)
+        {
             return SaveFilePath;
         }
 
@@ -73,6 +76,26 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();
+        #endregion
+
+        #region IEditorShell
+        public ICommandTarget TranslateCommandTarget(ITextView textView, object commandTarget) {
+            return commandTarget as ICommandTarget;
+        }
+
+        public object TranslateToHostCommandTarget(ITextView textView, object commandTarget) {
+            return commandTarget;
+        }
+
+        public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
+            return new CompoundUndoAction(textView, this, addRollbackOnCancel: false);
+        }
+
+        public bool IsUnitTestEnvironment { get; } = true;
+        public void DoIdle() {
+            UIThreadHelper.Instance.DoEvents();
+            UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
+        }
         #endregion
     }
 }

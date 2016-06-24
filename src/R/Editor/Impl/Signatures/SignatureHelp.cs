@@ -149,7 +149,7 @@ namespace Microsoft.R.Editor.Signatures {
 
         private void OnCaretPositionChanged(object sender, CaretPositionChangedEventArgs e) {
             if (TextView != null) {
-                if (SignatureHelper.IsSameSignatureContext(TextView, SubjectBuffer)) {
+                if (SignatureHelper.IsSameSignatureContext(TextView, SubjectBuffer, _shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>())) {
                     UpdateCurrentParameter();
                 } else {
                     DismissSession(TextView, _shell, retrigger: true);

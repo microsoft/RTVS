@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 }
             }
 
-            TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree);
+            TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree, shell);
 
             validator.Cleared += OnCleared;
             ResultsQueue = validator.ValidationResults;

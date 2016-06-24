@@ -4,12 +4,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
@@ -36,8 +36,8 @@ namespace Microsoft.R.Support.Test.Utility {
             return FunctionIndex.BuildIndexAsync();
         } 
 
-        public static async Task DisposeAsync() {
-            IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+        public static async Task DisposeAsync(IExportProvider exportProvider) {
+            IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }

@@ -1,12 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Editor.Test.Services {
@@ -14,12 +17,24 @@ namespace Microsoft.Languages.Editor.Test.Services {
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class IdleTaskQueueTest {
+    public class IdleTaskQueueTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
+
+        public IdleTaskQueueTest(LanguagesEditorMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         [Category.Languages.Core]
         public void OperationsTest() {
             var results = new List<Result>();
-            var queue = new IdleTimeAsyncTaskQueue(EditorShell.Current);
+            var queue = new IdleTimeAsyncTaskQueue(_editorShell);
 
             var ta = new TaskAction(1, results);
             queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
@@ -62,7 +77,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
         private void RunThreads() {
             for (int i = 0; i < 10; i++) {
-                EditorShell.Current.DoIdle();
+                _editorShell.DoIdle();
                 Thread.Sleep(100);
             }
         }

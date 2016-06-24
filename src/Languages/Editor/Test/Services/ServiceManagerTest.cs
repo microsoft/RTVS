@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Services;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Utilities;

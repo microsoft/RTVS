@@ -3,8 +3,8 @@
 
 using System;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Statements.Definitions;
@@ -23,7 +23,7 @@ namespace Microsoft.R.Editor.Formatting {
             return ch == '}';
         }
 
-        public static void HandleAutoformat(ITextView textView, ICoreShell shell, char typedChar) {
+        public static void HandleAutoformat(ITextView textView, IEditorShell editorShell, char typedChar) {
             if (!REditorSettings.AutoFormat) {
                 return;
             }
@@ -42,7 +42,7 @@ namespace Microsoft.R.Editor.Formatting {
 
             // Make sure we are not formatting damaging the projected range in R Markdown
             // which looks like ```{r. 'r' should not separate from {.
-            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, shell);
+            var host = ContainedLanguageHost.GetHost(textView, document.TextBuffer, editorShell);
             if(host != null && !host.CanFormatLine(textView, document.TextBuffer, document.TextBuffer.CurrentSnapshot.GetLineNumberFromPosition(rPoint.Value))) {
                 return;
             }
@@ -63,9 +63,9 @@ namespace Microsoft.R.Editor.Formatting {
                     var scopeStatement = GetFormatScope(textView, subjectBuffer, ast);
                     // Do not format large scope blocks for performance reasons
                     if (scopeStatement != null && scopeStatement.Length < 200) {
-                        FormatOperations.FormatNode(textView, subjectBuffer, scopeStatement);
+                        FormatOperations.FormatNode(textView, subjectBuffer, editorShell, scopeStatement);
                     } else {
-                        FormatOperations.FormatCurrentLine(textView, subjectBuffer);
+                        FormatOperations.FormatCurrentLine(textView, subjectBuffer, editorShell);
                     }
                 }
             } else if (typedChar == ';') {
@@ -75,10 +75,10 @@ namespace Microsoft.R.Editor.Formatting {
                 int positionInLine = rPoint.Value.Position - line.Start;
                 string lineText = line.GetText();
                 if (positionInLine >= lineText.TrimEnd().Length) {
-                    FormatOperations.FormatCurrentLine(textView, subjectBuffer);
+                    FormatOperations.FormatCurrentLine(textView, subjectBuffer, editorShell);
                 }
             } else if (typedChar == '}') {
-                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, limitAtCaret: true, caretOffset: -1);
+                FormatOperations.FormatCurrentStatement(textView, subjectBuffer, editorShell, limitAtCaret: true, caretOffset: -1);
             }
         }
 

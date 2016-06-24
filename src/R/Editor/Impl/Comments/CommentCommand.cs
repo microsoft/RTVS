@@ -5,6 +5,7 @@ using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -13,8 +14,8 @@ namespace Microsoft.R.Editor.Comments
 {
     internal class CommentCommand : EditingCommand
     {
-        internal CommentCommand(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK))
+        internal CommentCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
+            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK))
         {
         }
 
@@ -23,8 +24,7 @@ namespace Microsoft.R.Editor.Comments
         {
             SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
-            RCommenter.CommentBlock(TextView, TextView.TextBuffer,
-                new TextRange(selectionSpan.Start.Position, selectionSpan.Length));
+            RCommenter.CommentBlock(TextView, TextView.TextBuffer, new TextRange(selectionSpan.Start.Position, selectionSpan.Length), EditorShell);
 
             return CommandResult.Executed;
         }

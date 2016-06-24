@@ -7,13 +7,14 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Test.Utility;
 using Microsoft.Markdown.Editor.Classification.MD;
 using Microsoft.Markdown.Editor.ContentTypes;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -22,13 +23,19 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Markdown.Editor.Test.Classification {
     [ExcludeFromCodeCoverage]
-    public class MarkdownClassifierTest {
+    public class MarkdownClassifierTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
         private readonly MarkdownTestFilesFixture _files;
         // change to true in debugger if you want all baseline tree files regenerated
         private static bool _regenerateBaselineFiles = false;
 
-        public MarkdownClassifierTest(MarkdownTestFilesFixture files) {
+        public MarkdownClassifierTest(MarkdownEditorMefCatalogFixture catalogFixture, MarkdownTestFilesFixture files) {
+            _exportProvider = catalogFixture.CreateExportProvider();
             _files = files;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
         }
 
         [Test]
@@ -38,18 +45,18 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             a.ShouldNotThrow();
         }
 
-        private static void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName) {
+        private void ClassifyFile(MarkdownTestFilesFixture fixture, string fileName) {
             string testFile = fixture.GetDestinationPath(fileName);
             string content = fixture.LoadDestinationFile(fileName);
 
             TextBufferMock textBuffer = new TextBufferMock(content, MdContentTypeDefinition.ContentType);
 
-            var crs = EditorShell.Current.ExportProvider.GetExportedValue<IClassificationTypeRegistryService>();
-            var ctrs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-            var cnp = EditorShell.Current.ExportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
+            var crs = _exportProvider.GetExportedValue<IClassificationTypeRegistryService>();
+            var ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
+            var cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
 
             MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp);
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(classifierProvider);
+            _exportProvider.GetExportedValue<ICoreShell>().CompositionService.SatisfyImportsOnce(classifierProvider);
 
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);
 

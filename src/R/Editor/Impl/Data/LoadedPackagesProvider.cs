@@ -17,6 +17,9 @@ namespace Microsoft.R.Editor.Data {
     internal sealed class LoadedPackagesProvider : RSessionChangeWatcher, ILoadedPackagesProvider {
         private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
+        [ImportingConstructor]
+        public LoadedPackagesProvider(IRSessionProvider sessionProvider) : base(sessionProvider) { }
+
         protected override void SessionMutated() {
             UpdateListOfLoadedPackagesAsync().DoNotWait();
         }
