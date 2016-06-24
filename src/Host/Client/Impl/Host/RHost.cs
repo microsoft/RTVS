@@ -595,13 +595,7 @@ namespace Microsoft.R.Host.Client {
             using (_process = Process.Start(psi)) {
                 _log.RHostProcessStarted(psi);
                 _process.EnableRaisingEvents = true;
-                _process.Exited += delegate {
-                    int code = 0;
-                    try {
-                        code = _process.ExitCode;
-                    } catch (Exception) { }
-                    Dispose();
-                };
+                _process.Exited += delegate { Dispose(); };
 
                 try {
                     ct = CancellationTokenSource.CreateLinkedTokenSource(ct, _cts.Token).Token;
