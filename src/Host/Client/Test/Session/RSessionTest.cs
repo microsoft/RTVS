@@ -52,7 +52,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
             await session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RInstallation.GetRInstallPath()
+                RBasePath = new RInstallation().GetRInstallPath()
             }, null, 50000);
 
             session.HostStarted.Status.Should().Be(TaskStatus.RanToCompletion);
@@ -70,7 +70,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RInstallation.GetRInstallPath()
+                RBasePath = new RInstallation().GetRInstallPath()
             }, null, 50000);
 
             Func<Task> f = () => ParallelTools.InvokeAsync(4, i => start());
@@ -88,7 +88,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
         public async Task StartStopMultipleSessions() {
             Func<int, Task<RSession>> start = async i => {
                 var session = new RSession(i, () => { });
-                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = RInstallation.GetRInstallPath() }, null, 50000);
+                await session.StartHostAsync(new RHostStartupInfo { Name = _testMethod.Name, RBasePath = new RInstallation().GetRInstallPath() }, null, 50000);
                 return session;
             };
 
@@ -105,6 +105,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             var session = new RSession(0, () => { });
             Func<Task> start = () => session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
+                RBasePath = @"C:\",
                 RHostDirectory = Environment.SystemDirectory
             }, null, 10000);
 

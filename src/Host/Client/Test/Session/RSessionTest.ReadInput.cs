@@ -33,7 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RInstallation.GetRInstallPath()
+                    RBasePath = new RInstallation().GetRInstallPath()
                 }, _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());

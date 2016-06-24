@@ -575,7 +575,7 @@ dev.off()
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RInstallation.GetRInstallPath()
+                    RBasePath = new RInstallation().GetRInstallPath()
                 }, app, 50000);
 
                 foreach (var input in inputs) {

@@ -8,7 +8,7 @@ namespace Microsoft.R.Components.Test.StubFactories {
     public sealed class RSettingsStubFactory {
         public static RSettingsStub CreateForExistingRPath() {
             return new RSettingsStub {
-                RBasePath = RInstallation.GetRInstallPath()
+                RBasePath = new RInstallation().GetRInstallPath()
             };
         }
     }

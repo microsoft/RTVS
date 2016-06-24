@@ -239,7 +239,7 @@ namespace Microsoft.R.Host.Client.Test {
                 var session = sessionProvider.GetOrCreate(Guid.NewGuid());
                 await session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RInstallation.GetRInstallPath()
+                    RBasePath = new RInstallation().GetRInstallPath()
                 }, new RHostClientTestApp(), 50000);
 
                 using (var interaction = await session.BeginInteractionAsync()) {

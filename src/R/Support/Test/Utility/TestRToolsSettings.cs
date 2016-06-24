@@ -20,7 +20,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public string RBasePath {
             get {
-                return RInstallation.GetRInstallPath();
+                return new RInstallation().GetRInstallPath();
             }
             set { }
         }

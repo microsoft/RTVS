@@ -36,7 +36,7 @@ namespace Microsoft.R.StackTracing.Test {
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RInstallation.GetRInstallPath()
+                RBasePath = new RInstallation().GetRInstallPath()
             }, new RHostClientTestApp(), 50000);
         }
 
