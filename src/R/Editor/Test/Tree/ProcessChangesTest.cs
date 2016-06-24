@@ -32,12 +32,12 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 3, 4, 5, "false");
-            tree.IsDirty.Should().BeTrue();
-            tree.ProcessChanges();
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 3, 4, 5, "false")) {
+                tree.IsDirty.Should().BeTrue();
+                tree.ProcessChanges();
 
-            string expected2 =
-@"GlobalScope  [Global]
+                string expected2 =
+    @"GlobalScope  [Global]
     If  []
         TokenNode  [if [0...2)]
         TokenNode  [( [2...3)]
@@ -52,7 +52,8 @@ namespace Microsoft.R.Editor.Test.Tree {
                         TokenNode  [<- [12...14)]
                         NumericalValue  [1 [15...16)]
 ";
-            ParserTest.CompareTrees(expected2, tree.AstRoot);
+                ParserTest.CompareTrees(expected2, tree.AstRoot);
+            }
         }
 
         [Test]
@@ -85,12 +86,12 @@ namespace Microsoft.R.Editor.Test.Tree {
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 15, 0, 1, "\n");
-            tree.IsDirty.Should().BeTrue();
-            tree.ProcessChanges();
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 15, 0, 1, "\n")) {
+                tree.IsDirty.Should().BeTrue();
+                tree.ProcessChanges();
 
-            string expected2 =
-@"GlobalScope  [Global]
+                string expected2 =
+    @"GlobalScope  [Global]
     If  []
         TokenNode  [if [0...2)]
         TokenNode  [( [2...3)]
@@ -113,7 +114,8 @@ namespace Microsoft.R.Editor.Test.Tree {
 
 UnexpectedToken Token [17...21)
 ";
-            ParserTest.CompareTrees(expected2, tree.AstRoot);
+                ParserTest.CompareTrees(expected2, tree.AstRoot);
+            }
         }
 
         [Test]
@@ -148,12 +150,12 @@ UnexpectedToken Token [17...21)
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 17, 0, 1, "\n");
-            tree.IsDirty.Should().BeTrue();
-            tree.ProcessChanges();
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 17, 0, 1, "\n")) {
+                tree.IsDirty.Should().BeTrue();
+                tree.ProcessChanges();
 
-            string expected2 =
-@"GlobalScope  [Global]
+                string expected2 =
+    @"GlobalScope  [Global]
     If  []
         TokenNode  [if [0...2)]
         TokenNode  [( [2...3)]
@@ -178,7 +180,8 @@ UnexpectedToken Token [17...21)
 
 UnexpectedToken Token [19...23)
 ";
-            ParserTest.CompareTrees(expected2, tree.AstRoot);
+                ParserTest.CompareTrees(expected2, tree.AstRoot);
+            }
         }
     }
 }

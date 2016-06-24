@@ -30,22 +30,23 @@ namespace Microsoft.R.Editor.Test.Outline {
         [Test]
         public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer)) {
-                using (var editorDocument = new EditorDocumentMock(tree)) {
-                    using (var ob = new ROutlineRegionBuilder(editorDocument)) {
+            var tree = new EditorTree(textBuffer);
+            using (var editorDocument = new EditorDocumentMock(tree)) {
+                using (var ob = new ROutlineRegionBuilder(editorDocument)) {
 
-                        ob.EditorDocument.Should().NotBeNull();
-                        ob.EditorTree.Should().NotBeNull();
+                    ob.EditorDocument.Should().NotBeNull();
+                    ob.EditorTree.Should().NotBeNull();
 
-                        editorDocument.DocumentClosing.GetInvocationList().Should().ContainSingle();
+                    editorDocument.DocumentClosing.GetInvocationList().Should().ContainSingle();
 
-                        FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
-                        var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
-                        d.GetInvocationList().Should().ContainSingle();
+                    FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
+                    d.GetInvocationList().Should().ContainSingle();
 
-                        editorDocument.DocumentClosing.Should().BeNull();
-                        treeUpdateField.GetValue(tree).Should().BeNull();
-                    }
+                    tree.Dispose();
+
+                    editorDocument.DocumentClosing.Should().BeNull();
+                    treeUpdateField.GetValue(tree).Should().BeNull();
                 }
             }
         }

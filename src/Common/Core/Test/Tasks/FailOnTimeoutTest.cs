@@ -23,7 +23,7 @@ namespace Microsoft.Common.Core.Test.Tasks {
             };
 
             Func<Task> f = () => createTask().FailOnTimeout(200);
-            f.ShouldThrow<TimeoutException>();
+            f.ShouldThrow<InvalidOperationException>();
         }
 
         [Test]

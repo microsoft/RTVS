@@ -23,8 +23,9 @@ namespace Microsoft.R.Editor.Test.Tree {
         public void TextChange_EditWhitespaceTest(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- a + b";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, start, oldLength, newLength, newText);
-            tree.PendingChanges.TextChangeType.Should().Be(expected);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, start, oldLength, newLength, newText)) {
+                tree.PendingChanges.TextChangeType.Should().Be(expected);
+            }
         }
 
         [CompositeTest]
@@ -34,30 +35,32 @@ namespace Microsoft.R.Editor.Test.Tree {
         public void TextChange_EditString(int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- a + \"boo\"";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 10, oldLength, newLength, newText);
-            tree.PendingChanges.TextChangeType.Should().Be(expected);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 10, oldLength, newLength, newText)) {
+                tree.PendingChanges.TextChangeType.Should().Be(expected);
+            }
         }
 
         [Test]
         public void TextChange_EditString04() {
             string expression = "\"boo\"";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
-            tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a")) {
+                tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
 
-            var token = tree.AstRoot.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IScope>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IStatement>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<IExpression>()
-                .Which.Children.Should().ContainSingle()
-                .Which.Should().BeAssignableTo<TokenNode>()
-                .Which.Token;
+                var token = tree.AstRoot.Children.Should().ContainSingle()
+                    .Which.Should().BeAssignableTo<IScope>()
+                    .Which.Children.Should().ContainSingle()
+                    .Which.Should().BeAssignableTo<IStatement>()
+                    .Which.Children.Should().ContainSingle()
+                    .Which.Should().BeAssignableTo<IExpression>()
+                    .Which.Children.Should().ContainSingle()
+                    .Which.Should().BeAssignableTo<TokenNode>()
+                    .Which.Token;
 
-            token.TokenType.Should().Be(RTokenType.String);
-            token.Start.Should().Be(0);
-            token.Length.Should().Be(6);
+                token.TokenType.Should().Be(RTokenType.String);
+                token.Start.Should().Be(0);
+                token.Length.Should().Be(6);
+            }
         }
 
         [CompositeTest]
@@ -67,38 +70,42 @@ namespace Microsoft.R.Editor.Test.Tree {
         public void TextChange_EditComment01(int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- a + b # comment";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 12, oldLength, newLength, newText);
-            tree.PendingChanges.TextChangeType.Should().Be(expected);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 12, oldLength, newLength, newText)) {
+                tree.PendingChanges.TextChangeType.Should().Be(expected);
+            }
         }
 
         [Test]
         public void TextChange_EditComment04() {
             string expression = "# comment\n a <- b + c";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 9, 1, 0, string.Empty);
-            tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 9, 1, 0, string.Empty)) {
+                tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
+            }
         }
 
         [Test]
         public void TextChange_EditComment05() {
             string expression = "#";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a");
-            tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, 1, 0, 1, "a")) {
+                tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Trivial);
 
-            tree.AstRoot.Comments.Should().ContainSingle();
-            var comment = tree.AstRoot.Comments[0];
-            comment.Start.Should().Be(0);
-            comment.Length.Should().Be(2);
+                tree.AstRoot.Comments.Should().ContainSingle();
+                var comment = tree.AstRoot.Comments[0];
+                comment.Start.Should().Be(0);
+                comment.Length.Should().Be(2);
+            }
         }
 
         [Test]
         public void TextChange_CurlyBrace() {
             string expression = "if(true) {x <- 1} else ";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, expression.Length, 0, 1, "{");
-            tree.IsDirty.Should().BeTrue();
-            tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, expression.Length, 0, 1, "{")) {
+                tree.IsDirty.Should().BeTrue();
+                tree.PendingChanges.TextChangeType.Should().Be(TextChangeType.Structure);
+            }
         }
 
         [CompositeTest]
@@ -106,8 +113,9 @@ namespace Microsoft.R.Editor.Test.Tree {
         public void TextChange_AddWhitespace(int start, int oldLength, int newLength, string newText, TextChangeType expected) {
             string expression = "x <- aa";
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(expression, start, oldLength, newLength, newText);
-            tree.PendingChanges.TextChangeType.Should().Be(expected);
+            using (var tree = EditorTreeTest.ApplyTextChange(expression, start, oldLength, newLength, newText)) {
+                tree.PendingChanges.TextChangeType.Should().Be(expected);
+            }
         }
     }
 }

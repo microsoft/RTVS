@@ -18,6 +18,8 @@ using Xunit;
 
 namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
+    [Category.R.ExecutionTracing]
+    [Collection(CollectionNames.NonParallel)]
     public class BreakpointsTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
         private readonly RSessionProvider _sessionProvider;
@@ -42,7 +44,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task AddRemoveBreakpoint() {
             const string code =
 @"x <- 1
@@ -75,7 +76,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task SetAndHitToplevelBreakpoint() {
             const string code =
 @"x <- 1
@@ -116,7 +116,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task SetAndHitBreakpointInsideLoadedFunction() {
             const string code =
 @"f <- function() {
@@ -140,7 +139,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task RemovedBreakpointNotHit() {
             const string code =
 @"f <- function() {
@@ -175,7 +173,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task SetBreakpointOnNull() {
             const string code =
 @"f <- function() {
@@ -194,7 +191,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task OverlappingBreakpoints() {
             const string code =
 @"f <- function() {
@@ -250,7 +246,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task BreakpointsInDifferentFiles() {
             var tracer = await _session.TraceExecutionAsync();
             using (var sf1 = new SourceFile("1"))
@@ -284,7 +279,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task SetBreakpointWhileRunning() {
             const string code =
 @"browser()
@@ -310,7 +304,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task RemoveBreakpointWhileRunning() {
             const string code =
 @"browser()
@@ -346,7 +339,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task BrowseOnNewPrompt() {
             var tracer = await _session.TraceExecutionAsync();
             var browseTask = EventTaskSources.IRExecutionTracer.Browse.Create(tracer);
