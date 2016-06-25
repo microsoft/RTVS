@@ -19,7 +19,6 @@ using Xunit;
 namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
     [Category.R.ExecutionTracing]
-    [Collection(CollectionNames.NonParallel)]
     public class BreakpointsTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
         private readonly RSessionProvider _sessionProvider;

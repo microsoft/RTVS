@@ -41,6 +41,7 @@ namespace Microsoft.R.Components.Test.History {
         public Task DisposeAsync() {
             _containerDisposable?.Dispose();
             _historyVisualComponent.Dispose();
+            (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
         }
 

@@ -27,7 +27,7 @@ namespace Microsoft.R.Components.History.Implementation {
         internal IFileSystem FileSystem {
             get {
                 if(_fileSystem == null) {
-                    _fileSystem = Common.Core.IO.FileSystem.Current;
+                    _fileSystem = new FileSystem();
                 }
                 return _fileSystem;
             }
