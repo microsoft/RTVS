@@ -263,7 +263,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         #endregion
 
         #region IIdleTimeService
-        public void DoIdle(Thread thread = null) {
+        public void DoIdle() {
             Idle?.Invoke(this, EventArgs.Empty);
         }
         #endregion

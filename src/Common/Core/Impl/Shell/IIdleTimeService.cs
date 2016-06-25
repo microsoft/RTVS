@@ -6,6 +6,6 @@ using System.Threading;
 
 namespace Microsoft.Languages.Editor.Host {
     public interface IIdleTimeService {
-        void DoIdle(Thread thread = null);
+        void DoIdle();
     }
 }

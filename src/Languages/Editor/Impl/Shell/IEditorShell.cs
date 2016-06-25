@@ -48,6 +48,6 @@ namespace Microsoft.Languages.Editor.Shell {
         /// <summary>
         /// Forces idle time processing
         /// </summary>
-        void DoIdle(Thread thread = null);
+        void DoIdle();
     }
 }

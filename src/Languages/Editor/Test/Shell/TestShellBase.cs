@@ -36,18 +36,9 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return null;
         }
 
-        public void DoIdle(Thread thread = null) {
-            var disp = GetDispatcher(thread);
-            if (disp != null) {
-                disp.BeginInvoke(DispatcherPriority.Background,
-                        new DispatcherOperationCallback((o) => {
-                            FireIdle();
-                            return null;
-                        }), null);
-            } else {
-                FireIdle();
-            }
-            DoEvents(thread);
+        public void DoIdle() {
+            UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
+            DoEvents();
         }
 
         private void FireIdle() {
@@ -58,8 +49,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             UIThreadHelper.Instance.Invoke(action);
         }
 
-        public void DoEvents(Thread thread = null) {
-            var disp = GetDispatcher(thread);
+        public void DoEvents() {
+            var disp = GetDispatcher();
             if (disp != null) {
                 DispatcherFrame frame = new DispatcherFrame();
                 disp.BeginInvoke(DispatcherPriority.Background,

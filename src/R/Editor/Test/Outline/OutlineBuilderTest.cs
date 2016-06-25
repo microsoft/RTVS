@@ -131,7 +131,7 @@ x <- 1
                         // Wait for background/idle tasks to complete
                         var start = DateTime.Now;
                         while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                            EditorShell.Current.DoIdle(Thread.CurrentThread);
+                            EditorShell.Current.DoIdle();
                         }
 
                         calls.Should().Be(1);
