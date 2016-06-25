@@ -226,7 +226,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                     // If message starts with CR we remember current output buffer
                     // length so we can continue writing lines into the same spot.
                     // See txtProgressBar in R.
-                    if (message.StartsWithOrdinal("\r")) {
+                    if (message.Length > 1 && message[0] == '\r' && message[1] != '\n') {
                         // Store the message and the initial position. All subsequent 
                         // messages that start with CR. Will be written into the same place.
                         _lastMessage = message.Substring(1);
