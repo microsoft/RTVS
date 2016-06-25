@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -9,6 +10,7 @@ using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Outlining;
@@ -17,18 +19,26 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class OutlineTest {
+    public class OutlineTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
         private readonly EditorAppTestFilesFixture _files;
-
-        public OutlineTest(EditorAppTestFilesFixture files) {
+        
+        public OutlineTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost, EditorAppTestFilesFixture files) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
             _files = files;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
         }
 
         [Test]
         [Category.Interactive]
         public void R_OutlineToggleAll() {
             string text = _files.LoadDestinationFile("lsfit.r");
-            using (var script = new TestScript(text, RContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, text, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(500);
 
                 IOutliningManagerService svc = EditorShell.Current.ExportProvider.GetExportedValue<IOutliningManagerService>();

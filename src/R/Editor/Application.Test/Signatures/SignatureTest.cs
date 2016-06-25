@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
@@ -11,6 +12,7 @@ using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -18,11 +20,23 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class SignatureTest {
+    public class SignatureTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
+
+        public SignatureTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         [Category.Interactive]
         public void R_SignatureParametersMatch() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
@@ -58,7 +72,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         [Category.Interactive]
         public void R_SignatureSessionNavigation() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
@@ -93,7 +107,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Test]
         [Category.Interactive]
         public void R_EqualsCompletion01() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 PrepareFunctionIndex();
                 FunctionIndexUtility.GetFunctionInfoAsync("addmargins").Wait(3000);
 

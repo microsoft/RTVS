@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -9,6 +10,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.SuggestedActions.Actions;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -16,11 +18,23 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.SuggestedActions {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class SmartTagsTest {
+    public class SmartTagsTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
+
+        public SmartTagsTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+        
         [Test]
         [Category.Interactive]
         public void R_LibrarySuggestedActions() {
-            using (var script = new TestScript(" library(base)", RContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, " library(base)", RContentTypeDefinition.ContentType)) {
                 IEnumerable<SuggestedActionSet> sets = null;
                 ILightBulbSession session = null;
 

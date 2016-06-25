@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
@@ -11,6 +12,7 @@ using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Xunit;
@@ -18,11 +20,23 @@ using Xunit;
 namespace Microsoft.R.Editor.Application.Test.Markdown {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class MarkdownRCompletionTest {
+    public class MarkdownRCompletionTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
+
+        public MarkdownRCompletionTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         [Category.Interactive]
         public void TypeRBlock() {
-            using (var script = new TestScript(MdContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, MdContentTypeDefinition.ContentType)) {
                 script.Type("```{r}{ENTER}{ENTER}```");
                 script.MoveUp();
                 script.Type("x");
@@ -49,7 +63,7 @@ x <- function() {
         [Test]
         [Category.Interactive]
         public void RSignature() {
-            using (var script = new TestScript("```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
+            using (var script = _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
                     FunctionIndex.Initialize();
