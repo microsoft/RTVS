@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using Microsoft.Languages.Editor.Application.Core;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -12,6 +13,8 @@ using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Application.Test {
@@ -33,6 +36,11 @@ namespace Microsoft.R.Editor.Application.Test {
             _containerDisposable.Dispose();
             _coreEditor.Close();
         }
+
+        /// <summary>
+        /// Editor view
+        /// </summary>
+        public IWpfTextView View => _coreEditor.View;
 
         /// <summary>
         /// Editor text document object
@@ -187,40 +195,71 @@ namespace Microsoft.R.Editor.Application.Test {
 
             return this;
         }
+        
+        public IEnumerable<ClassificationSpan> GetClassificationSpans() {
+            var svc = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var aggregator = svc.CreateTagAggregator<IClassificationTag>(_coreEditor.View);
+            var textBuffer = _coreEditor.View.TextBuffer;
+            var snapshot = textBuffer.CurrentSnapshot;
+            var tags = aggregator.GetTags(new SnapshotSpan(snapshot, 0, snapshot.Length));
+            return tags.Select(t => new ClassificationSpan(t.Span.GetSpans(textBuffer)[0], t.Tag.ClassificationType));
+        }
+
         public ICompletionSession GetCompletionSession() {
             var broker = _exportProvider.GetExportedValue<ICompletionBroker>();
-            var sessions = broker.GetSessions(_coreEditor.View);
-            var session = sessions.FirstOrDefault();
-
-            int retries = 0;
-            while (session == null && retries < 10) {
-                DoIdle(1000);
-                sessions = broker.GetSessions(_coreEditor.View);
-                session = sessions.FirstOrDefault();
-                retries++;
-            }
-
-            return session;
+            return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 
         public IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans() {
-            throw new NotImplementedException();
+            var aggregatorService = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var tagAggregator = aggregatorService.CreateTagAggregator<IErrorTag>(_coreEditor.View);
+            var textBuffer = _coreEditor.View.TextBuffer;
+            return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ILightBulbSession GetLightBulbSession() {
-            throw new NotImplementedException();
+            var broker = _exportProvider.GetExportedValue<ILightBulbBroker>();
+            return Retry(() => broker.GetSession(_coreEditor.View));
         }
 
         public IList<IMappingTagSpan<IOutliningRegionTag>> GetOutlineTagSpans() {
-            throw new NotImplementedException();
+            var aggregatorService = _exportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+            var tagAggregator = aggregatorService.CreateTagAggregator<IOutliningRegionTag>(_coreEditor.View);
+            var textBuffer = _coreEditor.View.TextBuffer;
+            return tagAggregator.GetTags(new SnapshotSpan(textBuffer.CurrentSnapshot, new Span(0, textBuffer.CurrentSnapshot.Length))).ToList();
         }
 
         public ISignatureHelpSession GetSignatureSession() {
-            throw new NotImplementedException();
+            var broker = _exportProvider.GetExportedValue<ISignatureHelpBroker>();
+            return Retry(() => broker.GetSessions(_coreEditor.View).FirstOrDefault());
         }
 
         public string WriteErrorTags(IList<IMappingTagSpan<IErrorTag>> tags) {
-            throw new NotImplementedException();
+            var sb = new StringBuilder();
+
+            foreach (var c in tags) {
+                IMappingSpan span = c.Span;
+                SnapshotPoint? ptStart = span.Start.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                SnapshotPoint? ptEnd = span.End.GetPoint(span.AnchorBuffer, PositionAffinity.Successor);
+                sb.AppendLine($"[{ptStart.Value.Position} - {ptEnd.Value.Position}] {c.Tag.ToolTipContent}");
+            }
+
+            return sb.ToString();
+        }
+
+        private T Retry<T>(Func<T> getter, int count = 10, int idle = 1000) where T : class {
+            for (var i = 0; i < count; i++) {
+                var value = getter();
+                if (value != null) {
+                    return value;
+                }
+
+                if (i < count - 1) {
+                    DoIdle(idle);
+                }
+            }
+
+            return null;
         }
     }
 }

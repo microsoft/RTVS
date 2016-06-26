@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
@@ -31,16 +32,16 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
 
         //[Test]
         //[Category.Interactive]
-        public void TypeFile_R() {
-            string actual = TypeFileInEditor("check.r", RContentTypeDefinition.ContentType);
+        public async Task TypeFile_R() {
+            string actual = await TypeFileInEditor("check.r", RContentTypeDefinition.ContentType);
             string expected = "";
             actual.Should().Be(expected);
         }
 
         //[Test]
         //[Category.Interactive]
-        public void TypeFile_RD() {
-            TypeFileInEditor("01.rd", RdContentTypeDefinition.ContentType);
+        public async Task TypeFile_RD() {
+            await TypeFileInEditor("01.rd", RdContentTypeDefinition.ContentType);
         }
 
         /// <summary>
@@ -48,8 +49,8 @@ namespace Microsoft.R.Editor.Application.Test.Typing {
         /// </summary>
         /// <param name="fileName">File name</param>
         /// <param name="contentType">File content type</param>
-        private string TypeFileInEditor(string fileName, string contentType) {
-            using (var script = _editorHost.StartScript(_exportProvider, contentType)) {
+        private async Task<string> TypeFileInEditor(string fileName, string contentType) {
+            using (var script = await _editorHost.StartScript(_exportProvider, contentType)) {
                 string text = _files.LoadDestinationFile(fileName);
                 string[] lines = text.Split(CharExtensions.LineBreakChars);
                 for (int i = 0; i < lines.Length; i++) {

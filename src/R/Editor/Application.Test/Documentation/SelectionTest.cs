@@ -3,9 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -28,7 +28,7 @@ namespace Microsoft.R.Editor.Application.Test.Selection {
         
         [Test]
         [Category.Interactive]
-        public void InsertRoxygenBlock() {
+        public async Task InsertRoxygenBlock() {
             string content =
 @"
 x <- function(a,b,c) { }
@@ -47,9 +47,9 @@ x <- function(a,b,c) { }
 x <- function(a,b,c) { }
 ";
 
-            using (var script = _editorHost.StartScript(_exportProvider, content, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, content, RContentTypeDefinition.ContentType)) {
                 script.Type("###");
-                var actual = EditorWindow.TextBuffer.CurrentSnapshot.GetText();
+                var actual = script.TextBuffer.CurrentSnapshot.GetText();
                 actual.Should().Be(expected);
             }
         }

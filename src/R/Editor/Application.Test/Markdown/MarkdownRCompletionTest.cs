@@ -3,10 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -35,8 +34,8 @@ namespace Microsoft.R.Editor.Application.Test.Markdown {
 
         [Test]
         [Category.Interactive]
-        public void TypeRBlock() {
-            using (var script = _editorHost.StartScript(_exportProvider, MdContentTypeDefinition.ContentType)) {
+        public async Task TypeRBlock() {
+            using (var script = await _editorHost.StartScript(_exportProvider, MdContentTypeDefinition.ContentType)) {
                 script.Type("```{r}{ENTER}{ENTER}```");
                 script.MoveUp();
                 script.Type("x");
@@ -62,12 +61,12 @@ x <- function() {
 
         [Test]
         [Category.Interactive]
-        public void RSignature() {
-            using (var script = _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
+        public async Task RSignature() {
+            using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
-                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
+                using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     FunctionIndex.Initialize();
-                    FunctionIndex.BuildIndexAsync().Wait();
+                    await FunctionIndex.BuildIndexAsync();
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
                     script.MoveDown();

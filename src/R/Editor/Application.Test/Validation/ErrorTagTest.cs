@@ -3,10 +3,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
@@ -28,8 +28,8 @@ namespace Microsoft.R.Editor.Application.Test.Validation {
 
         [Test]
         [Category.Interactive]
-        public void R_ErrorTagsTest01() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_ErrorTagsTest01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 // Force tagger creation
                 var tagSpans = script.GetErrorTagSpans();
 

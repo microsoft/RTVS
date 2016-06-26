@@ -3,9 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -29,8 +29,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
-        public void R_ProvisionalText01() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_ProvisionalText01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("{");
                 script.Type("(");
                 script.Type("[");
@@ -58,8 +58,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
-        public void R_ProvisionalText02() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_ProvisionalText02() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("c(\"");
 
                 string expected = "c(\"\")";
@@ -87,8 +87,8 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
         [Test]
         [Category.Interactive]
-        public void R_ProvisionalCurlyBrace01() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_ProvisionalCurlyBrace01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(1)");

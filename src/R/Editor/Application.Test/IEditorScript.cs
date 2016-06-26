@@ -4,13 +4,33 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.R.Editor.Application.Test {
     public interface IEditorScript : IDisposable {
+        /// <summary>
+        /// Text content of the editor document
+        /// </summary>
         string EditorText { get; }
+
+        /// <summary>
+        /// Editor view
+        /// </summary>
+        IWpfTextView View { get; }
+
+        /// <summary>
+        /// Editor text document object
+        /// </summary>
+        ITextDocument TextDocument { get; }
+
+        /// <summary>
+        /// Editor text buffer
+        /// </summary>
+        ITextBuffer TextBuffer { get; }
 
         /// <summary>
         /// Simulates typing in the editor
@@ -76,6 +96,7 @@ namespace Microsoft.R.Editor.Application.Test {
         /// <param name="msIdle">Timeout to pause before and after execution</param>
         IEditorScript Execute(Guid group, int id, object commandData = null, int msIdle = 0);
 
+        IEnumerable<ClassificationSpan> GetClassificationSpans();
         ICompletionSession GetCompletionSession();
         IList<IMappingTagSpan<IErrorTag>> GetErrorTagSpans();
         ILightBulbSession GetLightBulbSession();

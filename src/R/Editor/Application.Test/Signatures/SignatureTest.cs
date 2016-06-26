@@ -3,10 +3,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
@@ -35,10 +35,10 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         [Test]
         [Category.Interactive]
-        public void R_SignatureParametersMatch() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_SignatureParametersMatch() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
-                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
+                using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
@@ -71,10 +71,10 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         [Test]
         [Category.Interactive]
-        public void R_SignatureSessionNavigation() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_SignatureSessionNavigation() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
-                using (new RHostScript(EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>())) {
+                using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     PrepareFunctionIndex();
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
@@ -106,8 +106,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         [Test]
         [Category.Interactive]
-        public void R_EqualsCompletion01() {
-            using (var script = _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
+        public async Task R_EqualsCompletion01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 PrepareFunctionIndex();
                 FunctionIndexUtility.GetFunctionInfoAsync("addmargins").Wait(3000);
 

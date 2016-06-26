@@ -6,20 +6,16 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Workspace;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.Application.Host
-{
+namespace Microsoft.Languages.Editor.Application.Host {
     [ExcludeFromCodeCoverage]
-    internal class EditorInstanceFactory
-    {
-        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService cs)
-        {
-            var importComposer = new ContentTypeImportComposer<IEditorFactory>(cs);
+    internal class EditorInstanceFactory {
+        public static IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, ICompositionService compositionService) {
+            var importComposer = new ContentTypeImportComposer<IEditorFactory>(compositionService);
             var factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
 
-            var documentFactoryImportComposer = new ContentTypeImportComposer<IEditorDocumentFactory>(EditorShell.Current.CompositionService);
+            var documentFactoryImportComposer = new ContentTypeImportComposer<IEditorDocumentFactory>(compositionService);
             var documentFactory = documentFactoryImportComposer.GetImport(textBuffer.ContentType.TypeName);
 
             // Debug.Assert(factory != null, String.Format("No editor factory found for content type {0}", textBuffer.ContentType.TypeName));
