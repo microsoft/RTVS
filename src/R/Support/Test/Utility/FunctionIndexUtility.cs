@@ -14,12 +14,12 @@ using Microsoft.UnitTests.Core.Mef;
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class FunctionIndexUtility {
-        public static Task<IFunctionInfo> GetFunctionInfoAsync(string functionName) {
+        public static Task<IFunctionInfo> GetFunctionInfoAsync(FunctionIndex functionIndex, string functionName) {
             FunctionRdDataProvider.HostStartTimeout = 10000;
 
             var tcs = new TaskCompletionSource<IFunctionInfo>();
-            var result = FunctionIndex.GetFunctionInfo(functionName, o => {
-                var r = FunctionIndex.GetFunctionInfo(functionName);
+            var result = functionIndex.GetFunctionInfo(functionName, o => {
+                var r = functionIndex.GetFunctionInfo(functionName);
                 tcs.TrySetResult(r);
             });
 
@@ -30,19 +30,19 @@ namespace Microsoft.R.Support.Test.Utility {
             return tcs.Task;
         }
 
-        public static Task InitializeAsync() {
+        public static Task InitializeAsync(FunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
-            FunctionIndex.Initialize();
-            return FunctionIndex.BuildIndexAsync();
+            functionIndex.Initialize();
+            return functionIndex.BuildIndexAsync();
         } 
 
-        public static async Task DisposeAsync(IExportProvider exportProvider) {
+        public static async Task DisposeAsync(FunctionIndex functionIndex, IExportProvider exportProvider) {
             IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
 
-            FunctionIndex.Terminate();
+            functionIndex.Terminate();
         } 
     }
 }

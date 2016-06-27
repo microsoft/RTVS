@@ -25,6 +25,9 @@ namespace Microsoft.R.Editor.QuickInfo {
         [Import]
         internal ITextBufferFactoryService TextBufferFactoryService { get; set; }
 
+        [Import]
+        internal IFunctionIndex FunctionIndex { get; set; }
+
         private ITextBuffer _subjectBuffer;
         private readonly ICompositionCatalog _catalog;
         private int _lastPosition = -1;

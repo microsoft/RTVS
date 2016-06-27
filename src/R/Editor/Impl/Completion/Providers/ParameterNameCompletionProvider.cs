@@ -88,7 +88,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// Extracts information on the current function in the completion context, if any.
         /// </summary>
         /// <returns></returns>
-        private static IFunctionInfo GetFunctionInfo(RCompletionContext context) {
+        private IFunctionInfo GetFunctionInfo(RCompletionContext context) {
             // Retrieve parameter positions from the current text buffer snapshot
             IFunctionInfo functionInfo = null;
 
@@ -96,9 +96,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
             if (parametersInfo != null) {
                 // User-declared functions take priority
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
-                if (functionInfo == null)
+                if (functionInfo == null) {
+                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                }
             }
             return functionInfo;
         }

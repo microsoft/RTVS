@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
@@ -39,8 +40,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
-                    PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
+                    var functionIndex = PrepareFunctionIndex();
+                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(");
                     script.DoIdle(2000);
@@ -75,8 +76,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
-                    PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
+                    var functionIndex = PrepareFunctionIndex();
+                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(subset = a, sing");
                     script.DoIdle(1000);
@@ -108,8 +109,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_EqualsCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                PrepareFunctionIndex();
-                FunctionIndexUtility.GetFunctionInfoAsync("addmargins").Wait(3000);
+                var functionIndex = PrepareFunctionIndex();
+                FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
 
                 script.DoIdle(100);
                 script.Type("addmargins(FU");
@@ -124,9 +125,11 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
-        private void PrepareFunctionIndex() {
-            FunctionIndex.Initialize();
-            FunctionIndex.BuildIndexAsync().Wait();
+        private FunctionIndex PrepareFunctionIndex() {
+            var functionIndex = new FunctionIndex(_exportProvider.GetExportedValue<ICoreShell>());
+            functionIndex.Initialize();
+            functionIndex.BuildIndexAsync().Wait();
+            return functionIndex;
         }
     }
 }

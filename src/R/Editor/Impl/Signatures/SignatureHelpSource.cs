@@ -7,7 +7,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -66,9 +65,10 @@ namespace Microsoft.R.Editor.Signatures {
                 // First try user-defined function
                 functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
                 if (functionInfo == null) {
+                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Then try package functions
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
                 }
 
                 if (functionInfo != null && functionInfo.Signatures != null) {

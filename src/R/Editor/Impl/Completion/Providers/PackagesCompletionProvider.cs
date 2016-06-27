@@ -21,31 +21,29 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackagesCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
         private readonly ICoreShell _shell;
+        private readonly IPackageIndex _packageIndex;
 
         [ImportingConstructor]
         public PackagesCompletionProvider(ICoreShell shell) {
             _shell = shell;
+            _packageIndex = shell.ExportProvider.GetExportedValue<IPackageIndex>();
         }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
-            List<RCompletion> completions = new List<RCompletion>();
             ImageSource glyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphLibrary, StandardGlyphItem.GlyphItemPublic, _shell);
 
-            IEnumerable<IPackageInfo> packages = PackageIndex.Packages;
-            foreach (var packageInfo in packages) {
-                completions.Add(new RCompletion(packageInfo.Name, packageInfo.Name, packageInfo.Description, glyph));
-            }
-
-            return completions;
+            return _packageIndex.Packages
+                .Select(p => new RCompletion(p.Name, p.Name, p.Description, glyph))
+                .ToList();
         }
         #endregion
 
         #region IRHelpSearchTermProvider
         public IReadOnlyCollection<string> GetEntries() {
-            return PackageIndex.Packages.Select(p => p.Name).ToList();
+            return _packageIndex.Packages.Select(p => p.Name).ToList();
         }
         #endregion
     }

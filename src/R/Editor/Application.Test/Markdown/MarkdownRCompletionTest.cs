@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
@@ -65,9 +66,10 @@ x <- function() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 FunctionRdDataProvider.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
-                    FunctionIndex.Initialize();
-                    await FunctionIndex.BuildIndexAsync();
-                    FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
+                    var functionIndex = new FunctionIndex(_exportProvider.GetExportedValue<ICoreShell>());
+                    functionIndex.Initialize();
+                    await functionIndex.BuildIndexAsync();
+                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.MoveDown();
                     script.Type("x <- lm(");

@@ -15,13 +15,10 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine {
     internal static class RCompletionEngine {
-        private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
-
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.
         /// </summary>
@@ -114,14 +111,10 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return providers;
         }
 
-        public static void Initialize() {
-            FunctionIndex.Initialize();
-        }
-
         public static bool CanShowFileCompletion(AstRoot ast, int position, out string directory) {
             TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
             directory = null;
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
+            if (node != null && node.Token.TokenType == RTokenType.String) {
                 string text = node.Root.TextProvider.GetText(node);
                 // Bring file/folder completion when either string is empty or ends with /
                 // assuming that / specifies directory where files are.

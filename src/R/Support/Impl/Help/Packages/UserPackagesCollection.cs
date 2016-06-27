@@ -16,8 +16,9 @@ namespace Microsoft.R.Support.Help.Packages {
     public sealed class UserPackagesCollection : PackageCollection {
         internal static string RLibraryPath { get; set; } = @"R\win-library";
 
-        public UserPackagesCollection() :
-            base(GetInstallPath()) {
+        [ImportingConstructor]
+        public UserPackagesCollection(IFunctionIndex functionIndex) :
+            base(functionIndex, GetInstallPath()) {
         }
 
         internal static string GetInstallPath() {

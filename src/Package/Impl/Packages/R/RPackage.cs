@@ -10,12 +10,12 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
 using Microsoft.VisualStudio.R.Package;
-using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.DataInspect;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
 using Microsoft.VisualStudio.R.Package.Definitions;
@@ -111,7 +111,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             RtvsTelemetry.Initialize();
 
             using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p.LoadSettings();
+                p?.LoadSettings();
             }
 
             MicrosoftRClient.CheckInstall(VsAppShell.Current);
@@ -120,8 +120,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
             ProjectIconProvider.LoadProjectImages();
             LogCleanup.DeleteLogsAsync(DiagnosticLogs.DaysToRetain);
 
-            _indexBuildingTask = FunctionIndex.BuildIndexAsync();
-
+            BuildFunctionIndex();
             AdviseExportedWindowFrameEvents<ActiveWpfTextViewTracker>();
             AdviseExportedWindowFrameEvents<VsActiveRInteractiveWindowTracker>();
             AdviseExportedDebuggerEvents<VsDebuggerModeTracker>();
@@ -143,8 +142,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
 
             RtvsTelemetry.Current.Dispose();
 
-            using (var p = RPackage.Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
-                p.SaveSettings();
+            using (var p = Current.GetDialogPage(typeof(RToolsOptionsPage)) as RToolsOptionsPage) {
+                p?.SaveSettings();
             }
 
             base.Dispose(disposing);
@@ -190,11 +189,16 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private bool IsCommandLineMode() {
             var shell = VsAppShell.Current.GetGlobalService<IVsShell>(typeof(SVsShell));
             if (shell != null) {
-                object value = null;
+                object value;
                 shell.GetProperty((int)__VSSPROPID.VSSPROPID_IsInCommandLineMode, out value);
                 return value is bool && (bool)value;
             }
             return false;
         }
-     }
+
+        private void BuildFunctionIndex() {
+            var functionIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IFunctionIndex>();
+            _indexBuildingTask = functionIndex.BuildIndexAsync();
+        }
+    }
 }

@@ -13,6 +13,7 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -26,18 +27,20 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
     public class FunctionIndexTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
+        private readonly FunctionIndex _functionIndex;
 
         public FunctionIndexTest(REditorMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _functionIndex = new FunctionIndex(_editorShell);
         }
 
         public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync();
+            return FunctionIndexUtility.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_exportProvider);
+            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
             _exportProvider.Dispose();
         }
 

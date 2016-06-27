@@ -134,7 +134,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
         }
 
         public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
-            if (EditorShell.HasShell) {
+            if (shell != null) {
                 ITextDocumentFactoryService textDocumentFactoryService = shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
                 ITextDocument textDocument;
 

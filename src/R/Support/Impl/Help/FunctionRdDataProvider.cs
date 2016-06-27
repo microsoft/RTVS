@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
@@ -16,8 +17,14 @@ namespace Microsoft.R.Host.Client.Signatures {
     [Export(typeof(IFunctionRdDataProvider))]
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
+        private readonly IEditorShell _editorShell;
+        private readonly SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
         private IRSession _session;
-        private SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
+
+        [ImportingConstructor]
+        public FunctionRdDataProvider(IEditorShell editorShell) {
+            _editorShell = editorShell;
+        }
 
         /// <summary>
         /// Timeout to allow R-Host to start. Typically only needs
@@ -58,13 +65,13 @@ namespace Microsoft.R.Host.Client.Signatures {
             await _sessionSemaphore.WaitAsync();
             try {
                 if (_session == null) {
-                    var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                    var provider = _editorShell.ExportProvider.GetExportedValue<IRSessionProvider>();
                     _session = provider.GetOrCreate(SessionId);
                     _session.Disposed += OnSessionDisposed;
                 }
 
                 if (!_session.IsHostRunning) {
-                    int timeout = EditorShell.Current.IsUnitTestEnvironment ? 10000 : 3000;
+                    int timeout = _editorShell.IsUnitTestEnvironment ? 10000 : 3000;
                     await _session.StartHostAsync(new RHostStartupInfo {
                         Name = "RdData",
                         RBasePath = RToolsSettings.Current.RBasePath,

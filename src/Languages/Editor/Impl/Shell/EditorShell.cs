@@ -38,22 +38,6 @@ namespace Microsoft.Languages.Editor.Shell {
             }
         }
 
-        /// <summary>
-        /// Provides a way to execute action on UI thread while
-        /// UI thread is waiting for the completion of the action.
-        /// May be implemented using ThreadHelper in VS or via
-        /// SynchronizationContext in all-managed application.
-        /// </summary>
-        /// <param name="action">Delegate to execute</param>
-        /// <param name="arguments">Arguments to pass to the delegate</param>
-        public static void DispatchOnUIThread(Action action) {
-            if (Current != null) {
-                Current.DispatchOnUIThread(action);
-            } else {
-                action();
-            }
-        }
-
         public static ISettingsStorage GetSettings(ICompositionCatalog compositionCatalog, string contentTypeName) {
             ISettingsStorage settingsStorage = null;
 
