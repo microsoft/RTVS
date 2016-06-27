@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.IO;
 
 namespace Microsoft.R.Host.Client {
@@ -17,7 +18,14 @@ namespace Microsoft.R.Host.Client {
 
         public bool IsClearAll => string.IsNullOrEmpty(FilePath);
 
-        public bool IsPlot => File.Exists(FilePath) && new FileInfo(FilePath).Length > 0;
+        public bool IsPlot {
+            get {
+                try {
+                    return new FileInfo(FilePath).Length > 0;
+                } catch (IOException) { } catch (AccessViolationException) { }
+                return false;
+            }
+        }
 
         /// <summary>
         /// A zero-sized file means a blank image, ie. the plot could not be rendered.

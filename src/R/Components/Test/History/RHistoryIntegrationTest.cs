@@ -63,6 +63,8 @@ namespace Microsoft.R.Components.Test.History {
                 history.SendSelectedToTextView(textView);
                 var text = textBuffer.CurrentSnapshot.GetText();
                 text.Should().Be("x <- c(1:10)");
+
+                UIThreadHelper.Instance.Invoke(() => textView.Close());
             }
         }
 

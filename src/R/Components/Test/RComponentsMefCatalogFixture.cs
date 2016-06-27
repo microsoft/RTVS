@@ -49,7 +49,6 @@ namespace Microsoft.R.Components.Test {
             base.AddValues(container);
             var coreShell = new TestCoreShell(container);
             var batch = new CompositionBatch()
-                .AddValue(FileSystemStubFactory.CreateDefault())
                 .AddValue<IRSettings>(RSettingsStubFactory.CreateForExistingRPath())
                 .AddValue<ICoreShell>(coreShell)
                 .AddValue(coreShell);
