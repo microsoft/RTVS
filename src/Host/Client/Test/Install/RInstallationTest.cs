@@ -41,7 +41,7 @@ namespace Microsoft.R.Host.Client.Test.Install {
         public void Test02() {
             // Use actual files and registry
             var ri = new RInstallation();
-            var svl = new SupportedRVersionRange(3, 2, 3, 2);
+            var svl = new SupportedRVersionRange(3, 2, 3, 9);
             RInstallData data = ri.GetInstallationData(null, svl);
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
