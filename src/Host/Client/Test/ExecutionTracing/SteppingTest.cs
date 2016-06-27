@@ -2,14 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.R.Host.Client.Test.Script;
@@ -20,6 +19,7 @@ using Xunit;
 
 namespace Microsoft.R.ExecutionTracing.Test {
     [ExcludeFromCodeCoverage]
+    [Category.R.ExecutionTracing]
     public class SteppingTest : IAsyncLifetime {
         private readonly MethodInfo _testMethod;
         private readonly IRSessionProvider _sessionProvider;
@@ -34,7 +34,7 @@ namespace Microsoft.R.ExecutionTracing.Test {
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = new RInstallation().GetRInstallPath()
             }, new RHostClientTestApp(), 50000);
         }
 
@@ -44,7 +44,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task BreakContinue() {
             const string code =
 @"x <- 0
@@ -80,7 +79,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepOver() {
             const string code =
 @"f <- function(x) {
@@ -141,7 +139,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test(Skip = "https://github.com/Microsoft/RTVS/issues/975")]
-        [Category.R.ExecutionTracing]
         public async Task StepOutToGlobal() {
             const string code =
 @"f <- function(x) {
@@ -171,7 +168,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepOutToFunction() {
             const string code =
 @"f <- function() {
@@ -207,7 +203,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepOutFromGlobal() {
             const string code =
 @"x <- 1
@@ -236,7 +231,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepOverBreakpoint() {
             const string code =
 @"f <- function() { 
@@ -264,7 +258,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
         }
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepOntoBreakpoint() {
             const string code =
 @"x <- 1
@@ -290,7 +283,6 @@ namespace Microsoft.R.ExecutionTracing.Test {
 
 
         [Test]
-        [Category.R.ExecutionTracing]
         public async Task StepIntoAfterStepOver() {
             const string code =
 @"f <- function(x) {

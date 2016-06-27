@@ -56,6 +56,7 @@ x <- function() {
                     FunctionIndex.BuildIndexAsync().Wait();
                     FunctionIndexUtility.GetFunctionInfoAsync("lm").Wait(3000);
 
+                    script.DoIdle(500);
                     script.MoveDown();
                     script.Type("x <- lm(");
                     script.DoIdle(2000);

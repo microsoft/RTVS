@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Threading;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
@@ -11,6 +12,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Xunit;
@@ -28,24 +30,25 @@ namespace Microsoft.R.Editor.Test.Outline {
         [Test]
         public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            EditorTree tree = new EditorTree(textBuffer);
-            EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
+            var tree = new EditorTree(textBuffer);
+            using (var editorDocument = new EditorDocumentMock(tree)) {
+                using (var ob = new ROutlineRegionBuilder(editorDocument)) {
 
-            ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument);
+                    ob.EditorDocument.Should().NotBeNull();
+                    ob.EditorTree.Should().NotBeNull();
 
-            ob.EditorDocument.Should().NotBeNull();
-            ob.EditorTree.Should().NotBeNull();
+                    editorDocument.DocumentClosing.GetInvocationList().Should().ContainSingle();
 
-            editorDocument.DocumentClosing.GetInvocationList().Should().ContainSingle();
+                    FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
+                    d.GetInvocationList().Should().ContainSingle();
 
-            FieldInfo treeUpdateField = tree.GetType().GetField("UpdateCompleted", BindingFlags.Instance | BindingFlags.NonPublic);
-            var d = (MulticastDelegate)treeUpdateField.GetValue(tree);
-            d.GetInvocationList().Should().ContainSingle();
+                    tree.Dispose();
 
-            ob.Dispose();
-
-            editorDocument.DocumentClosing.Should().BeNull();
-            treeUpdateField.GetValue(tree).Should().BeNull();
+                    editorDocument.DocumentClosing.Should().BeNull();
+                    treeUpdateField.GetValue(tree).Should().BeNull();
+                }
+            }
         }
 
         [Test(ThreadType.UI)]
@@ -94,7 +97,7 @@ namespace Microsoft.R.Editor.Test.Outline {
             a.ShouldNotThrow();
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void Sections() {
             string content =
 @"# NAME1 -----
@@ -106,40 +109,42 @@ x <- 1
             OutlineRegionsChangedEventArgs args = null;
 
             textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(textBuffer);
-            tree.Build();
-            var editorDocument = new EditorDocumentMock(tree);
+            using (var tree = new EditorTree(textBuffer)) {
+                tree.Build();
+                using (var editorDocument = new EditorDocumentMock(tree)) {
+                    using (var ob = new ROutlineRegionBuilder(editorDocument)) {
+                        var rc1 = new OutlineRegionCollection(0);
+                        ob.BuildRegions(rc1);
 
-            var ob = new ROutlineRegionBuilder(editorDocument);
-            var rc1 = new OutlineRegionCollection(0);
-            ob.BuildRegions(rc1);
+                        rc1.Should().HaveCount(2);
+                        rc1[0].DisplayText.Should().Be("# NAME1");
+                        rc1[1].DisplayText.Should().Be("# NAME2");
 
-            rc1.Should().HaveCount(2);
-            rc1[0].DisplayText.Should().Be("# NAME1");
-            rc1[1].DisplayText.Should().Be("# NAME2");
+                        ob.RegionsChanged += (s, e) => {
+                            calls++;
+                            args = e;
+                        };
 
-            ob.RegionsChanged += (s, e) => {
-                calls++;
-                args = e;
-            };
+                        textBuffer.Insert(2, "A");
+                        editorDocument.EditorTree.EnsureTreeReady();
 
-            textBuffer.Insert(2, "A");
-            editorDocument.EditorTree.EnsureTreeReady();
+                        // Wait for background/idle tasks to complete
+                        var start = DateTime.Now;
+                        while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
+                            EditorShell.Current.DoIdle();
+                        }
 
-            // Wait for background/idle tasks to complete
-            var start = DateTime.Now;
-            while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                EditorShell.Current.DoIdle();
+                        calls.Should().Be(1);
+                        args.Should().NotBeNull();
+                        args.ChangedRange.Start.Should().Be(0);
+                        args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
+                        args.Regions.Should().HaveCount(2);
+
+                        args.Regions[0].DisplayText.Should().Be("# ANAME1");
+                        args.Regions[1].DisplayText.Should().Be("# NAME2");
+                    }
+                }
             }
-
-            calls.Should().Be(1);
-            args.Should().NotBeNull();
-            args.ChangedRange.Start.Should().Be(0);
-            args.ChangedRange.End.Should().Be(textBuffer.CurrentSnapshot.Length);
-            args.Regions.Should().HaveCount(2);
-
-            args.Regions[0].DisplayText.Should().Be("# ANAME1");
-            args.Regions[1].DisplayText.Should().Be("# NAME2");
         }
     }
 }

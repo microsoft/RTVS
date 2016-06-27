@@ -3,7 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition.Hosting;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.History;
@@ -11,12 +11,12 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
-using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Formatting;
 using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Components.Test.History {
+    [ExcludeFromCodeCoverage]
     public class RHistoryViewModelTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly ExportProvider _exportProvider;
@@ -39,8 +39,11 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         public Task DisposeAsync() {
+            UIThreadHelper.Instance.Invoke(() => {
+                _historyVisualComponent.Dispose();
+            });
+
             _containerDisposable?.Dispose();
-            _historyVisualComponent.Dispose();
             (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
         }

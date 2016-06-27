@@ -5,6 +5,7 @@ using System.ComponentModel.Composition;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -13,6 +14,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof(IInteractiveWindowComponentContainerFactory))]
     internal sealed class TestRInteractiveWindowComponentContainerFactory : ContainerFactoryBase<IInteractiveWindowVisualComponent>, IInteractiveWindowComponentContainerFactory {
         private readonly IContentTypeRegistryService _contentTypeRegistryService;
+        private IInteractiveWindow _window;
         private IInteractiveWindowFactoryService InteractiveWindowFactory { get; }
 
         [ImportingConstructor]
@@ -23,14 +25,22 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
 
         public IInteractiveWindowVisualComponent Create(int instanceId, IInteractiveEvaluator evaluator) {
             return GetOrCreate(instanceId, container => {
-                var window = InteractiveWindowFactory.CreateWindow(evaluator);
+                _window = InteractiveWindowFactory.CreateWindow(evaluator);
                 var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
-                window.Properties[typeof(IContentType)] = contentType;
-                window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
-                window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
+                _window.Properties[typeof(IContentType)] = contentType;
+                _window.CurrentLanguageBuffer?.ChangeContentType(contentType, null);
+                _window.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, false);
 
-                return new RInteractiveWindowVisualComponent(window, container);
+                return new RInteractiveWindowVisualComponent(_window, container);
             }).Component;
+        }
+
+        public override void Dispose() {
+            UIThreadHelper.Instance.Invoke(() => {
+                _window?.TextView?.Close();
+                _window?.Dispose();
+            });
+            base.Dispose();
         }
     }
 }

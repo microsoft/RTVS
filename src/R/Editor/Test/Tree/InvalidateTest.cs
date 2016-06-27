@@ -19,10 +19,11 @@ namespace Microsoft.R.Editor.Test.Tree {
     public class EditorTreeInvalidateTest {
         [Test]
         public void InvalidateAll() {
-            EditorTree tree = EditorTreeTest.MakeTree("if(true) x <- a + b");
-            tree.Invalidate();
-            tree.AstRoot.Children.Should().ContainSingle();
-            tree.AstRoot.Children[0].Children.Should().BeEmpty();
+            using (var tree = EditorTreeTest.MakeTree("if(true) x <- a + b")) {
+                tree.Invalidate();
+                tree.AstRoot.Children.Should().ContainSingle();
+                tree.AstRoot.Children[0].Children.Should().BeEmpty();
+            }
         }
 
         [CompositeTest]
@@ -32,14 +33,14 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { }", 11, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 3)]
         public void InvalidateAllInRange(string content, int start, int length) {
-            EditorTree tree = EditorTreeTest.MakeTree(content);
+            using (var tree = EditorTreeTest.MakeTree(content)) {
+                bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
+                nodesChanged.Should().BeTrue();
 
-            bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
-            nodesChanged.Should().BeTrue();
-
-            tree.AstRoot.Children.Should().ContainSingle();
-            tree.AstRoot.Children[0].Should().BeOfType<GlobalScope>();
-            tree.AstRoot.Children[0].Children.Should().BeEmpty();
+                tree.AstRoot.Children.Should().ContainSingle();
+                tree.AstRoot.Children[0].Should().BeOfType<GlobalScope>();
+                tree.AstRoot.Children[0].Children.Should().BeEmpty();
+            }
         }
 
         [CompositeTest]
@@ -47,23 +48,24 @@ namespace Microsoft.R.Editor.Test.Tree {
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 23, 1)]
         [InlineData("if(true) { while(TRUE) { x <- a + b} }", 35, 1)]
         public void InvalidatePartsInRange01(string content, int start, int length) {
-            EditorTree tree = EditorTreeTest.MakeTree(content);
+            using (var tree = EditorTreeTest.MakeTree(content)) {
 
-            bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
-            nodesChanged.Should().BeTrue();
+                bool nodesChanged = tree.InvalidateInRange(new TextRange(start, length));
+                nodesChanged.Should().BeTrue();
 
-            tree.AstRoot.Children.Should().ContainSingle();
-            tree.AstRoot.Children[0].Should().BeOfType<GlobalScope>();
+                tree.AstRoot.Children.Should().ContainSingle();
+                tree.AstRoot.Children[0].Should().BeOfType<GlobalScope>();
 
-            tree.AstRoot.Children[0].Children.Should().NotBeEmpty();
-            tree.AstRoot.Children[0].Children[0].Should().BeOfType<If>();
+                tree.AstRoot.Children[0].Children.Should().NotBeEmpty();
+                tree.AstRoot.Children[0].Children[0].Should().BeOfType<If>();
 
-            var ifStatement = tree.AstRoot.Children[0].Children[0] as If;
-            ifStatement.Should().NotBeNull();
-            ifStatement.Scope.Should().NotBeNull();
-            ifStatement.Scope.Children.Count.Should().Be(2);
-            ifStatement.Scope.OpenCurlyBrace.Should().NotBeNull();
-            ifStatement.Scope.CloseCurlyBrace.Should().NotBeNull();
+                var ifStatement = tree.AstRoot.Children[0].Children[0] as If;
+                ifStatement.Should().NotBeNull();
+                ifStatement.Scope.Should().NotBeNull();
+                ifStatement.Scope.Children.Count.Should().Be(2);
+                ifStatement.Scope.OpenCurlyBrace.Should().NotBeNull();
+                ifStatement.Scope.CloseCurlyBrace.Should().NotBeNull();
+            }
         }
     }
 }

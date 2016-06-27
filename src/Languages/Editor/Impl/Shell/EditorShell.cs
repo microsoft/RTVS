@@ -19,17 +19,18 @@ namespace Microsoft.Languages.Editor.Shell {
     public sealed class EditorShell {
         private static Dictionary<string, ISettingsStorage> _settingStorageMap = new Dictionary<string, ISettingsStorage>(StringComparer.OrdinalIgnoreCase);
         private static object _shell;
-        private static readonly object _lock = new object();
+        private static readonly object _instanceLock = new object();
+        private static readonly object _settingsLock = new object();
 
         public void SetShell(object shell) {
             _shell = shell;
-         }
+        }
 
-        public static bool HasShell  => _shell != null;
+        public static bool HasShell => _shell != null;
 
         public static IEditorShell Current {
             get {
-                lock (_lock) {
+                lock (_instanceLock) {
                     if (_shell == null) {
                         CoreShell.TryCreateTestInstance("Microsoft.Languages.Editor.Test.dll", "TestEditorShell");
                         Debug.Assert(_shell != null);
@@ -64,41 +65,39 @@ namespace Microsoft.Languages.Editor.Shell {
         public static ISettingsStorage GetSettings(string contentTypeName) {
             ISettingsStorage settingsStorage = null;
 
-            lock (_lock) {
+            lock (_settingsLock) {
                 if (_settingStorageMap.TryGetValue(contentTypeName, out settingsStorage)) {
                     return settingsStorage;
                 }
-            }
 
-            // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
+                // Need to find the settings using MEF (don't use MEF inside of other locks, that can lead to deadlock)
 
-            var contentTypeRegistry = Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                var contentTypeRegistry = Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
 
-            var contentType = contentTypeRegistry.GetContentType(contentTypeName);
-            Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
+                var contentType = contentTypeRegistry.GetContentType(contentTypeName);
+                Debug.Assert(contentType != null, "Cannot find content type object for " + contentTypeName);
 
-            settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
+                settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>.FindFirstOrderedComponent(contentType);
 
-            if (settingsStorage == null) {
-                settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(contentType);
-            }
+                if (settingsStorage == null) {
+                    settingsStorage = ComponentLocatorForOrderedContentType<ISettingsStorage>.FindFirstOrderedComponent(contentType);
+                }
 
-            if (settingsStorage == null) {
-                var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (storages.Count() > 0)
-                    settingsStorage = storages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var storages = ComponentLocatorForContentType<IWritableSettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                    if (storages.Count() > 0)
+                        settingsStorage = storages.First().Value;
+                }
 
-            if (settingsStorage == null) {
-                var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(contentType);
-                if (readonlyStorages.Count() > 0)
-                    settingsStorage = readonlyStorages.First().Value;
-            }
+                if (settingsStorage == null) {
+                    var readonlyStorages = ComponentLocatorForContentType<ISettingsStorage, IComponentContentTypes>.ImportMany(contentType);
+                    if (readonlyStorages.Count() > 0)
+                        settingsStorage = readonlyStorages.First().Value;
+                }
 
-            Debug.Assert(settingsStorage != null, String.Format(CultureInfo.CurrentCulture,
-                "Cannot find settings storage export for content type '{0}'", contentTypeName));
+                Debug.Assert(settingsStorage != null, String.Format(CultureInfo.CurrentCulture,
+                    "Cannot find settings storage export for content type '{0}'", contentTypeName));
 
-            lock (_lock) {
                 if (_settingStorageMap.ContainsKey(contentTypeName)) {
                     // some other thread came along and loaded settings already
                     settingsStorage = _settingStorageMap[contentTypeName];

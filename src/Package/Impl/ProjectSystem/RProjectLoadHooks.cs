@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly MsBuildFileSystemWatcher _fileWatcher;
         private readonly string _projectDirectory;
         private readonly IRToolsSettings _toolsSettings;
-        private readonly IFileSystem _fileSystem;
+        private readonly IFileSystem _fileSystem = new FileSystem();
         private readonly IThreadHandling _threadHandling;
         private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
@@ -69,7 +69,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IRInteractiveWorkflowProvider workflowProvider
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
-            , IFileSystem fileSystem
             , IThreadHandling threadHandling
             , ISurveyNewsService surveyNews) {
 
@@ -79,13 +78,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _componentContainerFactory = componentContainerFactory;
 
             _toolsSettings = toolsSettings;
-            _fileSystem = fileSystem;
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
-            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, fileSystem, new RMsBuildFileSystemFilter());
+            _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter());
             _fileWatcher.Error += FileWatcherError;
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
         }

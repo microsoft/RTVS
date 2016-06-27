@@ -211,7 +211,6 @@
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
     <Compile Include="ProjectSystem\ConfiguredRProjectExportProvider.cs" />
-    <Compile Include="ProjectSystem\Exports.cs" />
     <Compile Include="ProjectSystem\Definitions\IConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Definitions\IRProjectProperties.cs" />
     <Compile Include="ProjectSystem\Definitions\IVsHierarchyExtensions.cs" />

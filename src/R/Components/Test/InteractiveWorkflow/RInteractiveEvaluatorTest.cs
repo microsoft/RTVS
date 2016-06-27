@@ -27,6 +27,10 @@ namespace Microsoft.R.Components.Test.History {
             _interactiveWindowComponentContainerFactory = _exportProvider.GetExportedValue<IInteractiveWindowComponentContainerFactory>();
         }
 
+        public void Dispose() {
+            (_exportProvider as IDisposable)?.Dispose();
+        }
+
         [Test]
         [Category.Interactive]
         public async Task EvaluatorTest01() {
@@ -122,10 +126,6 @@ namespace Microsoft.R.Components.Test.History {
                 text = window.OutputBuffer.CurrentSnapshot.GetText();
                 text.TrimEnd().Should().Be("[1] \"“абвг”\"");
             }
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
     }
 }

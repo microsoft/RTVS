@@ -1,16 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
-using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
@@ -29,7 +25,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RUtilities.FindExistingRBasePath()
+                    RBasePath = new RInstallation().GetRInstallPath()
                 }, null, 50000);
             }
 

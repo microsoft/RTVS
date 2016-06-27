@@ -35,7 +35,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     } else {
                         // Multiple library folders. Try and match to R version
                         // specified in the Tools | Options
-                        var version = RInstallation.GetRVersion(RToolsSettings.Current.RBasePath);
+                        var version = new RInstallation().GetRVersion(RToolsSettings.Current.RBasePath);
                         var versionString = Invariant($"{version.Major}.{version.Minor}");
                         string path = Path.Combine(libraryPath, versionString);
                         if (Directory.Exists(path)) {

@@ -40,10 +40,6 @@ namespace Microsoft.R.Components.Test.Plots {
             _testFiles = testFiles;
         }
 
-        private TestCoreShell CoreShell {
-            get { return _workflow.Shell as TestCoreShell; }
-        }
-
         public Task InitializeAsync() {
             return Task.CompletedTask;
         }
@@ -51,6 +47,10 @@ namespace Microsoft.R.Components.Test.Plots {
         public Task DisposeAsync() {
             (_exportProvider as IDisposable)?.Dispose();
             return Task.CompletedTask;
+        }
+
+        private TestCoreShell CoreShell {
+            get { return _workflow.Shell as TestCoreShell; }
         }
 
         [Test(ThreadType.UI)]

@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
+using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Test.Registry;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.UnitTests.Core.FluentAssertions;
@@ -21,7 +22,7 @@ namespace Microsoft.R.Host.Client.Test.Install {
         [Category.R.Install]
         public void Test01() {
             var svl = new SupportedRVersionRange(0, 0, 0, 0);
-            RInstallData data = RInstallation.GetInstallationData(null, svl);
+            RInstallData data = new RInstallation().GetInstallationData(null, svl);
             data.Status.Should().BeEither(RInstallStatus.PathNotSpecified, RInstallStatus.UnsupportedVersion);
         }
 
@@ -32,18 +33,16 @@ namespace Microsoft.R.Host.Client.Test.Install {
         [InlineData(@"C:\R\bin", @"C:\R")]
         [InlineData(@"C:\R\bin\x64", @"C:\R")]
         public void NormalizePath(string path, string expected) {
-            RInstallation.NormalizeRPath(path).Should().Be(expected);
+            new RInstallation().NormalizeRPath(path).Should().Be(expected);
         }
 
         [Test]
         [Category.R.Install]
         public void Test02() {
             // Use actual files and registry
-            RInstallation.Registry = null;
-            RInstallation.FileSystem = null;
-
+            var ri = new RInstallation();
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
-            RInstallData data = RInstallation.GetInstallationData(null, svl);
+            RInstallData data = ri.GetInstallationData(null, svl);
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
             data.Version.Minor.Should().BeGreaterOrEqualTo(2);
@@ -55,7 +54,6 @@ namespace Microsoft.R.Host.Client.Test.Install {
         [Category.R.Install]
         public void Test03() {
             var tr = new RegistryMock(SimulateRegistry03());
-            RInstallation.Registry = tr;
 
             string dir = @"C:\Program Files\MRO\R-3.2.3";
             string dir64 = dir + @"\bin\x64\";
@@ -67,9 +65,9 @@ namespace Microsoft.R.Host.Client.Test.Install {
             fvi.FileMinorPart.Returns(23);
             fs.GetVersionInfo(dir64 + "R.dll").Returns(fvi);
 
-            RInstallation.FileSystem = fs;
+            var ri = new RInstallation(tr, fs, new ProcessServices());
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
-            RInstallData data = RInstallation.GetInstallationData(null, svl);
+            RInstallData data = ri.GetInstallationData(null, svl);
 
             data.Status.Should().Be(RInstallStatus.OK);
             data.Version.Major.Should().BeGreaterOrEqualTo(3);
@@ -100,10 +98,10 @@ namespace Microsoft.R.Host.Client.Test.Install {
         [Category.R.Install]
         public void Test04() {
             var tr = new RegistryMock(SimulateRegistry04());
-            RInstallation.Registry = tr;
             var svl = new SupportedRVersionRange(3, 2, 3, 9);
+            var ri = new RInstallation(tr, null, null);
 
-            RInstallation.GetCompatibleEnginePathFromRegistry(svl).Should().BeNullOrEmpty();
+            ri.GetCompatibleEnginePathFromRegistry(svl).Should().BeNullOrEmpty();
 
             string dir = @"C:\Program Files\RRO\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
@@ -111,13 +109,13 @@ namespace Microsoft.R.Host.Client.Test.Install {
             fsi.Attributes.Returns(System.IO.FileAttributes.Directory);
             fsi.FullName.Returns(dir);
             fs.GetDirectoryInfo(@"C:\Program Files\RRO").EnumerateFileSystemInfos().Returns(new IFileSystemInfo[] { fsi });
-            RInstallation.FileSystem = fs;
-
-            RInstallData data = RInstallation.GetInstallationData(null, svl);
+            
+            ri = new RInstallation(tr, fs, null);
+            RInstallData data = ri.GetInstallationData(null, svl);
             data.Status.Should().Be(RInstallStatus.PathNotSpecified);
 
             PretendRFilesAvailable(fs, dir);
-            data = RInstallation.GetInstallationData(dir, svl);
+            data = ri.GetInstallationData(dir, svl);
             data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
         }
 
@@ -125,7 +123,6 @@ namespace Microsoft.R.Host.Client.Test.Install {
         [Category.R.Install]
         public void Test05() {
             var tr = new RegistryMock(SimulateRegistry04());
-            RInstallation.Registry = tr;
 
             string dir = @"C:\Program Files\RRO\R-3.1.3";
             var fs = Substitute.For<IFileSystem>();
@@ -136,9 +133,9 @@ namespace Microsoft.R.Host.Client.Test.Install {
             fvi.FileMinorPart.Returns(13);
             fs.GetVersionInfo(dir + "R.dll").Returns(fvi);
 
-            RInstallation.FileSystem = fs;
+            var ri = new RInstallation(tr, fs, null);
             var svl = new SupportedRVersionRange(3, 2, 3, 2);
-            RInstallData data = RInstallation.GetInstallationData(dir, svl);
+            RInstallData data = ri.GetInstallationData(dir, svl);
             data.Status.Should().Be(RInstallStatus.UnsupportedVersion);
         }
 

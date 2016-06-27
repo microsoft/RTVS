@@ -82,10 +82,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
                 clipboard.Data = content;
 
                 var ast = RParser.Parse(textBuffer.CurrentSnapshot.GetText());
-                var document = new EditorDocumentMock(new EditorTreeMock(textBuffer, ast));
-
-                object o = new object();
-                command.Invoke(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, null, ref o);
+                using (var document = new EditorDocumentMock(new EditorTreeMock(textBuffer, ast))) {
+                    object o = new object();
+                    command.Invoke(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste, null, ref o);
+                }
             }
 
             return textBuffer.CurrentSnapshot.GetText();

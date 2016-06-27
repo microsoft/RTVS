@@ -68,7 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry {
                     Assembly thisAssembly = Assembly.GetExecutingAssembly();
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RtvsVersion, thisAssembly.GetName().Version.ToString());
 
-                    string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
+                    string rInstallPath = new RInstallation().GetRInstallPath(RToolsSettings.Current.RBasePath);
                     TelemetryService.ReportEvent(TelemetryArea.Configuration, ConfigurationEvents.RInstallPath, rInstallPath);
 
                     string rClientPath = MicrosoftRClient.GetRClientPath();

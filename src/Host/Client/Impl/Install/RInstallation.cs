@@ -20,43 +20,22 @@ namespace Microsoft.R.Host.Client.Install {
     /// specified in settings. If nothing is specified
     /// settings try and find highest version.
     /// </summary>
-    public static class RInstallation {
+    public sealed class RInstallation {
         private const string rServer = "R_SERVER";
-        private static string[] rFolders = new string[] { "MRO", "RRO", "R" };
-        private static IRegistry _registry;
-        private static IFileSystem _fileSystem;
-        private static IProcessServices _processServices;
+        private static readonly string[] rFolders = new string[] { "MRO", "RRO", "R" };
 
-        internal static IRegistry Registry {
-            get {
-                if (_registry == null) {
-                    _registry = new RegistryImpl();
-                }
-                return _registry;
-            }
-            set { _registry = value; }
+        private readonly IRegistry _registry;
+        private readonly IFileSystem _fileSystem;
+        private readonly IProcessServices _processServices;
+
+        public RInstallation(): 
+            this(new RegistryImpl(), new FileSystem(), new ProcessServices()) { }
+
+        public RInstallation(IRegistry registry, IFileSystem fileSystem, IProcessServices processServices) {
+            _registry = registry;
+            _fileSystem = fileSystem;
+            _processServices = processServices;
         }
-
-        internal static IFileSystem FileSystem {
-            get {
-                if (_fileSystem == null) {
-                    _fileSystem = new FileSystem();
-                }
-                return _fileSystem;
-            }
-            set { _fileSystem = value; }
-        }
-
-        internal static IProcessServices ProcessServices {
-            get {
-                if (_processServices == null) {
-                    _processServices = new ProcessServices();
-                }
-                return _processServices;
-            }
-            set { _processServices = value; }
-        }
-
 
         /// <summary>
         /// Tries to determine R installation information. If user-specified path
@@ -66,7 +45,7 @@ namespace Microsoft.R.Host.Client.Install {
         /// </summary>
         /// <param name="basePath">Path as specified by the user settings</param>
         /// <returns></returns>
-        public static RInstallData GetInstallationData(
+        public RInstallData GetInstallationData(
             string basePath,
             ISupportedRVersionRange svl) {
 
@@ -104,9 +83,9 @@ namespace Microsoft.R.Host.Client.Install {
                 string rScriptPath = Path.Combine(rDirectory, "RScript.exe");
                 string rGuiPath = Path.Combine(rDirectory, "RGui.exe");
 
-                if (FileSystem.FileExists(rDllPath) && FileSystem.FileExists(rTermPath) &&
-                    FileSystem.FileExists(rScriptPath) && FileSystem.FileExists(rGraphAppPath) &&
-                    FileSystem.FileExists(rGuiPath)) {
+                if (_fileSystem.FileExists(rDllPath) && _fileSystem.FileExists(rTermPath) &&
+                    _fileSystem.FileExists(rScriptPath) && _fileSystem.FileExists(rGraphAppPath) &&
+                    _fileSystem.FileExists(rGuiPath)) {
 
                     data.Version = GetRVersion(path);
                     if (!svl.IsCompatibleVersion(data.Version)) {
@@ -126,16 +105,16 @@ namespace Microsoft.R.Host.Client.Install {
             return data;
         }
 
-        public static Version GetRVersion(string basePath) {
+        public Version GetRVersion(string basePath) {
             string rDllPath = Path.Combine(basePath, @"bin\x64\R.dll");
-            IFileVersionInfo fvi = FileSystem.GetVersionInfo(rDllPath);
+            IFileVersionInfo fvi = _fileSystem.GetVersionInfo(rDllPath);
             int minor, revision;
 
             GetRVersionPartsFromFileMinorVersion(fvi.FileMinorPart, out minor, out revision);
             return new Version(fvi.FileMajorPart, minor, revision);
         }
 
-        public static string NormalizeRPath(string path) {
+        public string NormalizeRPath(string path) {
             string[] suffixes = { @"\bin", @"\bin\x64" };
             foreach (var s in suffixes) {
                 if (path.EndsWith(s, StringComparison.OrdinalIgnoreCase)) {
@@ -150,9 +129,9 @@ namespace Microsoft.R.Host.Client.Install {
         /// Retrieves path to the installed R engine root folder.
         /// First tries user settings, then 64-bit registry.
         /// </summary>
-        public static string GetRInstallPath(string basePath, ISupportedRVersionRange svl = null) {
+        public string GetRInstallPath(string basePath = null, ISupportedRVersionRange svl = null) {
             svl = svl ?? new SupportedRVersionRange();
-            if (string.IsNullOrEmpty(basePath) || !FileSystem.DirectoryExists(basePath)) {
+            if (string.IsNullOrEmpty(basePath) || !_fileSystem.DirectoryExists(basePath)) {
                 basePath = GetRPathFromMRS();
                 if (string.IsNullOrEmpty(basePath)) {
                     basePath = GetCompatibleEnginePathFromRegistry(svl);
@@ -161,13 +140,13 @@ namespace Microsoft.R.Host.Client.Install {
             return basePath;
         }
 
-        private static string GetRPathFromMRS() {
+        private string GetRPathFromMRS() {
             // First check that MRS is present on the machine.
             bool mrsInstalled = false;
             try {
-                using (var hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+                using (var hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                     using (var key = hklm.OpenSubKey(@"SOFTWARE\Microsoft\Microsoft SQL Server\130\sql_shared_mr")) {
-                        var path = (string)key.GetValue("Path");
+                        var path = (string)key?.GetValue("Path");
                         if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
                             mrsInstalled = true;
                         }
@@ -178,13 +157,13 @@ namespace Microsoft.R.Host.Client.Install {
             // If yes, check 32-bit registry for R engine installed by the R Server.
             // TODO: remove this when MRS starts writing 64-bit keys.
             if (mrsInstalled) {
-                using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
+                using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)) {
                     try {
                         using (var key = hklm.OpenSubKey(@"SOFTWARE\R-core\R64")) {
                             foreach (var keyName in key.GetSubKeyNames()) {
                                 using (var rsKey = key.OpenSubKey(keyName)) {
                                     try {
-                                        var path = (string)rsKey.GetValue("InstallPath");
+                                        var path = (string)rsKey?.GetValue("InstallPath");
                                         if (!string.IsNullOrEmpty(path) && path.Contains(rServer)) {
                                             return path;
                                         }
@@ -204,9 +183,9 @@ namespace Microsoft.R.Host.Client.Install {
         /// R version is retrieved from settings or, af none is set,
         /// highest version is retrieved from registry.
         /// </summary>
-        public static string GetBinariesFolder(string basePath, ISupportedRVersionRange svl) {
+        public string GetBinariesFolder(string basePath, ISupportedRVersionRange svl) {
             string binFolder = null;
-            string installPath = RInstallation.GetRInstallPath(basePath, svl);
+            string installPath = GetRInstallPath(basePath, svl);
 
             if (!String.IsNullOrEmpty(installPath)) {
                 binFolder = Path.Combine(installPath, @"bin\x64");
@@ -237,7 +216,7 @@ namespace Microsoft.R.Host.Client.Install {
         /// from registry. Typically in the form 'Program Files\R\R-3.2.1'
         /// Selects highest from compatible versions, not just the highest.
         /// </summary>
-        public static string GetCompatibleEnginePathFromRegistry(ISupportedRVersionRange svl = null) {
+        public string GetCompatibleEnginePathFromRegistry(ISupportedRVersionRange svl = null) {
             svl = svl ?? new SupportedRVersionRange();
             string[] installedEngines = GetInstalledEngineVersionsFromRegistry();
             string highestVersionName = String.Empty;
@@ -245,7 +224,7 @@ namespace Microsoft.R.Host.Client.Install {
 
             foreach (string name in installedEngines) {
                 // Protect from random key name format changes
-                if (!String.IsNullOrEmpty(name)) {
+                if (!string.IsNullOrEmpty(name)) {
                     string versionString = ExtractVersionString(name);
                     Version v;
                     if (Version.TryParse(versionString, out v) && svl.IsCompatibleVersion(v)) {
@@ -290,13 +269,13 @@ namespace Microsoft.R.Host.Client.Install {
         /// may also look like '3.3.0 Pre-release' and typically are
         /// subfolders of 'Program Files\R'
         /// </summary>
-        public static string[] GetInstalledEngineVersionsFromRegistry() {
+        public string[] GetInstalledEngineVersionsFromRegistry() {
             List<string> enginePaths = new List<string>();
 
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\R-core
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core\R64\3.3.0 Pre-release
-            using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+            using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R")) {
                         return rKey.GetSubKeyNames();
@@ -307,9 +286,9 @@ namespace Microsoft.R.Host.Client.Install {
             return new string[0];
         }
 
-        private static string GetRVersionInstallPathFromRegistry(string version) {
+        private string GetRVersionInstallPathFromRegistry(string version) {
             // HKEY_LOCAL_MACHINE\SOFTWARE\R-core
-            using (IRegistryKey hklm = Registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
+            using (IRegistryKey hklm = _registry.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)) {
                 try {
                     using (var rKey = hklm.OpenSubKey(@"SOFTWARE\R-core\R\" + version)) {
                         if (rKey != null) {
@@ -333,12 +312,12 @@ namespace Microsoft.R.Host.Client.Install {
             return new Version(0, 0);
         }
 
-        private static string TryFindRInProgramFiles(string folder, ISupportedRVersionRange supportedVersions) {
+        private string TryFindRInProgramFiles(string folder, ISupportedRVersionRange supportedVersions) {
             string root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
             string baseRFolder = Path.Combine(root + @"Program Files\", folder);
             List<Version> versions = new List<Version>();
             try {
-                IEnumerable<IFileSystemInfo> directories = FileSystem.GetDirectoryInfo(baseRFolder)
+                IEnumerable<IFileSystemInfo> directories = _fileSystem.GetDirectoryInfo(baseRFolder)
                                                                 .EnumerateFileSystemInfos()
                                                                 .Where(x => (x.Attributes & FileAttributes.Directory) != 0);
                 foreach (IFileSystemInfo fsi in directories) {
@@ -361,9 +340,9 @@ namespace Microsoft.R.Host.Client.Install {
             return string.Empty;
         }
 
-        public static bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionRange svl, string path, bool showErrors = true) {
+        public bool VerifyRIsInstalled(ICoreShell coreShell, ISupportedRVersionRange svl, string path, bool showErrors = true) {
             svl = svl ?? new SupportedRVersionRange();
-            var data = RInstallation.GetInstallationData(path, svl);
+            var data = GetInstallationData(path, svl);
             if (data.Status == RInstallStatus.OK) {
                 return true;
             }

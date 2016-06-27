@@ -624,8 +624,7 @@ namespace Microsoft.R.Host.Client {
                                 _process.Kill();
                                 _process.WaitForExit();
                             }
-                        } catch (InvalidOperationException) {
-                        }
+                        } catch (InvalidOperationException) { }
                     }
                     _log.RHostProcessExited();
                 }

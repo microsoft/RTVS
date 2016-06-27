@@ -11,23 +11,19 @@ using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Test.Tree {
     [ExcludeFromCodeCoverage]
-    public static class EditorTreeTest
-    {
-        public static EditorTree MakeTree(string expression)
-        {
+    public static class EditorTreeTest {
+        public static EditorTree MakeTree(string expression) {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
 
-            EditorTree tree = new EditorTree(textBuffer);
+            var tree = new EditorTree(textBuffer);
             tree.Build();
 
             return tree;
         }
 
-        public static EditorTree ApplyTextChange(string expression, int start, int oldLength, int newLength, string newText)
-        {
+        public static EditorTree ApplyTextChange(string expression, int start, int oldLength, int newLength, string newText) {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
-
-            EditorTree tree = new EditorTree(textBuffer);
+            var tree = new EditorTree(textBuffer);
             tree.Build();
 
             TextChange tc = new TextChange();
@@ -35,16 +31,11 @@ namespace Microsoft.R.Editor.Test.Tree {
             tc.NewRange = new TextRange(start, newLength);
             tc.OldTextProvider = new TextProvider(textBuffer.CurrentSnapshot);
 
-            if (oldLength == 0 && newText.Length > 0)
-            {
+            if (oldLength == 0 && newText.Length > 0) {
                 textBuffer.Insert(start, newText);
-            }
-            else if (oldLength > 0 && newText.Length > 0)
-            {
+            } else if (oldLength > 0 && newText.Length > 0) {
                 textBuffer.Replace(new Span(start, oldLength), newText);
-            }
-            else
-            {
+            } else {
                 textBuffer.Delete(new Span(start, oldLength));
             }
 

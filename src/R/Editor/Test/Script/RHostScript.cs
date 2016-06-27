@@ -16,7 +16,7 @@ namespace Microsoft.R.Host.Client.Test.Script {
         public IRSessionProvider SessionProvider { get; private set; }
         public IRSession Session { get; private set; }
 
-        public static Version RVersion => RInstallation.GetInstallationData(RToolsSettings.Current.RBasePath, new SupportedRVersionRange()).Version;
+        public static Version RVersion => new RInstallation().GetInstallationData(RToolsSettings.Current.RBasePath, new SupportedRVersionRange()).Version;
 
         public RHostScript(IRSessionProvider sessionProvider, IRSessionCallback clientApp = null) {
             SessionProvider = sessionProvider;

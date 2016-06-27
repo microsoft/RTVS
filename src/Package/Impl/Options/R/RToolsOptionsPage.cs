@@ -269,8 +269,9 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
         private string ValidateRBasePath(string path) {
             // If path is null, folder selector dialog was canceled
             if (path != null) {
-                path = RInstallation.NormalizeRPath(path);
-                bool valid = RInstallation.VerifyRIsInstalled(VsAppShell.Current, null, path, showErrors: !_allowLoadingFromStorage);
+                var ri = new RInstallation();
+                path = ri.NormalizeRPath(path);
+                bool valid = ri.VerifyRIsInstalled(VsAppShell.Current, null, path, showErrors: !_allowLoadingFromStorage);
                 if (!valid) {
                     path = null; // Prevents assignment of bad values to the property.
                 }

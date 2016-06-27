@@ -37,8 +37,12 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public void DoIdle() {
-            Idle?.Invoke(null, EventArgs.Empty);
+            UIThreadHelper.Instance.Invoke(() => Idle?.Invoke(null, EventArgs.Empty));
             DoEvents();
+        }
+
+        private void FireIdle() {
+            Idle?.Invoke(null, EventArgs.Empty);
         }
 
         public void DispatchOnUIThread(Action action) {
@@ -60,9 +64,13 @@ namespace Microsoft.Languages.Editor.Test.Shell {
             return null;
         }
 
-        private Dispatcher GetDispatcher() {
-            if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
-                return Dispatcher.FromThread(MainThread);
+        private Dispatcher GetDispatcher(Thread thread = null) {
+            if (thread == null) {
+                if (MainThread != null && MainThread.ManagedThreadId == UIThreadHelper.Instance.Thread.ManagedThreadId) {
+                    return Dispatcher.FromThread(MainThread);
+                }
+            } else {
+                return Dispatcher.FromThread(thread);
             }
             return null;
         }
