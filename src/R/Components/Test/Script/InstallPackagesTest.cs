@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.Test.Script {
         [Test]
         [Category.R.Package]
         public void InstallPackages_BaseTest() {
-            var svl = new SupportedRVersionRange(3, 2, 3, 2);
+            var svl = new SupportedRVersionRange(3, 2, 3, 9);
             var ri = new RInstallation();
             RInstallData data = ri.GetInstallationData(string.Empty, svl);
 
