@@ -71,7 +71,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// </summary>
         public static IApplicationShell Current {
             get {
-                if(_testShell == null && _instance == null) {
+                if (_testShell == null && _instance == null) {
                     // Try test environment
                     CoreShell.TryCreateTestInstance("Microsoft.VisualStudio.R.Package.Test.dll", "TestVsAppShell");
                 }
@@ -197,7 +197,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
                 }
             } else {
                 var target = commandTarget as ICommandTarget;
-                if(target == null) {
+                if (target == null) {
                     throw new ArgumentException(Invariant($"{nameof(commandTarget)} must implement ICommandTarget"));
                 }
                 var shell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
@@ -264,8 +264,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
 
         #region IIdleTimeService
         public void DoIdle() {
-            if (Idle != null)
-                Idle(this, EventArgs.Empty);
+            Idle?.Invoke(this, EventArgs.Empty);
         }
         #endregion
 

@@ -50,6 +50,7 @@ namespace Microsoft.R.Editor.Outline {
 
             EditorTree = document.EditorTree;
             EditorTree.UpdateCompleted += OnTreeUpdateCompleted;
+            EditorTree.Closing += OnEditorTreeClosing;
         }
 
         protected override void OnTextBufferChanged(object sender, TextContentChangedEventArgs e) {
@@ -66,6 +67,13 @@ namespace Microsoft.R.Editor.Outline {
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
+            // Make sure background thread is not building regions
+            lock (_threadLock) {
+                Dispose();
+            }
+        }
+
+        private void OnEditorTreeClosing(object sender, EventArgs e) {
             // Make sure background thread is not building regions
             lock (_threadLock) {
                 Dispose();
@@ -228,6 +236,7 @@ namespace Microsoft.R.Editor.Outline {
             if (!IsDisposed) {
                 EditorDocument.DocumentClosing -= OnDocumentClosing;
                 EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
+                EditorTree.Closing -= OnEditorTreeClosing;
             }
 
             _sections?.Dispose();

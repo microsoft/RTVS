@@ -7,8 +7,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
@@ -42,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Data {
         public async Task InitializeAsync() {
             await _session.StartHostAsync(new RHostStartupInfo {
                 Name = _testMethod.Name,
-                RBasePath = RUtilities.FindExistingRBasePath()
+                RBasePath = new RInstallation().GetRInstallPath()
             }, new RHostClientTestApp(), 50000);
         }
 

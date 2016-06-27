@@ -16,7 +16,6 @@ namespace Microsoft.R.Components.History.Implementation {
     [Export(typeof(IRHistoryProvider))]
     internal class RHistoryProvider : IRHistoryProvider {
         private readonly ITextBufferFactoryService _textBufferFactory;
-        private readonly IFileSystem _fileSystem;
         private readonly IEditorOperationsFactoryService _editorOperationsFactory;
         private readonly IRtfBuilderService _rtfBuilderService;
         private readonly ITextSearchService2 _textSearchService;
@@ -25,9 +24,8 @@ namespace Microsoft.R.Components.History.Implementation {
         private readonly Dictionary<ITextBuffer, IRHistory> _histories;
 
         [ImportingConstructor]
-        public RHistoryProvider(ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IFileSystem fileSystem, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IRSettings settings) {
+        public RHistoryProvider(ITextBufferFactoryService textBufferFactory, IContentTypeRegistryService contentTypeRegistryService, IEditorOperationsFactoryService editorOperationsFactory, IRtfBuilderService rtfBuilderService, ITextSearchService2 textSearchService, IRSettings settings) {
             _textBufferFactory = textBufferFactory;
-            _fileSystem = fileSystem;
             _editorOperationsFactory = editorOperationsFactory;
             _rtfBuilderService = rtfBuilderService;
             _textSearchService = textSearchService;
@@ -55,7 +53,7 @@ namespace Microsoft.R.Components.History.Implementation {
         public IRHistory CreateRHistory(IRInteractiveWorkflow interactiveWorkflow) {
             var contentType = _contentTypeRegistryService.GetContentType(RHistoryContentTypeDefinition.ContentType);
             var textBuffer = _textBufferFactory.CreateTextBuffer(contentType);
-            var history = new RHistory(interactiveWorkflow, textBuffer, _fileSystem, _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
+            var history = new RHistory(interactiveWorkflow, textBuffer, new FileSystem(), _settings, _editorOperationsFactory, _rtfBuilderService, () => RemoveRHistory(textBuffer));
             _histories[textBuffer] = history;
             return history;
         }

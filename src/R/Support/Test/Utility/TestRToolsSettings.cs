@@ -4,9 +4,9 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {
@@ -20,28 +20,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public string RBasePath {
             get {
-                // Test settings are fixed and are unrelated to what is stored in VS.
-                // Therefore we need to look up R when it is not in the registry.
-                string programFiles = Environment.GetEnvironmentVariable("ProgramW6432");
-                if (programFiles == null) {
-                    return string.Empty;
-                }
-
-                var topDir = new DirectoryInfo(Path.Combine(programFiles, "R"));
-                if (!topDir.Exists) {
-                    topDir = new DirectoryInfo(Path.Combine(programFiles, @"Microsoft\MRO-for-RRE\8.0"));
-                    if (!topDir.Exists) {
-                        return string.Empty;
-                    }
-                }
-
-                foreach (var dir in topDir.EnumerateDirectories()) {
-                    if (dir.Name.StartsWith("R-3.2.")) {
-                        return dir.FullName;
-                    }
-                }
-
-                return string.Empty;
+                return new RInstallation().GetRInstallPath();
             }
             set { }
         }

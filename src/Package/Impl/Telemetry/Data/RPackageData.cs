@@ -21,7 +21,7 @@ namespace Microsoft.VisualStudio.R.Package.Telemetry.Data {
         /// <returns></returns>
         public static IEnumerable<string> GetInstalledPackageHashes(RPackageType packageType) {
 
-            string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath, null);
+            string rInstallPath = new RInstallation().GetRInstallPath(RToolsSettings.Current.RBasePath);
             if (!string.IsNullOrEmpty(rInstallPath)) {
                 IEnumerable<string> packageNames = Enumerable.Empty<string>();
                 if (packageType == RPackageType.Base) {

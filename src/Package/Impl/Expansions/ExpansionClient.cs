@@ -30,7 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
         private IVsExpansionSession _expansionSession;
         private int _currentFieldIndex = -1;
         private int _markerCount;
-        private bool _earlyEndExpansionHappened = false;
 
         class Marker : TextRange {
             public IVsTextStreamMarker StreamMarker { get; }
@@ -131,7 +130,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
                 var textBuffer = GetTargetBuffer();
                 var expansion = textBuffer.GetBufferAdapter<IVsExpansion>();
-                _earlyEndExpansionHappened = false;
 
                 Span span;
                 var shortcut = TextView.GetItemBeforeCaret(out span, x => true);
@@ -141,17 +139,13 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (exp.HasValue && ts.HasValue) {
                     // Insert into R buffer
                     hr = expansion.InsertNamedExpansion(exp.Value.title, exp.Value.path, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
-                    if (_earlyEndExpansionHappened) {
-                        // EndExpansion was called before InsertExpansion returned, so set _expansionSession
-                        // to null to indicate that there is no active expansion session. This can occur when 
-                        // the snippet inserted doesn't have any expansion fields.
-                        _expansionSession = null;
-                        _earlyEndExpansionHappened = false;
+                    // If EndExpansion was called before InsertExpansion returned, so set _expansionSession
+                    // to null to indicate that there is no active expansion session. This can occur when 
+                    // the snippet inserted doesn't have any expansion fields.
+                    if (_expansionSession != null) {
+                        PositionCaretInField(0);
                     }
-                    PositionCaretInField(0);
-                    ErrorHandler.ThrowOnFailure(hr);
-                    snippetInserted = true;
-                    return hr;
+                    snippetInserted = ErrorHandler.Succeeded(hr);
                 }
             }
             return hr;
@@ -159,11 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
 
         #region IVsExpansionClient
         public int EndExpansion() {
-            if (_expansionSession == null) {
-                _earlyEndExpansionHappened = true;
-            } else {
-                _expansionSession = null;
-            }
+            _expansionSession = null;
             return VSConstants.S_OK;
         }
 
@@ -209,15 +199,12 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 var ts = TextSpanFromViewSpan(span);
                 if (ts.HasValue) {
                     var expansion = GetTargetBuffer().GetBufferAdapter<IVsExpansion>();
-                    _earlyEndExpansionHappened = false;
-
                     hr = expansion.InsertNamedExpansion(pszTitle, pszPath, ts.Value, this, RGuidList.RLanguageServiceGuid, 0, out _expansionSession);
-                    if (_earlyEndExpansionHappened) {
-                        // EndExpansion was called before InsertNamedExpansion returned, so set _expansionSession
-                        // to null to indicate that there is no active expansion session. This can occur when 
-                        // the snippet inserted doesn't have any expansion fields.
-                        _expansionSession = null;
-                        _earlyEndExpansionHappened = false;
+                    // If EndExpansion was called before InsertNamedExpansion returned, so set _expansionSession
+                    // to null to indicate that there is no active expansion session. This can occur when 
+                    // the snippet inserted doesn't have any expansion fields.
+                    if (_expansionSession != null) {
+                        PositionCaretInField(0);
                     }
                 }
             }

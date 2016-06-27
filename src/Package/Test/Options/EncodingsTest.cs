@@ -28,8 +28,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
                             using (var inter = await script.Session.BeginInteractionAsync()) {
                                 await inter.RespondAsync(expression);
                             }
-                        }).Wait(2000);
-                        completed.Should().BeTrue();
+                        }).Wait(5000);
+                        completed.Should().BeTrue(because: "Sys.setlocale() didn't complete within 5000 ms");
 
                         string s = null;
                         completed = Task.Run(async () => {
@@ -37,9 +37,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.Options {
                                 var res = await e.EvaluateAsync("Sys.getlocale()", REvaluationKind.Normal);
                                 s = res.Result.ToString();
                             }
-                        }).Wait(2000);
+                        }).Wait(5000);
 
-                        completed.Should().BeTrue();
+                        completed.Should().BeTrue(because: "Sys.getlocale() didn't complete within 5000 ms");
                         s.Should().NotBeNull().And.Contain(cp.ToString());
                     }
                 }

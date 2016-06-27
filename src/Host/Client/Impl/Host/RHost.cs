@@ -131,7 +131,10 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task<string> SendAsync(string name, CancellationToken ct, params object[] args) {
+        private async Task<string> NotifyAsync(string name, CancellationToken ct, params object[] args) {
+            Debug.Assert(name.StartsWithOrdinal("!"));
+            TaskUtilities.AssertIsOnBackgroundThread();
+
             string id;
             var message = CreateMessage(out id, name, args);
             await SendAsync(message, ct);
@@ -139,10 +142,11 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+            Debug.Assert(request.Name.StartsWithOrdinal("?"));
             TaskUtilities.AssertIsOnBackgroundThread();
 
             string id;
-            var message = CreateMessage(out id, ":", request.Id, request.Name, args);
+            var message = CreateMessage(out id, ":" + request.Name.Substring(1), request.Id, args);
             await SendAsync(message, ct);
             return id;
         }
@@ -233,7 +237,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         private void ProcessEvaluationResult(Message response) {
-            EvaluationRequest request; ;
+            EvaluationRequest request;
             if (!_evalRequests.TryRemove(response.RequestId, out request)) {
                 throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
             }
@@ -244,8 +248,8 @@ namespace Microsoft.R.Host.Client {
                 request.CompletionSource.SetCanceled();
             }
 
-            if (response.Name != request.MessageName) {
-                throw ProtocolError($"Mismatched host response ['{response.Id}',':','{response.Name}',...] to evaluation request ['{request.Id}','{request.MessageName}','{request.Expression}']");
+            if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
+                throw ProtocolError($"Mismatched host response ['{response.Id}',':{response.Name.Substring(1)}',...] to evaluation request ['{request.Id}','{request.MessageName}','{request.Expression}']");
             }
 
             response.ExpectArguments(3);
@@ -283,7 +287,7 @@ namespace Microsoft.R.Host.Client {
                 _cancelAllCts.Cancel();
 
                 try {
-                    await SendAsync("/", _cts.Token, null);
+                    await NotifyAsync("!/", _cts.Token, null);
                 } catch (OperationCanceledException) {
                     return;
                 } catch (MessageTransportException) {
@@ -336,7 +340,7 @@ namespace Microsoft.R.Host.Client {
                     if (message == null) {
                         return null;
                     } else if (message.RequestId != null) {
-                        if (message.Name.StartsWithIgnoreCase("=")) {
+                        if (message.Name.StartsWithOrdinal(":=")) {
                             ProcessEvaluationResult(message);
                             continue;
                         } else {
@@ -346,29 +350,29 @@ namespace Microsoft.R.Host.Client {
 
                     try {
                         switch (message.Name) {
-                            case "\\":
+                            case "!CanceledAll":
                                 CancelAll();
                                 break;
 
-                            case "?":
+                            case "?YesNoCancel":
                                 ShowDialog(message, MessageButtons.YesNoCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
-                            case "??":
+                            case "?YesNo":
                                 ShowDialog(message, MessageButtons.YesNo, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
-                            case "???":
+                            case "?OkCancel":
                                 ShowDialog(message, MessageButtons.OKCancel, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
                                 break;
 
-                            case ">":
+                            case "?>":
                                 ReadConsole(message, CancellationTokenSource.CreateLinkedTokenSource(ct, _cancelAllCts.Token).Token)
                                     .SilenceException<MessageTransportException>()
                                     .DoNotWait();
@@ -383,27 +387,27 @@ namespace Microsoft.R.Host.Client {
                                     ct);
                                 break;
 
-                            case "![]":
+                            case "!ShowMessage":
                                 message.ExpectArguments(1);
                                 await _callbacks.ShowMessage(message.GetString(0, "s", allowNull: true), ct);
                                 break;
 
-                            case "~+":
+                            case "!+":
                                 await _callbacks.Busy(true, ct);
                                 break;
-                            case "~-":
+                            case "!-":
                                 await _callbacks.Busy(false, ct);
                                 break;
 
-                            case "setwd":
+                            case "!SetWD":
                                 _callbacks.DirectoryChanged();
                                 break;
 
-                            case "library":
+                            case "!Library":
                                 await _callbacks.ViewLibrary();
                                 break;
 
-                            case "show_file":
+                            case "!ShowFile":
                                 message.ExpectArguments(3);
                                 await _callbacks.ShowFile(
                                     message.GetString(0, "file"),
@@ -411,12 +415,12 @@ namespace Microsoft.R.Host.Client {
                                     message.GetBoolean(2, "delete.file"));
                                 break;
 
-                            case "View":
+                            case "!View":
                                 message.ExpectArguments(2);
                                 _callbacks.ViewObject(message.GetString(0, "x"), message.GetString(1, "title"));
                                 break;
 
-                            case "Plot":
+                            case "!Plot":
                                 await _callbacks.Plot(
                                     new PlotMessage(
                                         message.GetString(0, "xaml_file_path"),
@@ -425,14 +429,14 @@ namespace Microsoft.R.Host.Client {
                                     ct);
                                 break;
 
-                            case "Locator":
+                            case "?Locator":
                                 var locatorResult = await _callbacks.Locator(ct);
                                 ct.ThrowIfCancellationRequested();
                                 await RespondAsync(message, ct, locatorResult.Clicked, locatorResult.X, locatorResult.Y);
                                 break;
 
-                            case "open_url":
-                                await _callbacks.Browser(message.GetString(0, "help_url"));
+                            case "!WebBrowser":
+                                await _callbacks.WebBrowser(message.GetString(0, "help_url"));
                                 break;
 
                             default:
@@ -454,7 +458,7 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 var message = await ReceiveMessageAsync(ct);
-                if (message.Name != "Microsoft.R.Host" || message.RequestId != null) {
+                if (message.Name != "!Microsoft.R.Host" || message.RequestId != null) {
                     throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
                 }
 
@@ -620,8 +624,7 @@ namespace Microsoft.R.Host.Client {
                                 _process.Kill();
                                 _process.WaitForExit();
                             }
-                        } catch (InvalidOperationException) {
-                        }
+                        } catch (InvalidOperationException) { }
                     }
                     _log.RHostProcessExited();
                 }

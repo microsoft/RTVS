@@ -26,7 +26,7 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             });
         }
 
-        public void Dispose() {
+        public virtual void Dispose() {
             UIThreadHelper.Instance.Invoke(() => {
                 var containers = _containers.Values.ToList();
                 foreach (var container in containers) {

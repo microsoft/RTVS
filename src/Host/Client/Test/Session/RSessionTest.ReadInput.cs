@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Test.Utility;
+using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Stubs;
 using Microsoft.UnitTests.Core.Threading;
@@ -34,7 +33,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             public async Task InitializeAsync() {
                 await _session.StartHostAsync(new RHostStartupInfo {
                     Name = _testMethod.Name,
-                    RBasePath = RUtilities.FindExistingRBasePath()
+                    RBasePath = new RInstallation().GetRInstallPath()
                 }, _callback, 50000);
 
                 _taskObserver.ObserveTaskFailure(_session.RHost.GetRHostRunTask());

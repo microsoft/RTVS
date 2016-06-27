@@ -22,6 +22,10 @@ namespace Microsoft.R.Components.Test {
             _exportProvider = mefCatalog.CreateExportProvider();
         }
 
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void SearchControlProvider() {
             _exportProvider.GetExportedValue<ISearchControlProvider>().Should().NotBeNull();
@@ -55,10 +59,6 @@ namespace Microsoft.R.Components.Test {
         [Test]
         public void InteractiveWindowFactoryService() {
             _exportProvider.GetExportedValue<IInteractiveWindowFactoryService>().Should().NotBeNull();
-        }
-
-        public void Dispose() {
-            _exportProvider.Dispose();
         }
     }
 }

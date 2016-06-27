@@ -8,19 +8,19 @@ view <- function(x, title) {
     if (missing(title)) {
       title <- dep[1]
     }
-    invisible(rtvs:::send_message('View', dep, title))
+    invisible(rtvs:::send_notification('!View', dep, title))
   } else {
     print(x)
   }
 }
 
 open_url <- function(url) {
-  rtvs:::send_message('open_url', url)
+  rtvs:::send_notification('!WebBrowser', url)
 }
 
 setwd <- function(dir) {
   old <- .Internal(setwd(dir))
-  rtvs:::send_message('setwd', dir)
+  rtvs:::send_notification('!SetWD', dir)
   invisible(old)
 }
 
@@ -32,13 +32,13 @@ redirect_functions <- function(...) {
 
 library <- function(...) {
   if (nargs() == 0) {
-    invisible(rtvs:::send_message('library'))
+    invisible(rtvs:::send_notification('!Library'))
   } else {
     base::library(...)
   }
 }
 
-show_file <- function (files, header, title, delete.file) {
+show_file <- function(files, header, title, delete.file) {
   cFiles <- length(files)
   for (i in cFiles) {
     if ((i > length(header)) || !nzchar(header[[i]])) {
@@ -46,6 +46,6 @@ show_file <- function (files, header, title, delete.file) {
     } else {
       tabName <- header[[i]]
     }
-    invisible(rtvs:::send_message('show_file', files[[i]], tabName, delete.file))
+    invisible(rtvs:::send_notification('!ShowFile', files[[i]], tabName, delete.file))
   }
 }

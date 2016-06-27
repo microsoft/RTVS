@@ -35,6 +35,10 @@ namespace Microsoft.R.Components.Test.History {
             _historyVisualComponentContainerFactory = _exportProvider.GetExportedValue<IRHistoryVisualComponentContainerFactory>();
         }
 
+        public void Dispose() {
+            (_exportProvider as IDisposable)?.Dispose();
+        }
+
         [Test]
         [Category.History]
         public async Task InteractiveWindowIntegration01() {
@@ -59,6 +63,8 @@ namespace Microsoft.R.Components.Test.History {
                 history.SendSelectedToTextView(textView);
                 var text = textBuffer.CurrentSnapshot.GetText();
                 text.Should().Be("x <- c(1:10)");
+
+                UIThreadHelper.Instance.Invoke(() => textView.Close());
             }
         }
 
@@ -157,10 +163,6 @@ namespace Microsoft.R.Components.Test.History {
                 text = history.GetSelectedText();
                 text.Should().Be(string.Empty);
             }
-        }
-
-        public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
         }
     }
 }

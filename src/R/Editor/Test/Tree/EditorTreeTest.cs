@@ -16,7 +16,7 @@ namespace Microsoft.R.Editor.Test.Tree {
         public static EditorTree MakeTree(ICoreShell coreShell, string expression) {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
 
-            EditorTree tree = new EditorTree(textBuffer, coreShell);
+            var tree = new EditorTree(textBuffer, coreShell);
             tree.Build();
 
             return tree;
@@ -24,8 +24,7 @@ namespace Microsoft.R.Editor.Test.Tree {
 
         public static EditorTree ApplyTextChange(ICoreShell coreShell, string expression, int start, int oldLength, int newLength, string newText) {
             TextBufferMock textBuffer = new TextBufferMock(expression, RContentTypeDefinition.ContentType);
-
-            EditorTree tree = new EditorTree(textBuffer, coreShell);
+            var tree = new EditorTree(textBuffer, coreShell);
             tree.Build();
 
             TextChange tc = new TextChange();

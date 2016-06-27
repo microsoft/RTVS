@@ -204,21 +204,22 @@ namespace Microsoft.VisualStudio.R.Package.Logging {
                 }
                 writer.WriteLine();
 
+                var ri = new RInstallation();
                 if (detailed) {
-                    IEnumerable<string> rEngines = RInstallation.GetInstalledEngineVersionsFromRegistry();
+                    IEnumerable<string> rEngines = ri.GetInstalledEngineVersionsFromRegistry();
                     writer.WriteLine("Installed R Engines (from registry):");
                     foreach (string e in rEngines) {
                         writer.WriteLine("    " + e);
                     }
                     writer.WriteLine();
 
-                    string latestEngine = RInstallation.GetCompatibleEnginePathFromRegistry();
+                    string latestEngine = ri.GetCompatibleEnginePathFromRegistry();
                     writer.WriteLine("Latest R Engine (from registry):");
                     writer.WriteLine("    " + latestEngine);
                     writer.WriteLine();
                 }
 
-                string rInstallPath = RInstallation.GetRInstallPath(RToolsSettings.Current.RBasePath);
+                string rInstallPath = ri.GetRInstallPath(RToolsSettings.Current.RBasePath);
                 writer.WriteLine("R Install path:");
                 writer.WriteLine("    " + rInstallPath);
                 writer.WriteLine();

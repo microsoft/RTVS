@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.History;
@@ -15,6 +16,7 @@ using Xunit;
 using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 
 namespace Microsoft.R.Components.Test.History {
+    [ExcludeFromCodeCoverage]
     public class RHistoryViewModelTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
         private readonly IExportProvider _exportProvider;
@@ -37,8 +39,11 @@ namespace Microsoft.R.Components.Test.History {
         }
 
         public Task DisposeAsync() {
+            UIThreadHelper.Instance.Invoke(() => {
+                _historyVisualComponent.Dispose();
+            });
+
             _containerDisposable?.Dispose();
-            _historyVisualComponent.Dispose();
             _exportProvider.Dispose();
             return Task.CompletedTask;
         }

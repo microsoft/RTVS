@@ -113,7 +113,7 @@ namespace Microsoft.Languages.Editor.Projection {
                     }
                     span = new Span(mapping.SourceStart, mapping.Length);
                     // Active span comes from the disk buffer
-                    spans.Add(new CustomTrackingSpan(DiskBuffer.CurrentSnapshot, span, PointTrackingMode.Negative, PointTrackingMode.Positive)); // active
+                    spans.Add(new CustomTrackingSpan(DiskBuffer.CurrentSnapshot, span, PointTrackingMode.Positive, PointTrackingMode.Positive)); // active
                     secondaryIndex = mapping.ProjectionRange.End;
                 }
             }

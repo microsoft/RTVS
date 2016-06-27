@@ -19,15 +19,15 @@ namespace Microsoft.R.Editor.Test.Outline {
     public class OutlineTest {
         public static OutlineRegionCollection BuildOutlineRegions(IEditorShell editorShell, string content) {
             TextBufferMock textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (EditorTree tree = new EditorTree(textBuffer, editorShell)) {
+            using (var tree = new EditorTree(textBuffer, editorShell)) {
                 tree.Build();
-
-                EditorDocumentMock editorDocument = new EditorDocumentMock(tree);
-                ROutlineRegionBuilder ob = new ROutlineRegionBuilder(editorDocument, editorShell);
-                OutlineRegionCollection rc = new OutlineRegionCollection(0);
-                ob.BuildRegions(rc);
-
-                return rc;
+                using (var editorDocument = new EditorDocumentMock(tree)) {
+                    using (var ob = new ROutlineRegionBuilder(editorDocument, editorShell)) {
+                        OutlineRegionCollection rc = new OutlineRegionCollection(0);
+                        ob.BuildRegions(rc);
+                        return rc;
+                    }
+                }
             }
         }
 

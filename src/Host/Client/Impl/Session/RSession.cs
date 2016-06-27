@@ -169,6 +169,10 @@ namespace Microsoft.R.Host.Client.Session {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
+            if (string.IsNullOrEmpty(startupInfo.RBasePath)) {
+                throw new ArgumentException("Path to R must be specified");
+            }
+
             Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
 
             await StartHostAsyncBackground(startupInfo, callback, timeout);
@@ -239,7 +243,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         private async Task CreateAndRunHost(RHostStartupInfo startupInfo, int timeout) {
             try {
-                await _host.CreateAndRun(RInstallation.GetRInstallPath(startupInfo.RBasePath, new SupportedRVersionRange()), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
+                await _host.CreateAndRun(new RInstallation().GetRInstallPath(startupInfo.RBasePath, new SupportedRVersionRange()), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
             } catch (OperationCanceledException oce) {
                 _initializationTcs.TrySetCanceled(oce.CancellationToken);
             } catch (Exception ex) {
@@ -514,7 +518,7 @@ namespace Microsoft.R.Host.Client.Session {
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        Task IRCallbacks.Browser(string url) {
+        Task IRCallbacks.WebBrowser(string url) {
             var callback = _callback;
             return callback != null ? callback.ShowHelp(url) : Task.CompletedTask;
         }

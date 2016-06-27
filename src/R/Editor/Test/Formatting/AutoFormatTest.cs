@@ -50,14 +50,14 @@ namespace Microsoft.R.Editor.Test.Formatting {
         public void SmartIndentTest05() {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
-            var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
+            using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
 
-            ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>();
-            SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
+                ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>();
+                SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
-            int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
-
-            indent.Should().HaveValue().And.Be(2);
+                int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
+                indent.Should().HaveValue().And.Be(2);
+            }
         }
 
         private ITextView TestAutoFormat(int position, string initialContent = "") {
