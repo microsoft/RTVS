@@ -500,7 +500,7 @@ namespace Microsoft.R.Host.Client {
             } catch (Exception ex) {
                 var message = "Exception in RHost run loop:\n" + ex;
                 _log.WriteLineAsync(MessageCategory.Error, message).DoNotWait();
-                Debug.Assert(false, message);
+                Debug.Fail(message);
                 throw;
             }
         }
