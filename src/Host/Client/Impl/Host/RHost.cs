@@ -502,7 +502,9 @@ namespace Microsoft.R.Host.Client {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (Exception ex) {
-                Trace.Fail("Exception in RHost run loop:\n" + ex);
+                var message = "Exception in RHost run loop:\n" + ex;
+                _log.WriteLineAsync(MessageCategory.Error, message).DoNotWait();
+                Debug.Fail(message);
                 throw;
             }
         }
