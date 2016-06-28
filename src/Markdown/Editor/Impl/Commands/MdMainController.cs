@@ -18,15 +18,15 @@ namespace Microsoft.Markdown.Editor.Commands {
     public class MdMainController : ViewController {
         private BraceCompletionWorkaround223902 _workaround;
 
-        public MdMainController(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog compositionCatalog)
-            : base(textView, textBuffer, compositionCatalog) {
-            ServiceManager.AddService(this, textView);
+        public MdMainController(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
+            : base(textView, textBuffer, shell) {
+            ServiceManager.AddService(this, textView, shell);
         }
 
-        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog compositionCatalog) {
+        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
             MdMainController controller = FromTextView(textView);
             if (controller == null) {
-                controller = new MdMainController(textView, textBuffer, compositionCatalog);
+                controller = new MdMainController(textView, textBuffer, coreShell);
             }
 
             return controller;

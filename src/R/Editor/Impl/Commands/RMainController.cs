@@ -14,18 +14,18 @@ namespace Microsoft.R.Editor.Commands {
     /// Main R editor command controller
     /// </summary>
     public class RMainController : ViewController {
-        public RMainController(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog compositionCatalog)
-            : base(textView, textBuffer, compositionCatalog) {
-            ServiceManager.AddService(this, textView);
+        public RMainController(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
+            : base(textView, textBuffer, shell) {
+            ServiceManager.AddService(this, textView, shell);
         }
 
         /// <summary>
         /// Attaches command controller to the view and projected buffer
         /// </summary>
-        public static RMainController Attach(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog compositionCatalog) {
+        public static RMainController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
             RMainController controller = FromTextView(textView);
             if (controller == null) {
-                controller = new RMainController(textView, textBuffer, compositionCatalog);
+                controller = new RMainController(textView, textBuffer, shell);
             }
 
             return controller;

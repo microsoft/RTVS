@@ -28,12 +28,11 @@ namespace Microsoft.Markdown.Editor.Document {
         public MdEditorDocument(ITextBuffer textBuffer, IProjectionBufferFactoryService projectionBufferFactoryService, IContentTypeRegistryService contentTypeRegistryService, ICoreShell coreShell) {
 
             this.TextBuffer = textBuffer;
-            ServiceManager.AddService<MdEditorDocument>(this, TextBuffer);
+            ServiceManager.AddService(this, TextBuffer, coreShell);
 
             _projectionBufferManager = new ProjectionBufferManager(textBuffer, 
                         projectionBufferFactoryService, contentTypeRegistryService,
-                        MdProjectionContentTypeDefinition.ContentType,
-                        RContentTypeDefinition.ContentType);
+                        coreShell, MdProjectionContentTypeDefinition.ContentType, RContentTypeDefinition.ContentType);
             ContainedLanguageHandler = _rLanguageHandler = new RLanguageHandler(textBuffer, _projectionBufferManager, coreShell);
         }
         #endregion

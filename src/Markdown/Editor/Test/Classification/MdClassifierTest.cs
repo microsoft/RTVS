@@ -55,7 +55,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             var ctrs = _exportProvider.GetExportedValue<IContentTypeRegistryService>();
             var cnp = _exportProvider.GetExports<IClassificationNameProvider, IComponentContentTypes>();
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp);
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(crs, ctrs, cnp, _exportProvider.GetExportedValue<ICoreShell>());
             _exportProvider.GetExportedValue<ICoreShell>().CompositionService.SatisfyImportsOnce(classifierProvider);
 
             IClassifier cls = classifierProvider.GetClassifier(textBuffer);

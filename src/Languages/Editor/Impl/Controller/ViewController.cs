@@ -19,14 +19,14 @@ namespace Microsoft.Languages.Editor.Controller {
         /// </summary>
         public ITextView TextView { get; protected set; }
         public ITextBuffer TextBuffer { get; protected set; }
-        private readonly ICompositionCatalog _compositionCatalog;
+        private readonly ICompositionCatalog _shell;
         private readonly List<ICommandTarget> _controllers;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        protected ViewController(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog compositionCatalog) {
+        protected ViewController(ITextView textView, ITextBuffer textBuffer, ICompositionCatalog shell) {
             TextView = textView;
             TextBuffer = textBuffer;
-            _compositionCatalog = compositionCatalog;
+            _shell = shell;
             _controllers = new List<ICommandTarget>();
 
             BuildCommandSet();
@@ -69,8 +69,8 @@ namespace Microsoft.Languages.Editor.Controller {
             // It is allowed here not to have host. The reason is that we allow using controller classes
             // without host as long as derived controller is adding commands manually. Without host there is
             // no composition service and hence we are unable to import command factories.
-            if (_compositionCatalog.CompositionService != null) {
-                var importComposer = new ContentTypeImportComposer<ICommandFactory>(_compositionCatalog.CompositionService);
+            if (_shell.CompositionService != null) {
+                var importComposer = new ContentTypeImportComposer<ICommandFactory>(_shell.CompositionService);
                 var commandFactories = importComposer.GetAll(TextBuffer.ContentType.TypeName);
 
                 foreach (var factory in commandFactories) {
@@ -81,7 +81,7 @@ namespace Microsoft.Languages.Editor.Controller {
         }
 
         private void BuildControllerSet() {
-            var controllerFactories = ComponentLocatorForOrderedContentType<IControllerFactory>.ImportMany(_compositionCatalog.CompositionService, TextBuffer.ContentType);
+            var controllerFactories = ComponentLocatorForOrderedContentType<IControllerFactory>.ImportMany(_shell.CompositionService, TextBuffer.ContentType);
             if (controllerFactories != null) {
                 foreach (var factory in controllerFactories) {
                     _controllers.AddRange(factory.Value.GetControllers(TextView, TextBuffer));

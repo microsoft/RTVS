@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -14,17 +15,18 @@ namespace Microsoft.R.Editor.QuickInfo {
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("R ToolTip QuickInfo Controller")]
     [ContentType(RContentTypeDefinition.ContentType)]
-    sealed class QuickInfoControllerProvider : IIntellisenseControllerProvider
-    {
+    sealed class QuickInfoControllerProvider : IIntellisenseControllerProvider {
         [Import]
         private IQuickInfoBroker quickInfoBroker { get; set; }
 
-        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers)
-        {
+        [Import]
+        private ICoreShell Shell { get; set; }
+
+        public IIntellisenseController TryCreateIntellisenseController(ITextView textView, IList<ITextBuffer> subjectBuffers) {
             QuickInfoController quickInfoController = ServiceManager.GetService<QuickInfoController>(textView);
-            if (quickInfoController == null)
-            {
+            if (quickInfoController == null) {
                 quickInfoController = new QuickInfoController(textView, subjectBuffers, quickInfoBroker);
+                ServiceManager.AddService(quickInfoController, textView, Shell);
             }
 
             return quickInfoController;

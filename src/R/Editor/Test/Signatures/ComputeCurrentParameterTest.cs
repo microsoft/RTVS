@@ -12,7 +12,7 @@ using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -28,12 +28,12 @@ namespace Microsoft.R.Editor.Test.Signatures {
     public class ComputeCurrentParameter : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
-        private readonly FunctionIndex _functionIndex;
+        private readonly IFunctionIndex _functionIndex;
 
         public ComputeCurrentParameter(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
-            _functionIndex = new FunctionIndex(_coreShell);
+            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {

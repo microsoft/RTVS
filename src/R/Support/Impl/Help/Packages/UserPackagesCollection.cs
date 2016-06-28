@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
@@ -17,8 +18,8 @@ namespace Microsoft.R.Support.Help.Packages {
         internal static string RLibraryPath { get; set; } = @"R\win-library";
 
         [ImportingConstructor]
-        public UserPackagesCollection(IFunctionIndex functionIndex) :
-            base(functionIndex, GetInstallPath()) {
+        public UserPackagesCollection(ICoreShell coreShell) :
+            base(coreShell.ExportProvider.GetExportedValue<IFunctionIndex>(), GetInstallPath()) {
         }
 
         internal static string GetInstallPath() {

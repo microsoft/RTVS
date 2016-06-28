@@ -22,7 +22,7 @@ namespace Microsoft.R.Components.Services {
         /// </summary>
         public event EventHandler<ServiceManagerEventArgs> ServiceRemoved;
 
-        protected static ServiceManagerBase FromPropertyOwner(IPropertyOwner propertyOwner, Func<IPropertyOwner, ServiceManagerBase> factory) {
+        public static ServiceManagerBase TryGetOrCreate(IPropertyOwner propertyOwner, Func<IPropertyOwner, ServiceManagerBase> factory) {
             ServiceManagerBase sm = null;
 
             if (propertyOwner.Properties.ContainsProperty(typeof (ServiceManagerBase))) {
@@ -43,7 +43,7 @@ namespace Microsoft.R.Components.Services {
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         public static T GetService<T>(IPropertyOwner propertyOwner) where T : class {
             try {
-                var sm = FromPropertyOwner(propertyOwner, null);
+                var sm = TryGetOrCreate(propertyOwner, null);
                 return sm?.GetService<T>();
             } catch (Exception) {
                 return null;
@@ -51,8 +51,15 @@ namespace Microsoft.R.Components.Services {
         }
 
         public static ICollection<T> GetAllServices<T>(IPropertyOwner propertyOwner) where T : class {
-            var sm = FromPropertyOwner(propertyOwner, null);
+            var sm = TryGetOrCreate(propertyOwner, null);
             return sm != null ? sm.GetAllServices<T>() : new List<T>();
+        }
+        
+        public static void RemoveService<T>(IPropertyOwner propertyOwner) where T : class {
+            if (propertyOwner != null) {
+                var sm = TryGetOrCreate(propertyOwner, null);
+                sm?.RemoveService<T>();
+            }
         }
 
         protected ServiceManagerBase(IPropertyOwner propertyOwner) {

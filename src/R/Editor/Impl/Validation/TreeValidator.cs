@@ -87,7 +87,7 @@ namespace Microsoft.R.Editor.Validation {
             StartValidationNextIdle();
             ValidationResults = new ConcurrentQueue<IValidationError>();
 
-            ServiceManager.AddService<TreeValidator>(this, editorTree.TextBuffer);
+            ServiceManager.AddService<TreeValidator>(this, editorTree.TextBuffer, shell);
         }
         #endregion
 

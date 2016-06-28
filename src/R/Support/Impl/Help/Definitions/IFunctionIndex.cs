@@ -12,5 +12,6 @@ namespace Microsoft.R.Support.Help.Definitions {
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
         IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName);
         void Initialize();
+        void Terminate();
     }
 }

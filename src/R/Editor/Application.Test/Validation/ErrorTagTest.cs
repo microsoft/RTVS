@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Validation {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class ErrorTagTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;

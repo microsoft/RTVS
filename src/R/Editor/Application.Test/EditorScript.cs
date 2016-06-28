@@ -34,7 +34,7 @@ namespace Microsoft.R.Editor.Application.Test {
 
         public void Dispose() {
             _containerDisposable.Dispose();
-            _coreEditor.Close();
+            UIThreadHelper.Instance.Invoke(() => _coreEditor.Close());
         }
 
         /// <summary>
@@ -130,12 +130,10 @@ namespace Microsoft.R.Editor.Application.Test {
         }
 
         public IEditorScript DoIdle(int ms = 100) {
-            UIThreadHelper.Instance.Invoke(() => {
-                for (var i = 0; i < ms; i += 20) {
-                    _editorShell.DoIdle();
-                    Thread.Sleep(20);
-                }
-            });
+            for (var i = 0; i < ms; i += 20) {
+                _editorShell.DoIdle();
+                UIThreadHelper.Instance.DoEvents(20);
+            }
             return this;
         }
 
@@ -185,7 +183,7 @@ namespace Microsoft.R.Editor.Application.Test {
         public IEditorScript Execute(Guid @group, int id, object commandData = null, int msIdle = 0) => Invoke(() => {
             var unused = new object();
             _coreEditor.CommandTarget.Invoke(@group, id, commandData, ref unused);
-            Thread.Sleep(msIdle);
+            UIThreadHelper.Instance.DoEvents(msIdle);
         });
 
         private IEditorScript Execute(VSConstants.VSStd2KCmdID cmdId, int count, int msIdle) {

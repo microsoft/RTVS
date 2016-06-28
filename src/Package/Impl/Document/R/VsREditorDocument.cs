@@ -14,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.R {
             : base(editorInstance.ViewBuffer, shell) {
 
             _editorInstance = editorInstance;
-            ServiceManager.AddService<VsREditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<VsREditorDocument>(this, TextBuffer, shell);
         }
 
         public override void Close() {

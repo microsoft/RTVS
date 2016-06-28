@@ -23,8 +23,6 @@ namespace Microsoft.R.Editor.QuickInfo
 
             _textView.MouseHover += OnViewMouseHover;
             _textView.TextBuffer.Changing += OnTextBufferChanging;
-
-            ServiceManager.AddService<QuickInfoController>(this, textView);
         }
 
         private void OnTextBufferChanging(object sender, TextContentChangingEventArgs e)

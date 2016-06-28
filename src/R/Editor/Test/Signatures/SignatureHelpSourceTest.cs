@@ -11,7 +11,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -25,11 +25,11 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     public class SignatureHelpSourceTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
-        private readonly FunctionIndex _functionIndex;
+        private readonly IFunctionIndex _functionIndex;
 
         public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
-            _functionIndex = new FunctionIndex(_exportProvider.GetExportedValue<ICoreShell>());
+            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {

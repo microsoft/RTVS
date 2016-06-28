@@ -94,7 +94,7 @@ namespace Microsoft.R.Editor.Document {
             this.TextBuffer = textBuffer;
             IsClosed = false;
 
-            ServiceManager.AddService<REditorDocument>(this, TextBuffer);
+            ServiceManager.AddService(this, TextBuffer, shell);
 
             _editorTree = new EditorTree(textBuffer, shell);
             if (REditorSettings.SyntaxCheckInRepl) {

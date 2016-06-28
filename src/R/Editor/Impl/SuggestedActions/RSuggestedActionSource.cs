@@ -28,20 +28,20 @@ namespace Microsoft.R.Editor.SuggestedActions {
         IREditorDocument _document;
         IAstNode _lastNode;
 
-        public RSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<IRSuggestedActionProvider> suggestedActionProviders) {
+        public RSuggestedActionSource(ITextView textView, ITextBuffer textBuffer, IEnumerable<IRSuggestedActionProvider> suggestedActionProviders, ICoreShell shell) {
             _textBuffer = textBuffer;
             _textView = textView;
             _textView.Caret.PositionChanged += OnCaretPositionChanged;
             _suggestedActionProviders = suggestedActionProviders;
             _document = REditorDocument.TryFromTextBuffer(_textBuffer);
-            ServiceManager.AddService(this, _textView);
+            ServiceManager.AddService(this, _textView, shell);
         }
 
-        public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
+        public static ISuggestedActionsSource FromViewAndBuffer(ITextView textView, ITextBuffer textBuffer, ICoreShell shell) {
             var suggestedActionsSource = ServiceManager.GetService<RSuggestedActionSource>(textView);
             if (suggestedActionsSource == null) {
-                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany(coreShell.CompositionService).Select(p => p.Value);
-                suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders);
+                IEnumerable<IRSuggestedActionProvider> suggestedActionProviders = ComponentLocator<IRSuggestedActionProvider>.ImportMany(shell.CompositionService).Select(p => p.Value);
+                suggestedActionsSource = new RSuggestedActionSource(textView, textBuffer, suggestedActionProviders, shell);
             }
             return suggestedActionsSource;
         }

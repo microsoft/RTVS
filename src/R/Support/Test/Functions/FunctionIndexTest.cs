@@ -1,13 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -17,11 +15,11 @@ namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
     public class FunctionIndexTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
-        private readonly FunctionIndex _functionIndex;
+        private readonly IFunctionIndex _functionIndex;
 
         public FunctionIndexTest(RSupportMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
-            _functionIndex = new FunctionIndex(_exportProvider.GetExportedValue<ICoreShell>());
+            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {

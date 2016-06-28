@@ -41,6 +41,7 @@ namespace Microsoft.Languages.Editor.Test {
             return new[] {
                 "Microsoft.VisualStudio.CoreUtility.dll",
                 "Microsoft.VisualStudio.Text.Data.dll",
+                "Microsoft.VisualStudio.Text.Internal.dll",
                 "Microsoft.VisualStudio.Text.Logic.dll",
                 "Microsoft.VisualStudio.Text.UI.dll",
                 "Microsoft.VisualStudio.Text.UI.Wpf.dll"

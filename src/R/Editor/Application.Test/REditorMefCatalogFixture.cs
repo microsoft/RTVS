@@ -15,6 +15,9 @@ namespace Microsoft.R.Editor.Application.Test {
     [ExcludeFromCodeCoverage]
     public class REditorApplicationMefCatalogFixtureBase : REditorMefCatalogFixtureBase {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
+            "Microsoft.Markdown.Editor",
+            "Microsoft.Markdown.Editor.Test",
+            "Microsoft.Languages.Editor.Application",
             "Microsoft.R.Editor.Application.Test"
         });
     }

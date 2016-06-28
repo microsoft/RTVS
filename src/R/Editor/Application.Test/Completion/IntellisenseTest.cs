@@ -22,10 +22,12 @@ using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
+using Xunit;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class IntellisenseTest : IDisposable {
         private readonly EditorHostMethodFixture _editorHost;
         private readonly IExportProvider _exportProvider;

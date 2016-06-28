@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
                 var snapshot = script.TextBuffer.CurrentSnapshot;
 
                 var viewLines = script.View.TextViewLines;
-                viewLines.Count.Should().Be(40);
+                viewLines.Count.Should().Be(22);
                 script.DoIdle(500);
 
                 script.Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_TOGGLE_ALL);
@@ -59,7 +59,7 @@ namespace Microsoft.R.Editor.Application.Test.Outline {
                 script.DoIdle(500);
 
                 viewLines = script.View.TextViewLines;
-                viewLines.Count.Should().Be(40);
+                viewLines.Count.Should().Be(22);
 
                 script.Execute(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.OUTLN_STOP_HIDING_ALL);
                 script.DoIdle(200);

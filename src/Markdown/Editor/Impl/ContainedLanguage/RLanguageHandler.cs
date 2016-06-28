@@ -23,7 +23,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         private readonly ICoreShell _coreShell;
 
         public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager, ICoreShell coreShell) :
-            base(textBuffer) {
+            base(textBuffer, coreShell) {
             _projectionBufferManager = projectionBufferManager;
             _coreShell = coreShell;
             UpdateProjections();

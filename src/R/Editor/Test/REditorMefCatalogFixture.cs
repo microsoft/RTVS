@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Microsoft.Languages.Editor.Test;
+using Microsoft.R.Support.Test;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Editor.Test {
@@ -13,7 +13,7 @@ namespace Microsoft.R.Editor.Test {
     public sealed class REditorMefCatalogFixture : REditorMefCatalogFixtureBase { }
 
     [ExcludeFromCodeCoverage]
-    public class REditorMefCatalogFixtureBase : LanguagesEditorMefCatalogFixtureBase {
+    public class REditorMefCatalogFixtureBase : RSupportMefCatalogFixtureBase {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() => base.GetBinDirectoryAssemblies().Concat(new[] {
             "Microsoft.R.Editor",
             "Microsoft.R.Editor.Test"

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
@@ -14,7 +15,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
     public abstract class EditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
+        public EditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell) {
             if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
             }
@@ -25,7 +26,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
             ViewBuffer = DiskBuffer = diskBuffer;
             _document = documentFactory.CreateDocument(this);
 
-            ServiceManager.AddService<IEditorInstance>(this, ViewBuffer);
+            ServiceManager.AddService<IEditorInstance>(this, ViewBuffer, coreShell);
         }
 
         #region IEditorInstance

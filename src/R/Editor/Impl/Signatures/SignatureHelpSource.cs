@@ -25,7 +25,7 @@ namespace Microsoft.R.Editor.Signatures {
         public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
             _textBuffer = textBuffer;
             _shell = shell;
-            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
+            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer, shell);
 
         }
 

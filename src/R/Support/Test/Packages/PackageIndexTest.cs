@@ -104,7 +104,7 @@ namespace Microsoft.R.Support.Test.Packages {
 
             installPath.Should().Be(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath));
 
-            var collection = new UserPackagesCollection(_exportProvider.GetExportedValue<IFunctionIndex>());
+            var collection = new UserPackagesCollection(_exportProvider.GetExportedValue<ICoreShell>());
             collection.Packages.Should().NotBeNull();
 
             IEnumerator en = collection.Packages.GetEnumerator();

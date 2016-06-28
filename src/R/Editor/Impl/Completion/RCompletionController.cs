@@ -46,7 +46,7 @@ namespace Microsoft.R.Editor.Completion {
             : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AddService<RCompletionController>(this, TextView);
+            ServiceManager.AddService<RCompletionController>(this, TextView, shell);
         }
 
         public override void Detach(ITextView textView) {

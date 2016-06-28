@@ -36,7 +36,7 @@ namespace Microsoft.Languages.Editor.BraceMatch {
                 view.LayoutChanged += OnViewLayoutChanged;
                 view.Caret.PositionChanged += OnCaretPositionChanged;
 
-                ServiceManager.AddService<BraceHighlighter>(this, _textView);
+                ServiceManager.AddService(this, _textView, shell);
             }
         }
 

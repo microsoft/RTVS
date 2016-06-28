@@ -9,9 +9,11 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class AutoFormatTest : IDisposable {
         private readonly IExportProvider _exportProvider;
         private readonly EditorHostMethodFixture _editorHost;

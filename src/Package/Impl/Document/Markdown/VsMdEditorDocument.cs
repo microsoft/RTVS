@@ -16,7 +16,7 @@ namespace Microsoft.VisualStudio.R.Package.Document.Markdown {
             : base(editorInstance.ViewBuffer, projectionBufferFactoryService, contentTypeRegistryService, shell) {
 
             _editorInstance = editorInstance;
-            ServiceManager.AddService<VsMdEditorDocument>(this, TextBuffer);
+            ServiceManager.AddService<VsMdEditorDocument>(this, TextBuffer, shell);
         }
 
         public override void Close() {

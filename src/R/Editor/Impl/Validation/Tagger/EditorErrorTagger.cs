@@ -80,7 +80,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             ResultsQueue = validator.ValidationResults;
             _shell.Idle += OnIdle;
 
-            ServiceManager.AddService<EditorErrorTagger>(this, textBuffer);
+            ServiceManager.AddService<EditorErrorTagger>(this, textBuffer, shell);
         }
 
         /// <summary>

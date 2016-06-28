@@ -5,13 +5,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -125,8 +123,8 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
             }
         }
 
-        private FunctionIndex PrepareFunctionIndex() {
-            var functionIndex = new FunctionIndex(_exportProvider.GetExportedValue<ICoreShell>());
+        private IFunctionIndex PrepareFunctionIndex() {
+            var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>(); ;
             functionIndex.Initialize();
             functionIndex.BuildIndexAsync().Wait();
             return functionIndex;

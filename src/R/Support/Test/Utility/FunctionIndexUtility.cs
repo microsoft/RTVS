@@ -14,7 +14,7 @@ using Microsoft.UnitTests.Core.Mef;
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class FunctionIndexUtility {
-        public static Task<IFunctionInfo> GetFunctionInfoAsync(FunctionIndex functionIndex, string functionName) {
+        public static Task<IFunctionInfo> GetFunctionInfoAsync(IFunctionIndex functionIndex, string functionName) {
             FunctionRdDataProvider.HostStartTimeout = 10000;
 
             var tcs = new TaskCompletionSource<IFunctionInfo>();
@@ -30,13 +30,13 @@ namespace Microsoft.R.Support.Test.Utility {
             return tcs.Task;
         }
 
-        public static Task InitializeAsync(FunctionIndex functionIndex) {
+        public static Task InitializeAsync(IFunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
             functionIndex.Initialize();
             return functionIndex.BuildIndexAsync();
         } 
 
-        public static async Task DisposeAsync(FunctionIndex functionIndex, IExportProvider exportProvider) {
+        public static async Task DisposeAsync(IFunctionIndex functionIndex, IExportProvider exportProvider) {
             IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));

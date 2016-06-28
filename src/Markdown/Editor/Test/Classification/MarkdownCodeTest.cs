@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Classification;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Text;
@@ -82,7 +83,7 @@ namespace Microsoft.Markdown.Editor.Test.Classification {
             textBuffer = _tbfs.CreateTextBuffer(new ContentTypeMock(MdContentTypeDefinition.ContentType));
             textBuffer.Insert(0, content);
 
-            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _cnp);
+            MdClassifierProvider classifierProvider = new MdClassifierProvider(_crs, _ctrs, _cnp, _exportProvider.GetExportedValue<ICoreShell>());
            return classifierProvider.GetClassifier(textBuffer);
         }
 
