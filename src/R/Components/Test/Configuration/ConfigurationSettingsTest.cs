@@ -13,7 +13,7 @@ using Xunit;
 namespace Microsoft.R.Components.Test.Configuration {
     [ExcludeFromCodeCoverage]
     [Category.Configuration]
-    public class ConfigurationSettingsTest {
+    public sealed class ConfigurationSettingsTest {
         [CompositeTest]
         [InlineData("x <- 1", "x", "1", ConfigurationSettingValueType.Expression)]
         [InlineData("ab <- x + 3", "ab", "x + 3", ConfigurationSettingValueType.Expression)]
@@ -52,17 +52,9 @@ y <- x + 3
 z <- 'ab
 c'
 ";
-            var settings = new List<IConfigurationSetting>();
-            using (var sr = new StreamReader(ToStream(content))) {
-                var cp = new ConfigurationParser(sr);
-                while (true) {
-                    var s = cp.ReadSetting();
-                    if (s == null) {
-                        break;
-                    }
-                    settings.Add(s);
-                }
-            }
+            ConfigurationParser cp;
+            var settings = GetSettings(content, out cp);
+
             settings.Should().HaveCount(3);
 
             settings[0].Name.Should().Be("x");
@@ -82,6 +74,54 @@ c'
             settings[2].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("Category 1");
         }
 
+        [Test]
+        public void LoadMultiple02() {
+            string content =
+@"
+# [Category] SQL
+# [Description] Database connection string
+# [Editor] ConnectionString
+c1 <- 'DSN'
+";
+            ConfigurationParser cp;
+            var settings = GetSettings(content, out cp);
+
+            settings.Should().HaveCount(1);
+
+            settings[0].Name.Should().Be("c1");
+            settings[0].Value.Should().Be("DSN");
+            settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
+            settings[0].Attributes.Should().HaveCount(3);
+            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("SQL");
+            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Description)].Should().Be("Database connection string");
+            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Editor)].Should().Be("ConnectionString");
+        }
+
+        [Test]
+        public void LoadMultiple03() {
+            string content =
+@"# [Category] SQL
+# [Editor] ConnectionString
+# [Editor] ConnectionString
+c1 <- 'DSN'
+";
+            ConfigurationParser cp;
+            var settings = GetSettings(content, out cp);
+
+            settings.Should().HaveCount(1);
+
+            settings[0].Name.Should().Be("c1");
+            settings[0].Value.Should().Be("DSN");
+            settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
+            settings[0].Attributes.Should().HaveCount(2);
+            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("SQL");
+            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Editor)].Should().Be("ConnectionString");
+
+            cp.Errors.Should().HaveCount(1);
+            cp.Errors[0].Message.Should().StartWith("Duplicate");
+            cp.Errors[0].LineNumber.Should().Be(3);
+        }
+
         [CompositeTest]
         [InlineData("x <- ", 1, 1)]
         [InlineData("", 0, 0)]
@@ -96,8 +136,18 @@ c'
 
                       x <- ", 1, 2)]
         public void LoadErrors(string content, int expectedCount, int expectedLineNumber) {
-            var settings = new List<IConfigurationSetting>();
             ConfigurationParser cp;
+            var settings = GetSettings(content, out cp);
+
+            settings.Should().HaveCount(0);
+            cp.Errors.Should().HaveCount(expectedCount);
+            if (expectedCount > 0) {
+                cp.Errors[0].LineNumber.Should().Be(expectedLineNumber);
+            }
+        }
+
+        private List<IConfigurationSetting> GetSettings(string content, out ConfigurationParser cp) {
+            var settings = new List<IConfigurationSetting>();
             using (var sr = new StreamReader(ToStream(content))) {
                 cp = new ConfigurationParser(sr);
                 while (true) {
@@ -108,11 +158,7 @@ c'
                     settings.Add(s);
                 }
             }
-            settings.Should().HaveCount(0);
-            cp.Errors.Should().HaveCount(expectedCount);
-            if (expectedCount > 0) {
-                cp.Errors[0].LineNumber.Should().Be(expectedLineNumber);
-            }
+            return settings;
         }
 
         private Stream ToStream(string s) {
