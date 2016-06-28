@@ -44,5 +44,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
         public override int GetHashCode() {
             return this.Value.GetHashCode();
         }
+
+        public override string ToString() {
+            return Value;
+        }
     }
 }

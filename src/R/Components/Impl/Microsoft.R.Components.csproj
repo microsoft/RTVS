@@ -52,9 +52,10 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Application\Configuration\RConfigurationValueFormatter.cs" />
-    <Compile Include="Application\Configuration\IAppSettings.cs" />
-    <Compile Include="Application\Configuration\RAppSetting.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingsCollection.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingsStorage.cs" />
+    <Compile Include="Application\Configuration\IConfigurationSetting.cs" />
+    <Compile Include="Application\Configuration\IConfigurationSettingsStorage.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />

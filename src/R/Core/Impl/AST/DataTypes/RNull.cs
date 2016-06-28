@@ -15,5 +15,9 @@ namespace Microsoft.R.Core.AST.DataTypes {
         public RMode Mode {
             get { return RMode.Null; }
         }
+
+        public override string ToString() {
+            return "NULL";
+        }
     }
 }
