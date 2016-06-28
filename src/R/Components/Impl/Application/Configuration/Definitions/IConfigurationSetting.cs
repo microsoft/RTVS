@@ -1,7 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Core.AST.DataTypes;
+
+using System.Collections.Generic;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -16,23 +17,18 @@ namespace Microsoft.R.Components.Application.Configuration {
         string Name { get; }
 
         /// <summary>
-        /// Retrieves setting value
+        /// Setting value
         /// </summary>
-        RObject Value { get; }
+        string Value { get; set; }
 
         /// <summary>
         /// Setting category (section in the Property Grid)
         /// </summary>
-        string Category { get; }
+        IDictionary<string, string> Attributes { get; }
 
         /// <summary>
-        /// Setting description (description in the Property Grid)
+        /// Value type
         /// </summary>
-        string Description { get; }
-
-        /// <summary>
-        /// Value GUI editor
-        /// </summary>
-        string Editor { get; }
+        ConfigurationSettingValueType ValueType { get; }
     }
 }

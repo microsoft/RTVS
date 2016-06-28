@@ -1,0 +1,95 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using FluentAssertions;
+using Microsoft.R.Components.Application.Configuration;
+using Microsoft.R.Components.Application.Configuration.Parser;
+using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
+
+namespace Microsoft.R.Components.Test.Configuration {
+    [ExcludeFromCodeCoverage]
+    [Category.Configuration]
+    public class ConfigurationSettingsTest {
+        [CompositeTest]
+        [InlineData("x <- 1", "x", "1", ConfigurationSettingValueType.Expression)]
+        [InlineData("ab <- x + 3", "ab", "x + 3", ConfigurationSettingValueType.Expression)]
+        [InlineData("`x y` <- 'abc'", "`x y`", "abc", ConfigurationSettingValueType.String)]
+        [InlineData("c.d <- \"1 0\"", "c.d", "1 0", ConfigurationSettingValueType.String)]
+        [InlineData("x <- 1", "x", "1", ConfigurationSettingValueType.Expression)]
+        [InlineData("z <- c(1:100)", "z", "c(1:100)", ConfigurationSettingValueType.Expression)]
+        public void LoadSingle(string content, string expectedName, string expectedValue, ConfigurationSettingValueType expectedValueType) {
+            var settings = new List<IConfigurationSetting>();
+            using (var sr = new StreamReader(ToStream(content))) {
+                var cp = new ConfigurationParser(sr);
+                while (true) {
+                    var s = cp.ReadSetting();
+                    if (s == null) {
+                        break;
+                    }
+                    settings.Add(s);
+                }
+            }
+            settings.Should().HaveCount(1);
+            settings[0].Name.Should().Be(expectedName);
+            settings[0].Value.Should().Be(expectedValue);
+            settings[0].ValueType.Should().Be(expectedValueType);
+            settings[0].Attributes.Should().HaveCount(0);
+        }
+
+        [Test]
+        public void LoadMultiple01() {
+            string content =
+@"
+x <- 1
+
+# comment
+y <- x + 3
+# [Category] Category 1
+z <- 'ab
+c'
+";
+            var settings = new List<IConfigurationSetting>();
+            using (var sr = new StreamReader(ToStream(content))) {
+                var cp = new ConfigurationParser(sr);
+                while (true) {
+                    var s = cp.ReadSetting();
+                    if (s == null) {
+                        break;
+                    }
+                    settings.Add(s);
+                }
+            }
+            settings.Should().HaveCount(3);
+
+            settings[0].Name.Should().Be("x");
+            settings[0].Value.Should().Be("1");
+            settings[0].ValueType.Should().Be(ConfigurationSettingValueType.Expression);
+            settings[0].Attributes.Should().HaveCount(0);
+
+            settings[1].Name.Should().Be("y");
+            settings[1].Value.Should().Be("x + 3");
+            settings[1].ValueType.Should().Be(ConfigurationSettingValueType.Expression);
+            settings[1].Attributes.Should().HaveCount(0);
+
+            settings[2].Name.Should().Be("z");
+            settings[2].Value.Should().Be("ab\r\nc");
+            settings[2].ValueType.Should().Be(ConfigurationSettingValueType.String);
+            settings[2].Attributes.Should().HaveCount(1);
+            settings[2].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("Category 1");
+        }
+
+        private Stream ToStream(string s) {
+            MemoryStream stream = new MemoryStream();
+            StreamWriter writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+
+            stream.Position = 0;
+            return stream;
+        }
+    }
+}

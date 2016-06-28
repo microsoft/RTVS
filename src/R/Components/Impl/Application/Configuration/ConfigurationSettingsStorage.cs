@@ -4,27 +4,33 @@
 using System;
 using System.Globalization;
 using System.IO;
-using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Operators.Definitions;
-using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Statements.Definitions;
-using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Core.Parser;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration {
+    /// <summary>
+    /// Storage of the R application settings. Settings are written
+    /// into R file as assignment statements such as 'name &lt;- value'.
+    /// Value can be string or an expression. The difference is that
+    /// string values are quoted when written into the file and expressions
+    /// are written as is.
+    /// </summary>
     public sealed class ConfigurationSettingsStorage : IConfigurationSettingsStorage {
         public ConfigurationSettingsCollection Load(Stream stream) {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Persists settings into R file. Settings are written
+        /// into R file as assignment statements such as 'name &lt;- value'.
+        /// Value
+        /// </summary>
         public void Save(ConfigurationSettingsCollection settings, Stream stream) {
             var sw = new StreamWriter(stream);
             try {
                 WriteHeader(sw);
                 foreach (var s in settings) {
-                    var v = s.Value.ToString();
-                    if (!string.IsNullOrEmpty(v)) {
+                    var v = FormatValue(s);
+                    if (!string.IsNullOrWhiteSpace(v)) {
                         WriteAttributes(s, sw);
                         sw.WriteLine(Invariant($"{s.Name} <- {v}"));
                         sw.WriteLine(string.Empty);
@@ -42,36 +48,26 @@ namespace Microsoft.R.Components.Application.Configuration {
         }
 
         private void WriteAttributes(IConfigurationSetting s, StreamWriter sw) {
-            if (!string.IsNullOrEmpty(s.Category)) {
-                sw.WriteLine(Invariant($"# [Category] {s.Category}"));
-            }
-            if (!string.IsNullOrEmpty(s.Description)) {
-                sw.WriteLine(Invariant($"# [Description] {s.Description}"));
-            }
-            if (!string.IsNullOrEmpty(s.Editor)) {
-                sw.WriteLine(Invariant($"# [Editor] {s.Editor}"));
+            foreach (var attName in s.Attributes.Keys) {
+                var value = s.Attributes[attName];
+                if (!string.IsNullOrEmpty(value)) {
+                    sw.WriteLine(Invariant($"# [{attName}] {value}"));
+                }
             }
         }
 
-        private bool ParseNameAndValue(string line, out string name, out string value) {
-            name = value = null;
-            var ast = RParser.Parse(line);
-            if (ast.Errors.Count == 0 && ast.Children.Count > 0) {
-                var scope = ast.Children[0] as GlobalScope;
-                if (scope?.Children.Count > 0) {
-                    var es = scope.Children[0] as IExpressionStatement;
-                    var exp = es?.Expression;
-                    if (exp?.Children.Count == 1) {
-                        var op = exp.Children[0] as IOperator;
-                        if (op?.Children.Count == 2) {
-                            name = (op.Children[0] as Variable)?.Name;
-                            value = line.Substring(op.Children[1].Start, op.Children[1].Length);
-                            return !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
-                        }
-                    }
+        private string FormatValue(IConfigurationSetting s) {
+            if (s.ValueType == ConfigurationSettingValueType.String) {
+                var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
+                var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
+                if (hasSingleQuotes && !hasDoubleQuotes) {
+                    return Invariant($"\"s\"");
+                } else if (!hasSingleQuotes) {
+                    return Invariant($"'s'");
                 }
+                // TODO: Resources.ConfigurationError_Quotes; ?
             }
-            return false;
+            return s.Value;
         }
     }
 }

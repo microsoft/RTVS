@@ -43,6 +43,19 @@ namespace Microsoft.Common.Core {
             return s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
+        public static string RemoveQuotes(this string s) {
+            if (s.Length > 0) {
+                char quote = s[0];
+                if (quote == '\'' || quote == '\"') {
+                    if (s.Length > 1 && s[s.Length - 1] == quote) {
+                        return s.Substring(1, s.Length - 2);
+                    }
+                    return s.Substring(1);
+                }
+            }
+            return s;
+        }
+
         public static string Replace(this string s, string oldValue, string newValue, int start, int length) {
             if (string.IsNullOrEmpty(oldValue)) {
                 throw new ArgumentException("oldValue can't be null or empty string", nameof(oldValue));

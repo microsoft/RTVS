@@ -5,6 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Microsoft.R.Components.Application.Configuration {
+    /// <summary>
+    /// Collection of the R application settings.
+    /// Presented in the project properties.
+    /// </summary>
     public sealed class ConfigurationSettingsCollection: ICollection<IConfigurationSetting> {
         private readonly Dictionary<string, IConfigurationSetting> _settings = new Dictionary<string, IConfigurationSetting>();
 
