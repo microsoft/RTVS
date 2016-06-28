@@ -167,12 +167,12 @@ UnexpectedToken Token [17...21)
 ";
             ParserTest.VerifyParse(expected1, expression);
 
-            EditorTree tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 17, 0, 1, "\n");
-            tree.IsDirty.Should().BeTrue();
-            tree.ProcessChanges();
+            using (var tree = EditorTreeTest.ApplyTextChange(_coreShell, expression, 17, 0, 1, "\n")) { 
+                tree.IsDirty.Should().BeTrue();
+                tree.ProcessChanges();
 
-            string expected2 =
-    @"GlobalScope  [Global]
+                string expected2 =
+@"GlobalScope  [Global]
     If  []
         TokenNode  [if [0...2)]
         TokenNode  [( [2...3)]
@@ -197,7 +197,8 @@ UnexpectedToken Token [17...21)
 
 UnexpectedToken Token [19...23)
 ";
-            ParserTest.CompareTrees(expected2, tree.AstRoot);
+                ParserTest.CompareTrees(expected2, tree.AstRoot);
+            }
         }
     }
 }

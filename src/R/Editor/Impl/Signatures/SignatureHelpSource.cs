@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Utility;
@@ -19,14 +20,15 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
-        private ITextBuffer _textBuffer;
+        private readonly DisposeToken _disposeToken;
+        private readonly ITextBuffer _textBuffer;
         private readonly ICoreShell _shell;
 
         public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
+            _disposeToken = DisposeToken.Create<SignatureHelpSource>();
             _textBuffer = textBuffer;
             _shell = shell;
             ServiceManager.AddService<SignatureHelpSource>(this, textBuffer, shell);
-
         }
 
         #region ISignatureHelpSource
@@ -151,9 +153,8 @@ namespace Microsoft.R.Editor.Signatures {
 
         #region IDisposable
         public void Dispose() {
-            if (_textBuffer != null) {
+            if (_disposeToken.TryMarkDisposed()) {
                 ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
-                _textBuffer = null;
             }
         }
         #endregion
