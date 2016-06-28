@@ -21,7 +21,7 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
         private string _bufferedLine;
         private int _lineNumber;
 
-        public IReadOnlyCollection<ConfigurationError> Errors => _errors;
+        public IReadOnlyList<ConfigurationError> Errors => _errors;
 
         public ConfigurationParser(StreamReader sr) {
             _sr = sr;
@@ -86,32 +86,30 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
             }
             // Parse the expression
             var ast = RParser.Parse(text);
-            if (ast.Errors.Count > 0) {
-                _errors.Add(new ConfigurationError(lineNumber, Resources.ConfigurationError_Syntax));
-                return false;
-            }
-
-            // Expected 'Variable <- Expression'
-            var scope = ast.Children[0] as GlobalScope;
-            if (scope?.Children.Count > 0) {
-                var exp = (scope.Children[0] as IExpressionStatement)?.Expression;
-                if (exp?.Children.Count == 1) {
-                    var op = exp.Children[0] as IOperator;
-                    if (op != null) {
-                        if (op.OperatorType == OperatorType.LeftAssign && op.LeftOperand != null && op.RightOperand != null) {
-                            var name = (op.LeftOperand as Variable)?.Name;
-                            var value = text.Substring(op.RightOperand.Start, op.RightOperand.Length);
-                            var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
-                            if (result) {
-                                s.Name = name;
-                                s.Value = value.RemoveQuotes();
-                                s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
-                                return true;
+            if (ast.Errors.Count == 0) {
+                // Expected 'Variable <- Expression'
+                var scope = ast.Children[0] as GlobalScope;
+                if (scope?.Children.Count > 0) {
+                    var exp = (scope.Children[0] as IExpressionStatement)?.Expression;
+                    if (exp?.Children.Count == 1) {
+                        var op = exp.Children[0] as IOperator;
+                        if (op != null) {
+                            if (op.OperatorType == OperatorType.LeftAssign && op.LeftOperand != null && op.RightOperand != null) {
+                                var name = (op.LeftOperand as Variable)?.Name;
+                                var value = text.Substring(op.RightOperand.Start, op.RightOperand.Length);
+                                var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
+                                if (result) {
+                                    s.Name = name;
+                                    s.Value = value.RemoveQuotes();
+                                    s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
             }
+            _errors.Add(new ConfigurationError(lineNumber, Resources.ConfigurationError_Syntax));
             return false;
         }
 

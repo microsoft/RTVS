@@ -82,6 +82,39 @@ c'
             settings[2].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("Category 1");
         }
 
+        [CompositeTest]
+        [InlineData("x <- ", 1, 1)]
+        [InlineData("", 0, 0)]
+        [InlineData(@"
+
+                        x < 1 ", 1, 3)]
+        [InlineData("#", 0, 0)]
+        [InlineData("# x <- 1", 0, 0)]
+        [InlineData(" <- 1", 1, 1)]
+        [InlineData(@"
+                      <- 1
+
+                      x <- ", 1, 2)]
+        public void LoadErrors(string content, int expectedCount, int expectedLineNumber) {
+            var settings = new List<IConfigurationSetting>();
+            ConfigurationParser cp;
+            using (var sr = new StreamReader(ToStream(content))) {
+                cp = new ConfigurationParser(sr);
+                while (true) {
+                    var s = cp.ReadSetting();
+                    if (s == null) {
+                        break;
+                    }
+                    settings.Add(s);
+                }
+            }
+            settings.Should().HaveCount(0);
+            cp.Errors.Should().HaveCount(expectedCount);
+            if (expectedCount > 0) {
+                cp.Errors[0].LineNumber.Should().Be(expectedLineNumber);
+            }
+        }
+
         private Stream ToStream(string s) {
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
