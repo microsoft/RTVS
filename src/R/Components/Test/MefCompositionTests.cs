@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using FluentAssertions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
@@ -16,14 +16,14 @@ namespace Microsoft.R.Components.Test {
     /// These tests are basic markers that all required composition imports are available.
     /// </summary>
     public class MefCompositionTests : IDisposable {
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
 
         public MefCompositionTests(RComponentsMefCatalogFixture mefCatalog) {
             _exportProvider = mefCatalog.CreateExportProvider();
         }
 
         public void Dispose() {
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider.Dispose();
         }
 
         [Test]

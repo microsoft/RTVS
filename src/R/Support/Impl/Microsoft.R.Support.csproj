@@ -33,7 +33,9 @@
     <Compile Include="..\..\..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Help\Definitions\IFunctionIndex.cs" />
     <Compile Include="Help\Definitions\IFunctionRdDataProvider.cs" />
+    <Compile Include="Help\Definitions\IPackageIndex.cs" />
     <Compile Include="Help\Definitions\NamedItemType.cs" />
     <Compile Include="Help\FunctionRdDataProvider.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />

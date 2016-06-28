@@ -6,12 +6,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Outline;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Tree;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -20,19 +22,27 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Outline {
     [ExcludeFromCodeCoverage]
     [Category.R.Outlining]
-    public class ROutlineBuilderTest {
+    public class ROutlineBuilderTest : IDisposable {
         private readonly EditorTestFilesFixture _testFiles;
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
 
-        public ROutlineBuilderTest(EditorTestFilesFixture testFiles) {
+        public ROutlineBuilderTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
             _testFiles = testFiles;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
         }
 
         [Test]
         public void ConstructionTest() {
             TextBufferMock textBuffer = new TextBufferMock(string.Empty, RContentTypeDefinition.ContentType);
-            var tree = new EditorTree(textBuffer);
+            var tree = new EditorTree(textBuffer, _editorShell);
             using (var editorDocument = new EditorDocumentMock(tree)) {
-                using (var ob = new ROutlineRegionBuilder(editorDocument)) {
+                using (var ob = new ROutlineRegionBuilder(editorDocument, _editorShell)) {
 
                     ob.EditorDocument.Should().NotBeNull();
                     ob.EditorTree.Should().NotBeNull();
@@ -53,7 +63,7 @@ namespace Microsoft.R.Editor.Test.Outline {
 
         [Test(ThreadType.UI)]
         public void EmptyTest() {
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions("");
+            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_editorShell, "");
 
             rc.Should().BeEmpty();
             rc.Start.Should().Be(0);
@@ -73,7 +83,7 @@ namespace Microsoft.R.Editor.Test.Outline {
     xnames<- c(0, xnames)
   }
 ";
-            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(content);
+            OutlineRegionCollection rc = OutlineTest.BuildOutlineRegions(_editorShell, content);
 
             rc.Should().HaveCount(3);
 
@@ -93,7 +103,7 @@ namespace Microsoft.R.Editor.Test.Outline {
         [InlineData("01.r")]
         [InlineData("02.r")]
         public void OutlineFile(string name) {
-            Action a = () => OutlineTest.OutlineFile(_testFiles, name);
+            Action a = () => OutlineTest.OutlineFile(_editorShell, _testFiles, name);
             a.ShouldNotThrow();
         }
 
@@ -109,10 +119,10 @@ x <- 1
             OutlineRegionsChangedEventArgs args = null;
 
             textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            using (var tree = new EditorTree(textBuffer)) {
+            using (var tree = new EditorTree(textBuffer, _editorShell)) {
                 tree.Build();
                 using (var editorDocument = new EditorDocumentMock(tree)) {
-                    using (var ob = new ROutlineRegionBuilder(editorDocument)) {
+                    using (var ob = new ROutlineRegionBuilder(editorDocument, _editorShell)) {
                         var rc1 = new OutlineRegionCollection(0);
                         ob.BuildRegions(rc1);
 
@@ -131,7 +141,7 @@ x <- 1
                         // Wait for background/idle tasks to complete
                         var start = DateTime.Now;
                         while (calls == 0 && (DateTime.Now - start).TotalMilliseconds < 2000) {
-                            EditorShell.Current.DoIdle();
+                            _editorShell.DoIdle();
                         }
 
                         calls.Should().Be(1);

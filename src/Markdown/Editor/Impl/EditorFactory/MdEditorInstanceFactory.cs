@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.VisualStudio.Text;
@@ -17,6 +18,13 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
     [Export(typeof(IEditorFactory))]
     [ContentType(MdContentTypeDefinition.ContentType)]
     internal class MdEditorInstanceFactory : IEditorFactory {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public MdEditorInstanceFactory(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
+
         public IEditorInstance CreateEditorInstance(ITextBuffer textBuffer, IEditorDocumentFactory documentFactory) {
             if (textBuffer == null) {
                 throw new ArgumentNullException(nameof(textBuffer));
@@ -24,7 +32,7 @@ namespace Microsoft.Markdown.Editor.EditorFactory {
             if (documentFactory == null) {
                 throw new ArgumentNullException(nameof(documentFactory));
             }
-            return new MdEditorInstance(textBuffer, documentFactory);
+            return new MdEditorInstance(textBuffer, documentFactory, _coreShell);
         }
     }
 }

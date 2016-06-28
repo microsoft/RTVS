@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.BraceMatch;
 using Microsoft.R.Support.RD.ContentTypes;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -11,7 +12,8 @@ namespace Microsoft.R.Support.RD.BraceMatch {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType(RdContentTypeDefinition.ContentType)]
     [TagType(typeof(TextMarkerTag))]
-    internal sealed class RdBraceHighlightProvider : BraceHighlightProvider
-    {
+    internal sealed class RdBraceHighlightProvider : BraceHighlightProvider {
+        [ImportingConstructor]
+        public RdBraceHighlightProvider(ICoreShell shell) : base(shell) { }
     }
 }

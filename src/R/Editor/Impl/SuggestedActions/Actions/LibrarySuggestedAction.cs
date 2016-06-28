@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -10,8 +11,8 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SuggestedActions.Actions {
     internal abstract class LibrarySuggestedAction : RSuggestedActionBase {
-        public LibrarySuggestedAction(ITextView textView, ITextBuffer textBuffer, int position, string displayText) :
-            base(textView, textBuffer, position, displayText) {
+        public LibrarySuggestedAction(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position, string displayText) :
+            base(textView, textBuffer, workflow, position, displayText) {
 
         }
 

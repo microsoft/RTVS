@@ -3,9 +3,11 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
@@ -21,19 +23,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
 
         protected virtual void AddValues(CompositionContainer container) {}
 
-        public ExportProvider CreateExportProvider() {
+        public IExportProvider CreateExportProvider() {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
             AddValues(container);
             _containers.Enqueue(container);
-            return container;
+            return new TestExportProvider(container);
         }
 
-        public ExportProvider CreateExportProvider(CompositionBatch additionalValues) {
+        public IExportProvider CreateExportProvider(CompositionBatch additionalValues) {
             var container = new CompositionContainer(_catalogLazy.Value, CompositionOptions.DisableSilentRejection);
             AddValues(container);
             container.Compose(additionalValues);
             _containers.Enqueue(container);
-            return container;
+            return new TestExportProvider(container);
         }
 
         void IDisposable.Dispose() {
@@ -41,6 +43,19 @@ namespace Microsoft.UnitTests.Core.XUnit {
             while (_containers.TryDequeue(out container)) {
                 container.Dispose();
             }
+        }
+
+        private class TestExportProvider : IExportProvider {
+            private readonly CompositionContainer _compositionContainer;
+
+            public TestExportProvider(CompositionContainer compositionContainer) {
+                _compositionContainer = compositionContainer;
+            }
+
+            public void Dispose() => _compositionContainer.Dispose();
+            public T GetExportedValue<T>() => _compositionContainer.GetExportedValue<T>();
+            public IEnumerable<Lazy<T>> GetExports<T>() => _compositionContainer.GetExports<T>();
+            public IEnumerable<Lazy<T, TMetadataView>> GetExports<T, TMetadataView>() => _compositionContainer.GetExports<T, TMetadataView>();
         }
     }
 }

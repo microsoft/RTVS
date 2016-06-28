@@ -1,14 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -18,7 +21,17 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    public class RCompletionSourceTest {
+    public class RCompletionSourceTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+
+        public RCompletionSourceTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void BaseFunctions01() {
             List<CompletionSet> completionSets = new List<CompletionSet>();
@@ -366,7 +379,7 @@ aaa(a
             }
 
             CompletionSessionMock completionSession = new CompletionSessionMock(textView, completionSets, caretPosition);
-            RCompletionSource completionSource = new RCompletionSource(textBuffer);
+            RCompletionSource completionSource = new RCompletionSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
 
             completionSource.PopulateCompletionList(caretPosition, completionSession, completionSets, ast);
         }

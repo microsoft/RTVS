@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
@@ -132,9 +133,9 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
             return textBuffer.ContentType.TypeName.EndsWithIgnoreCase(" Signature Help");
         }
 
-        public static void AddBufferDisposedAction(this ITextBuffer textBuffer, Action<ITextBuffer> callback) {
-            if (EditorShell.HasShell) {
-                ITextDocumentFactoryService textDocumentFactoryService = EditorShell.Current.ExportProvider.GetExport<ITextDocumentFactoryService>().Value;
+        public static void AddBufferDisposedAction(this ITextBuffer textBuffer, ICoreShell shell, Action<ITextBuffer, ICoreShell> callback) {
+            if (shell != null) {
+                ITextDocumentFactoryService textDocumentFactoryService = shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
                 ITextDocument textDocument;
 
                 if (textDocumentFactoryService.TryGetTextDocument(textBuffer, out textDocument)) {
@@ -143,7 +144,7 @@ namespace Microsoft.Languages.Editor.EditorHelpers {
                         if (eventArgs.TextDocument == textDocument) {
                             textDocumentFactoryService.TextDocumentDisposed -= onDocumentDisposed;
 
-                            callback(textBuffer);
+                            callback(textBuffer, shell);
                         }
                     };
 

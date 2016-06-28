@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Shell;
@@ -22,7 +23,7 @@ namespace Microsoft.R.Editor.Tree {
     /// <summary>
     /// Asynchronous text change processing task
     /// </summary>
-    internal sealed partial class TreeUpdateTask : CancellableTask {
+    internal sealed class TreeUpdateTask : CancellableTask {
         #region Private members
 
         private static readonly Guid _treeUserId = new Guid("BE78E649-B9D4-4BC0-A332-F38A2B16CD10");
@@ -37,6 +38,8 @@ namespace Microsoft.R.Editor.Tree {
         /// Editor tree that task is servicing
         /// </summary>
         private EditorTree _editorTree;
+
+        private readonly ICoreShell _shell;
 
         /// <summary>
         /// Text buffer
@@ -75,12 +78,13 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         #region Constructors
-        public TreeUpdateTask(EditorTree editorTree) {
+        public TreeUpdateTask(EditorTree editorTree, ICoreShell shell) {
             _editorTree = editorTree;
-            if (EditorShell.HasShell) {
-                // Can be null in test cases
-                EditorShell.Current.Idle += OnIdle;
+            _shell = shell;
+            if (_shell != null) {
+                _shell.Idle += OnIdle;
             }
+            
         }
         #endregion
 
@@ -329,8 +333,9 @@ namespace Microsoft.R.Editor.Tree {
         /// Idle time event handler. Kicks background parsing if there are pending changes
         /// </summary>
         private void OnIdle(object sender, EventArgs e) {
-            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId && !EditorShell.Current.IsUnitTestEnvironment)
+            if (Thread.CurrentThread.ManagedThreadId != _ownerThreadId) {
                 throw new ThreadStateException("Method should only be called on the main thread");
+            }
 
             if (TextBuffer == null || TextBuffer.EditInProgress)
                 return;
@@ -442,7 +447,7 @@ namespace Microsoft.R.Editor.Tree {
                     if (async) {
                         // Post request to apply tree changes to the main thread.
                         // This must NOT block or else task will never enter 'RanToCompletion' state.
-                        EditorShell.DispatchOnUIThread(() => ApplyBackgroundProcessingResults());
+                        _shell.DispatchOnUIThread(ApplyBackgroundProcessingResults);
                     } else {
                         // When processing is synchronous, apply changes and fire events right away.
                         ApplyBackgroundProcessingResults();
@@ -605,8 +610,8 @@ namespace Microsoft.R.Editor.Tree {
                     Cancel();
 
                     _disposed = true;
-                    if (EditorShell.HasShell) {
-                        EditorShell.Current.Idle -= OnIdle;
+                    if (_shell != null) {
+                        _shell.Idle -= OnIdle;
                     }
                 }
                 base.Dispose(disposing);

@@ -21,7 +21,6 @@ namespace Microsoft.Languages.Editor.Composition {
 
         public ContentTypeImportComposer(ICompositionService cs)
             : base(cs) {
-            cs.SatisfyImportsOnce(this);
         }
 
         public ICollection<T> GetAll(IContentType contentType) {

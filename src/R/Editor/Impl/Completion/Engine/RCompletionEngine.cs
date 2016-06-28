@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.Languages.Editor.Composition;
@@ -14,21 +15,18 @@ using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
-using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Completion.Engine {
     internal static class RCompletionEngine {
-        private static IEnumerable<Lazy<IRCompletionListProvider>> _completionProviders;
-
         /// <summary>
         /// Provides list of completion entries for a given location in the AST.
         /// </summary>
-        /// <param name="tree">Document tree</param>
-        /// <param name="position">Caret position in the document</param>
+        /// <param name="context"></param>
         /// <param name="autoShownCompletion">True if completion is forced (like when typing Ctrl+Space)</param>
+        /// <param name="shell"></param>
         /// <returns>List of completion entries for a given location in the AST</returns>
-        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion) {
+        public static IReadOnlyCollection<IRCompletionListProvider> GetCompletionForLocation(RCompletionContext context, bool autoShownCompletion, ICoreShell shell) {
             List<IRCompletionListProvider> providers = new List<IRCompletionListProvider>();
 
             if (context.AstRoot.Comments.Contains(context.Position)) {
@@ -40,7 +38,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             string directory;
             if (CanShowFileCompletion(context.AstRoot, context.Position, out directory)) {
                 if (!string.IsNullOrEmpty(directory)) {
-                    providers.Add(new FilesCompletionProvider(directory));
+                    providers.Add(new FilesCompletionProvider(directory, shell));
                 }
                 return providers;
             }
@@ -86,41 +84,37 @@ namespace Microsoft.R.Editor.Completion.Engine {
             }
 
             if (IsInObjectMemberName(context.AstRoot.TextProvider, context.Position)) {
-                providers.Add(new WorkspaceVariableCompletionProvider());
+                providers.Add(new WorkspaceVariableCompletionProvider(shell));
                 return providers;
             }
 
             if (IsPackageListCompletion(context.TextBuffer, context.Position)) {
-                providers.Add(new PackagesCompletionProvider());
+                providers.Add(new PackagesCompletionProvider(shell));
             } else {
                 if (IsInFunctionArgumentName<FunctionCall>(context.AstRoot, context.Position)) {
-                    providers.Add(new ParameterNameCompletionProvider());
+                    providers.Add(new ParameterNameCompletionProvider(shell));
                 }
 
-                foreach (var p in CompletionProviders) {
+                foreach (var p in GetCompletionProviders(shell)) {
                     providers.Add(p.Value);
                 }
 
                 if (!context.IsInNameSpace()) {
-                    providers.Add(new PackagesCompletionProvider());
+                    providers.Add(new PackagesCompletionProvider(shell));
                 }
             }
 
             if (!context.IsInNameSpace()) {
-                providers.Add(new WorkspaceVariableCompletionProvider());
+                providers.Add(new WorkspaceVariableCompletionProvider(shell));
             }
 
             return providers;
         }
 
-        public static void Initialize() {
-            FunctionIndex.Initialize();
-        }
-
         public static bool CanShowFileCompletion(AstRoot ast, int position, out string directory) {
             TokenNode node = ast.GetNodeOfTypeFromPosition<TokenNode>(position);
             directory = null;
-            if ((node is TokenNode) && ((TokenNode)node).Token.TokenType == RTokenType.String) {
+            if (node != null && node.Token.TokenType == RTokenType.String) {
                 string text = node.Root.TextProvider.GetText(node);
                 // Bring file/folder completion when either string is empty or ends with /
                 // assuming that / specifies directory where files are.
@@ -132,14 +126,7 @@ namespace Microsoft.R.Editor.Completion.Engine {
             return false;
         }
 
-        private static IEnumerable<Lazy<IRCompletionListProvider>> CompletionProviders {
-            get {
-                if (_completionProviders == null) {
-                    _completionProviders = ComponentLocator<IRCompletionListProvider>.ImportMany();
-                }
-                return _completionProviders;
-            }
-        }
+        private static IEnumerable<Lazy<IRCompletionListProvider>> GetCompletionProviders(ICoreShell shell) => ComponentLocator<IRCompletionListProvider>.ImportMany(shell.CompositionService);
 
         internal static bool IsPackageListCompletion(ITextBuffer textBuffer, int position) {
             ITextSnapshot snapshot = textBuffer.CurrentSnapshot;

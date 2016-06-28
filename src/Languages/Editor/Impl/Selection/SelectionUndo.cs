@@ -15,41 +15,27 @@ namespace Microsoft.Languages.Editor.Selection {
     /// and/or view port position. For example, in automatic formatting.
     /// </summary>
     public sealed class SelectionUndo : IDisposable {
-        private ISelectionTracker _selectionTracker;
-        private ITextUndoTransaction _transaction;
+        private readonly ISelectionTracker _selectionTracker;
+        private readonly ITextUndoTransaction _transaction;
 
-        public SelectionUndo(ITextView textView, string transactionName) :
-            this(new SelectionTracker(textView), transactionName, true) {
-        }
+        public SelectionUndo(ISelectionTracker selectionTracker, ITextBufferUndoManagerProvider undoManagerProvider, string transactionName, bool automaticTracking) {
+            _selectionTracker = selectionTracker;
+            var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
 
-        public SelectionUndo(ITextView textView, string transactionName, bool automaticTracking) :
-            this(new SelectionTracker(textView), transactionName, automaticTracking) {
-        }
+            ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
+            _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
+            _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
 
-        public SelectionUndo(ISelectionTracker selectionTracker, string transactionName, bool automaticTracking) {
-            if (!EditorShell.Current.IsUnitTestEnvironment) {
-                _selectionTracker = selectionTracker;
-
-                var undoManagerProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
-                var undoManager = undoManagerProvider.GetTextBufferUndoManager(selectionTracker.TextView.TextBuffer);
-
-                ITextUndoTransaction innerTransaction = undoManager.TextBufferUndoHistory.CreateTransaction(transactionName);
-                _transaction = new TextUndoTransactionThatRollsBackProperly(innerTransaction);
-                _transaction.AddUndo(new StartSelectionTrackingUndoUnit(selectionTracker));
-
-                _selectionTracker.StartTracking(automaticTracking);
-            }
+            _selectionTracker.StartTracking(automaticTracking);
         }
 
         public void Dispose() {
-            if (!EditorShell.Current.IsUnitTestEnvironment) {
-                _selectionTracker.EndTracking();
+            _selectionTracker.EndTracking();
 
-                _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
+            _transaction.AddUndo(new EndSelectionTrackingUndoUnit(_selectionTracker));
 
-                _transaction.Complete();
-                _transaction.Dispose();
-            }
+            _transaction.Complete();
+            _transaction.Dispose();
         }
     }
 

@@ -25,7 +25,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Utility {
                 while (time < ms) {
                     TestScript.DoEvents();
                     VsAppShell.Current.DoIdle();
-                    EditorShell.Current.DoIdle();
 
                     Thread.Sleep(20);
                     time += 20;

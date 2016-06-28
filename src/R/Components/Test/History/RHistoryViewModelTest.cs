@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.Test.History {
     [ExcludeFromCodeCoverage]
     public class RHistoryViewModelTest : IAsyncLifetime {
         private readonly ContainerHostMethodFixture _containerHost;
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly IRHistory _history;
         private readonly IRHistoryWindowVisualComponent _historyVisualComponent;
         private IDisposable _containerDisposable;
@@ -44,7 +44,7 @@ namespace Microsoft.R.Components.Test.History {
             });
 
             _containerDisposable?.Dispose();
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 

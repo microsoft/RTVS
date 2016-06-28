@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Microsoft.Common.Core.Disposables;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
@@ -19,12 +20,15 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Signatures {
     sealed class SignatureHelpSource : ISignatureHelpSource {
-        private ITextBuffer _textBuffer;
+        private readonly DisposeToken _disposeToken;
+        private readonly ITextBuffer _textBuffer;
+        private readonly ICoreShell _shell;
 
-        public SignatureHelpSource(ITextBuffer textBuffer) {
+        public SignatureHelpSource(ITextBuffer textBuffer, ICoreShell shell) {
+            _disposeToken = DisposeToken.Create<SignatureHelpSource>();
             _textBuffer = textBuffer;
-            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer);
-
+            _shell = shell;
+            ServiceManager.AddService<SignatureHelpSource>(this, textBuffer, shell);
         }
 
         #region ISignatureHelpSource
@@ -37,7 +41,7 @@ namespace Microsoft.R.Editor.Signatures {
             if (document != null) {
                 if (!document.EditorTree.IsReady) {
                     document.EditorTree.InvokeWhenReady((p) => {
-                        var broker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+                        var broker = _shell.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
                         broker.DismissAllSessions((ITextView)p);
                         broker.TriggerSignatureHelp((ITextView)p);
                     }, session.TextView, this.GetType(), processNow: true);
@@ -63,9 +67,10 @@ namespace Microsoft.R.Editor.Signatures {
                 // First try user-defined function
                 functionInfo = ast.GetUserFunctionInfo(parametersInfo.FunctionName, position);
                 if (functionInfo == null) {
+                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Then try package functions
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
+                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, triggerSession, session.TextView);
                 }
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
@@ -83,7 +88,7 @@ namespace Microsoft.R.Editor.Signatures {
         }
 
         private void TriggerSignatureHelp(object o) {
-            SignatureHelp.TriggerSignatureHelp(o as ITextView);
+            SignatureHelp.TriggerSignatureHelp(o as ITextView, _shell);
         }
 
         public ISignature GetBestMatch(ISignatureHelpSession session) {
@@ -108,7 +113,7 @@ namespace Microsoft.R.Editor.Signatures {
         private ISignature CreateSignature(ISignatureHelpSession session,
                                        IFunctionInfo functionInfo, ISignatureInfo signatureInfo,
                                        ITrackingSpan span, AstRoot ast, int position) {
-            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo);
+            SignatureHelp sig = new SignatureHelp(session, _textBuffer, functionInfo.Name, string.Empty, signatureInfo, _shell);
             List<IParameter> paramList = new List<IParameter>();
 
             // Locus points in the pretty printed signature (the one displayed in the tooltip)
@@ -148,9 +153,8 @@ namespace Microsoft.R.Editor.Signatures {
 
         #region IDisposable
         public void Dispose() {
-            if (_textBuffer != null) {
+            if (_disposeToken.TryMarkDisposed()) {
                 ServiceManager.RemoveService<SignatureHelpSource>(_textBuffer);
-                _textBuffer = null;
             }
         }
         #endregion

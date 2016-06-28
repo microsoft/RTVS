@@ -14,7 +14,7 @@ using Microsoft.Common.Wpf.Threading;
 using Microsoft.UnitTests.Core.Threading;
 
 namespace Microsoft.R.Components.Test.Fakes.Shell {
-    public sealed class TestCoreShell : ICoreShell, IMainThread {
+    public class TestCoreShell : ICoreShell, IMainThread {
         private readonly CompositionContainer _container;
 
         public TestCoreShell(CompositionContainer container) {

@@ -9,20 +9,30 @@ using System.IO;
 using System.Linq;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
-using Xunit;
 
 namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
     public class PackageIndexTest {
+        private readonly IExportProvider _exportProvider;
+        private readonly ICoreShell _shell;
+
+        public PackageIndexTest(RSupportMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _shell = _exportProvider.GetExportedValue<ICoreShell>();
+        }
+
         [Test]
         [Category.R.Completion]
         public void BuildPackageIndexTest() {
-            IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages.AsList();
+            var packageIndex = new PackageIndex(_shell);
+            IEnumerable<IPackageInfo> basePackages = packageIndex.BasePackages.AsList();
             string[] packageNames = {
                 "base",
                 "boot",
@@ -64,7 +74,7 @@ namespace Microsoft.R.Support.Test.Packages {
                 IPackageInfo info = basePackages.FirstOrDefault(x => x.Name == name);
                 info.Should().NotBeNull();
 
-                IPackageInfo pi1 = PackageIndex.GetPackageByName(info.Name);
+                IPackageInfo pi1 = packageIndex.GetPackageByName(info.Name);
                 pi1.Should().NotBeNull();
 
                 pi1.Name.Should().Be(info.Name);
@@ -75,10 +85,10 @@ namespace Microsoft.R.Support.Test.Packages {
         [Category.R.Completion]
         public void PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
+            var packageIndex = new PackageIndex(_shell);
+            IEnumerable<IPackageInfo> basePackages = packageIndex.BasePackages;
 
-            IEnumerable<IPackageInfo> basePackages = PackageIndex.BasePackages;
-
-            IPackageInfo pi = PackageIndex.GetPackageByName("base");
+            IPackageInfo pi = packageIndex.GetPackageByName("base");
             pi.Description.Should().Be("Base R functions.");
         }
 
@@ -94,7 +104,7 @@ namespace Microsoft.R.Support.Test.Packages {
 
             installPath.Should().Be(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath));
 
-            var collection = new UserPackagesCollection();
+            var collection = new UserPackagesCollection(_exportProvider.GetExportedValue<ICoreShell>());
             collection.Packages.Should().NotBeNull();
 
             IEnumerator en = collection.Packages.GetEnumerator();

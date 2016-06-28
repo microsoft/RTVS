@@ -314,7 +314,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
         /// <param name="textBuffer">Text buffer</param>
         /// <returns>Undo action instance</returns>
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
-            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: true);
+            return new CompoundUndoAction(textView, this, addRollbackOnCancel: true);
         }
         #endregion
 

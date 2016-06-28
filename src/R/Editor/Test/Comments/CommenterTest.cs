@@ -6,18 +6,31 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Comments;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using Xunit;
 
 namespace Microsoft.R.Editor.Test.Comments {
     [ExcludeFromCodeCoverage]
     [Category.R.Commenting]
-    public class CommenterTest {
+    public class CommenterTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
+
+        public CommenterTest(REditorMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void Commenter_CommentTest01() {
             string original =
@@ -28,7 +41,7 @@ x <- 2
             ITextView textView = TextViewTest.MakeTextView(original, new TextRange(2, 0));
             ITextBuffer textBuffer = textView.TextBuffer;
 
-            var command = new CommentCommand(textView, textBuffer);
+            var command = new CommentCommand(textView, textBuffer, _editorShell);
             CommandStatus status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK);
             status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -56,7 +69,7 @@ x <- 2
             ITextView textView = TextViewTest.MakeTextView(original, new TextRange(8, 8));
             ITextBuffer textBuffer = textView.TextBuffer;
 
-            var command = new CommentCommand(textView, textBuffer);
+            var command = new CommentCommand(textView, textBuffer, _editorShell);
             CommandStatus status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK);
             status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -83,7 +96,7 @@ x <- 2
             ITextView textView = TextViewTest.MakeTextView(original, new TextRange(2, 0));
             ITextBuffer textBuffer = textView.TextBuffer;
 
-            var command = new UncommentCommand(textView, textBuffer);
+            var command = new UncommentCommand(textView, textBuffer, _editorShell);
             CommandStatus status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK);
             status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -110,7 +123,7 @@ x <- 2
             ITextView textView = TextViewTest.MakeTextView(original, new TextRange(8, 8));
             ITextBuffer textBuffer = textView.TextBuffer;
 
-            var command = new UncommentCommand(textView, textBuffer);
+            var command = new UncommentCommand(textView, textBuffer, _editorShell);
             CommandStatus status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.UNCOMMENT_BLOCK);
             status.Should().Be(CommandStatus.SupportedAndEnabled);
 

@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Constants;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text.Editor;
@@ -18,14 +19,14 @@ namespace Microsoft.Languages.Editor.Application.Controller {
         private ITextBufferUndoManager _undoManager;
         private BraceCompletionCommandTarget _braceCompletionTarget;
 
-        public void Initialize(ITextView view, IEditorOperations editorOperations, ITextBufferUndoManager undoManager) {
+        public void Initialize(ITextView view, IEditorOperations editorOperations, ITextBufferUndoManager undoManager, ICoreShell coreShell) {
             Debug.Assert(view != null, "view must not be null");
             Debug.Assert(editorOperations != null, "editor operations must not be null");
 
             _view = view;
             _editorOperations = editorOperations;
             _undoManager = undoManager;
-            _braceCompletionTarget = new BraceCompletionCommandTarget(view);
+            _braceCompletionTarget = new BraceCompletionCommandTarget(view, coreShell);
         }
 
         #region ICommandTarget Members

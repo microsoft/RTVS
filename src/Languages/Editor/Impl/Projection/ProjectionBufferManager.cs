@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
@@ -24,6 +25,7 @@ namespace Microsoft.Languages.Editor.Projection {
         public ProjectionBufferManager(ITextBuffer diskBuffer,
                                        IProjectionBufferFactoryService projectionBufferFactoryService,
                                        IContentTypeRegistryService contentTypeRegistryService,
+                                       ICoreShell coreShell,
                                        string topLevelContentTypeName,
                                        string secondaryContentTypeName) {
             DiskBuffer = diskBuffer;
@@ -37,8 +39,8 @@ namespace Microsoft.Languages.Editor.Projection {
             contentType = _contentTypeRegistryService.GetContentType(secondaryContentTypeName);
             ContainedLanguageBuffer = projectionBufferFactoryService.CreateProjectionBuffer(_editResolver, new List<object>(0), ProjectionBufferOptions.WritableLiteralSpans, contentType);
 
-            ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer);
-            ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer);
+            ServiceManager.AddService<IProjectionBufferManager>(this, DiskBuffer, coreShell);
+            ServiceManager.AddService<IProjectionBufferManager>(this, ViewBuffer, coreShell);
         }
 
         public static IProjectionBufferManager FromTextBuffer(ITextBuffer textBuffer) {

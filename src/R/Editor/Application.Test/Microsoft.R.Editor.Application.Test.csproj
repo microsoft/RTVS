@@ -136,21 +136,21 @@
     <Compile Include="Completion\ProvisionalTextTest.cs" />
     <Compile Include="Documentation\SelectionTest.cs" />
     <Compile Include="EditorAppTestFilesFixture.cs" />
+    <Compile Include="EditorHostMethodFixture.cs" />
+    <Compile Include="EditorScript.cs" />
     <Compile Include="Formatting\FormatDocumentTest.cs" />
     <Compile Include="Formatting\FormatSelectionTest.cs" />
     <Compile Include="Formatting\SmartIndentTest.cs" />
     <Compile Include="Formatting\AutoFormatTest.cs" />
+    <Compile Include="IEditorScript.cs" />
     <Compile Include="Markdown\RmdClassificationTest.cs" />
     <Compile Include="Markdown\MarkdownRCompletionTest.cs" />
     <Compile Include="Outline\OutlineTest.cs" />
+    <Compile Include="REditorMefCatalogFixture.cs" />
     <Compile Include="Selection\SelectionTest.cs" />
     <Compile Include="Signatures\SignatureTest.cs" />
     <Compile Include="SuggestedActions\SmartTagsTest.cs" />
-    <Compile Include="TestShell\EditorWindow.cs" />
     <Compile Include="Completion\IntellisenseTest.cs" />
-    <Compile Include="TestShell\Navigation.cs" />
-    <Compile Include="TestShell\TestScript.cs" />
-    <Compile Include="TestShell\Typing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Typing\TypeFileTest.cs" />
     <Compile Include="Validation\ErrorTagTest.cs" />
@@ -172,7 +172,9 @@
       <StrongName>StrongName</StrongName>
     </FilesToSign>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="TestShell\" />
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.Targets" />
   <Import Project="$(SourceDirectory)R.Build.Version.targets" />

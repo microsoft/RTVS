@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
 using Microsoft.VisualStudio.Text;
@@ -17,17 +18,21 @@ namespace Microsoft.R.Editor.Outline {
     [Export(typeof(ITaggerProvider))]
     [TagType(typeof(IOutliningRegionTag))]
     [ContentType(RContentTypeDefinition.ContentType)]
-    internal sealed class OutliningTaggerProvider : ITaggerProvider
-    {
+    internal sealed class OutliningTaggerProvider : ITaggerProvider {
+        private readonly IEditorShell _shell;
+
+        [ImportingConstructor]
+        public OutliningTaggerProvider(IEditorShell shell) {
+            _shell = shell;
+        }
+
         #region ITaggerProvider
-        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
-        {
+        public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag {
             var tagger = ServiceManager.GetService<ROutliningTagger>(buffer);
-            if (tagger == null)
-            {
+            if (tagger == null) {
                 var document = ServiceManager.GetService<REditorDocument>(buffer);
                 if (document != null)
-                    tagger = new ROutliningTagger(document);
+                    tagger = new ROutliningTagger(document, _shell);
             }
             return tagger as ITagger<T>;
         }

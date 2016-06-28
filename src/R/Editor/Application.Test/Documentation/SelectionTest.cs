@@ -1,20 +1,34 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Selection {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class DocumentationTest {
+    public class DocumentationTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
+
+        public DocumentationTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+        
         [Test]
         [Category.Interactive]
-        public void InsertRoxygenBlock() {
+        public async Task InsertRoxygenBlock() {
             string content =
 @"
 x <- function(a,b,c) { }
@@ -33,9 +47,9 @@ x <- function(a,b,c) { }
 x <- function(a,b,c) { }
 ";
 
-            using (var script = new TestScript(content, RContentTypeDefinition.ContentType)) {
+            using (var script = await _editorHost.StartScript(_exportProvider, content, RContentTypeDefinition.ContentType)) {
                 script.Type("###");
-                var actual = EditorWindow.TextBuffer.CurrentSnapshot.GetText();
+                var actual = script.TextBuffer.CurrentSnapshot.GetText();
                 actual.Should().Be(expected);
             }
         }

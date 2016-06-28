@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
@@ -22,6 +23,7 @@ using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -31,6 +33,7 @@ namespace Microsoft.R.Editor.Document {
     /// Main editor document for the R language
     /// </summary>
     public class REditorDocument : IREditorDocument {
+        private readonly ICoreShell _shell;
         private readonly ITextDocumentFactoryService _textDocumentFactoryService;
 
         #region IEditorDocument
@@ -83,22 +86,23 @@ namespace Microsoft.R.Editor.Document {
         private TreeValidator _validator;
 
         #region Constructors
-        public REditorDocument(ITextBuffer textBuffer) {
-            _textDocumentFactoryService = EditorShell.Current.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
+        public REditorDocument(ITextBuffer textBuffer, ICoreShell shell) {
+            _shell = shell;
+            _textDocumentFactoryService = _shell.ExportProvider.GetExportedValue<ITextDocumentFactoryService>();
             _textDocumentFactoryService.TextDocumentDisposed += OnTextDocumentDisposed;
 
             this.TextBuffer = textBuffer;
             IsClosed = false;
 
-            ServiceManager.AddService<REditorDocument>(this, TextBuffer);
+            ServiceManager.AddService(this, TextBuffer, shell);
 
-            _editorTree = new EditorTree(textBuffer);
+            _editorTree = new EditorTree(textBuffer, shell);
             if (REditorSettings.SyntaxCheckInRepl) {
-                _validator = new TreeValidator(this.EditorTree);
+                _validator = new TreeValidator(EditorTree, shell);
             }
 
             _editorTree.Build();
-            RCompletionEngine.Initialize();
+            _shell.ExportProvider.GetExportedValue<IFunctionIndex>().Initialize();
         }
         #endregion
 

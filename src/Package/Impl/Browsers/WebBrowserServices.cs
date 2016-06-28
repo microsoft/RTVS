@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Browsers {
             if (!string.IsNullOrEmpty(url)) {
                 IdleTimeAction.Create(() => {
                     OpenVsBrowser(role, url);
-                }, 100, typeof(WebBrowserServices));
+                }, 100, typeof(WebBrowserServices), VsAppShell.Current);
             }
         }
 

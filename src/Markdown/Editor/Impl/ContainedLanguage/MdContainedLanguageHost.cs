@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.EditorHelpers;
@@ -20,6 +21,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
     /// </summary>
     public class MdContainedLanguageHost : IContainedLanguageHost {
         private readonly ITextBuffer _textBuffer;
+        private readonly ICoreShell _coreShell;
         private IEditorDocument _document;
 
         /// <summary>
@@ -27,13 +29,15 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         /// </summary>
         /// <param name="document">Markdown editor document</param>
         /// <param name="textBuffer">Contained language text buffer</param>
-        public MdContainedLanguageHost(IEditorDocument document, ITextBuffer textBuffer) {
+        /// <param name="coreShell"></param>
+        public MdContainedLanguageHost(IEditorDocument document, ITextBuffer textBuffer, ICoreShell coreShell) {
             _textBuffer = textBuffer;
+            _coreShell = coreShell;
 
             _document = document;
             _document.DocumentClosing += OnDocumentClosing;
 
-            ServiceManager.AddService<IContainedLanguageHost>(this, textBuffer);
+            ServiceManager.AddService<IContainedLanguageHost>(this, textBuffer, coreShell);
         }
 
         private void OnDocumentClosing(object sender, EventArgs e) {
@@ -87,7 +91,7 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
             if (controller != null && controller.ChainedController != null) {
                 return controller.ChainedController;
             }
-            return CommandTargetProxy.GetProxyTarget(textView);
+            return CommandTargetProxy.GetProxyTarget(textView, _coreShell);
         }
     }
 }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
@@ -40,11 +41,12 @@ namespace Microsoft.R.Editor.Completion {
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker)
-            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker) {
+            ISignatureHelpBroker signatureBroker,
+            ICoreShell shell)
+            : base(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell) {
             _textBuffer = subjectBuffers[0];
 
-            ServiceManager.AddService<RCompletionController>(this, TextView);
+            ServiceManager.AddService<RCompletionController>(this, TextView, shell);
         }
 
         public override void Detach(ITextView textView) {
@@ -75,12 +77,13 @@ namespace Microsoft.R.Editor.Completion {
             IList<ITextBuffer> subjectBuffers,
             ICompletionBroker completionBroker,
             IQuickInfoBroker quickInfoBroker,
-            ISignatureHelpBroker signatureBroker) {
-            RCompletionController completionController = null;
+            ISignatureHelpBroker signatureBroker,
+            ICoreShell shell) {
+            RCompletionController completionController;
 
             completionController = ServiceManager.GetService<RCompletionController>(textView);
             if (completionController == null) {
-                completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker);
+                completionController = new RCompletionController(textView, subjectBuffers, completionBroker, quickInfoBroker, signatureBroker, shell);
             }
 
             return completionController;
@@ -291,7 +294,7 @@ namespace Microsoft.R.Editor.Completion {
                 // Check if caret moved into a different functions such as when
                 // user types a sequence of nested function calls. If so,
                 // dismiss current signature session and start a new one.
-                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer)) {
+                if (!SignatureHelper.IsSameSignatureContext(TextView, _textBuffer, SignatureBroker)) {
                     DismissAllSessions();
                     TriggerSignatureHelp();
                 }
@@ -395,30 +398,6 @@ namespace Microsoft.R.Editor.Completion {
         public override void TriggerSignatureHelp() {
             DismissAllSessions();
             SignatureBroker.TriggerSignatureHelp(TextView);
-        }
-
-        private async Task<bool> IsFunction(string name) {
-            if (Keywords.IsKeyword(name)) {
-                return false;
-            }
-
-            string expression = $"tryCatch(is.function({name}), error = function(e) {{ }})";
-            AstRoot ast = RParser.Parse(expression);
-            if (ast.Errors.Count > 0) {
-                return false;
-            }
-
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            IRSession session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
-            if (session != null) {
-                using (IRSessionEvaluation eval = await session.BeginEvaluationAsync()) {
-                    try {
-                        return await eval.EvaluateAsync<bool>(expression, REvaluationKind.Normal);
-                    } catch (RException) {
-                    }
-                }
-            }
-            return false;
         }
 
         private bool TryInsertRoxygenBlock() {

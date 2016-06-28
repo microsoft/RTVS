@@ -5,6 +5,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
@@ -24,6 +25,12 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
     [Export(typeof(IVsInteractiveWindowOleCommandTargetProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class ReplCommandTargetProvider : IVsInteractiveWindowOleCommandTargetProvider {
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public ReplCommandTargetProvider(ICoreShell shell) {
+            _shell = shell;
+        }
 
         public IOleCommandTarget GetCommandTarget(IWpfTextView textView, IOleCommandTarget nextTarget) {
             IOleCommandTarget target = ServiceManager.GetService<IOleCommandTarget>(textView);
@@ -34,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 target = VsAppShell.Current.TranslateToHostCommandTarget(textView, controller) as IOleCommandTarget;
                 Debug.Assert(target != null);
 
-                ServiceManager.AddService(target, textView);
+                ServiceManager.AddService(target, textView, _shell);
 
                 // Wrap next OLE target in the chain into ICommandTarget so we can have 
                 // chain like: OLE Target -> Shim -> ICommandTarget -> Shim -> Next OLE target
@@ -88,7 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 if (tb.ContentType.IsOfType(RContentTypeDefinition.ContentType)) {
                     IREditorDocument doc = REditorDocument.TryFromTextBuffer(tb);
                     if (doc == null) {
-                        var editorDocument = new REditorDocument(tb);
+                        var editorDocument = new REditorDocument(tb, _shell);
                     }
                 }
             }

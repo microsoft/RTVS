@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
     [Export(typeof(IVariablesProvider))]
     [ContentType(RContentTypeDefinition.ContentType)]
     internal sealed class WorkspaceVariableProvider : RSessionChangeWatcher, IVariablesProvider {
-        private static readonly char[] _selectors = new char[] { '$', '@' };
+        private static readonly char[] _selectors = { '$', '@' };
         private const int _maxWaitTime = 2000;
         private const int _maxResults = 100;
 
@@ -34,6 +34,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         /// </summary>
         private Dictionary<string, IRSessionDataObject> _topLevelVariables = new Dictionary<string, IRSessionDataObject>();
         private bool _updating;
+
+        [ImportingConstructor]
+        public WorkspaceVariableProvider(IRSessionProvider sessionProvider) : base(sessionProvider) { }
 
         #region IVariablesProvider
         /// <summary>
@@ -82,7 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // May be a package object line mtcars$
                 variableName = TrimToTrailingSelector(variableName);
-                var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+                var sessionProvider = SessionProvider;
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 try {
@@ -136,7 +139,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             try {
                 _updating = true;
                 // May be null in tests
-                var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValueOrDefault<IRSessionProvider>();
+                var sessionProvider = SessionProvider;
                 var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
                 if (session.IsHostRunning) {
                     var stackFrames = await session.TracebackAsync();

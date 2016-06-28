@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -16,8 +17,15 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Name("R Completion Source Provider")]
     [Order(Before = "default")]
     internal class RCompletionSourceProvider : ICompletionSourceProvider {
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public RCompletionSourceProvider(ICoreShell shell) {
+            _shell = shell;
+        }
+
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer) {
-            return new RCompletionSource(textBuffer);
+            return new RCompletionSource(textBuffer, _shell);
         }
     }
 }

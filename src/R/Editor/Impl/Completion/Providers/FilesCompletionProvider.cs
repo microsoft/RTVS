@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Completion.Definitions;
@@ -22,6 +23,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// Provides list of files and folder in the current directory
     /// </summary>
     public class FilesCompletionProvider : IRCompletionListProvider {
+        private readonly ICoreShell _shell;
+
         [Import(AllowDefault = true)]
         private IImagesProvider ImagesProvider { get; set; }
 
@@ -32,12 +35,13 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private string _directory;
         private string _cachedUserDirectory;
 
-        public FilesCompletionProvider(string directoryCandidate) {
+        public FilesCompletionProvider(string directoryCandidate, ICoreShell shell) {
+            _shell = shell;
             if(directoryCandidate == null) {
                 throw new ArgumentNullException(nameof(directoryCandidate));
             }
 
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+            _shell.CompositionService.SatisfyImportsOnce(this);
             _directory = ExtractDirectory(directoryCandidate);
 
             if (_directory.StartsWithOrdinal("~\\")) {
@@ -52,7 +56,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic);
+            ImageSource folderGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphClosedFolder, StandardGlyphItem.GlyphItemPublic, _shell);
             string directory = null;
             string userDirectory = null;
 

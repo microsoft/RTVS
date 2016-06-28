@@ -26,8 +26,6 @@ namespace Microsoft.Markdown.Editor.Classification.MD {
             ContentTypeRegistryService = contentTypeRegistryService;
             ClassificationNameProviders = classificationNameProviders;
             ClassificationRegistryService = classificationRegistryService;
-
-            ServiceManager.AddService<MdClassifier>(this, textBuffer);
         }
 
 

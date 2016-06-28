@@ -12,7 +12,6 @@ using Microsoft.Html.Core.Tree.Nodes;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
@@ -20,9 +19,11 @@ namespace Microsoft.R.Support.Help.Packages {
     /// </summary>
     public sealed class PackageInfo : NamedItemInfo, IPackageInfo {
         private string _description;
+        private readonly IFunctionIndex _functionIndex;
 
-        public PackageInfo(string name, string installPath) :
+        public PackageInfo(IFunctionIndex functionIndex, string name, string installPath) :
             base(name, NamedItemType.Package) {
+            _functionIndex = functionIndex;
             InstallPath = installPath;
         }
 
@@ -51,7 +52,7 @@ namespace Microsoft.R.Support.Help.Packages {
         /// </summary>
         public IReadOnlyCollection<INamedItemInfo> Functions {
             get {
-                IReadOnlyCollection<INamedItemInfo> functions = FunctionIndex.GetPackageFunctions(this.Name);
+                IReadOnlyCollection<INamedItemInfo> functions = _functionIndex.GetPackageFunctions(this.Name);
                 if (functions == null || functions.Count == 0) {
                     functions = LoadFunctionInfoFromPackageHelpIndex();
                 }

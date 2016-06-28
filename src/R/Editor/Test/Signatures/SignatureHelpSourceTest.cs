@@ -5,12 +5,15 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -20,14 +23,22 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
-    [Collection(CollectionNames.NonParallel)]
     public class SignatureHelpSourceTest : IAsyncLifetime {
-        public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync();
+        private readonly IExportProvider _exportProvider;
+        private readonly IFunctionIndex _functionIndex;
+
+        public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
-        public Task DisposeAsync() {
-            return FunctionIndexUtility.DisposeAsync();
+        public Task InitializeAsync() {
+            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+        }
+
+        public async Task DisposeAsync() {
+            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            _exportProvider.Dispose();
         }
 
         [Test]
@@ -37,7 +48,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             AstRoot ast = RParser.Parse(content);
             int caretPosition = 15;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 
@@ -62,7 +73,7 @@ x( )
             AstRoot ast = RParser.Parse(content);
             int caretPosition = content.IndexOf("( )")+1;
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer);
+            SignatureHelpSource signatureHelpSource = new SignatureHelpSource(textBuffer, _exportProvider.GetExportedValue<ICoreShell>());
             SignatureHelpSessionMock signatureHelpSession = new SignatureHelpSessionMock(textBuffer, caretPosition);
             List<ISignature> signatures = new List<ISignature>();
 

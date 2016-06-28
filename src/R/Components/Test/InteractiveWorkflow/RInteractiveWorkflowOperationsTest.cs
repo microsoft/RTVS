@@ -4,12 +4,13 @@
 using System.ComponentModel.Composition.Hosting;
 using System.Threading.Tasks;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     public class RInteractiveWorkflowOperationsTest : IAsyncLifetime  {
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _workflow;
         private IInteractiveWindowVisualComponent _workflowComponent;
 

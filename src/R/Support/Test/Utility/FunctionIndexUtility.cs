@@ -4,22 +4,22 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Settings;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class FunctionIndexUtility {
-        public static Task<IFunctionInfo> GetFunctionInfoAsync(string functionName) {
+        public static Task<IFunctionInfo> GetFunctionInfoAsync(IFunctionIndex functionIndex, string functionName) {
             FunctionRdDataProvider.HostStartTimeout = 10000;
 
             var tcs = new TaskCompletionSource<IFunctionInfo>();
-            var result = FunctionIndex.GetFunctionInfo(functionName, o => {
-                var r = FunctionIndex.GetFunctionInfo(functionName);
+            var result = functionIndex.GetFunctionInfo(functionName, o => {
+                var r = functionIndex.GetFunctionInfo(functionName);
                 tcs.TrySetResult(r);
             });
 
@@ -30,19 +30,19 @@ namespace Microsoft.R.Support.Test.Utility {
             return tcs.Task;
         }
 
-        public static Task InitializeAsync() {
+        public static Task InitializeAsync(IFunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
-            FunctionIndex.Initialize();
-            return FunctionIndex.BuildIndexAsync();
+            functionIndex.Initialize();
+            return functionIndex.BuildIndexAsync();
         } 
 
-        public static async Task DisposeAsync() {
-            IRSessionProvider sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+        public static async Task DisposeAsync(IFunctionIndex functionIndex, IExportProvider exportProvider) {
+            IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
 
-            FunctionIndex.Terminate();
+            functionIndex.Terminate();
         } 
     }
 }

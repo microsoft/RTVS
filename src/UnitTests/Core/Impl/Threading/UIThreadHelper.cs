@@ -13,7 +13,6 @@ using System.Threading.Tasks.Dataflow;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.UnitTests.Core.Threading {
     [ExcludeFromCodeCoverage]
@@ -115,6 +114,41 @@ namespace Microsoft.UnitTests.Core.Threading {
         public async Task<Exception> WaitForNextExceptionAsync(CancellationToken cancellationToken = default (CancellationToken)) {
             var args = await EventTaskSources.Dispatcher.UnhandledException.Create(_application.Dispatcher, e => e.Handled = true, cancellationToken);
             return args.Exception;
+        }
+
+        public void DoEvents() {
+            if (TaskUtilities.IsOnBackgroundThread()) {
+                DoEventsAsync().WaitAndUnwrapExceptions();
+                return;
+            }
+
+            DispatcherFrame frame = new DispatcherFrame();
+            _application.Dispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+            Dispatcher.PushFrame(frame);
+        }
+
+        public void DoEvents(int ms) {
+            if (ms < 0) {
+                throw new ArgumentOutOfRangeException(nameof(ms));
+            }
+
+            if (ms == 0) {
+                DoEvents();
+            } else if (TaskUtilities.IsOnBackgroundThread()) {
+                Task.Delay(ms)
+                    .ContinueWith(t => DoEventsAsync())
+                    .Wait();
+            } else {
+                DispatcherFrame frame = new DispatcherFrame();
+                Task.Delay(ms)
+                    .ContinueWith(t => _application.Dispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame));
+                Dispatcher.PushFrame(frame);
+            }
+        }
+
+        private object ExitFrame(object f) {
+            ((DispatcherFrame)f).Continue = false;
+            return null;
         }
 
         public Task DoEventsAsync() {

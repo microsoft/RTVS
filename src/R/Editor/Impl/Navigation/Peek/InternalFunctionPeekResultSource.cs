@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.ContentTypes;
@@ -19,13 +20,15 @@ using Microsoft.VisualStudio.Utilities;
 namespace Microsoft.R.Editor.Navigation.Peek {
     internal sealed class InternalFunctionPeekResultSource : IPeekResultSource {
         private readonly InternalFunctionPeekItem _peekItem;
+        private readonly ICoreShell _shell;
         private Exception _exception;
         private IDocumentPeekResult _result;
 
         internal Task<IDocumentPeekResult> LookupTask { get; }
 
-        public InternalFunctionPeekResultSource(string sourceFileName, Span sourceSpan, string functionName, InternalFunctionPeekItem peekItem) {
+        public InternalFunctionPeekResultSource(string sourceFileName, Span sourceSpan, string functionName, InternalFunctionPeekItem peekItem, ICoreShell shell) {
             _peekItem = peekItem;
+            _shell = shell;
             // Start asynchronous function fetching so by the time FindResults 
             // is called the task may be already completed or close to that.
             LookupTask = FindFunctionAsync(sourceFileName, sourceSpan, functionName);
@@ -67,12 +70,12 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                         // Editor opens external items as plain text. When file opens, change content type to R.
                         IdleTimeAction.Create(() => {
                             if (_result.Span.IsDocumentOpen) {
-                                var rs = EditorShell.Current.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                                var rs = _shell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
                                 try { File.Delete(tempFile); } catch(IOException) { } catch(AccessViolationException) { }
                             }
-                        }, 50, this.GetType());
+                        }, 50, GetType(), _shell);
 
                         return _result;
                      }
@@ -84,7 +87,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
         }
 
         private async Task<string> GetFunctionCode(string functionName) {
-            var sessionProvider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var sessionProvider = _shell.ExportProvider.GetExportedValue<IRSessionProvider>();
             var rSession = sessionProvider.GetInteractiveWindowRSession();
             string functionCode = await rSession.GetFunctionCodeAsync(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {

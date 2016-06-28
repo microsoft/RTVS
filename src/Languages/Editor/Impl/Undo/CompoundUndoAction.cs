@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
@@ -20,10 +19,10 @@ namespace Microsoft.Languages.Editor.Undo {
         private bool _addRollbackOnCancel;
         private bool _discardChanges = true;
 
-        public CompoundUndoAction(ITextView textView, ITextBuffer textBuffer, bool addRollbackOnCancel = true) {
-            if (!EditorShell.Current.IsUnitTestEnvironment) {
-                IEditorOperationsFactoryService operationsService = EditorShell.Current.ExportProvider.GetExport<IEditorOperationsFactoryService>().Value;
-                ITextBufferUndoManagerProvider undoProvider = EditorShell.Current.ExportProvider.GetExport<ITextBufferUndoManagerProvider>().Value;
+        public CompoundUndoAction(ITextView textView, IEditorShell editorShell, bool addRollbackOnCancel = true) {
+            if (!editorShell.IsUnitTestEnvironment) {
+                IEditorOperationsFactoryService operationsService = editorShell.ExportProvider.GetExportedValue<IEditorOperationsFactoryService>();
+                ITextBufferUndoManagerProvider undoProvider = editorShell.ExportProvider.GetExportedValue<ITextBufferUndoManagerProvider>();
 
                 _editorOperations = operationsService.GetEditorOperations(textView);
                 _undoManager = undoProvider.GetTextBufferUndoManager(_editorOperations.TextView.TextBuffer);

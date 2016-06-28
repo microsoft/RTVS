@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help.Definitions;
@@ -23,13 +23,19 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// to a function name, user can choose either subset() or subset=
     /// </summary>
     public class ParameterNameCompletionProvider : IRCompletionListProvider {
+        private readonly ICoreShell _shell;
+
+        public ParameterNameCompletionProvider(ICoreShell shell) {
+            _shell = shell;
+        }
+
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
             FunctionCall funcCall;
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic);
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupValueType, StandardGlyphItem.GlyphItemPublic, _shell);
 
             // Safety checks
             if (!ShouldProvideCompletions(context, out funcCall)) {
@@ -82,7 +88,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// Extracts information on the current function in the completion context, if any.
         /// </summary>
         /// <returns></returns>
-        private static IFunctionInfo GetFunctionInfo(RCompletionContext context) {
+        private IFunctionInfo GetFunctionInfo(RCompletionContext context) {
             // Retrieve parameter positions from the current text buffer snapshot
             IFunctionInfo functionInfo = null;
 
@@ -90,9 +96,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
             if (parametersInfo != null) {
                 // User-declared functions take priority
                 functionInfo = context.AstRoot.GetUserFunctionInfo(parametersInfo.FunctionName, context.Position);
-                if (functionInfo == null)
+                if (functionInfo == null) {
+                    var functionIndex = _shell.ExportProvider.GetExportedValue<IFunctionIndex>();
                     // Get collection of function signatures from documentation (parsed RD file)
-                    functionInfo = FunctionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                    functionInfo = functionIndex.GetFunctionInfo(parametersInfo.FunctionName, o => { }, context.Session.TextView);
+                }
             }
             return functionInfo;
         }

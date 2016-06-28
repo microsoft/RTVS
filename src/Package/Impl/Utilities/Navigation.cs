@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         }
 
         public static bool NavigateToTextView(IVsTextView vsTextView, int start, int length) {
-            IVsEditorAdaptersFactoryService adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import();
+            IVsEditorAdaptersFactoryService adapterService = ComponentLocator<IVsEditorAdaptersFactoryService>.Import(VsAppShell.Current.CompositionService);
             if (adapterService != null) {
                 ITextView textView = adapterService.GetWpfTextView(vsTextView);
 

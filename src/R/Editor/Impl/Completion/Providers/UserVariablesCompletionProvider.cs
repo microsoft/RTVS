@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
@@ -20,14 +21,20 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     [Export(typeof(IRCompletionListProvider))]
     public class UserVariablesCompletionProvider : IRCompletionListProvider {
+        private readonly ICoreShell _coreShell;
+
+        [ImportingConstructor]
+        public UserVariablesCompletionProvider(ICoreShell coreShell) {
+            _coreShell = coreShell;
+        }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
-            ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic);
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _coreShell);
+            ImageSource variableGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupVariable, StandardGlyphItem.GlyphItemPublic, _coreShell);
 
             var ast = context.AstRoot;
             // First try simple scope like in 'for(x in 1:10) x|'

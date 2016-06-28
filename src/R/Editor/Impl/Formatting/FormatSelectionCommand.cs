@@ -5,6 +5,7 @@ using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Settings;
@@ -15,8 +16,8 @@ namespace Microsoft.R.Editor.Formatting {
     internal class FormatSelectionCommand : EditingCommand {
         ITextBuffer _textBuffer;
 
-        internal FormatSelectionCommand(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION)) {
+        internal FormatSelectionCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
+            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATSELECTION)) {
             _textBuffer = textBuffer;
         }
 
@@ -33,8 +34,10 @@ namespace Microsoft.R.Editor.Formatting {
                 RangeFormatter.FormatRange(TextView,
                                            spanToFormat.Snapshot.TextBuffer,
                                            new TextRange(spanToFormat.Start.Position, spanToFormat.Length),
-                                           REditorSettings.FormatOptions);
+                                           REditorSettings.FormatOptions,
+                                           EditorShell);
             }
+
             return new CommandResult(CommandStatus.Supported, 0);
         }
 

@@ -67,7 +67,7 @@ namespace Microsoft.Languages.Editor.Test.Shell {
         }
 
         public ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer) {
-            return new CompoundUndoAction(textView, textBuffer, addRollbackOnCancel: false);
+            return new CompoundUndoAction(textView, this, addRollbackOnCancel: false);
         }
         #endregion
     }
