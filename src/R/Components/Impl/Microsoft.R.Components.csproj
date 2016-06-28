@@ -56,7 +56,6 @@
     <Compile Include="Application\Configuration\Parser\ConfigurationError.cs" />
     <Compile Include="Application\Configuration\Parser\ConfigurationParser.cs" />
     <Compile Include="Application\Configuration\ConfigurationSetting.cs" />
-    <Compile Include="Application\Configuration\ConfigurationSettingsCollection.cs" />
     <Compile Include="Application\Configuration\ConfigurationSettingsStorage.cs" />
     <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />

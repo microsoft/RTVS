@@ -2,8 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using Microsoft.R.Components.Application.Configuration.Parser;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration {
@@ -15,8 +17,19 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are written as is.
     /// </summary>
     public sealed class ConfigurationSettingsStorage : IConfigurationSettingsStorage {
-        public ConfigurationSettingsCollection Load(Stream stream) {
-            throw new NotImplementedException();
+
+        public IReadOnlyList<IConfigurationSetting> Load(Stream stream) {
+            var settings = new List<IConfigurationSetting>();
+            var sr = new StreamReader(stream);
+            var cp = new ConfigurationParser(sr);
+            while (true) {
+                var s = cp.ReadSetting();
+                if (s == null) {
+                    break;
+                }
+                settings.Add(s);
+            }
+            return settings;
         }
 
         /// <summary>
@@ -24,21 +37,18 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// into R file as assignment statements such as 'name &lt;- value'.
         /// Value
         /// </summary>
-        public void Save(ConfigurationSettingsCollection settings, Stream stream) {
+        public void Save(IEnumerable<IConfigurationSetting> settings, Stream stream) {
             var sw = new StreamWriter(stream);
-            try {
-                WriteHeader(sw);
-                foreach (var s in settings) {
-                    var v = FormatValue(s);
-                    if (!string.IsNullOrWhiteSpace(v)) {
-                        WriteAttributes(s, sw);
-                        sw.WriteLine(Invariant($"{s.Name} <- {v}"));
-                        sw.WriteLine(string.Empty);
-                    }
+            WriteHeader(sw);
+            foreach (var s in settings) {
+                var v = FormatValue(s);
+                if (!string.IsNullOrWhiteSpace(v)) {
+                    WriteAttributes(s, sw);
+                    sw.WriteLine(Invariant($"{s.Name} <- {v}"));
+                    sw.WriteLine(string.Empty);
                 }
-            } finally {
-                sw.Close();
             }
+            sw.Flush();
         }
 
         private void WriteHeader(StreamWriter sw) {
@@ -61,9 +71,9 @@ namespace Microsoft.R.Components.Application.Configuration {
                 var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
                 var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
                 if (hasSingleQuotes && !hasDoubleQuotes) {
-                    return Invariant($"\"s\"");
+                    return Invariant($"\"{s.Value}\"");
                 } else if (!hasSingleQuotes) {
-                    return Invariant($"'s'");
+                    return Invariant($"'{s.Value}'");
                 }
                 // TODO: Resources.ConfigurationError_Quotes; ?
             }
