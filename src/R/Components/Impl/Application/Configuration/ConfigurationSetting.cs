@@ -8,6 +8,6 @@ namespace Microsoft.R.Components.Application.Configuration {
         public string Name { get; internal set; }
         public string Value { get; set; }
         public ConfigurationSettingValueType ValueType { get; internal set; }
-        public IDictionary<string, string> Attributes { get; } = new Dictionary<string, string>();
+        public ICollection<IConfigurationSettingAttribute> Attributes { get; } = new List<IConfigurationSettingAttribute>();
     }
 }

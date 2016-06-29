@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.Collections.Generic;
+using System;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -9,7 +9,7 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are stored in R file that looks like a set of assignments
     /// similar to 'setting1 &lt;- value.
     /// </summary>
-    public interface IConfigurationSetting {
+    public interface IConfigurationSettingAttribute {
         /// <summary>
         /// Setting name
         /// </summary>
@@ -21,13 +21,9 @@ namespace Microsoft.R.Components.Application.Configuration {
         string Value { get; set; }
 
         /// <summary>
-        /// Setting category (section in the Property Grid)
+        /// Returns equivalent .NET attribute
         /// </summary>
-        ICollection<IConfigurationSettingAttribute> Attributes { get; }
-
-        /// <summary>
-        /// Value type
-        /// </summary>
-        ConfigurationSettingValueType ValueType { get; }
+        /// <returns></returns>
+        Attribute GetDotNetAttribute();
     }
 }

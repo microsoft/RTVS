@@ -16,14 +16,15 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are written as is.
     /// </summary>
     public sealed class ConfigurationSettingsWriter : IConfigurationSettingsWriter {
-        private readonly Stream _stream;
+        private StreamWriter _writer;
 
-        public ConfigurationSettingsWriter(Stream stream) {
-            _stream = stream;
+        public ConfigurationSettingsWriter(StreamWriter writer) {
+            _writer = writer;
         }
 
         public void Dispose() {
-            _stream?.Dispose();
+            _writer?.Dispose();
+            _writer = null;
         }
 
         /// <summary>
@@ -32,35 +33,34 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// Value
         /// </summary>
         public void SaveSettings(IEnumerable<IConfigurationSetting> settings) {
-            var sw = new StreamWriter(_stream);
-            WriteHeader(sw);
+             WriteHeader();
             foreach (var s in settings) {
                 var v = FormatValue(s);
                 if (!string.IsNullOrWhiteSpace(v)) {
-                    WriteAttributes(s, sw);
-                    sw.WriteLine(Invariant($"{s.Name} <- {v}"));
-                    sw.WriteLine(string.Empty);
+                    WriteAttributes(s);
+                    _writer.WriteLine(Invariant($"{s.Name} <- {v}"));
+                    _writer.WriteLine(string.Empty);
                 }
             }
-            sw.Flush();
+            _writer.Flush();
         }
 
-        private void WriteHeader(StreamWriter sw) {
-            sw.WriteLine("# Application settings file.");
-            sw.WriteLine(string.Format(CultureInfo.CurrentCulture, "File content was generated on {0}", DateTime.Now));
-            sw.WriteLine(string.Empty);
+        private void WriteHeader() {
+            _writer.WriteLine("# Application settings file.");
+            _writer.WriteLine(string.Format(CultureInfo.CurrentCulture, "File content was generated on {0}", DateTime.Now));
+            _writer.WriteLine(string.Empty);
         }
 
-        private void WriteAttributes(IConfigurationSetting s, StreamWriter sw) {
-            foreach (var attName in s.Attributes.Keys) {
-                var value = s.Attributes[attName];
+        private void WriteAttributes(IConfigurationSetting s) {
+            foreach (var attribute in s.Attributes) {
+                var value = attribute.Value;
                 if (!string.IsNullOrEmpty(value)) {
-                    sw.WriteLine(Invariant($"# [{attName}] {value}"));
+                    _writer.WriteLine(Invariant($"# {ConfigurationSettingAttributeNames.GetPersistentKey(attribute.Name)} {value}"));
                 }
             }
         }
 
-        private string FormatValue(IConfigurationSetting s) {
+        private static string FormatValue(IConfigurationSetting s) {
             if (s.ValueType == ConfigurationSettingValueType.String) {
                 var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
                 var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;

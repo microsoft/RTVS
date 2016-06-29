@@ -4,7 +4,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Application.Configuration.Parser;
 using Microsoft.UnitTests.Core.XUnit;
@@ -71,7 +73,7 @@ c'
             settings[2].Value.Should().Be("ab\r\nc");
             settings[2].ValueType.Should().Be(ConfigurationSettingValueType.String);
             settings[2].Attributes.Should().HaveCount(1);
-            settings[2].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("Category 1");
+            settings[2].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("Category 1");
         }
 
         [Test]
@@ -80,11 +82,11 @@ c'
 @"
 # [Category] SQL
 # [Description] Database connection string
-# [Editor] ConnectionString
+# [Editor] ConnectionStringEditor
 c1 <- 'DSN'
 ";
-            var stream = ToStream(content);
-            var css = new ConfigurationSettingsReader(stream);
+            var sr = new StreamReader(ToStream(content));
+            var css = new ConfigurationSettingsReader(sr);
             var settings = css.LoadSettings();
 
             settings.Should().HaveCount(1);
@@ -93,17 +95,17 @@ c1 <- 'DSN'
             settings[0].Value.Should().Be("DSN");
             settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
             settings[0].Attributes.Should().HaveCount(3);
-            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("SQL");
-            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Description)].Should().Be("Database connection string");
-            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Editor)].Should().Be("ConnectionString");
+            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
+            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Description)).Value.Should().Be("Database connection string");
+            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
         }
 
         [Test]
         public void LoadMultiple03() {
             string content =
 @"# [Category] SQL
-# [Editor] ConnectionString
-# [Editor] ConnectionString
+# [Editor] ConnectionStringEditor
+# [Editor] ConnectionStringEditor
 c1 <- 'DSN'
 ";
             ConfigurationParser cp;
@@ -115,8 +117,8 @@ c1 <- 'DSN'
             settings[0].Value.Should().Be("DSN");
             settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
             settings[0].Attributes.Should().HaveCount(2);
-            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Category)].Should().Be("SQL");
-            settings[0].Attributes[ConfigurationSettingAttribute.GetName(ConfigurationSettingAttribute.Editor)].Should().Be("ConnectionString");
+            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
+            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
 
             cp.Errors.Should().HaveCount(1);
             cp.Errors[0].Message.Should().StartWith("Duplicate");
@@ -158,18 +160,18 @@ c1 <- 'DSN'
 x <- 1
 ";
             IReadOnlyList<IConfigurationSetting> settings;
-            var stream = ToStream(content);
-            using (var csr = new ConfigurationSettingsReader(stream)) {
+            var sr = new StreamReader(ToStream(content));
+            using (var csr = new ConfigurationSettingsReader(sr)) {
                 settings = csr.LoadSettings();
             }
 
-            stream = CreateStream();
-            using (var csw = new ConfigurationSettingsWriter(stream)) {
+            var stream = CreateStream();
+            using (var csw = new ConfigurationSettingsWriter(new StreamWriter(stream))) {
                 csw.SaveSettings(settings);
 
                 stream.Seek(0, SeekOrigin.Begin);
-                using (var sr = new StreamReader(stream)) {
-                    var s = sr.ReadToEnd();
+                using (var r = new StreamReader(stream)) {
+                    var s = r.ReadToEnd();
                     s.Should().StartWith("# Application settings file");
                     s.Should().Contain(content);
                 }

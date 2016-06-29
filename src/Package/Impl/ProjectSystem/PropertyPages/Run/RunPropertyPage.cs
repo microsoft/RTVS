@@ -5,9 +5,9 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
-    [Guid("2c5c6e73-2855-4590-af60-f476752cd2ec")]
+    [Guid("2C5C6E73-2855-4590-AF60-F476752CD2EC")]
     internal class RunPropertyPage : WpfBasedPropertyPage {
-        internal static readonly string PageName = Resources.RunPropertyPageTitle;
+        internal static readonly string PageName = Resources.ProjectProperties_RunPageTitle;
 
         protected override string PropertyPageName => PageName;
 

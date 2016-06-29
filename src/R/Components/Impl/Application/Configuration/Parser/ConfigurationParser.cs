@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.Operators;
@@ -115,17 +116,18 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
 
         private bool ReadAttributeValue(string line, IConfigurationSetting s) {
             line = line.TrimStart();
-            foreach (var attribute in ConfigurationSettingAttribute.Attributes) {
-                if (line.StartsWith(attribute)) {
-                    var attName = ConfigurationSettingAttribute.GetName(attribute);
-                    if (!string.IsNullOrWhiteSpace(attName)) {
-                        if (s.Attributes.ContainsKey(attName)) {
-                            _errors.Add(new ConfigurationError(_lineNumber, Resources.ConfigurationError_DuplicateAttribute));
-                        } else {
-                            s.Attributes[attName] = line.Substring(attribute.Length).Trim();
-                            return true;
-                        }
-                    }
+            var name = ConfigurationSettingAttributeNames.KnownAttributes
+                        .FirstOrDefault(
+                            x => line.StartsWithOrdinal(ConfigurationSettingAttributeNames.GetPersistentKey(x)));
+            if (name != null) {
+                var existingAttribute = s.Attributes.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
+                if (existingAttribute != null) {
+                    _errors.Add(new ConfigurationError(_lineNumber, Resources.ConfigurationError_DuplicateAttribute));
+                } else {
+                    var persistentKey = ConfigurationSettingAttributeNames.GetPersistentKey(name);
+                    var value = line.Substring(persistentKey.Length).Trim();
+                    s.Attributes.Add(ConfigurationSettingAttributeBase.CreateAttribute(name, value));
+                    return true;
                 }
             }
             return false;

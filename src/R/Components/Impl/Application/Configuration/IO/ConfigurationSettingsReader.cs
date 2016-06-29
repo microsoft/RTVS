@@ -14,19 +14,19 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are written as is.
     /// </summary>
     public sealed class ConfigurationSettingsReader : IConfigurationSettingsReader {
-        private readonly Stream _stream;
-        public ConfigurationSettingsReader(Stream stream) {
-            _stream = stream;
+        private StreamReader _reader;
+        public ConfigurationSettingsReader(StreamReader reader) {
+            _reader = reader;
         }
 
         public void Dispose() {
-            _stream?.Dispose();
+            _reader?.Dispose();
+            _reader = null;
         }
 
         public IReadOnlyList<IConfigurationSetting> LoadSettings() {
             var settings = new List<IConfigurationSetting>();
-            var sr = new StreamReader(_stream);
-            var cp = new ConfigurationParser(sr);
+            var cp = new ConfigurationParser(_reader);
             while (true) {
                 var s = cp.ReadSetting();
                 if (s == null) {

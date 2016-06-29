@@ -209,33 +209,39 @@
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml.cs">
+      <DependentUpon>RunPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageMetadata.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPageViewModel.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingPropertyDescriptor.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageMetadata.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsTypeDescriptor.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageControl.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageElementHost.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\PropertyPageViewModel.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\WpfBasedPropertyPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectSystem\PropertyPages\Wpf\WpfBasedPropertyPage.Designer.cs">
+      <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProjectSystem\RProjectCapabilityProvider.cs" />
     <Compile Include="ProjectSystem\ConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Definitions\IConfiguredRProjectExportProvider.cs" />
     <Compile Include="ProjectSystem\Definitions\IRProjectProperties.cs" />
     <Compile Include="ProjectSystem\Definitions\IVsHierarchyExtensions.cs" />
     <Compile Include="ProjectSystem\ProjectProperties.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageControl.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageElementHost.cs" />
     <Compile Include="ProjectSystem\PropertyPages\PropertyPageProvider.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\PropertyPageViewModel.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPageControl.xaml.cs">
-      <DependentUpon>RunPageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\RunPageMetadata.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPageViewModel.cs" />
-    <Compile Include="ProjectSystem\PropertyPages\RunPropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ProjectSystem\PropertyPages\WpfBasedPropertyPage.Designer.cs">
-      <DependentUpon>WpfBasedPropertyPage.cs</DependentUpon>
-    </Compile>
     <Compile Include="ProjectSystem\RDebugLaunchProvider.cs" />
     <Compile Include="RClient\MicrosoftRClient.cs" />
     <Compile Include="RClient\MicrosoftRClientInstaller.cs" />
@@ -1258,14 +1264,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Content>
-    <Page Include="ProjectSystem\PropertyPages\RunPageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <EmbeddedResource Include="Rules\Run.xaml">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -882,6 +882,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Run.
+        /// </summary>
+        public static string ProjectProperties_RunPageTitle {
+            get {
+                return ResourceManager.GetString("ProjectProperties_RunPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings.
+        /// </summary>
+        public static string ProjectProperties_SettingsPageTitle {
+            get {
+                return ResourceManager.GetString("ProjectProperties_SettingsPageTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Visual Studio detected that Microsoft R Client was recently installed. Would you like to start using R from the Microsoft R Client?.
         /// </summary>
         public static string Prompt_MsRClientJustInstalled {
@@ -991,15 +1009,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string RPromptClassification {
             get {
                 return ResourceManager.GetString("RPromptClassification", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Run.
-        /// </summary>
-        public static string RunPropertyPageTitle {
-            get {
-                return ResourceManager.GetString("RunPropertyPageTitle", resourceCulture);
             }
         }
         

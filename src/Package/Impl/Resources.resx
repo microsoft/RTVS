@@ -673,7 +673,7 @@ Additional information:
   <data name="PropertyPageDifferentOptions" xml:space="preserve">
     <value>&lt;different options&gt;</value>
   </data>
-  <data name="RunPropertyPageTitle" xml:space="preserve">
+  <data name="ProjectProperties_RunPageTitle" xml:space="preserve">
     <value>Run</value>
   </data>
   <data name="Settings_DefaultValue" xml:space="preserve">
@@ -802,5 +802,8 @@ Additional information:
   </data>
   <data name="Settings_MarkdownCategory" xml:space="preserve">
     <value>Markdown</value>
+  </data>
+  <data name="ProjectProperties_SettingsPageTitle" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>
