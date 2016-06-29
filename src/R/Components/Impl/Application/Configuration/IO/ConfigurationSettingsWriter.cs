@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Microsoft.R.Components.Application.Configuration.Parser;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration {
@@ -16,20 +15,15 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// string values are quoted when written into the file and expressions
     /// are written as is.
     /// </summary>
-    public sealed class ConfigurationSettingsStorage : IConfigurationSettingsStorage {
+    public sealed class ConfigurationSettingsWriter : IConfigurationSettingsWriter {
+        private readonly Stream _stream;
 
-        public IReadOnlyList<IConfigurationSetting> Load(Stream stream) {
-            var settings = new List<IConfigurationSetting>();
-            var sr = new StreamReader(stream);
-            var cp = new ConfigurationParser(sr);
-            while (true) {
-                var s = cp.ReadSetting();
-                if (s == null) {
-                    break;
-                }
-                settings.Add(s);
-            }
-            return settings;
+        public ConfigurationSettingsWriter(Stream stream) {
+            _stream = stream;
+        }
+
+        public void Dispose() {
+            _stream?.Dispose();
         }
 
         /// <summary>
@@ -37,8 +31,8 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// into R file as assignment statements such as 'name &lt;- value'.
         /// Value
         /// </summary>
-        public void Save(IEnumerable<IConfigurationSetting> settings, Stream stream) {
-            var sw = new StreamWriter(stream);
+        public void SaveSettings(IEnumerable<IConfigurationSetting> settings) {
+            var sw = new StreamWriter(_stream);
             WriteHeader(sw);
             foreach (var s in settings) {
                 var v = FormatValue(s);

@@ -83,8 +83,9 @@ c'
 # [Editor] ConnectionString
 c1 <- 'DSN'
 ";
-            var css = new ConfigurationSettingsStorage();
-            var settings = css.Load(ToStream(content));
+            var stream = ToStream(content);
+            var css = new ConfigurationSettingsReader(stream);
+            var settings = css.LoadSettings();
 
             settings.Should().HaveCount(1);
 
@@ -156,19 +157,24 @@ c1 <- 'DSN'
 
 x <- 1
 ";
-            var css = new ConfigurationSettingsStorage();
-            var settings = css.Load(ToStream(content));
-
-            var stream = CreateStream();
-            css.Save(settings, stream);
-
-            stream.Seek(0, SeekOrigin.Begin);
-            using (var sr = new StreamReader(stream)) {
-                var s = sr.ReadToEnd();
-                s.Should().StartWith("# Application settings file");
-                s.Should().Contain(content);
+            IReadOnlyList<IConfigurationSetting> settings;
+            var stream = ToStream(content);
+            using (var csr = new ConfigurationSettingsReader(stream)) {
+                settings = csr.LoadSettings();
             }
-        }
+
+            stream = CreateStream();
+            using (var csw = new ConfigurationSettingsWriter(stream)) {
+                csw.SaveSettings(settings);
+
+                stream.Seek(0, SeekOrigin.Begin);
+                using (var sr = new StreamReader(stream)) {
+                    var s = sr.ReadToEnd();
+                    s.Should().StartWith("# Application settings file");
+                    s.Should().Contain(content);
+                }
+            }
+       }
 
         private List<IConfigurationSetting> GetSettings(string content, out ConfigurationParser cp) {
             var settings = new List<IConfigurationSetting>();
