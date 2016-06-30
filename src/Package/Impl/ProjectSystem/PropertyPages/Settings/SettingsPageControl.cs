@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -37,8 +38,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public bool Save() {
-            var result = _viewModel != null ?_viewModel.Save() : true;
-            if(result) {
+            var result = _viewModel != null ? _viewModel.Save() : true;
+            if (result) {
                 IsDirty = false;
             }
             return result;
@@ -54,6 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
             PopulateFilesCombo();
             LoadPropertyGrid();
+            SetButtonEnableState();
 
             filesList.SelectedIndexChanged += OnSelectedFileChanged;
             addSettingButton.Click += OnAddSettingClick;
@@ -73,16 +75,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             variableTypeList.Items.Add(Resources.SettingsPage_VariableType_Expression);
             variableTypeList.SelectedIndex = 0;
 
-            explanationText1.Text = Resources.SettingsPage_Explanation1;
-            explanationText2.Text = Resources.SettingsPage_Explanation2;
-            explanationText3.Text = Resources.SettingsPage_Explanation3;
+            explanationText.Text = Resources.SettingsPage_Explanation1
+                                    + Environment.NewLine + Environment.NewLine
+                                    + Resources.SettingsPage_Explanation2
+                                    + Environment.NewLine + Environment.NewLine
+                                    + Resources.SettingsPage_Explanation3;
         }
 
         private void PopulateFilesCombo() {
-            foreach (var f in _viewModel.Files) {
-                filesList.Items.Add(f);
-            }
-
+            filesList.Items.AddRange(_viewModel.Files.ToArray());
             if (filesList.Items.Count == 0) {
                 filesList.Items.Add(Resources.NoSettingFiles);
             }
@@ -91,12 +92,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         private void LoadPropertyGrid() {
             IsDirty = false;
-
             var item = filesList.Items[filesList.SelectedIndex] as string;
             if (item.EqualsOrdinal(Resources.NoSettingFiles)) {
                 return;
             }
-
             _viewModel.CurrentFile = item;
             UpdatePropertyGrid();
         }
@@ -105,14 +104,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             propertyGrid.SelectedObject = _viewModel.TypeDescriptor;
         }
 
+        private void SetButtonEnableState() {
+            addSettingButton.Enabled = !string.IsNullOrWhiteSpace(variableName.Text) && !string.IsNullOrWhiteSpace(variableValue.Text);
+        }
+
         private void OnSelectedFileChanged(object sender, EventArgs e) {
             if (_selectedIndex != filesList.SelectedIndex) {
-                if(IsDirty) {
+                if (IsDirty) {
                     var answer = _coreShell.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
-                    if(answer == MessageButtons.Cancel) {
+                    if (answer == MessageButtons.Cancel) {
                         filesList.SelectedIndex = _selectedIndex;
                         return;
-                    } else if(answer == MessageButtons.Yes) {
+                    } else if (answer == MessageButtons.Yes) {
                         _viewModel.Save();
                         IsDirty = false;
                     }
@@ -123,8 +126,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void OnAddSettingClick(object sender, EventArgs e) {
-            _viewModel.AddSetting(variableName.Text, variableValue.Text, 
-                    ((string)variableTypeList.SelectedItem).EqualsOrdinal(Resources.SettingsPage_VariableType_String) 
+            _viewModel.AddSetting(variableName.Text, variableValue.Text,
+                    ((string)variableTypeList.SelectedItem).EqualsOrdinal(Resources.SettingsPage_VariableType_String)
                         ? ConfigurationSettingValueType.String
                         : ConfigurationSettingValueType.Expression);
             UpdatePropertyGrid();
@@ -132,11 +135,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void OnVariableNameTextChanged(object sender, EventArgs e) {
-            addSettingButton.Enabled = !string.IsNullOrWhiteSpace(variableName.Text) && !string.IsNullOrWhiteSpace(variableValue.Text);
+            SetButtonEnableState();
         }
 
         private void OnVariableValueTextChanged(object sender, EventArgs e) {
-            addSettingButton.Enabled = !string.IsNullOrWhiteSpace(variableName.Text) && !string.IsNullOrWhiteSpace(variableValue.Text);
+            SetButtonEnableState();
         }
 
         private void OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
