@@ -377,15 +377,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This settings file no longer exists.
-        /// </summary>
-        public static string Error_SettingFileNoLongerExists {
-            get {
-                return ResourceManager.GetString("Error_SettingFileNoLongerExists", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {

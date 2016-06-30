@@ -16,6 +16,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     public partial class SettingsPageControl : UserControl {
         private SettingsPageViewModel _viewModel;
+        private IConfigurationSettingsService _css;
         private ICoreShell _coreShell;
         private IProjectSystemServices _pss;
         private int _selectedIndex;
@@ -46,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         internal void InitializeModel() {
-            _viewModel = new SettingsPageViewModel(CoreShell, FileSystem, ProjectServices);
+            _viewModel = new SettingsPageViewModel(ConfigurationSettingService, CoreShell, FileSystem, ProjectServices);
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -187,6 +188,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             set {
                 Debug.Assert(_pss == null);
                 _pss = value;
+            }
+        }
+
+        internal IConfigurationSettingsService ConfigurationSettingService {
+            get {
+                if (_css == null) {
+                    _css = CoreShell.ExportProvider.GetExportedValue<IConfigurationSettingsService>();
+                }
+                return _css;
+            }
+            set {
+                Debug.Assert(_css == null);
+                _css = value;
             }
         }
         #endregion

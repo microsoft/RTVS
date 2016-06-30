@@ -806,9 +806,6 @@ Additional information:
   <data name="ProjectProperties_SettingsPageTitle" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="Error_SettingFileNoLongerExists" xml:space="preserve">
-    <value>This settings file no longer exists</value>
-  </data>
   <data name="Error_UnableToReadSettings" xml:space="preserve">
     <value>Unable to load settings. Exception {0}</value>
   </data>

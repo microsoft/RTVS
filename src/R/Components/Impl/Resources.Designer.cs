@@ -151,6 +151,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Settings file {0} does not exists..
+        /// </summary>
+        public static string Error_SettingFileNoLongerExists {
+            get {
+                return ResourceManager.GetString("Error_SettingFileNoLongerExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input is too long - no more than {0} characters expected..
         /// </summary>
         public static string InputIsTooLong {

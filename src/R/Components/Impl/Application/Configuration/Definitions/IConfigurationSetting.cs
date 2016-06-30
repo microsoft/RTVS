@@ -28,6 +28,6 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// <summary>
         /// Value type
         /// </summary>
-        ConfigurationSettingValueType ValueType { get; }
+        ConfigurationSettingValueType ValueType { get; set; }
     }
 }

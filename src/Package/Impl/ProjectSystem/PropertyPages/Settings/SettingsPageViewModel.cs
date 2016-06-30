@@ -15,14 +15,15 @@ using Microsoft.R.Host.Client.Extensions;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal sealed class SettingsPageViewModel {
         private readonly Dictionary<string, string> _filesMap = new Dictionary<string, string>();
+        private readonly IConfigurationSettingsService _css;
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private EnvDTE.Project _activeProject;
         private string _currentFile;
-        private List<IConfigurationSetting> _settings;
 
-        public SettingsPageViewModel(ICoreShell coreShell, IFileSystem fileSystem, IProjectSystemServices pss) {
+        public SettingsPageViewModel(IConfigurationSettingsService css, ICoreShell coreShell, IFileSystem fileSystem, IProjectSystemServices pss) {
+            _css = css;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
             _pss = pss;
@@ -31,18 +32,21 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public IEnumerable<string> Files => _filesMap.Keys;
-
         public string CurrentFile {
-            get {
-                return _currentFile;
-            }
-            set {
-                _currentFile = value;
-                LoadSettingsFromFile(_currentFile);
-            }
+            get { return _css.ActiveSettingsFile; }
+            set { _css.ActiveSettingsFile = value; }
         }
 
-        public SettingsTypeDescriptor TypeDescriptor => _settings != null ? new SettingsTypeDescriptor(_settings) : null;
+        public SettingsTypeDescriptor TypeDescriptor {
+            get {
+                try {
+                    return new SettingsTypeDescriptor(_css.Settings);
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
+                }
+                return null;
+            }
+        }
 
         /// <summary>
         /// Retrieves all files with settings.r tail
@@ -52,73 +56,41 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _activeProject = _pss.GetActiveProject();
             _filesMap.Clear();
             try {
-                EnumerateSettingFiles(_activeProject?.ProjectItems);
+                EnumerateSettingFiles();
             } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
         }
 
         public void AddSetting(string name, string value, ConfigurationSettingValueType valueType) {
-            _settings.Add(new ConfigurationSetting(name, value, valueType));
+            var setting = _css.AddSetting(name);
+            setting.Value = value;
+            setting.ValueType = valueType;
         }
 
         public void RemoveSetting(IConfigurationSetting s) {
-            _settings.Remove(s);
+            _css.RemoveSetting(s);
         }
 
         public bool Save() {
-            var fullPath = _filesMap[CurrentFile];
             try {
-                using (var sw = new StreamWriter(fullPath)) {
-                    using (var csw = new ConfigurationSettingsWriter(sw)) {
-                        csw.SaveSettings(_settings);
-                        return true;
-                    }
-                }
+                _css.Save();
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, fullPath, ex.Message));
+                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _css.ActiveSettingsFile, ex.Message));
             }
             return false;
         }
 
 
-        private void EnumerateSettingFiles(EnvDTE.ProjectItems items) {
-            if (items == null) {
-                return;
-            }
-            foreach (var item in items) {
-                var pi = item as EnvDTE.ProjectItem;
-                if (pi.ProjectItems?.Count != 0) {
-                    EnumerateSettingFiles(pi.ProjectItems);
-                } else {
-                    var fullPath = (item as EnvDTE.ProjectItem)?.Properties?.Item("FullPath")?.Value as string;
-                    if (!string.IsNullOrEmpty(fullPath)) {
-                        var fileName = Path.GetFileName(fullPath);
-                        if (fileName.EqualsIgnoreCase("settings.r") || fileName.EndsWithIgnoreCase(".settings.r")) {
-                            var relativePath = fullPath.MakeRRelativePath(Path.GetDirectoryName(_activeProject.FileName));
-                            _filesMap[relativePath] = fullPath;
-                        }
+        private void EnumerateSettingFiles() {
+            var projectFiles = _pss.GetProjectFiles(_activeProject);
+            foreach (var fullPath in projectFiles) {
+                if (!string.IsNullOrEmpty(fullPath)) {
+                    var fileName = Path.GetFileName(fullPath);
+                    if (fileName.EqualsIgnoreCase("settings.r") || fileName.EndsWithIgnoreCase(".settings.r")) {
+                        var relativePath = fullPath.MakeRRelativePath(Path.GetDirectoryName(_activeProject.FileName));
+                        _filesMap[relativePath] = fullPath;
                     }
                 }
             }
-        }
-
-        private IReadOnlyList<IConfigurationSetting> LoadSettingsFromFile(string filePath) {
-            _settings = new List<IConfigurationSetting>();
-            var fullPath = _filesMap[filePath];
-            if (_fileSystem.FileExists(fullPath)) {
-                try {
-                    using (var sr = new StreamReader(fullPath)) {
-                        using (var csr = new ConfigurationSettingsReader(sr)) {
-                            _settings.AddRange(csr.LoadSettings());
-                            return _settings;
-                        }
-                    }
-                } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
-                }
-            } else {
-                _coreShell.ShowErrorMessage(Resources.Error_SettingFileNoLongerExists);
-            }
-            return null;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Microsoft.R.Components.Application.Configuration {
     public sealed class ConfigurationSetting : IConfigurationSetting {
         public string Name { get; internal set; }
         public string Value { get; set; }
-        public ConfigurationSettingValueType ValueType { get; internal set; }
+        public ConfigurationSettingValueType ValueType { get; set; }
         public ICollection<IConfigurationSettingAttribute> Attributes { get; } = new List<IConfigurationSettingAttribute>();
 
         public ConfigurationSetting() : this(null, null, ConfigurationSettingValueType.String) { }

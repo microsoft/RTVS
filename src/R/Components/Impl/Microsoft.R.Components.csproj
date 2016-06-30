@@ -56,7 +56,9 @@
     <Compile Include="Application\Configuration\Attributes\ConfigurationSettingAttributeNames.cs" />
     <Compile Include="Application\Configuration\Attributes\ConfigurationSettingEditorAttribute.cs" />
     <Compile Include="Application\Configuration\Attributes\ConfigurationSettingDescriptionAttribute.cs" />
+    <Compile Include="Application\Configuration\ConfigurationSettingsService.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingAttribute.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsService.cs" />
     <Compile Include="Application\Configuration\IO\ConfigurationSettingsWriter.cs" />
     <Compile Include="Application\Configuration\Attributes\ConfigurationSettingCategoryAttribute.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsWriter.cs" />
