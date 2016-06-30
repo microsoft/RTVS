@@ -37,7 +37,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public bool Save() {
-            return _viewModel != null ?_viewModel.Save() : true;
+            var result = _viewModel != null ?_viewModel.Save() : true;
+            if(result) {
+                IsDirty = false;
+            }
+            return result;
         }
 
         internal void InitializeModel() {
