@@ -16,7 +16,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         IReadOnlyList<IConfigurationSetting> Settings { get; }
 
         /// <summary>
-        /// Retrueves existing setting. Returns null if setting does not exist
+        /// Retrieves existing setting. Returns null if setting does not exist
         /// </summary>
         IConfigurationSetting GetSetting(string settingName);
 

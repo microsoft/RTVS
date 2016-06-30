@@ -83,8 +83,9 @@ namespace Microsoft.R.Components.Application.Configuration {
                             _settings.AddRange(csr.LoadSettings());
                         }
                     }
+                } else {
+                    throw new IOException(string.Format(CultureInfo.InvariantCulture, Resources.Error_SettingFileNoLongerExists, ActiveSettingsFile));
                 }
-                throw new IOException(string.Format(CultureInfo.InvariantCulture, Resources.Error_SettingFileNoLongerExists, ActiveSettingsFile));
             }
         }
     }
