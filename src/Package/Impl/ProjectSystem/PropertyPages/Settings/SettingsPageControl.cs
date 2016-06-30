@@ -147,8 +147,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             if (setting != null && string.IsNullOrWhiteSpace(setting.Value)) {
                 _viewModel.RemoveSetting(setting);
                 UpdatePropertyGrid();
-                IsDirty = true;
             }
+            IsDirty = true;
         }
 
         private void SetFont() {

@@ -491,6 +491,10 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
+    <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
     <Content Include="Templates\Sql\Create Procedure R.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1124,6 +1128,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <None Include="Templates\ItemTemplates\RSettings\Settings.R" />
     <None Include="VSShell\ShellIcons.h" />
     <Page Include="DataInspect\DataGridStyle.xaml">
       <SubType>Designer</SubType>
