@@ -806,4 +806,43 @@ Additional information:
   <data name="ProjectProperties_SettingsPageTitle" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="Error_SettingFileNoLongerExists" xml:space="preserve">
+    <value>This settings file no longer exists</value>
+  </data>
+  <data name="Error_UnableToReadSettings" xml:space="preserve">
+    <value>Unable to load settings. Exception {0}</value>
+  </data>
+  <data name="Error_UnableToSaveSettings" xml:space="preserve">
+    <value>Unable to write to settings file {0}. Exception: {1}</value>
+  </data>
+  <data name="NoSettingFiles" xml:space="preserve">
+    <value>&lt;No *setting.R files found&gt;</value>
+  </data>
+  <data name="SettingsPage_Explanation1" xml:space="preserve">
+    <value>R project settings come from Settings.R or *.Settings.R files that are located inside the project.</value>
+  </data>
+  <data name="SettingsPage_Explanation2" xml:space="preserve">
+    <value>If there is no settings file and you would like to create one, please close this page, right click on the project node in Solution Explorer, choose Add New Item and pick R Settings file.</value>
+  </data>
+  <data name="SettingsPage_Explanation3" xml:space="preserve">
+    <value>Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings.</value>
+  </data>
+  <data name="SettingsPage_VariableNameLabel" xml:space="preserve">
+    <value>&amp;Name:</value>
+  </data>
+  <data name="SettingsPage_VariableTypeLabel" xml:space="preserve">
+    <value>&amp;Type:</value>
+  </data>
+  <data name="SettingsPage_VariableType_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="SettingsPage_VariableType_String" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="SettingsPage_VariableValueLabel" xml:space="preserve">
+    <value>&amp;Value:</value>
+  </data>
+  <data name="SettingsPage_SavePrompt" xml:space="preserve">
+    <value>The selected settings have changed. Do you want to save the file?</value>
+  </data>
 </root>

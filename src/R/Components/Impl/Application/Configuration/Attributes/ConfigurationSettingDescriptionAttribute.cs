@@ -6,6 +6,8 @@ using System.ComponentModel;
 
 namespace Microsoft.R.Components.Application.Configuration {
     internal sealed class ConfigurationSettingDescriptionAttribute: ConfigurationSettingAttributeBase {
+        public ConfigurationSettingDescriptionAttribute() : this(null) { }
+
         public ConfigurationSettingDescriptionAttribute(string value) : 
             base(ConfigurationSettingAttributeNames.Description, value) {
         }

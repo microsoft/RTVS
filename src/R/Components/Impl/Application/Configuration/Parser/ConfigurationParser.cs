@@ -126,8 +126,11 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                 } else {
                     var persistentKey = ConfigurationSettingAttributeNames.GetPersistentKey(name);
                     var value = line.Substring(persistentKey.Length).Trim();
-                    s.Attributes.Add(ConfigurationSettingAttributeBase.CreateAttribute(name, value));
-                    return true;
+                    var attribute = ConfigurationSettingAttributeBase.CreateAttribute(name, value);
+                    if (attribute != null) {
+                        s.Attributes.Add(attribute);
+                        return true;
+                    }
                 }
             }
             return false;

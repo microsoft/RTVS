@@ -9,5 +9,13 @@ namespace Microsoft.R.Components.Application.Configuration {
         public string Value { get; set; }
         public ConfigurationSettingValueType ValueType { get; internal set; }
         public ICollection<IConfigurationSettingAttribute> Attributes { get; } = new List<IConfigurationSettingAttribute>();
+
+        public ConfigurationSetting() : this(null, null, ConfigurationSettingValueType.String) { }
+
+        public ConfigurationSetting(string name, string value, ConfigurationSettingValueType valueType) {
+            Name = name;
+            Value = value;
+            ValueType = valueType;
+        }
     }
 }

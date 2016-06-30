@@ -18,11 +18,14 @@ namespace Microsoft.R.Components.Application.Configuration {
         public abstract Attribute GetDotNetAttribute();
 
         public static IConfigurationSettingAttribute CreateAttribute(string name, string value) {
-            var attribute = Activator.CreateInstance(
-                   Assembly.GetExecutingAssembly().FullName, 
-                   Invariant($"Microsoft.R.Components.Application.Configuration.ConfigurationSetting{name}Attribute")) 
-                   as IConfigurationSettingAttribute;
-            attribute.Value = value;
+            IConfigurationSettingAttribute attribute = null;
+            try {
+                var handle = Activator.CreateInstance(
+                       Assembly.GetExecutingAssembly().FullName,
+                       Invariant($"Microsoft.R.Components.Application.Configuration.ConfigurationSetting{name}Attribute"));
+                attribute = handle.Unwrap() as IConfigurationSettingAttribute;
+                attribute.Value = value;
+            } catch (Exception) { }
             return attribute;
         }
     }

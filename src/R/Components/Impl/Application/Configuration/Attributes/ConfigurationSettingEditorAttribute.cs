@@ -13,6 +13,8 @@ namespace Microsoft.R.Components.Application.Configuration {
             { "ConnectionStringEditor", "ConnectionStringEditor" }
         };
 
+        public ConfigurationSettingEditorAttribute() : this(null) { }
+
         public ConfigurationSettingEditorAttribute(string editorName) : 
             base(ConfigurationSettingAttributeNames.Editor, editorName) {
             if(!_editorTypeMap.ContainsKey(editorName)) {

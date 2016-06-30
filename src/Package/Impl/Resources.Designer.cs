@@ -377,6 +377,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This settings file no longer exists.
+        /// </summary>
+        public static string Error_SettingFileNoLongerExists {
+            get {
+                return ResourceManager.GetString("Error_SettingFileNoLongerExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {
@@ -400,6 +409,24 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Error_UnableToDownloadRClient_Timeout {
             get {
                 return ResourceManager.GetString("Error_UnableToDownloadRClient_Timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to load settings. Exception {0}.
+        /// </summary>
+        public static string Error_UnableToReadSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToReadSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to write to settings file {0}. Exception: {1}.
+        /// </summary>
+        public static string Error_UnableToSaveSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToSaveSettings", resourceCulture);
             }
         }
         
@@ -779,6 +806,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string No {
             get {
                 return ResourceManager.GetString("No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;No *setting.R files found&gt;.
+        /// </summary>
+        public static string NoSettingFiles {
+            get {
+                return ResourceManager.GetString("NoSettingFiles", resourceCulture);
             }
         }
         
@@ -1808,6 +1844,87 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string Settings_WorkspaceCategory {
             get {
                 return ResourceManager.GetString("Settings_WorkspaceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R project settings come from Settings.R or *.Settings.R files that are located inside the project..
+        /// </summary>
+        public static string SettingsPage_Explanation1 {
+            get {
+                return ResourceManager.GetString("SettingsPage_Explanation1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If there is no settings file and you would like to create one, please close this page, right click on the project node in Solution Explorer, choose Add New Item and pick R Settings file..
+        /// </summary>
+        public static string SettingsPage_Explanation2 {
+            get {
+                return ResourceManager.GetString("SettingsPage_Explanation2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings..
+        /// </summary>
+        public static string SettingsPage_Explanation3 {
+            get {
+                return ResourceManager.GetString("SettingsPage_Explanation3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The selected settings have changed. Do you want to save the file?.
+        /// </summary>
+        public static string SettingsPage_SavePrompt {
+            get {
+                return ResourceManager.GetString("SettingsPage_SavePrompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Name:.
+        /// </summary>
+        public static string SettingsPage_VariableNameLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableNameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expression.
+        /// </summary>
+        public static string SettingsPage_VariableType_Expression {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableType_Expression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to String.
+        /// </summary>
+        public static string SettingsPage_VariableType_String {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableType_String", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Type:.
+        /// </summary>
+        public static string SettingsPage_VariableTypeLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableTypeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Value:.
+        /// </summary>
+        public static string SettingsPage_VariableValueLabel {
+            get {
+                return ResourceManager.GetString("SettingsPage_VariableValueLabel", resourceCulture);
             }
         }
         

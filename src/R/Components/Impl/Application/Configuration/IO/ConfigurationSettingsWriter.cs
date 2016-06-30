@@ -47,7 +47,7 @@ namespace Microsoft.R.Components.Application.Configuration {
 
         private void WriteHeader() {
             _writer.WriteLine("# Application settings file.");
-            _writer.WriteLine(string.Format(CultureInfo.CurrentCulture, "File content was generated on {0}", DateTime.Now));
+            _writer.WriteLine(string.Format(CultureInfo.CurrentCulture, "# File content was generated on {0}", DateTime.Now));
             _writer.WriteLine(string.Empty);
         }
 

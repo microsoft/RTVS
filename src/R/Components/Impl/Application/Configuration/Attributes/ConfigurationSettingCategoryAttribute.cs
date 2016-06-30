@@ -5,8 +5,10 @@ using System;
 using System.ComponentModel;
 
 namespace Microsoft.R.Components.Application.Configuration {
-    internal sealed class ConfigurationSettingCategoryAttribute: ConfigurationSettingAttributeBase {
-        public ConfigurationSettingCategoryAttribute(string value) : 
+    internal sealed class ConfigurationSettingCategoryAttribute : ConfigurationSettingAttributeBase {
+        public ConfigurationSettingCategoryAttribute() : this(null) { }
+
+        public ConfigurationSettingCategoryAttribute(string value) :
             base(ConfigurationSettingAttributeNames.Category, value) {
         }
 
