@@ -9,5 +9,6 @@ namespace Microsoft.R.Host.Client {
     public interface IMessageTransport {
         Task SendAsync(string message, CancellationToken ct = default(CancellationToken));
         Task<string> ReceiveAsync(CancellationToken ct = default(CancellationToken));
+        Task<byte[]> ReceiveRawAsync(CancellationToken ct = default(CancellationToken));
     }
 }

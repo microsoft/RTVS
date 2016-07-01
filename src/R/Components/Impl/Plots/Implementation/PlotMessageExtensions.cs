@@ -4,11 +4,12 @@
 using System.Windows.Media.Imaging;
 using Microsoft.Common.Wpf.Imaging;
 using Microsoft.R.Host.Client;
+using System.IO;
 
 namespace Microsoft.R.Components.Plots.Implementation {
     internal static class PlotMessageExtensions {
         public static BitmapImage ToBitmapImage(this PlotMessage plot) {
-            return BitmapImageFactory.Load(plot.FilePath);
+            return BitmapImageFactory.Load(new MemoryStream(plot.Data));
         }
     }
 }

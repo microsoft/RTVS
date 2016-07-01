@@ -46,6 +46,12 @@ namespace Microsoft.R.Host.Client {
         /// </remarks>
         /// <seealso cref="RExpressionEvaluatorExtensions.ExecuteAsync"/>
         NoResult = 1 << 8,
+        /// <summary>
+        /// Returns result explicitly in Raw format.
+        /// </summary>
+        /// <remarks>
+        /// Used for data that cannot be represented in JSON.</remarks>
+        RawBytes = 1 << 9,
     }
 }
 

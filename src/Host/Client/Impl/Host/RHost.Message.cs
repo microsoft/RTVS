@@ -4,6 +4,10 @@
 using System;
 using Microsoft.Common.Core;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 namespace Microsoft.R.Host.Client {
     partial class RHost {
@@ -12,6 +16,9 @@ namespace Microsoft.R.Host.Client {
             public readonly string RequestId;
             public readonly string Name;
 
+            public ConcurrentQueue<byte[]> Blobs;
+            public readonly int ExpectedBlobs;
+
             private readonly JArray _body;
             private readonly int _argsOffset;
 
@@ -19,25 +26,58 @@ namespace Microsoft.R.Host.Client {
 
             public Message(JToken token) {
                 _body = token as JArray;
+                var header = _body[0] as JArray;
+
                 if (_body == null) {
                     throw ProtocolError($"Message must be an array:", token);
                 }
-                if (_body.Count < 2) {
-                    throw ProtocolError($"Message must have form [id, name, ...]:", token);
+
+                if(header == null) {
+                    throw ProtocolError($"Message header must be an array:", header);
                 }
 
-                Id = GetString(0, "id");
-                Name = GetString(1, "name");
-                _argsOffset = 2;
+                if (_body.Count < 1) {
+                    throw ProtocolError($"Message must have form [[id, name, blob_count], ...]:", token);
+                }
+
+                if (header.Count < 3) {
+                    throw ProtocolError($"Message header must have form [[id, name, blob_count], ...]:", header);
+                }
+
+                var id = header[0];
+                if(id.Type != JTokenType.String) {
+                    throw ProtocolError($"id must be {JTokenType.String}:", this);
+                }
+                Id = (string)id;
+
+                var name = header[1];
+                if (name.Type != JTokenType.String) {
+                    throw ProtocolError($"name must be {JTokenType.String}:", this);
+                }
+                Name = (string)name;
+
+                var blob = header[2];
+                if (blob.Type != JTokenType.Integer) {
+                    throw ProtocolError($"blob_count must be {JTokenType.Integer}:", this);
+                }
+                ExpectedBlobs = (int)blob;
 
                 if (Name.StartsWithOrdinal(":")) {
-                    if (_body.Count < 3) {
-                        throw ProtocolError($"Response message must have form [id, name, request_id, ...]:", token);
+                    if (header.Count < 4) {
+                        throw ProtocolError($"Response message must have form [[id, name, blob_count, request_id, ...], ...]:", token);
                     }
 
-                    RequestId = GetString(0, "request_id");
-                    ++_argsOffset;
+                    var requestId = header[3];
+                    if (requestId.Type != JTokenType.String) {
+                        throw ProtocolError($"request_id must be {JTokenType.String}:", this);
+                    }
+                    RequestId = (string)requestId;
                 }
+
+                // header part is done
+                _argsOffset = 1;
+
+                Blobs = new ConcurrentQueue<byte[]>(); 
             }
 
             public override string ToString() {
@@ -112,6 +152,7 @@ namespace Microsoft.R.Host.Client {
 
                 return (TEnum)(object)n;
             }
+
         }
     }
 }
