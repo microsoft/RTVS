@@ -33,8 +33,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public IEnumerable<string> Files => _filesMap.Keys;
         public string CurrentFile {
-            get { return _css.ActiveSettingsFile; }
-            set { _css.ActiveSettingsFile = value; }
+            get {
+                return _currentFile;
+            }
+            set {
+                _currentFile = value;
+                _css.Load(_currentFile);
+            }
         }
 
         public SettingsTypeDescriptor TypeDescriptor {
@@ -72,9 +77,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public bool Save() {
             try {
-                _css.Save();
+                _css.Save(_currentFile);
             } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _css.ActiveSettingsFile, ex.Message));
+                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _currentFile, ex.Message));
             }
             return false;
         }

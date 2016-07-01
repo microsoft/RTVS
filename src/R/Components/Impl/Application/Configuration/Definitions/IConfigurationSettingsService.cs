@@ -6,11 +6,6 @@ using System.Collections.Generic;
 namespace Microsoft.R.Components.Application.Configuration {
     public interface IConfigurationSettingsService {
         /// <summary>
-        /// Full path to the current settings file
-        /// </summary>
-        string ActiveSettingsFile { get; set; }
-
-        /// <summary>
         /// Complete collection of settings
         /// </summary>
         IReadOnlyList<IConfigurationSetting> Settings { get; }
@@ -31,8 +26,13 @@ namespace Microsoft.R.Components.Application.Configuration {
         void RemoveSetting(IConfigurationSetting s);
 
         /// <summary>
-        /// Writes settings to disk.
+        /// Loads settings from the file
         /// </summary>
-        void Save();
+        void Load(string filePath);
+
+        /// <summary>
+        /// Writes settings to a disk file.
+        /// </summary>
+        void Save(string filePath);
     }
 }

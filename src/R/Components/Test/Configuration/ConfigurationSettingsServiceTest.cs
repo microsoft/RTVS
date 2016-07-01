@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using FluentAssertions;
@@ -8,6 +9,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.R.Components.Test.Configuration {
     [ExcludeFromCodeCoverage]
@@ -22,14 +24,16 @@ namespace Microsoft.R.Components.Test.Configuration {
 
             var css = new ConfigurationSettingsService(fs);
             css.Settings.Should().BeEmpty();
+            css.Save(file);
+            var fi = new FileInfo(file);
+            fi.Length.Should().Be(0);
 
             try {
                 using (var sw = new StreamWriter(file)) {
                     sw.Write(content);
                 }
 
-                css.ActiveSettingsFile = file;
-                css.ActiveSettingsFile.Should().Be(file);
+                css.Load(file);
 
                 css.GetSetting("foo").Should().BeNull();
                 var setting = css.GetSetting("x");
