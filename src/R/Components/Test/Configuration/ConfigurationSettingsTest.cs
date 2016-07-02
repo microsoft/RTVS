@@ -85,19 +85,20 @@ c'
 # [Editor] ConnectionStringEditor
 c1 <- 'DSN'
 ";
-            var sr = new StreamReader(ToStream(content));
-            var css = new ConfigurationSettingsReader(sr);
-            var settings = css.LoadSettings();
+            using (var sr = new StreamReader(ToStream(content))) {
+                using (var css = new ConfigurationSettingsReader(sr)) {
+                    var settings = css.LoadSettings();
+                    settings.Should().HaveCount(1);
 
-            settings.Should().HaveCount(1);
-
-            settings[0].Name.Should().Be("c1");
-            settings[0].Value.Should().Be("DSN");
-            settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
-            settings[0].Attributes.Should().HaveCount(3);
-            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
-            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Description)).Value.Should().Be("Database connection string");
-            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
+                    settings[0].Name.Should().Be("c1");
+                    settings[0].Value.Should().Be("DSN");
+                    settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
+                    settings[0].Attributes.Should().HaveCount(3);
+                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
+                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Description)).Value.Should().Be("Database connection string");
+                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
+                }
+            }
         }
 
         [Test]

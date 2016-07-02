@@ -1,7 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -9,7 +12,7 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are stored in R file that looks like a set of assignments
     /// similar to 'setting1 &lt;- value.
     /// </summary>
-    public interface IConfigurationSetting {
+    public interface IConfigurationSetting: INotifyPropertyChanged {
         /// <summary>
         /// Setting name
         /// </summary>
@@ -23,7 +26,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// <summary>
         /// Setting category (section in the Property Grid)
         /// </summary>
-        ICollection<IConfigurationSettingAttribute> Attributes { get; }
+        ObservableCollection<IConfigurationSettingAttribute> Attributes { get; }
 
         /// <summary>
         /// Value type

@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
-        private EnvDTE.Project _activeProject;
+        private readonly EnvDTE.Project _activeProject;
         private string _currentFile;
 
         public SettingsPageViewModel(IConfigurationSettingsService css, ICoreShell coreShell, IFileSystem fileSystem, IProjectSystemServices pss) {
@@ -28,62 +28,50 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _fileSystem = fileSystem;
             _pss = pss;
 
-            Initialize();
-        }
-
-        public IEnumerable<string> Files => _filesMap.Keys;
-        public string CurrentFile {
-            get {
-                return _currentFile;
-            }
-            set {
-                _currentFile = value;
-                _css.Load(_currentFile);
-            }
-        }
-
-        public SettingsTypeDescriptor TypeDescriptor {
-            get {
-                try {
-                    return new SettingsTypeDescriptor(_css.Settings);
-                } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
-                }
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves all files with settings.r tail
-        /// </summary>
-        /// <returns></returns>
-        public void Initialize() {
             _activeProject = _pss.GetActiveProject();
-            _filesMap.Clear();
             try {
                 EnumerateSettingFiles();
             } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
         }
 
+        public IEnumerable<string> Files => _filesMap.Keys;
+        public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_css.Settings);
+
+        public string CurrentFile {
+            get {
+                return _currentFile;
+            }
+            set {
+                if (!value.EqualsIgnoreCase(_currentFile)) {
+                    _currentFile = value;
+                    try {
+                        _css.Load(_currentFile);
+                    } catch (Exception ex) when (!ex.IsCriticalException()) {
+                        _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
+                    }
+                }
+            }
+        }
+
         public void AddSetting(string name, string value, ConfigurationSettingValueType valueType) {
-            var setting = _css.AddSetting(name);
-            setting.Value = value;
-            setting.ValueType = valueType;
+            _css.Settings.Add(new ConfigurationSetting(name, value, valueType));
         }
 
         public void RemoveSetting(IConfigurationSetting s) {
-            _css.RemoveSetting(s);
+            _css.Settings.Remove(s);
         }
 
         public bool Save() {
-            try {
-                _css.Save(_currentFile);
-            } catch (Exception ex) when (!ex.IsCriticalException()) {
-                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _currentFile, ex.Message));
+            if (!string.IsNullOrEmpty(_currentFile)) {
+                try {
+                    _css.Save(_currentFile);
+                    return true;
+                } catch (Exception ex) when (!ex.IsCriticalException()) {
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _currentFile, ex.Message));
+                }
             }
             return false;
         }
-
 
         private void EnumerateSettingFiles() {
             var projectFiles = _pss.GetProjectFiles(_activeProject);

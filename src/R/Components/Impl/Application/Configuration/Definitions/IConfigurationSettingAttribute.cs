@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.ComponentModel;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -9,7 +10,7 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are stored in R file that looks like a set of assignments
     /// similar to 'setting1 &lt;- value.
     /// </summary>
-    public interface IConfigurationSettingAttribute {
+    public interface IConfigurationSettingAttribute: INotifyPropertyChanged {
         /// <summary>
         /// Setting name
         /// </summary>

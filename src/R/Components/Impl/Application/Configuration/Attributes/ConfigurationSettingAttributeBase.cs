@@ -6,14 +6,8 @@ using System.Reflection;
 using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration {
-    internal abstract class ConfigurationSettingAttributeBase : IConfigurationSettingAttribute {
-        public ConfigurationSettingAttributeBase(string name, string value) {
-            Name = name;
-            Value = value;
-        }
-
-        public string Name { get; }
-        public string Value { get; set; }
+    internal abstract class ConfigurationSettingAttributeBase : ObservableNameValue<string>, IConfigurationSettingAttribute {
+        public ConfigurationSettingAttributeBase(string name, string value) : base(name, value) { }
 
         public abstract Attribute GetDotNetAttribute();
 
