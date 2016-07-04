@@ -70,24 +70,6 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate attribute.
-        /// </summary>
-        public static string ConfigurationError_DuplicateAttribute {
-            get {
-                return ResourceManager.GetString("ConfigurationError_DuplicateAttribute", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to String value contains both single and double quotes.
-        /// </summary>
-        public static string ConfigurationError_Quotes {
-            get {
-                return ResourceManager.GetString("ConfigurationError_Quotes", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Syntax error.
         /// </summary>
         public static string ConfigurationError_Syntax {

@@ -9,9 +9,11 @@ using System.ComponentModel;
 
 namespace Microsoft.R.Components.Application.Configuration {
     public sealed class ConfigurationSetting : IConfigurationSetting {
-        private readonly ObservableCollection<IConfigurationSettingAttribute> _attributes = new ObservableCollection<IConfigurationSettingAttribute>();
         private string _value;
         private ConfigurationSettingValueType _valueType;
+        private string _category;
+        private string _description;
+        private string _editorType;
 
         public string Name { get; internal set; }
 
@@ -20,7 +22,7 @@ namespace Microsoft.R.Components.Application.Configuration {
             set {
                 if(_value != value) {
                     _value = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Name));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Value"));
                 }
             }
         }
@@ -30,11 +32,39 @@ namespace Microsoft.R.Components.Application.Configuration {
             set {
                 if (_valueType != value) {
                     _valueType = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Name));
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ValueType"));
                 }
             }
         }
-        public ObservableCollection<IConfigurationSettingAttribute> Attributes => _attributes;
+        public string Category {
+            get { return _category; }
+            set {
+                if (_category != value) {
+                    _category = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Category"));
+                }
+            }
+        }
+
+        public string Description {
+            get { return _description; }
+            set {
+                if (_description != value) {
+                    _description = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Description"));
+                }
+            }
+        }
+
+        public string EditorType {
+            get { return _editorType; }
+            set {
+                if (_editorType != value) {
+                    _editorType = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("EditorType"));
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -44,13 +74,6 @@ namespace Microsoft.R.Components.Application.Configuration {
         public ConfigurationSetting(string name, string value, ConfigurationSettingValueType valueType) {
             Name = name;
             Value = value;
-            ValueType = valueType;
-
-            _attributes.CollectionChanged += OnAttributesChanged;
-        }
-
-        private void OnAttributesChanged(object sender, NotifyCollectionChangedEventArgs e) {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Attributes)));
         }
     }
 }

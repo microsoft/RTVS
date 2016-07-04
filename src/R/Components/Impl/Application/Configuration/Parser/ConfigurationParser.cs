@@ -14,10 +14,10 @@ using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
+using static System.FormattableString;
 
 namespace Microsoft.R.Components.Application.Configuration.Parser {
     internal sealed class ConfigurationParser {
-        private readonly IConfigurationSettingAttributeFactoryProvider _factoryProvider;
         private readonly List<ConfigurationError> _errors = new List<ConfigurationError>();
         private readonly StreamReader _sr;
         private string _bufferedLine;
@@ -25,9 +25,8 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
 
         public IReadOnlyList<ConfigurationError> Errors => _errors;
 
-        public ConfigurationParser(StreamReader sr, IConfigurationSettingAttributeFactoryProvider factoryProvider) {
+        public ConfigurationParser(StreamReader sr) {
             _sr = sr;
-            _factoryProvider = factoryProvider;
         }
 
         public IConfigurationSetting ReadSetting() {
@@ -116,27 +115,32 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
             return false;
         }
 
-        private bool ReadAttributeValue(string line, IConfigurationSetting s) {
+        private bool ReadAttributeValue(string line, ConfigurationSetting s) {
+            string attributeName;
             line = line.TrimStart();
-            var attributeName = ConfigurationSettingAttributeNames.KnownAttributes
-                            .FirstOrDefault(
-                                x => line.StartsWithOrdinal(ConfigurationSettingAttributeNames.GetPersistentKey(x)));
-            if (attributeName != null) {
-                var existingAttribute = s.Attributes.FirstOrDefault(x => x.Name.EqualsOrdinal(attributeName));
-                if (existingAttribute != null) {
-                    _errors.Add(new ConfigurationError(_lineNumber, Resources.ConfigurationError_DuplicateAttribute));
-                } else {
-                    var persistentKey = ConfigurationSettingAttributeNames.GetPersistentKey(attributeName);
-                    var value = line.Substring(persistentKey.Length).Trim();
-                    var factory = _factoryProvider.GetFactory(attributeName);
-                    var attribute = factory?.CreateInstance(value);
-                    if (attribute != null) {
-                        s.Attributes.Add(attribute);
+            if (line.Length > 0 && line[0] == '[') {
+                var closeBraceIndex = line.IndexOf(']');
+                if (closeBraceIndex >= 0) {
+                    attributeName = line.Substring(1, closeBraceIndex - 1);
+                    var value = line.Substring(closeBraceIndex + 1).Trim();
+                    if (attributeName.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)) {
+                        s.Category = value;
+                        return true;
+                    } else if (attributeName.EqualsOrdinal(ConfigurationSettingAttributeNames.Description)) {
+                        s.Description = value;
+                        return true;
+                    } else if (attributeName.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)) {
+                        s.EditorType = value;
                         return true;
                     }
                 }
             }
             return false;
         }
+
+        public static string GetPersistentKey(string attribute) {
+            return Invariant($"[{attribute}]");
+        }
+
     }
 }

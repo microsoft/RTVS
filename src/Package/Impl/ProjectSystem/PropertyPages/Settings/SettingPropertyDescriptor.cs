@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Drawing.Design;
 using Microsoft.R.Components.Application.Configuration;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
@@ -32,9 +33,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public override bool ShouldSerializeValue(object component) => false;
 
         protected override void FillAttributes(IList attributeList) {
-            foreach(var a in Setting.Attributes) {
-                attributeList.Add(a.GetDotNetAttribute());
-             }
+            if(!string.IsNullOrEmpty(Setting.Category)) {
+                attributeList.Add(new CategoryAttribute(Setting.Category));
+            }
+            if (!string.IsNullOrEmpty(Setting.Description)) {
+                attributeList.Add(new DescriptionAttribute(Setting.Description));
+            }
+            if (!string.IsNullOrEmpty(Setting.EditorType)) {
+                attributeList.Add(new EditorAttribute(Setting.EditorType, typeof(UITypeEditor)));
+            }
             base.FillAttributes(attributeList);
         }
     }

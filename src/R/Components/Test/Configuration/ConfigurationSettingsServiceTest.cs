@@ -35,7 +35,6 @@ namespace Microsoft.R.Components.Test.Configuration {
                 setting.Name.Should().Be("x");
                 setting.Value.Should().Be("1");
                 setting.ValueType.Should().Be(ConfigurationSettingValueType.Expression);
-                setting.Attributes.Should().BeEmpty();
 
             } finally {
                 if (File.Exists(file)) {

@@ -26,7 +26,17 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// <summary>
         /// Setting category (section in the Property Grid)
         /// </summary>
-        ObservableCollection<IConfigurationSettingAttribute> Attributes { get; }
+        string Category { get; }
+
+        /// <summary>
+        /// Setting description
+        /// </summary>
+        string Description { get; }
+
+        /// <summary>
+        /// Editor type if setting provides UI editor
+        /// </summary>
+        string EditorType { get; }
 
         /// <summary>
         /// Value type

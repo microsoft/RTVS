@@ -27,11 +27,8 @@ namespace Microsoft.R.Components.Test.Configuration {
         public void LoadSingle(string content, string expectedName, string expectedValue, ConfigurationSettingValueType expectedValueType) {
             var settings = new List<IConfigurationSetting>();
 
-            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
-            fp.GetFactory(Arg.Any<string>()).Returns((IConfigurationSettingAttributeFactory)null);
-
             using (var sr = new StreamReader(ToStream(content))) {
-                var cp = new ConfigurationParser(sr, fp);
+                var cp = new ConfigurationParser(sr);
                 while (true) {
                     var s = cp.ReadSetting();
                     if (s == null) {
@@ -44,7 +41,6 @@ namespace Microsoft.R.Components.Test.Configuration {
             settings[0].Name.Should().Be(expectedName);
             settings[0].Value.Should().Be(expectedValue);
             settings[0].ValueType.Should().Be(expectedValueType);
-            settings[0].Attributes.Should().HaveCount(0);
         }
 
         [Test]
@@ -67,18 +63,18 @@ c'
             settings[0].Name.Should().Be("x");
             settings[0].Value.Should().Be("1");
             settings[0].ValueType.Should().Be(ConfigurationSettingValueType.Expression);
-            settings[0].Attributes.Should().HaveCount(0);
+            settings[0].Category.Should().BeNull();
+            settings[0].Description.Should().BeNull();
+            settings[0].EditorType.Should().BeNull();
 
             settings[1].Name.Should().Be("y");
             settings[1].Value.Should().Be("x + 3");
             settings[1].ValueType.Should().Be(ConfigurationSettingValueType.Expression);
-            settings[1].Attributes.Should().HaveCount(0);
 
             settings[2].Name.Should().Be("z");
             settings[2].Value.Should().Be("ab\r\nc");
             settings[2].ValueType.Should().Be(ConfigurationSettingValueType.String);
-            settings[2].Attributes.Should().HaveCount(1);
-            settings[2].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("Category 1");
+            settings[2].Category.Should().Be("Category 1");
         }
 
         [Test]
@@ -90,20 +86,17 @@ c'
 # [Editor] ConnectionStringEditor
 c1 <- 'DSN'
 ";
-            var fp = GetFactoryProvider();
-
             using (var sr = new StreamReader(ToStream(content))) {
-                using (var css = new ConfigurationSettingsReader(sr, fp)) {
+                using (var css = new ConfigurationSettingsReader(sr)) {
                     var settings = css.LoadSettings();
                     settings.Should().HaveCount(1);
 
                     settings[0].Name.Should().Be("c1");
                     settings[0].Value.Should().Be("DSN");
                     settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
-                    settings[0].Attributes.Should().HaveCount(3);
-                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
-                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Description)).Value.Should().Be("Database connection string");
-                    settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
+                    settings[0].Category.Should().Be("SQL");
+                    settings[0].Description.Should().Be("Database connection string");
+                    settings[0].EditorType.Should().Be("ConnectionStringEditor");
                 }
             }
         }
@@ -124,13 +117,8 @@ c1 <- 'DSN'
             settings[0].Name.Should().Be("c1");
             settings[0].Value.Should().Be("DSN");
             settings[0].ValueType.Should().Be(ConfigurationSettingValueType.String);
-            settings[0].Attributes.Should().HaveCount(2);
-            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Category)).Value.Should().Be("SQL");
-            settings[0].Attributes.First(x => x.Name.EqualsOrdinal(ConfigurationSettingAttributeNames.Editor)).Value.Should().Be("ConnectionStringEditor");
-
-            cp.Errors.Should().HaveCount(1);
-            cp.Errors[0].Message.Should().StartWith("Duplicate");
-            cp.Errors[0].LineNumber.Should().Be(3);
+            settings[0].Category.Should().Be("SQL");
+            settings[0].EditorType.Should().Be("ConnectionStringEditor");
         }
 
         [CompositeTest]
@@ -167,11 +155,9 @@ c1 <- 'DSN'
 
 x <- 1
 ";
-            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
-
             IReadOnlyList<IConfigurationSetting> settings;
             var sr = new StreamReader(ToStream(content));
-            using (var csr = new ConfigurationSettingsReader(sr, fp)) {
+            using (var csr = new ConfigurationSettingsReader(sr)) {
                 settings = csr.LoadSettings();
             }
 
@@ -189,10 +175,9 @@ x <- 1
         }
 
         private List<IConfigurationSetting> GetSettings(string content, out ConfigurationParser cp) {
-            var fp = GetFactoryProvider();
             var settings = new List<IConfigurationSetting>();
             using (var sr = new StreamReader(ToStream(content))) {
-                cp = new ConfigurationParser(sr, fp);
+                cp = new ConfigurationParser(sr);
                 while (true) {
                     var s = cp.ReadSetting();
                     if (s == null) {
@@ -218,14 +203,6 @@ x <- 1
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
             return stream;
-        }
-
-        private IConfigurationSettingAttributeFactoryProvider GetFactoryProvider() {
-            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
-            fp.GetFactory(ConfigurationSettingAttributeNames.Category).Returns(new ConfigurationSettingCategoryAttribute.AttributeFactory());
-            fp.GetFactory(ConfigurationSettingAttributeNames.Description).Returns(new ConfigurationSettingDescriptionAttribute.AttributeFactory());
-            fp.GetFactory(ConfigurationSettingAttributeNames.Editor).Returns(new ConfigurationSettingEditorAttribute.AttributeFactory(null));
-            return fp;
         }
     }
 }

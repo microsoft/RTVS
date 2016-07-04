@@ -33,7 +33,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// Value
         /// </summary>
         public void SaveSettings(IEnumerable<IConfigurationSetting> settings) {
-             WriteHeader();
+            WriteHeader();
             foreach (var s in settings) {
                 var v = FormatValue(s);
                 if (!string.IsNullOrWhiteSpace(v)) {
@@ -52,26 +52,28 @@ namespace Microsoft.R.Components.Application.Configuration {
         }
 
         private void WriteAttributes(IConfigurationSetting s) {
-            foreach (var attribute in s.Attributes) {
-                var value = attribute.Value;
-                if (!string.IsNullOrEmpty(value)) {
-                    _writer.WriteLine(Invariant($"# {ConfigurationSettingAttributeNames.GetPersistentKey(attribute.Name)} {value}"));
-                }
+            if (!string.IsNullOrEmpty(s.Category)) {
+                _writer.WriteLine(Invariant($"# [{ConfigurationSettingAttributeNames.Category}] {s.Category}"));
+            }
+            if (!string.IsNullOrEmpty(s.Description)) {
+                _writer.WriteLine(Invariant($"# [{ConfigurationSettingAttributeNames.Description}] {s.Description}"));
+            }
+            if (!string.IsNullOrEmpty(s.EditorType)) {
+                _writer.WriteLine(Invariant($"# [{ConfigurationSettingAttributeNames.Editor}] {s.EditorType}"));
             }
         }
 
         private static string FormatValue(IConfigurationSetting s) {
-            if (s.ValueType == ConfigurationSettingValueType.String) {
-                var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
-                var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
-                if (hasSingleQuotes && !hasDoubleQuotes) {
-                    return Invariant($"\"{s.Value}\"");
-                } else if (!hasSingleQuotes) {
-                    return Invariant($"'{s.Value}'");
-                }
-                // TODO: Resources.ConfigurationError_Quotes; ?
+        if (s.ValueType == ConfigurationSettingValueType.String) {
+            var hasSingleQuotes = s.Value.IndexOf('\'') >= 0;
+            var hasDoubleQuotes = s.Value.IndexOf('\"') >= 0;
+            if (hasSingleQuotes && !hasDoubleQuotes) {
+                return Invariant($"\"{s.Value}\"");
+            } else if (!hasSingleQuotes) {
+                return Invariant($"'{s.Value}'");
             }
-            return s.Value;
         }
+        return s.Value;
     }
+}
 }
