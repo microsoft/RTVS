@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Task = System.Threading.Tasks.Task;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
     internal static class CsvAppFileIO {
@@ -74,7 +75,20 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
             using (var e = await session.BeginEvaluationAsync()) {
-                await e.EvaluateAsync($"write.table({result.Expression}, qmethod='double', col.names=NA, file={file.ToRPath().ToRStringLiteral()}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
+                var fileinfo = await e.EvaluateAsync($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
+                JArray arr = fileinfo.Result.ToObject<JArray>();
+                string filepath = arr[0].Value<string>();
+                int bytes = arr[2].Value<int>();
+                var csvdata = await e.EvaluateAsync($"charToRaw(readChar({filepath.ToRStringLiteral()}, {bytes}, useBytes=TRUE))", REvaluationKind.RawBytes);
+
+                if (csvdata.Raw.Count > 0) {
+                    using (BinaryWriter writer = new BinaryWriter(File.OpenWrite(file))) {
+                        foreach (var data in csvdata.Raw) {
+                            writer.Write(data);
+                        }
+                        writer.Flush();
+                    }
+                }
             }
 
             if (File.Exists(file)) {

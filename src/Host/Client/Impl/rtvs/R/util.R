@@ -128,3 +128,12 @@ safe_eval <- function(expr, env) {
         set_rdebug(env, debug);
     });
 }
+
+# Helper to export variable to CSV
+export_to_csv <- function(expr, sep, dec) {
+	res <- expr
+	ln <- length(res) + 1
+	filepath <- tempfile('export_', fileext='.csv')
+	write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
+	list(filepath, ln, file.info(filepath)$size)
+}

@@ -41,14 +41,22 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
         [CompositeTest]
         [Category.R.RtvsPackage]
-        [InlineData("serialize(1:10, NULL)", "null")]
-        public async Task Serialize(string expr, string json) {
+        [InlineData("serialize(1:10, NULL)", "null", new int[] { 62 })]
+        [InlineData("NULL", "null", null)]
+        public async Task Serialize(string expr, string json, int[] sizes) {
             using (var eval = await _session.BeginEvaluationAsync()) {
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.RawBytes);
                 var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
-                res.Raw.Should().NotBeNull();
-                res.Raw.Count.Should().Be(1);
+                if (sizes != null) {
+                    res.Raw.Should().NotBeNull();
+                    res.Raw.Count.Should().Be(sizes.Length);
+                    for (int i = 0; i < sizes.Length; ++i) {
+                        res.Raw[i].Length.Should().Be(sizes[i]);
+                    }
+                } else {
+                    res.Raw.Should().BeNull();
+                }
             }
         }
     }

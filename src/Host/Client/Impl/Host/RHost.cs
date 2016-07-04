@@ -109,7 +109,8 @@ namespace Microsoft.R.Host.Client {
             var message = new Message(token);
 
             for(int i = 0; i < message.ExpectedBlobs; ++i) {
-                message.Blobs.Enqueue(_transport.ReceiveRawAsync().GetAwaiter().GetResult());
+                var blob_slices = await _transport.ReceiveRawAsync();
+                message.Blobs.Enqueue(blob_slices);
             }
 
             return message;
