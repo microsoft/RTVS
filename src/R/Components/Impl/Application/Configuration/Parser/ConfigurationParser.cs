@@ -17,6 +17,7 @@ using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Components.Application.Configuration.Parser {
     internal sealed class ConfigurationParser {
+        private readonly IConfigurationSettingAttributeFactoryProvider _factoryProvider;
         private readonly List<ConfigurationError> _errors = new List<ConfigurationError>();
         private readonly StreamReader _sr;
         private string _bufferedLine;
@@ -24,8 +25,9 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
 
         public IReadOnlyList<ConfigurationError> Errors => _errors;
 
-        public ConfigurationParser(StreamReader sr) {
+        public ConfigurationParser(StreamReader sr, IConfigurationSettingAttributeFactoryProvider factoryProvider) {
             _sr = sr;
+            _factoryProvider = factoryProvider;
         }
 
         public IConfigurationSetting ReadSetting() {
@@ -36,7 +38,7 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                     if (line.TrimStart()[0] == '#') {
                         ReadAttributeValue(line.Substring(1), setting);
                     } else {
-                        // Expression can be multiline so read all lines up to the next comment
+                        // Expression can be multi-line so read all lines up to the next comment
                         int startingLineNumber = _lineNumber;
                         var text = line + ReadRemainingExpressionText();
                         if (ParseSetting(text, startingLineNumber, setting)) {
@@ -116,17 +118,18 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
 
         private bool ReadAttributeValue(string line, IConfigurationSetting s) {
             line = line.TrimStart();
-            var name = ConfigurationSettingAttributeNames.KnownAttributes
-                        .FirstOrDefault(
-                            x => line.StartsWithOrdinal(ConfigurationSettingAttributeNames.GetPersistentKey(x)));
-            if (name != null) {
-                var existingAttribute = s.Attributes.FirstOrDefault(x => x.Name.EqualsOrdinal(name));
+            var attributeName = ConfigurationSettingAttributeNames.KnownAttributes
+                            .FirstOrDefault(
+                                x => line.StartsWithOrdinal(ConfigurationSettingAttributeNames.GetPersistentKey(x)));
+            if (attributeName != null) {
+                var existingAttribute = s.Attributes.FirstOrDefault(x => x.Name.EqualsOrdinal(attributeName));
                 if (existingAttribute != null) {
                     _errors.Add(new ConfigurationError(_lineNumber, Resources.ConfigurationError_DuplicateAttribute));
                 } else {
-                    var persistentKey = ConfigurationSettingAttributeNames.GetPersistentKey(name);
+                    var persistentKey = ConfigurationSettingAttributeNames.GetPersistentKey(attributeName);
                     var value = line.Substring(persistentKey.Length).Trim();
-                    var attribute = ConfigurationSettingAttributeBase.CreateAttribute(name, value);
+                    var factory = _factoryProvider.GetFactory(attributeName);
+                    var attribute = factory?.CreateInstance(value);
                     if (attribute != null) {
                         s.Attributes.Add(attribute);
                         return true;

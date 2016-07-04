@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Microsoft.R.Components.Application.Configuration;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
@@ -12,9 +13,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
     /// </summary>
     public sealed class SettingsTypeDescriptor : ICustomTypeDescriptor {
         private const string _componentName = "R Settings";
-        private readonly IReadOnlyList<IConfigurationSetting> _settings;
+        private readonly IConfigurationSettingCollection _settings;
 
-        public SettingsTypeDescriptor(IReadOnlyList<IConfigurationSetting> settings) {
+        public SettingsTypeDescriptor(IConfigurationSettingCollection settings) {
             _settings = settings;
         }
 
@@ -47,11 +48,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public object GetPropertyOwner(PropertyDescriptor pd) => this;
 
         private PropertyDescriptor[] GetProps() {
-            var list = new List<SettingPropertyDescriptor>();
-            foreach (var s in _settings) {
-                list.Add(new SettingPropertyDescriptor(s));
-            }
-            return list.ToArray();
+            return _settings.Select(s => new SettingPropertyDescriptor(s)).ToArray();
         }
     }
 }

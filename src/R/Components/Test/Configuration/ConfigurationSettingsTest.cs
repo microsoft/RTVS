@@ -10,6 +10,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Application.Configuration.Parser;
 using Microsoft.UnitTests.Core.XUnit;
+using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.Configuration {
@@ -25,8 +26,12 @@ namespace Microsoft.R.Components.Test.Configuration {
         [InlineData("z <- c(1:100)", "z", "c(1:100)", ConfigurationSettingValueType.Expression)]
         public void LoadSingle(string content, string expectedName, string expectedValue, ConfigurationSettingValueType expectedValueType) {
             var settings = new List<IConfigurationSetting>();
+
+            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
+            fp.GetFactory(Arg.Any<string>()).Returns((IConfigurationSettingAttributeFactory)null);
+
             using (var sr = new StreamReader(ToStream(content))) {
-                var cp = new ConfigurationParser(sr);
+                var cp = new ConfigurationParser(sr, fp);
                 while (true) {
                     var s = cp.ReadSetting();
                     if (s == null) {
@@ -85,8 +90,10 @@ c'
 # [Editor] ConnectionStringEditor
 c1 <- 'DSN'
 ";
+            var fp = GetFactoryProvider();
+
             using (var sr = new StreamReader(ToStream(content))) {
-                using (var css = new ConfigurationSettingsReader(sr)) {
+                using (var css = new ConfigurationSettingsReader(sr, fp)) {
                     var settings = css.LoadSettings();
                     settings.Should().HaveCount(1);
 
@@ -160,9 +167,11 @@ c1 <- 'DSN'
 
 x <- 1
 ";
+            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
+
             IReadOnlyList<IConfigurationSetting> settings;
             var sr = new StreamReader(ToStream(content));
-            using (var csr = new ConfigurationSettingsReader(sr)) {
+            using (var csr = new ConfigurationSettingsReader(sr, fp)) {
                 settings = csr.LoadSettings();
             }
 
@@ -177,12 +186,13 @@ x <- 1
                     s.Should().Contain(content);
                 }
             }
-       }
+        }
 
         private List<IConfigurationSetting> GetSettings(string content, out ConfigurationParser cp) {
+            var fp = GetFactoryProvider();
             var settings = new List<IConfigurationSetting>();
             using (var sr = new StreamReader(ToStream(content))) {
-                cp = new ConfigurationParser(sr);
+                cp = new ConfigurationParser(sr, fp);
                 while (true) {
                     var s = cp.ReadSetting();
                     if (s == null) {
@@ -208,6 +218,14 @@ x <- 1
             MemoryStream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
             return stream;
+        }
+
+        private IConfigurationSettingAttributeFactoryProvider GetFactoryProvider() {
+            var fp = Substitute.For<IConfigurationSettingAttributeFactoryProvider>();
+            fp.GetFactory(ConfigurationSettingAttributeNames.Category).Returns(new ConfigurationSettingCategoryAttribute.AttributeFactory());
+            fp.GetFactory(ConfigurationSettingAttributeNames.Description).Returns(new ConfigurationSettingDescriptionAttribute.AttributeFactory());
+            fp.GetFactory(ConfigurationSettingAttributeNames.Editor).Returns(new ConfigurationSettingEditorAttribute.AttributeFactory(null));
+            return fp;
         }
     }
 }

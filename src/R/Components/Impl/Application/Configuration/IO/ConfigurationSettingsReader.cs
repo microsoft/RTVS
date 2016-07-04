@@ -14,9 +14,11 @@ namespace Microsoft.R.Components.Application.Configuration {
     /// are written as is.
     /// </summary>
     public sealed class ConfigurationSettingsReader : IConfigurationSettingsReader {
+        private readonly IConfigurationSettingAttributeFactoryProvider _factoryProvider;
         private StreamReader _reader;
-        public ConfigurationSettingsReader(StreamReader reader) {
+        public ConfigurationSettingsReader(StreamReader reader, IConfigurationSettingAttributeFactoryProvider factoryProvider) {
             _reader = reader;
+            _factoryProvider = factoryProvider;
         }
 
         public void Dispose() {
@@ -26,7 +28,7 @@ namespace Microsoft.R.Components.Application.Configuration {
 
         public IReadOnlyList<IConfigurationSetting> LoadSettings() {
             var settings = new List<IConfigurationSetting>();
-            var cp = new ConfigurationParser(_reader);
+            var cp = new ConfigurationParser(_reader, _factoryProvider);
             while (true) {
                 var s = cp.ReadSetting();
                 if (s == null) {

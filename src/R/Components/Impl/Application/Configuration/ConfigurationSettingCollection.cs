@@ -3,10 +3,21 @@
 
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using Microsoft.Common.Core;
 
 namespace Microsoft.R.Components.Application.Configuration {
-    public sealed class ConfigurationSettingCollection : ObservableCollection<IConfigurationSetting> {
+    public sealed class ConfigurationSettingCollection : 
+        ObservableCollection<IConfigurationSetting>, 
+        IConfigurationSettingCollection {
         private readonly object _lock = new object();
+
+        /// <summary>
+        /// Retrieves existing setting. Returns null if setting does not exist
+        /// </summary>
+        public IConfigurationSetting GetSetting(string settingName) {
+            return this.FirstOrDefault(x => x.Name.EqualsOrdinal(settingName));
+        }
 
         /// <summary>
         /// Loads settings from the file
@@ -14,7 +25,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         public void Load(string filePath) {
             lock (_lock) {
                 using (var sr = new StreamReader(filePath)) {
-                    using (var csr = new ConfigurationSettingsReader(sr)) {
+                    using (var csr = new ConfigurationSettingsReader(sr, new ConfigurationSettingAttributeFactoryProvider())) {
                         var settings = csr.LoadSettings();
                         foreach(var s in settings) {
                             Add(s);

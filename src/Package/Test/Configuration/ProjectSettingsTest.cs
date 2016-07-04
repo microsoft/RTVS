@@ -19,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
         [Test]
         [Category.Configuration]
         public void Test01() {
-            var css = Substitute.For<IConfigurationSettingsService>();
+            var css = Substitute.For<IConfigurationSettingCollection>();
             var shell = Substitute.For<ICoreShell>();
 
             string file = Path.GetTempFileName();

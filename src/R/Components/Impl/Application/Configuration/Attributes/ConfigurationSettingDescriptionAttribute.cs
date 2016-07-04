@@ -3,6 +3,8 @@
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.R.Components.Application.Configuration {
     internal sealed class ConfigurationSettingDescriptionAttribute: ConfigurationSettingAttributeBase {
@@ -14,6 +16,14 @@ namespace Microsoft.R.Components.Application.Configuration {
 
         public override Attribute GetDotNetAttribute() {
             return new DescriptionAttribute(Value);
+        }
+
+        [Export(typeof(IConfigurationSettingAttributeFactory))]
+        [Name(ConfigurationSettingAttributeNames.Description)]
+        internal sealed class AttributeFactory : IConfigurationSettingAttributeFactory {
+            public IConfigurationSettingAttribute CreateInstance(string value) {
+                return new ConfigurationSettingCategoryAttribute(value);
+            }
         }
     }
 }

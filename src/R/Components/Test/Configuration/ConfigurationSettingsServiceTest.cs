@@ -1,18 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using FluentAssertions;
-using Microsoft.Common.Core;
-using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 
 namespace Microsoft.R.Components.Test.Configuration {
     [ExcludeFromCodeCoverage]
@@ -23,15 +16,9 @@ namespace Microsoft.R.Components.Test.Configuration {
             string file = Path.GetTempFileName();
             var content = "x <- 1";
 
-            var fs = Substitute.For<IFileSystem>();
-            fs.FileExists(file).Returns(true);
+            var coll = new ConfigurationSettingCollection();
+            coll.Save(file);
 
-            var coreShell = Substitute.For<ICoreShell>();
-            var css = new ConfigurationSettingsService(coreShell);
-            css.FileSystem = fs;
-
-            css.Settings.Should().BeEmpty();
-            css.Save(file);
             var fi = new FileInfo(file);
             fi.Length.Should().Be(0);
 
@@ -40,10 +27,10 @@ namespace Microsoft.R.Components.Test.Configuration {
                     sw.Write(content);
                 }
 
-                css.Load(file);
+                coll.Load(file);
+                coll.GetSetting("foo").Should().BeNull();
 
-                css.Settings.FirstOrDefault(x => x.Name.EqualsOrdinal("foo")).Should().BeNull();
-                var setting = css.GetSetting("x");
+                var setting = coll.GetSetting("x");
                 setting.Should().NotBeNull();
                 setting.Name.Should().Be("x");
                 setting.Value.Should().Be("1");
