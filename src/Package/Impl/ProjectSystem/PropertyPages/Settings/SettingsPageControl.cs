@@ -14,7 +14,8 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
-    public partial class SettingsPageControl : UserControl {
+    internal partial class SettingsPageControl : UserControl {
+        private readonly ProjectProperties[] _properties;
         private SettingsPageViewModel _viewModel;
         private IConfigurationSettingCollection _settings;
         private ICoreShell _coreShell;
@@ -22,7 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private int _selectedIndex;
         private bool _isDirty;
 
-        public SettingsPageControl() {
+        public SettingsPageControl(ProjectProperties[] properties) {
+            _properties = properties;
             InitializeComponent();
             InitializeModel();
         }
@@ -39,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public bool Save() {
-            var result = _viewModel != null ? _viewModel.Save() : true;
+            var result = _viewModel != null ? _viewModel.Save(_properties) : true;
             if (result) {
                 IsDirty = false;
             }
@@ -117,7 +119,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                         filesList.SelectedIndex = _selectedIndex;
                         return;
                     } else if (answer == MessageButtons.Yes) {
-                        _viewModel.Save();
+                        _viewModel.Save(_properties);
                         IsDirty = false;
                     }
                 }

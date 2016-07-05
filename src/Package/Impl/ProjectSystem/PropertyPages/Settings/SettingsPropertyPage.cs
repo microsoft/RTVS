@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly SettingsPageControl _control;
 
         public SettingsPropertyPage() {
-            _control = new SettingsPageControl();
+            _control = new SettingsPageControl(ConfiguredProperties);
             _control.DirtyStateChanged += OnDirtyStateChanged;
             this.Load += OnLoad;
         }

@@ -61,10 +61,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _settings.Remove(s);
         }
 
-        public bool Save() {
+        public bool Save(IRProjectProperties[] configuredProjectsProperties) {
             if (!string.IsNullOrEmpty(_currentFile)) {
                 try {
                     _settings.Save(_currentFile);
+                    SaveProjectProperties(configuredProjectsProperties);
                     return true;
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _currentFile, ex.Message));
@@ -82,6 +83,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                         var relativePath = fullPath.MakeRRelativePath(Path.GetDirectoryName(_activeProject.FileName));
                         _filesMap[relativePath] = fullPath;
                     }
+                }
+            }
+        }
+
+        private void SaveProjectProperties(IRProjectProperties[] configuredProjectsProperties) {
+            if (configuredProjectsProperties != null) {
+                foreach (var props in configuredProjectsProperties) {
+                    props.SettingsFile = CurrentFile;
                 }
             }
         }

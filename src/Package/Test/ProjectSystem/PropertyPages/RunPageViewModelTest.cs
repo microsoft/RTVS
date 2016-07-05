@@ -151,6 +151,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 CommandLineArgs = val;
                 return Task.CompletedTask;
             }
+
+            public string SettingsFile { get; set; }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
 
             var model = new SettingsPageViewModel(css, shell, fs, pss);
             model.CurrentFile.Should().BeNull();
-            model.Save(); // nothing should happen
+            model.Save(null); // nothing should happen
         }
     }
 }
