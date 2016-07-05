@@ -125,6 +125,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             public bool ResetReplOnRun { get; set; }
             public string StartupFile { get; set; }
             public string CommandLineArgs { get; set; }
+            public string SettingsFile { get; set; }
 
             public TestProjectProperties(bool resetReplOnRun, string startupFile, string commandLineArgs) {
                 ResetReplOnRun = resetReplOnRun;
@@ -133,10 +134,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             }
 
             public Task<bool> GetResetReplOnRunAsync() => Task.FromResult(ResetReplOnRun);
-
             public Task<string> GetStartupFileAsync() => Task.FromResult(StartupFile);
-
             public Task<string> GetCommandLineArgsAsync() => Task.FromResult(CommandLineArgs);
+            public Task<string> GetSettingsFile() => Task.FromResult(SettingsFile);
 
             public Task SetResetReplOnRunAsync(bool val) {
                 ResetReplOnRun = val;
@@ -152,7 +152,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 return Task.CompletedTask;
             }
 
-            public string SettingsFile { get; set; }
+            public Task SetSettingsFile(string file) {
+                SettingsFile = file;
+                return Task.CompletedTask;
+            }
         }
     }
 }

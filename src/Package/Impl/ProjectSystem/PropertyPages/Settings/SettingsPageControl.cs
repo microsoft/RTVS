@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -15,9 +16,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
+        private readonly IConfigurationSettingCollection _settings = new ConfigurationSettingCollection();
         private readonly ProjectProperties[] _properties;
-        private SettingsPageViewModel _viewModel;
-        private IConfigurationSettingCollection _settings;
+        private readonly SettingsPageViewModel _viewModel;
         private ICoreShell _coreShell;
         private IProjectSystemServices _pss;
         private int _selectedIndex;
@@ -25,8 +26,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public SettingsPageControl(ProjectProperties[] properties) {
             _properties = properties;
+            _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem, ProjectServices);
             InitializeComponent();
-            InitializeModel();
         }
 
         public event EventHandler<EventArgs> DirtyStateChanged;
@@ -40,16 +41,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public bool Save() {
-            var result = _viewModel != null ? _viewModel.Save(_properties) : true;
+        public async Task<bool> SaveAsync() {
+            var result = _viewModel != null ? await _viewModel.SaveAsync(_properties) : true;
             if (result) {
                 IsDirty = false;
             }
             return result;
-        }
-
-        internal void InitializeModel() {
-            _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem, ProjectServices);
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -119,7 +116,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                         filesList.SelectedIndex = _selectedIndex;
                         return;
                     } else if (answer == MessageButtons.Yes) {
-                        _viewModel.Save(_properties);
+                        _viewModel.SaveAsync(_properties).DoNotWait();
                         IsDirty = false;
                     }
                 }

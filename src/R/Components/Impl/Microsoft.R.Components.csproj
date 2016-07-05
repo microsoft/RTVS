@@ -54,6 +54,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Application\Configuration\ConfigurationSettingAttributeNames.cs" />
+    <Compile Include="Application\Configuration\Editors\SettingPropertyDescriptor.cs" />
+    <Compile Include="Application\Configuration\Editors\SettingsTypeDescriptor.cs" />
     <Compile Include="Application\Configuration\ObservableNameValue.cs" />
     <Compile Include="Application\Configuration\ConfigurationSettingCollection.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingCollection.cs" />

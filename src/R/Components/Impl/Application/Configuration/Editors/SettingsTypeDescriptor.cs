@@ -2,12 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Microsoft.R.Components.Application.Configuration;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
+namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
     /// Represents view model for the property grid in the Project | Properties | Settings
     /// </summary>

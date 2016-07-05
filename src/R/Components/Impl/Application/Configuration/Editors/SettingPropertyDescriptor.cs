@@ -5,15 +5,14 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing.Design;
-using Microsoft.R.Components.Application.Configuration;
 
-namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
+namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
     /// Represents a single entry in the property grid in the Project | Properties | Settings page
     /// </summary>
     [Browsable(true)]
     [DesignTimeVisible(true)]
-    internal sealed class SettingPropertyDescriptor : PropertyDescriptor {
+    public sealed class SettingPropertyDescriptor : PropertyDescriptor {
         public IConfigurationSetting Setting { get; }
 
         public SettingPropertyDescriptor(IConfigurationSetting setting) :

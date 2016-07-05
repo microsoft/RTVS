@@ -4,6 +4,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
@@ -18,7 +19,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
     public class ProjectSettingsTest {
         [Test]
         [Category.Configuration]
-        public void Test01() {
+        public async Task Test01() {
             var css = Substitute.For<IConfigurationSettingCollection>();
             var shell = Substitute.For<ICoreShell>();
 
@@ -32,7 +33,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
 
             var model = new SettingsPageViewModel(css, shell, fs, pss);
             model.CurrentFile.Should().BeNull();
-            model.Save(null); // nothing should happen
+            await model.SaveAsync(null); // nothing should happen
         }
     }
 }

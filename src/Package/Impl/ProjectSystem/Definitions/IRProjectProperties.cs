@@ -39,11 +39,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         Task SetStartupFileAsync(string val);
 
         /// <summary>
-        /// R file that contains project settings as R code.
-        /// the file is to be sourced before running the application.
-        /// Null if no settings are defined. In order to read actual
-        /// settings, use <see cref="ConfigurationSettingCollection"/>
+        /// Sets R path to the settings file. 
         /// </summary>
-        string SettingsFile { get; set; }
+        /// <remarks>
+        /// Settings file contains project settings as R code.
+        /// The file is to be sourced before running the application. Null means no settings are defined. 
+        /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
+        /// </remarks>
+        Task<string> GetSettingsFile();
+
+        /// <summary>
+        /// Gets R path to the settings file. 
+        /// </summary>
+        /// <remarks>
+        /// Settings file contains project settings as R code.
+        /// The file is to be sourced before running the application. Null means no settings are defined. 
+        /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
+        /// </remarks>
+        Task SetSettingsFile(string rFilePath);
     }
 }

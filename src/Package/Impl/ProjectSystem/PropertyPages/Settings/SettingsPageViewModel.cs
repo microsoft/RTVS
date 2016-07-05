@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
@@ -45,7 +46,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                 if (!value.EqualsIgnoreCase(_currentFile)) {
                     _currentFile = value;
                     try {
-                        _settings.Load(_currentFile);
+                        var fullPath = GetFullPath(_currentFile);
+                        if (!string.IsNullOrEmpty(fullPath)) {
+                            _settings.Load(fullPath);
+                        }
                     } catch (Exception ex) when (!ex.IsCriticalException()) {
                         _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
                     }
@@ -61,17 +65,24 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _settings.Remove(s);
         }
 
-        public bool Save(IRProjectProperties[] configuredProjectsProperties) {
-            if (!string.IsNullOrEmpty(_currentFile)) {
+        public async Task<bool> SaveAsync(IRProjectProperties[] configuredProjectsProperties) {
+            var fullPath = GetFullPath(CurrentFile);
+            if (!string.IsNullOrEmpty(fullPath)) {
                 try {
-                    _settings.Save(_currentFile);
-                    SaveProjectProperties(configuredProjectsProperties);
+                    _settings.Save(fullPath);
+                    await SaveProjectPropertiesAsync(configuredProjectsProperties);
                     return true;
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
-                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, _currentFile, ex.Message));
+                    _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, fullPath, ex.Message));
                 }
             }
             return false;
+        }
+
+        private string GetFullPath(string rPath) {
+            string fullPath = null;
+            _filesMap.TryGetValue(rPath, out fullPath);
+            return fullPath;
         }
 
         private void EnumerateSettingFiles() {
@@ -87,10 +98,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        private void SaveProjectProperties(IRProjectProperties[] configuredProjectsProperties) {
+        private async Task SaveProjectPropertiesAsync(IRProjectProperties[] configuredProjectsProperties) {
             if (configuredProjectsProperties != null) {
                 foreach (var props in configuredProjectsProperties) {
-                    props.SettingsFile = CurrentFile;
+                    // Remember R path lik ~/... so when project moves we can still find the file
+                    await props.SetSettingsFile(CurrentFile);
                 }
             }
         }

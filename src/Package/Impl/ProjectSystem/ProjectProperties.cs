@@ -71,12 +71,30 @@ namespace Microsoft.VisualStudio.R.Package {
         }
 
         /// <summary>
-        /// R file that contains project settings as R code.
-        /// the file is to be sourced before running the application.
-        /// Null if no settings are defined. In order to read actual
-        /// settings, use <see cref="ConfigurationSettingCollection"/>
+        /// Sets R path to the settings file. 
         /// </summary>
-        public string SettingsFile { get; set; }
+        /// <remarks>
+        /// Settings file contains project settings as R code.
+        /// The file is to be sourced before running the application. Null means no settings are defined. 
+        /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
+        /// </remarks>
+        public async Task<string> GetSettingsFile() {
+            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            return await runProps.StartupFile.GetEvaluatedValueAsync();
+        }
+
+        /// <summary>
+        /// Gets R path to the settings file. 
+        /// </summary>
+        /// <remarks>
+        /// Settings file contains project settings as R code.
+        /// The file is to be sourced before running the application. Null means no settings are defined. 
+        /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
+        /// </remarks>
+        public async Task SetSettingsFile(string rFilePath) {
+            var runProps = await this.GetConfigurationRunPropertiesAsync();
+            await runProps.StartupFile.SetValueAsync(rFilePath);
+        }
 
         private static bool ParseBooleanProperty(string propertyText, bool defaultVal) {
             bool result;

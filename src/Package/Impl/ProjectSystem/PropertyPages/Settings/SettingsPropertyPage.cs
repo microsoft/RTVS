@@ -32,9 +32,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             return Task.CompletedTask;
         }
 
-        protected override Task<int> OnApply() {
-            bool result = _control.Save();
-            return result ? Task.FromResult<int>(VSConstants.S_OK) : Task.FromResult<int>(VSConstants.E_FAIL);
+        protected override async Task<int> OnApply() {
+            return await _control.SaveAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
         }
 
         protected override Task OnSetObjects(bool isClosing) {
