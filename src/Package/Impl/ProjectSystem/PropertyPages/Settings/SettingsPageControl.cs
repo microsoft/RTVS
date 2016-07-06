@@ -20,12 +20,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly SettingsPageViewModel _viewModel;
         private ProjectProperties[] _properties;
         private ICoreShell _coreShell;
-        private IProjectSystemServices _pss;
         private int _selectedIndex;
         private bool _isDirty;
 
         public SettingsPageControl() {
-            _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem, ProjectServices);
+            _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem);
             InitializeComponent();
         }
 
@@ -188,19 +187,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             set {
                 Debug.Assert(_coreShell == null);
                 _coreShell = value;
-            }
-        }
-
-        internal IProjectSystemServices ProjectServices {
-            get {
-                if (_pss == null) {
-                    _pss = CoreShell.ExportProvider.GetExportedValue<IProjectSystemServices>();
-                }
-                return _pss;
-            }
-            set {
-                Debug.Assert(_pss == null);
-                _pss = value;
             }
         }
         #endregion

@@ -19,15 +19,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IConfigurationSettingCollection _settings;
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
-        private readonly IProjectSystemServices _pss;
         private string _currentFile;
         private string _projectPath;
 
-        public SettingsPageViewModel(IConfigurationSettingCollection settings, ICoreShell coreShell, IFileSystem fileSystem, IProjectSystemServices pss) {
+        public SettingsPageViewModel(IConfigurationSettingCollection settings, ICoreShell coreShell, IFileSystem fileSystem) {
             _settings = settings;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
-            _pss = pss;
         }
 
         public IEnumerable<string> Files => _filesMap.Keys;
@@ -83,13 +81,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public void CreateNewSettingsFile() {
             var fullPath = Path.Combine(_projectPath, "Settings.R");
-            CurrentFile = fullPath.MakeRRelativePath(_projectPath);
-            _filesMap[CurrentFile] = fullPath;
+            _currentFile = fullPath.MakeRRelativePath(_projectPath);
+            _filesMap[_currentFile] = fullPath;
         }
 
         private string GetFullPath(string rPath) {
             string fullPath = null;
-            _filesMap.TryGetValue(rPath, out fullPath);
+            if (rPath != null) {
+                _filesMap.TryGetValue(rPath, out fullPath);
+            }
             return fullPath;
         }
 

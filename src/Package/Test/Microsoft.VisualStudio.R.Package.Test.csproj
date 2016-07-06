@@ -169,7 +169,7 @@
     <Compile Include="AssertionExtensions.cs" />
     <Compile Include="Assertions\MenuCommandAssertions.cs" />
     <Compile Include="Browsers\WebBrowserServicesTest.cs" />
-    <Compile Include="Configuration\ProjectSettingsTest.cs" />
+    <Compile Include="ProjectSystem\PropertyPages\ProjectSettingsTest.cs" />
     <Compile Include="DataInspect\ViewersTest.cs" />
     <Compile Include="DataInspect\EvaluationWrapperTest.cs" />
     <Compile Include="DataInspect\REnvironmentProviderTest.cs" />
