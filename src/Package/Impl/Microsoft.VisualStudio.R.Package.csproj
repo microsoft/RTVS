@@ -1,5 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,8 +17,6 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <BaseIntermediateOutputPath>$(ObjDirectory)</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BinDirectory)</BaseOutputPath>
@@ -1279,18 +1280,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Content>
     <XamlPropertyRule Include="Rules\Run.xaml">
-      <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Generator>MSBuild:Compile</Generator>
     </XamlPropertyRule>
     <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <XamlPropertyRule Include="Rules\Settings.xaml">
-      <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Generator>MSBuild:Compile</Generator>
     </XamlPropertyRule>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -1325,11 +1322,61 @@
     <Copy SourceFiles="@(Rules)" DestinationFolder="$(MSBuildUserExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\RTVS\Rules\" />
   </Target>
   <Import Project="..\..\R.Build.Version.targets" />
-  <Import Project="$(UserProfile)\.nuget\packages\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets" Condition="'$(VisualStudioVersion)'=='14.0'" />
-  <Import Project="$(UserProfile)\.nuget\packages\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\Microsoft.VisualStudio.ProjectSystem.Sdk.Tools.targets" Condition="'$(VisualStudioVersion)'=='15.0'" />
   <Target Name="BeforeBuild">
     <!-- Define constant to use in the [InstalledProductRegistration] attribute -->
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
+  </Target>
+
+  <!-- CPS XAML rule handling -->
+  <PropertyGroup>
+    <MarkupCompilePass1DependsOn>
+      GenerateRuleSourceFromXaml;
+      $(MarkupCompilePass1DependsOn)
+    </MarkupCompilePass1DependsOn>
+  </PropertyGroup>
+
+  <Target Name="GenerateRulePrep">
+    <ItemGroup>
+      <_XamlPropertyRuleSource Include="@(XamlPropertyRule->'$(IntermediateOutputPath)%(FileName)$(DefaultLanguageSourceExtension)')"/>
+      <Compile Include="@(_XamlPropertyRuleSource)">
+        <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+      </Compile>
+      <_GeneratedCodeFiles Include="@(_XamlPropertyRuleSource)">
+        <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
+      </_GeneratedCodeFiles>
+      <Clean Include="@(_XamlPropertyRuleSource)" />
+    </ItemGroup>
+  </Target>
+
+  <!-- The target needs to run so the task can populate the output items correctly. 
+    The task does an up to date check on the files themselves
+   -->
+  <Target Name="GenerateRuleSourceFromXaml"
+          DependsOnTargets="GenerateRulePrep"
+          Condition="'@(XamlPropertyRule)' != ''">
+    <XamlRuleToCode
+       CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)"
+       NamespaceName="%(XamlPropertyRule.Namespace)"
+       RuleMissingError="%(XamlPropertyRule.RuleMissingError)"
+       PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)"
+       Inputs="@(XamlPropertyRule)"
+       OutputDirectory="%(XamlPropertyRule.OutputPath)"
+       DataAccess="%(XamlPropertyRule.DataAccess)"
+       RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)"
+       RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)"
+       RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)"
+       RuleInjection="%(XamlPropertyRule.RuleInjection)"
+       RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)"
+       RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)"
+       RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)"
+       ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)"
+       IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)"
+       IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)"
+       ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)"
+       IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)"
+       IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
+      <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource"/>
+    </XamlRuleToCode>
   </Target>
 </Project>
