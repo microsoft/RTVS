@@ -46,7 +46,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// The file is to be sourced before running the application. Null means no settings are defined. 
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
-        Task<string> GetSettingsFile();
+        Task<string> GetSettingsFileAsync();
 
         /// <summary>
         /// Gets R path to the settings file. 
@@ -56,6 +56,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// The file is to be sourced before running the application. Null means no settings are defined. 
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
-        Task SetSettingsFile(string rFilePath);
+        Task SetSettingsFileAsync(string rFilePath);
     }
 }

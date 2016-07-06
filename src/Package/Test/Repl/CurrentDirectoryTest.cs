@@ -10,6 +10,7 @@ using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.XUnit;
@@ -77,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             using (new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
-                actual = cmd.GetFriendlyDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
+                actual = cmd.UserDirectory.MakeRRelativePath(Environment.GetFolderPath(Environment.SpecialFolder.Personal));
             };
 
             actual.Should().Be("~");
@@ -90,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Repl {
             using (new VsRHostScript()) {
                 var cmd = new WorkingDirectoryCommand(_interactiveWorkflow);
                 cmd.InitializationTask.Wait();
-                actual = cmd.GetFriendlyDirectoryName("c:\\");
+                actual = cmd.UserDirectory.MakeRRelativePath("c:\\");
             };
 
             actual.Should().Be("c:/");

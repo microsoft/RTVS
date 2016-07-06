@@ -17,17 +17,21 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
         private readonly IConfigurationSettingCollection _settings = new ConfigurationSettingCollection();
-        private readonly ProjectProperties[] _properties;
         private readonly SettingsPageViewModel _viewModel;
+        private ProjectProperties[] _properties;
         private ICoreShell _coreShell;
         private IProjectSystemServices _pss;
         private int _selectedIndex;
         private bool _isDirty;
 
-        public SettingsPageControl(ProjectProperties[] properties) {
-            _properties = properties;
+        public SettingsPageControl() {
             _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem, ProjectServices);
             InitializeComponent();
+        }
+
+        public void SetProject(string path, ProjectProperties[] properties) {
+            _properties = properties;
+            _viewModel.SetProjectPath(path);
         }
 
         public event EventHandler<EventArgs> DirtyStateChanged;
@@ -42,9 +46,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public async Task<bool> SaveAsync() {
-            var result = _viewModel != null ? await _viewModel.SaveAsync(_properties) : true;
-            if (result) {
-                IsDirty = false;
+            bool result = true;
+            if (_viewModel != null) {
+                if (string.IsNullOrEmpty(_viewModel.CurrentFile)) {
+                    _viewModel.CreateNewSettingsFile();
+                    PopulateFilesCombo();
+                }
+                result = await _viewModel.SaveAsync(_properties);
+                if (result) {
+                    IsDirty = false;
+                }
             }
             return result;
         }
@@ -83,9 +94,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void PopulateFilesCombo() {
-            filesList.Items.AddRange(_viewModel.Files.ToArray());
-            if (filesList.Items.Count == 0) {
+            var files = _viewModel.Files.ToArray();
+            if (files.Length == 0) {
                 filesList.Items.Add(Resources.NoSettingFiles);
+            } else {
+                filesList.Items.Clear();
+                filesList.Items.AddRange(files);
             }
             _selectedIndex = filesList.SelectedIndex = 0;
         }

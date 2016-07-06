@@ -78,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// The file is to be sourced before running the application. Null means no settings are defined. 
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
-        public async Task<string> GetSettingsFile() {
+        public async Task<string> GetSettingsFileAsync() {
             var runProps = await this.GetConfigurationRunPropertiesAsync();
             return await runProps.StartupFile.GetEvaluatedValueAsync();
         }
@@ -91,7 +91,7 @@ namespace Microsoft.VisualStudio.R.Package {
         /// The file is to be sourced before running the application. Null means no settings are defined. 
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
-        public async Task SetSettingsFile(string rFilePath) {
+        public async Task SetSettingsFileAsync(string rFilePath) {
             var runProps = await this.GetConfigurationRunPropertiesAsync();
             await runProps.StartupFile.SetValueAsync(rFilePath);
         }

@@ -1279,20 +1279,16 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Content>
-    <XamlPropertyRule Include="Rules\Run.xaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </XamlPropertyRule>
     <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <XamlPropertyRule Include="Rules\Settings.xaml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </XamlPropertyRule>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <XamlPropertyRule Include="Rules\Run.xaml" />
+    <XamlPropertyRule Include="Rules\Settings.xaml" />
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
@@ -1352,6 +1348,17 @@
   <!-- The target needs to run so the task can populate the output items correctly. 
     The task does an up to date check on the files themselves
    -->
+  <!--<PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
+    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
+  </PropertyGroup>-->
+  
+  <!--<UsingTask Condition="'$(VisualStudioVersion)'=='14.0'"
+             TaskName="XamlRuleToCode" 
+             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>
+  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'"
+             TaskName="XamlRuleToCode" 
+             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>-->
+  
   <Target Name="GenerateRuleSourceFromXaml"
           DependsOnTargets="GenerateRulePrep"
           Condition="'@(XamlPropertyRule)' != ''">
@@ -1379,4 +1386,6 @@
       <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource"/>
     </XamlRuleToCode>
   </Target>
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
+  <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='15.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\15.0.25201-Dev15Preview2\tools\vssdk\Microsoft.VsSDK.targets')" />
 </Project>

@@ -20,19 +20,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
-        private readonly EnvDTE.Project _activeProject;
         private string _currentFile;
+        private string _projectPath;
 
         public SettingsPageViewModel(IConfigurationSettingCollection settings, ICoreShell coreShell, IFileSystem fileSystem, IProjectSystemServices pss) {
             _settings = settings;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
             _pss = pss;
-
-            _activeProject = _pss.GetActiveProject();
-            try {
-                EnumerateSettingFiles();
-            } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
         }
 
         public IEnumerable<string> Files => _filesMap.Keys;
@@ -57,6 +52,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
+        public void SetProjectPath(string projectPath) {
+            _projectPath = projectPath;
+            try {
+                EnumerateSettingFiles(projectPath);
+            } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
+        }
+
         public void AddSetting(string name, string value, ConfigurationSettingValueType valueType) {
             _settings.Add(new ConfigurationSetting(name, value, valueType));
         }
@@ -79,20 +81,27 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             return false;
         }
 
+        public void CreateNewSettingsFile() {
+            var fullPath = Path.Combine(_projectPath, "Settings.R");
+            CurrentFile = fullPath.MakeRRelativePath(_projectPath);
+            _filesMap[CurrentFile] = fullPath;
+        }
+
         private string GetFullPath(string rPath) {
             string fullPath = null;
             _filesMap.TryGetValue(rPath, out fullPath);
             return fullPath;
         }
 
-        private void EnumerateSettingFiles() {
-            var projectFiles = _pss.GetProjectFiles(_activeProject);
-            foreach (var fullPath in projectFiles) {
-                if (!string.IsNullOrEmpty(fullPath)) {
-                    var fileName = Path.GetFileName(fullPath);
+        private void EnumerateSettingFiles(string directory) {
+            foreach (var entry in _fileSystem.GetFileSystemEntries(directory)) {
+                if (_fileSystem.DirectoryExists(entry)) {
+                    EnumerateSettingFiles(entry);
+                } else {
+                    var fileName = Path.GetFileName(entry);
                     if (fileName.EqualsIgnoreCase("settings.r") || fileName.EndsWithIgnoreCase(".settings.r")) {
-                        var relativePath = fullPath.MakeRRelativePath(Path.GetDirectoryName(_activeProject.FileName));
-                        _filesMap[relativePath] = fullPath;
+                        var relativePath = entry.MakeRRelativePath(_projectPath);
+                        _filesMap[relativePath] = entry;
                     }
                 }
             }
@@ -101,8 +110,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private async Task SaveProjectPropertiesAsync(IRProjectProperties[] configuredProjectsProperties) {
             if (configuredProjectsProperties != null) {
                 foreach (var props in configuredProjectsProperties) {
-                    // Remember R path lik ~/... so when project moves we can still find the file
-                    await props.SetSettingsFile(CurrentFile);
+                    // Remember R path like ~/... so when project moves we can still find the file
+                    await props.SetSettingsFileAsync(CurrentFile);
                 }
             }
         }

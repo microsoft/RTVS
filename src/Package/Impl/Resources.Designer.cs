@@ -674,6 +674,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified settings file does not exist:.
+        /// </summary>
+        public static string Launch_SettingsFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Launch_SettingsFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified startup file does not exist:.
+        /// </summary>
+        public static string Launch_StartupFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("Launch_StartupFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Load History.
         /// </summary>
         public static string LoadHistoryTitle {

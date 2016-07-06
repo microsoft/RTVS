@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -12,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly SettingsPageControl _control;
 
         public SettingsPropertyPage() {
-            _control = new SettingsPageControl(ConfiguredProperties);
+            _control = new SettingsPageControl();
             _control.DirtyStateChanged += OnDirtyStateChanged;
             this.Load += OnLoad;
         }
@@ -37,6 +39,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         protected override Task OnSetObjects(bool isClosing) {
+            if(!isClosing) {
+                Debug.Assert(!string.IsNullOrEmpty(UnconfiguredProject.FullPath));
+                _control.SetProject(Path.GetDirectoryName(UnconfiguredProject.FullPath), ConfiguredProperties);
+            }
             return Task.CompletedTask;
         }
     }

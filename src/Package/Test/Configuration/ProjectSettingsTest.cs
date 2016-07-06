@@ -25,6 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
 
             string file = Path.GetTempFileName();
             var fs = Substitute.For<IFileSystem>();
+            fs.GetFileSystemEntries(file).Returns(new string[] { file });
+            fs.DirectoryExists(file).Returns(false);
             fs.FileExists(file).Returns(true);
 
             var pss = Substitute.For<IProjectSystemServices>();
@@ -32,6 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Configuration {
             pss.GetProjectFiles(Arg.Any<EnvDTE.Project>()).Returns(Enumerable.Empty<string>());
 
             var model = new SettingsPageViewModel(css, shell, fs, pss);
+            model.SetProjectPath(Path.GetDirectoryName(file));
             model.CurrentFile.Should().BeNull();
             await model.SaveAsync(null); // nothing should happen
         }

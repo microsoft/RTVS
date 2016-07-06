@@ -57,6 +57,10 @@ namespace Microsoft.Common.Core.IO {
             File.Delete(path);
         }
 
+        public string[] GetFileSystemEntries(string path) {
+            return Directory.GetFileSystemEntries(path);
+        }
+
         private static class NativeMethods {
             public const int MAX_PATH = 260;
 

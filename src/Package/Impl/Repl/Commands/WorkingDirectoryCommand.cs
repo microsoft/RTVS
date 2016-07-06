@@ -13,6 +13,7 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.R.Host.Client.Extensions;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -89,7 +90,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                     if (inputArg == null) {
                         // Return currently selected item
                         if (!string.IsNullOrEmpty(RToolsSettings.Current.WorkingDirectory)) {
-                            outputArg = GetFriendlyDirectoryName(RToolsSettings.Current.WorkingDirectory);
+                            outputArg = RToolsSettings.Current.WorkingDirectory.MakeRRelativePath(UserDirectory);
                         }
                     } else {
                         SetDirectory(inputArg as string);
@@ -105,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             string newDirectory = GetFullPathName(friendlyName);
 
             if (newDirectory != null && currentDirectory != newDirectory) {
-                RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
+                RToolsSettings.Current.WorkingDirectory = newDirectory.MakeRRelativePath(UserDirectory);
                 _session.SetWorkingDirectoryAsync(newDirectory)
                     .SilenceException<RException>()
                     .SilenceException<MessageTransportException>()
@@ -117,26 +118,9 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal string[] GetFriendlyDirectoryNames() {
             return RToolsSettings.Current.WorkingDirectoryList
-                .Select(GetFriendlyDirectoryName)
+                .Select(x => UserDirectory.MakeRRelativePath(x))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToArray();
-        }
-
-        internal string GetFriendlyDirectoryName(string directory) {
-            if (!string.IsNullOrEmpty(UserDirectory)) {
-                if(directory.EndsWithOrdinal("\\") && !directory.EndsWithOrdinal(":\\")) {
-                    directory = directory.Substring(0, directory.Length - 1);
-                }
-                if (directory.StartsWithIgnoreCase(UserDirectory)) {
-                    var relativePath = PathHelper.MakeRelative(UserDirectory, directory);
-                    if (relativePath.Length > 0) {
-                        return "~/" + relativePath.Replace('\\', '/');
-                    }
-                    return "~";
-                }
-                return directory.Replace('\\', '/');
-            }
-            return directory;
         }
 
         internal string GetFullPathName(string friendlyName) {

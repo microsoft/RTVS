@@ -842,4 +842,10 @@ Additional information:
   <data name="SettingsPage_SavePrompt" xml:space="preserve">
     <value>The selected settings have changed. Do you want to save the file?</value>
   </data>
+  <data name="Launch_SettingsFileDoesNotExist" xml:space="preserve">
+    <value>The specified settings file does not exist:</value>
+  </data>
+  <data name="Launch_StartupFileDoesNotExist" xml:space="preserve">
+    <value>The specified startup file does not exist:</value>
+  </data>
 </root>
