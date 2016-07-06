@@ -9,9 +9,9 @@ using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.R.Components.Test.Configuration {
     [ExcludeFromCodeCoverage]
-    public class ConfigurationSettingsServiceTest {
+    [Category.Configuration]
+    public class ConfigurationSettingsCollectionTest {
         [Test]
-        [Category.Configuration]
         public void Test01() {
             string file = Path.GetTempFileName();
             var content = "x <- 1";

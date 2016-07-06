@@ -10,15 +10,14 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
     [ExcludeFromCodeCoverage]
-    public class ProjectSettingsTest {
+    [Category.Configuration]
+    public class ProjectSettingsViewModelTest {
         [Test]
-        [Category.Configuration]
         public async Task EmptyViewModel() {
             var css = Substitute.For<IConfigurationSettingCollection>();
             var shell = Substitute.For<ICoreShell>();
@@ -36,7 +35,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
         }
 
         [Test]
-        [Category.Configuration]
         public void CreateNewFile() {
             var css = Substitute.For<IConfigurationSettingCollection>();
             var shell = Substitute.For<ICoreShell>();
@@ -50,7 +48,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
         }
 
         [Test]
-        [Category.Configuration]
         public void EnumerateFiles() {
             var css = Substitute.For<IConfigurationSettingCollection>();
             var shell = Substitute.For<ICoreShell>();

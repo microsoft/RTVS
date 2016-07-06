@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -19,12 +18,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IConfigurationSettingCollection _settings = new ConfigurationSettingCollection();
         private readonly SettingsPageViewModel _viewModel;
         private ProjectProperties[] _properties;
-        private ICoreShell _coreShell;
+        private readonly ICoreShell _coreShell;
         private int _selectedIndex;
         private bool _isDirty;
 
-        public SettingsPageControl() {
-            _viewModel = new SettingsPageViewModel(_settings, CoreShell, FileSystem);
+        public SettingsPageControl() : this(VsAppShell.Current, new FileSystem()) { }
+
+        public SettingsPageControl(ICoreShell coreShell, IFileSystem fs) {
+            _coreShell = coreShell;
+            _viewModel = new SettingsPageViewModel(_settings, coreShell, fs);
             InitializeComponent();
         }
 
@@ -39,22 +41,20 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             set {
                 if (_isDirty != value) {
                     _isDirty = value;
-                    DirtyStateChanged.Invoke(this, EventArgs.Empty);
+                    DirtyStateChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
         public async Task<bool> SaveAsync() {
             bool result = true;
-            if (_viewModel != null) {
-                if (string.IsNullOrEmpty(_viewModel.CurrentFile)) {
-                    _viewModel.CreateNewSettingsFile();
-                    PopulateFilesCombo();
-                }
-                result = await _viewModel.SaveAsync(_properties);
-                if (result) {
-                    IsDirty = false;
-                }
+            if (string.IsNullOrEmpty(_viewModel.CurrentFile)) {
+                _viewModel.CreateNewSettingsFile();
+                PopulateFilesCombo();
+            }
+            result = await _viewModel.SaveAsync(_properties);
+            if (result) {
+                IsDirty = false;
             }
             return result;
         }
@@ -170,25 +170,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             if (fontSvc != null) {
                 var logFont = new UIDLGLOGFONT[1];
                 int hr = fontSvc.GetDialogFont(logFont);
-                if (hr == VSConstants.S_OK)
+                if (hr == VSConstants.S_OK) {
                     this.Font = IdeUtilities.FontFromUiDialogFont(logFont[0]);
+                }
             }
         }
 
         #region Test support
-        internal IFileSystem FileSystem { get; set; } = new FileSystem();
-        internal ICoreShell CoreShell {
-            get {
-                if (_coreShell == null) {
-                    _coreShell = VsAppShell.Current;
-                }
-                return _coreShell;
-            }
-            set {
-                Debug.Assert(_coreShell == null);
-                _coreShell = value;
-            }
-        }
+        internal ComboBox FileListCombo => filesList;
+        internal PropertyGrid PropertyGrid => propertyGrid;
+        internal TextBox VariableName => variableName;
+        internal TextBox VariableValue => variableValue;
+        internal Button AddButton => addSettingButton;
+        internal ComboBox VariableTypeCombo => variableTypeList;
         #endregion
     }
 }

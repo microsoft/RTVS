@@ -4,13 +4,10 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Application.Configuration.Parser;
 using Microsoft.UnitTests.Core.XUnit;
-using NSubstitute;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.Configuration {

@@ -79,8 +79,8 @@ namespace Microsoft.VisualStudio.R.Package {
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
         public async Task<string> GetSettingsFileAsync() {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
-            return await runProps.StartupFile.GetEvaluatedValueAsync();
+            var runProps = await this.GetConfigurationSettingsPropertiesAsync();
+            return await runProps.SettingsFile.GetEvaluatedValueAsync();
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace Microsoft.VisualStudio.R.Package {
         /// In order to read the actual settings, use <see cref="ConfigurationSettingCollection"/>
         /// </remarks>
         public async Task SetSettingsFileAsync(string rFilePath) {
-            var runProps = await this.GetConfigurationRunPropertiesAsync();
-            await runProps.StartupFile.SetValueAsync(rFilePath);
+            var runProps = await this.GetConfigurationSettingsPropertiesAsync();
+            await runProps.SettingsFile.SetValueAsync(rFilePath);
         }
 
         private static bool ParseBooleanProperty(string propertyText, bool defaultVal) {

@@ -70,7 +70,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             if (!string.IsNullOrEmpty(fullPath)) {
                 try {
                     _settings.Save(fullPath);
-                    await SaveProjectPropertiesAsync(configuredProjectsProperties);
+                    if (configuredProjectsProperties != null) {
+                        await SaveProjectPropertiesAsync(configuredProjectsProperties);
+                    }
                     return true;
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, fullPath, ex.Message));
@@ -80,9 +82,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public void CreateNewSettingsFile() {
-            var fullPath = Path.Combine(_projectPath, "Settings.R");
-            _currentFile = fullPath.MakeRRelativePath(_projectPath);
-            _filesMap[_currentFile] = fullPath;
+            if (!string.IsNullOrEmpty(_projectPath)) {
+                var fullPath = Path.Combine(_projectPath, "Settings.R");
+                _currentFile = fullPath.MakeRRelativePath(_projectPath);
+                _filesMap[_currentFile] = fullPath;
+            }
         }
 
         private string GetFullPath(string rPath) {
