@@ -24,16 +24,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         private uint _debuggerCookie;
 
         // WIN32 Constants
-        private const int
-            WM_KEYFIRST = 0x0100,
-            WM_KEYLAST = 0x0108,
-            WM_MOUSEFIRST = 0x0200,
-            WM_MOUSELAST = 0x020A,
-            SW_HIDE = 0;
-
-        internal static class NativeMethods {
-            public const int S_OK = 0x00000000;
-        }
+        private const int SW_HIDE = 0;
 
         protected UnconfiguredProject UnconfiguredProject { get; set; }
         protected ProjectProperties[] ConfiguredProperties { get; set; }
@@ -108,24 +99,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
         }
 
-        public void Help(string pszHelpDir) {
-        }
-
-        public int IsPageDirty() {
-            if (IsDirty)
-                return VSConstants.S_OK;
-            return VSConstants.S_FALSE;
-        }
+        public void Help(string pszHelpDir) { }
+        public int IsPageDirty() => IsDirty ? VSConstants.S_OK : VSConstants.S_FALSE;
 
         public new void Move(RECT[] pRect) {
             if (pRect == null || pRect.Length <= 0) {
                 throw new ArgumentNullException(nameof(pRect));
             }
 
-            Microsoft.VisualStudio.OLE.Interop.RECT r = pRect[0];
-
-            this.Location = new Point(r.left, r.top);
-            this.Size = new Size(r.right - r.left, r.bottom - r.top);
+            RECT r = pRect[0];
+            Location = new Point(r.left, r.top);
+            Size = new Size(r.right - r.left, r.bottom - r.top);
         }
 
         internal void SetObjects(bool isClosing) {
@@ -150,13 +134,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                 throw new ArgumentOutOfRangeException(nameof(cObjects));
             }
 
-            List<ProjectProperties> configuredProjectsProperties = new List<ProjectProperties>();
+            var configuredProjectsProperties = new List<ProjectProperties>();
 
             // Look for an IVsBrowseObject
             for (int i = 0; i < cObjects; ++i) {
-                IVsBrowseObject browseObj = null;
-                browseObj = ppunk[i] as IVsBrowseObject;
-
+                var browseObj = ppunk[i] as IVsBrowseObject;
                 if (browseObj != null) {
                     IVsHierarchy hier = null;
                     uint itemid;
@@ -166,12 +148,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
                     if (hr == VSConstants.S_OK && itemid == VSConstants.VSITEMID_ROOT) {
                         UnconfiguredProject = hier.GetUnconfiguredProject();
-
-                        // We need to save ThreadHandling because the appdesigner will call SetObjects with null, and then call
+                        // We need to save ThreadHandling because the app designer will call SetObjects with null, and then call
                         // Deactivate(). We need to run Async code during Deactivate() which requires ThreadHandling.
                         ThreadHandling = UnconfiguredProject.Services.ExportProvider.GetExportedValue<IThreadHandling>();
 
-                        IVsProjectCfg2 pcg = ppunk[i] as IVsProjectCfg2;
+                        var pcg = ppunk[i] as IVsProjectCfg2;
                         if (pcg != null) {
                             string vsConfigName;
                             pcg.get_CanonicalName(out vsConfigName);
@@ -196,7 +177,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         public void Show(uint nCmdShow) {
-            if (nCmdShow != SW_HIDE) {
+            if (nCmdShow !=  SW_HIDE) {
                 this.Show();
             } else {
                 this.Hide();
@@ -256,7 +237,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
 
         public int OnModeChange(DBGMODE dbgmodeNew) {
             Enabled = (dbgmodeNew == DBGMODE.DBGMODE_Design);
-            return NativeMethods.S_OK;
+            return VSConstants.S_OK;
         }
     }
 }

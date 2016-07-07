@@ -57,8 +57,8 @@ namespace Microsoft.Common.Core.IO {
             File.Delete(path);
         }
 
-        public string[] GetFileSystemEntries(string path) {
-            return Directory.GetFileSystemEntries(path);
+        public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) {
+            return Directory.GetFileSystemEntries(path, searchPattern, options);
         }
 
         private static class NativeMethods {

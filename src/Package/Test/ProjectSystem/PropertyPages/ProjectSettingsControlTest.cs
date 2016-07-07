@@ -51,11 +51,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             control.IsDirty.Should().BeTrue();
             count.Should().Be(1);
 
-            (await control.SaveAsync()).Should().BeFalse(); // No op
+            (await control.SaveSettingsAsync()).Should().BeFalse(); // No op
             control.IsDirty.Should().BeTrue();
 
-            control.SetProject(Path.GetTempPath(), null);
-            (await control.SaveAsync()).Should().BeTrue();
+            await control.SetProjectAsync(Path.GetTempPath(), null);
+            (await control.SaveSettingsAsync()).Should().BeTrue();
             control.IsDirty.Should().BeFalse();
         }
 
@@ -72,9 +72,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 using (var sw = new StreamWriter(file)) {
                     sw.WriteLine("x <- 1");
                 }
-                fs.GetFileSystemEntries(Arg.Any<string>()).Returns(new string[] { file });
+                fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file });
 
-                control.SetProject(folder, null);
+                control.SetProjectAsync(folder, null);
 
                 control.CreateControl();
                 control.FileListCombo.Items.Count.Should().BeGreaterThan(0);
@@ -104,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var fs = Substitute.For<IFileSystem>();
             var control = new SettingsPageControl(shell, fs);
 
-            control.SetProject(Path.GetTempPath(), null);
+            control.SetProjectAsync(Path.GetTempPath(), null);
             control.CreateControl();
 
             control.PropertyGrid.SelectedObject.Should().BeNull();
@@ -152,9 +152,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 using (var sw = new StreamWriter(file2)) {
                     sw.WriteLine("y <- 2");
                 }
-                fs.GetFileSystemEntries(Arg.Any<string>()).Returns(new string[] { file1, file2 });
+                fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file1, file2 });
 
-                control.SetProject(folder, null);
+                control.SetProjectAsync(folder, null);
 
                 control.CreateControl();
                 control.FileListCombo.Items.Count.Should().BeGreaterThan(0);
@@ -194,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
         }
 
         [Test]
-        public void PropertyGridMultiple02() {
+        public async Task PropertyGridMultiple02() {
             var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
             var control = new SettingsPageControl(shell, fs);
@@ -211,9 +211,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 using (var sw = new StreamWriter(file2)) {
                     sw.WriteLine("y <- 2");
                 }
-                fs.GetFileSystemEntries(Arg.Any<string>()).Returns(new string[] { file1, file2 });
+                fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file1, file2 });
 
-                control.SetProject(folder, null);
+                await control.SetProjectAsync(folder, null);
 
                 control.CreateControl();
                 control.FileListCombo.Items.Count.Should().BeGreaterThan(0);
@@ -240,7 +240,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 control.FileListCombo.SelectedIndex = 1;
                 shell.Received().ShowMessage(Microsoft.VisualStudio.R.Package.Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
 
-                control.IsDirty.Should().BeFalse();
+                control.IsDirty.Should().BeTrue(); // Changing between setting files makes page dirty
                 control.FileListCombo.SelectedIndex.Should().Be(1);
             } finally {
                 if (File.Exists(file1)) {

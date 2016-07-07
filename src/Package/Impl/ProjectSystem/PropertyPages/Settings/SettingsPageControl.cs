@@ -18,7 +18,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
     internal partial class SettingsPageControl : UserControl {
         private readonly IConfigurationSettingCollection _settings = new ConfigurationSettingCollection();
         private readonly SettingsPageViewModel _viewModel;
-        private ProjectProperties[] _properties;
         private readonly ICoreShell _coreShell;
         private int _selectedIndex;
         private bool _isDirty;
@@ -31,9 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             InitializeComponent();
         }
 
-        public void SetProject(string path, ProjectProperties[] properties) {
-            _properties = properties;
-            _viewModel.SetProjectPath(path);
+        public async Task SetProjectAsync(string path, ProjectProperties[] properties) {
+            await _viewModel.SetProjectPathAsync(path, properties);
         }
 
         public event EventHandler<EventArgs> DirtyStateChanged;
@@ -47,13 +45,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public async Task<bool> SaveAsync() {
+        public Task SaveSelectedSettingsFileNameAsync() {
+            return _viewModel?.SaveSelectedSettingsFileNameAsync();
+        }
+
+        public async Task<bool> SaveSettingsAsync() {
             bool result = true;
             if (string.IsNullOrEmpty(_viewModel.CurrentFile)) {
                 _viewModel.CreateNewSettingsFile();
                 PopulateFilesCombo();
             }
-            result = await _viewModel.SaveAsync(_properties);
+            result = await _viewModel.SaveAsync();
             if (result) {
                 IsDirty = false;
             }
@@ -87,24 +89,25 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             variableTypeList.SelectedIndex = 0;
 
             explanationText.Text = string.Format(CultureInfo.InvariantCulture,
-                                    Resources.SettingsPage_Explanation, 
+                                    Resources.SettingsPage_Explanation,
                                     Environment.NewLine + Environment.NewLine,
                                     Environment.NewLine + Environment.NewLine);
         }
 
         private void PopulateFilesCombo() {
             var files = _viewModel.Files.ToArray();
+            filesList.Items.Clear();
             if (files.Length == 0) {
                 filesList.Items.Add(Resources.NoSettingFiles);
+                _selectedIndex = filesList.SelectedIndex = 0;
             } else {
-                filesList.Items.Clear();
                 filesList.Items.AddRange(files);
+                int index = Array.FindIndex(files, x => x.EqualsIgnoreCase(_viewModel.CurrentFile));
+                _selectedIndex = filesList.SelectedIndex = index >= 0 ? index : 0;
             }
-            _selectedIndex = filesList.SelectedIndex = 0;
         }
 
         private void LoadPropertyGrid() {
-            IsDirty = false;
             var item = filesList.Items[filesList.SelectedIndex] as string;
             if (item.EqualsOrdinal(Resources.NoSettingFiles)) {
                 return;
@@ -129,11 +132,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                         filesList.SelectedIndex = _selectedIndex;
                         return;
                     } else if (answer == MessageButtons.Yes) {
-                        _viewModel.SaveAsync(_properties).DoNotWait();
-                        IsDirty = false;
+                        _viewModel.SaveAsync().DoNotWait();
                     }
                 }
                 _selectedIndex = filesList.SelectedIndex;
+                IsDirty = true;
                 LoadPropertyGrid();
             }
         }

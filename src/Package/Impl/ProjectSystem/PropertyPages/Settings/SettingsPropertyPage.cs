@@ -31,19 +31,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         protected override string PropertyPageName => PageName;
 
         protected override Task OnDeactivate() {
-            return Task.CompletedTask;
+            return _control.SaveSelectedSettingsFileNameAsync();
         }
 
         protected override async Task<int> OnApply() {
-            return await _control.SaveAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
+            return await _control.SaveSettingsAsync() ? VSConstants.S_OK : VSConstants.E_FAIL;
         }
 
-        protected override Task OnSetObjects(bool isClosing) {
+        protected override async Task OnSetObjects(bool isClosing) {
             if(!isClosing) {
                 Debug.Assert(!string.IsNullOrEmpty(UnconfiguredProject.FullPath));
-                _control.SetProject(Path.GetDirectoryName(UnconfiguredProject.FullPath), ConfiguredProperties);
+                await _control.SetProjectAsync(Path.GetDirectoryName(UnconfiguredProject.FullPath), ConfiguredProperties);
             }
-            return Task.CompletedTask;
         }
     }
 }

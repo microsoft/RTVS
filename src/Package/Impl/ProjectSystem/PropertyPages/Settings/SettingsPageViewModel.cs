@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -19,6 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IConfigurationSettingCollection _settings;
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
+        private IRProjectProperties[] _properties;
         private string _currentFile;
         private string _projectPath;
 
@@ -32,9 +34,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_settings);
 
         public string CurrentFile {
-            get {
-                return _currentFile;
-            }
+            get { return _currentFile; }
             set {
                 if (!value.EqualsIgnoreCase(_currentFile)) {
                     try {
@@ -50,11 +50,23 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public void SetProjectPath(string projectPath) {
+        public async Task SetProjectPathAsync(string projectPath, IRProjectProperties[] properties) {
             _projectPath = projectPath;
+            _properties = properties;
             try {
                 EnumerateSettingFiles(projectPath);
             } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
+
+            if (_properties?.Length > 0) {
+                var file = await _properties[0].GetSettingsFileAsync();
+                if (_filesMap.ContainsKey(file)) {
+                    CurrentFile = file;
+                }
+            }
+
+            if (CurrentFile == null) {
+                CurrentFile = _filesMap.Keys.FirstOrDefault();
+            }
         }
 
         public void AddSetting(string name, string value, ConfigurationSettingValueType valueType) {
@@ -65,20 +77,27 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _settings.Remove(s);
         }
 
-        public async Task<bool> SaveAsync(IRProjectProperties[] configuredProjectsProperties) {
+        public async Task<bool> SaveAsync() {
             var fullPath = GetFullPath(CurrentFile);
             if (!string.IsNullOrEmpty(fullPath)) {
                 try {
                     _settings.Save(fullPath);
-                    if (configuredProjectsProperties != null) {
-                        await SaveProjectPropertiesAsync(configuredProjectsProperties);
-                    }
+                    await SaveSelectedSettingsFileNameAsync();
                     return true;
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
                     _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToSaveSettings, fullPath, ex.Message));
                 }
             }
             return false;
+        }
+
+        public async Task SaveSelectedSettingsFileNameAsync() {
+            if (_properties != null) {
+                foreach (var props in _properties) {
+                    // Remember R path like ~/... so when project moves we can still find the file
+                    await props.SetSettingsFileAsync(CurrentFile);
+                }
+            }
         }
 
         public void CreateNewSettingsFile() {
@@ -98,24 +117,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void EnumerateSettingFiles(string directory) {
-            foreach (var entry in _fileSystem.GetFileSystemEntries(directory)) {
-                if (_fileSystem.DirectoryExists(entry)) {
-                    EnumerateSettingFiles(entry);
-                } else {
-                    var fileName = Path.GetFileName(entry);
-                    if (fileName.EqualsIgnoreCase("settings.r") || fileName.EndsWithIgnoreCase(".settings.r")) {
-                        var relativePath = entry.MakeRRelativePath(_projectPath);
-                        _filesMap[relativePath] = entry;
-                    }
-                }
-            }
-        }
-
-        private async Task SaveProjectPropertiesAsync(IRProjectProperties[] configuredProjectsProperties) {
-            if (configuredProjectsProperties != null) {
-                foreach (var props in configuredProjectsProperties) {
-                    // Remember R path like ~/... so when project moves we can still find the file
-                    await props.SetSettingsFileAsync(CurrentFile);
+            var entries = _fileSystem.GetFileSystemEntries(directory, "*settings*.r", SearchOption.AllDirectories);
+            foreach (var entry in entries) {
+                var fileName = Path.GetFileName(entry);
+                if (fileName.StartsWithIgnoreCase("settings") || fileName.EndsWithIgnoreCase(".settings.r")) {
+                    var relativePath = entry.MakeRRelativePath(_projectPath);
+                    _filesMap[relativePath] = entry;
                 }
             }
         }

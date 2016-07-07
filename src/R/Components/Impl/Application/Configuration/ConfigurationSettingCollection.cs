@@ -24,6 +24,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// </summary>
         public void Load(string filePath) {
             lock (_lock) {
+                Clear();
                 using (var sr = new StreamReader(filePath)) {
                     using (var csr = new ConfigurationSettingsReader(sr)) {
                         var settings = csr.LoadSettings();
