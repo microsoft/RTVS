@@ -10,6 +10,9 @@ namespace Microsoft.Common.Core {
             if (!basePath.EndsWithOrdinal("\\")) {
                 basePath += "\\";
             }
+            if (!path.EndsWithOrdinal("\\")) {
+                path += "\\";
+            }
             if (path.StartsWithIgnoreCase(basePath)) {
                 return path.Substring(basePath.Length);
             }

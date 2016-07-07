@@ -242,7 +242,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
                 control.IsDirty.Should().BeFalse();
                 control.FileListCombo.SelectedIndex.Should().Be(1);
-
             } finally {
                 if (File.Exists(file1)) {
                     File.Delete(file1);
