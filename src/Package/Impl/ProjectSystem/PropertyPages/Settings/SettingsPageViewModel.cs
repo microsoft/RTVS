@@ -37,12 +37,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
             set {
                 if (!value.EqualsIgnoreCase(_currentFile)) {
-                    _currentFile = value;
                     try {
-                        var fullPath = GetFullPath(_currentFile);
+                        var fullPath = GetFullPath(value);
                         if (!string.IsNullOrEmpty(fullPath)) {
                             _settings.Load(fullPath);
                         }
+                        _currentFile = value;
                     } catch (Exception ex) when (!ex.IsCriticalException()) {
                         _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToReadSettings, ex.Message));
                     }

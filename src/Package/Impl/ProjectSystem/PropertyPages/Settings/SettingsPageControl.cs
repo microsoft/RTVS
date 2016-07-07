@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -85,11 +86,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             variableTypeList.Items.Add(Resources.SettingsPage_VariableType_Expression);
             variableTypeList.SelectedIndex = 0;
 
-            explanationText.Text = Resources.SettingsPage_Explanation1
-                                    + Environment.NewLine + Environment.NewLine
-                                    + Resources.SettingsPage_Explanation2
-                                    + Environment.NewLine + Environment.NewLine
-                                    + Resources.SettingsPage_Explanation3;
+            explanationText.Text = string.Format(CultureInfo.InvariantCulture,
+                                    Resources.SettingsPage_Explanation, 
+                                    Environment.NewLine + Environment.NewLine,
+                                    Environment.NewLine + Environment.NewLine);
         }
 
         private void PopulateFilesCombo() {

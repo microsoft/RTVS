@@ -815,14 +815,8 @@ Additional information:
   <data name="NoSettingFiles" xml:space="preserve">
     <value>&lt;No *setting.R files found&gt;</value>
   </data>
-  <data name="SettingsPage_Explanation1" xml:space="preserve">
-    <value>R project settings come from Settings.R or *.Settings.R files that are located inside the project.</value>
-  </data>
-  <data name="SettingsPage_Explanation2" xml:space="preserve">
-    <value>If there is no settings file and you would like to create one, please close this page, right click on the project node in Solution Explorer, choose Add New Item and pick R Settings file.</value>
-  </data>
-  <data name="SettingsPage_Explanation3" xml:space="preserve">
-    <value>Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings.</value>
+  <data name="SettingsPage_Explanation" xml:space="preserve">
+    <value>R project settings come from Settings.R or *.Settings.R files that are located inside the project.{0}If there is no settings file, you can add variables and save the page. Default Settings.R will be created for you. You can also add settings file to the project via File | Add New Item.{0}Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings.</value>
   </data>
   <data name="SettingsPage_VariableNameLabel" xml:space="preserve">
     <value>&amp;Name:</value>

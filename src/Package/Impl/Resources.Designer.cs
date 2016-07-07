@@ -1857,29 +1857,11 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R project settings come from Settings.R or *.Settings.R files that are located inside the project..
+        ///   Looks up a localized string similar to R project settings come from Settings.R or *.Settings.R files that are located inside the project.{0}If there is no settings file, you can add variables and save the page. Default Settings.R will be created for you. You can also add settings file to the project via File | Add New Item.{0}Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings..
         /// </summary>
-        public static string SettingsPage_Explanation1 {
+        public static string SettingsPage_Explanation {
             get {
-                return ResourceManager.GetString("SettingsPage_Explanation1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to If there is no settings file and you would like to create one, please close this page, right click on the project node in Solution Explorer, choose Add New Item and pick R Settings file..
-        /// </summary>
-        public static string SettingsPage_Explanation2 {
-            get {
-                return ResourceManager.GetString("SettingsPage_Explanation2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings..
-        /// </summary>
-        public static string SettingsPage_Explanation3 {
-            get {
-                return ResourceManager.GetString("SettingsPage_Explanation3", resourceCulture);
+                return ResourceManager.GetString("SettingsPage_Explanation", resourceCulture);
             }
         }
         
