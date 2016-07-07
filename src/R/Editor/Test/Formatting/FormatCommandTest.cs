@@ -1,16 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Controller.Constants;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Formatting.Data;
 using Microsoft.R.Editor.Test.Mocks;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -20,7 +23,19 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
-    public class FormatCommandTest {
+    public class FormatCommandTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
+
+        public FormatCommandTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [CompositeTest]
         [InlineData("if(x<1){x<-2}", "if (x < 1) { x <- 2 }")]
         [InlineData("if(x<1){\nx<-2}", "if (x < 1) {\n    x <- 2\n}")]
@@ -30,7 +45,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextBuffer textBuffer = new TextBufferMock(original, RContentTypeDefinition.ContentType);
             ITextView textView = new TextViewMock(textBuffer);
 
-            using (var command = new FormatDocumentCommand(textView, textBuffer)) {
+            using (var command = new FormatDocumentCommand(textView, textBuffer, _editorShell)) {
                 var status = command.Status(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.FORMATDOCUMENT);
                 status.Should().Be(CommandStatus.SupportedAndEnabled);
 
@@ -48,7 +63,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, _editorShell)) {
                 command.ClipboardDataProvider = clipboard;
 
                 var status = command.Status(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Paste);
@@ -75,7 +90,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = new TextViewMock(textBuffer);
             var clipboard = new ClipboardDataProvider();
 
-            using (var command = new FormatOnPasteCommand(textView, textBuffer)) {
+            using (var command = new FormatOnPasteCommand(textView, textBuffer, _editorShell)) {
                 command.ClipboardDataProvider = clipboard;
 
                 clipboard.Format = DataFormats.UnicodeText;

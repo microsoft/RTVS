@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
@@ -12,7 +13,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
     public abstract class ProjectionEditorInstance : IEditorInstance {
         IEditorDocument _document;
 
-        public ProjectionEditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory) {
+        public ProjectionEditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell) {
             if (diskBuffer == null) {
                 throw new ArgumentNullException(nameof(diskBuffer));
             }
@@ -26,7 +27,7 @@ namespace Microsoft.Languages.Editor.EditorFactory {
             var projectionBufferManager = ProjectionBufferManager.FromTextBuffer(diskBuffer);
             ViewBuffer = projectionBufferManager.ViewBuffer;
 
-            ServiceManager.AddService<IEditorInstance>(this, DiskBuffer);
+            ServiceManager.AddService<IEditorInstance>(this, DiskBuffer, coreShell);
         }
 
         #region IEditorInstance

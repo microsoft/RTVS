@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
@@ -14,14 +15,16 @@ namespace Microsoft.R.Support.Help.Packages {
     /// the packages are installed in.
     /// </summary>
     internal class PackageEnumeration : IEnumerable<IPackageInfo> {
-        private string _libraryPath;
+        private readonly IFunctionIndex _functionIndex;
+        private readonly string _libraryPath;
 
-        public PackageEnumeration(string libraryPath) {
+        public PackageEnumeration(IFunctionIndex functionIndex, string libraryPath) {
             _libraryPath = libraryPath;
+            _functionIndex = functionIndex;
         }
 
         public IEnumerator<IPackageInfo> GetEnumerator() {
-            return new PackageEnumerator(_libraryPath);
+            return new PackageEnumerator(_functionIndex, _libraryPath);
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -30,9 +33,11 @@ namespace Microsoft.R.Support.Help.Packages {
     }
 
     class PackageEnumerator : IEnumerator<IPackageInfo> {
+        private readonly IFunctionIndex _functionIndex;
         private IEnumerator<string> _directoriesEnumerator;
 
-        public PackageEnumerator(string libraryPath) {
+        public PackageEnumerator(IFunctionIndex functionIndex, string libraryPath) {
+            _functionIndex = functionIndex;
             if (!string.IsNullOrEmpty(libraryPath) && Directory.Exists(libraryPath)) {
                 _directoriesEnumerator = Directory.EnumerateDirectories(libraryPath).GetEnumerator();
             } else {
@@ -45,16 +50,14 @@ namespace Microsoft.R.Support.Help.Packages {
                 string directoryPath = _directoriesEnumerator.Current;
                 if (!string.IsNullOrEmpty(directoryPath)) {
                     string name = Path.GetFileName(directoryPath);
-                    return new PackageInfo(name, Path.GetDirectoryName(directoryPath));
+                    return new PackageInfo(_functionIndex, name, Path.GetDirectoryName(directoryPath));
                 }
 
                 return null;
             }
         }
 
-        object IEnumerator.Current {
-            get { return this.Current; }
-        }
+        object IEnumerator.Current => this.Current;
 
         public bool MoveNext() {
             return _directoriesEnumerator.MoveNext();

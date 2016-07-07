@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
@@ -17,10 +18,14 @@ namespace Microsoft.R.Editor.Classification {
         [Import]
         public IClassificationTypeRegistryService ClassificationRegistryService { get; set; }
 
+        [Import]
+        public ICoreShell Shell { get; set; }
+
         public IClassifier GetClassifier(ITextBuffer textBuffer) {
             RClassifier classifier = ServiceManager.GetService<RClassifier>(textBuffer);
             if (classifier == null) {
                 classifier = new RClassifier(textBuffer, ClassificationRegistryService);
+                ServiceManager.AddService<RClassifier>(classifier, textBuffer, Shell);
             }
 
             return classifier;

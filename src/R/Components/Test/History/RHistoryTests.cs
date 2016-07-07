@@ -1,19 +1,19 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System.ComponentModel.Composition.Hosting;
 using FluentAssertions;
 using Microsoft.R.Components.History.Implementation;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Test.StubFactories;
 using Microsoft.R.Components.Test.Stubs;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.History {
     public class RHistoryTests {
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
         private readonly ITextBuffer _textBuffer;
 

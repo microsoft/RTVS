@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
         public EditorDocumentMock(string content, string filePath = null) {
             var tb = new TextBufferMock(content, RContentTypeDefinition.ContentType);
             EditorTree = new EditorTreeMock(tb, RParser.Parse(content));
-            ServiceManager.AddService<IREditorDocument>(this, tb);
+            ServiceManager.AddService<IREditorDocument>(this, tb, null);
             if (!string.IsNullOrEmpty(filePath)) {
                 tb.Properties.AddProperty(typeof(ITextDocument), new TextDocumentMock(tb, filePath));
             }
@@ -26,7 +26,7 @@ namespace Microsoft.R.Editor.Test.Mocks {
 
         public EditorDocumentMock(IEditorTree tree) {
             EditorTree = tree;
-            ServiceManager.AddService<IREditorDocument>(this, tree.TextBuffer);
+            ServiceManager.AddService<IREditorDocument>(this, tree.TextBuffer, null);
         }
 
         public IEditorTree EditorTree { get; private set; }

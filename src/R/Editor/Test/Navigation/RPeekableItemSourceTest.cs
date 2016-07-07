@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
@@ -14,6 +16,7 @@ using Microsoft.R.Editor.Navigation.Peek;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,8 +27,17 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Navigation {
     [ExcludeFromCodeCoverage]
     [Category.R.Navigation]
-    [Collection(CollectionNames.NonParallel)]
-    public class RPeekableItemSourceTest {
+    public class RPeekableItemSourceTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+
+        public RPeekableItemSourceTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void PeekFunction01() {
             string content =
@@ -71,7 +83,7 @@ x <- function(a) {
 
         [Test]
         public void PeekInternalFunction01() {
-            var provider = EditorShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
+            var provider = _exportProvider.GetExportedValue<IRSessionProvider>();
             using (new RHostScript(provider)) {
                 string content = @"lm()";
                 RunInternalItemPeekTest(content, 0, 1, "lm");
@@ -149,7 +161,7 @@ x <- function(a) {
 
             var peekSession = PeekSessionMock.Create(textView, position);
             var factory = PeekResultFactoryMock.Create();
-            var peekSource = new PeekableItemSource(textView.TextBuffer, factory);
+            var peekSource = new PeekableItemSource(textView.TextBuffer, factory, _exportProvider.GetExportedValue<ICoreShell>());
 
             peekSource.AugmentPeekSession(peekSession, items);
         }

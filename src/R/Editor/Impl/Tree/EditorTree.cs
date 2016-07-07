@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
@@ -180,17 +181,19 @@ namespace Microsoft.R.Editor.Tree {
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// Creates document tree on a given text buffer.
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public EditorTree(ITextBuffer textBuffer) {
+        /// <param name="shell"></param>
+        public EditorTree(ITextBuffer textBuffer, ICoreShell shell) {
             _ownerThread = Thread.CurrentThread.ManagedThreadId;
 
             TextBuffer = textBuffer;
             TextBuffer.ChangedHighPriority += OnTextBufferChanged;
 
-            TreeUpdateTask = new TreeUpdateTask(this);
+            TreeUpdateTask = new TreeUpdateTask(this, shell);
             TreeLock = new EditorTreeLock();
         }
         #endregion

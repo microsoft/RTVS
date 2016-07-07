@@ -4,8 +4,8 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Selection;
 using Microsoft.VisualStudio.Text;
@@ -16,8 +16,11 @@ using Microsoft.VisualStudio.Text.Tagging;
 namespace Microsoft.R.Editor.Commands {
     public sealed class RMouseProcessor : MouseProcessorBase {
         private readonly IWpfTextView _wpfTextView;
-        public RMouseProcessor(IWpfTextView wpfTextView) {
+        private readonly ICoreShell _shell;
+
+        public RMouseProcessor(IWpfTextView wpfTextView, ICoreShell shell) {
             _wpfTextView = wpfTextView;
+            _shell = shell;
         }
 
         public override void PreprocessMouseLeftButtonDown(MouseButtonEventArgs e) {
@@ -49,7 +52,7 @@ namespace Microsoft.R.Editor.Commands {
                     var snapshot = textView.TextBuffer.CurrentSnapshot;
                     ITextSnapshotLine line = snapshot.GetLineFromPosition(bufferPosition.Value);
 
-                    var tagAggregator = EditorShell.Current.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
+                    var tagAggregator = _shell.ExportProvider.GetExportedValue<IViewTagAggregatorFactoryService>();
                     using (var urlClassificationAggregator = tagAggregator.CreateTagAggregator<IUrlTag>(textView)) {
 
                         var tags = urlClassificationAggregator.GetTags(new SnapshotSpan(snapshot, line.Start, line.Length));

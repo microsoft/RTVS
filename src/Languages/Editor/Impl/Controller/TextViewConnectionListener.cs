@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -19,6 +20,9 @@ namespace Microsoft.Languages.Editor.Controller {
     /// gets aggregate focus.
     /// </summary>
     public abstract class TextViewConnectionListener : IWpfTextViewCreationListener, IWpfTextViewConnectionListener {
+        [Import]
+        public ICoreShell Shell { get; set; }
+
         [ImportMany]
         public IEnumerable<Lazy<ITextBufferListener, IOrderedComponentContentTypes>> TextBufferListeners { get; set; }
 
@@ -49,7 +53,7 @@ namespace Microsoft.Languages.Editor.Controller {
             if (TextBufferToViewData == null) {
                 TextBufferToViewData = new Dictionary<ITextBuffer, TextViewData>();
 
-                EditorShell.Current.Terminating += OnTerminateApp;
+                Shell.Terminating += OnTerminateApp;
                 TextBufferListeners = Orderer.Order(TextBufferListeners);
                 _bufferToOriginalContentType = new Dictionary<ITextBuffer, IContentType>();
             }
@@ -104,7 +108,7 @@ namespace Microsoft.Languages.Editor.Controller {
                                 // The buffer could be temporarily removed from the view, so don't
                                 // immediately check if it's unused - do that after posting a message.
                                 _pendingCheckForViewlessTextBuffers = CheckForViewlessTextBuffers;
-                                EditorShell.Current.Idle += OnIdle;
+                                Shell.Idle += OnIdle;
                             } else {
                                 CheckForViewlessTextBuffers();
                             }
@@ -115,14 +119,12 @@ namespace Microsoft.Languages.Editor.Controller {
         }
 
         protected void FlushPendingAction() {
-            if (_pendingCheckForViewlessTextBuffers != null) {
-                _pendingCheckForViewlessTextBuffers();
-            }
+            _pendingCheckForViewlessTextBuffers?.Invoke();
         }
 
         private void OnIdle(object sender, EventArgs e) {
             FlushPendingAction();
-            EditorShell.Current.Idle -= OnIdle;
+            Shell.Idle -= OnIdle;
         }
         #endregion
 
@@ -206,7 +208,7 @@ namespace Microsoft.Languages.Editor.Controller {
         /// needs to access native VS adapters, like IVsTextView.
         /// </summary>
         protected virtual void OnTextViewGotAggregateFocus(ITextView textView, ITextBuffer textBuffer) {
-            IEnumerable<Lazy<ITextViewCreationListener, IComponentContentTypes>> listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(textBuffer.ContentType);
+            var listeners = ComponentLocatorForContentType<ITextViewCreationListener, IComponentContentTypes>.ImportMany(Shell.CompositionService, textBuffer.ContentType);
 
             foreach (var listener in listeners) {
                 listener.Value.OnTextViewCreated(textView, textBuffer);

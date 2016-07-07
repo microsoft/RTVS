@@ -3,35 +3,47 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.Utilities;
-using Xunit;
 
 namespace Microsoft.Languages.Editor.Test.Services {
     /// <summary>
     /// Summary description for UnitTest1
     /// </summary>
     [ExcludeFromCodeCoverage]
-    public class IdleTaskQueueTest {
+    public class IdleTaskQueueTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
+
+        public IdleTaskQueueTest(LanguagesEditorMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         [Category.Languages.Core]
         public void OperationsTest() {
-            List<Result> results = new List<Result>();
+            var results = new List<Result>();
+            var queue = new IdleTimeAsyncTaskQueue(_editorShell);
 
             var ta = new TaskAction(1, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             ta = new TaskAction(2, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             ta = new TaskAction(3, results);
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
+            queue.Enqueue(ta.Action, ta.CallBackAction, typeof(TaskAction));
 
             RunThreads();
 
@@ -44,17 +56,17 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
             ta = new TaskAction(1, results);
             object o1 = 1;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o1);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o1);
 
             ta = new TaskAction(2, results);
             object o2 = 2;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o2);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o2);
 
             ta = new TaskAction(3, results);
             object o3 = 3;
-            IdleTimeAsyncTaskQueue.Enqueue(ta.Action, ta.CallBackAction, o3);
+            queue.Enqueue(ta.Action, ta.CallBackAction, o3);
 
-            IdleTimeAsyncTaskQueue.IncreasePriority(o3);
+            queue.IncreasePriority(o3);
             RunThreads();
 
             results.Count.Should().Be(3);
@@ -65,7 +77,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
 
         private void RunThreads() {
             for (int i = 0; i < 10; i++) {
-                EditorShell.Current.DoIdle();
+                _editorShell.DoIdle();
                 Thread.Sleep(100);
             }
         }

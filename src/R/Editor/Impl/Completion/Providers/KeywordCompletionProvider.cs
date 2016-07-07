@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
@@ -17,8 +18,14 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     [Export(typeof(IRHelpSearchTermProvider))]
     public class KeywordCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        [Import(AllowDefault = true)]
-        private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
+        private readonly ISnippetInformationSourceProvider _snippetInformationSource;
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public KeywordCompletionProvider([Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, ICoreShell shell) {
+            _snippetInformationSource = snippetInformationSource;
+            _shell = shell;
+        }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
@@ -27,8 +34,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
             List<RCompletion> completions = new List<RCompletion>();
 
             if (!context.IsInNameSpace()) {
-                var infoSource = SnippetInformationSource?.InformationSource;
-                ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic);
+                var infoSource = _snippetInformationSource?.InformationSource;
+                ImageSource keyWordGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphKeyword, StandardGlyphItem.GlyphItemPublic, _shell);
 
                 foreach (string keyword in Keywords.KeywordList) {
                     bool? isSnippet = infoSource?.IsSnippet(keyword);
@@ -37,7 +44,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     }
                 }
 
-                ImageSource buildInGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic);
+                ImageSource buildInGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupIntrinsic, StandardGlyphItem.GlyphItemPublic, _shell);
                 foreach (string s in Builtins.BuiltinList) {
                     completions.Add(new RCompletion(s, s, string.Empty, buildInGlyph));
                 }

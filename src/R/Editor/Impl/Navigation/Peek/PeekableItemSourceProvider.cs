@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -13,11 +14,17 @@ namespace Microsoft.R.Editor.Navigation.Peek {
     [Name("R Peekable Item Provider")]
     [SupportsStandaloneFiles(true)]
     internal sealed class PeekableItemSourceProvider : IPeekableItemSourceProvider {
-        [Import]
-        private IPeekResultFactory PeekResultFactory { get; set; }
+        private readonly IPeekResultFactory _peekResultFactory;
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public PeekableItemSourceProvider(IPeekResultFactory peekResultFactory, ICoreShell shell) {
+            _peekResultFactory = peekResultFactory;
+            _shell = shell;
+        }
 
         public IPeekableItemSource TryCreatePeekableItemSource(ITextBuffer textBuffer) {
-            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new PeekableItemSource(textBuffer, PeekResultFactory));
+            return textBuffer.Properties.GetOrCreateSingletonProperty(() => new PeekableItemSource(textBuffer, _peekResultFactory, _shell));
         }
     }
 }

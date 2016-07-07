@@ -4,20 +4,22 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
     /// Base class for package collections
     /// </summary>
     public class PackageCollection : IPackageCollection {
-        public string InstallPath { get; private set; }
+        private readonly IFunctionIndex _functionIndex;
+        public string InstallPath { get; }
 
         public IEnumerable<IPackageInfo> Packages {
             get {
                 try {
                     string libraryPath = this.InstallPath;
                     if (!string.IsNullOrEmpty(libraryPath)) {
-                        return new PackageEnumeration(libraryPath);
+                        return new PackageEnumeration(_functionIndex, libraryPath);
                     }
                 } catch (IOException) { }
 
@@ -25,7 +27,8 @@ namespace Microsoft.R.Support.Help.Packages {
             }
         }
 
-        protected PackageCollection(string installPath) {
+        protected PackageCollection(IFunctionIndex functionIndex, string installPath) {
+            _functionIndex = functionIndex;
             InstallPath = installPath;
         }
     }

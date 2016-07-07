@@ -1,20 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.R.Editor.BraceMatch;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Test.BraceMatch {
     [ExcludeFromCodeCoverage]
     [Category.R.BraceMatch]
-    public class RBraceMatchTest {
+    public class RBraceMatchTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+
+        public RBraceMatchTest(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         public void RBraceMatch_CurlyBraces01() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a{\"{ }\"}b");
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a{\"{ }\"}b", _exportProvider);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -42,7 +54,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
 
         [Test]
         public void RBraceMatch_Braces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a(\"( )\")b");
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("a(\"( )\")b", _exportProvider);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -70,7 +82,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
         }
         [Test]
         public void RBraceMatch_CurlyBraces02() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}");
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{{\"{ }\"}}", _exportProvider);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;
@@ -95,7 +107,7 @@ namespace Microsoft.R.Editor.Test.BraceMatch {
 
         [Test]
         public void RBraceMatch_MixedBraces() {
-            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}");
+            ITextView tv = TextViewTest.MakeTextViewRealTextBuffer("{a[[b()]]}", _exportProvider);
             RBraceMatcher bm = new RBraceMatcher(tv, tv.TextBuffer);
 
             int startPosition, endPosition;

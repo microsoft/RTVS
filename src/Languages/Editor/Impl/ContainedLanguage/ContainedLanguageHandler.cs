@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
@@ -15,8 +16,8 @@ namespace Microsoft.Languages.Editor.ContainedLanguage {
         private int _cachedPosition = -1;
         private ITextRange _cachedLanguageBlock;
 
-        public ContainedLanguageHandler(ITextBuffer textBuffer) {
-            ServiceManager.AddService<IContainedLanguageHandler>(this, textBuffer);
+        protected ContainedLanguageHandler(ITextBuffer textBuffer, ICoreShell coreShell) {
+            ServiceManager.AddService<IContainedLanguageHandler>(this, textBuffer, coreShell);
 
             TextBuffer = textBuffer;
             TextBuffer.Changed += OnTextBufferChanged;

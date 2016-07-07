@@ -4,12 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.Diagnostics;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
@@ -28,8 +27,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     /// As the stylesheet changes, this class keeps the list of syntax errors up to date.
     /// </summary>
     public class EditorErrorTagger : ITagger<IErrorTag>, IEditorTaskListItemSource {
-        [Import(AllowDefault = true)]
-        internal IEditorTaskList TaskList { get; set; }
+        private readonly IEditorTaskList _taskList;
+        private readonly ICoreShell _shell;
 
         /// <summary>
         /// Tells the editor (or any listener) that syntax errors have changed
@@ -41,13 +40,14 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         /// </summary>
         internal ConcurrentQueue<IValidationError> ResultsQueue;
 
-        ITextBuffer _textBuffer;
-        IREditorDocument _document;
-        ErrorTagCollection _errorTags;
+        private ITextBuffer _textBuffer;
+        private IREditorDocument _document;
+        private ErrorTagCollection _errorTags;
         private bool _fireCodeMarkerUponCompletion;
 
-        public EditorErrorTagger(ITextBuffer textBuffer) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+        public EditorErrorTagger(ITextBuffer textBuffer, IEditorTaskList taskList, ICoreShell shell) {
+            _taskList = taskList;
+            _shell = shell;
 
             _document = REditorDocument.FromTextBuffer(textBuffer);
             _document.DocumentClosing += OnDocumentClosing;
@@ -63,20 +63,18 @@ namespace Microsoft.R.Editor.Validation.Tagger {
             // Don't push syntax errors to the Error List in transient
             // documents such as in document attached to a projected buffer
             // in the R interactive window
-            if (TaskList != null) {
+            if (_taskList != null) {
                 var view = _document.GetFirstView();
                 if (view != null && !view.IsRepl()) {
-                    TaskList.AddTaskSource(this);
+                    _taskList.AddTaskSource(this);
                 }
             }
 
-            TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree);
+            TreeValidator validator = TreeValidator.EnsureFromTextBuffer(_textBuffer, _document.EditorTree, shell);
 
             validator.Cleared += OnCleared;
             ResultsQueue = validator.ValidationResults;
-            EditorShell.Current.Idle += OnIdle;
-
-            ServiceManager.AddService<EditorErrorTagger>(this, textBuffer);
+            _shell.Idle += OnIdle;
         }
 
         /// <summary>
@@ -145,7 +143,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
         #region Tree event handlers
         private void OnDocumentClosing(object sender, EventArgs e) {
             if (_textBuffer != null) {
-                EditorShell.Current.Idle -= OnIdle;
+                _shell.Idle -= OnIdle;
 
                 _document.EditorTree.UpdateCompleted -= OnTreeUpdateCompleted;
                 _document.EditorTree.NodesRemoved -= OnNodesRemoved;
@@ -162,8 +160,8 @@ namespace Microsoft.R.Editor.Validation.Tagger {
                 _textBuffer.Changed -= OnTextBufferChanged;
                 _textBuffer = null;
 
-                if (TaskList != null)
-                    TaskList.RemoveTaskSource(this);
+                if (_taskList != null)
+                    _taskList.RemoveTaskSource(this);
             }
         }
         #endregion

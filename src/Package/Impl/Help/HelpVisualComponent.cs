@@ -240,7 +240,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             if (!ConnectBrowser()) {
                 // The browser document is not ready yet. Create another idle 
                 // time action that will run after few milliseconds.
-                IdleTimeAction.Create(() => SetThemeColorsWhenReady(), 10, new object());
+                IdleTimeAction.Create(SetThemeColorsWhenReady, 10, new object(), VsAppShell.Current);
             }
         }
 

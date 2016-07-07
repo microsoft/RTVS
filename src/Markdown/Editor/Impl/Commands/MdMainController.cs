@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
@@ -17,15 +18,15 @@ namespace Microsoft.Markdown.Editor.Commands {
     public class MdMainController : ViewController {
         private BraceCompletionWorkaround223902 _workaround;
 
-        public MdMainController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer) {
-            ServiceManager.AddService(this, textView);
+        public MdMainController(ITextView textView, ITextBuffer textBuffer, ICoreShell shell)
+            : base(textView, textBuffer, shell) {
+            ServiceManager.AddService(this, textView, shell);
         }
 
-        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer) {
+        public static MdMainController Attach(ITextView textView, ITextBuffer textBuffer, ICoreShell coreShell) {
             MdMainController controller = FromTextView(textView);
             if (controller == null) {
-                controller = new MdMainController(textView, textBuffer);
+                controller = new MdMainController(textView, textBuffer, coreShell);
             }
 
             return controller;

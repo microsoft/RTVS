@@ -7,6 +7,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.TaskList {
     /// <summary>
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.TaskList {
         }
 
         internal static void StaticFlushTaskList() {
-            IEditorTaskList tasks = ComponentLocator<IEditorTaskList>.Import();
+            IEditorTaskList tasks = ComponentLocator<IEditorTaskList>.Import(VsAppShell.Current.CompositionService);
             tasks.FlushTaskList();
         }
 

@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information
 
 using System.Linq;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Projection;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Markdown.Editor.Tokens;
@@ -18,10 +20,12 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
         private readonly RCodeSeparatorCollection _separators = new RCodeSeparatorCollection();
         private readonly IBufferGenerator _generator = new BufferGenerator();
         private readonly IProjectionBufferManager _projectionBufferManager;
+        private readonly ICoreShell _coreShell;
 
-        public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager) :
-            base(textBuffer) {
+        public RLanguageHandler(ITextBuffer textBuffer, IProjectionBufferManager projectionBufferManager, ICoreShell coreShell) :
+            base(textBuffer, coreShell) {
             _projectionBufferManager = projectionBufferManager;
+            _coreShell = coreShell;
             UpdateProjections();
         }
 
@@ -41,8 +45,8 @@ namespace Microsoft.Markdown.Editor.ContainedLanguage {
                 if (destructive) {
                     // Allow existing command call to complete so we don't yank projections
                     // from underneath code that expects text buffer to exist, such as formatter.
-                    IdleTimeAction.Cancel(this.GetType());
-                    IdleTimeAction.Create(() => UpdateProjections(), 0, this.GetType());
+                    IdleTimeAction.Cancel(GetType());
+                    IdleTimeAction.Create(UpdateProjections, 0, GetType(), _coreShell);
                     break;
                 } else {
                     Blocks.ReflectTextChange(c.OldStart, c.OldLength, c.NewLength);

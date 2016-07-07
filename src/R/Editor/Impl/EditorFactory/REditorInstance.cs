@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Commands;
@@ -12,8 +13,8 @@ namespace Microsoft.R.Editor.EditorFactory {
     /// Represents instance of the editor to the host application
     /// </summary>
     public sealed class REditorInstance : EditorInstance {
-        public REditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory): 
-            base(diskBuffer, documentFactory) {
+        public REditorInstance(ITextBuffer diskBuffer, IEditorDocumentFactory documentFactory, ICoreShell coreShell): 
+            base(diskBuffer, documentFactory, coreShell) {
         }
 
         #region IEditorInstance

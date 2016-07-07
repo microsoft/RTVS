@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using FluentAssertions;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text.Editor;
 using Xunit;
@@ -14,7 +16,17 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.SmartIndent]
-    public class SmartIndentTest {
+    public class SmartIndentTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+
+        public SmartIndentTest(REditorMefCatalogFixture catalogFixture) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [CompositeTest]
         [InlineData("x <- function(a) {\n", 1, 4)]
         [InlineData("x <- function(a) {\n\n", 2, 4)]
@@ -53,19 +65,14 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        },\n", 4, 8)]
         [InlineData("x <- func(\n    z = list(\n        a = function() {\n        }\n)\n", 5, 0)]
         public void Scope(string content, int lineNum, int expectedIndent) {
-            int? indent = GetSmartIndent(content, lineNum);
-            indent.Should().HaveValue().And.Be(expectedIndent);
-        }
-
-        private int? GetSmartIndent(string content, int lineNumber) {
             AstRoot ast;
             ITextView textView = TextViewTest.MakeTextView(content, 0, out ast);
             var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast));
 
-            ISmartIndentProvider provider = EditorShell.Current.ExportProvider.GetExport<ISmartIndentProvider>().Value;
+            ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>();
             ISmartIndent indenter = provider.CreateSmartIndent(textView);
-
-            return indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNumber));
+            int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(lineNum));
+            indent.Should().HaveValue().And.Be(expectedIndent);
         }
     }
 }

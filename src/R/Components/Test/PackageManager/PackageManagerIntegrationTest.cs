@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -16,13 +15,14 @@ using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
 
 namespace Microsoft.R.Components.Test.PackageManager {
     public class PackageManagerIntegrationTest : IAsyncLifetime {
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly TestRInteractiveWorkflowProvider _workflowProvider;
         private readonly MethodInfo _testMethod;
         private readonly string _repoPath;

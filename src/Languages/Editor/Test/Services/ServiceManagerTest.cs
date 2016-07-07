@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Editor.Services;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Services;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Utilities;
@@ -58,21 +59,21 @@ namespace Microsoft.Languages.Editor.Test.Services {
             bool added = false;
             bool removed = false;
 
-            ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, s => { added = true; });
+            ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, null, s => { added = true; });
 
             // Verify notifications not sent out when advising
             added.Should().BeFalse();
 
             // Verify notifications not sent out after adding other service
-            ServiceManager.AddService<Service1>(s1, propertyOwner);
+            ServiceManager.AddService<Service1>(s1, propertyOwner, null);
             added.Should().BeFalse();
 
             // Verify added notification sent out after adding this service
-            ServiceManager.AddService<IService1>(s1, propertyOwner);
+            ServiceManager.AddService<IService1>(s1, propertyOwner, null);
             added.Should().BeTrue();
 
             added = false;
-            ServiceManager.AdviseServiceRemoved<IService1>(propertyOwner, s => { removed = true; });
+            ServiceManager.AdviseServiceRemoved<IService1>(propertyOwner, null, s => { removed = true; });
 
             // Verify notifications not sent out after removing other service
             ServiceManager.RemoveService<Service1>(propertyOwner);
@@ -83,11 +84,11 @@ namespace Microsoft.Languages.Editor.Test.Services {
             removed.Should().BeTrue();
 
             // Verify we aren't still listening to advised events
-            ServiceManager.AddService<IService1>(s1, propertyOwner);
+            ServiceManager.AddService<IService1>(s1, propertyOwner, null);
             added.Should().BeFalse();
 
             // Verify notification sent out when advising to existing service
-            ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, s => { added = true; });
+            ServiceManager.AdviseServiceAdded<IService1>(propertyOwner, null, s => { added = true; });
             added.Should().BeTrue();
         }
 
@@ -101,7 +102,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
             Service1 s1 = new Service1();
             Service2 s2 = new Service2();
 
-            ServiceManager.AddService<IService1>(s1, propertyOwner);
+            ServiceManager.AddService<IService1>(s1, propertyOwner, null);
 
             ServiceManager.GetService<IService1>(propertyOwner).Should().Be(s1);
             ServiceManager.GetService<Service1>(propertyOwner).Should().Be(s1);
@@ -109,7 +110,7 @@ namespace Microsoft.Languages.Editor.Test.Services {
             ServiceManager.RemoveService<IService1>(propertyOwner);
             ServiceManager.GetService<IService1>(propertyOwner).Should().BeNull();
 
-            ServiceManager sm = ServiceManager.FromPropertyOwner(propertyOwner);
+            ServiceManager sm = ServiceManager.FromPropertyOwner(propertyOwner, null);
             sm.Should().NotBeNull();
 
             EventHandler<ServiceManagerEventArgs> onServiceAdded = (object sender, ServiceManagerEventArgs e) => {
@@ -143,8 +144,8 @@ namespace Microsoft.Languages.Editor.Test.Services {
             sm.ServiceAdded += onServiceAdded;
             sm.ServiceRemoved += onServiceRemoved;
 
-            ServiceManager.AddService<IService1>(s1, propertyOwner);
-            ServiceManager.AddService<IService2>(s2, propertyOwner);
+            ServiceManager.AddService<IService1>(s1, propertyOwner, null);
+            ServiceManager.AddService<IService2>(s2, propertyOwner, null);
 
             ServiceManager.RemoveService<IService1>(propertyOwner);
             ServiceManager.RemoveService<IService2>(propertyOwner);

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.Settings;
@@ -15,6 +16,12 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
     /// such as parsing and formatting.
     /// </summary>
     internal sealed class BraceCompletionContext : IBraceCompletionContext {
+        private readonly IEditorShell _shell;
+
+        public BraceCompletionContext(IEditorShell shell) {
+            _shell = shell;
+        }
+
         /// <summary>
         /// Called before the session is added to the stack.
         /// </summary>
@@ -26,7 +33,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         public void Start(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer);
+                FormatOperations.FormatCurrentStatement(session.TextView, session.SubjectBuffer, _shell);
             }
         }
 
@@ -50,7 +57,7 @@ namespace Microsoft.R.Editor.Completion.AutoCompletion {
         public void OnReturn(IBraceCompletionSession session) {
             if (session.OpeningBrace == '{' && REditorSettings.AutoFormat) {
                 EnsureTreeReady(session.SubjectBuffer);
-                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, indentCaret: true);
+                FormatOperations.FormatCurrentScope(session.TextView, session.SubjectBuffer, _shell, indentCaret: true);
             }
         }
 

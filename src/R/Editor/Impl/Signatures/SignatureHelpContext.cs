@@ -19,8 +19,7 @@ namespace Microsoft.R.Editor.Signatures {
         /// help session should be dismissed and re-triggered. This is helpful
         /// when user types nested function calls such as 'a(b(c(...), d(...)))'
         /// </summary>
-        public static bool IsSameSignatureContext(ITextView textView, ITextBuffer subjectBuffer) {
-            ISignatureHelpBroker signatureBroker = EditorShell.Current.ExportProvider.GetExportedValue<ISignatureHelpBroker>();
+        public static bool IsSameSignatureContext(ITextView textView, ITextBuffer subjectBuffer, ISignatureHelpBroker signatureBroker) {
             var sessions = signatureBroker.GetSessions(textView);
             Debug.Assert(sessions.Count < 2);
             if (sessions.Count == 1) {

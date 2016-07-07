@@ -15,14 +15,12 @@ using Microsoft.VisualStudio.Text.Outlining;
 
 namespace Microsoft.Languages.Editor.Outline {
     public class OutlineController : ICommandTarget {
-        [Import]
-        private IOutliningManagerService _outliningManagerService = null;
+        private readonly IOutliningManagerService _outliningManagerService;
+        private readonly ITextView _textView;
 
-        private ITextView _textView;
-
-        public OutlineController(ITextView textView) {
-            EditorShell.Current.CompositionService.SatisfyImportsOnce(this);
+        public OutlineController(ITextView textView, IOutliningManagerService outliningManagerService) {
             _textView = textView;
+            _outliningManagerService = outliningManagerService;
         }
 
         private IOutliningManager OutliningManager {

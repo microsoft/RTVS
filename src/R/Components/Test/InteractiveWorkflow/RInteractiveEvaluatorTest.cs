@@ -2,18 +2,18 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.InteractiveWindow;
 
-namespace Microsoft.R.Components.Test.History {
+namespace Microsoft.R.Components.Test.InteractiveWorkflow {
     public class RInteractiveEvaluatorTest : IDisposable {
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _interactiveWindowComponentContainerFactory;
 

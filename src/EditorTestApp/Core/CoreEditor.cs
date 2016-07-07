@@ -9,11 +9,11 @@ using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Application.Composition;
 using Microsoft.Languages.Editor.Application.Controller;
 using Microsoft.Languages.Editor.Application.Host;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -57,13 +57,15 @@ namespace Microsoft.Languages.Editor.Application.Core {
         private IContentType _contentType;
         private ITextBufferUndoManager _undoManager;
         private IEditorOperations _editorOperations;
+        private readonly ICoreShell _coreShell;
         private string _filePath;
         private ICompositionService _compositionService;
         private IEditorInstance _editorIntance;
 
-        public CoreEditor(string text, string filePath, string contentTypeName) {
-            _compositionService = EditorShell.Current.CompositionService;
+        public CoreEditor(ICoreShell coreShell, string text, string filePath, string contentTypeName) {
+            _compositionService = coreShell.CompositionService;
             _compositionService.SatisfyImportsOnce(this);
+            _coreShell = coreShell;
             _filePath = filePath;
 
             if (string.IsNullOrEmpty(_filePath) || Path.GetExtension(_filePath).Length == 0) {
@@ -182,7 +184,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
                 CommandTarget = baseController;
             }
 
-            baseController.Initialize(textView, EditorOperations, UndoManager);
+            baseController.Initialize(textView, EditorOperations, UndoManager, _coreShell);
         }
 
         public void Close() {
@@ -227,7 +229,7 @@ namespace Microsoft.Languages.Editor.Application.Core {
         }
 
         private ContentControl _contentControl = new ContentControl();
-        public Control Control { get { return _contentControl; } }
+        public Control Control => _contentControl;
 
         public ICommandTarget CommandTarget { get; private set; }
 

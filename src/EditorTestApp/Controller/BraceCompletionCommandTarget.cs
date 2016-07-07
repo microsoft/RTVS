@@ -3,9 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.Languages.Editor.Controller.Constants;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text.BraceCompletion;
@@ -18,10 +18,12 @@ namespace Microsoft.Languages.Editor.Application.Controller {
     [ExcludeFromCodeCoverage]
     internal sealed class BraceCompletionCommandTarget : ICommandTarget {
         private IBraceCompletionManager _manager;
-        private ITextView _textView;
+        private readonly ITextView _textView;
+        private readonly ICoreShell _coreShell;
 
-        public BraceCompletionCommandTarget(ITextView textView) {
+        public BraceCompletionCommandTarget(ITextView textView, ICoreShell coreShell) {
             _textView = textView;
+            _coreShell = coreShell;
         }
 
         #region ICommandTarget
@@ -158,7 +160,7 @@ namespace Microsoft.Languages.Editor.Application.Controller {
         private ICompletionBroker CompletionBroker {
             get {
                 if (_completionBroker == null) {
-                    _completionBroker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+                    _completionBroker = _coreShell.ExportProvider.GetExportedValue<ICompletionBroker>();
                 }
 
                 return _completionBroker;

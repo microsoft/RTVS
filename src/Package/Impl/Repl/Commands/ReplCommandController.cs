@@ -30,8 +30,8 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
         private ExpansionsController _snippetController;
 
         public ReplCommandController(ITextView textView, ITextBuffer textBuffer)
-            : base(textView, textBuffer) {
-            ServiceManager.AddService(this, textView);
+            : base(textView, textBuffer, VsAppShell.Current) {
+            ServiceManager.AddService(this, textView, VsAppShell.Current);
 
             var textManager = VsAppShell.Current.GetGlobalService<IVsTextManager2>(typeof(SVsTextManager));
             IVsExpansionManager expansionManager;
@@ -148,7 +148,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (document != null) {
                 var tree = document.EditorTree;
                 tree.EnsureTreeReady();
-                FormatOperations.FormatCurrentStatement(textView, textBuffer);
+                FormatOperations.FormatCurrentStatement(textView, textBuffer, VsAppShell.Current);
             }
         }
 

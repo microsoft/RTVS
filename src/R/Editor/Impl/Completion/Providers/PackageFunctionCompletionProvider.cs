@@ -6,13 +6,13 @@ using System.ComponentModel.Composition;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -23,8 +23,12 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
-        private static readonly string[] _preloadPackages = new string[]
-        {
+        private readonly ILoadedPackagesProvider _loadedPackagesProvider;
+        private readonly ISnippetInformationSourceProvider _snippetInformationSource;
+        private readonly ICoreShell _shell;
+        private readonly IPackageIndex _packageIndex;
+
+        private static readonly string[] _preloadPackages = {
             "stats",
             "graphics",
             "grDevices",
@@ -34,21 +38,24 @@ namespace Microsoft.R.Editor.Completion.Providers {
             "base"
         };
 
-        [Import]
-        private ILoadedPackagesProvider LoadedPackagesProvider { get; set; }
 
-        [Import(AllowDefault = true)]
-        private ISnippetInformationSourceProvider SnippetInformationSource { get; set; }
+        [ImportingConstructor]
+        public PackageFunctionCompletionProvider(ILoadedPackagesProvider loadedPackagesProvider, [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IPackageIndex packageIndex, ICoreShell shell) {
+            _loadedPackagesProvider = loadedPackagesProvider;
+            _snippetInformationSource = snippetInformationSource;
+            _shell = shell;
+            _packageIndex = packageIndex;
+        }
 
         #region IRCompletionListProvider
         public bool AllowSorting { get; } = true;
 
         public IReadOnlyCollection<RCompletion> GetEntries(RCompletionContext context) {
             List<RCompletion> completions = new List<RCompletion>();
-            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic);
-            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic);
-            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic);
-            var infoSource = SnippetInformationSource?.InformationSource;
+            ImageSource functionGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupMethod, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource constantGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphGroupConstant, StandardGlyphItem.GlyphItemPublic, _shell);
+            ImageSource snippetGlyph = GlyphService.GetGlyph(StandardGlyphGroup.GlyphCSharpExpansion, StandardGlyphItem.GlyphItemPublic, _shell);
+            var infoSource = _snippetInformationSource?.InformationSource;
 
             // TODO: this is different in the console window where 
             // packages may have been loaded from the command line. 
@@ -83,7 +90,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         #region IRHelpSearchTermProvider
         public IReadOnlyCollection<string> GetEntries() {
             var list = new List<string>();
-            foreach (IPackageInfo pkg in PackageIndex.Packages) {
+            foreach (IPackageInfo pkg in _packageIndex.Packages) {
                 list.AddRange(pkg.Functions.Select(x => x.Name));
             }
             return list;
@@ -132,7 +139,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     packageName = snapshot.GetText(Span.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
-                        IPackageInfo package = PackageIndex.GetPackageByName(packageName);
+                        IPackageInfo package = _packageIndex.GetPackageByName(packageName);
                         if (package != null) {
                             packages.Add(package);
                         }
@@ -149,23 +156,18 @@ namespace Microsoft.R.Editor.Completion.Providers {
         /// <param name="context"></param>
         /// <returns></returns>
         private IEnumerable<IPackageInfo> GetAllFilePackages(RCompletionContext context) {
-            List<IPackageInfo> packages = new List<IPackageInfo>();
-            LoadedPackagesProvider?.Initialize();
+            _loadedPackagesProvider?.Initialize();
 
-            IEnumerable<string> loadedPackages = LoadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
+            IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = Enumerable.Union(_preloadPackages, Enumerable.Union(filePackageNames, loadedPackages));
+            IEnumerable<string> allPackageNames = _preloadPackages.Union(filePackageNames).Union(loadedPackages);
 
-            foreach (string packageName in allPackageNames) {
-                IPackageInfo p = PackageIndex.GetPackageByName(packageName);
+            return allPackageNames
+                .Select(packageName => _packageIndex.GetPackageByName(packageName))
                 // May be null if user mistyped package name in the library()
                 // statement or package is not installed.
-                if (p != null) {
-                    packages.Add(p);
-                }
-            }
-
-            return packages;
+                .Where(p => p != null)
+                .ToList();
         }
     }
 }

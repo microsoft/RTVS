@@ -15,6 +15,7 @@ using Microsoft.R.Editor.Formatting;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.R.Editor.Test.Mocks;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -23,7 +24,17 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.Formatting]
-    public class AutoFormatTest {
+    public class AutoFormatTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+
+        public AutoFormatTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [CompositeTest]
         [InlineData("x<-function(x,y,", 16, "x <- function(x, y,\n")]
         [InlineData("'x<-1'", 5, "'x<-1\n'")]
@@ -41,7 +52,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             ITextView textView = TextViewTest.MakeTextView("  x <- 1\r\n", 0, out ast);
             using (var document = new EditorDocumentMock(new EditorTreeMock(textView.TextBuffer, ast))) {
 
-                ISmartIndentProvider provider = EditorShell.Current.ExportProvider.GetExportedValue<ISmartIndentProvider>();
+                ISmartIndentProvider provider = _exportProvider.GetExportedValue<ISmartIndentProvider>();
                 SmartIndenter indenter = (SmartIndenter)provider.CreateSmartIndent(textView);
 
                 int? indent = indenter.GetDesiredIndentation(textView.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(1), IndentStyle.Block);
@@ -60,7 +71,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
                     char ch = e.Changes[0].NewText[0];
                     if (AutoFormat.IsPreProcessAutoformatTriggerCharacter(ch)) {
                         position = e.Changes[0].OldPosition + 1;
-                        FormatOperations.FormatCurrentLine(textView, textView.TextBuffer);
+                        FormatOperations.FormatCurrentLine(textView, textView.TextBuffer, _exportProvider.GetExportedValue<IEditorShell>());
                         textView.Caret.MoveTo(new SnapshotPoint(e.After, position));
                     }
                 } else {

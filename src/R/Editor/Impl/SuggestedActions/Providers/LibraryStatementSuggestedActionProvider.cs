@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.SuggestedActions.Actions;
@@ -19,11 +20,19 @@ namespace Microsoft.R.Editor.SuggestedActions.Providers {
     [ContentType(RContentTypeDefinition.ContentType)]
     [Name("R Library Statement Suggested Action Provider")]
     internal sealed class LibraryStatementSuggestedActionProvider : IRSuggestedActionProvider {
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
+
+        [ImportingConstructor]
+        public LibraryStatementSuggestedActionProvider(IRInteractiveWorkflowProvider workflowProvider) {
+            _workflowProvider = workflowProvider;
+        }
+
         private static readonly Guid _treeUsedId = new Guid("{F0C102DF-9B3E-4C69-9CFE-23C244DBC7C4}");
         public IEnumerable<ISuggestedAction> GetSuggestedActions(ITextView textView, ITextBuffer textBuffer, int bufferPosition) {
+            var workflow = _workflowProvider.GetOrCreate();
             return new ISuggestedAction[] {
-                new InstallPackageSuggestedAction(textView, textBuffer, bufferPosition),
-                new LoadLibrarySuggestedAction(textView, textBuffer, bufferPosition)
+                new InstallPackageSuggestedAction(textView, textBuffer, workflow, bufferPosition),
+                new LoadLibrarySuggestedAction(textView, textBuffer, workflow, bufferPosition)
             };
         }
 

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Windows.Media;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 
@@ -13,9 +14,9 @@ namespace Microsoft.Languages.Editor.Imaging {
     public static class GlyphService {
         private static readonly object _lock = new object();
 
-        public static ImageSource GetGlyph(StandardGlyphGroup group, StandardGlyphItem item) {
+        public static ImageSource GetGlyph(StandardGlyphGroup @group, StandardGlyphItem item, ICompositionCatalog compositionCatalog) {
             lock (_lock) {
-                var glyphService = EditorShell.Current.ExportProvider.GetExport<IGlyphService>().Value;
+                var glyphService = compositionCatalog.ExportProvider.GetExportedValue<IGlyphService>();
                 return glyphService.GetGlyph(group, item);
             }
         }

@@ -1,17 +1,21 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Test.Utility;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -20,14 +24,24 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.QuickInfo {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
-    [Collection(CollectionNames.NonParallel)]
     public class FunctionIndexTest : IAsyncLifetime {
-        public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync();
+        private readonly IExportProvider _exportProvider;
+        private readonly IEditorShell _editorShell;
+        private readonly IFunctionIndex _functionIndex;
+
+        public FunctionIndexTest(REditorMefCatalogFixture catalog) {
+            _exportProvider = catalog.CreateExportProvider();
+            _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
-        public Task DisposeAsync() {
-            return FunctionIndexUtility.DisposeAsync();
+        public Task InitializeAsync() {
+            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+        }
+
+        public async Task DisposeAsync() {
+            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            _exportProvider.Dispose();
         }
 
         [Test]
@@ -37,7 +51,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             int caretPosition = 15; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, _editorShell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
             List<object> quickInfoContent = new List<object>();
 
@@ -60,7 +74,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             int caretPosition = 23; // in arguments
             ITextBuffer textBuffer = new TextBufferMock(content, RContentTypeDefinition.ContentType);
-            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer);
+            QuickInfoSource quickInfoSource = new QuickInfoSource(textBuffer, _editorShell);
             QuickInfoSessionMock quickInfoSession = new QuickInfoSessionMock(textBuffer, caretPosition);
             List<object> quickInfoContent = new List<object>();
 

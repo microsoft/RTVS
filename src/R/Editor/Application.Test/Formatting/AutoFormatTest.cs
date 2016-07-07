@@ -1,22 +1,36 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.R.Editor.Application.Test.TestShell;
 using Microsoft.R.Editor.Settings;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Application.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
-    public class AutoFormatTest {
+    public class AutoFormatTest : IDisposable {
+        private readonly IExportProvider _exportProvider;
+        private readonly EditorHostMethodFixture _editorHost;
+
+        public AutoFormatTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+            _exportProvider = catalogFixture.CreateExportProvider();
+            _editorHost = editorHost;
+        }
+
+        public void Dispose() {
+            _exportProvider.Dispose();
+        }
+
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFunctionBraces() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFunctionBraces() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("function(a,b){");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -30,8 +44,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces01() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("if(x>1){ENTER}{");
@@ -47,8 +61,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces02() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces02() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
                 script.Type("if(x>1){ENTER}{");
@@ -64,8 +78,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces03() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces03() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(true) {");
@@ -83,8 +97,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces04() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces04() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(true) {");
@@ -100,8 +114,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces05() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces05() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("while(true) {");
@@ -121,8 +135,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces06() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces06() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
                 script.Type("x <-function(a) {");
@@ -138,8 +152,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces07() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces07() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
                 script.Type("x <-function(a,{ENTER}b){ENTER}{");
@@ -154,8 +168,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces08() {
-            using (var script = new TestScript("while (true) {\r\n}", RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces08() {
+            using (var script = await _editorHost.StartScript(_exportProvider, "while (true) {\r\n}", RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = true;
 
                 script.MoveDown();
@@ -170,8 +184,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces09() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces09() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("if(TRUE){ENTER}while(TRUE){");
@@ -194,8 +208,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces10() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces10() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("if(TRUE){");
@@ -213,8 +227,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatScopeBraces11() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatScopeBraces11() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("{");
@@ -233,8 +247,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFunctionArgument() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFunctionArgument() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
                 script.Type("zzzz(a=1,{ENTER}");
@@ -249,8 +263,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatIfNoScope() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatIfNoScope() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("if(x>1)");
                 script.DoIdle(300);
                 script.Type("{ENTER}a");
@@ -264,8 +278,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatOnSemicolon() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatOnSemicolon() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("x<-1;");
 
                 string expected = "x <- 1;";
@@ -277,8 +291,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFunctonArguments01() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFunctonArguments01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text = "x <-function (x,{ENTER}y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
@@ -295,8 +309,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFunctonArguments02() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFunctonArguments02() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text = "x <-function (x,y,{ENTER}wt= NULL){ENTER}";
 
                 script.Type(text);
@@ -312,8 +326,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition01() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFuncionDefinition01() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text = "x <-function (x,y,{ENTER}wt= NULL){{ENTER}";
                 REditorSettings.FormatOptions.BracesOnNewLine = false;
 
@@ -334,8 +348,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition02() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFuncionDefinition02() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text1 = "library ( abind){ENTER}x <-function (x,y, wt= NULL, intercept =TRUE, tolerance=1e-07,{ENTER}";
                 string text2 = "yname = NULL){{ENTER}abind(a, )";
 
@@ -357,8 +371,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition03() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFuncionDefinition03() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text1 = "x <-function(x, y,{ENTER}";
                 string text2 = "a,b,";
                 string text3 = "c, d)";
@@ -384,8 +398,8 @@ namespace Microsoft.R.Editor.Application.Test.Formatting {
 
         [Test]
         [Category.Interactive]
-        public void R_AutoFormatFuncionDefinition04() {
-            using (var script = new TestScript(RContentTypeDefinition.ContentType)) {
+        public async Task R_AutoFormatFuncionDefinition04() {
+            using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string text = "function(){return(1)}";
 
                 script.Type(text);

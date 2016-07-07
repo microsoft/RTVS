@@ -3,11 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Shell;
 using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
@@ -17,17 +17,28 @@ namespace Microsoft.R.Support.Help.Packages {
     /// list of per-project packages (when PackRat is used) 
     /// are supplied by the providers exported via MEF. 
     /// </summary>
-    public static class PackageIndex {
-        private static IEnumerable<Lazy<IPackageCollection>> _collections;
-        private static IPackageCollection _basePackages;
-        private static Dictionary<string, IPackageInfo> _packages = new Dictionary<string, IPackageInfo>();
+    [Export(typeof(IPackageIndex))]
+    public class PackageIndex : IPackageIndex {
+        private readonly ICoreShell _shell;
+        private readonly Dictionary<string, IPackageInfo> _packages = new Dictionary<string, IPackageInfo>();
+        private readonly Lazy<IFunctionIndex> _functionIndexLazy;
+
+        private IEnumerable<Lazy<IPackageCollection>> _collections;
+        private IPackageCollection _basePackages;
+
+        [ImportingConstructor]
+        public PackageIndex(ICoreShell shell) {
+            _shell = shell;
+            _functionIndexLazy = Lazy.Create(() => _shell.ExportProvider.GetExportedValue<IFunctionIndex>());
+        }
+
         /// <summary>
         /// Collection or packages installed with the R engine.
         /// </summary>
-        public static IEnumerable<IPackageInfo> BasePackages {
+        public IEnumerable<IPackageInfo> BasePackages {
             get {
                 if (_basePackages == null)
-                    _basePackages = new BasePackagesCollection();
+                    _basePackages = new BasePackagesCollection(_shell.ExportProvider.GetExportedValue<IFunctionIndex>());
 
                 return _basePackages.Packages;
             }
@@ -36,10 +47,10 @@ namespace Microsoft.R.Support.Help.Packages {
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
-        public static IReadOnlyList<IPackageInfo> Packages {
+        public IReadOnlyList<IPackageInfo> Packages {
             get {
                 if (_collections == null)
-                    _collections = EditorShell.Current.ExportProvider.GetExports<IPackageCollection>();
+                    _collections = _shell.ExportProvider.GetExports<IPackageCollection>();
 
                 if (_collections != null) {
                     List<IPackageInfo> packages = new List<IPackageInfo>();
@@ -63,14 +74,12 @@ namespace Microsoft.R.Support.Help.Packages {
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
-        public static IPackageInfo GetPackageByName(string packageName) {
-            IPackageInfo package;
-
+        public IPackageInfo GetPackageByName(string packageName) {
             // Strip quotes, if any
             packageName = packageName.Replace("\'", string.Empty).Replace("\"", string.Empty).Trim();
             packageName = packageName.ToLowerInvariant();
 
-            package = BasePackages.FirstOrDefault((IPackageInfo p) => p.Name.EqualsIgnoreCase(packageName));
+            var package = BasePackages.FirstOrDefault(p => p.Name.EqualsIgnoreCase(packageName));
             if (package == null) {
                 _packages.TryGetValue(packageName, out package);
             }
@@ -82,13 +91,12 @@ namespace Microsoft.R.Support.Help.Packages {
             return package;
         }
 
-        private static IPackageInfo TryFindPackageNew(string packageName) {
+        private IPackageInfo TryFindPackageNew(string packageName) {
             foreach (Lazy<IPackageCollection> collection in _collections) {
-                IPackageInfo package = collection.Value.Packages.FirstOrDefault((p) => p.Name.EqualsIgnoreCase(packageName));
+                IPackageInfo package = collection.Value.Packages.FirstOrDefault(p => p.Name.EqualsIgnoreCase(packageName));
                 if (package != null) {
                     _packages[package.Name.ToLowerInvariant()] = package;
-
-                    FunctionIndex.BuildIndexForPackage(package);
+                    _functionIndexLazy.Value.BuildIndexForPackage(package);
                     return package;
                 }
             }

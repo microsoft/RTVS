@@ -3,11 +3,11 @@
 
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Document;
@@ -23,7 +23,11 @@ namespace Microsoft.Languages.Editor.Application.Packages {
     [Name("R Text View Connection Listener")]
     [Order(Before = "Default")]
     internal sealed class TestRTextViewConnectionListener : RTextViewConnectionListener {
-        public TestRTextViewConnectionListener() {
+        private readonly ICoreShell _shell;
+
+        [ImportingConstructor]
+        public TestRTextViewConnectionListener(ICoreShell shell) {
+            _shell = shell;
         }
 
         protected override void OnTextBufferCreated(ITextBuffer textBuffer) {
@@ -33,9 +37,9 @@ namespace Microsoft.Languages.Editor.Application.Packages {
 
         private void InitEditorInstance(ITextBuffer textBuffer) {
             if (ServiceManager.GetService<IEditorInstance>(textBuffer) == null) {
-                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(EditorShell.Current.CompositionService);
+                ContentTypeImportComposer<IEditorFactory> importComposer = new ContentTypeImportComposer<IEditorFactory>(_shell.CompositionService);
                 IEditorFactory factory = importComposer.GetImport(textBuffer.ContentType.TypeName);
-                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory());
+                IEditorInstance editorInstance = factory.CreateEditorInstance(textBuffer, new RDocumentFactory(_shell));
             }
         }
     }

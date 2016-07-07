@@ -3,12 +3,13 @@
 
 using System.IO;
 using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help.Packages {
     public sealed class BasePackagesCollection : PackageCollection {
-        public BasePackagesCollection() :
-            base(GetInstallPath()) {
+        public BasePackagesCollection(IFunctionIndex functionIndex) :
+            base(functionIndex, GetInstallPath()) {
         }
 
         private static string GetInstallPath() {

@@ -4,18 +4,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using Microsoft.Languages.Core.Text;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
@@ -37,13 +33,10 @@ namespace Microsoft.R.Editor.Validation {
     /// settings which may turn validation on or off.
     /// </summary>
     public sealed class TreeValidator {
-        private static BooleanSwitch _traceValidation =
-            new BooleanSwitch("traceRValidation", "Trace R validation events in debug window.");
-        public BooleanSwitch TraceValidation {
-            get { return _traceValidation; }
-        }
-
+        private static readonly BooleanSwitch _traceValidation = new BooleanSwitch("traceRValidation", "Trace R validation events in debug window.");
         private static int _validationDelay = 200;
+
+        public BooleanSwitch TraceValidation => _traceValidation;
 
         /// <summary>
         /// Queue of validation results. Typically accessed from the main 
@@ -54,6 +47,7 @@ namespace Microsoft.R.Editor.Validation {
         internal ConcurrentQueue<IValidationError> ValidationResults { get; private set; }
 
         private IEditorTree _editorTree;
+        private readonly ICoreShell _shell;
         private bool _syntaxCheckEnabled = false;
         private bool _validationStarted = false;
 
@@ -67,7 +61,7 @@ namespace Microsoft.R.Editor.Validation {
         public event EventHandler<EventArgs> Cleared;
 
         #region Constructors
-        public TreeValidator(IEditorTree editorTree) {
+        public TreeValidator(IEditorTree editorTree, ICoreShell shell) {
 #if DEBUG
             TraceValidation.Enabled = false;
 #endif
@@ -77,6 +71,8 @@ namespace Microsoft.R.Editor.Validation {
             _editorTree.NodesRemoved += OnNodesRemoved;
             _editorTree.UpdateCompleted += OnTreeUpdateCompleted;
             _editorTree.Closing += OnTreeClose;
+
+            _shell = shell;
 
             _syntaxCheckEnabled = IsSyntaxCheckEnabled(_editorTree.TextBuffer);
 
@@ -91,7 +87,7 @@ namespace Microsoft.R.Editor.Validation {
             StartValidationNextIdle();
             ValidationResults = new ConcurrentQueue<IValidationError>();
 
-            ServiceManager.AddService<TreeValidator>(this, editorTree.TextBuffer);
+            ServiceManager.AddService<TreeValidator>(this, editorTree.TextBuffer, shell);
         }
         #endregion
 
@@ -100,10 +96,12 @@ namespace Microsoft.R.Editor.Validation {
         /// for the document that is associated with the text buffer
         /// </summary>
         /// <param name="textBuffer">Text buffer</param>
-        public static TreeValidator EnsureFromTextBuffer(ITextBuffer textBuffer, IEditorTree editorTree) {
+        /// <param name="editorTree"></param>
+        /// <param name="shell"></param>
+        public static TreeValidator EnsureFromTextBuffer(ITextBuffer textBuffer, IEditorTree editorTree, ICoreShell shell) {
             TreeValidator validator = ServiceManager.GetService<TreeValidator>(textBuffer);
             if (validator == null) {
-                validator = new TreeValidator(editorTree);
+                validator = new TreeValidator(editorTree, shell);
             }
 
             return validator;
@@ -136,14 +134,14 @@ namespace Microsoft.R.Editor.Validation {
             if (!_advisedToIdleTime) {
                 _idleRequestTime = DateTime.UtcNow;
 
-                EditorShell.Current.Idle += OnIdle;
+                _shell.Idle += OnIdle;
                 _advisedToIdleTime = true;
             }
         }
 
         private void UnadviseFromIdle() {
             if (_advisedToIdleTime) {
-                EditorShell.Current.Idle -= OnIdle;
+                _shell.Idle -= OnIdle;
                 _advisedToIdleTime = false;
             }
         }

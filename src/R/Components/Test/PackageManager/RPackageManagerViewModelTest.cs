@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,6 +10,7 @@ using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Test.Fakes.InteractiveWindow;
 using Microsoft.R.Host.Client;
+using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Xunit;
@@ -19,12 +19,11 @@ using static Microsoft.UnitTests.Core.Threading.UIThreadTools;
 namespace Microsoft.R.Components.Test.PackageManager {
     public class RPackageManagerViewModelTest : IAsyncLifetime {
         private readonly TestFilesFixture _testFiles;
-        private readonly ExportProvider _exportProvider;
+        private readonly IExportProvider _exportProvider;
         private readonly MethodInfo _testMethod;
         private readonly IRInteractiveWorkflow _workflow;
         private IRPackageManagerVisualComponent _packageManagerComponent;
         private IRPackageManagerViewModel _packageManagerViewModel;
-
 
         public RPackageManagerViewModelTest(RComponentsMefCatalogFixture catalog, TestMethodFixture testMethod, TestFilesFixture testFiles) {
             _exportProvider = catalog.CreateExportProvider();
@@ -55,7 +54,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public Task DisposeAsync() {
             _packageManagerComponent.Dispose();
-            (_exportProvider as IDisposable)?.Dispose();
+            _exportProvider.Dispose();
             return Task.CompletedTask;
         }
 
