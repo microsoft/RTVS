@@ -25,6 +25,6 @@ namespace Microsoft.R.Host.Client {
         /// <summary>
         /// The plot could not be rendered id length is 0.
         /// </summary>
-        public bool IsError => (Data == null) || Data.Length == 0;
+        public bool IsError => Data.Length == 0;
     }
 }

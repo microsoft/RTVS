@@ -270,7 +270,7 @@ namespace Microsoft.R.Host.Client {
             REvaluationResult result;
             if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
                 result = new REvaluationResult(error, parseStatus);
-            } else if(request.Kind.HasFlag(REvaluationKind.RawBytes) && response.Blobs.Count > 0) {
+            } else if(request.Kind.HasFlag(REvaluationKind.Raw) && response.Blobs.Count > 0) {
                 result = new REvaluationResult(response[2], error, parseStatus, response.Blobs.ToList());
             } else {
                 result = new REvaluationResult(response[2], error, parseStatus);

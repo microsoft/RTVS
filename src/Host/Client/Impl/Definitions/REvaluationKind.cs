@@ -51,7 +51,7 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <remarks>
         /// Used for data that cannot be represented in JSON.</remarks>
-        RawBytes = 1 << 9,
+        Raw = 1 << 9,
     }
 }
 

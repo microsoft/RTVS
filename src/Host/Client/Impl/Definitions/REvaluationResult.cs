@@ -35,7 +35,8 @@ namespace Microsoft.R.Host.Client {
         /// Result of evaluation for 'raw'
         /// </summary>
         /// <remarks>
-        /// Computed by serializing the immediate result of evaluation, as if by <c>serialize(x,NULL)</c>
+        /// Contains the result of <see cref="RHost.EvaluateAsync(string, REvaluationKind, CancellationToken)"/>, 
+        /// with <see cref="REvaluationKind.Raw"/>.
         /// </remarks>
         public List<byte[]> Raw { get; }
 
@@ -61,7 +62,6 @@ namespace Microsoft.R.Host.Client {
         public REvaluationResult(JToken result, string error, RParseStatus parseStatus)
             : this(error, parseStatus) {
             Result = result;
-            Raw = null;
         }
 
         public REvaluationResult(JToken result, string error, RParseStatus parseStatus, List<byte[]> raw)

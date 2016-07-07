@@ -34,7 +34,7 @@ namespace Microsoft.R.Host.Client {
                 if (kind.HasFlag(REvaluationKind.NoResult)) {
                     nameBuilder.Append('0');
                 }
-                if (kind.HasFlag(REvaluationKind.RawBytes)) {
+                if (kind.HasFlag(REvaluationKind.Raw)) {
                     nameBuilder.Append('r');
                 }
                 MessageName = nameBuilder.ToString();

@@ -135,5 +135,27 @@ export_to_csv <- function(expr, sep, dec) {
 	ln <- length(res) + 1
 	filepath <- tempfile('export_', fileext='.csv')
 	write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
-	list(filepath, ln, file.info(filepath)$size)
+	data <- readBin(filepath, 'raw', file.info(filepath)$size)
+	file.remove(filepath)
+	data
+}
+
+# Helper to export current plot to image
+export_to_image <- function(device, width, height, resolution) {
+	filepath <- tempfile('plot_', fileext='.dat')
+	dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
+	dev.off()
+	data <- readBin(filepath, 'raw', file.info(filepath)$size)
+	file.remove(filepath)
+	data
+}
+
+# Helper to export current plot to pdf
+export_to_pdf <- function(width, height) {
+	filepath <- tempfile('plot_',fileext='.pdf')
+	dev.copy(device=pdf,file=filepath,width=width,height=height)
+	dev.off()
+	data <- readBin(filepath, 'raw', file.info(filepath)$size)
+	file.remove(filepath)
+	data
 }
