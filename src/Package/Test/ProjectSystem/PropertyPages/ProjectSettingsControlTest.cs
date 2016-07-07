@@ -12,7 +12,6 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using NSubstitute;
 
@@ -173,10 +172,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 prop.Setting.Value.Should().Be("42");
 
                 var pg = control.PropertyGrid;
-                var eventDelegate = (MulticastDelegate)pg.GetType().GetField("PropertyValueChanged").GetValue(pg);
-                eventDelegate?.DynamicInvoke(new object[] { pg, new PropertyValueChangedEventArgs(pg.SelectedGridItem, "1") });
-                control.IsDirty.Should().BeTrue();
+                var mi = pg.GetType().GetMethod("OnPropertyValueChanged", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi.Invoke(pg, new object[] { new PropertyValueChangedEventArgs(pg.SelectedGridItem, "1") });
 
+                control.IsDirty.Should().BeTrue();
                 shell.ShowMessage(Microsoft.VisualStudio.R.Package.Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel).Returns(MessageButtons.Cancel);
 
                 control.FileListCombo.SelectedIndex = 1;
@@ -230,6 +229,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
                 prop.Should().NotBeNull();
                 prop.SetValue(null, "42");
                 prop.Setting.Value.Should().Be("42");
+
+                var pg = control.PropertyGrid;
+                var mi = pg.GetType().GetMethod("OnPropertyValueChanged", BindingFlags.Instance | BindingFlags.NonPublic);
+                mi.Invoke(pg, new object[] { new PropertyValueChangedEventArgs(pg.SelectedGridItem, "1") });
 
                 control.IsDirty.Should().BeTrue();
 
