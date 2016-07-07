@@ -131,31 +131,28 @@ safe_eval <- function(expr, env) {
 
 # Helper to export variable to CSV
 export_to_csv <- function(expr, sep, dec) {
-	res <- expr
-	ln <- length(res) + 1
-	filepath <- tempfile('export_', fileext='.csv')
-	write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
-	data <- readBin(filepath, 'raw', file.info(filepath)$size)
-	file.remove(filepath)
-	data
+    res <- expr
+    ln <- length(res) + 1
+    filepath <- tempfile('export_', fileext='.csv')
+    on.exit(unlink(filepath))
+    write.table(res, file=filepath, qmethod='double', col.names=NA, sep=sep, dec=dec)
+    readBin(filepath, 'raw', file.info(filepath)$size)
 }
 
 # Helper to export current plot to image
 export_to_image <- function(device, width, height, resolution) {
-	filepath <- tempfile('plot_', fileext='.dat')
-	dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
-	dev.off()
-	data <- readBin(filepath, 'raw', file.info(filepath)$size)
-	file.remove(filepath)
-	data
+    filepath <- tempfile('plot_', fileext='.dat')
+    on.exit(unlink(filepath))
+    dev.copy(device=device,filename=filepath,width=width,height=height,res=resolution)
+    dev.off()
+    readBin(filepath, 'raw', file.info(filepath)$size)
 }
 
 # Helper to export current plot to pdf
 export_to_pdf <- function(width, height) {
-	filepath <- tempfile('plot_',fileext='.pdf')
-	dev.copy(device=pdf,file=filepath,width=width,height=height)
-	dev.off()
-	data <- readBin(filepath, 'raw', file.info(filepath)$size)
-	file.remove(filepath)
-	data
+    filepath <- tempfile('plot_',fileext='.pdf')
+    on.exit(unlink(filepath))
+    dev.copy(device=pdf,file=filepath,width=width,height=height)
+    dev.off()
+    readBin(filepath, 'raw', file.info(filepath)$size)
 }
