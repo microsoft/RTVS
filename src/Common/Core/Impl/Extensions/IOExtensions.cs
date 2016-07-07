@@ -7,16 +7,14 @@ using System.IO;
 namespace Microsoft.Common.Core {
     public static class IOExtensions {
         public static string MakeRelativePath(this string path, string basePath) {
-            if (!basePath.EndsWithOrdinal("\\")) {
-                basePath += "\\";
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(basePath)) {
+                return path;
             }
-            if (!path.EndsWithOrdinal("\\")) {
-                path += "\\";
+            var bp = basePath.EndsWithOrdinal("\\") ? basePath : basePath + "\\";
+            if (path.EqualsIgnoreCase(bp) || bp.EqualsIgnoreCase(path + "\\")) {
+                return string.Empty;
             }
-            if (path.StartsWithIgnoreCase(basePath)) {
-                return path.Substring(basePath.Length);
-            }
-            return path;
+            return path.StartsWithIgnoreCase(bp) ? path.Substring(bp.Length) : path;
         }
 
         public static bool ExistsOnPath(string fileName) {
