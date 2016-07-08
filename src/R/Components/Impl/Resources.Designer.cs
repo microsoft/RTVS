@@ -718,6 +718,24 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to # File content was generated on {0}..
+        /// </summary>
+        public static string SettingsFileGeneratedStamp {
+            get {
+                return ResourceManager.GetString("SettingsFileGeneratedStamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Application settings file..
+        /// </summary>
+        public static string SettingsFileHeader {
+            get {
+                return ResourceManager.GetString("SettingsFileHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uninstall.
         /// </summary>
         public static string Uninstall {

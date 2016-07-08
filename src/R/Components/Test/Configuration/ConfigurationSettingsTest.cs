@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using FluentAssertions;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Components.Application.Configuration.Parser;
@@ -158,14 +159,14 @@ x <- 1
                 settings = csr.LoadSettings();
             }
 
-            var stream = CreateStream();
+            var stream = new MemoryStream();
             using (var csw = new ConfigurationSettingsWriter(new StreamWriter(stream))) {
                 csw.SaveSettings(settings);
 
                 stream.Seek(0, SeekOrigin.Begin);
                 using (var r = new StreamReader(stream)) {
                     var s = r.ReadToEnd();
-                    s.Should().StartWith("# Application settings file");
+                    s.Should().StartWith(Resources.SettingsFileHeader);
                     s.Should().Contain(content);
                 }
             }
@@ -187,19 +188,7 @@ x <- 1
         }
 
         private Stream ToStream(string s) {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-
-            stream.Position = 0;
-            return stream;
-        }
-
-        private Stream CreateStream() {
-            MemoryStream stream = new MemoryStream();
-            StreamWriter writer = new StreamWriter(stream);
-            return stream;
+            return new MemoryStream(Encoding.UTF8.GetBytes(s));
         }
     }
 }
