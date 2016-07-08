@@ -225,26 +225,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
         [Test(ThreadType.UI)]
         [Category.Plots]
-        public async Task ExportAsPdfInvalidFilename() {
-            using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(1:10)",
-                });
-
-                var outputFilePath = _testFiles.GetDestinationPath("invalid%.pdf");
-                CoreShell.SaveFilePath = outputFilePath;
-
-                _workflow.Plots.Commands.ExportAsPdf.Should().BeEnabled();
-                await _workflow.Plots.Commands.ExportAsPdf.InvokeAsync();
-
-                // Ensure that RException was caught and message displayed to the user
-                File.Exists(CoreShell.SaveFilePath).Should().BeFalse();
-                CoreShell.LastShownErrorMessage.Should().Contain("invalid 'file' argument");
-            }
-        }
-
-        [Test(ThreadType.UI)]
-        [Category.Plots]
         public async Task ExportAsImage() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
                 // We set an initial size for plots, because export as image command
@@ -278,6 +258,10 @@ namespace Microsoft.R.Components.Test.Plots {
         [Category.Plots]
         public async Task ExportAsImageUnsupportedExtension() {
             using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
+                // We set an initial size for plots, because export as image command
+                // will use the current size of plot control as export parameter.
+                await _workflow.Plots.ResizeAsync(600, 500, 96);
+
                 await ExecuteAndWaitForPlotsAsync(new string[] {
                     "plot(1:10)",
                 });
@@ -293,26 +277,6 @@ namespace Microsoft.R.Components.Test.Plots {
 
                 File.Exists(CoreShell.SaveFilePath).Should().BeFalse();
                 CoreShell.LastShownErrorMessage.Should().Contain(".unsupportedextension");
-            }
-        }
-
-        [Test(ThreadType.UI)]
-        [Category.Plots]
-        public async Task ExportAsImageInvalidFilename() {
-            using (await _workflow.GetOrCreateVisualComponent(_componentContainerFactory)) {
-                await ExecuteAndWaitForPlotsAsync(new string[] {
-                    "plot(1:10)",
-                });
-
-                var outputFilePath = _testFiles.GetDestinationPath("invalid%.png");
-                CoreShell.SaveFilePath = outputFilePath;
-
-                _workflow.Plots.Commands.ExportAsImage.Should().BeEnabled();
-                await _workflow.Plots.Commands.ExportAsImage.InvokeAsync();
-
-                // Ensure that RException was caught and message displayed to the user
-                File.Exists(CoreShell.SaveFilePath).Should().BeFalse();
-                CoreShell.LastShownErrorMessage.Should().Contain("invalid 'filename'");
             }
         }
 

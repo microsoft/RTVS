@@ -10,6 +10,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Plots.Implementation.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Components.Plots.Implementation {
@@ -172,7 +173,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public async Task ExportToBitmapAsync(string deviceName, string outputFilePath) {
             try {
-                await _interactiveWorkflow.RSession.ExportToBitmapAsync(deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution);
+                var bitmapResult = await _interactiveWorkflow.RSession.ExportToBitmapAsync(deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution);
+                bitmapResult.SaveRawDataToFile(outputFilePath);
             } catch (MessageTransportException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
@@ -182,7 +184,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public async Task ExportToMetafileAsync(string outputFilePath) {
             try {
-                await _interactiveWorkflow.RSession.ExportToMetafileAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
+                var metafileResult = await _interactiveWorkflow.RSession.ExportToMetafileAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
+                metafileResult.SaveRawDataToFile(outputFilePath);
             } catch (MessageTransportException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
@@ -192,7 +195,8 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public async Task ExportToPdfAsync(string outputFilePath) {
             try {
-                await _interactiveWorkflow.RSession.ExportToPdfAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
+                var pdfResult = await _interactiveWorkflow.RSession.ExportToPdfAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
+                pdfResult.SaveRawDataToFile(outputFilePath);
             } catch (MessageTransportException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {

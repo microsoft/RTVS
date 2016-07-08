@@ -13,16 +13,6 @@ graphics.ide.new <- function() {
    invisible(external_embedded('ide_graphicsdevice_new'))
 }
 
-graphics.ide.exportimage <- function(filename, device, width, height, resolution) {
-    dev.copy(device=device,filename=filename,width=width,height=height,res=resolution)
-    dev.off()
-}
-
-graphics.ide.exportpdf <- function(filename, width, height) {
-    dev.copy(device=pdf,file=filename,width=width,height=height)
-    dev.off()
-}
-
 graphics.ide.nextplot <- function() {
    invisible(external_embedded('ide_graphicsdevice_next_plot'))
 }

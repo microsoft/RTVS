@@ -34,11 +34,14 @@ namespace Microsoft.R.Host.Client {
                 if (kind.HasFlag(REvaluationKind.NoResult)) {
                     nameBuilder.Append('0');
                 }
+                if (kind.HasFlag(REvaluationKind.Raw)) {
+                    nameBuilder.Append('r');
+                }
                 MessageName = nameBuilder.ToString();
 
                 expression = expression.Replace("\r\n", "\n");
 
-                message = host.CreateMessage(out Id, MessageName, expression);
+                message = host.CreateMessage(host.CreateMessageHeader(out Id, MessageName, null), expression);
             }
         }
     }

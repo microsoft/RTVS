@@ -13,6 +13,7 @@ namespace Microsoft.R.Host.Client {
     public class WebSocketMessageTransport : WebSocketBehavior, IMessageTransport {
         private readonly WebSocket _socket;
         private readonly BufferBlock<Task<string>> _incomingMessages = new BufferBlock<Task<string>>();
+        private readonly BufferBlock<Task<byte[]>> _incomingRawMessages = new BufferBlock<Task<byte[]>>();
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
 
         private WebSocket Socket => _socket ?? Context.WebSocket;
@@ -33,6 +34,10 @@ namespace Microsoft.R.Host.Client {
 
         public async Task<string> ReceiveAsync(CancellationToken ct = default(CancellationToken)) {
             return await await _incomingMessages.ReceiveAsync(ct);
+        }
+
+        public async Task<byte[]> ReceiveRawAsync(CancellationToken ct = default(CancellationToken)) {
+            return await await _incomingRawMessages.ReceiveAsync(ct);
         }
 
         public async Task SendAsync(string message, CancellationToken ct = default(CancellationToken)) {
@@ -69,7 +74,12 @@ namespace Microsoft.R.Host.Client {
 
         protected override void OnMessage(MessageEventArgs e) {
             base.OnMessage(e);
-            _incomingMessages.Post(Task.FromResult(e.Data));
+
+            if (e.Type == Opcode.Binary) {
+                _incomingRawMessages.Post(Task.FromResult(e.RawData));
+            } else {
+                _incomingMessages.Post(Task.FromResult(e.Data));
+            }
         }
 
         protected override void OnError(ErrorEventArgs e) {
