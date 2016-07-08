@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Host.Client.Test.Script;
@@ -218,21 +219,13 @@ rtvs:::graphics.ide.resize(600, 600, 96)
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportimage({0}, bmp, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({1}, png, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({2}, jpeg, {4}, {5}, {6})
-rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
-",
-                QuotedRPath(exportedBmpFilePath),
-                QuotedRPath(exportedPngFilePath),
-                QuotedRPath(exportedJpegFilePath),
-                QuotedRPath(exportedTiffFilePath),
-                DefaultExportWidth,
-                DefaultExportHeight,
-                DefaultExportResolution);
+"
+            );
 
+            string[] format = { "bmp", "png", "jpeg", "tiff" };
+            string[] paths = { exportedBmpFilePath, exportedPngFilePath, exportedJpegFilePath, exportedTiffFilePath };
             var inputs = Interactive(code);
-            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            var actualPlotFilePaths = await ExportToImageAsync(inputs, format, paths, DefaultExportWidth, DefaultExportHeight, DefaultExportResolution);
             var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
             var bmp = (Bitmap)Image.FromFile(plotFilePath);
@@ -259,23 +252,20 @@ rtvs:::graphics.ide.exportimage({3}, tiff, {4}, {5}, {6})
         [Test]
         [Category.Plots]
         public async Task ExportPreviousPlotToImage() {
-            var expectedExportedBmpFilePath = await WriteExpectedImageAsync("bmp", 360, 360, 96, "Expected", "plot(0:10)");
+            var expectedExportedBmpFilePath = await WriteExpectedImageAsync("bmp", DefaultExportWidth, DefaultExportHeight, DefaultExportResolution, "Expected", "plot(0:10)");
 
             var actualExportedBmpFilePath = _files.GetDestinationPath("ExportPreviousPlotToImageExpected1.bmp");
             var code = string.Format(@"
 plot(0:10)
 plot(10:20)
 rtvs:::graphics.ide.previousplot()
-rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
-",
-                QuotedRPath(actualExportedBmpFilePath),
-                DefaultWidth,
-                DefaultHeight,
-                DefaultExportResolution
+"
             );
 
             var inputs = Interactive(code);
-            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            string[] format = { "bmp"};
+            string[] paths = { actualExportedBmpFilePath };
+            var actualPlotFilePaths = await ExportToImageAsync(inputs, format, paths, DefaultExportWidth, DefaultExportHeight, DefaultExportResolution);
             actualPlotFilePaths.Should().HaveCount(3);
 
             CompareImages(new string[] { actualExportedBmpFilePath }, new string[] { expectedExportedBmpFilePath });
@@ -288,15 +278,11 @@ rtvs:::graphics.ide.exportimage({0}, bmp, {1}, {2}, {3})
 
             var code = string.Format(@"
 plot(0:10)
-rtvs:::graphics.ide.exportpdf({0}, {1}, {2})
-",
-                QuotedRPath(exportedFilePath),
-                7,
-                7
+"
             );
 
             var inputs = Interactive(code);
-            var actualPlotFilePaths = await GraphicsTestAsync(inputs);
+            var actualPlotFilePaths = await ExportToPdfAsync(inputs, exportedFilePath, 7, 7);
             var plotFilePath = actualPlotFilePaths.Should().ContainSingle().Which;
 
             var bmp = (Bitmap)Image.FromFile(plotFilePath);
@@ -586,6 +572,70 @@ dev.off()
 
                 await session.StopHostAsync();
             }
+        }
+
+        private async Task ExportToImageAsync(IRSession session, string format, string filePath, int widthInPixels,int heightInPixels, int resolution) {
+            string script = String.Format("rtvs:::export_to_image({0}, {1}, {2}, {3})",format, widthInPixels, heightInPixels, resolution);
+            var result = await session.EvaluateAsync(script, REvaluationKind.Raw);
+            result.SaveRawDataToFile(filePath);
+        }
+
+        private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
+            var app = new RHostClientTestApp { PlotHandler = OnPlot };
+            using (var sessionProvider = new RSessionProvider()) {
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RBasePath = new RInstallation().GetRInstallPath()
+                }, app, 50000);
+
+                foreach (var input in inputs) {
+                    using (var interaction = await session.BeginInteractionAsync()) {
+                        await interaction.RespondAsync(input + "\n");
+                    }
+                }
+
+                for (int i = 0; i < format.Length; ++i) {
+                    await ExportToImageAsync(session, format[i], paths[i], widthInPixels, heightInPixels, resolution);
+                }
+
+                await session.StopHostAsync();
+            }
+            // Ensure that all plot files created by the graphics device have been deleted
+            foreach (var plot in OriginalPlotMessages) {
+                File.Exists(plot.FilePath).Should().BeFalse();
+            }
+
+            return PlotFilePaths.AsReadOnly();
+        }
+
+        private async Task<IEnumerable<string>> ExportToPdfAsync(string[] inputs, string filePath, int width, int height) {
+            var app = new RHostClientTestApp { PlotHandler = OnPlot };
+            using (var sessionProvider = new RSessionProvider()) {
+                var session = sessionProvider.GetOrCreate(Guid.NewGuid());
+                await session.StartHostAsync(new RHostStartupInfo {
+                    Name = _testMethod.Name,
+                    RBasePath = new RInstallation().GetRInstallPath()
+                }, app, 50000);
+
+                foreach (var input in inputs) {
+                    using (var interaction = await session.BeginInteractionAsync()) {
+                        await interaction.RespondAsync(input + "\n");
+                    }
+                }
+
+                string script = String.Format("rtvs:::export_to_pdf({0}, {1})", width, height);
+                var result = await session.EvaluateAsync(script, REvaluationKind.Raw);
+                result.SaveRawDataToFile(filePath);
+
+                await session.StopHostAsync();
+            }
+            // Ensure that all plot files created by the graphics device have been deleted
+            foreach (var plot in OriginalPlotMessages) {
+                File.Exists(plot.FilePath).Should().BeFalse();
+            }
+
+            return PlotFilePaths.AsReadOnly();
         }
 
         private static string QuotedRPath(string path) {

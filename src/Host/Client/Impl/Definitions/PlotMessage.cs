@@ -9,27 +9,22 @@ namespace Microsoft.R.Host.Client {
         public string FilePath { get; }
         public int ActivePlotIndex { get; }
         public int PlotCount { get; }
+        public byte[] Data { get; }
 
-        public PlotMessage(string filePath, int activePlotIndex, int plotCount) {
+        public PlotMessage(string filePath, int activePlotIndex, int plotCount, byte[] data) {
             FilePath = filePath;
             ActivePlotIndex = activePlotIndex;
             PlotCount = plotCount;
+            Data = data;
         }
 
         public bool IsClearAll => string.IsNullOrEmpty(FilePath);
 
-        public bool IsPlot {
-            get {
-                try {
-                    return new FileInfo(FilePath).Length > 0;
-                } catch (IOException) { } catch (AccessViolationException) { }
-                return false;
-            }
-        }
+        public bool IsPlot => Data.Length > 0;
 
         /// <summary>
-        /// A zero-sized file means a blank image, ie. the plot could not be rendered.
+        /// The plot could not be rendered id length is 0.
         /// </summary>
-        public bool IsError => !File.Exists(FilePath) || new FileInfo(FilePath).Length == 0;
+        public bool IsError => Data.Length == 0;
     }
 }
