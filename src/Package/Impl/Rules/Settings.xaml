@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (c) Microsoft Corporation. All rights reserved.
+  Licensed under the MIT License. See LICENSE in the project root for license information.
+-->
+<Rule Name="ConfigurationSettings" DisplayName="Settings" PageTemplate="generic" Description="Settings" xmlns="http://schemas.microsoft.com/build/2009/properties">
+    <Rule.Categories>
+        <Category Name="Settings" DisplayName="Settings" />
+    </Rule.Categories>
+    <Rule.DataSource>
+        <DataSource Persistence="ProjectFile" />
+    </Rule.DataSource>
+
+    <StringProperty Name="SettingsFile" DisplayName="File with settings" Description="R file with settings that is sourced before the application starts" Visible="True">
+        <StringProperty.DataSource>
+            <DataSource Persistence="ProjectFile" HasConfigurationCondition="True"/>
+        </StringProperty.DataSource>
+    </StringProperty>
+</Rule>

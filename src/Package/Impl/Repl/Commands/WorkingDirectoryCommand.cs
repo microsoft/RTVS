@@ -124,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         internal string GetFriendlyDirectoryName(string directory) {
             if (!string.IsNullOrEmpty(UserDirectory)) {
-                if(directory.EndsWithOrdinal("\\") && !directory.EndsWithOrdinal(":\\")) {
+                if (directory.EndsWithOrdinal("\\") && !directory.EndsWithOrdinal(":\\")) {
                     directory = directory.Substring(0, directory.Length - 1);
                 }
                 if (directory.StartsWithIgnoreCase(UserDirectory)) {

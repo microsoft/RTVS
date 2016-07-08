@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
@@ -35,5 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Retrieves folder name of the project item templates
         /// </summary>
         string GetProjectItemTemplatesFolder();
+
+        IEnumerable<string> GetProjectFiles(EnvDTE.Project project);
     }
 }

@@ -70,6 +70,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Syntax error.
+        /// </summary>
+        public static string ConfigurationError_Syntax {
+            get {
+                return ResourceManager.GetString("ConfigurationError_Syntax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dismiss.
         /// </summary>
         public static string Dismiss {
@@ -120,6 +129,15 @@ namespace Microsoft.R.Components {
         public static string Error_ReplUnicodeCoversion {
             get {
                 return ResourceManager.GetString("Error_ReplUnicodeCoversion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings file {0} does not exists..
+        /// </summary>
+        public static string Error_SettingFileNoLongerExists {
+            get {
+                return ResourceManager.GetString("Error_SettingFileNoLongerExists", resourceCulture);
             }
         }
         
@@ -696,6 +714,24 @@ namespace Microsoft.R.Components {
         public static string Ready {
             get {
                 return ResourceManager.GetString("Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # File content was generated on {0}..
+        /// </summary>
+        public static string SettingsFileGeneratedStamp {
+            get {
+                return ResourceManager.GetString("SettingsFileGeneratedStamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Application settings file..
+        /// </summary>
+        public static string SettingsFileHeader {
+            get {
+                return ResourceManager.GetString("SettingsFileHeader", resourceCulture);
             }
         }
         

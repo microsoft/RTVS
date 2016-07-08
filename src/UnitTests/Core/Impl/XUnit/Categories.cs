@@ -34,6 +34,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class CoreExtensionsAttribute : CategoryAttribute {
+            public CoreExtensionsAttribute() : base("Core.Extensions") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class InteractiveAttribute : CategoryAttribute {
             public InteractiveAttribute() : base("Interactive") { }
         }
@@ -59,6 +64,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         [ExcludeFromCodeCoverage]
         public class PlotsAttribute : CategoryAttribute {
             public PlotsAttribute() : base("Plots") { }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class ConfigurationAttribute : CategoryAttribute {
+            public ConfigurationAttribute() : base("Configuration") { }
         }
 
         [ExcludeFromCodeCoverage]

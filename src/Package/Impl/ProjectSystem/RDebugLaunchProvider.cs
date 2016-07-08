@@ -6,11 +6,15 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
+using static System.FormattableString;
+using System.IO;
+using Microsoft.R.Host.Client.Extensions;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -28,13 +32,17 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal class RDebugLaunchProvider : DebugLaunchProviderBase {
         private readonly ProjectProperties _properties;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
+        private readonly IProjectSystemServices _pss;
 
         [ImportingConstructor]
-        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider)
+        public RDebugLaunchProvider(ConfiguredProject configuredProject, IRInteractiveWorkflowProvider interactiveWorkflowProvider, IProjectSystemServices pss)
             : base(configuredProject) {
             _properties = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
             _interactiveWorkflow = interactiveWorkflowProvider.GetOrCreate();
+            _pss = pss;
         }
+
+        internal IFileSystem FileSystem { get; set; } = new FileSystem();
 
         private IRSession Session => _interactiveWorkflow.RSession;
 
@@ -77,16 +85,30 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _interactiveWorkflow.ActiveWindow?.Container.Show(false);
 
-            string startupFile = await _properties.GetStartupFileAsync();
-
-            if (string.IsNullOrEmpty(startupFile)) {
+            var startupFile = await _properties.GetStartupFileAsync();
+            if(string.IsNullOrWhiteSpace(startupFile)) {
                 _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(Resources.Launch_NoStartupFile);
                 return;
             }
+            await SourceFileAsync(startupFile, Invariant($"{Resources.Launch_StartupFileDoesNotExist} {startupFile}"));
 
-            _interactiveWorkflow.Operations.SourceFileAsync(startupFile, echo: false)
-                .SilenceException<Exception>()
-                .DoNotWait();
+            var settingsFile = await _properties.GetSettingsFileAsync();
+
+            if (!string.IsNullOrWhiteSpace(settingsFile)) {
+                var activeProject = _pss.GetActiveProject();
+                if (activeProject != null) {
+                    settingsFile = settingsFile.MakeAbsolutePathFromRRelative(Path.GetDirectoryName(activeProject.FullName));
+                    await SourceFileAsync(settingsFile, Invariant($"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}"));
+                }
+            }
+        }
+
+        private async Task SourceFileAsync(string file, string errorMessage) {
+            if (!FileSystem.FileExists(file)) {
+                _interactiveWorkflow.ActiveWindow?.InteractiveWindow.WriteErrorLine(errorMessage);
+                return;
+            }
+            await _interactiveWorkflow.Operations.SourceFileAsync(file, echo: false).SilenceException<Exception>();
         }
     }
 }
