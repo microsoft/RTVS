@@ -59,8 +59,7 @@
     <Compile Include="Application\Configuration\ObservableNameValue.cs" />
     <Compile Include="Application\Configuration\ConfigurationSettingCollection.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingCollection.cs" />
-    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingUIEditor.cs" />
-    <Compile Include="Application\Configuration\Editors\ConnectionStringEditor.cs" />
+    <Compile Include="Application\Configuration\Definitions\IConfigurationSettingUIEditorProvider.cs" />
     <Compile Include="Application\Configuration\IO\ConfigurationSettingsWriter.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsWriter.cs" />
     <Compile Include="Application\Configuration\Parser\ConfigurationError.cs" />
