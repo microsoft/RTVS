@@ -5,8 +5,8 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Shell.Mocks;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Mocks {
