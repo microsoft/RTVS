@@ -4,9 +4,9 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.R.InteractiveWindow;
+using Microsoft.R.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Editor.Mocks;
-using Microsoft.VisualStudio.InteractiveWindow;
-using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {

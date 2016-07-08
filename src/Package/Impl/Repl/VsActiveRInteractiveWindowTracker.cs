@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.R.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;

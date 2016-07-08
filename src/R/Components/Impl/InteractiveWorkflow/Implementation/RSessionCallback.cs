@@ -13,7 +13,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {

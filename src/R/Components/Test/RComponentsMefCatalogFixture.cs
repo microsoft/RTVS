@@ -18,7 +18,7 @@ namespace Microsoft.R.Components.Test {
     public sealed class RComponentsMefCatalogFixture : AssemblyMefCatalogFixture {
         protected override IEnumerable<string> GetBinDirectoryAssemblies() {
             return new[] {
-                "Microsoft.VisualStudio.InteractiveWindow.dll",
+                "Microsoft.R.InteractiveWindow.dll",
                 "Microsoft.R.Host.Client.dll",
                 "Microsoft.R.Common.Core.dll",
                 "Microsoft.R.Common.Core.Test.dll",

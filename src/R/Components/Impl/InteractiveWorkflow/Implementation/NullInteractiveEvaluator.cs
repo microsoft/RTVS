@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     internal sealed class NullInteractiveEvaluator : IInteractiveEvaluator {
