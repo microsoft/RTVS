@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public string CurrentFile {
             get { return _currentFile; }
             set {
-                if (!value.EqualsIgnoreCase(_currentFile)) {
+                if (value != null && !value.EqualsIgnoreCase(_currentFile)) {
                     try {
                         var fullPath = GetFullPath(value);
                         if (!string.IsNullOrEmpty(fullPath)) {

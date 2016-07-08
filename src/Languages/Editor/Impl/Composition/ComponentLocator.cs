@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.Languages.Editor.Composition {

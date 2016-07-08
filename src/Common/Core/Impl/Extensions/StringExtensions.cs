@@ -43,7 +43,7 @@ namespace Microsoft.Common.Core {
             return s.IndexOf(prefix, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        public static string TrimQuotes(this string s) {
+        public static string RemoveQuotes(this string s) {
             if (s.Length > 0) {
                 char quote = s[0];
                 if (quote == '\'' || quote == '\"') {

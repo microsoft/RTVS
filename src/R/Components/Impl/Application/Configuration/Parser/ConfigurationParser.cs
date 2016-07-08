@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.Operators;
@@ -102,7 +101,7 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                                 var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
                                 if (result) {
                                     s.Name = name;
-                                    s.Value = value.TrimQuotes();
+                                    s.Value = value.RemoveQuotes();
                                     s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
                                     return true;
                                 }
