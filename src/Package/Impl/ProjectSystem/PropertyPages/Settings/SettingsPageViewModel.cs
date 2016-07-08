@@ -31,7 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public IEnumerable<string> Files => _filesMap.Keys;
-        public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_settings);
+        public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_coreShell, _settings);
 
         public string CurrentFile {
             get { return _currentFile; }

@@ -47,13 +47,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         }
 
         private T WaitForAsync<T>(Func<Task<T>> asyncFunc) {
-            Debug.Assert(ThreadHandling != null);
-            return ThreadHandling.ExecuteSynchronously<T>(asyncFunc);
+            return ThreadHandling != null ? ThreadHandling.ExecuteSynchronously<T>(asyncFunc) : default(T);
         }
 
         private void WaitForAsync(Func<Task> asyncFunc) {
-            Debug.Assert(ThreadHandling != null);
-            ThreadHandling.ExecuteSynchronously(asyncFunc);
+            ThreadHandling?.ExecuteSynchronously(asyncFunc);
         }
 
         protected abstract Task<int> OnApply();

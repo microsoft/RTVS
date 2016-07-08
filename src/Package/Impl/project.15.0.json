@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "MicroBuild.Core": "0.2.0",
+    "Microsoft.VisualStudio.Data.Services": "9.0.21022",
     "Microsoft.VisualStudio.ImageCatalog": "14.2.25123",
     "Microsoft.VisualStudio.ProjectSystem": "15.0.183-pre",
     "Microsoft.VisualStudio.ProjectSystem.SDK.Tools": "15.0.183-pre",

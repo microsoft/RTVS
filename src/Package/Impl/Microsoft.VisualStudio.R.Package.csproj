@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
-          Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="..\..\R.Settings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -256,6 +255,7 @@
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
+    <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
@@ -1323,7 +1323,6 @@
     <WriteLinesToFile File="$(MSBuildProjectDirectory)\RtvsProductInfo.cs" Overwrite="true" Lines="// Generated version file. Do not modify or check in.;&#xD;&#xA;                              namespace Microsoft.VisualStudio.R.Package {;&#xD;&#xA;                              %20%20%20%20static partial class RtvsProductInfo {;&#xD;&#xA;                              %20%20%20%20%20%20%20%20public const string VersionString = &quot;$(MajorVersion).$(MinorVersion).$(Build).$(Revision)&quot;%3B;&#xD;&#xA;                              %20%20%20%20};&#xD;&#xA;                              };">
     </WriteLinesToFile>
   </Target>
-
   <!-- CPS XAML rule handling -->
   <PropertyGroup>
     <MarkupCompilePass1DependsOn>
@@ -1331,10 +1330,9 @@
       $(MarkupCompilePass1DependsOn)
     </MarkupCompilePass1DependsOn>
   </PropertyGroup>
-
   <Target Name="GenerateRulePrep">
     <ItemGroup>
-      <_XamlPropertyRuleSource Include="@(XamlPropertyRule->'$(IntermediateOutputPath)%(FileName)$(DefaultLanguageSourceExtension)')"/>
+      <_XamlPropertyRuleSource Include="@(XamlPropertyRule->'$(IntermediateOutputPath)%(FileName)$(DefaultLanguageSourceExtension)')" />
       <Compile Include="@(_XamlPropertyRuleSource)">
         <ExcludeFromStyleCop>true</ExcludeFromStyleCop>
       </Compile>
@@ -1344,46 +1342,21 @@
       <Clean Include="@(_XamlPropertyRuleSource)" />
     </ItemGroup>
   </Target>
-
   <!-- The target needs to run so the task can populate the output items correctly. 
     The task does an up to date check on the files themselves
    -->
   <!--<PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
     <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
   </PropertyGroup>-->
-  
   <!--<UsingTask Condition="'$(VisualStudioVersion)'=='14.0'"
              TaskName="XamlRuleToCode" 
              AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>
   <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'"
              TaskName="XamlRuleToCode" 
              AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>-->
-  
-  <Target Name="GenerateRuleSourceFromXaml"
-          DependsOnTargets="GenerateRulePrep"
-          Condition="'@(XamlPropertyRule)' != ''">
-    <XamlRuleToCode
-       CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)"
-       NamespaceName="%(XamlPropertyRule.Namespace)"
-       RuleMissingError="%(XamlPropertyRule.RuleMissingError)"
-       PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)"
-       Inputs="@(XamlPropertyRule)"
-       OutputDirectory="%(XamlPropertyRule.OutputPath)"
-       DataAccess="%(XamlPropertyRule.DataAccess)"
-       RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)"
-       RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)"
-       RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)"
-       RuleInjection="%(XamlPropertyRule.RuleInjection)"
-       RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)"
-       RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)"
-       RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)"
-       ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)"
-       IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)"
-       IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)"
-       ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)"
-       IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)"
-       IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
-      <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource"/>
+  <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
+    <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" NamespaceName="%(XamlPropertyRule.Namespace)" RuleMissingError="%(XamlPropertyRule.RuleMissingError)" PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)" Inputs="@(XamlPropertyRule)" OutputDirectory="%(XamlPropertyRule.OutputPath)" DataAccess="%(XamlPropertyRule.DataAccess)" RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" RuleInjection="%(XamlPropertyRule.RuleInjection)" RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
+      <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />
     </XamlRuleToCode>
   </Target>
   <Import Project="$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets" Condition="'$(VisualStudioVersion)'=='14.0' AND Exists('$(NuGetPackageRoot)\Microsoft.VSSDK.BuildTools\14.2.25201\tools\vssdk\Microsoft.VsSDK.targets')" />
