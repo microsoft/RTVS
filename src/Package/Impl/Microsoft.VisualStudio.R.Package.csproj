@@ -205,6 +205,9 @@
     <Compile Include="Packages\Attributes\ProvideCodeExpansionsAttribute.cs" />
     <Compile Include="Plots\PlotManagerWindowPane.cs" />
     <Compile Include="Plots\VsRPlotManagerVisualComponent.cs" />
+    <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsAccess.cs" />
+    <Compile Include="ProjectSystem\Configuration\IProjectConfigurationSettingsProvider.cs" />
+    <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
@@ -256,6 +259,9 @@
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
+    <Compile Include="Sql\AddDbConnectionCommand.cs" />
+    <Compile Include="Sql\DbConnectionService.cs" />
+    <Compile Include="Sql\IDbConnectionService.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />

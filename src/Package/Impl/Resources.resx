@@ -404,8 +404,8 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+  <data name="ConnectionStringDescription" xml:space="preserve">
+    <value>Database connection string</value>
   </data>
   <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
     <value>Save current workspace image to {0}?</value>

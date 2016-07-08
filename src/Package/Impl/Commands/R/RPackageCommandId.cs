@@ -67,6 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdShowDetails = 806;
         public const int icmdOpenInCsvApp = 807;
         public const int icmdCopyValue = 808;
+        public const int icmdAddDabaseConnection = 809;
 
         // Window management
         public const int icmdShowReplWindow = 901;

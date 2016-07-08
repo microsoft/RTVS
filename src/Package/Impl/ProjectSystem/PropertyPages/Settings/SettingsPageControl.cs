@@ -10,28 +10,31 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
+using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
-        private readonly IConfigurationSettingCollection _settings = new ConfigurationSettingCollection();
         private readonly SettingsPageViewModel _viewModel;
         private readonly ICoreShell _coreShell;
         private int _selectedIndex;
         private bool _isDirty;
 
-        public SettingsPageControl() : this(VsAppShell.Current, new FileSystem()) { }
+        public SettingsPageControl() : this(
+            VsAppShell.Current.ExportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>(), 
+            VsAppShell.Current, new FileSystem()) { }
 
-        public SettingsPageControl(ICoreShell coreShell, IFileSystem fs) {
+        public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell coreShell, IFileSystem fs) {
             _coreShell = coreShell;
-            _viewModel = new SettingsPageViewModel(_settings, coreShell, fs);
+            _viewModel = new SettingsPageViewModel(settingsProvider, coreShell, fs);
             InitializeComponent();
         }
 
-        public async Task SetProjectAsync(string path, ProjectProperties[] properties) {
-            await _viewModel.SetProjectPathAsync(path, properties);
+        public async Task SetProjectAsync(ConfiguredProject project) {
+            await _viewModel.SetProjectAsync(project);
         }
 
         public event EventHandler<EventArgs> DirtyStateChanged;

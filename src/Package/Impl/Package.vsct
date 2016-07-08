@@ -306,7 +306,10 @@
       <Group guid="guidRToolsCmdSet" id="dataSubMenuEditGroup" priority="0x0200">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
-
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup" priority="0x0300">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
+      </Group>
+      
       <!-- Directory flyout -->
       <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
@@ -1493,6 +1496,16 @@
         </Strings>
       </Button>
 
+      <Button guid="guidRToolsCmdSet" id="icmdAddDabaseConnection" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ConnectToDatabase"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Add &amp;Database Connection...</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
   </Commands>
 
@@ -2183,7 +2196,8 @@
       <IDSymbol name="icmdShowDetails" value="806" />
       <IDSymbol name="icmdOpenInCsvApp" value="807" />
       <IDSymbol name="icmdCopyValue" value="808" />
-
+      <IDSymbol name="icmdAddDabaseConnection" value="809" />
+      
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
       <IDSymbol name="icmdShowPlotWindow" value="902" />
@@ -2291,6 +2305,7 @@
       <IDSymbol name="dataSubMenuGroup" value="0x2340"/>
       <IDSymbol name="dataSubMenuEditGroup" value="0x2341"/>
       <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
+      <IDSymbol name="dataSubMenuDatabaseGroup" value="0x2343"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>

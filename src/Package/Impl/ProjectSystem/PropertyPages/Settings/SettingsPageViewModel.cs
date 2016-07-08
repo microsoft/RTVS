@@ -13,19 +13,22 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Host.Client.Extensions;
+using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
-    internal sealed class SettingsPageViewModel {
+    internal sealed class SettingsPageViewModel: IDisposable {
         private readonly Dictionary<string, string> _filesMap = new Dictionary<string, string>();
-        private readonly IConfigurationSettingCollection _settings;
+        private readonly IProjectConfigurationSettingsProvider _settingProvider;
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
+        private IProjectConfigurationSettingsAccess _access;
         private IRProjectProperties[] _properties;
         private string _currentFile;
         private string _projectPath;
 
-        public SettingsPageViewModel(IConfigurationSettingCollection settings, ICoreShell coreShell, IFileSystem fileSystem) {
-            _settings = settings;
+        public SettingsPageViewModel(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell coreShell, IFileSystem fileSystem) {
+            _settingProvider = settingsProvider;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
         }
@@ -36,11 +39,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         public string CurrentFile {
             get { return _currentFile; }
             set {
+                if(_access == null) {
+                    throw new InvalidOperationException("Set path to the project first");
+                }
                 if (value != null && !value.EqualsIgnoreCase(_currentFile)) {
                     try {
                         var fullPath = GetFullPath(value);
                         if (!string.IsNullOrEmpty(fullPath)) {
-                            _settings.Load(fullPath);
+                            _access.Settings.Load(fullPath);
                         }
                         _currentFile = value;
                     } catch (Exception ex) when (!ex.IsCriticalException()) {
@@ -50,11 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public async Task SetProjectPathAsync(string projectPath, IRProjectProperties[] properties) {
-            _projectPath = projectPath;
-            _properties = properties;
+        public async Task SetProjectAsync(ConfiguredProject project) {
+            _projectPath = Path.GetDirectoryName(project.UnconfiguredProject.FullPath);
+            _access = await _settingProvider.OpenProjectSettingsAccessAsync(project);
             try {
-                EnumerateSettingFiles(projectPath);
+                EnumerateSettingFiles(_projectPath);
             } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
 
             if (_properties?.Length > 0) {
@@ -70,18 +76,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         public void AddSetting(string name, string value, ConfigurationSettingValueType valueType) {
-            _settings.Add(new ConfigurationSetting(name, value, valueType));
+            _access.Settings.Add(new ConfigurationSetting(name, value, valueType));
         }
 
         public void RemoveSetting(IConfigurationSetting s) {
-            _settings.Remove(s);
+            _access.Settings.Remove(s);
         }
 
         public async Task<bool> SaveAsync() {
             var fullPath = GetFullPath(CurrentFile);
             if (!string.IsNullOrEmpty(fullPath)) {
                 try {
-                    _settings.Save(fullPath);
+                    _access.Settings.Save(fullPath);
                     await SaveSelectedSettingsFileNameAsync();
                     return true;
                 } catch (Exception ex) when (!ex.IsCriticalException()) {
@@ -106,6 +112,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                 _currentFile = fullPath.MakeRRelativePath(_projectPath);
                 _filesMap[_currentFile] = fullPath;
             }
+        }
+
+        public void Dispose() {
+            _access?.Dispose();
+            _access = null;
         }
 
         private string GetFullPath(string rPath) {

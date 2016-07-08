@@ -8,12 +8,14 @@ using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.VisualStudio.R.Package.Commands;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {

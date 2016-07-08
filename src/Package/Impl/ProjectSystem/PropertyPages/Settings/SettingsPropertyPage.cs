@@ -41,7 +41,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         protected override async Task OnSetObjects(bool isClosing) {
             if(!isClosing) {
                 Debug.Assert(!string.IsNullOrEmpty(UnconfiguredProject.FullPath));
-                await _control.SetProjectAsync(Path.GetDirectoryName(UnconfiguredProject.FullPath), ConfiguredProperties);
+                await _control.SetProjectAsync(ConfiguredProject);
             }
         }
     }

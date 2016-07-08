@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -33,16 +34,21 @@ namespace Microsoft.R.Components.Application.Configuration {
                         }
                     }
                 }
+                SourceFile = filePath;
             }
         }
 
         /// <summary>
         /// Writes settings to a disk file.
         /// </summary>
-        public void Save(string filePath) {
+        public void Save(string filePath = null) {
             lock (_lock) {
+                SourceFile = filePath ?? SourceFile;
+                if(SourceFile == null) {
+                    throw new InvalidOperationException("Either settings must have been previously loaded from the existing file or a file name must be provided");
+                }
                 if (Count > 0) {
-                    using (var sw = new StreamWriter(filePath)) {
+                    using (var sw = new StreamWriter(SourceFile)) {
                         using (var csw = new ConfigurationSettingsWriter(sw)) {
                             csw.SaveSettings(this);
                         }
@@ -50,5 +56,7 @@ namespace Microsoft.R.Components.Application.Configuration {
                 }
             }
         }
+
+        public string SourceFile { get; private set; }
     }
 }

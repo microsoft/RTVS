@@ -22,6 +22,11 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// <summary>
         /// Writes settings to a disk file.
         /// </summary>
-        void Save(string filePath);
+        void Save(string filePath = null);
+
+        /// <summary>
+        /// Path to the settings file on disk
+        /// </summary>
+        string SourceFile { get; }
     }
 }
