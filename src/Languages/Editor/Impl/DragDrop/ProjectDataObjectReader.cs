@@ -51,12 +51,10 @@ namespace Microsoft.Languages.Editor.DragDrop {
                     int pointX = reader.ReadInt32();
                     int pointY = reader.ReadInt32();
                     int fNC = reader.ReadInt32();
-                    int wide = reader.ReadInt32();
 
-                    // If the string is not Unicode, use ASCII encoding
-                    if (wide == 0) {
-                        reader.Dispose();
-                        reader = new BinaryReader(stream, Encoding.ASCII);
+                    int wide = reader.ReadInt32();
+                    if(wide == 0) { // We don't deal with ASCII
+                        return items;
                     }
 
                     if (filesOffset > 0 && filesOffset < reader.BaseStream.Length) {

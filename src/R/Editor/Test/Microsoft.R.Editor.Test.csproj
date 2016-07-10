@@ -140,6 +140,7 @@
     </Compile>
     <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
     <Compile Include="Documentation\RoxygenTest.cs" />
+    <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
     <Compile Include="REditorMefCatalogFixture.cs" />

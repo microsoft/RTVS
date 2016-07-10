@@ -127,6 +127,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DragDropAttribute : CategoryAttribute {
+                public DragDropAttribute() : base("R.DragDrop") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class DataInspectionAttribute : CategoryAttribute {
                 public DataInspectionAttribute() : base("R.DataInspection") { }
             }
