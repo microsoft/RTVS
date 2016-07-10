@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -11,10 +12,9 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
 using static System.FormattableString;
-using System.IO;
-using Microsoft.R.Host.Client.Extensions;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Debuggers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -93,12 +93,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             await SourceFileAsync(startupFile, Invariant($"{Resources.Launch_StartupFileDoesNotExist} {startupFile}"));
 
             var settingsFile = await _properties.GetSettingsFileAsync();
-
             if (!string.IsNullOrWhiteSpace(settingsFile)) {
                 var activeProject = _pss.GetActiveProject();
                 if (activeProject != null) {
                     settingsFile = settingsFile.MakeAbsolutePathFromRRelative(Path.GetDirectoryName(activeProject.FullName));
-                    await SourceFileAsync(settingsFile, Invariant($"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}"));
+                    if (FileSystem.FileExists(settingsFile)) {
+                        await SourceFileAsync(settingsFile, Invariant($"{Resources.Launch_SettingsFileDoesNotExist} {settingsFile}"));
+                    }
                 }
             }
         }

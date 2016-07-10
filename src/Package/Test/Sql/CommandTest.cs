@@ -6,13 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.Application.Configuration;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Sql;
 using NSubstitute;
-using Xunit;
+using static System.FormattableString;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -37,7 +39,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var properties = new ProjectProperties(Substitute.For<ConfiguredProject>());
             var dbcs = Substitute.For<IDbConnectionService>();
             dbcs.EditConnectionString(null).Returns("DSN");
-            var cmd = new AddDbConnectionCommand(configuredProject, properties, dbcs, csp);
+
+            var session = Substitute.For<IRSession>();
+            session.EvaluateAsync(null, REvaluationKind.NoResult).ReturnsForAnyArgs(Task.FromResult(new REvaluationResult()));
+            var wf = Substitute.For<IRInteractiveWorkflow>();
+            wf.RSession.Returns(session);
+            var wfp = Substitute.For<IRInteractiveWorkflowProvider>();
+            wfp.GetOrCreate().Returns(wf);
+
+            var cmd = new AddDbConnectionCommand(configuredProject, properties, dbcs, csp, wfp);
 
             var result = await cmd.GetCommandStatusAsync(null, RPackageCommandId.icmdAddDabaseConnection, true, string.Empty, CommandStatus.Enabled);
             result.Status.Should().Be(CommandStatus.Supported | CommandStatus.Enabled);
@@ -55,6 +65,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             s.Category.Should().Be(ConnectionStringEditor.ConnectionStringEditorCategory);
             s.EditorType.Should().Be(ConnectionStringEditor.ConnectionStringEditorName);
             s.Description.Should().Be(Resources.ConnectionStringDescription);
+
+            await session.Received(1).EvaluateAsync(Invariant($"dbConnection3 <- 'DSN'"), REvaluationKind.Mutating);
         }
     }
 }
