@@ -1293,8 +1293,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <XamlPropertyRule Include="Rules\Run.xaml" />
-    <XamlPropertyRule Include="Rules\Settings.xaml" />
+    <XamlPropertyRule Include="Rules\Run.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </XamlPropertyRule>
+    <XamlPropertyRule Include="Rules\Settings.xaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </XamlPropertyRule>
   </ItemGroup>
   <ItemGroup>
     <FilesToSign Include="$(OutputPath)\$(AssemblyName).dll">
@@ -1354,12 +1358,8 @@
   <!--<PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
     <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
   </PropertyGroup>-->
-  <!--<UsingTask Condition="'$(VisualStudioVersion)'=='14.0'"
-             TaskName="XamlRuleToCode" 
-             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>
-  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'"
-             TaskName="XamlRuleToCode" 
-             AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll"/>-->
+  <UsingTask Condition="'$(VisualStudioVersion)'=='14.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\14.0.50617-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
+  <UsingTask Condition="'$(VisualStudioVersion)'=='15.0'" TaskName="XamlRuleToCode" AssemblyFile="$(NuGetPackageRoot)\Microsoft.VisualStudio.ProjectSystem.SDK.Tools\15.0.183-pre\build\net451\Microsoft.VisualStudio.ProjectSystem.Sdk.Tasks.dll" />
   <Target Name="GenerateRuleSourceFromXaml" DependsOnTargets="GenerateRulePrep" Condition="'@(XamlPropertyRule)' != ''">
     <XamlRuleToCode CreateFallbackRule="%(XamlPropertyRule.CreateFallbackRule)" NamespaceName="%(XamlPropertyRule.Namespace)" RuleMissingError="%(XamlPropertyRule.RuleMissingError)" PropertyMissingError="%(XamlPropertyRule.PropertyMissingError)" Inputs="@(XamlPropertyRule)" OutputDirectory="%(XamlPropertyRule.OutputPath)" DataAccess="%(XamlPropertyRule.DataAccess)" RuleBaseTypes="%(XamlPropertyRule.RuleBaseTypes)" RuleNamePrefix="%(XamlPropertyRule.RuleNamePrefix)" RuleInjectionClassName="%(XamlPropertyRule.RuleInjectionClassName)" RuleInjection="%(XamlPropertyRule.RuleInjection)" RuleInjectionContextName="%(XamlPropertyRule.RuleInjectionCatalog)" RuleInjectionItemTypePropertyName="%(XamlPropertyRule.RuleInjectionItemTypePropertyName)" RuleInjectionItemNamePropertyName="%(XamlPropertyRule.RuleInjectionItemNamePropertyName)" ProjectPropertiesContext="%(XamlPropertyRule.ProjectPropertiesContext)" IPropertyPagesCatalogTypeName="%(XamlPropertyRule.IPropertyPagesCatalogTypeName)" IRuleTypeName="%(XamlPropertyRule.IRuleTypeName)" ConfiguredProjectTypeName="%(XamlPropertyRule.ConfiguredProjectTypeName)" IEvaluatedPropertyTypeName="%(XamlPropertyRule.IEvaluatedPropertyTypeName)" IProjectPropertiesContextTypeName="%(XamlPropertyRule.IProjectPropertiesContextTypeName)">
       <Output TaskParameter="ResourcesToEmbed" ItemName="EmbeddedResource" />

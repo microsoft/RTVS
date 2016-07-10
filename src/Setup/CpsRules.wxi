@@ -9,6 +9,7 @@
       <File Source="$(var.CpsRulesDir)\None.xaml" />
       <File Source="$(var.CpsRulesDir)\ProjectItemsSchema.xaml" />
       <File Source="$(var.CpsRulesDir)\Run.xaml" />
+      <File Source="$(var.CpsRulesDir)\Settings.xaml" />
       <File Source="$(var.CpsRulesDir)\Scc.xaml" />
       <File Source="$(var.CpsRulesDir)\rtvs.rules.props" />
     </Component>
