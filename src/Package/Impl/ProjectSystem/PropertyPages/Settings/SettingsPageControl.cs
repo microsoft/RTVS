@@ -3,10 +3,12 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
@@ -18,8 +20,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
-        private readonly SettingsPageViewModel _viewModel;
+        private readonly IProjectConfigurationSettingsProvider _settingsProvider;
         private readonly ICoreShell _coreShell;
+        private readonly IFileSystem _fs;
+        private IProjectConfigurationSettingsAccess _access;
+        private SettingsPageViewModel _viewModel;
         private int _selectedIndex;
         private bool _isDirty;
 
@@ -28,13 +33,31 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             VsAppShell.Current, new FileSystem()) { }
 
         public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell coreShell, IFileSystem fs) {
+            Check.ArgumentNull(nameof(settingsProvider), settingsProvider);
+            Check.ArgumentNull(nameof(coreShell), coreShell);
+            Check.ArgumentNull(nameof(fs), fs);
+
+            _settingsProvider = settingsProvider;
             _coreShell = coreShell;
-            _viewModel = new SettingsPageViewModel(settingsProvider, coreShell, fs);
+            _fs = fs;
             InitializeComponent();
         }
 
-        public async Task SetProjectAsync(ConfiguredProject project) {
-            await _viewModel.SetProjectAsync(project);
+        public async Task SetProjectAsync(UnconfiguredProject project, IRProjectProperties properties) {
+            if(_access != null) {
+                throw new InvalidOperationException("Project is already set");
+            }
+            _access = await _settingsProvider.OpenProjectSettingsAccessAsync(project, properties);
+            _viewModel = new SettingsPageViewModel(_access.Settings, _coreShell, _fs);
+            await _viewModel.SetProjectPathAsync(Path.GetDirectoryName(project.FullPath), properties);
+
+            PopulateFilesCombo();
+            LoadPropertyGrid();
+        }
+
+        public void Close() {
+            _access?.Dispose();
+            _access = null;
         }
 
         public event EventHandler<EventArgs> DirtyStateChanged;
@@ -68,10 +91,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         protected override void OnLoad(EventArgs e) {
             SetFont();
             SetTextToControls();
-
-            PopulateFilesCombo();
-            LoadPropertyGrid();
             SetButtonEnableState();
+            PopulateFilesCombo();
 
             filesList.SelectedIndexChanged += OnSelectedFileChanged;
             addSettingButton.Click += OnAddSettingClick;
@@ -98,9 +119,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void PopulateFilesCombo() {
-            var files = _viewModel.Files.ToArray();
+            var files = _viewModel?.Files.ToArray();
             filesList.Items.Clear();
-            if (files.Length == 0) {
+            if (files == null || files.Length == 0) {
                 filesList.Items.Add(Resources.NoSettingFiles);
                 _selectedIndex = filesList.SelectedIndex = 0;
             } else {
@@ -153,13 +174,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             IsDirty = true;
         }
 
-        private void OnVariableNameTextChanged(object sender, EventArgs e) {
-            SetButtonEnableState();
-        }
-
-        private void OnVariableValueTextChanged(object sender, EventArgs e) {
-            SetButtonEnableState();
-        }
+        private void OnVariableNameTextChanged(object sender, EventArgs e) => SetButtonEnableState();
+        private void OnVariableValueTextChanged(object sender, EventArgs e) => SetButtonEnableState();
 
         private void OnPropertyValueChanged(object s, PropertyValueChangedEventArgs e) {
             var setting = (e.ChangedItem.PropertyDescriptor as SettingPropertyDescriptor)?.Setting;

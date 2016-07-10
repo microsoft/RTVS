@@ -845,4 +845,7 @@ Additional information:
   <data name="Error_ConnectionStringFormat" xml:space="preserve">
     <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
   </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
 </root>

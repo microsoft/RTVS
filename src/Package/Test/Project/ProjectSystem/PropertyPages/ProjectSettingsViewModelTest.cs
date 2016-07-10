@@ -29,20 +29,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             fs.FileExists(file).Returns(true);
 
             var model = new SettingsPageViewModel(css, shell, fs);
-            await model.SetProjectAsync(Path.GetDirectoryName(file), null);
+            await model.SetProjectPathAsync(Path.GetDirectoryName(file), null);
             model.CurrentFile.Should().BeNull();
             (await model.SaveAsync()).Should().BeFalse(); // nothing should happen
         }
 
         [Test]
         public async Task CreateNewFile() {
-            var css = Substitute.For<IConfigurationSettingCollection>();
+            var css = new ConfigurationSettingCollection();
             var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
 
             var model = new SettingsPageViewModel(css, shell, fs);
             string file = Path.GetTempFileName();
-            await model.SetProjectAsync("C:\\", null);
+            await model.SetProjectPathAsync("C:\\", null);
             model.CreateNewSettingsFile();
             model.CurrentFile.Should().Be("~/Settings.R");
         }
@@ -64,7 +64,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             fs.FileExists(file3).Returns(true);
 
             var model = new SettingsPageViewModel(css, shell, fs);
-            await model.SetProjectAsync(folder, null);
+            await model.SetProjectPathAsync(folder, null);
             model.CurrentFile.Should().Be("~/Settings.R");
             model.Files.Should().HaveCount(2);
             model.Files.ToArray()[0].Should().Be("~/Settings.R");

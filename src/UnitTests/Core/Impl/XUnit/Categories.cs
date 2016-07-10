@@ -241,6 +241,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class SqlAttribute : CategoryAttribute {
+            public SqlAttribute() : base("SQL") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class ProjectAttribute : CategoryAttribute {
             public ProjectAttribute() : base("Project") { }
         }

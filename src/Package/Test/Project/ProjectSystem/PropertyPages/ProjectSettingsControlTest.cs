@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -12,6 +11,9 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using NSubstitute;
 
@@ -20,22 +22,41 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
     [Category.Configuration]
     public class ProjectSettingsControlTest {
         private readonly PackageTestFilesFixture _files;
+        private readonly ICoreShell _coreShell;
+        private readonly IProjectConfigurationSettingsProvider _csp;
+        private readonly IFileSystem _fs;
+        private readonly IRProjectProperties _properties;
+        private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly ConfigurationSettingCollection _coll = new ConfigurationSettingCollection();
+        private readonly IProjectConfigurationSettingsAccess _access;
 
         public ProjectSettingsControlTest(PackageTestFilesFixture files) {
             _files = files;
+            _coreShell = Substitute.For<ICoreShell>();
+            _fs = Substitute.For<IFileSystem>();
+
+            _access = Substitute.For<IProjectConfigurationSettingsAccess>();
+            _access.Settings.Returns(_coll);
+
+            _csp = Substitute.For<IProjectConfigurationSettingsProvider>();
+            _csp.OpenProjectSettingsAccessAsync(null, null).ReturnsForAnyArgs(Task.FromResult(_access));
+
+            _unconfiguredProject = Substitute.For<UnconfiguredProject>();
+            _unconfiguredProject.FullPath.Returns(@"C:\file.rproj");
+
+            _properties = Substitute.For<IRProjectProperties>();
+            _properties.GetSettingsFileAsync().Returns(Task.FromResult<string>(null));
         }
 
         [Test]
         public void Construction() {
-            var shell = Substitute.For<ICoreShell>();
-            var fs = Substitute.For<IFileSystem>();
-            var control = new SettingsPageControl(shell, fs);
+            var control = new SettingsPageControl(_csp, _coreShell, _fs);
 
             control.IsDirty.Should().BeFalse();
             control.CreateControl();
 
             control.FileListCombo.Items.Count.Should().Be(1);
-            control.FileListCombo.Items[0].Should().Be(Microsoft.VisualStudio.R.Package.Resources.NoSettingFiles);
+            control.FileListCombo.Items[0].Should().Be(Resources.NoSettingFiles);
 
             control.VariableName.Text.Should().BeNullOrEmpty();
             control.VariableValue.Text.Should().BeNullOrEmpty();
@@ -45,10 +66,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task DirtyState() {
-            var shell = Substitute.For<ICoreShell>();
-            var fs = Substitute.For<IFileSystem>();
-
-            var control = new SettingsPageControl(shell, fs);
+            var control = new SettingsPageControl(_csp, _coreShell, _fs);
             int count = 0;
             control.DirtyStateChanged += (s, e) => {
                 count++;
@@ -57,25 +75,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             control.IsDirty.Should().BeTrue();
             count.Should().Be(1);
 
-            (await control.SaveSettingsAsync()).Should().BeFalse(); // No op
-            control.IsDirty.Should().BeTrue();
-
-            await control.SetProjectAsync(Path.GetTempPath(), null);
+            await control.SetProjectAsync(_unconfiguredProject, _properties);
             (await control.SaveSettingsAsync()).Should().BeTrue();
             control.IsDirty.Should().BeFalse();
         }
 
         [Test]
         public async Task PropertyGridSingle() {
-            var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
-            var control = new SettingsPageControl(shell, fs);
+            var up = Substitute.For<UnconfiguredProject>();
+            up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
+
+            var control = new SettingsPageControl(_csp, _coreShell, fs);
 
             var fileName = "PropertyGridSingle.settings.r";
             var file = Path.Combine(_files.DestinationPath, fileName);
             fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file });
 
-            await control.SetProjectAsync(_files.DestinationPath, null);
+            await control.SetProjectAsync(up, _properties);
 
             control.CreateControl();
             control.FileListCombo.Items.Count.Should().BeGreaterThan(0);
@@ -96,11 +113,9 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task AddVariable() {
-            var shell = Substitute.For<ICoreShell>();
-            var fs = Substitute.For<IFileSystem>();
-            var control = new SettingsPageControl(shell, fs);
+            var control = new SettingsPageControl(_csp, _coreShell, _fs);
 
-            await control.SetProjectAsync(Path.GetTempPath(), null);
+            await control.SetProjectAsync(_unconfiguredProject, _properties);
             control.CreateControl();
 
             control.PropertyGrid.SelectedObject.Should().BeNull();
@@ -134,7 +149,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
         public async Task PropertyGridMultiple01() {
             var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
-            var control = new SettingsPageControl(shell, fs);
+            var up = Substitute.For<UnconfiguredProject>();
+            up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
+
+            var control = new SettingsPageControl(_csp, shell, fs);
 
             var fileName1 = "PropertyGridMultiple01-1.Settings.R";
             var file1 = Path.Combine(_files.DestinationPath, fileName1);
@@ -142,7 +160,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var file2 = Path.Combine(_files.DestinationPath, fileName2);
             fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file1, file2 });
 
-            await control.SetProjectAsync(_files.DestinationPath, null);
+            await control.SetProjectAsync(up, _properties);
 
             control.CreateControl();
             control.FileListCombo.Items.Count.Should().BeGreaterThan(0);
@@ -177,7 +195,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
         public async Task PropertyGridMultiple02() {
             var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
-            var control = new SettingsPageControl(shell, fs);
+            var up = Substitute.For<UnconfiguredProject>();
+            up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
+
+            var control = new SettingsPageControl(_csp, shell, fs);
 
             var fileName1 = "PropertyGridMultiple02-1.Settings.R";
             var file1 = Path.Combine(_files.DestinationPath, fileName1);
@@ -185,7 +206,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var file2 = Path.Combine(_files.DestinationPath, fileName2);
             fs.GetFileSystemEntries(Arg.Any<string>(), Arg.Any<string>(), SearchOption.AllDirectories).Returns(new string[] { file1, file2 });
 
-            await control.SetProjectAsync(_files.DestinationPath, null);
+            await control.SetProjectAsync(up, _properties);
 
             control.CreateControl();
             control.FileListCombo.Items.Count.Should().BeGreaterThan(0);

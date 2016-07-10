@@ -25,21 +25,27 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
         private readonly Dictionary<string, SettingsAccess> _settings = new Dictionary<string, SettingsAccess>();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        public async Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(ConfiguredProject configuredProject) {
-            Check.ArgumentNull(nameof(configuredProject), configuredProject);
+        public Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(ConfiguredProject configuredProject) {
+            var props = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
+            return OpenProjectSettingsAccessAsync(configuredProject.UnconfiguredProject, props);
+        }
+
+        public async Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(
+            UnconfiguredProject unconfiguredProject, IRProjectProperties propertes) {
+
+            Check.ArgumentNull(nameof(unconfiguredProject), unconfiguredProject);
+            Check.ArgumentNull(nameof(propertes), propertes);
             SettingsAccess access = null;
 
             await _semaphore.WaitAsync();
             try {
-                string projectFile = configuredProject.UnconfiguredProject.FullPath;
-                if (_settings.TryGetValue(projectFile, out access)) {
+                string projectFolder = Path.GetDirectoryName(unconfiguredProject.FullPath);
+                if (_settings.TryGetValue(projectFolder, out access)) {
                     access.UseCount++;
                 } else {
-                    var settings = await OpenCollectionAsync(configuredProject);
-                    if (settings != null) {
-                        access = new SettingsAccess(this, projectFile, settings);
-                        _settings[projectFile] = access;
-                    }
+                    var settings = await OpenCollectionAsync(projectFolder, propertes);
+                    access = new SettingsAccess(this, projectFolder, settings);
+                    _settings[projectFolder] = access;
                 }
 
             } finally {
@@ -49,25 +55,19 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
             return access;
         }
 
-        private async Task<ConfigurationSettingCollection> OpenCollectionAsync(ConfiguredProject configuredProject) {
+        private async Task<ConfigurationSettingCollection> OpenCollectionAsync(string projectFolder, IRProjectProperties propertes) {
             var settings = new ConfigurationSettingCollection();
-            var projectFolder = Path.GetDirectoryName(configuredProject.UnconfiguredProject.FullPath);
-            var settingsFilePath = await GetSettingsFilePathAsync(configuredProject);
+            var settingsFilePath = await GetSettingsFilePathAsync(projectFolder, propertes);
             if (string.IsNullOrEmpty(settingsFilePath)) {
                 settings.Load(settingsFilePath);
             }
             return settings;
         }
 
-        private async Task<string> GetSettingsFilePathAsync(ConfiguredProject configuredProject) {
-            var projectFolder = Path.GetDirectoryName(configuredProject.UnconfiguredProject.FullPath);
-            var props = configuredProject.Services.ExportProvider.GetExportedValue<ProjectProperties>();
-            if (props != null) {
-                var conf = await props.GetConfigurationSettingsPropertiesAsync();
-                var settingsFile = await conf.SettingsFile.GetEvaluatedValueAsync();
-                if (string.IsNullOrEmpty(settingsFile)) {
-                    return settingsFile.MakeAbsolutePathFromRRelative(projectFolder);
-                }
+        private async Task<string> GetSettingsFilePathAsync(string projectFolder, IRProjectProperties propertes) {
+            var settingsFile = await propertes.GetSettingsFileAsync();
+            if (string.IsNullOrEmpty(settingsFile)) {
+                return settingsFile.MakeAbsolutePathFromRRelative(projectFolder);
             }
             return null;
         }
@@ -78,9 +78,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                 var access = _settings[projectPath];
                 string settingsFile = null;
                 if (string.IsNullOrEmpty(access.Settings.SourceFile)) {
-                    settingsFile = Path.Combine(Path.GetDirectoryName(projectPath), "Settings.R");
+                    settingsFile = Path.Combine(projectPath, "Settings.R");
                 }
-                access.Settings.Save(settingsFile);
+                if (save) {
+                    access.Settings.Save(settingsFile);
+                }
+                _settings.Remove(projectPath);
             } finally {
                 _semaphore.Release();
             }
@@ -109,6 +112,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                     UseCount--;
                 }
                 if (UseCount == 0) {
+                    Settings.CollectionChanged -= OnCollectionChanged;
                     _provider.ReleaseSettings(_projectPath, _changed);
                 }
             }

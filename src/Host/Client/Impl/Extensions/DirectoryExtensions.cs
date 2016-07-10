@@ -21,6 +21,9 @@ namespace Microsoft.R.Host.Client.Extensions {
         }
 
         public static string MakeAbsolutePathFromRRelative(this string rPath, string basePath) {
+            if (string.IsNullOrEmpty(rPath)) {
+                return basePath.Replace('/', '\\');
+            }
             rPath = rPath.Replace('/', '\\');
             if (!string.IsNullOrEmpty(basePath)) {
                 if(rPath.Length == 1 && rPath[0] == '~') {

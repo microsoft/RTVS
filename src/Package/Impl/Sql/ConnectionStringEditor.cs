@@ -10,9 +10,20 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
+    /// <summary>
+    /// Implements visual editing of database connection strings
+    /// via VS data services.
+    /// </summary>
     internal sealed class ConnectionStringEditor : UITypeEditor {
+        /// <summary>
+        /// Category as it appears in settings.r. Example: # [Category] SQL
+        /// </summary>
         public const string ConnectionStringEditorCategory = "SQL";
+        /// <summary>
+        /// Editor as it appears in settings.r. Example: # [Editor] ConnectionStringEditor
+        /// </summary>
         public const string ConnectionStringEditorName = "ConnectionStringEditor";
+
         private readonly IDbConnectionService _dbcs;
 
         public ConnectionStringEditor() : this(null) { }
@@ -26,6 +37,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             return _dbcs.EditConnectionString(value as string);
         }
 
+        /// <summary>
+        /// Provides type of the UI editor for database connection strings
+        /// </summary>
         [Export(typeof(IConfigurationSettingUIEditorProvider))]
         [Name(ConnectionStringEditor.ConnectionStringEditorName)]
         class EditorProvider : IConfigurationSettingUIEditorProvider {

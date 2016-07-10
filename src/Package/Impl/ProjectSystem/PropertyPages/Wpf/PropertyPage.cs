@@ -46,18 +46,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
         }
 
-        private T WaitForAsync<T>(Func<Task<T>> asyncFunc) {
-            return ThreadHandling != null ? ThreadHandling.ExecuteSynchronously<T>(asyncFunc) : default(T);
-        }
-
-        private void WaitForAsync(Func<Task> asyncFunc) {
-            ThreadHandling?.ExecuteSynchronously(asyncFunc);
-        }
+        private T WaitForAsync<T>(Func<Task<T>> asyncFunc)=> ThreadHandling != null ? ThreadHandling.ExecuteSynchronously<T>(asyncFunc) : default(T);
+        private void WaitForAsync(Func<Task> asyncFunc)  => ThreadHandling?.ExecuteSynchronously(asyncFunc);
 
         protected abstract Task<int> OnApply();
-
         protected abstract Task OnDeactivate();
-
         protected abstract Task OnSetObjects(bool isClosing);
 
         public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal) {
@@ -70,9 +63,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             this.ResumeLayout();
         }
 
-        public int Apply() {
-            return WaitForAsync<int>(OnApply);
-        }
+        public int Apply() => WaitForAsync<int>(OnApply);
 
         public void Deactivate() {
             WaitForAsync(OnDeactivate);

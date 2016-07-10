@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Threading.Tasks;
-using Microsoft.R.Components.Application.Configuration;
 using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
@@ -13,7 +12,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// 'Add Database Connection' command. Dispose object to release access
     /// to the collection. All access is read/write. Do not cache the object.
     /// </summary>
-    public interface IProjectConfigurationSettingsProvider {
-        Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(ConfiguredProject configuredProject);
+    internal interface IProjectConfigurationSettingsProvider {
+        Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(UnconfiguredProject project, IRProjectProperties propertes);
+        Task<IProjectConfigurationSettingsAccess> OpenProjectSettingsAccessAsync(ConfiguredProject project);
     }
 }

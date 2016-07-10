@@ -2188,5 +2188,14 @@ namespace Microsoft.VisualStudio.R.Package {
                 return ResourceManager.GetString("WorkspaceFileFilter", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Yes.
+        /// </summary>
+        public static string Yes {
+            get {
+                return ResourceManager.GetString("Yes", resourceCulture);
+            }
+        }
     }
 }

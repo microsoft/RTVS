@@ -3,7 +3,6 @@
 
 using System;
 using Microsoft.R.Components.Application.Configuration;
-using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// <summary>

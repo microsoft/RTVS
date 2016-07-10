@@ -3,9 +3,9 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     [Guid("EE42AA31-44FF-4A83-B098-45C4F98FE9C3")]
@@ -41,7 +41,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         protected override async Task OnSetObjects(bool isClosing) {
             if(!isClosing) {
                 Debug.Assert(!string.IsNullOrEmpty(UnconfiguredProject.FullPath));
-                await _control.SetProjectAsync(ConfiguredProject);
+                await _control.SetProjectAsync(UnconfiguredProject, ConfiguredProperties[0]);
+            } else {
+                _control.Close();
             }
         }
     }
