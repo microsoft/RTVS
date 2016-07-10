@@ -223,6 +223,15 @@ namespace Microsoft.R.Editor {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Drag/drop.
+        /// </summary>
+        internal static string DragDropOperation {
+            get {
+                return ResourceManager.GetString("DragDropOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Format document.
         /// </summary>
         internal static string FormatDocument {

@@ -246,4 +246,7 @@
   <data name="ReplWindowName" xml:space="preserve">
     <value>Interactive Window</value>
   </data>
+  <data name="DragDropOperation" xml:space="preserve">
+    <value>Drag/drop</value>
+  </data>
 </root>

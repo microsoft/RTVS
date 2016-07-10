@@ -54,6 +54,11 @@
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHost.cs" />
     <Compile Include="ContainedLanguage\Definitions\IContainedLanguageHostProvider.cs" />
     <Compile Include="Diagnostics\IntegerSwitch.cs" />
+    <Compile Include="DragDrop\DataObjectFlags.cs" />
+    <Compile Include="DragDrop\DataObjectFormats.cs" />
+    <Compile Include="DragDrop\DataObjectExtensions.cs" />
+    <Compile Include="DragDrop\DropFileType.cs" />
+    <Compile Include="DragDrop\ProjectDataObjectReader.cs" />
     <Compile Include="EditorFactory\EditorExtensions.cs" />
     <Compile Include="EditorFactory\ProjectionEditorInstance.cs" />
     <Compile Include="EditorFactory\EditorInstance.cs" />
@@ -137,8 +142,7 @@
     <Compile Include="Undo\TextUndoTransactionThatRollsBackProperly.cs" />
     <Compile Include="Utility\GuardedOperations.cs" />
     <Compile Include="Utility\StringUtility.cs" />
-    <Compile Include="Workspace\IFile.cs" />
-    <Compile Include="Workspace\IFolder.cs" />
+    <Compile Include="Workspace\IWorkspaceServices.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
