@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 #if VS14
@@ -13,7 +14,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class OpenRDataVsStd97CommandGroupHandler : OpenRDataCommandGroupHandler {
         [ImportingConstructor]
-        public OpenRDataVsStd97CommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
-            : base(unconfiguredProject, sessionProvider, (long)VSConstants.VSStd97CmdID.Open) {}
+        public OpenRDataVsStd97CommandGroupHandler(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowProvider workflowProvider)
+            : base(unconfiguredProject, workflowProvider, (long)VSConstants.VSStd97CmdID.Open) {}
     }
 }

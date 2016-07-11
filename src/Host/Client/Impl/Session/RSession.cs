@@ -12,6 +12,7 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
@@ -26,8 +27,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
 
-        public event EventHandler<RRequestEventArgs> BeforeRequest;
-        public event EventHandler<RRequestEventArgs> AfterRequest;
+        public event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
+        public event EventHandler<RAfterRequestEventArgs> AfterRequest;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
         public event EventHandler<EventArgs> Connected;
@@ -41,7 +42,7 @@ namespace Microsoft.R.Host.Client.Session {
         private IReadOnlyList<IRContext> _contexts;
         private RHost _host;
         private Task _hostRunTask;
-        private TaskCompletionSource<object> _afterHostStartedTcs;
+        private Task _afterHostStartedTask;
         private TaskCompletionSource<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
         private readonly Action _onDispose;
@@ -70,7 +71,7 @@ namespace Microsoft.R.Host.Client.Session {
             tcs.Cancel();
             CanceledBeginEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
             CanceledBeginInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
-            CanceledEvaluateTask = Task.FromCanceled<REvaluationResult>(tcs.Token);
+            CanceledEvaluateTask = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
         }
 
         public RSession(int id, Action onDispose) {
@@ -85,6 +86,8 @@ namespace Microsoft.R.Host.Client.Session {
                 _delayedMutatedOnReadConsole = false;
                 Task.Run(() => Mutated?.Invoke(this, EventArgs.Empty));
             });
+
+            _afterHostStartedTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
         private void OnMutated() {
@@ -132,7 +135,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return await CanceledEvaluateTask;
             }
 
-            await _afterHostStartedTcs.Task;
+            await _afterHostStartedTask;
 
             try {
                 var result = await _host.EvaluateAsync(expression, kind, ct);
@@ -171,9 +174,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             if (string.IsNullOrEmpty(startupInfo.RBasePath)) {
                 throw new ArgumentException("Path to R must be specified");
-            }
-
-            Interlocked.Exchange(ref _afterHostStartedTcs, new TaskCompletionSource<object>());
+            } 
 
             await StartHostAsyncBackground(startupInfo, callback, timeout);
         }
@@ -184,11 +185,10 @@ namespace Microsoft.R.Host.Client.Session {
             _callback = callback;
             _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
             ClearPendingRequests();
+            ScheduleAfterHostStarted(startupInfo);
 
             var initializationTask = _initializationTcs.Task;
             _hostRunTask = CreateAndRunHost(startupInfo, timeout);
-
-            ScheduleAfterHostStarted(startupInfo);
 
             await initializationTask;
         }
@@ -256,41 +256,33 @@ namespace Microsoft.R.Host.Client.Session {
         private void ScheduleAfterHostStarted(RHostStartupInfo startupInfo) {
             var afterHostStartedEvaluationSource = new RSessionEvaluationSource(CancellationToken.None);
             _pendingEvaluationSources.Post(afterHostStartedEvaluationSource);
-            AfterHostStarted(afterHostStartedEvaluationSource, startupInfo).DoNotWait();
+            Interlocked.Exchange(ref _afterHostStartedTask, AfterHostStarted(afterHostStartedEvaluationSource, startupInfo));
         }
 
         private async Task AfterHostStarted(RSessionEvaluationSource evaluationSource, RHostStartupInfo startupInfo) {
-            try {
-                using (var evaluation = await evaluationSource.Task) {
-                    // Load RTVS R package before doing anything in R since the calls
-                    // below calls may depend on functions exposed from the RTVS package
-                    await LoadRtvsPackage(evaluation);
-                    if (startupInfo.WorkingDirectory != null) {
-                        await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
-                    } else {
-                        await evaluation.SetDefaultWorkingDirectoryAsync();
-                    }
-
-                    var callback = _callback;
-                    if (callback != null) {
-                        await evaluation.SetVsGraphicsDeviceAsync();
-
-                        string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
-                        await evaluation.SetVsCranSelectionAsync(mirrorUrl);
-
-                        await evaluation.SetCodePageAsync(startupInfo.CodePage);
-                        await evaluation.SetROptionsAsync();
-                        await evaluation.OverrideFunctionAsync("setwd", "base");
-                        await evaluation.SetFunctionRedirectionAsync();
-                        await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
-                    }
-
-                    _afterHostStartedTcs.SetResult(null);
+            using (var evaluation = await evaluationSource.Task) {
+                // Load RTVS R package before doing anything in R since the calls
+                // below calls may depend on functions exposed from the RTVS package
+                await LoadRtvsPackage(evaluation);
+                if (startupInfo.WorkingDirectory != null) {
+                    await evaluation.SetWorkingDirectoryAsync(startupInfo.WorkingDirectory);
+                } else {
+                    await evaluation.SetDefaultWorkingDirectoryAsync();
                 }
-            } catch (OperationCanceledException oce) {
-                _afterHostStartedTcs.TrySetCanceled(oce.CancellationToken);
-            } catch (Exception ex) {
-                _afterHostStartedTcs.TrySetException(ex);
+
+                var callback = _callback;
+                if (callback != null) {
+                    await evaluation.SetVsGraphicsDeviceAsync();
+
+                    string mirrorUrl = callback.CranUrlFromName(startupInfo.CranMirrorName);
+                    await evaluation.SetVsCranSelectionAsync(mirrorUrl);
+
+                    await evaluation.SetCodePageAsync(startupInfo.CodePage);
+                    await evaluation.SetROptionsAsync();
+                    await evaluation.OverrideFunctionAsync("setwd", "base");
+                    await evaluation.SetFunctionRedirectionAsync();
+                    await evaluation.OptionsSetWidthAsync(startupInfo.TerminalWidth);
+                }
             }
         }
 
@@ -353,7 +345,7 @@ namespace Microsoft.R.Host.Client.Session {
             Prompt = prompt;
             MaxLength = len;
 
-            var requestEventArgs = new RRequestEventArgs(contexts, prompt, len, addToHistory);
+            var requestEventArgs = new RBeforeRequestEventArgs(contexts, prompt, len, addToHistory);
             BeforeRequest?.Invoke(this, requestEventArgs);
 
             var evaluationCts = new CancellationTokenSource();
@@ -380,7 +372,7 @@ namespace Microsoft.R.Host.Client.Session {
             evaluationCts.Cancel();
             await evaluationTask;
 
-            AfterRequest?.Invoke(this, requestEventArgs);
+            AfterRequest?.Invoke(this, new RAfterRequestEventArgs(contexts, prompt, consoleInput, addToHistory, _currentRequestSource.IsVisible));
 
             return consoleInput;
         }

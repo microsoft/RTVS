@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -10,6 +11,20 @@ using static System.FormattableString;
 
 namespace Microsoft.Common.Core {
     public static class TaskUtilities {
+        public static Task CreateCanceled(OperationCanceledException exception) {
+            exception = exception ?? new OperationCanceledException();
+            var atmb = new AsyncTaskMethodBuilder();
+            atmb.SetException(exception);
+            return atmb.Task;
+        }
+
+        public static Task<TResult> CreateCanceled<TResult>(OperationCanceledException exception) {
+            exception = exception ?? new OperationCanceledException();
+            var atmb = new AsyncTaskMethodBuilder<TResult>();
+            atmb.SetException(exception);
+            return atmb.Task;
+        }
+
         public static bool IsOnBackgroundThread() {
             var taskScheduler = TaskScheduler.Current;
             var syncContext = SynchronizationContext.Current;

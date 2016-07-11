@@ -100,7 +100,6 @@
     <Compile Include="InteractiveWorkflow\IInteractiveWindowComponentContainerFactory.cs" />
     <Compile Include="InteractiveWorkflow\IInteractiveWindowVisualComponent.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\ActiveTextViewChangedEventArgs.cs" />
-    <Compile Include="InteractiveWorkflow\Implementation\NullInteractiveEvaluator.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\RInteractiveEvaluator.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\RInteractiveWindowVisualComponent.cs" />
     <Compile Include="InteractiveWorkflow\Implementation\RInteractiveWorkflow.cs" />
@@ -109,7 +108,6 @@
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflow.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowOperations.cs" />
     <Compile Include="InteractiveWorkflow\IRInteractiveWorkflowProvider.cs" />
-    <Compile Include="PackageManager\Implementation\SessionPool.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageSourceViewModel.cs" />
     <Compile Include="PackageManager\Implementation\ViewModel\RPackageViewModel.cs" />
     <Compile Include="PackageManager\Implementation\View\DesignTime\DesignTimeRPackageManagerViewModel.cs" />

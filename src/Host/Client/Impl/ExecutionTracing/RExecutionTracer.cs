@@ -322,12 +322,12 @@ namespace Microsoft.R.ExecutionTracing {
             InitializeAsync().DoNotWait();
         }
 
-        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+        private void RSession_BeforeRequest(object sender, RBeforeRequestEventArgs e) {
             _initialPromptCts.Cancel();
             ProcessBrowsePrompt(e.Contexts);
         }
 
-        private void RSession_AfterRequest(object sender, RRequestEventArgs e) {
+        private void RSession_AfterRequest(object sender, RAfterRequestEventArgs e) {
             _currentBrowseEventArgs = null;
         }
     }

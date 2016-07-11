@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventTaskSources.cs" />
+    <Compile Include="FluentAssertions\ActionAssertionsExtensions.cs" />
+    <Compile Include="FluentAssertions\AsyncAssertions.cs" />
     <Compile Include="FluentAssertions\CollectionAssertionsExtensions.cs" />
     <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
     <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />

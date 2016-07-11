@@ -70,7 +70,9 @@
     <Compile Include="StubFactories\FileSystemStubFactory.cs" />
     <Compile Include="Tasks\EventTaskSourceTest.cs" />
     <Compile Include="Tasks\FailOnTimeoutTest.cs" />
+    <Compile Include="Tasks\TaskCompletionSourceExTest.cs" />
     <Compile Include="Tasks\TaskExtensionsTest.cs" />
+    <Compile Include="Tasks\TaskUtilitiesTest.cs" />
     <Compile Include="Threading\BinaryAsyncLockTest.cs" />
     <Compile Include="Threading\DelayedAsyncActionTest.cs" />
     <Compile Include="Utility\CommonTestData.cs" />

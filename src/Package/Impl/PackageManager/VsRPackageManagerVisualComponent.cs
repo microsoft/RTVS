@@ -16,21 +16,13 @@ namespace Microsoft.VisualStudio.R.Package.PackageManager {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
     internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory { 
         private readonly ISearchControlProvider _searchControlProvider;
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
-        private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
 
         [ImportingConstructor]
-        public VsRPackageManagerVisualComponentContainerFactory(ISearchControlProvider searchControlProvider, IRInteractiveWorkflowProvider workflowProvider, IInteractiveWindowComponentContainerFactory componentContainerFactory) {
+        public VsRPackageManagerVisualComponentContainerFactory(ISearchControlProvider searchControlProvider) {
             _searchControlProvider = searchControlProvider;
-            _workflowProvider = workflowProvider;
-            _componentContainerFactory = componentContainerFactory;
         }
 
         public IVisualComponentContainer<IRPackageManagerVisualComponent> GetOrCreate(IRPackageManager packageManager, IRSession session, int instanceId = 0) {
-            var workflow = _workflowProvider.GetOrCreate();
-            if (workflow.ActiveWindow == null) {
-                VsAppShell.Current.DispatchOnUIThread(() => workflow.GetOrCreateVisualComponent(_componentContainerFactory).DoNotWait());
-            }
             return GetOrCreate(instanceId, i => new PackageManagerWindowPane(packageManager, session, _searchControlProvider, RToolsSettings.Current, VsAppShell.Current));
         }
     }

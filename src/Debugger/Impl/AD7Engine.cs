@@ -582,7 +582,7 @@ namespace Microsoft.R.Debugger {
             }
         }
 
-        private void Session_AfterRequest(object sender, RRequestEventArgs e) {
+        private void Session_AfterRequest(object sender, RAfterRequestEventArgs e) {
             bool? sentContinue;
             lock (_browseLock) {
                 var browseEventArgs = _currentBrowseEventArgs;

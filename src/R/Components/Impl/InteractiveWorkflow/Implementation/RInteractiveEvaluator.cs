@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
@@ -21,6 +22,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
+        private readonly CountdownDisposable _evaluatorRequest;
         private int _terminalWidth = 80;
 
         public IRHistory History { get; }
@@ -32,8 +34,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
             Session.BeforeRequest += SessionOnBeforeRequest;
+            Session.AfterRequest += SessionOnAfterRequest;
             _coreShell = coreShell;
             _settings = settings;
+            _evaluatorRequest = new CountdownDisposable();
         }
 
         public void Dispose() {
@@ -44,6 +48,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
             Session.BeforeRequest -= SessionOnBeforeRequest;
+            Session.AfterRequest -= SessionOnAfterRequest;
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
@@ -125,19 +130,21 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             try {
-                using (Session.DisableMutatedOnReadConsole()) {
-                    while (end != -1) {
-                        var line = text.Substring(start, end - start + 1);
-                        start = end + 1;
-                        end = text.IndexOf('\n', start);
+                using (_evaluatorRequest.Increment()) {
+                    using (Session.DisableMutatedOnReadConsole()) {
+                        while (end != -1) {
+                            var line = text.Substring(start, end - start + 1);
+                            start = end + 1;
+                            end = text.IndexOf('\n', start);
 
-                        using (var request = await Session.BeginInteractionAsync()) {
-                            if (line.Length >= request.MaxLength) {
-                                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
-                                return ExecutionResult.Failure;
+                            using (var request = await Session.BeginInteractionAsync()) {
+                                if (line.Length >= request.MaxLength) {
+                                    CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                                    return ExecutionResult.Failure;
+                                }
+
+                                await request.RespondAsync(line);
                             }
-
-                            await request.RespondAsync(line);
                         }
                     }
                 }
@@ -188,7 +195,16 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private void SessionOnBeforeRequest(object sender, RRequestEventArgs e) {
+        private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
+            if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
+                _coreShell.DispatchOnUIThread(() => {
+                    ((IInteractiveWindow2)CurrentWindow).AddToHistory(e.Request.TrimEnd());
+                    History.AddToHistory(e.Request);
+                });
+            }
+        }
+
+        private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;

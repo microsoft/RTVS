@@ -6,19 +6,18 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
-using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
 using Microsoft.R.StackTracing;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IDataObjectEvaluator))]
     public sealed class DebugObjectEvaluator : IDataObjectEvaluator {
-        private readonly IRSessionProvider _rSessionProvider;
+        private readonly IRInteractiveWorkflow _workflow;
 
         [ImportingConstructor]
-        public DebugObjectEvaluator(IRSessionProvider rSessionProvider) {
-            _rSessionProvider = rSessionProvider;
+        public DebugObjectEvaluator(IRInteractiveWorkflowProvider workflowProvider) {
+            _workflow = workflowProvider.GetOrCreate();
         }
 
         public async Task<IREvaluationResultInfo> EvaluateAsync(string expression, REvaluationResultProperties fields, string repr = null) {
@@ -28,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
 
             // Don't cache sessions since they can be disposed, expecially the debug session
             // when host is restarts or gets re-created in tests
-            var rSession = _rSessionProvider.GetInteractiveWindowRSession();
+            var rSession = _workflow.RSession;
 
             var frames = await rSession.TracebackAsync();
             if (frames == null || frames.Count == 0) {

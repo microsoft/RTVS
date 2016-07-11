@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.R.Host.Client.Test.Mocks;
 
 namespace Microsoft.R.Host.Client.Mocks {
@@ -24,5 +26,7 @@ namespace Microsoft.R.Host.Client.Mocks {
         public IEnumerable<IRSession> GetSessions() {
             return _sessions.Values;
         }
+
+        public Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = new CancellationToken()) => new RSessionMock().BeginEvaluationAsync(cancellationToken);
     }
 }

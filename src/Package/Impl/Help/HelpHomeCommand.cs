@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Commands;
@@ -32,8 +33,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         }
 
         private static async Task ShowDefaultHelpPageAsync() {
-            var rSessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            var session = rSessionProvider.GetInteractiveWindowRSession();
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            var session = workflow.RSession;
             if (session.IsHostRunning) {
                 try {
                     using (IRSessionEvaluation evaluation = await session.BeginEvaluationAsync()) {

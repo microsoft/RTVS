@@ -14,6 +14,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -221,7 +222,7 @@ namespace Microsoft.R.Host.Client {
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<REvaluationResult>(new CancellationToken(true))
+                ? TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException())
                 : EvaluateAsyncBackground(expression, kind, ct);
         }
 
@@ -263,6 +264,14 @@ namespace Microsoft.R.Host.Client {
                 result = new REvaluationResult(response[2], error, parseStatus);
             }
             request.CompletionSource.SetResult(result);
+        }
+
+        private void CancelRemainingEvaluationRequests() {
+            var requests = _evalRequests.Values;
+            _evalRequests.Clear();
+            foreach (var request in requests) {
+                request.CompletionSource.TrySetCanceled();
+            }
         }
 
         /// <summary>
@@ -506,6 +515,8 @@ namespace Microsoft.R.Host.Client {
                 _log.WriteLineAsync(MessageCategory.Error, message).DoNotWait();
                 Debug.Fail(message);
                 throw;
+            } finally {
+                CancelRemainingEvaluationRequests();
             }
         }
 

@@ -8,8 +8,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
@@ -17,6 +19,7 @@ using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.Session {
     public partial class RSessionTest {
+        [Category.R.Session]
         public class InteractionEvaluation : IAsyncLifetime {
             private readonly TaskObserverMethodFixture _taskObserver;
             private readonly MethodInfo _testMethod;
@@ -43,7 +46,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test]
-            [Category.R.Session]
             public async Task ExclusiveInteraction() {
                 var interactionTasks = await ParallelTools.InvokeAsync(4, i => Task.Factory.StartNew(() => _session.BeginInteractionAsync()));
                 IList<Task<IRSessionInteraction>> runningTasks = interactionTasks.ToList();
@@ -59,7 +61,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test(Skip = "https://github.com/Microsoft/RTVS/issues/1193")]
-            [Category.R.Session]
             public async Task OneResponsePerInteraction() {
                 using (var interaction = await _session.BeginInteractionAsync()) {
                     // ReSharper disable once AccessToDisposedClosure
@@ -70,7 +71,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test]
-            [Category.R.Session]
             public async Task ExclusiveEvaluation() {
                 var interactionTasks = await ParallelTools.InvokeAsync(4, i => Task.Factory.StartNew(() => _session.BeginEvaluationAsync()));
                 IList<Task<IRSessionEvaluation>> runningTasks = interactionTasks.ToList();
@@ -86,7 +86,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test]
-            [Category.R.Session]
             public async Task NestedInteraction() {
                 string topLevelPrompt;
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -122,7 +121,6 @@ namespace Microsoft.R.Host.Client.Test.Session {
             }
 
             [Test]
-            [Category.R.Session]
             public async Task InteractionContexts() {
                 Task<IRSessionInteraction> interTask;
                 using (var inter = await _session.BeginInteractionAsync()) {
@@ -137,6 +135,23 @@ namespace Microsoft.R.Host.Client.Test.Session {
 
                 // Check that task queued before the new prompt has the appropriate contexts for that prompt.
                 (await interTask).Contexts.IsBrowser().Should().BeTrue();
+            }
+ 
+            [Test]
+            public async Task EvaluateAsync_DisconnectedFromTheStart() {
+                using (var session = new RSession(0, () => { })) {
+                    Func<Task> f = () => session.EvaluateAsync("x <- 1");
+                    await f.ShouldThrowAsync<RHostDisconnectedException>();
+                }
+            }
+
+            [Test]
+            public async Task EvaluateAsync_DisconnectedDuringExecution() {
+                Func<Task> f = () => _session.EvaluateAsync("while(TRUE) {}");
+                var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
+                await Task.Delay(100);
+                await _session.StopHostAsync();
+                await assertion;
             }
         }
     }

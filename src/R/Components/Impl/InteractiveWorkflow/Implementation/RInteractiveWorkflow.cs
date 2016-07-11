@@ -121,11 +121,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ActiveWindow;
             }
 
-            var svl = new SupportedRVersionRange();
-            var ri = new RInstallation();
-            var evaluator = ri.VerifyRIsInstalled(Shell, svl, _settings.RBasePath)
-                ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
-                : (IInteractiveEvaluator) new NullInteractiveEvaluator();
+            var evaluator = new RInteractiveEvaluator(RSession, History, Shell, _settings);
 
             ActiveWindow = componentContainerFactory.Create(instanceId, evaluator);
             var interactiveWindow = ActiveWindow.InteractiveWindow;

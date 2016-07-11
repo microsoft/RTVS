@@ -15,6 +15,7 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Help;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
 using Microsoft.R.Host.Client;
@@ -45,7 +46,8 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         public HelpVisualComponent() {
             _codeColorBuilder = VsAppShell.Current.ExportProvider.GetExportedValue<IVignetteCodeColorBuilder>();
 
-            _session = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>().GetInteractiveWindowRSession();
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _session = workflow.RSession;
             _session.Disconnected += OnRSessionDisconnected;
 
             _windowContentControl = new ContentControl();

@@ -7,8 +7,8 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
@@ -36,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _updating;
 
         [ImportingConstructor]
-        public WorkspaceVariableProvider(IRSessionProvider sessionProvider) : base(sessionProvider) { }
+        public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
 
         #region IVariablesProvider
         /// <summary>
@@ -85,8 +85,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // May be a package object line mtcars$
                 variableName = TrimToTrailingSelector(variableName);
-                var sessionProvider = SessionProvider;
-                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                var session = Workflow.RSession;
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 try {
                     infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
@@ -139,8 +138,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             try {
                 _updating = true;
                 // May be null in tests
-                var sessionProvider = SessionProvider;
-                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                IRSession session = Workflow.RSession;
                 if (session.IsHostRunning) {
                     var stackFrames = await session.TracebackAsync();
 
