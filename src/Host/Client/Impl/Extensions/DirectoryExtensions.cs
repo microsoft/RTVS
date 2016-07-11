@@ -24,16 +24,16 @@ namespace Microsoft.R.Host.Client.Extensions {
             if (string.IsNullOrEmpty(rPath)) {
                 return basePath.Replace('/', '\\');
             }
-            rPath = rPath.Replace('/', '\\');
             if (!string.IsNullOrEmpty(basePath)) {
                 if(rPath.Length == 1 && rPath[0] == '~') {
                     return basePath;
                 }
                 else if(rPath.StartsWithOrdinal("~/")) {
+                    rPath = rPath.Replace('/', '\\');
                     return Path.Combine(basePath, rPath.Substring(2));
                 }
             }
-            return rPath;
+            return rPath.Replace('/', '\\');
         }
     }
 }

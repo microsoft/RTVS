@@ -43,6 +43,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public double Margin { get; set; } = 3.0;
         public double X { get; set; }
         public double Y { get; set; }
+        public TextAlignment TextAlignment { get; set; } = TextAlignment.Right;
 
         private FormattedText _formattedText;
         public FormattedText GetFormattedText() {
