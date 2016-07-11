@@ -912,6 +912,11 @@
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.VsInteractiveWindow.pkgdef">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.resx">
@@ -1305,7 +1310,7 @@
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.InteractiveWindow.dll" />
       <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.VsInteractiveWindow.dll" />
-      <VSIXSourceItem Include="$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.VsInteractiveWindow.pkgdef" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.VsInteractiveWindow.pkgdef" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>
