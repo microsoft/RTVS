@@ -259,10 +259,14 @@
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
+    <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
+    <Compile Include="Sql\Commands\AddDsnCommand.cs" />
+    <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
-    <Compile Include="Sql\AddDbConnectionCommand.cs" />
+    <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\DbConnectionService.cs" />
     <Compile Include="Sql\IDbConnectionService.cs" />
+    <Compile Include="Sql\NativeMethods.cs" />
     <Compile Include="Sql\OdbcStringConverter.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />

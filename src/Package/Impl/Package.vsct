@@ -1496,7 +1496,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidRToolsCmdSet" id="icmdAddDabaseConnection" priority="0x0100" type="Button">
+      <Button guid="guidRToolsCmdSet" id="icmdAddDatabaseConnection" priority="0x0100" type="Button">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
         <Icon guid="ImageCatalogGuid" id="ConnectToDatabase"/>
         <CommandFlag>IconIsMoniker</CommandFlag>
@@ -1506,7 +1506,27 @@
         </Strings>
       </Button>
 
-    </Buttons>
+      <Button guid="guidRToolsCmdSet" id="icmdAddDsn" priority="0x0200" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="AddDataSource"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Add Data So&amp;urce...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidRToolsCmdSet" id="icmdManageDsn" priority="0x0300" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup"/>
+        <Icon guid="ImageCatalogGuid" id="ConfigureDatabaseWizard"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Manage Data Sources...</ButtonText>
+        </Strings>
+      </Button>
+
+  </Buttons>
   </Commands>
 
   <Commands package="MarkdownPackage">
@@ -2196,8 +2216,10 @@
       <IDSymbol name="icmdShowDetails" value="806" />
       <IDSymbol name="icmdOpenInCsvApp" value="807" />
       <IDSymbol name="icmdCopyValue" value="808" />
-      <IDSymbol name="icmdAddDabaseConnection" value="809" />
-      
+      <IDSymbol name="icmdAddDatabaseConnection" value="809" />
+      <IDSymbol name="icmdAddDsn" value="810" />
+      <IDSymbol name="icmdManageDsn" value="811" />
+
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
       <IDSymbol name="icmdShowPlotWindow" value="902" />

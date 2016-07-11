@@ -49,13 +49,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var cmd = new AddDbConnectionCommand(configuredProject, properties, dbcs, csp, wfp);
 
-            var result = await cmd.GetCommandStatusAsync(null, RPackageCommandId.icmdAddDabaseConnection, true, string.Empty, CommandStatus.Enabled);
+            var result = await cmd.GetCommandStatusAsync(null, RPackageCommandId.icmdAddDatabaseConnection, true, string.Empty, CommandStatus.Enabled);
             result.Status.Should().Be(CommandStatus.Supported | CommandStatus.Enabled);
 
             result = await cmd.GetCommandStatusAsync(null, 1, true, string.Empty, CommandStatus.Enabled);
             result.Should().Be(CommandStatusResult.Unhandled);
 
-            var f = await cmd.TryHandleCommandAsync(null, RPackageCommandId.icmdAddDabaseConnection, true, 0, IntPtr.Zero, IntPtr.Zero);
+            var f = await cmd.TryHandleCommandAsync(null, RPackageCommandId.icmdAddDatabaseConnection, true, 0, IntPtr.Zero, IntPtr.Zero);
             f.Should().BeTrue();
 
             coll.Should().HaveCount(4);

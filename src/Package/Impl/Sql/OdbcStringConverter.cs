@@ -7,7 +7,8 @@ using System.Data.SqlClient;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal static class OdbcStringConverter {
-        private const string _odbcSqlDriver = "{SQL Server}";
+        public const string OdbcSqlDriver = "{SQL Server}";
+
         private const string _odbcDriverKey = "Driver";
         private const string _odbcServerKey = "Server";
         private const string _odbcDatabaseKey = "Database";
@@ -22,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             try {
                 var sql = new SqlConnectionStringBuilder(sqlClientString);
                 var odbc = new OdbcConnectionStringBuilder();
-                odbc[_odbcDriverKey] = _odbcSqlDriver;
+                odbc[_odbcDriverKey] = OdbcSqlDriver;
                 odbc[_odbcServerKey] = sql.DataSource;
                 odbc[_odbcDatabaseKey] = sql.InitialCatalog;
                 if (sql.IntegratedSecurity) {
