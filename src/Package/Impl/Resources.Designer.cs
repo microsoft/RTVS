@@ -1085,7 +1085,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Language Files (*.r)|*.r|.
+        ///   Looks up a localized string similar to R Language Files (*.R)|*.R|.
         /// </summary>
         public static string SaveAsFilterR {
             get {

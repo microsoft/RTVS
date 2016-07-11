@@ -166,7 +166,7 @@
     <value>Reformat code as you type</value>
   </data>
   <data name="SaveAsFilterR" xml:space="preserve">
-    <value>R Language Files (*.r)|*.r|</value>
+    <value>R Language Files (*.R)|*.R|</value>
   </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>

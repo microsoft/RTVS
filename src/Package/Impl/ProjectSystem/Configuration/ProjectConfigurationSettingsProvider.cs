@@ -55,18 +55,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
             return access;
         }
 
-        private async Task<ConfigurationSettingCollection> OpenCollectionAsync(string projectFolder, IRProjectProperties propertes) {
+        private async Task<ConfigurationSettingCollection> OpenCollectionAsync(string projectFolder, IRProjectProperties properties) {
             var settings = new ConfigurationSettingCollection();
-            var settingsFilePath = await GetSettingsFilePathAsync(projectFolder, propertes);
+            var settingsFilePath = await GetSettingsFilePathAsync(projectFolder, properties);
             if (!string.IsNullOrEmpty(settingsFilePath)) {
-                settings.Load(settingsFilePath);
+                settings.Load(settingsFilePath.MakeAbsolutePathFromRRelative(projectFolder));
             }
             return settings;
         }
 
-        private async Task<string> GetSettingsFilePathAsync(string projectFolder, IRProjectProperties propertes) {
-            var settingsFile = await propertes.GetSettingsFileAsync();
-            if (string.IsNullOrEmpty(settingsFile)) {
+        private async Task<string> GetSettingsFilePathAsync(string projectFolder, IRProjectProperties properties) {
+            var settingsFile = await properties.GetSettingsFileAsync();
+            if (!string.IsNullOrEmpty(settingsFile)) {
                 return settingsFile.MakeAbsolutePathFromRRelative(projectFolder);
             }
             return null;
