@@ -7,9 +7,9 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
-using Microsoft.VisualStudio.InteractiveWindow;
 
 namespace Microsoft.R.Components.Test {
     /// <summary>

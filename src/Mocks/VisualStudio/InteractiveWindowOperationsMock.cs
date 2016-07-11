@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.VisualStudio.Shell.Mocks {

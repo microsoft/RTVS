@@ -3,7 +3,7 @@
 
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Editor.Formatting;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

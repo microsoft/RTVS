@@ -13,7 +13,7 @@ using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Install;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 
 namespace Microsoft.VisualStudio.R.Package.Repl {
     public sealed class RInteractiveWorkflow : IRInteractiveWorkflow {

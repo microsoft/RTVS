@@ -34,10 +34,10 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Xaml" />
     <Reference Include="WindowsBase" />
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
+    <Reference Include="Microsoft.R.InteractiveWindow">
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.InteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Text.Internal.dll">
       <Private>False</Private>

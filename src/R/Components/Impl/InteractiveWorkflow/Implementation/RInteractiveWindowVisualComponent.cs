@@ -6,7 +6,7 @@ using System.Windows;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.Services;
 using Microsoft.R.Components.View;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

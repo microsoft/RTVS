@@ -11,7 +11,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
-using Microsoft.VisualStudio.InteractiveWindow.Shell;
+using Microsoft.R.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Repl.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
