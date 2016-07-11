@@ -2322,7 +2322,7 @@
 
 
     <!-- InteractiveWindow Guid -->
-    <GuidSymbol name="guidInteractiveWindowCmdSet" value="{00B8868B-F9F5-4970-A048-410B05508506}">
+    <GuidSymbol name="guidInteractiveWindowCmdSet" value="{5682C825-8362-4536-98EE-4E23F289B41E}">
       <!-- https://github.com/dotnet/roslyn/blob/master/src/InteractiveWindow/VisualStudio/InteractiveWindow.vsct -->
       <IDSymbol name="menuIdInteractiveToolbar" value="0x2000"/>
       <IDSymbol name="menuIdInteractiveContextMenu" value="0x2100" />
