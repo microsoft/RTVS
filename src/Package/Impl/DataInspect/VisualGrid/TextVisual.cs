@@ -74,6 +74,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 var formattedText = GetFormattedText();
                 double offset;
                 Size = GetRenderSize(formattedText, out offset);
+                TextAlignment = IsNumerical(Text) ? TextAlignment.Right : TextAlignment.Left;
 
                 dc.DrawText(formattedText, new Point(offset, 0));
                 _drawValid = true;
@@ -99,6 +100,15 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         protected void Invalidate() {
             _formattedText = null;
             _drawValid = false;
+        }
+
+        private static bool IsNumerical(string text) {
+            double d;
+            int x;
+            if(double.TryParse(text, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out d) || int.TryParse(text, out x)) {
+                return true;
+            }
+            return false;
         }
     }
 }

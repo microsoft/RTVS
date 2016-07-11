@@ -26,8 +26,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     dlg.SelectedDataSource = DataSource.SqlDataSource;
                     try {
                         dlg.ConnectionString = connectionString ?? _connectionString;
-                        if (DialogResult.OK == DataConnectionDialog.Show(dlg)) {
-                            _connectionString = dlg.ConnectionString;
+                        var result = DataConnectionDialog.Show(dlg);
+                        switch(result) {
+                            case DialogResult.Cancel:
+                                return null;
+                            case DialogResult.OK:
+                                _connectionString = dlg.ConnectionString;
+                                break;
                         }
                         break;
                     } catch (ArgumentException) {

@@ -23,7 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 ProjectProperties projectProperties,
                 IDbConnectionService dbcs, IProjectConfigurationSettingsProvider pcsp,
                 IRInteractiveWorkflowProvider workflowProvider) :
-            base(RPackageCommandId.icmdAddDsn, "dbConnection", configuredProject, pcsp, workflowProvider) {
+            base(RPackageCommandId.icmdAddDatabaseConnection, "dbConnection", configuredProject, pcsp, workflowProvider) {
             _dbcs = dbcs;
         }
 
