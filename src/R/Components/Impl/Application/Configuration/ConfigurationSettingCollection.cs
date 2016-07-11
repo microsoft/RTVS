@@ -25,16 +25,18 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// </summary>
         public void Load(string filePath) {
             lock (_lock) {
-                Clear();
-                using (var sr = new StreamReader(filePath)) {
-                    using (var csr = new ConfigurationSettingsReader(sr)) {
-                        var settings = csr.LoadSettings();
-                        foreach(var s in settings) {
-                            Add(s);
+                if (!string.IsNullOrEmpty(filePath)) {
+                    Clear();
+                    using (var sr = new StreamReader(filePath)) {
+                        using (var csr = new ConfigurationSettingsReader(sr)) {
+                            var settings = csr.LoadSettings();
+                            foreach (var s in settings) {
+                                Add(s);
+                            }
                         }
                     }
+                    SourceFile = filePath;
                 }
-                SourceFile = filePath;
             }
         }
 

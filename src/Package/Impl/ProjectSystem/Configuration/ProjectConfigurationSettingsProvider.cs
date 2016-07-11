@@ -58,7 +58,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
         private async Task<ConfigurationSettingCollection> OpenCollectionAsync(string projectFolder, IRProjectProperties propertes) {
             var settings = new ConfigurationSettingCollection();
             var settingsFilePath = await GetSettingsFilePathAsync(projectFolder, propertes);
-            if (string.IsNullOrEmpty(settingsFilePath)) {
+            if (!string.IsNullOrEmpty(settingsFilePath)) {
                 settings.Load(settingsFilePath);
             }
             return settings;

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
@@ -54,11 +55,8 @@ namespace Microsoft.R.Editor.DragDrop {
                 _wpfTextView.Caret.MoveTo(dropPosition);
             }
 
-            if (!Whitespace.IsNewLineBeforePosition(new TextProvider(textBuffer.CurrentSnapshot), dropPosition)) {
-                var lineBreak = textBuffer.CurrentSnapshot.GetLineFromPosition(0)?.GetText()?.GetDefaultLineBreakSequence();
-                if (!string.IsNullOrEmpty(lineBreak)) {
-                    text = lineBreak + text;
-                }
+            if (text.StartsWithOrdinal(Environment.NewLine) && Whitespace.IsNewLineBeforePosition(new TextProvider(textBuffer.CurrentSnapshot), dropPosition)) {
+                text = text.TrimStart();
             }
 
             using (var undoAction = EditorShell.Current.CreateCompoundAction(_wpfTextView, textBuffer)) {

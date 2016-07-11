@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -53,6 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
             PopulateFilesCombo();
             LoadPropertyGrid();
+
+            _access.Settings.CollectionChanged += OnSettingsCollectionChanged;
         }
 
         public void Close() {
@@ -71,8 +74,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public Task SaveSelectedSettingsFileNameAsync() {
-            return _viewModel?.SaveSelectedSettingsFileNameAsync();
+        public async Task SaveSelectedSettingsFileNameAsync() {
+            await _viewModel?.SaveSelectedSettingsFileNameAsync();
+            IsDirty = false;
         }
 
         public async Task<bool> SaveSettingsAsync() {
@@ -183,6 +187,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                 _viewModel.RemoveSetting(setting);
                 UpdatePropertyGrid();
             }
+            IsDirty = true;
+        }
+
+        private void OnSettingsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+            UpdatePropertyGrid();
             IsDirty = true;
         }
 
