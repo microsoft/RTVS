@@ -10,7 +10,9 @@ using Microsoft.Data.ConnectionUI;
 namespace Microsoft.VisualStudio.R.Package.Sql {
     [Export(typeof(IDbConnectionService))]
     internal sealed class DbConnectionService : IDbConnectionService {
+        private const string _defaultConnectionString = "Data Source=(local);Integrated Security=true";
         private readonly ICoreShell _coreShell;
+        private string _connectionString = _defaultConnectionString;
 
         [ImportingConstructor]
         public DbConnectionService(ICoreShell coreShell) {
@@ -21,24 +23,23 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
             do {
                 using (var dlg = new DataConnectionDialog()) {
                     DataSource.AddStandardDataSources(dlg);
-                    dlg.SaveSelection = true;
-                    dlg.SelectedDataSource = DataSource.SqlDataSource;                  
+                    dlg.SelectedDataSource = DataSource.SqlDataSource;
                     try {
-                        dlg.ConnectionString = connectionString;
+                        dlg.ConnectionString = connectionString ?? _connectionString;
                         if (DialogResult.OK == DataConnectionDialog.Show(dlg)) {
-                            connectionString = dlg.ConnectionString;
-                            break;
+                            _connectionString = dlg.ConnectionString;
                         }
+                        break;
                     } catch (ArgumentException) {
                         if (_coreShell.ShowMessage(Resources.Error_ConnectionStringFormat, MessageButtons.YesNo) == MessageButtons.No) {
                             break;
                         }
-                        connectionString = null;
+                        _connectionString = _defaultConnectionString;
                     }
                 }
             } while (true);
 
-            return connectionString;
+            return _connectionString;
         }
     }
 }
