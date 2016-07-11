@@ -912,6 +912,11 @@
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
+    <Content Include="$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.VsInteractiveWindow.pkgdef">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <VSIXSubPath>.</VSIXSubPath>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.resx">
@@ -933,15 +938,15 @@
     <Reference Include="Microsoft.VisualStudio.CommandBars, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.InteractiveWindow">
-      <Private>False</Private>
+    <Reference Include="Microsoft.R.InteractiveWindow">
+      <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.InteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.InteractiveWindow.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.VisualStudio.VsInteractiveWindow">
-      <Private>False</Private>
+    <Reference Include="Microsoft.R.VsInteractiveWindow">
+      <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(LibDirectory)\Microsoft.VisualStudio.VsInteractiveWindow.dll</HintPath>
+      <HintPath>$(LibDirectory)\Dev$(VisualStudioVersion)\Microsoft.R.VsInteractiveWindow.dll</HintPath>
     </Reference>
     <Reference Include="$(PrivateAssembliesFolderPath)\Microsoft.VisualStudio.Telemetry.dll">
       <SpecificVersion>False</SpecificVersion>
@@ -1303,6 +1308,9 @@
     <ItemGroup>
       <VSIXSourceItem Include="$(OutputPath)\Newtonsoft.Json.dll" />
       <VSIXSourceItem Include="$(OutputPath)\websocket-sharp.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.InteractiveWindow.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.VsInteractiveWindow.dll" />
+      <VSIXSourceItem Include="$(OutputPath)\Microsoft.R.VsInteractiveWindow.pkgdef" />
       <VSIXSourceItem Include="$(OutputPath)\ItemTemplates\**\*.*">
         <VSIXSubPath>ItemTemplates</VSIXSubPath>
       </VSIXSourceItem>

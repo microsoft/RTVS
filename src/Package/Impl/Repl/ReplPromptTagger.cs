@@ -7,7 +7,7 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.R.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
