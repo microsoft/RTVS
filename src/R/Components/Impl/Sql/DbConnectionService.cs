@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Data.ConnectionUI;
 
-namespace Microsoft.VisualStudio.R.Package.Sql {
+namespace Microsoft.R.Components.Sql {
     [Export(typeof(IDbConnectionService))]
     internal sealed class DbConnectionService : IDbConnectionService {
         private const string _defaultSqlConnectionString = "Data Source=(local);Integrated Security=true";

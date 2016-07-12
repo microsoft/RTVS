@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.Composition;
 using System.Drawing.Design;
 using Microsoft.R.Components.Application.Configuration;
+using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Utilities;
 

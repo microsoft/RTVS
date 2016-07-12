@@ -842,9 +842,6 @@ Additional information:
   <data name="Launch_StartupFileDoesNotExist" xml:space="preserve">
     <value>The specified startup file does not exist:</value>
   </data>
-  <data name="Error_ConnectionStringFormat" xml:space="preserve">
-    <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
-  </data>
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
   </data>

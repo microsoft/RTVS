@@ -5,8 +5,8 @@ using System;
 using System.Data.Odbc;
 using System.Data.SqlClient;
 
-namespace Microsoft.VisualStudio.R.Package.Sql {
-    internal static class OdbcStringConverter {
+namespace Microsoft.R.Components.Sql {
+    public static class ConnectionStringConverter {
         public const string OdbcSqlDriver = "{SQL Server}";
 
         private const string _odbcDriverKey = "Driver";

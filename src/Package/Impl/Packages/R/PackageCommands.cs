@@ -6,7 +6,7 @@ using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
-using Microsoft.R.Components.Plots.Implementation.Commands;
+using Microsoft.R.Components.Sql;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Browsers;
 using Microsoft.VisualStudio.R.Package.Commands;
