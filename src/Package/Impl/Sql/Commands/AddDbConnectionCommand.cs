@@ -12,8 +12,6 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
-    [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class AddDbConnectionCommand : ConfigurationSettingCommand {
         private readonly IDbConnectionService _dbcs;
 
