@@ -37,7 +37,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
             if (!string.IsNullOrEmpty(newDirectory)) {
                 _workflow.RSession.SetWorkingDirectoryAsync(newDirectory)
                     .SilenceException<RException>()
-                    .SilenceException<MessageTransportException>()
                     .DoNotWait();
             }
         }

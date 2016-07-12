@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
@@ -140,6 +141,7 @@ namespace Microsoft.R.Host.Client.Test.Session {
             [Test]
             public async Task EvaluateAsync_DisconnectedFromTheStart() {
                 using (var session = new RSession(0, () => { })) {
+                    // ReSharper disable once AccessToDisposedClosure
                     Func<Task> f = () => session.EvaluateAsync("x <- 1");
                     await f.ShouldThrowAsync<RHostDisconnectedException>();
                 }
@@ -151,6 +153,15 @@ namespace Microsoft.R.Host.Client.Test.Session {
                 var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
                 await Task.Delay(100);
                 await _session.StopHostAsync();
+                await assertion;
+            }
+
+            [Test]
+            public async Task EvaluateAsync_CanceledDuringExecution() {
+                var cts = new CancellationTokenSource();
+                Func<Task> f = () => _session.EvaluateAsync("while(TRUE) {}", ct: cts.Token);
+                var assertion = f.ShouldThrowAsync<RHostDisconnectedException>();
+                cts.CancelAfter(100);
                 await assertion;
             }
         }

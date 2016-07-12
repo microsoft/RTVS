@@ -12,6 +12,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
@@ -167,9 +168,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
-                    VsAppShell.Current.ShowErrorMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
-                } catch (MessageTransportException) { }
+                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
+                } catch (RHostDisconnectedException) {
+                }
             }
         }
         #endregion

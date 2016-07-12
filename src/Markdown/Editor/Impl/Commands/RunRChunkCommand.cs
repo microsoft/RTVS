@@ -42,7 +42,7 @@ namespace Microsoft.Markdown.Editor.Commands {
                     if (!string.IsNullOrWhiteSpace(code)) {
                         try {
                             _interactiveWorkflow.Operations.ExecuteExpression(code);
-                        } catch (MessageTransportException) { } catch (RException) { } catch (OperationCanceledException) { }
+                        } catch (RException) { } catch (OperationCanceledException) { }
                     }
                 }
             }

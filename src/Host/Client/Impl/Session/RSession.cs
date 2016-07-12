@@ -12,6 +12,7 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
 using static System.FormattableString;
@@ -22,7 +23,6 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
-        private readonly static Task<REvaluationResult> CanceledEvaluateTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -43,7 +43,7 @@ namespace Microsoft.R.Host.Client.Session {
         private RHost _host;
         private Task _hostRunTask;
         private Task _afterHostStartedTask;
-        private TaskCompletionSource<object> _initializationTcs;
+        private TaskCompletionSourceEx<object> _initializationTcs;
         private RSessionRequestSource _currentRequestSource;
         private readonly Action _onDispose;
         private readonly CountdownDisposable _disableMutatingOnReadConsole;
@@ -63,15 +63,12 @@ namespace Microsoft.R.Host.Client.Session {
         /// <summary>
         /// For testing purpose only
         /// Do not expose this property to the IRSession interface
-        /// </summary>
+        /// </summary> 
         internal RHost RHost => _host;
 
         static RSession() {
-            var tcs = new CancellationTokenSource();
-            tcs.Cancel();
-            CanceledBeginEvaluationTask = Task.FromCanceled<IRSessionEvaluation>(tcs.Token);
-            CanceledBeginInteractionTask = Task.FromCanceled<IRSessionInteraction>(tcs.Token);
-            CanceledEvaluateTask = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
+            CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
+            CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
         }
 
         public RSession(int id, Action onDispose) {
@@ -132,7 +129,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public async Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind = REvaluationKind.Normal, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
-                return await CanceledEvaluateTask;
+                throw new RHostDisconnectedException();
             }
 
             await _afterHostStartedTask;
@@ -144,7 +141,7 @@ namespace Microsoft.R.Host.Client.Session {
                 }
                 return result;
             } catch (MessageTransportException) when (!IsHostRunning) {
-                return await CanceledEvaluateTask;
+                throw new RHostDisconnectedException();
             }
         }
 
@@ -152,14 +149,14 @@ namespace Microsoft.R.Host.Client.Session {
             var cancelTask = _host.CancelAllAsync();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.Cancel();
-            ClearPendingRequests();
+            currentRequest?.TryCancel();
+            ClearPendingRequests(new OperationCanceledException());
 
             await cancelTask;
         }
 
         public async Task EnsureHostStartedAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
-            var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null);
+            var existingInitializationTcs = Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null);
             if (existingInitializationTcs == null) {
                 await StartHostAsyncBackground(startupInfo, callback, timeout);
             } else {
@@ -168,7 +165,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
         public async Task StartHostAsync(RHostStartupInfo startupInfo, IRSessionCallback callback, int timeout = 3000) {
-            if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSource<object>(), null) != null) {
+            if (Interlocked.CompareExchange(ref _initializationTcs, new TaskCompletionSourceEx<object>(), null) != null) {
                 throw new InvalidOperationException("Another instance of RHost is running for this RSession. Stop it before starting new one.");
             }
 
@@ -184,7 +181,7 @@ namespace Microsoft.R.Host.Client.Session {
 
             _callback = callback;
             _host = new RHost(startupInfo != null ? startupInfo.Name : "Empty", this);
-            ClearPendingRequests();
+            ClearPendingRequests(new RHostDisconnectedException());
             ScheduleAfterHostStarted(startupInfo);
 
             var initializationTask = _initializationTcs.Task;
@@ -245,7 +242,9 @@ namespace Microsoft.R.Host.Client.Session {
             try {
                 await _host.CreateAndRun(new RInstallation().GetRInstallPath(startupInfo.RBasePath, new SupportedRVersionRange()), startupInfo.RHostDirectory, startupInfo.RHostCommandLineArguments, timeout);
             } catch (OperationCanceledException oce) {
-                _initializationTcs.TrySetCanceled(oce.CancellationToken);
+                _initializationTcs.TrySetCanceled(oce);
+            } catch (MessageTransportException mte) {
+                _initializationTcs.TrySetCanceled(new RHostDisconnectedException(string.Empty, mte));
             } catch (Exception ex) {
                 _initializationTcs.TrySetException(ex);
             } finally {
@@ -311,20 +310,20 @@ namespace Microsoft.R.Host.Client.Session {
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
             currentRequest?.CompleteResponse();
 
-            ClearPendingRequests();
+            ClearPendingRequests(new RHostDisconnectedException());
 
             return Task.CompletedTask;
         }
 
-        private void ClearPendingRequests() {
+        private void ClearPendingRequests(OperationCanceledException exception) {
             RSessionRequestSource requestSource;
             while (_pendingRequestSources.TryReceive(out requestSource)) {
-                requestSource.Cancel();
+                requestSource.TryCancel();
             }
 
             RSessionEvaluationSource evalSource;
             while (_pendingEvaluationSources.TryReceive(out evalSource)) {
-                evalSource.TryCancel();
+                evalSource.TryCancel(exception);
             }
 
             _contexts = null;

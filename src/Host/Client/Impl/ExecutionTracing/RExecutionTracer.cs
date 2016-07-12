@@ -152,7 +152,6 @@ namespace Microsoft.R.ExecutionTracing {
             // suppress that.
             Session.ExecuteAsync("browser()", REvaluationKind.Reentrant, cancellationToken)
                 .SilenceException<RException>()
-                .SilenceException<MessageTransportException>()
                 .DoNotWait();
 
             // Wait until prompt appears, but don't actually respond to it.
@@ -161,9 +160,7 @@ namespace Microsoft.R.ExecutionTracing {
 
         public async Task ContinueAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             await TaskUtilities.SwitchToBackgroundThread();
-            ExecuteBrowserCommandAsync("c", null, cancellationToken)
-                .SilenceException<MessageTransportException>()
-                .DoNotWait();
+            ExecuteBrowserCommandAsync("c", null, cancellationToken).DoNotWait();
         }
 
         public Task<bool> StepIntoAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
@@ -197,9 +194,7 @@ namespace Microsoft.R.ExecutionTracing {
             await TaskUtilities.SwitchToBackgroundThread();
 
             _stepTcs = new TaskCompletionSource<bool>();
-            ExecuteBrowserCommandAsync(command, prepare, cancellationToken)
-                .SilenceException<MessageTransportException>()
-                .DoNotWait();
+            ExecuteBrowserCommandAsync(command, prepare, cancellationToken).DoNotWait();
             return await _stepTcs.Task;
         }
 

@@ -89,8 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 try {
                     infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
-                               variableName, 
-                               REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
+                               variableName, HasChildrenProperty | AccessorKindProperty,
                                null, _maxResults).WaitTimeout(_maxWaitTime);
                 } catch(TimeoutException) { }
 
@@ -103,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
                                 .ToArray();
                 }
-            } catch (OperationCanceledException) { } catch (RException) { } catch (MessageTransportException) { }
+            } catch (OperationCanceledException) { } catch (RException) { }
 
             return new VariableInfo[0];
         }
@@ -177,7 +176,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 this(e.Name, e.TypeName) { }
 
             public VariableInfo(string name, string typeName) {
-                this.Name = name;
+                Name = name;
                 if (typeName.EqualsOrdinal("closure") || typeName.EqualsOrdinal("builtin")) {
                     ItemType = NamedItemType.Function;
                 } else {
@@ -187,13 +186,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             public string Description { get; } = string.Empty;
 
-            public NamedItemType ItemType { get; private set; }
+            public NamedItemType ItemType { get; }
 
-            public string Name { get; set; }
-
-            public string ActualName {
-                get { return Name; }
-            }
+            public string Name { get; }
         }
     }
 }

@@ -75,9 +75,7 @@ namespace Microsoft.R.Debugger {
             Tracer = null;
             RSessionProvider = null;
 
-            ExitBrowserAsync(Session)
-                .SilenceException<MessageTransportException>()
-                .DoNotWait();
+            ExitBrowserAsync(Session).DoNotWait();
             Session = null;
 
             IsDisposed = true;
@@ -191,9 +189,7 @@ namespace Microsoft.R.Debugger {
 
         int IDebugEngine2.CauseBreak() {
             ThrowIfDisposed();
-            Tracer.BreakAsync()
-                .SilenceException<MessageTransportException>()
-                .DoNotWait();
+            Tracer.BreakAsync().DoNotWait();
             return VSConstants.S_OK;
         }
 
@@ -302,9 +298,7 @@ namespace Microsoft.R.Debugger {
                 // Queue disabling breakpoint instrumentation, but do not wait for it to complete -
                 // if there's currently some code running, this may take a while, so just detach and
                 // let breakpoints be taken care of later.
-                Tracer.EnableBreakpointsAsync(false)
-                    .SilenceException<MessageTransportException>()
-                    .DoNotWait();
+                Tracer.EnableBreakpointsAsync(false).DoNotWait();
             } finally {
                 // Detach should never fail, even if something above didn't work.
                 DestroyProgram();
@@ -452,7 +446,6 @@ namespace Microsoft.R.Debugger {
                 try {
                     completed = t.GetAwaiter().GetResult();
                 } catch (OperationCanceledException) {
-                } catch (MessageTransportException) {
                 }
 
                 if (completed) {

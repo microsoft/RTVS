@@ -13,6 +13,7 @@ using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
 
@@ -62,7 +63,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.InstallPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -80,7 +81,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.UninstallPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -98,7 +99,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.LoadPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -112,7 +113,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                     await request.UnloadPackageAsync(name);
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -125,7 +126,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -138,7 +139,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -187,13 +188,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                     // in the package query session
                     var repositories = (await DeparseRepositoriesAsync()).ToRStringLiteral();
                     await WrapRException(eval.ExecuteAsync($"options(repos=eval(parse(text={repositories})))"));
-                    var libraries = await DeparseLibrariesAsync();
+                    var libraries = (await DeparseLibrariesAsync()).ToRStringLiteral();
                     await WrapRException(eval.ExecuteAsync($".libPaths(eval(parse(text={libraries})))"));
 
                     var result = await WrapRException(queryFunc(eval));
                     return result.Select(p => p.ToObject<RPackage>()).ToList().AsReadOnly();
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }

@@ -13,6 +13,7 @@ using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -74,6 +75,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             } catch (RHostBinaryMissingException) {
                 await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
+            } catch (RHostDisconnectedException) {
+                // We don't 
+                return ExecutionResult.Success;
             } catch (Exception) {
                 return ExecutionResult.Failure;
             }
@@ -151,8 +155,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
-                // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
-                return ExecutionResult.Failure;
+                // Cancellation reason was already reported via RSession.Error and printed out;
+                // Return success cause connection lost doesn't mean that RHost died
+                return ExecutionResult.Success;
             } catch (Exception ex) {
                 await _coreShell.ShowErrorMessageAsync(ex.ToString());
                 return ExecutionResult.Failure;
@@ -198,6 +203,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
             if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
                 _coreShell.DispatchOnUIThread(() => {
+                    if (CurrentWindow == null) {
+                        return;
+                    }
+
                     ((IInteractiveWindow2)CurrentWindow).AddToHistory(e.Request.TrimEnd());
                     History.AddToHistory(e.Request);
                 });
@@ -277,7 +286,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // From R docs:  Valid values are 10...10000 with default normally 80.
             _terminalWidth = Math.Max(10, Math.Min(10000, width));
 
-            Session.OptionsSetWidthAsync(_terminalWidth).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
+            Session.OptionsSetWidthAsync(_terminalWidth)
+                .SilenceException<RException>()
+                .DoNotWait();
         }
     }
 }

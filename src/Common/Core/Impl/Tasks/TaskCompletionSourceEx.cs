@@ -114,5 +114,23 @@ namespace Microsoft.Common.Core.Tasks {
         //            return task.Result;
         //    }
         //}
+
+        public void SetResult(TResult result) {
+            if (!TrySetResult(result)) {
+                throw new InvalidOperationException("Task already completed");
+            }
+        }
+
+        public void SetCanceled(OperationCanceledException exception = null, CancellationToken cancellationToken = default(CancellationToken)) {
+            if (!TrySetCanceled(exception, cancellationToken)) {
+                throw new InvalidOperationException("Task already completed");
+            }
+        }
+
+        public void SetException(Exception exception) {
+            if (!TrySetException(exception)) {
+                throw new InvalidOperationException("Task already completed");
+            }
+        }
     }
 }

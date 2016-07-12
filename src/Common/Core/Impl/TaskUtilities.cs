@@ -11,14 +11,14 @@ using static System.FormattableString;
 
 namespace Microsoft.Common.Core {
     public static class TaskUtilities {
-        public static Task CreateCanceled(OperationCanceledException exception) {
+        public static Task CreateCanceled(OperationCanceledException exception = null) {
             exception = exception ?? new OperationCanceledException();
             var atmb = new AsyncTaskMethodBuilder();
             atmb.SetException(exception);
             return atmb.Task;
         }
 
-        public static Task<TResult> CreateCanceled<TResult>(OperationCanceledException exception) {
+        public static Task<TResult> CreateCanceled<TResult>(OperationCanceledException exception = null) {
             exception = exception ?? new OperationCanceledException();
             var atmb = new AsyncTaskMethodBuilder<TResult>();
             atmb.SetException(exception);

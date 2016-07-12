@@ -129,6 +129,8 @@ namespace Microsoft.R.Host.Client {
             } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
+            } catch (MessageTransportException ex) {
+                throw new RHostDisconnectedException(ex.Message, ex);
             }
         }
 

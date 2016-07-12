@@ -30,7 +30,6 @@ namespace Microsoft.VisualStudio.R.Package.Help {
         protected override void Handle(string item) {
             _workflow.RSession.ExecuteAsync($"rtvs:::show_help({item.ToRStringLiteral()})")
                 .SilenceException<RException>()
-                .SilenceException<MessageTransportException>()
                 .DoNotWait();
         }
     }

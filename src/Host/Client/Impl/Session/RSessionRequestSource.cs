@@ -38,7 +38,7 @@ namespace Microsoft.R.Host.Client.Session {
             _responseTcs.SetResult(null);
         }
 
-        public void Cancel() {
+        public void TryCancel() {
             _createRequestTcs.TrySetCanceled();
             _responseTcs.TrySetCanceled();
         }

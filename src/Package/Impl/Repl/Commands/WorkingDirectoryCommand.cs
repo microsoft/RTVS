@@ -108,7 +108,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 RToolsSettings.Current.WorkingDirectory = GetFriendlyDirectoryName(newDirectory);
                 _session.SetWorkingDirectoryAsync(newDirectory)
                     .SilenceException<RException>()
-                    .SilenceException<MessageTransportException>()
                     .DoNotWait();
             }
 

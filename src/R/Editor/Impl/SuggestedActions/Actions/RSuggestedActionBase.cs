@@ -37,7 +37,6 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
                     await eval.RespondAsync(command);
                 }
             } catch(OperationCanceledException) {
-            } catch(MessageTransportException) {
             } finally {
                 await _workflow.Shell.SwitchToMainThreadAsync();
                 _runningAction = null;
