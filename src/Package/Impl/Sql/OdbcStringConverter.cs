@@ -20,6 +20,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         /// Converts SQL Client (.NET) connection string to the ODBC connection string.
         /// </summary>
         public static string SqlClientToOdbc(this string sqlClientString) {
+            if(string.IsNullOrEmpty(sqlClientString)) {
+                return null;
+            }
             try {
                 var sql = new SqlConnectionStringBuilder(sqlClientString);
                 var odbc = new OdbcConnectionStringBuilder();
@@ -34,13 +37,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 }
                 return odbc.ConnectionString;
             } catch (ArgumentException) { }
-            return string.Empty;
+            return null;
         }
 
         /// <summary>
         /// Converts ODBC connection string to the SQL Client (.NET).
         /// </summary>
         public static string OdbcToSqlClient(this string odbcString) {
+            if (string.IsNullOrEmpty(odbcString)) {
+                return null;
+            }
             try {
                 var odbc = new OdbcConnectionStringBuilder(odbcString);
                 var server= odbc.GetValue(_odbcServerKey);
@@ -62,8 +68,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     return sql.ConnectionString;
                 }
             } catch(ArgumentException) { }
-
-            return string.Empty;
+            return null;
         }
 
         private static string GetValue(this OdbcConnectionStringBuilder odbc, string key) {
