@@ -106,7 +106,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
             }
 
             #region IProjectConfigurationSettingsAccess
-            public ConfigurationSettingCollection Settings { get; }
+            public IConfigurationSettingCollection Settings { get; }
             public void Dispose() {
                 if (UseCount > 0) {
                     UseCount--;
