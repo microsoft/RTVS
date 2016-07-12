@@ -7,7 +7,6 @@ using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal abstract class SessionCommand : PackageCommand {
-        private readonly IRInteractiveWorkflowProvider _workflowProvider;
         protected IRSession RSession { get; }
 
         public SessionCommand(int id, IRSession session) :

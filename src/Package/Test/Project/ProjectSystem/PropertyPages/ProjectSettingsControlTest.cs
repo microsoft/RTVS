@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
     [Category.Configuration]
     public class ProjectSettingsControlTest {
         private readonly PackageTestFilesFixture _files;
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
         private readonly IProjectConfigurationSettingsProvider _csp;
         private readonly IFileSystem _fs;
         private readonly IRProjectProperties _properties;
@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         public ProjectSettingsControlTest(PackageTestFilesFixture files) {
             _files = files;
-            _coreShell = Substitute.For<ICoreShell>();
+            _appShell = Substitute.For<IApplicationShell>();
             _fs = Substitute.For<IFileSystem>();
 
             _access = Substitute.For<IProjectConfigurationSettingsAccess>();
@@ -53,7 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public void Construction() {
-            var control = new SettingsPageControl(_csp, _coreShell, _fs);
+            var control = new SettingsPageControl(_csp, _appShell, _fs);
 
             control.IsDirty.Should().BeFalse();
             control.CreateControl();
@@ -97,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task DirtyState() {
-            var control = new SettingsPageControl(_csp, _coreShell, _fs);
+            var control = new SettingsPageControl(_csp, _appShell, _fs);
             int count = 0;
             control.DirtyStateChanged += (s, e) => {
                 count++;
@@ -117,7 +117,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
 
-            var control = new SettingsPageControl(_csp, _coreShell, fs);
+            var control = new SettingsPageControl(_csp, _appShell, fs);
 
             var fileName = "PropertyGridSingle.settings.r";
             var file = Path.Combine(_files.DestinationPath, fileName);
@@ -144,7 +144,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task AddVariable() {
-            var control = new SettingsPageControl(_csp, _coreShell, _fs);
+            var control = new SettingsPageControl(_csp, _appShell, _fs);
 
             await control.SetProjectAsync(_unconfiguredProject, _properties);
             control.CreateControl();
@@ -178,7 +178,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task PropertyGridMultiple01() {
-            var shell = Substitute.For<ICoreShell>();
+            var shell = Substitute.For<IApplicationShell>();
             var fs = Substitute.For<IFileSystem>();
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
@@ -224,7 +224,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task PropertyGridMultiple02() {
-            var shell = Substitute.For<ICoreShell>();
+            var shell = Substitute.For<IApplicationShell>();
             var fs = Substitute.For<IFileSystem>();
             var up = Substitute.For<UnconfiguredProject>();
             up.FullPath.Returns(Path.Combine(_files.DestinationPath, "file.rproj"));
