@@ -16,8 +16,6 @@ using Microsoft.R.Components.Application.Configuration;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
@@ -196,15 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void SetFont() {
-            // Set the correct font
-            var fontSvc = VsAppShell.Current.GetGlobalService<IUIHostLocale2>(typeof(SUIHostLocale));
-            if (fontSvc != null) {
-                var logFont = new UIDLGLOGFONT[1];
-                int hr = fontSvc.GetDialogFont(logFont);
-                if (hr == VSConstants.S_OK) {
-                    this.Font = IdeUtilities.FontFromUiDialogFont(logFont[0]);
-                }
-            }
+            this.Font = (_coreShell as IApplicationShell)?.GetUiFont() ?? this.Font;
         }
 
         #region Test support

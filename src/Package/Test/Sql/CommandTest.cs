@@ -17,11 +17,14 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     public class CommandTest {
-        [Test]
+        [Test(ThreadType.UI)]
         [Category.Sql]
         public async Task AddDbConnectionCommand() {
             var coll = new ConfigurationSettingCollection();
@@ -42,8 +45,20 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var session = Substitute.For<IRSession>();
             session.EvaluateAsync(null, REvaluationKind.NoResult).ReturnsForAnyArgs(Task.FromResult(new REvaluationResult()));
 
+            var vsbc = Substitute.For<IVsBrowseObjectContext>();
+            vsbc.ConfiguredProject.Returns(configuredProject); // IVsBrowseObjectContext.ConfiguredProject
+
+            var dteProj = Substitute.For<EnvDTE.Project>();
+            dteProj.Object.Returns(vsbc); // dteProject?.Object as IVsBrowseObjectContext
+
+            object extObject;
             var hier = Substitute.For<IVsHierarchy>();
-            hier.GetConfiguredProject().Returns(configuredProject);
+            hier.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out extObject)
+                .Returns(x => {
+                    x[2] = dteProj;
+                    return VSConstants.S_OK;
+                });
+            
             var pss = Substitute.For<IProjectSystemServices>();
             pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 

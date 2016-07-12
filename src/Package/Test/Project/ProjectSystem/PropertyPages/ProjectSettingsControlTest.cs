@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
@@ -15,6 +16,8 @@ using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
+using Microsoft.VisualStudio.R.Package.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 
 namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
@@ -62,6 +65,34 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             control.VariableValue.Text.Should().BeNullOrEmpty();
             control.VariableTypeCombo.Items.Should().HaveCount(2);
             control.AddButton.Enabled.Should().BeFalse();
+        }
+
+        [Test]
+        public void Font() {
+            var fontSvc = Substitute.For<IUIHostLocale2>();
+            var logFont = new UIDLGLOGFONT[1];
+            logFont[0].lfItalic = 1;
+
+            fontSvc.When(x => x.GetDialogFont(Arg.Any<UIDLGLOGFONT[]>())).Do(x => {
+                var fontName = "Arial";
+                var lf = x.Args()[0] as UIDLGLOGFONT[];
+                lf[0].lfItalic = 1;
+                lf[0].lfHeight = 16;
+                lf[0].lfFaceName = new ushort[fontName.Length];
+                int i = 0;
+                foreach (var ch in fontName) {
+                    lf[0].lfFaceName[i++] = (ushort)ch;
+                }
+            });
+            fontSvc.GetDialogFont(Arg.Any<UIDLGLOGFONT[]>()).Returns(VSConstants.S_OK);
+
+            var appShell = Substitute.For<IApplicationShell>();
+            appShell.GetGlobalService<IUIHostLocale2>(typeof(SUIHostLocale)).Returns(fontSvc);
+
+            var control = new SettingsPageControl(_csp, appShell, _fs);
+            control.CreateControl();
+            control.Font.Italic.Should().BeTrue();
+            control.Font.Name.Should().Be("Arial");
         }
 
         [Test]

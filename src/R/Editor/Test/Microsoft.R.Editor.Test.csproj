@@ -123,7 +123,9 @@
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Files\query.sql" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
       <Link>app.config</Link>

@@ -12,13 +12,12 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
         /// </summary>
         public static Font FontFromUiDialogFont(UIDLGLOGFONT logFont) {
             var conversion = new char[logFont.lfFaceName.Length];
-            int i = 0;
-            foreach (ushort convertChar in logFont.lfFaceName) {
-                conversion[i++] = (char)convertChar;
+            for(int i = 0; i < logFont.lfFaceName.Length; i++) {
+                conversion[i] = (char)logFont.lfFaceName[i];
             }
 
             var familyName = new String(conversion);
-            var emSize = 0 - logFont.lfHeight;
+            var emSize = Math.Abs(logFont.lfHeight);
             var style = FontStyle.Regular;
             int FW_NORMAL = 400;
 
@@ -46,7 +45,7 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             teststyles[3] = FontStyle.Italic;
             teststyles[4] = FontStyle.Bold | FontStyle.Italic;
 
-            for (i = 0; i < teststyles.Length; i++) {
+            for (int i = 0; i < teststyles.Length; i++) {
                 if (ff.IsStyleAvailable(teststyles[i])) {
                     style = teststyles[i];
                     return new Font(familyName, emSize, style, unit, gdiCharSet);

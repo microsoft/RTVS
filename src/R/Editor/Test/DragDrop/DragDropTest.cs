@@ -18,6 +18,12 @@ namespace Microsoft.R.Editor.Test.Formatting {
     [ExcludeFromCodeCoverage]
     [Category.R.DragDrop]
     public class DragDropTest {
+        private readonly EditorTestFilesFixture _files;
+
+        public DragDropTest(EditorTestFilesFixture files) {
+            _files = files;
+        }
+
         [CompositeTest]
         [InlineData(new string[0], new string[0], "", "")]
         [InlineData(new string[] { "", "Text" }, new string[0], "", "")]
@@ -36,22 +42,21 @@ namespace Microsoft.R.Editor.Test.Formatting {
             data.GetPlainText(projectFolder).Should().Be(expected);
         }
 
-        //[CompositeTest]
-        [InlineData("", 0, "")]
-        [InlineData("x", 1, "x")]
-        [InlineData("x(", 1, "x")]
-        [InlineData("x(", 2, "")]
-        [InlineData("`a`", 3, "`a`")]
-        [InlineData("abc$def@", 8, "abc$def@")]
-        [InlineData("abc$def@", 4, "abc$")]
-        [InlineData("abc", 3, "abc")]
-        [InlineData("`a bc`@`d ef `$", 7, "`a bc`@")]
-        [InlineData("`a bc`@`d ef `", 14, "`a bc`@`d ef `")]
-        [InlineData("`a bc` `d ef `$", 15, "`d ef `$")]
-        [InlineData("x$+y$", 5, "y$")]
-        [InlineData("x$+`y y`$", 9, "`y y`$")]
-        [InlineData("a::b$`z`", 8, "a::b$`z`")]
-        public void RDropHandler(string content, int caretPosition, string expected) {
+        [CompositeTest]
+        [InlineData("query.sql")]
+        public void RSqlDataObject(string fileName) {
+            var data = Substitute.For<IDataObject>();
+            var fullPath = Path.Combine(_files.DestinationPath, fileName);
+
+            data.GetFormats().Returns(new string[] { DataObjectFormats.VSProjectItems });
+            data.GetDataPresent(DataObjectFormats.VSProjectItems).Returns(true);
+            data.GetData(DataObjectFormats.VSProjectItems).Returns(MakeStream(new string[] { fullPath }));
+
+            string content = null;
+            using (var sr = new StreamReader(fullPath)) {
+                content = sr.ReadToEnd().Trim();
+            }
+            data.GetPlainText(null).Should().Be('\'' + content + '\'');
         }
 
         private MemoryStream MakeStream(string[] files) {
