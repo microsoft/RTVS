@@ -27,11 +27,11 @@ namespace Microsoft.R.Editor.Test.Formatting {
         [CompositeTest]
         [InlineData(new string[0], new string[0], "", "")]
         [InlineData(new string[] { "", "Text" }, new string[0], "", "")]
-        [InlineData(new string[] { DataObjectFormats.VSProjectItems, "Text" }, new string[] { @"c:\foo\file.r"}, @"c:\", "source('~/foo/file.r')\r\n")]
+        [InlineData(new string[] { DataObjectFormats.VSProjectItems, "Text" }, new string[] { @"c:\foo\file.r"}, @"c:\", "\r\nsource('~/foo/file.r')\r\n")]
         [InlineData(new string[] { DataObjectFormats.VSProjectItems, "Text" }, new string[] { @"c:\foo\file.rmd" }, @"c:\", "'~/foo/file.rmd'")]
         [InlineData(new string[] { DataObjectFormats.VSProjectItems, "Text" }, 
                     new string[] { @"c:\foo\file1.r", @"c:\foo\file2.r" }, @"c:\", 
-                    "source('~/foo/file1.r')\r\nsource('~/foo/file2.r')\r\n")]
+                    "\r\nsource('~/foo/file1.r')\r\nsource('~/foo/file2.r')\r\n")]
         public void RDataObject(string[] formats, string[] files, string projectFolder, string expected) {
             var data = Substitute.For<IDataObject>();
 

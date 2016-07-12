@@ -21,12 +21,15 @@ namespace Microsoft.R.Editor.DragDrop {
 
         private static string TextFromProjectItems(this IDataObject dataObject, string projectFolder) {
             var sb = new StringBuilder();
-            foreach(var item in dataObject.GetProjectItems()) {
+            bool first = true;
+            foreach (var item in dataObject.GetProjectItems()) {
                 var relative = item.FileName.MakeRRelativePath(projectFolder);
                 var ext = Path.GetExtension(item.FileName).ToLowerInvariant();
-                switch(ext) {
+                switch (ext) {
                     case ".r":
-                        sb.AppendLine(Invariant($"{Environment.NewLine}source('{relative}')"));
+                        var str = first ? Environment.NewLine : string.Empty;
+                        sb.AppendLine(Invariant($"{str}source('{relative}')"));
+                        first = false;
                         break;
                     case ".sql":
                         sb.Append(Invariant($"'{GetFileContent(item.FileName)}'"));
@@ -44,7 +47,7 @@ namespace Microsoft.R.Editor.DragDrop {
                 using (var sr = new StreamReader(file)) {
                     return sr.ReadToEnd().Trim();
                 }
-            } catch(IOException) { } catch(AccessViolationException) { }
+            } catch (IOException) { } catch (AccessViolationException) { }
             return string.Empty;
         }
     }
