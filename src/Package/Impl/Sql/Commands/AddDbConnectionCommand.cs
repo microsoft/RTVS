@@ -4,9 +4,9 @@
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
-using Microsoft.R.Host.Client;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.Sql;
+using Microsoft.R.Components.InteractiveWorkflow;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -18,8 +18,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         private readonly IDbConnectionService _dbcs;
 
         public AddDbConnectionCommand(IDbConnectionService dbcs, IProjectSystemServices pss,
-                IProjectConfigurationSettingsProvider pcsp, IRSession session) :
-            base(RPackageCommandId.icmdAddDatabaseConnection, "dbConnection", pss, pcsp, session) {
+                IProjectConfigurationSettingsProvider pcsp, IRInteractiveWorkflow workflow) :
+            base(RPackageCommandId.icmdAddDatabaseConnection, "dbConnection", pss, pcsp, workflow) {
             _dbcs = dbcs;
         }
 

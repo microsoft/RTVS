@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                 int id, string settingNameTemplate,
                 IProjectSystemServices pss,
                 IProjectConfigurationSettingsProvider pcsp,
-                IRSession session) : base(id, session) {
+                IRInteractiveWorkflow workflow) : base(id, workflow) {
             _id = id;
             _settingNameTemplate = settingNameTemplate;
             _projectSystemServices = pss;
@@ -43,7 +43,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     access.Settings.Add(s);
                 }
             }
-            await RSession?.EvaluateAsync(Invariant($"{name ?? _settingNameTemplate} <- '{value}'"), REvaluationKind.Mutating);
+
+            if(Workflow.RSession.IsHostRunning) {
+                Workflow.Operations.EnqueueExpression(Invariant($"{name ?? _settingNameTemplate} <- '{value}'"), addNewLine: true);
+            }
         }
     }
 }

@@ -2,20 +2,19 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Packages.R;
 
 namespace Microsoft.VisualStudio.R.Package.Commands {
     internal abstract class SessionCommand : PackageCommand {
-        protected IRSession RSession { get; }
+        protected IRInteractiveWorkflow Workflow { get; }
 
-        public SessionCommand(int id, IRSession session) :
+        public SessionCommand(int id, IRInteractiveWorkflow workflow) :
             base(RGuidList.RCmdSetGuid, id) {
-            RSession = session;
+            Workflow = workflow;
         }
 
         protected override void SetStatus() {
-            Enabled = RSession.IsHostRunning;
+            Enabled = Workflow.RSession.IsHostRunning;
         }
     }
 }

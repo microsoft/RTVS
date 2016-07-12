@@ -101,9 +101,9 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new ImportDataSetTextFileCommand(appShell, interactiveWorkflow.RSession),
                 new ImportDataSetUrlCommand(interactiveWorkflow.RSession),
                 new DeleteAllVariablesCommand(interactiveWorkflow.RSession),
-                new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow.RSession),
-                new AddDsnCommand(appShell, interactiveWorkflow.RSession),
-                new ManageDsnCommand(appShell, interactiveWorkflow.RSession),
+                new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
+                new AddDsnCommand(appShell, interactiveWorkflow),
+                new ManageDsnCommand(appShell, interactiveWorkflow),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),

@@ -17,6 +17,7 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
+using Microsoft.R.Components.InteractiveWorkflow;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -26,7 +27,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     public class CommandTest {
         [Test(ThreadType.UI)]
         [Category.Sql]
-        public async Task AddDbConnectionCommand() {
+        public void AddDbConnectionCommand() {
             var coll = new ConfigurationSettingCollection();
             coll.Add(new ConfigurationSetting("dbConnection1", "1", ConfigurationSettingValueType.String));
             coll.Add(new ConfigurationSetting("dbConnection2", "1", ConfigurationSettingValueType.String));
@@ -44,6 +45,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var session = Substitute.For<IRSession>();
             session.EvaluateAsync(null, REvaluationKind.NoResult).ReturnsForAnyArgs(Task.FromResult(new REvaluationResult()));
+            session.IsHostRunning.Returns(true);
+            var operations = Substitute.For<IRInteractiveWorkflowOperations>();
+
+            var workflow = Substitute.For<IRInteractiveWorkflow>();
+            workflow.RSession.Returns(session);
+            workflow.Operations.Returns(operations);
 
             var vsbc = Substitute.For<IVsBrowseObjectContext>();
             vsbc.ConfiguredProject.Returns(configuredProject); // IVsBrowseObjectContext.ConfiguredProject
@@ -62,7 +69,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var pss = Substitute.For<IProjectSystemServices>();
             pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 
-            var cmd = new AddDbConnectionCommand(dbcs, pss, csp, session);
+            var cmd = new AddDbConnectionCommand(dbcs, pss, csp, workflow);
             cmd.Enabled.Should().BeTrue();
             cmd.Invoke(null, IntPtr.Zero, OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT);
 
@@ -74,7 +81,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             s.EditorType.Should().Be(ConnectionStringEditor.ConnectionStringEditorName);
             s.Description.Should().Be(Resources.ConnectionStringDescription);
 
-            await session.Received(1).EvaluateAsync(Invariant($"dbConnection3 <- 'DSN'"), REvaluationKind.Mutating);
+            operations.Received(1).EnqueueExpression(Invariant($"dbConnection3 <- 'DSN'"), true);
         }
     }
 }
