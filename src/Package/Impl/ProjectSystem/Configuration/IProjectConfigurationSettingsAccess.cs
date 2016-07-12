@@ -13,6 +13,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
     /// to the collection. All access is read/write. Do not cache the object.
     /// </summary>
     public interface IProjectConfigurationSettingsAccess: IDisposable {
-        ConfigurationSettingCollection Settings { get; }
+        IConfigurationSettingCollection Settings { get; }
     }
 }
