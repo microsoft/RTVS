@@ -20,7 +20,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     internal partial class SettingsPageControl : UserControl {
         private readonly IProjectConfigurationSettingsProvider _settingsProvider;
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
         private readonly IFileSystem _fs;
         private IProjectConfigurationSettingsAccess _access;
         private SettingsPageViewModel _viewModel;
@@ -31,13 +31,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             VsAppShell.Current.ExportProvider.GetExportedValue<IProjectConfigurationSettingsProvider>(), 
             VsAppShell.Current, new FileSystem()) { }
 
-        public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, ICoreShell coreShell, IFileSystem fs) {
+        public SettingsPageControl(IProjectConfigurationSettingsProvider settingsProvider, IApplicationShell appShell, IFileSystem fs) {
             Check.ArgumentNull(nameof(settingsProvider), settingsProvider);
-            Check.ArgumentNull(nameof(coreShell), coreShell);
+            Check.ArgumentNull(nameof(appShell), appShell);
             Check.ArgumentNull(nameof(fs), fs);
 
             _settingsProvider = settingsProvider;
-            _coreShell = coreShell;
+            _appShell = appShell;
             _fs = fs;
             InitializeComponent();
         }
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
                 throw new InvalidOperationException("Project is already set");
             }
             _access = await _settingsProvider.OpenProjectSettingsAccessAsync(project, properties);
-            _viewModel = new SettingsPageViewModel(_access.Settings, _coreShell, _fs);
+            _viewModel = new SettingsPageViewModel(_access.Settings, _appShell, _fs);
             await _viewModel.SetProjectPathAsync(Path.GetDirectoryName(project.FullPath), properties);
 
             PopulateFilesCombo();
@@ -153,7 +153,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private void OnSelectedFileChanged(object sender, EventArgs e) {
             if (_selectedIndex != filesList.SelectedIndex) {
                 if (IsDirty) {
-                    var answer = _coreShell.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
+                    var answer = _appShell.ShowMessage(Resources.SettingsPage_SavePrompt, MessageButtons.YesNoCancel);
                     if (answer == MessageButtons.Cancel) {
                         filesList.SelectedIndex = _selectedIndex;
                         return;
@@ -194,7 +194,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         }
 
         private void SetFont() {
-            this.Font = (_coreShell as IApplicationShell)?.GetUiFont() ?? this.Font;
+            this.Font = _appShell?.GetUiFont() ?? this.Font;
         }
 
         #region Test support

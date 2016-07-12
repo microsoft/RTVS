@@ -20,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Shell {
             if (fontSvc != null) {
                 var logFont = new UIDLGLOGFONT[1];
                 int hr = fontSvc.GetDialogFont(logFont);
-                if (hr == VSConstants.S_OK) {
+                if (hr == VSConstants.S_OK && logFont[0].lfFaceName != null) {
                     return IdeUtilities.FontFromUiDialogFont(logFont[0]);
                 }
             }

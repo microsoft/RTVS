@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
@@ -40,18 +41,15 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
             await _semaphore.WaitAsync();
             try {
                 string projectFolder = Path.GetDirectoryName(unconfiguredProject.FullPath);
-                if (_settings.TryGetValue(projectFolder, out access)) {
-                    access.UseCount++;
-                } else {
+                if (!_settings.TryGetValue(projectFolder, out access)) {
                     var settings = await OpenCollectionAsync(projectFolder, propertes);
                     access = new SettingsAccess(this, projectFolder, settings);
                     _settings[projectFolder] = access;
                 }
-
+                access.Counter.Increment();
             } finally {
                 _semaphore.Release();
             }
-
             return access;
         }
 
@@ -91,14 +89,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
 
         class SettingsAccess : IProjectConfigurationSettingsAccess {
             private readonly ProjectConfigurationSettingsProvider _provider;
+            private readonly CountdownDisposable _counter;
             private readonly string _projectPath;
             private bool _changed;
 
             public SettingsAccess(ProjectConfigurationSettingsProvider provider, string projectPath, ConfigurationSettingCollection settings) {
                 _provider = provider;
                 _projectPath = projectPath;
+
+                _counter = new CountdownDisposable(() => Release());
+
                 Settings = settings;
-                settings.CollectionChanged += OnCollectionChanged;
+                Settings.CollectionChanged += OnCollectionChanged;
             }
 
             private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -107,18 +109,18 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
 
             #region IProjectConfigurationSettingsAccess
             public IConfigurationSettingCollection Settings { get; }
+
             public void Dispose() {
-                if (UseCount > 0) {
-                    UseCount--;
-                }
-                if (UseCount == 0) {
-                    Settings.CollectionChanged -= OnCollectionChanged;
-                    _provider.ReleaseSettings(_projectPath, _changed);
-                }
+                _counter.Decrement();
             }
             #endregion
 
-            public int UseCount { get; set; } = 1;
+            public CountdownDisposable Counter => _counter;
+
+            private void Release() {
+                Settings.CollectionChanged -= OnCollectionChanged;
+                _provider.ReleaseSettings(_projectPath, _changed);
+            }
         }
     }
 }

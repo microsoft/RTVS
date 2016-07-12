@@ -20,7 +20,7 @@ namespace Microsoft.Common.Core.Disposables {
             return Disposable.Create(Decrement);
         }
 
-        private void Decrement() {
+        public void Decrement() {
             if (Interlocked.Decrement(ref _count) == 0) {
                 this._disposeAction();
             }
