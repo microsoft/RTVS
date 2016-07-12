@@ -6,18 +6,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.Application.Configuration;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Commands;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Sql;
+using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-#endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
@@ -42,21 +40,15 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
 
             var session = Substitute.For<IRSession>();
             session.EvaluateAsync(null, REvaluationKind.NoResult).ReturnsForAnyArgs(Task.FromResult(new REvaluationResult()));
-            var wf = Substitute.For<IRInteractiveWorkflow>();
-            wf.RSession.Returns(session);
-            var wfp = Substitute.For<IRInteractiveWorkflowProvider>();
-            wfp.GetOrCreate().Returns(wf);
 
-            var cmd = new AddDbConnectionCommand(configuredProject, properties, dbcs, csp, wfp);
+            var hier = Substitute.For<IVsHierarchy>();
+            hier.GetConfiguredProject().Returns(configuredProject);
+            var pss = Substitute.For<IProjectSystemServices>();
+            pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
 
-            var result = await cmd.GetCommandStatusAsync(null, RPackageCommandId.icmdAddDatabaseConnection, true, string.Empty, CommandStatus.Enabled);
-            result.Status.Should().Be(CommandStatus.Supported | CommandStatus.Enabled);
-
-            result = await cmd.GetCommandStatusAsync(null, 1, true, string.Empty, CommandStatus.Enabled);
-            result.Should().Be(CommandStatusResult.Unhandled);
-
-            var f = await cmd.TryHandleCommandAsync(null, RPackageCommandId.icmdAddDatabaseConnection, true, 0, IntPtr.Zero, IntPtr.Zero);
-            f.Should().BeTrue();
+            var cmd = new AddDbConnectionCommand(dbcs, pss, csp, session);
+            cmd.Enabled.Should().BeTrue();
+            cmd.Invoke(null, IntPtr.Zero, OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT);
 
             coll.Should().HaveCount(4);
             var s = coll.GetSetting("dbConnection3");

@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         protected UnconfiguredProject UnconfiguredProject { get; set; }
         protected ProjectProperties[] ConfiguredProperties { get; set; }
         private IThreadHandling ThreadHandling { get; set; }
-
         protected abstract string PropertyPageName { get; }
 
         protected bool IsDirty {
@@ -138,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                     if (hr == VSConstants.S_OK && itemid == VSConstants.VSITEMID_ROOT) {
                         UnconfiguredProject = hier.GetUnconfiguredProject();
                         // We need to save ThreadHandling because the app designer will call SetObjects with null, and then call
-                        // Deactivate(). We need to run Async code during Deactivate() which requires ThreadHandling.
+                        // Deactivate(). We need to run async code during Deactivate() which requires ThreadHandling.
                         ThreadHandling = UnconfiguredProject.Services.ExportProvider.GetExportedValue<IThreadHandling>();
 
                         var pcg = ppunk[i] as IVsProjectCfg2;
@@ -154,10 +153,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                         }
                     }
                 }
-
                 ConfiguredProperties = configuredProjectsProperties.ToArray();
             }
-
             SetObjects(false);
         }
 

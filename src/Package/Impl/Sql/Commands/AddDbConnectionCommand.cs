@@ -2,12 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
-using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
+using Microsoft.Common.Core;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -17,23 +17,18 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
     [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class AddDbConnectionCommand : ConfigurationSettingCommand {
         private readonly IDbConnectionService _dbcs;
-         
-        [ImportingConstructor]
-        public AddDbConnectionCommand(ConfiguredProject configuredProject,
-                ProjectProperties projectProperties,
-                IDbConnectionService dbcs, IProjectConfigurationSettingsProvider pcsp,
-                IRInteractiveWorkflowProvider workflowProvider) :
-            base(RPackageCommandId.icmdAddDatabaseConnection, "dbConnection", configuredProject, pcsp, workflowProvider) {
+
+        public AddDbConnectionCommand(IDbConnectionService dbcs, IProjectSystemServices pss,
+                IProjectConfigurationSettingsProvider pcsp, IRSession session) :
+            base(RPackageCommandId.icmdAddDatabaseConnection, "dbConnection", pss, pcsp, session) {
             _dbcs = dbcs;
         }
 
-        public override async Task<bool> TryHandleCommandAsync() {
+        protected override void Handle() {
             var connString = _dbcs.EditConnectionString(null);
             if (!string.IsNullOrWhiteSpace(connString)) {
-                await SaveSetting(connString);
-                return true;
+                SaveSetting(connString).DoNotWait();
             }
-            return false;
         }
     }
 }
