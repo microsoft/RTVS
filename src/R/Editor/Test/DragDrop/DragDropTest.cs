@@ -60,6 +60,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             data.GetPlainText(null, DragDropKeyStates.ControlKey).Should().Be('\'' + content + '\'');
 
             var rp = fullPath.MakeRRelativePath(_files.DestinationPath);
+            data.GetData(DataObjectFormats.VSProjectItems).Returns(MakeStream(new string[] { fullPath }));
             data.GetPlainText(_files.DestinationPath, DragDropKeyStates.None).Should().Be(Invariant($"readLines('{rp}', encoding = 'UTF-8', warn = FALSE)"));
         }
 
