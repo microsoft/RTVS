@@ -5,6 +5,7 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Linq;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -37,7 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// Convenient way to get to the ConfiguredProject from the hierarchy
         /// </summary>
         public static ConfiguredProject GetConfiguredProject(this IVsHierarchy hierarchy) {
-            return hierarchy.GetBrowseObjectContext()?.ConfiguredProject;
+            return hierarchy.GetBrowseObjectContext()?.UnconfiguredProject?.LoadedConfiguredProjects?.FirstOrDefault();
         }
 
         /// <summary>
