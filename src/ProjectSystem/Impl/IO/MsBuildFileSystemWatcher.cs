@@ -195,7 +195,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
         private void EmptyQueue() {
             IFileSystemChange change;
-            while (_queue.TryDequeue(out change)) {}
+            while (_queue.TryDequeue(out change)) { }
         }
 
         private IFileSystemWatcher CreateFileSystemWatcher(NotifyFilters notifyFilter) {
@@ -215,6 +215,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
             relativePath = PathHelper.MakeRelative(rootDirectory, fullPath);
             try {
+                if (!fileSystem.FileExists(fullPath)) {
+                    return true; // optimistic
+                }
                 return filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
             } catch (IOException) {
                 // File isn't allowed if it isn't accessable
