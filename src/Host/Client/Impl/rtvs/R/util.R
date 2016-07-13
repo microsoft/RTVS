@@ -53,6 +53,18 @@ toJSON <- function(obj) {
   call_embedded("toJSON", obj)
 }
 
+create_blob <- function(obj) {
+    call_embedded("create_blob", obj)
+}
+
+get_blob <- function(blob.id) {
+    call_embedded("get_blob", blob.id)
+}
+
+destroy_blob <- function(blob.id) {
+    call_embedded("destroy_blob", blob.id)
+}
+
 NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }

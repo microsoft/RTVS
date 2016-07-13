@@ -20,9 +20,10 @@ using Newtonsoft.Json.Linq;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 using static System.FormattableString;
+using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
-    public sealed partial class RHost : IDisposable, IRExpressionEvaluator {
+    public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobHelper {
         private readonly string[] parseStatusNames = { "NULL", "OK", "INCOMPLETE", "ERROR", "EOF" };
 
         public const int DefaultPort = 5118;
@@ -58,6 +59,7 @@ namespace Microsoft.R.Host.Client {
         private int _rLoopDepth;
         private long _lastMessageId = -1;
         private readonly ConcurrentDictionary<string, EvaluationRequest> _evalRequests = new ConcurrentDictionary<string, EvaluationRequest>();
+        private readonly ConcurrentDictionary<string, BlobRequest> _blobRequests = new ConcurrentDictionary<string, BlobRequest>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
@@ -119,11 +121,10 @@ namespace Microsoft.R.Host.Client {
             return message;
         }
 
-        private JArray CreateMessageHeader(out string id, string name, string requestId) {
+        private JArray CreateMessageHeader(out string id, string name, string requestId, int blobCount = 0) {
             long n = Interlocked.Add(ref _lastMessageId, 2);
             id = "#" + n + "#";
-            int blob_count = 0;
-            var header = string.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blob_count) : new JArray(id, name, blob_count, requestId);
+            var header = String.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blobCount) : new JArray(id, name, blobCount, requestId);
             return header;
         }
 
@@ -144,6 +145,20 @@ namespace Microsoft.R.Host.Client {
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             } catch (MessageTransportException ex) {
                 throw new RHostDisconnectedException(ex.Message, ex);
+            }
+        }
+
+        private async Task SendAsync(JToken token, byte[] data, CancellationToken ct) {
+            TaskUtilities.AssertIsOnBackgroundThread();
+
+            var json = JsonConvert.SerializeObject(token);
+            _log.Request(json, _rLoopDepth);
+
+            try {
+                await _transport.SendAsync(json, data, ct);
+            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
+                // Network errors during cancellation are expected, but should not be exposed to clients.
+                throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             }
         }
 
@@ -235,6 +250,56 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
+        public Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct) {
+            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled<SendBlobResult>(new CancellationToken(true))
+                : SendBlobAsyncBackground(data, ct);
+        }
+
+        private async Task<SendBlobResult> SendBlobAsyncBackground(byte[] data, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            JArray message;
+            var request =  BlobRequest.MakeCreateBlobRequest(this,out message, 1);
+            _blobRequests[request.Id] = request;
+
+            await SendAsync(message, data, ct);
+            return (await request.CompletionSource.Task).ToSendBlobResult();
+        }
+
+        public Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct) {
+            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled<GetBlobResult>(new CancellationToken(true))
+                : GetBlobAsyncBackground(blobIds, ct);
+        }
+
+        private async Task<GetBlobResult> GetBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            JArray message;
+            var request = BlobRequest.MakeGetBlobsRequest(this, out message, blobIds);
+            _blobRequests[request.Id] = request;
+
+            await SendAsync(message, ct);
+            return (await request.CompletionSource.Task).ToGetBlobResult();
+        }
+
+        public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct) {
+            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled(new CancellationToken(true))
+                : DestroyBlobAsyncBackground(blobIds, ct);
+        }
+
+        private async Task DestroyBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+            await TaskUtilities.SwitchToBackgroundThread();
+
+            JArray message;
+            var request = BlobRequest.MakeDestroyBlobsRequest(this, out message, blobIds);
+            //  we don't expect a response for this so don't add it to the pending blob requests
+
+            await SendAsync(message, ct);
+        }
+
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
             if (_cancelEvaluationAfterRunTask == null || _cancelEvaluationAfterRunTask.IsCompleted) { 
                 return _rhostDisconnectedEvaluationResult;
@@ -257,6 +322,41 @@ namespace Microsoft.R.Host.Client {
 
             await SendAsync(message, ct);
             return await request.CompletionSource.Task;
+        }
+
+        private void ProcessBlobResult(Message response) {
+            BlobRequest request;
+            if (!_blobRequests.TryRemove(response.RequestId, out request)) {
+                throw ProtocolError($"Unexpected response to create blob request {response.RequestId} that is not pending.");
+            }
+
+            response.ExpectArguments(1, 1);
+            var firstArg = response[0] as JValue;
+            if (firstArg != null && firstArg.Value == null) {
+                request.CompletionSource.SetCanceled();
+            }
+
+            if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
+                throw ProtocolError($"Mismatched host response ['{response.Id}',':{response.Name.Substring(1)}',...] to create blob request ['{request.Id}']");
+            }
+
+            switch (request.Kind) {
+                case BlobRequestKind.Create:
+                    request.CompletionSource.SetResult(new SendBlobResult(response.GetInt32(0, "blob_id")));
+                    break;
+                case BlobRequestKind.Get:
+                    List<Blob> blobs = new List<Blob>();
+                    int i = 0;
+                    JArray arr = response.GetArgument(0, "block_ids", JTokenType.Array) as JArray;
+                    foreach(var data in response.Blobs) {
+                        Blob blob = new Blob(arr[i++].Value<long>(), data);
+                        blobs.Add(blob);
+                    }
+                    request.CompletionSource.SetResult(new GetBlobResult(blobs));
+                    break;
+                case BlobRequestKind.Destroy:
+                    throw ProtocolError($"Destroying blobs does not have a response.");
+            }
         }
 
         private void ProcessEvaluationResult(Message response) {
@@ -375,7 +475,11 @@ namespace Microsoft.R.Host.Client {
                         if (message.Name.StartsWithOrdinal(":=")) {
                             ProcessEvaluationResult(message);
                             continue;
-                        } else {
+                        }  else if (message.Name == BlobRequest.CreateBlobResponseMessageName || message.Name == BlobRequest.GetBlobResponseMessageName) {
+                            ProcessBlobResult(message);
+                            continue;
+                        } 
+                        else {
                             throw ProtocolError($"Unrecognized host response message name:", message);
                         }
                     }

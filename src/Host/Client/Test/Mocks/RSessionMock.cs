@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
+using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -20,6 +21,18 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
 
         public string Prompt { get; set; } = ">";
+
+        public Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult(new SendBlobResult(0));
+        }
+
+        public Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult(new GetBlobResult(new List<Blob>()));
+        }
+
+        public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.CompletedTask;
+        }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
             LastExpression = expression;

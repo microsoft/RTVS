@@ -23,6 +23,9 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
+        private readonly static Task<SendBlobResult> CanceledSendBlobTask;
+        private readonly static Task<GetBlobResult> CanceledGetBlobTask;
+        private readonly static Task CanceledDestoryBlobTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
         private readonly BufferBlock<RSessionEvaluationSource> _pendingEvaluationSources = new BufferBlock<RSessionEvaluationSource>();
@@ -69,6 +72,9 @@ namespace Microsoft.R.Host.Client.Session {
         static RSession() {
             CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
+            CanceledSendBlobTask = Task.FromCanceled<SendBlobResult>(tcs.Token);
+            CanceledGetBlobTask = Task.FromCanceled<GetBlobResult>(tcs.Token);
+            CanceledDestoryBlobTask = Task.FromCanceled(tcs.Token);
         }
 
         public RSession(int id, Action onDispose) {
@@ -142,6 +148,49 @@ namespace Microsoft.R.Host.Client.Session {
                 return result;
             } catch (MessageTransportException) when (!IsHostRunning) {
                 throw new RHostDisconnectedException();
+            }
+        }
+
+
+        public async Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+            if (!IsHostRunning) {
+                return await CanceledSendBlobTask;
+            }
+
+            await _afterHostStartedTcs.Task;
+
+            try {
+                return await _host.SendBlobAsync(data, ct);
+            } catch (MessageTransportException) when (!IsHostRunning) {
+                return await CanceledSendBlobTask;
+            }
+        }
+
+        public async Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            if (!IsHostRunning) {
+                return await CanceledGetBlobTask;
+            }
+
+            await _afterHostStartedTcs.Task;
+
+            try {
+                return await _host.GetBlobAsync(blobIds, ct);
+            } catch (MessageTransportException) when (!IsHostRunning) {
+                return await CanceledGetBlobTask;
+            }
+        }
+
+        public async Task DestroyBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            if (!IsHostRunning) {
+                await CanceledDestoryBlobTask;
+            }
+
+            await _afterHostStartedTcs.Task;
+
+            try {
+                await _host.DestroyBlobAsync(blobIds, ct);
+            } catch (MessageTransportException) when (!IsHostRunning) {
+                await CanceledDestoryBlobTask;
             }
         }
 
