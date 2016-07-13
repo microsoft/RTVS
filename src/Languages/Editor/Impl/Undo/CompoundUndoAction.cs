@@ -48,7 +48,7 @@ namespace Microsoft.Languages.Editor.Undo {
         }
 
         /// <summary>
-        /// Marks action as successfull. Dispose will place the undo unit on the undo stack.
+        /// Marks action as successful. Dispose will place the undo unit on the undo stack.
         /// </summary>
         public void Commit() {
             _discardChanges = false;

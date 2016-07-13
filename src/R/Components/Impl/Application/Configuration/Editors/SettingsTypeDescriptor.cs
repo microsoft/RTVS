@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -12,8 +13,10 @@ namespace Microsoft.R.Components.Application.Configuration {
     public sealed class SettingsTypeDescriptor : ICustomTypeDescriptor {
         private const string _componentName = "R Settings";
         private readonly IConfigurationSettingCollection _settings;
+        private readonly ICoreShell _coreShell;
 
-        public SettingsTypeDescriptor(IConfigurationSettingCollection settings) {
+        public SettingsTypeDescriptor(ICoreShell coreShell, IConfigurationSettingCollection settings) {
+            _coreShell = coreShell;
             _settings = settings;
         }
 
@@ -46,7 +49,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         public object GetPropertyOwner(PropertyDescriptor pd) => this;
 
         private PropertyDescriptor[] GetProps() {
-            return _settings.Select(s => new SettingPropertyDescriptor(s)).ToArray();
+            return _settings.Select(s => new SettingPropertyDescriptor(_coreShell, s)).ToArray();
         }
     }
 }

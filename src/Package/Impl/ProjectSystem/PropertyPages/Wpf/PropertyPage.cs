@@ -29,7 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
         protected UnconfiguredProject UnconfiguredProject { get; set; }
         protected ProjectProperties[] ConfiguredProperties { get; set; }
         private IThreadHandling ThreadHandling { get; set; }
-
         protected abstract string PropertyPageName { get; }
 
         protected bool IsDirty {
@@ -46,20 +45,11 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             }
         }
 
-        private T WaitForAsync<T>(Func<Task<T>> asyncFunc) {
-            Debug.Assert(ThreadHandling != null);
-            return ThreadHandling.ExecuteSynchronously<T>(asyncFunc);
-        }
-
-        private void WaitForAsync(Func<Task> asyncFunc) {
-            Debug.Assert(ThreadHandling != null);
-            ThreadHandling.ExecuteSynchronously(asyncFunc);
-        }
+        private T WaitForAsync<T>(Func<Task<T>> asyncFunc)=> ThreadHandling != null ? ThreadHandling.ExecuteSynchronously<T>(asyncFunc) : default(T);
+        private void WaitForAsync(Func<Task> asyncFunc)  => ThreadHandling?.ExecuteSynchronously(asyncFunc);
 
         protected abstract Task<int> OnApply();
-
         protected abstract Task OnDeactivate();
-
         protected abstract Task OnSetObjects(bool isClosing);
 
         public void Activate(IntPtr hWndParent, RECT[] pRect, int bModal) {
@@ -72,9 +62,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
             this.ResumeLayout();
         }
 
-        public int Apply() {
-            return WaitForAsync<int>(OnApply);
-        }
+        public int Apply() => WaitForAsync<int>(OnApply);
 
         public void Deactivate() {
             WaitForAsync(OnDeactivate);
@@ -149,7 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                     if (hr == VSConstants.S_OK && itemid == VSConstants.VSITEMID_ROOT) {
                         UnconfiguredProject = hier.GetUnconfiguredProject();
                         // We need to save ThreadHandling because the app designer will call SetObjects with null, and then call
-                        // Deactivate(). We need to run Async code during Deactivate() which requires ThreadHandling.
+                        // Deactivate(). We need to run async code during Deactivate() which requires ThreadHandling.
                         ThreadHandling = UnconfiguredProject.Services.ExportProvider.GetExportedValue<IThreadHandling>();
 
                         var pcg = ppunk[i] as IVsProjectCfg2;
@@ -165,10 +153,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages {
                         }
                     }
                 }
-
                 ConfiguredProperties = configuredProjectsProperties.ToArray();
             }
-
             SetObjects(false);
         }
 

@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -41,6 +43,22 @@ namespace Microsoft.VisualStudio.R.Package.Utilities {
             }
 
             return result;
+        }
+
+        public static UnconfiguredProject GetUnconfiguredProject(this ITextBuffer textBuffer) {
+            string filePath = textBuffer.GetFileName();
+            IVsHierarchy vsHierarchy;
+            uint vsItemID;
+            TryGetHierarchy(filePath, out vsHierarchy, out vsItemID);
+            return vsHierarchy?.GetUnconfiguredProject();
+        }
+
+        public static ConfiguredProject GetConfiguredProject(this ITextBuffer textBuffer) {
+            string filePath = textBuffer.GetFileName();
+            IVsHierarchy vsHierarchy;
+            uint vsItemID;
+            TryGetHierarchy(filePath, out vsHierarchy, out vsItemID);
+            return vsHierarchy?.GetConfiguredProject();
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Drawing.Design;
 using System.IO;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.R.Package.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudioTools;
 
 namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
@@ -17,10 +16,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
         }
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) {
-            IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
-            IntPtr dialogOwner;
-            uiShell.GetDialogOwnerHwnd(out dialogOwner);
-
             string latestRPath = Environment.SystemDirectory;
             try {
                 latestRPath = new RInstallation().GetCompatibleEnginePathFromRegistry();
@@ -30,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R.Tools {
                 }
             } catch (ArgumentException) { } catch (IOException) { }
 
-            return Dialogs.BrowseForDirectory(dialogOwner, latestRPath, Resources.ChooseRInstallFolder);
+            return Dialogs.BrowseForDirectory(VsAppShell.Current.GetDialogOwnerWindow(), latestRPath, Resources.ChooseRInstallFolder);
         }
     }
 }

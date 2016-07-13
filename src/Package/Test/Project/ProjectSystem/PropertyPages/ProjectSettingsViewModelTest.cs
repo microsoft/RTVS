@@ -10,6 +10,7 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
 using Microsoft.UnitTests.Core.XUnit;
+using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings;
 using NSubstitute;
 
@@ -36,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
 
         [Test]
         public async Task CreateNewFile() {
-            var css = Substitute.For<IConfigurationSettingCollection>();
+            var css = new ConfigurationSettingCollection();
             var shell = Substitute.For<ICoreShell>();
             var fs = Substitute.For<IFileSystem>();
 
@@ -69,6 +70,24 @@ namespace Microsoft.VisualStudio.R.Package.Test.ProjectSystem.PropertyPages {
             model.Files.Should().HaveCount(2);
             model.Files.ToArray()[0].Should().Be("~/Settings.R");
             model.Files.ToArray()[1].Should().Be("~/Debug.Settings.R");
+        }
+
+        [Test]
+        public async Task LoadSave() {
+            var settings = Substitute.For<IConfigurationSettingCollection>();
+            var shell = Substitute.For<ICoreShell>();
+            var fs = Substitute.For<IFileSystem>();
+            var pp = Substitute.For<IRProjectProperties>();
+            fs.GetFileSystemEntries(null, null, SearchOption.AllDirectories).ReturnsForAnyArgs(new string[] { @"C:\Settings22.R" });
+            pp.GetSettingsFileAsync().Returns(Task.FromResult("~/Settings22.R"));
+
+            var model = new SettingsPageViewModel(settings, shell, fs);
+            await model.SetProjectPathAsync(@"C:\", pp);
+            await pp.Received().GetSettingsFileAsync();
+            model.CurrentFile.Should().Be("~/Settings22.R");
+
+            (await model.SaveAsync()).Should().BeTrue();
+            settings.Received().Save(@"C:\Settings22.R");
         }
     }
 }

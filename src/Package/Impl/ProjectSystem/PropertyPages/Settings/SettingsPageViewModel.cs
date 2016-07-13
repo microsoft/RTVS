@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Application.Configuration;
@@ -20,18 +21,22 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
         private readonly IConfigurationSettingCollection _settings;
         private readonly IFileSystem _fileSystem;
         private readonly ICoreShell _coreShell;
-        private IRProjectProperties[] _properties;
+        private IRProjectProperties _properties;
         private string _currentFile;
         private string _projectPath;
 
         public SettingsPageViewModel(IConfigurationSettingCollection settings, ICoreShell coreShell, IFileSystem fileSystem) {
+            Check.ArgumentNull(nameof(settings), settings);
+            Check.ArgumentNull(nameof(coreShell), coreShell);
+            Check.ArgumentNull(nameof(fileSystem), fileSystem);
+
             _settings = settings;
             _coreShell = coreShell;
             _fileSystem = fileSystem;
         }
 
         public IEnumerable<string> Files => _filesMap.Keys;
-        public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_settings);
+        public SettingsTypeDescriptor TypeDescriptor => new SettingsTypeDescriptor(_coreShell, _settings);
 
         public string CurrentFile {
             get { return _currentFile; }
@@ -50,16 +55,16 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             }
         }
 
-        public async Task SetProjectPathAsync(string projectPath, IRProjectProperties[] properties) {
+        public async Task SetProjectPathAsync(string projectPath, IRProjectProperties properties) {
             _projectPath = projectPath;
             _properties = properties;
             try {
                 EnumerateSettingFiles(projectPath);
             } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
 
-            if (_properties?.Length > 0) {
-                var file = await _properties[0].GetSettingsFileAsync();
-                if (_filesMap.ContainsKey(file)) {
+            if (_properties != null) {
+                var file = await _properties.GetSettingsFileAsync();
+                if (!string.IsNullOrEmpty(file) && _filesMap.ContainsKey(file)) {
                     CurrentFile = file;
                 }
             }
@@ -93,10 +98,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
 
         public async Task SaveSelectedSettingsFileNameAsync() {
             if (_properties != null) {
-                foreach (var props in _properties) {
-                    // Remember R path like ~/... so when project moves we can still find the file
-                    await props.SetSettingsFileAsync(CurrentFile);
-                }
+                // Remember R path like ~/... so when project moves we can still find the file
+                await _properties.SetSettingsFileAsync(CurrentFile);
             }
         }
 

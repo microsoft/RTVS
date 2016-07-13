@@ -106,6 +106,15 @@ namespace Microsoft.R.Components {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The connection string appears to be in incorrect format. Would you like to re-created it?.
+        /// </summary>
+        public static string Error_ConnectionStringFormat {
+            get {
+                return ResourceManager.GetString("Error_ConnectionStringFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Timeout installing package {0}.
         /// </summary>
         public static string Error_InstallTimeout_Format {

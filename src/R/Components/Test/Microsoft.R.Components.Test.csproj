@@ -91,6 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InteractiveWorkflow\RInteractiveWorkflowCommandTest.cs" />
     <Compile Include="Script\InstallPackagesTest.cs" />
+    <Compile Include="Sql\SqlDbTest.cs" />
     <Compile Include="StubFactories\InteractiveWorkflowStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryStubFactory.cs" />
     <Compile Include="StubFactories\RHistoryProviderStubFactory.cs" />

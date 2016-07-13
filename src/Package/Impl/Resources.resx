@@ -166,7 +166,7 @@
     <value>Reformat code as you type</value>
   </data>
   <data name="SaveAsFilterR" xml:space="preserve">
-    <value>R Language Files (*.r)|*.r|</value>
+    <value>R Language Files (*.R)|*.R|</value>
   </data>
   <data name="Settings_IntellisenseCategory" xml:space="preserve">
     <value>IntelliSense</value>
@@ -404,8 +404,8 @@
   <data name="No" xml:space="preserve">
     <value>No</value>
   </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Yes</value>
+  <data name="ConnectionStringDescription" xml:space="preserve">
+    <value>Database connection string</value>
   </data>
   <data name="SaveWorkspaceOnProjectUnload" xml:space="preserve">
     <value>Save current workspace image to {0}?</value>
@@ -841,5 +841,8 @@ Additional information:
   </data>
   <data name="Launch_StartupFileDoesNotExist" xml:space="preserve">
     <value>The specified startup file does not exist:</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
 </root>

@@ -178,6 +178,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Database connection string.
+        /// </summary>
+        public static string ConnectionStringDescription {
+            get {
+                return ResourceManager.GetString("ConnectionStringDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Converting....
         /// </summary>
         public static string Converting {
@@ -1067,7 +1076,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R Language Files (*.r)|*.r|.
+        ///   Looks up a localized string similar to R Language Files (*.R)|*.R|.
         /// </summary>
         public static string SaveAsFilterR {
             get {

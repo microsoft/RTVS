@@ -123,7 +123,9 @@
       <Name>Microsoft.R.Editor</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Files\query.sql" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\UnitTests\References.$(VisualStudioVersion)\app.config">
       <Link>app.config</Link>
@@ -140,6 +142,7 @@
     </Compile>
     <Compile Include="BraceMatch\GotoBraceCommandTest.cs" />
     <Compile Include="Documentation\RoxygenTest.cs" />
+    <Compile Include="DragDrop\DragDropTest.cs" />
     <Compile Include="Extensions\TextViewExtensionsTest.cs" />
     <Compile Include="Formatting\FormatCommandTest.cs" />
     <Compile Include="REditorMefCatalogFixture.cs" />

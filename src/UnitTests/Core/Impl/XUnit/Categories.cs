@@ -127,6 +127,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
             }
 
             [ExcludeFromCodeCoverage]
+            public class DragDropAttribute : CategoryAttribute {
+                public DragDropAttribute() : base("R.DragDrop") { }
+            }
+
+            [ExcludeFromCodeCoverage]
             public class DataInspectionAttribute : CategoryAttribute {
                 public DataInspectionAttribute() : base("R.DataInspection") { }
             }
@@ -238,6 +243,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         [ExcludeFromCodeCoverage]
         public class ReplAttribute : CategoryAttribute {
             public ReplAttribute() : base("Repl") { }
+        }
+
+        [ExcludeFromCodeCoverage]
+        public class SqlAttribute : CategoryAttribute {
+            public SqlAttribute() : base("SQL") { }
         }
 
         [ExcludeFromCodeCoverage]

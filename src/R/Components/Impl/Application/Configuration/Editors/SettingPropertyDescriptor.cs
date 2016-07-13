@@ -5,6 +5,10 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Linq;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Composition;
+using Microsoft.Common.Core.Shell;
 
 namespace Microsoft.R.Components.Application.Configuration {
     /// <summary>
@@ -13,10 +17,13 @@ namespace Microsoft.R.Components.Application.Configuration {
     [Browsable(true)]
     [DesignTimeVisible(true)]
     public sealed class SettingPropertyDescriptor : PropertyDescriptor {
+        private readonly ICoreShell _coreShell;
+
         public IConfigurationSetting Setting { get; }
 
-        public SettingPropertyDescriptor(IConfigurationSetting setting) :
+        public SettingPropertyDescriptor(ICoreShell coreShell, IConfigurationSetting setting) :
                 base(setting.Name, null) {
+            _coreShell = coreShell;
             Setting = setting;
         }
 
@@ -39,7 +46,11 @@ namespace Microsoft.R.Components.Application.Configuration {
                 attributeList.Add(new DescriptionAttribute(Setting.Description));
             }
             if (!string.IsNullOrEmpty(Setting.EditorType)) {
-                attributeList.Add(new EditorAttribute(Setting.EditorType, typeof(UITypeEditor)));
+                var expl = new NamedExportLocator<IConfigurationSettingUIEditorProvider>(_coreShell.CompositionService);
+                var provider = expl.GetExport(Setting.EditorType);
+                if (provider != null) {
+                    attributeList.Add(new EditorAttribute(provider.EditorType, typeof(UITypeEditor)));
+                }
             }
             base.FillAttributes(attributeList);
         }

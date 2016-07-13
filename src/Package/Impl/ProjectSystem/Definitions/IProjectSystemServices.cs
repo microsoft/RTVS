@@ -15,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         /// <summary>
         /// Locates project that is currently selected in Solution Explorer
         /// </summary>
-        IVsProject GetSelectedProject();
+        T GetSelectedProject<T>() where T: class;
 
         /// <summary>
         /// Locates project that is currently active in Solution Explorer

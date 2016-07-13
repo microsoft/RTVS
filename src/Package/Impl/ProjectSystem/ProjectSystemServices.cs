@@ -12,13 +12,14 @@ using System.Runtime.InteropServices;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Common.Core;
+using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSystemServices))]
-    internal sealed class ProjectSystemServices: IProjectSystemServices {
+    internal sealed class ProjectSystemServices : IProjectSystemServices {
         public EnvDTE.Solution GetSolution() {
             DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
             return dte.Solution;
@@ -34,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return null;
         }
 
-        public IVsProject GetSelectedProject() {
+        public T GetSelectedProject<T>() where T : class {
             var monSel = VsAppShell.Current.GetGlobalService<IVsMonitorSelection>();
             IntPtr hierarchy = IntPtr.Zero, selectionContainer = IntPtr.Zero;
             uint itemid;
@@ -42,7 +43,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             try {
                 if (VSConstants.S_OK == monSel.GetCurrentSelection(out hierarchy, out itemid, out ms, out selectionContainer)) {
-                    return Marshal.GetObjectForIUnknown(hierarchy) as IVsProject;
+                    if (hierarchy != IntPtr.Zero) {
+                        return Marshal.GetObjectForIUnknown(hierarchy) as T;
+                    }
                 }
             } finally {
                 if (hierarchy != IntPtr.Zero) {

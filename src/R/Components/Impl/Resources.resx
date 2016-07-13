@@ -348,4 +348,7 @@
   <data name="SettingsFileHeader" xml:space="preserve">
     <value># Application settings file.</value>
   </data>
+  <data name="Error_ConnectionStringFormat" xml:space="preserve">
+    <value>The connection string appears to be in incorrect format. Would you like to re-created it?</value>
+  </data>
 </root>

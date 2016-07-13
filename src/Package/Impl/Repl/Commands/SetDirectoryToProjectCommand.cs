@@ -9,6 +9,7 @@ using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
     internal sealed class SetDirectoryToProjectCommand : PackageCommand {
@@ -28,7 +29,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
 
         protected override void Handle() {
             string projectFile = null;
-            var project = _pss.GetSelectedProject();
+            var project = _pss.GetSelectedProject<IVsProject>();
             if (VSConstants.S_OK == project?.GetMkDocument((uint)VSConstants.VSITEMID.Root, out projectFile)) {
                 if (!string.IsNullOrEmpty(projectFile)) {
                     _interactiveWorkflow.RSession.SetWorkingDirectoryAsync(Path.GetDirectoryName(projectFile))

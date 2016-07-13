@@ -105,6 +105,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
         public Brush Foreground { get; set; } = Brushes.Black;
         public Brush Background { get; set; } = Brushes.Transparent;
+        public Brush AlternateBackground { get; set; } = Brushes.Transparent;
 
         public void Clear() {
             _visualChildren.Clear();
@@ -171,8 +172,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             visual.Foreground = Foreground;
         }
 
-        private bool alignRight = true;
-
         internal void ArrangeVisuals(IPoints points) {
             foreach (int c in _dataViewport.Columns.GetEnumerable()) {
                 foreach (int r in _dataViewport.Rows.GetEnumerable()) {
@@ -187,8 +186,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     double cellH = points.Height[r];
                     visual.CellBounds = new Rect(cellX, cellY, cellW, cellH);
 
-                    double x = cellX + (alignRight ? (cellW - visual.Size.Width - visual.Margin - GridLineThickness) : 0.0);
-                    double y = cellY;
+                    bool alignRight = visual.TextAlignment == TextAlignment.Right;
+                    double x = cellX + (alignRight ? (cellW - visual.Size.Width - visual.Margin - GridLineThickness) : visual.Margin);
+                    double y = cellY + visual.Margin;
 
                     var transform = visual.Transform as TranslateTransform;
                     if (transform == null) {
@@ -200,6 +200,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                     visual.X = x;
                     visual.Y = y;
+                    visual.Draw();
                 }
             }
 
