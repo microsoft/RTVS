@@ -90,8 +90,6 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
-            var sb = new StringBuilder();
-
             string json;
             try {
                 json = await _transport.ReceiveAsync(ct);
@@ -109,13 +107,26 @@ namespace Microsoft.R.Host.Client {
                 return null;
             }
 
-            return new Message(token);
+            var message = new Message(token);
+
+            for(int i = 0; i < message.ExpectedBlobs; ++i) {
+                var blob_slices = await _transport.ReceiveRawAsync();
+                message.Blobs.Enqueue(blob_slices);
+            }
+
+            return message;
         }
 
-        private JArray CreateMessage(out string id, string name, params object[] args) {
+        private JArray CreateMessageHeader(out string id, string name, string requestId) {
             long n = Interlocked.Add(ref _lastMessageId, 2);
             id = "#" + n + "#";
-            return new JArray(id, name, args);
+            int blob_count = 0;
+            var header = String.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blob_count) : new JArray(id, name, blob_count, requestId);
+            return header;
+        }
+
+        private JArray CreateMessage(JArray header, params object[] args) {
+            return new JArray(header, args);
         }
 
         private async Task SendAsync(JToken token, CancellationToken ct) {
@@ -139,7 +150,7 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             string id;
-            var message = CreateMessage(out id, name, args);
+            var message = CreateMessage(CreateMessageHeader(out id, name, null), args);
             await SendAsync(message, ct);
             return id;
         }
@@ -149,7 +160,7 @@ namespace Microsoft.R.Host.Client {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             string id;
-            var message = CreateMessage(out id, ":" + request.Name.Substring(1), request.Id, args);
+            var message = CreateMessage(CreateMessageHeader(out id, ":" + request.Name.Substring(1), request.Id), args);
             await SendAsync(message, ct);
             return id;
         }
@@ -262,6 +273,8 @@ namespace Microsoft.R.Host.Client {
             REvaluationResult result;
             if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
                 result = new REvaluationResult(error, parseStatus);
+            } else if(request.Kind.HasFlag(REvaluationKind.Raw) && response.Blobs.Count > 0) {
+                result = new REvaluationResult(response[2], error, parseStatus, response.Blobs.ToList());
             } else {
                 result = new REvaluationResult(response[2], error, parseStatus);
             }
@@ -432,11 +445,14 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!Plot":
+                                byte[] data;
+                                message.Blobs.TryDequeue(out data);
                                 await _callbacks.Plot(
                                     new PlotMessage(
                                         message.GetString(0, "xaml_file_path"),
                                         message.GetInt32(1, "active_plot_index"),
-                                        message.GetInt32(2, "plot_count")),
+                                        message.GetInt32(2, "plot_count"),
+                                        data),
                                     ct);
                                 break;
 

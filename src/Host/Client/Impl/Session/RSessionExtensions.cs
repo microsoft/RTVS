@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.R.Host.Client.Extensions;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client.Session {
@@ -35,26 +36,12 @@ namespace Microsoft.R.Host.Client.Session {
 
         public static async Task<string> MakeRelativeToRUserDirectoryAsync(this IRSession session, string name) {
             var userDirectory = await session.GetRUserDirectoryAsync();
-            return MakeRelativeToUserDirectory(name, userDirectory);
+            return name.MakeRRelativePath(userDirectory);
         }
 
         public static async Task<IEnumerable<string>> MakeRelativeToRUserDirectoryAsync(this IRSession session, IEnumerable<string> names) {
             var userDirectory = await session.GetRUserDirectoryAsync();
-            return names.Select(n => MakeRelativeToUserDirectory(n, userDirectory));
-        }
-
-        private static string MakeRelativeToUserDirectory(string name, string userDirectory) {
-            if (!string.IsNullOrEmpty(userDirectory)) {
-                if (name.StartsWithIgnoreCase(userDirectory)) {
-                    var relativePath = name.MakeRelativePath(userDirectory);
-                    if (relativePath.Length > 0) {
-                        return "~/" + relativePath.Replace('\\', '/');
-                    }
-                    return "~";
-                }
-                return name.Replace('\\', '/');
-            }
-            return name;
+            return names.Select(n => n.MakeRRelativePath(userDirectory));
         }
 
         public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName) {

@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.IO.Compression;
@@ -148,5 +149,25 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             return templatesFolder;
         }
 
+        public IEnumerable<string> GetProjectFiles(EnvDTE.Project project) {
+            return EnumerateProjectFiles(project?.ProjectItems);
+        }
+
+        private IEnumerable<string> EnumerateProjectFiles(EnvDTE.ProjectItems items) {
+            if (items == null) {
+                yield break;
+            }
+            foreach (var item in items) {
+                var pi = item as EnvDTE.ProjectItem;
+                if (pi.ProjectItems?.Count != 0) {
+                    EnumerateProjectFiles(pi.ProjectItems);
+                } else {
+                    var fullPath = (item as EnvDTE.ProjectItem)?.Properties?.Item("FullPath")?.Value as string;
+                    if (!string.IsNullOrEmpty(fullPath)) {
+                        yield return fullPath;
+                    }
+                }
+            }
+        }
     }
 }

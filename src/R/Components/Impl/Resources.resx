@@ -336,4 +336,16 @@
   <data name="Error_InstallTimeout_Format" xml:space="preserve">
     <value>Timeout installing package {0}</value>
   </data>
+  <data name="ConfigurationError_Syntax" xml:space="preserve">
+    <value>Syntax error</value>
+  </data>
+  <data name="Error_SettingFileNoLongerExists" xml:space="preserve">
+    <value>Settings file {0} does not exists.</value>
+  </data>
+  <data name="SettingsFileGeneratedStamp" xml:space="preserve">
+    <value># File content was generated on {0}.</value>
+  </data>
+  <data name="SettingsFileHeader" xml:space="preserve">
+    <value># Application settings file.</value>
+  </data>
 </root>

@@ -673,7 +673,7 @@ Additional information:
   <data name="PropertyPageDifferentOptions" xml:space="preserve">
     <value>&lt;different options&gt;</value>
   </data>
-  <data name="RunPropertyPageTitle" xml:space="preserve">
+  <data name="ProjectProperties_RunPageTitle" xml:space="preserve">
     <value>Run</value>
   </data>
   <data name="Settings_DefaultValue" xml:space="preserve">
@@ -802,5 +802,44 @@ Additional information:
   </data>
   <data name="Settings_MarkdownCategory" xml:space="preserve">
     <value>Markdown</value>
+  </data>
+  <data name="ProjectProperties_SettingsPageTitle" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="Error_UnableToReadSettings" xml:space="preserve">
+    <value>Unable to load settings. Exception {0}</value>
+  </data>
+  <data name="Error_UnableToSaveSettings" xml:space="preserve">
+    <value>Unable to write to settings file {0}. Exception: {1}</value>
+  </data>
+  <data name="NoSettingFiles" xml:space="preserve">
+    <value>&lt;No *setting.R files found&gt;</value>
+  </data>
+  <data name="SettingsPage_Explanation" xml:space="preserve">
+    <value>R project settings come from Settings.R or *.Settings.R files that are located inside the project.{0}If there is no settings file, you can add variables and save the page. Default Settings.R will be created for you. You can also add settings file to the project via File | Add New Item.{0}Settings are stored as R code and the file can be sourced before running other modules thus pre-populating environment with the predefined settings.</value>
+  </data>
+  <data name="SettingsPage_VariableNameLabel" xml:space="preserve">
+    <value>&amp;Name:</value>
+  </data>
+  <data name="SettingsPage_VariableTypeLabel" xml:space="preserve">
+    <value>&amp;Type:</value>
+  </data>
+  <data name="SettingsPage_VariableType_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="SettingsPage_VariableType_String" xml:space="preserve">
+    <value>String</value>
+  </data>
+  <data name="SettingsPage_VariableValueLabel" xml:space="preserve">
+    <value>&amp;Value:</value>
+  </data>
+  <data name="SettingsPage_SavePrompt" xml:space="preserve">
+    <value>The selected settings have changed. Do you want to save the file?</value>
+  </data>
+  <data name="Launch_SettingsFileDoesNotExist" xml:space="preserve">
+    <value>The specified settings file does not exist:</value>
+  </data>
+  <data name="Launch_StartupFileDoesNotExist" xml:space="preserve">
+    <value>The specified startup file does not exist:</value>
   </data>
 </root>

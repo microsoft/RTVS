@@ -15,6 +15,7 @@ using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
@@ -74,7 +75,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
             using (var e = await session.BeginEvaluationAsync()) {
-                await e.EvaluateAsync($"write.table({result.Expression}, qmethod='double', col.names=NA, file={file.ToRPath().ToRStringLiteral()}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
+                var csvdata = await e.EvaluateAsync($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Raw);
+                csvdata.SaveRawDataToFile(file);
             }
 
             if (File.Exists(file)) {
