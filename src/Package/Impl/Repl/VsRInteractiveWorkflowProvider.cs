@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Host.Client;

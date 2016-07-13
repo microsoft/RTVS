@@ -50,6 +50,7 @@
     <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />
     <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
     <Compile Include="Mef\CatalogFactory.cs" />
+    <Compile Include="Mef\PartMetadataAttributeNames.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />
     <Compile Include="NSubstitute\SubstituteHelper.cs" />
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.AddValueFactory.cs" />
