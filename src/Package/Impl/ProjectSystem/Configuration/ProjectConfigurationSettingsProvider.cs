@@ -97,7 +97,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration {
                 _provider = provider;
                 _projectPath = projectPath;
 
-                _counter = new CountdownDisposable(() => Release());
+                _counter = new CountdownDisposable(Release);
 
                 Settings = settings;
                 Settings.CollectionChanged += OnCollectionChanged;
