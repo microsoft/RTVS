@@ -6,6 +6,7 @@ using Microsoft.Languages.Editor.DragDrop;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Workspace;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Editor.DragDrop;
 using Microsoft.VisualStudio.Utilities;

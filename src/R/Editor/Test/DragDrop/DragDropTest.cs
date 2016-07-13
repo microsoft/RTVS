@@ -9,6 +9,7 @@ using System.Windows;
 using FluentAssertions;
 using Microsoft.Languages.Editor.DragDrop;
 using Microsoft.R.Editor.DragDrop;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
@@ -39,7 +40,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             data.GetDataPresent(Arg.Any<string>()).Returns(true);
             data.GetData(DataObjectFormats.VSProjectItems).Returns(MakeStream(files));
 
-            data.GetPlainText(projectFolder).Should().Be(expected);
+            data.GetPlainText(projectFolder, DragDropKeyStates.None).Should().Be(expected);
         }
 
         [CompositeTest]
@@ -56,7 +57,10 @@ namespace Microsoft.R.Editor.Test.Formatting {
             using (var sr = new StreamReader(fullPath)) {
                 content = sr.ReadToEnd().Trim();
             }
-            data.GetPlainText(null).Should().Be('\'' + content + '\'');
+            data.GetPlainText(null, DragDropKeyStates.ControlKey).Should().Be('\'' + content + '\'');
+
+            var rp = fullPath.MakeRRelativePath(_files.DestinationPath);
+            data.GetPlainText(_files.DestinationPath, DragDropKeyStates.None).Should().Be(Invariant($"readLines('{rp}', encoding = 'UTF-8', warn = FALSE)"));
         }
 
         private MemoryStream MakeStream(string[] files) {

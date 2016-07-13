@@ -3,6 +3,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Core.Text;
@@ -33,16 +34,29 @@ namespace Microsoft.R.Editor.DragDrop {
 
         #region IDropHandler
         public DragDropPointerEffects HandleDataDropped(DragDropInfo dragDropInfo) {
+            Task.Run(async () => {
+                var folder = await _wsps.GetRUserFolder();
+                _editorShell.DispatchOnUIThread(() => HandleDrop(dragDropInfo, folder));
+            }).DoNotWait();
+            return DragDropPointerEffects.None;
+        }
+        public void HandleDragCanceled() { }
+        public DragDropPointerEffects HandleDragStarted(DragDropInfo dragDropInfo) => DragDropPointerEffects.Copy | DragDropPointerEffects.Track;
+        public DragDropPointerEffects HandleDraggingOver(DragDropInfo dragDropInfo) => DragDropPointerEffects.Copy | DragDropPointerEffects.Track;
+        public bool IsDropEnabled(DragDropInfo dragDropInfo) => true;
+        #endregion
+
+        private void HandleDrop(DragDropInfo dragDropInfo, string userFolder) {
             var dataObject = dragDropInfo.Data;
 
             var document = REditorDocument.FindInProjectedBuffers(_wpfTextView.TextBuffer);
             Debug.Assert(document != null, "Text view does not have associated R document.");
 
-            var text = dataObject.GetPlainText(_wsps.ActiveProjectPath);
+            var text = dataObject.GetPlainText(userFolder, dragDropInfo.KeyStates);
             var line = _wpfTextView.TextViewLines.GetTextViewLineContainingYCoordinate(dragDropInfo.Location.Y);
             line = line ?? _wpfTextView.TextViewLines.LastVisibleLine;
             if (line == null) {
-                return DragDropPointerEffects.None;
+                return;
             }
 
             var bufferPosition = line.GetBufferPositionFromXCoordinate(dragDropInfo.Location.X);
@@ -72,13 +86,6 @@ namespace Microsoft.R.Editor.DragDrop {
                 }
                 undoAction.Commit();
             }
-            return DragDropPointerEffects.None;
         }
-
-        public void HandleDragCanceled() { }
-        public DragDropPointerEffects HandleDragStarted(DragDropInfo dragDropInfo) => DragDropPointerEffects.Copy | DragDropPointerEffects.Track;
-        public DragDropPointerEffects HandleDraggingOver(DragDropInfo dragDropInfo) => DragDropPointerEffects.Copy | DragDropPointerEffects.Track;
-        public bool IsDropEnabled(DragDropInfo dragDropInfo) => true;
-        #endregion
     }
 }

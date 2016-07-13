@@ -11,18 +11,19 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Editor.DragDrop {
     public static class DataObject {
-        public static string GetPlainText(this IDataObject dataObject, string projectFolder) {
+        public static string GetPlainText(this IDataObject dataObject, string projectFolder, DragDropKeyStates keystates) {
             var flags = dataObject.GetFlags();
             if ((flags & DataObjectFlags.ProjectItems) != 0) {
-                return dataObject.TextFromProjectItems(projectFolder);
+                return dataObject.TextFromProjectItems(projectFolder, keystates);
             }
             return string.Empty;
         }
 
-        private static string TextFromProjectItems(this IDataObject dataObject, string projectFolder) {
+        private static string TextFromProjectItems(this IDataObject dataObject, string projectFolder, DragDropKeyStates keystates) {
             var sb = new StringBuilder();
             bool first = true;
             foreach (var item in dataObject.GetProjectItems()) {
+
                 var relative = item.FileName.MakeRRelativePath(projectFolder);
                 var ext = Path.GetExtension(item.FileName).ToLowerInvariant();
                 switch (ext) {
@@ -32,7 +33,11 @@ namespace Microsoft.R.Editor.DragDrop {
                         first = false;
                         break;
                     case ".sql":
-                        sb.Append(Invariant($"'{GetFileContent(item.FileName)}'"));
+                        if ((keystates & DragDropKeyStates.ControlKey) != 0) {
+                            sb.Append(Invariant($"'{GetFileContent(item.FileName)}'"));
+                        } else {
+                            sb.Append(Invariant($"readLines('{relative}', encoding = 'UTF-8', warn = FALSE)"));
+                        }
                         break;
                     default:
                         sb.Append(Invariant($"'{relative}'"));
