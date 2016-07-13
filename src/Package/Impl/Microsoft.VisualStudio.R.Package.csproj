@@ -499,10 +499,19 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="Resources\DatabaseProject.ico" />
     <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
     <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
+    <VSTemplate Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
+    <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
+    <Content Include="Templates\NewItem\SqlQuery.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Templates\Sql\Create Procedure R.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
