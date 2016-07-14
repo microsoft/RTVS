@@ -327,7 +327,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             _contexts = null;
-            Prompt = string.Empty;
+            Prompt = DefaultPrompt;
         }
 
         async Task<string> IRCallbacks.ReadConsole(IReadOnlyList<IRContext> contexts, string prompt, int len, bool addToHistory, CancellationToken ct) {

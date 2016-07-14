@@ -59,6 +59,7 @@
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.cs" />
     <Compile Include="NSubstitute\Mef\NSubstituteCompositionContainer.cs" />
     <Compile Include="NSubstitute\Mef\NSubstituteExportProvider.cs" />
+    <Compile Include="Paths.cs" />
     <Compile Include="Threading\ControlledTaskScheduler.cs" />
     <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
     <Compile Include="Threading\ParallelTools.cs" />

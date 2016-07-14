@@ -129,6 +129,10 @@
       <Project>{41aa8769-0fbc-4a80-8498-21c833f0c2ac}</Project>
       <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ProjectSystem\Test\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.csproj">
+      <Project>{8B9B73CB-C7B4-4613-8ADA-5D8C1CF583E2}</Project>
+      <Name>Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\R\Components\Impl\Microsoft.R.Components.csproj">
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>

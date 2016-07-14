@@ -1,9 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.SurveyNews;
 using Xunit;
@@ -21,9 +23,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.SurveyNews {
         [Test]
         [Category.SurveyNews]
         public async void Invalid() {
-            await Assert.ThrowsAsync<SurveyNewsFeedException>(() => {
-                return GetFeed("Invalid.txt");
-            });
+            Func<Task> f = () => GetFeed("Invalid.txt");
+            await f.ShouldThrowAsync<SurveyNewsFeedException>();
         }
 
         [Test]

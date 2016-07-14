@@ -18,15 +18,13 @@ namespace Microsoft.UnitTests.Core.XUnit {
     [ExcludeFromCodeCoverage]
     public abstract class AssemblyMefCatalogFixture : MefCatalogFixture {
         private readonly Dictionary<string, string> _knownVsAssemblyPaths = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        private string _idePath;
         private string _binDirectoryPath;
 
         protected override ComposablePartCatalog CreateCatalog() {
-            _idePath = GetDevEnvIdePath();
-            _binDirectoryPath = Path.GetDirectoryName(GetType().Assembly.GetAssemblyPath());
+            _binDirectoryPath = Paths.Bin;
 
-            EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"PrivateAssemblies\"));
-            EnumerateAssemblies(_knownVsAssemblyPaths, Path.Combine(_idePath, @"CommonExtensions\"));
+            EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsPrivateAssemblies);
+            EnumerateAssemblies(_knownVsAssemblyPaths, Paths.VsCommonExtensions);
 
             try {
                 var aggregateCatalog = new AggregateCatalog();
@@ -97,10 +95,6 @@ namespace Microsoft.UnitTests.Core.XUnit {
                 composablePartDefinition.ExportDefinitions.Should().NotBeNull();
                 composablePartDefinition.ImportDefinitions.Should().NotBeNull();
             }
-        }
-
-        private static string GetDevEnvIdePath() {
-            return (string)Registry.GetValue(Invariant($"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\{Toolset.Version}"), "InstallDir", string.Empty);
         }
     }
 }
