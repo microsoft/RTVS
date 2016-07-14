@@ -2,10 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     public interface IPackageIndex {
-        IReadOnlyList<IPackageInfo> Packages { get; }
+        Task BuildIndexAsync(IFunctionIndex functionIndex);
+        IEnumerable<IPackageInfo> Packages { get; }
         IPackageInfo GetPackageByName(string packageName);
     }
 }

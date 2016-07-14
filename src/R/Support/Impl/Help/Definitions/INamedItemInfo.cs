@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     /// <summary>
     /// Represents generic item that has name and description.
     /// Primarily used in intellisense where name appear in the

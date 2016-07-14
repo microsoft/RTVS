@@ -1,73 +1,48 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.Common.Core.Threading;
+using Microsoft.Languages.Core.Formatting;
+using Microsoft.R.Host.Client;
+using Newtonsoft.Json.Linq;
+using static System.FormattableString;
 
 namespace Microsoft.R.Support.Help.Packages {
     /// <summary>
-    /// Index of packages available from the R engine. Collection 
-    /// of packages installed by the engine is furhished by a static
-    /// provider while list of the user-installed packages and 
-    /// list of per-project packages (when PackRat is used) 
-    /// are supplied by the providers exported via MEF. 
+    /// Index of packages available from the R engine.
     /// </summary>
     [Export(typeof(IPackageIndex))]
-    public class PackageIndex : IPackageIndex {
+    internal sealed class PackageIndex : IPackageIndex {
         private readonly ICoreShell _shell;
+        private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
         private readonly Dictionary<string, IPackageInfo> _packages = new Dictionary<string, IPackageInfo>();
-        private readonly Lazy<IFunctionIndex> _functionIndexLazy;
-
-        private IEnumerable<Lazy<IPackageCollection>> _collections;
-        private IPackageCollection _basePackages;
+        private IFunctionIndex _functionIndex;
 
         [ImportingConstructor]
         public PackageIndex(ICoreShell shell) {
+            // TODO: connect to installed/uninstalled/loaded/unloaded events from 
+            // the package manager when it gets them implemented.
             _shell = shell;
-            _functionIndexLazy = Lazy.Create(() => _shell.ExportProvider.GetExportedValue<IFunctionIndex>());
-        }
-
-        /// <summary>
-        /// Collection or packages installed with the R engine.
-        /// </summary>
-        public IEnumerable<IPackageInfo> BasePackages {
-            get {
-                if (_basePackages == null)
-                    _basePackages = new BasePackagesCollection(_shell.ExportProvider.GetExportedValue<IFunctionIndex>());
-
-                return _basePackages.Packages;
-            }
         }
 
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
-        public IReadOnlyList<IPackageInfo> Packages {
-            get {
-                if (_collections == null)
-                    _collections = _shell.ExportProvider.GetExports<IPackageCollection>();
+        public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
-                if (_collections != null) {
-                    List<IPackageInfo> packages = new List<IPackageInfo>();
-
-                    foreach (Lazy<IPackageCollection> collection in _collections) {
-                        packages.AddRange(collection.Value.Packages);
-
-                        foreach (IPackageInfo p in collection.Value.Packages) {
-                            _packages[p.Name.ToLowerInvariant()] = p;
-                        }
-                    }
-
-                    packages.AddRange(BasePackages);
-                    return packages;
-                }
-
-                return new List<IPackageInfo>();
+        public async Task BuildIndexAsync(IFunctionIndex functionIndex) {
+            _functionIndex = functionIndex;
+            await TaskUtilities.SwitchToBackgroundThread();
+            var packageNames = await GetPackageNamesAsync();
+            foreach (var name in packageNames) {
+                var description = await GetPackageDescriptionAsync(name);
+                _packages[name] = new PackageInfo(functionIndex, name, description);
             }
         }
 
@@ -75,33 +50,49 @@ namespace Microsoft.R.Support.Help.Packages {
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
         public IPackageInfo GetPackageByName(string packageName) {
-            // Strip quotes, if any
-            packageName = packageName.Replace("\'", string.Empty).Replace("\"", string.Empty).Trim();
-            packageName = packageName.ToLowerInvariant();
-
-            var package = BasePackages.FirstOrDefault(p => p.Name.EqualsIgnoreCase(packageName));
+            IPackageInfo package = null;
+            packageName = packageName.TrimQuotes().Trim();
+            _packages.TryGetValue(packageName, out package);
             if (package == null) {
-                _packages.TryGetValue(packageName, out package);
+                var task = TryAddNewPackageAsync(packageName);
+                task.Wait(1000);
+                if (task.IsCompleted) {
+                    _packages.TryGetValue(packageName, out package);
+                }
             }
-
-            if (package == null) {
-                package = TryFindPackageNew(packageName);
-            }
-
             return package;
         }
 
-        private IPackageInfo TryFindPackageNew(string packageName) {
-            foreach (Lazy<IPackageCollection> collection in _collections) {
-                IPackageInfo package = collection.Value.Packages.FirstOrDefault(p => p.Name.EqualsIgnoreCase(packageName));
-                if (package != null) {
-                    _packages[package.Name.ToLowerInvariant()] = package;
-                    _functionIndexLazy.Value.BuildIndexForPackage(package);
-                    return package;
-                }
+        private Task TryAddNewPackageAsync(string packageName) {
+            if (_functionIndex != null) {
+                return Task.Run(async () => {
+                    var packageNames = await GetPackageNamesAsync();
+                    var name = packageNames.FirstOrDefault(x => x.EqualsOrdinal(packageName));
+                    if (name != null) {
+                        var description = await GetPackageDescriptionAsync(name);
+                        var p = new PackageInfo(_functionIndex, name, description);
+                        _packages[packageName] = p;
+                    }
+                });
             }
+            return Task.CompletedTask;
+        }
 
-            return null;
+        private async Task<IEnumerable<string>> GetPackageNamesAsync() {
+            try {
+                var r = await _functionIndex.RSession.EvaluateAsync<JArray>(Invariant($"as.list(.packages(all = TRUE))"), REvaluationKind.Normal);
+                return r.Select(p => (string)((JValue)p).Value).ToArray();
+            } catch (MessageTransportException) { } catch (TaskCanceledException) { }
+            return Enumerable.Empty<string>();
+        }
+
+        private async Task<string> GetPackageDescriptionAsync(string name) {
+            try {
+                var t = await _functionIndex.RSession.EvaluateAsync<JToken>(Invariant($"utils::packageDescription('{name}', fields = 'Description')"), REvaluationKind.Normal);
+                var value = t.Value<string>();
+                return value != null ? value.NormalizeWhitespace() : string.Empty;
+            } catch (MessageTransportException) { } catch (TaskCanceledException) { }
+            return string.Empty;
         }
     }
 }

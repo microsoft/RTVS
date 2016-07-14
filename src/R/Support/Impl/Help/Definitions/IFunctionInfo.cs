@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     public interface IFunctionInfo : INamedItemInfo {
         /// <summary>
         /// Function sugnatures

@@ -8,7 +8,7 @@ using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Text;
 

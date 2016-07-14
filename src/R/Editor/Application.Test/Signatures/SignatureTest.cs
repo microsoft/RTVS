@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -36,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                FunctionRdDataProvider.HostStartTimeout = 10000;
+                IntelliSenseRHost.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
                     FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
@@ -72,7 +71,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                FunctionRdDataProvider.HostStartTimeout = 10000;
+                IntelliSenseRHost.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
                     FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
@@ -125,7 +124,6 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
 
         private IFunctionIndex PrepareFunctionIndex() {
             var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>(); ;
-            functionIndex.Initialize();
             functionIndex.BuildIndexAsync().Wait();
             return functionIndex;
         }

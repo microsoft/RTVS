@@ -8,22 +8,18 @@ using System.Globalization;
 using System.Linq;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Projection;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Editor.Classification;
-using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation;
-using Microsoft.R.Support.Help.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
@@ -102,7 +98,6 @@ namespace Microsoft.R.Editor.Document {
             }
 
             _editorTree.Build();
-            _shell.ExportProvider.GetExportedValue<IFunctionIndex>().Initialize();
         }
         #endregion
 

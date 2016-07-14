@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     /// <summary>
     /// Exported via MEF. Provides RD data (help) on a
     /// function from the specified package.

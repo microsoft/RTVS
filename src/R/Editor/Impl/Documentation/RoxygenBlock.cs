@@ -7,7 +7,7 @@ using Microsoft.Common.Core;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Variables;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Text;
 using static System.FormattableString;
 

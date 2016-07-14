@@ -35,24 +35,19 @@
     </Compile>
     <Compile Include="Help\Definitions\IFunctionIndex.cs" />
     <Compile Include="Help\Definitions\IFunctionRdDataProvider.cs" />
+    <Compile Include="Help\Definitions\IIntellisenseHostSession.cs" />
     <Compile Include="Help\Definitions\IPackageIndex.cs" />
     <Compile Include="Help\Definitions\NamedItemType.cs" />
     <Compile Include="Help\FunctionRdDataProvider.cs" />
     <Compile Include="Help\Functions\FunctionIndexBuild.cs" />
-    <Compile Include="Help\Packages\BasePackagesCollection.cs" />
+    <Compile Include="Help\IntelliSenseRHost.cs" />
     <Compile Include="Help\Packages\PackageIndex.cs" />
-    <Compile Include="Help\Packages\PackagesCollection.cs" />
-    <Compile Include="Help\Packages\UserPackagesCollection.cs" />
     <Compile Include="Help\Definitions\IArgumentInfo.cs" />
     <Compile Include="Help\Definitions\INamedItemInfo.cs" />
     <Compile Include="Help\Definitions\IPackageInfo.cs" />
     <Compile Include="Help\Definitions\IFunctionInfo.cs" />
-    <Compile Include="Help\Definitions\IPackageCollection.cs" />
     <Compile Include="Help\Definitions\ISignatureInfo.cs" />
-    <Compile Include="Help\Functions\FunctionIndexSave.cs" />
-    <Compile Include="Help\Functions\FunctionIndexLoad.cs" />
     <Compile Include="Help\Functions\FunctionIndex.cs" />
-    <Compile Include="Help\Packages\PackageEnumeration.cs" />
     <Compile Include="Help\NamedItemInfo.cs" />
     <Compile Include="Help\Functions\ArgumentInfo.cs" />
     <Compile Include="Html\Parser\DefaultScriptOrStyleTagNameService.cs" />

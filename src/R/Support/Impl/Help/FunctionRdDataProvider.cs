@@ -3,12 +3,8 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Settings;
+using Microsoft.R.Support.Help;
 
 namespace Microsoft.R.Host.Client.Signatures {
     /// <summary>
@@ -16,21 +12,16 @@ namespace Microsoft.R.Host.Client.Signatures {
     /// </summary>
     [Export(typeof(IFunctionRdDataProvider))]
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
-        private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
-        private readonly IEditorShell _editorShell;
-        private readonly SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
-        private IRSession _session;
+        private readonly IIntellisenseRHost _host;
 
         [ImportingConstructor]
-        public FunctionRdDataProvider(IEditorShell editorShell) {
-            _editorShell = editorShell;
+        public FunctionRdDataProvider(IIntellisenseRHost host) {
+            _host = host;
         }
 
-        /// <summary>
-        /// Timeout to allow R-Host to start. Typically only needs
-        /// different value in tests or code coverage runs.
-        /// </summary>
-        public static int HostStartTimeout { get; set; } = 3000;
+        public void Dispose() {
+            _host?.Dispose();
+        }
 
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
@@ -39,56 +30,14 @@ namespace Microsoft.R.Host.Client.Signatures {
         /// </summary>
         public void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
             Task.Run(async () => {
-                await CreateSessionAsync();
-                using (var eval = await _session.BeginEvaluationAsync()) {
-                    string command = GetCommandText(functionName, packageName);
-                    string rd;
-                    try {
-                        rd = await eval.EvaluateAsync<string>(command, REvaluationKind.Normal);
-                    } catch (RException) {
-                        return;
-                    }
+                await _host.CreateSessionAsync();
+                string command = GetCommandText(functionName, packageName);
+                string rd;
+                try {
+                    rd = await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
                     rdDataAvailableCallback(rd);
-                }
+                } catch (RException) { }
             });
-        }
-
-        public void Dispose() {
-            if (_session != null) {
-                _session.Disposed -= OnSessionDisposed;
-                _session.Dispose();
-                _session = null;
-            }
-        }
-
-        private async Task CreateSessionAsync() {
-            await _sessionSemaphore.WaitAsync();
-            try {
-                if (_session == null) {
-                    var provider = _editorShell.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    _session = provider.GetOrCreate(SessionId);
-                    _session.Disposed += OnSessionDisposed;
-                }
-
-                if (!_session.IsHostRunning) {
-                    int timeout = _editorShell.IsUnitTestEnvironment ? 10000 : 3000;
-                    await _session.StartHostAsync(new RHostStartupInfo {
-                        Name = "RdData",
-                        RBasePath = RToolsSettings.Current.RBasePath,
-                        CranMirrorName = RToolsSettings.Current.CranMirror,
-                        CodePage = RToolsSettings.Current.RCodePage
-                    }, null, timeout);
-                }
-            } finally {
-                _sessionSemaphore.Release();
-            }
-        }
-
-        private void OnSessionDisposed(object sender, EventArgs e) {
-            if (_session != null) {
-                _session.Disposed -= OnSessionDisposed;
-                _session = null;
-            }
         }
 
         private string GetCommandText(string functionName, string packageName) {

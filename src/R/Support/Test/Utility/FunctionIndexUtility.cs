@@ -5,9 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Signatures;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Mef;
 
@@ -15,7 +13,7 @@ namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
     public static class FunctionIndexUtility {
         public static Task<IFunctionInfo> GetFunctionInfoAsync(IFunctionIndex functionIndex, string functionName) {
-            FunctionRdDataProvider.HostStartTimeout = 10000;
+            IntelliSenseRHost.HostStartTimeout = 10000;
 
             var tcs = new TaskCompletionSource<IFunctionInfo>();
             var result = functionIndex.GetFunctionInfo(functionName, o => {
@@ -32,7 +30,6 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public static Task InitializeAsync(IFunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
-            functionIndex.Initialize();
             return functionIndex.BuildIndexAsync();
         } 
 
@@ -41,8 +38,7 @@ namespace Microsoft.R.Support.Test.Utility {
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
-
-            functionIndex.Terminate();
+            functionIndex?.Dispose();
         } 
     }
 }

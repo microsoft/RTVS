@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Support.Help.Functions {
     public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo {

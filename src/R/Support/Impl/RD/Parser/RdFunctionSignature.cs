@@ -11,7 +11,7 @@ using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 

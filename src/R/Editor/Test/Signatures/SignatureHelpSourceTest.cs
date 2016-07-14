@@ -11,7 +11,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;

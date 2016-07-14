@@ -4,14 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 
-namespace Microsoft.R.Support.Help.Definitions {
-    public interface IFunctionIndex {
+namespace Microsoft.R.Support.Help {
+    public interface IFunctionIndex: IDisposable {
         Task BuildIndexAsync();
-        void BuildIndexForPackage(IPackageInfo package);
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
         IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName);
-        void Initialize();
-        void Terminate();
+        bool IsReady { get; }
+        IRSession RSession { get; }
     }
 }

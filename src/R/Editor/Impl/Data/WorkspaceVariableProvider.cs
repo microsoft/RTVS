@@ -7,14 +7,13 @@ using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
 using Microsoft.R.StackTracing;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Utilities;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 

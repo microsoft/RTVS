@@ -7,18 +7,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help {
-    [Export(typeof(IIntellisenseHostSession))]
-    public sealed class IntelliSenseHostSession: IIntellisenseHostSession {
+    [Export(typeof(IIntellisenseRHost))]
+    public sealed class IntelliSenseRHost: IIntellisenseRHost {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly IEditorShell _editorShell;
         private readonly SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
 
         [ImportingConstructor]
-        public IntelliSenseHostSession(IEditorShell editorShell) {
+        public IntelliSenseRHost(IEditorShell editorShell) {
             _editorShell = editorShell;
         }
 

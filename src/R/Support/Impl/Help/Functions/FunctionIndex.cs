@@ -5,17 +5,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
     /// Provides information on functions in packages for intellisense.
-    /// Since loading list of functions requires parsing of HTML index
-    /// files in packages help, it caches information and persists
-    /// cache to disk.
     /// </summary>
-    public partial class FunctionIndex : IFunctionIndex {
+    public sealed partial class FunctionIndex : IFunctionIndex {
         /// <summary>
         /// Maps package name to a list of functions in the package.
         /// Used to extract function names and descriptions when
@@ -41,23 +37,10 @@ namespace Microsoft.R.Support.Help.Functions {
         /// Provides RD data (help) on a function from the specified R package.
         /// Typically exported via MEF from the host that runs R.dll.
         /// </summary>
-        private IFunctionRdDataProvider _functionRdDataProvider;
+        private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
-        /// <summary>
-        /// Initialized function index and starts R data help session
-        /// that is used to get RD documentation on functions.
-        /// </summary>
-        public void Initialize() {
-            if (_functionRdDataProvider == null) {
-                _functionRdDataProvider = _shell.ExportProvider.GetExportedValue<IFunctionRdDataProvider>();
-            }
-        }
-
-        public void Terminate() {
-            if(_functionRdDataProvider != null) {
-                _functionRdDataProvider.Dispose();
-                _functionRdDataProvider = null;
-            }
+        public void Dispose() {
+            _functionRdDataProvider?.Dispose();
         }
 
         /// <summary>
@@ -84,7 +67,6 @@ namespace Microsoft.R.Support.Help.Functions {
                     return packageFunctions;
                 }
             }
-
             return new List<INamedItemInfo>();
         }
 

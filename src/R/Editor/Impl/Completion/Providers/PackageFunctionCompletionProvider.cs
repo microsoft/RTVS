@@ -12,7 +12,7 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -139,7 +139,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     packageName = snapshot.GetText(Span.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
-                        IPackageInfo package = _packageIndex.GetPackageByName(packageName);
+                        var package = _packageIndex.GetPackageByName(packageName);
                         if (package != null) {
                             packages.Add(package);
                         }

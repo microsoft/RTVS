@@ -10,8 +10,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -199,8 +198,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() {
-            var functionIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IFunctionIndex>();
-            _indexBuildingTask = functionIndex.BuildIndexAsync();
+            var index = VsAppShell.Current.ExportProvider.GetExportedValue<IFunctionIndex>();
+            _indexBuildingTask = index.BuildIndexAsync();
         }
     }
 }
