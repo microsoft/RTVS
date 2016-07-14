@@ -258,6 +258,8 @@
     <Compile Include="Repl\Commands\SetDirectoryToProjectCommand.cs" />
     <Compile Include="Repl\Commands\SetDirectoryToSourceCommand.cs" />
     <Compile Include="Repl\Commands\WorkingDirectoryCommand.cs" />
+    <Compile Include="Repl\Editor\KeyProcessor.cs" />
+    <Compile Include="Repl\Editor\KeyProcessorProvider.cs" />
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
