@@ -36,7 +36,7 @@ namespace Microsoft.R.Editor.DragDrop {
                         if ((keystates & DragDropKeyStates.ControlKey) != 0) {
                             sb.Append(Invariant($"'{GetFileContent(item.FileName)}'"));
                         } else {
-                            sb.Append(Invariant($"readLines('{relative}', encoding = 'UTF-8', warn = FALSE)"));
+                            sb.Append(Invariant($"iconv(readLines('{relative}', encoding = 'UTF-8', warn = FALSE), from = 'UTF-8', to = 'ASCII', sub = '')"));
                         }
                         break;
                     default:

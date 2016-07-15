@@ -82,7 +82,7 @@ namespace Microsoft.R.Editor.Signatures {
             int p = position;
             functionCall = astRoot.GetSpecificNodeFromPosition<FunctionCall>(p, (x) => {
                 var fc = x as FunctionCall;
-                // Take into account incompleted argument lists line in 'func(a|'
+                // Take into account incomplete argument lists line in 'func(a|'
                 return fc != null && (fc.Arguments.Contains(p) || (fc.CloseBrace == null && fc.Arguments.End == p));
             });
 
@@ -92,7 +92,7 @@ namespace Microsoft.R.Editor.Signatures {
                 functionCall = astRoot.GetNodeOfTypeFromPosition<FunctionCall>(position - 1, includeEnd: true);
                 if (functionCall != null) {
                     // But if signature does have closing brace and caret
-                    // is beyond it, we are really otuside of the signature.
+                    // is beyond it, we are really outside of the signature.
                     if (functionCall.CloseBrace != null && position >= functionCall.CloseBrace.End) {
                         return false;
                     }
