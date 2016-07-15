@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
-    public interface IRSession : IRExpressionEvaluator, IRBlobHelper, IDisposable {
+    public interface IRSession : IRExpressionEvaluator, IRBlobService, IDisposable {
         event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
         event EventHandler<RAfterRequestEventArgs> AfterRequest;
         event EventHandler<EventArgs> Mutated;

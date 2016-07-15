@@ -7,24 +7,19 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
     partial class RHost {
-        
-        private class BlobRequest {
-            public static readonly string CreateBlobRequestMessageName = "?CreateBlob";
-            public static readonly string GetBlobRequestMessageName = "?GetBlob";
-            public static readonly string DestroyBlobNotifyMessageName = "!DestroyBlob";
+        private class BlobRequest : BaseRequest {
+            public const string CreateBlobRequestMessageName = "?CreateBlob";
+            public const string GetBlobRequestMessageName = "?GetBlob";
+            public const string DestroyBlobNotifyMessageName = "!DestroyBlob";
 
-            public static readonly string CreateBlobResponseMessageName = ":CreateBlob";
-            public static readonly string GetBlobResponseMessageName = ":GetBlob";
+            public const string CreateBlobResponseMessageName = ":CreateBlob";
+            public const string GetBlobResponseMessageName = ":GetBlob";
 
-            public readonly string Id;
-            public readonly string MessageName;
             public readonly TaskCompletionSource<BlobResult> CompletionSource = new TaskCompletionSource<BlobResult>();
             public readonly BlobRequestKind Kind;
 
-            private BlobRequest(string id, BlobRequestKind kind, string messasgeName) {
-                Id = id;
+            private BlobRequest(string id, BlobRequestKind kind, string messageName) : base(id, messageName) {
                 Kind = kind;
-                MessageName = messasgeName;
             }
 
             public static BlobRequest MakeCreateBlobRequest(RHost host, out JArray message, int blobCount) {

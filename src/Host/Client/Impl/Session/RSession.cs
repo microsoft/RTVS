@@ -23,8 +23,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
-        private readonly static Task<SendBlobResult> CanceledSendBlobTask;
-        private readonly static Task<GetBlobResult> CanceledGetBlobTask;
+        private readonly static Task<long> CanceledSendBlobTask;
+        private readonly static Task<IReadOnlyList<Blob>> CanceledGetBlobTask;
         private readonly static Task CanceledDestoryBlobTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
@@ -70,10 +70,8 @@ namespace Microsoft.R.Host.Client.Session {
         internal RHost RHost => _host;
 
         static RSession() {
-            CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
-            CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
-            CanceledSendBlobTask = Task.FromCanceled<SendBlobResult>(tcs.Token);
-            CanceledGetBlobTask = Task.FromCanceled<GetBlobResult>(tcs.Token);
+            CanceledSendBlobTask = Task.FromCanceled<long>(tcs.Token);
+            CanceledGetBlobTask = Task.FromCanceled<IReadOnlyList<Blob>>(tcs.Token);
             CanceledDestoryBlobTask = Task.FromCanceled(tcs.Token);
         }
 
@@ -152,7 +150,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public async Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+        public async Task<long> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledSendBlobTask;
             }
@@ -166,7 +164,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledGetBlobTask;
             }

@@ -2,9 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Client {
-    public enum BlobRequestKind {
-        Create,
-        Get,
-        Destroy
+    partial class RHost {
+        private enum BlobRequestKind {
+            Create,
+            Get,
+            Destroy
+        }
     }
 }

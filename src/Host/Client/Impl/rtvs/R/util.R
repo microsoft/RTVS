@@ -57,12 +57,12 @@ create_blob <- function(obj) {
     call_embedded("create_blob", obj)
 }
 
-get_blob <- function(blob.id) {
-    call_embedded("get_blob", blob.id)
+get_blob <- function(blob_id) {
+    call_embedded("get_blob", blob_id)
 }
 
-destroy_blob <- function(blob.id) {
-    call_embedded("destroy_blob", blob.id)
+destroy_blob <- function(blob_id) {
+    invisible(call_embedded("destroy_blob", blob_id))
 }
 
 NA_if_error <- function(expr) {

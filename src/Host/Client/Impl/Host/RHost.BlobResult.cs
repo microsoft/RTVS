@@ -2,11 +2,13 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Client {
-    public class SendBlobResult : BlobResult {
-        public readonly long BlobId;
+    partial class RHost {
+        private class BlobResult {
+            public readonly BlobRequestKind Kind;
 
-        public SendBlobResult(long blobId) : base(BlobRequestKind.Create) {
-            BlobId = blobId;
+            public BlobResult(BlobRequestKind kind) {
+                Kind = kind;
+            }
         }
     }
 }

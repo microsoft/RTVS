@@ -23,7 +23,7 @@ using static System.FormattableString;
 using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
-    public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobHelper {
+    public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
         private readonly string[] parseStatusNames = { "NULL", "OK", "INCOMPLETE", "ERROR", "EOF" };
 
         public const int DefaultPort = 5118;
@@ -58,8 +58,7 @@ namespace Microsoft.R.Host.Client {
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
         private int _rLoopDepth;
         private long _lastMessageId = -1;
-        private readonly ConcurrentDictionary<string, EvaluationRequest> _evalRequests = new ConcurrentDictionary<string, EvaluationRequest>();
-        private readonly ConcurrentDictionary<string, BlobRequest> _blobRequests = new ConcurrentDictionary<string, BlobRequest>();
+        private readonly ConcurrentDictionary<string, BaseRequest> _requests = new ConcurrentDictionary<string, BaseRequest>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
@@ -250,38 +249,42 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct) {
+        public Task<long> SendBlobAsync(byte[] data, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<SendBlobResult>(new CancellationToken(true))
+                ? Task.FromCanceled<long>(new CancellationToken(true))
                 : SendBlobAsyncBackground(data, ct);
         }
 
-        private async Task<SendBlobResult> SendBlobAsyncBackground(byte[] data, CancellationToken ct) {
+        private async Task<long> SendBlobAsyncBackground(byte[] data, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
             var request =  BlobRequest.MakeCreateBlobRequest(this,out message, 1);
-            _blobRequests[request.Id] = request;
+            _requests[request.Id] = request;
 
             await SendAsync(message, data, ct);
-            return (await request.CompletionSource.Task).ToSendBlobResult();
+            var blobResult = await request.CompletionSource.Task;
+
+            return ((SendBlobResult)blobResult).BlobId;
         }
 
-        public Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct) {
+        public Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<GetBlobResult>(new CancellationToken(true))
+                ? Task.FromCanceled<IReadOnlyList<Blob>>(new CancellationToken(true))
                 : GetBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task<GetBlobResult> GetBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+        private async Task<IReadOnlyList<Blob>> GetBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
             var request = BlobRequest.MakeGetBlobsRequest(this, out message, blobIds);
-            _blobRequests[request.Id] = request;
+            _requests[request.Id] = request;
 
             await SendAsync(message, ct);
-            return (await request.CompletionSource.Task).ToGetBlobResult();
+            var blobResult = await request.CompletionSource.Task;
+
+            return ((GetBlobResult)blobResult).Blobs;
         }
 
         public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct) {
@@ -316,18 +319,23 @@ namespace Microsoft.R.Host.Client {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
-            var request = new EvaluationRequest(this, expression, kind, out message);
-            ct.Register(() => request.CompletionSource.TrySetCanceled(cancellationToken:ct));
-            _evalRequests[request.Id] = request;
+            var request = EvaluationRequest.Create(this, expression, kind, out message);
+            ct.Register(() => request.CompletionSource.TrySetCanceled(cancellationToken: ct));
+            _requests[request.Id] = request;
 
             await SendAsync(message, ct);
             return await request.CompletionSource.Task;
         }
 
         private void ProcessBlobResult(Message response) {
-            BlobRequest request;
-            if (!_blobRequests.TryRemove(response.RequestId, out request)) {
+            BaseRequest baseRequest;
+            if (!_requests.TryRemove(response.RequestId, out baseRequest)) {
                 throw ProtocolError($"Unexpected response to create blob request {response.RequestId} that is not pending.");
+            }
+
+            BlobRequest request = baseRequest as BlobRequest;
+            if (request == null) {
+                throw ProtocolError($"Unexpected request type {response.RequestId}.");
             }
 
             response.ExpectArguments(1, 1);
@@ -360,11 +368,16 @@ namespace Microsoft.R.Host.Client {
         }
 
         private void ProcessEvaluationResult(Message response) {
-            EvaluationRequest request;
-            if (!_evalRequests.TryRemove(response.RequestId, out request)) {
+            BaseRequest baseRequest;
+            if (!_requests.TryRemove(response.RequestId, out baseRequest)) {
                 if (_runTask != null && !_runTask.IsCompleted) {
                     throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
                 }
+            }
+
+            EvaluationRequest request = baseRequest as EvaluationRequest;
+            if (request == null) {
+                throw ProtocolError($"Unexpected request type {response.RequestId}.");
             }
 
             if (request.CompletionSource.Task.IsCompleted) {

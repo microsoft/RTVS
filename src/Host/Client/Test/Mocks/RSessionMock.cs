@@ -2,10 +2,10 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
-using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client.Test.Mocks {
     public sealed class RSessionMock : IRSession {
@@ -22,12 +22,12 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<SendBlobResult> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult(new SendBlobResult(0));
+        public Task<long> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult((long)0);
         }
 
-        public Task<GetBlobResult> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult(new GetBlobResult(new List<Blob>()));
+        public Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult((new List<Blob>()) as IReadOnlyList<Blob>);
         }
 
         public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
