@@ -12,6 +12,7 @@ using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 
 namespace Microsoft.R.Host.Client.Test.RtvsPackage {
@@ -61,6 +62,83 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
                 res.Raw.Should().BeNull();
+            }
+        }
+
+        [Test]
+        public async Task CreateGetDestroyBlobsTest() {
+            byte[] data1 = new byte[] { 0, 1, 2, 3, 4, 5 };
+            byte[] data2 = new byte[] { 10, 11, 12, 13, 14, 15 };
+            byte[] data3 = new byte[] { 20, 21, 22, 23, 24, 25 };
+            var dataSet = new byte[][] { data1, data2, data3 };
+
+            var blob1 = await _session.SendBlobAsync(data1);
+            var blob2 = await _session.SendBlobAsync(data2);
+            var blob3 = await _session.SendBlobAsync(data3);
+
+            blob1.Should().BeGreaterThan(0);
+            blob2.Should().BeGreaterThan(0);
+            blob3.Should().BeGreaterThan(0);
+
+            blob1.Should().NotBe(blob2);
+            blob2.Should().NotBe(blob3);
+            blob3.Should().NotBe(blob1);
+            var blobIds = new long[] { blob1, blob2, blob3 };
+
+            var res = await _session.GetBlobAsync(blobIds);
+            res.Count.Should().Be(3);
+
+            for(int i = 0; i < res.Count; ++i) {
+                Blob blob = res[i];
+                blob.BlobId.Should().Be(blobIds[i]);
+                blob.Data.ShouldAllBeEquivalentTo(dataSet[i]);
+            }
+
+            await _session.DestroyBlobAsync(blobIds);
+        }
+
+        [Test]
+        public async Task BadSendBlobsRequest() {
+            byte[] data1 = new byte[] { };
+            var blob1 = 0;
+            bool exceptionRaised = false;
+            try {
+                await _session.SendBlobAsync(data1);
+            } catch (ArgumentException ex) {
+                ex.Message.Should().Contain("cannot be a 0 length array.");
+                exceptionRaised = true;
+            } finally {
+                exceptionRaised.Should().BeTrue();
+                var res = await _session.GetBlobAsync(new long[] { blob1 });
+                res.Count.Should().Be(0);
+            }
+        }
+
+        [Test]
+        public async Task BadGetBlobsRequest() {
+            byte[] data1 = new byte[] { 0, 1, 2, 3, 4, 5 };
+            var blob1 = await _session.SendBlobAsync(data1);
+            blob1.Should().BeGreaterThan(0);
+            var res = await _session.GetBlobAsync(new long[] { blob1 + 1 });
+            res.Count.Should().Be(0);
+        }
+
+        [Test]
+        public async Task RCreateGetDestroyBlobsTest() {
+            using (var eval = await _session.BeginEvaluationAsync()) {
+                var createResult = await eval.EvaluateAsync("rtvs:::create_blob(as.raw(1:10))", REvaluationKind.Normal);
+                createResult.Result.Should().NotBeNull();
+                long blobId = ((JValue)createResult.Result).Value<long>();
+                var getResult = await eval.EvaluateAsync($"rtvs:::get_blob({blobId})", REvaluationKind.Raw);
+
+                byte[] expectedData = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                getResult.Raw.Count.Should().Be(1);
+                getResult.Raw[0].Length.Should().Be(expectedData.Length);
+                getResult.Raw[0].ShouldAllBeEquivalentTo(expectedData);
+                
+                var destroyResult = await eval.EvaluateAsync($"rtvs:::destroy_blob({blobId})", REvaluationKind.NoResult);
+                destroyResult.Result.Should().BeNull();
+                destroyResult.Raw.Should().BeNull();
             }
         }
     }

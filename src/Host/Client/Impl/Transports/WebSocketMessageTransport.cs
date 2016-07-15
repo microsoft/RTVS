@@ -64,8 +64,12 @@ namespace Microsoft.R.Host.Client {
         public async Task SendAsync(string message, byte[] data, CancellationToken ct = default(CancellationToken)) {
             await _sendLock.WaitAsync(ct);
             try {
-                Socket.Send(message);
-                Socket.Send(data);
+                if (data.Length > 0) {
+                    Socket.Send(message);
+                    Socket.Send(data);
+                } else {
+                    throw new ArgumentException($"{nameof(data)} cannot be a 0 length array.");
+                }
             } catch (SocketException ex) {
                 throw new MessageTransportException(ex);
             } catch (WebSocketException ex) {
