@@ -2063,15 +2063,15 @@
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="RmdEditor" key1="C" mod1="CONTROL ALT" />
     <KeyBinding guid="guidMdToolsCmdSet" id="cmdidRunRChunk" editor="REditor" key1="C" mod1="CONTROL ALT" />
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="RmdEditor" key1="VK_F1" />
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="REditor" key1="VK_F1" mod1="Control" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="RmdEditor" key1="VK_F1" mod1="Control" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdSearchWebForCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control" />
 
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1"  mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="RmdEditor" key1="VK_F1"  mod1="Control"/>
-    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" mod1="Control"/>
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="guidRToolsCmdSet" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="REditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="RmdEditor" key1="VK_F1" />
+    <KeyBinding guid="guidRToolsCmdSet" id="icmdHelpOnCurrent" editor="InteractiveWindow" key1="VK_F1" />
 
     <KeyBinding guid="guidRToolsCmdSet" id="icmdCopyValue" editor="Global" key1="VK_RETURN" mod1="CONTROL SHIFT" />
   </KeyBindings>

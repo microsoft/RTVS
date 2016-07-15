@@ -5,8 +5,6 @@ using System;
 using System.Collections.Immutable;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-using Microsoft.VisualStudio.R.Package.Utilities;
-using Microsoft.VisualStudio.R.Package.Shell;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #endif
@@ -14,13 +12,15 @@ using Microsoft.VisualStudio.ProjectSystem.Designers;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal abstract class AddItemCommand : ICommandGroupHandler {
         private readonly UnconfiguredProject _unconfiguredProject;
+        private readonly IProjectSystemServices _pss;
         private readonly int _commandId;
         private readonly string _templateName;
         private readonly string _fileName;
         private readonly string _extension;
 
-        public AddItemCommand(UnconfiguredProject project, int id, string templateName, string fileName, string extension) {
+        public AddItemCommand(UnconfiguredProject project, IProjectSystemServices pss, int id, string templateName, string fileName, string extension) {
             _unconfiguredProject = project;
+            _pss = pss;
             _commandId = id;
             _templateName = templateName;
             _fileName = fileName;
@@ -38,8 +38,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
             if (commandId == _commandId) {
                 var path = nodes.GetSelectedFolderPath(_unconfiguredProject);
                 if (!string.IsNullOrEmpty(path)) {
-                    var pss = VsAppShell.Current.ExportProvider.GetExportedValue<IProjectSystemServices>();
-                    pss.AddNewItem(_templateName, _fileName, _extension, path);
+                     _pss.AddNewItem(_templateName, _fileName, _extension, path);
                     return true;
                 }
             }
