@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         }
 
         public void AddNewItem(string templateName, string name, string extension, string destinationPath) {
-            var project = GetActiveProject();
+            var project = GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 DTE dte = VsAppShell.Current.GetGlobalService<DTE>();
                 var solution = (Solution2)dte.Solution;

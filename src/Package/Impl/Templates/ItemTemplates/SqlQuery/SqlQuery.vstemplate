@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005">
+  <TemplateData>
+    <Name Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3006" />
+    <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3016" />
+    <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="504" />
+    <TemplateID>Microsoft.RTools.SqlQuery</TemplateID>
+    <ProjectType>R</ProjectType>
+    <ShowByDefault>false</ShowByDefault>
+    <AppliesTo>RTools</AppliesTo>
+    <NumberOfParentCategoriesToRollUp>1</NumberOfParentCategoriesToRollUp>
+    <DefaultName>SqlQuery.sql</DefaultName>
+    <SortOrder>36</SortOrder>
+  </TemplateData>
+  <TemplateContent>
+    <ProjectItem>SqlQuery.sql</ProjectItem>
+  </TemplateContent>
+</VSTemplate>

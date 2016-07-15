@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class AddRMarkdownCommand : AddItemCommand {
 
         [ImportingConstructor]
-        public AddRMarkdownCommand(UnconfiguredProject unconfiguredProject): 
-            base(unconfiguredProject, RPackageCommandId.icmdAddRMarkdown, "emptyrmd", "markdown", "rmd") {
+        public AddRMarkdownCommand(UnconfiguredProject unconfiguredProject, IProjectSystemServices pss): 
+            base(unconfiguredProject, pss, RPackageCommandId.icmdAddRMarkdown, "emptyrmd", "markdown", "rmd") {
         }
     }
 }

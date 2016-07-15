@@ -47,8 +47,7 @@
 
   <BoolProperty Name="Visible" Visible="false" />
   <StringProperty Name="DependentUpon" Visible="false" />
-  <StringProperty Name="Link" Visible="false" />
-
+  
   <EnumProperty Name="SubType" Visible="false">
     <EnumValue Name="Designer" />
   </EnumProperty>
