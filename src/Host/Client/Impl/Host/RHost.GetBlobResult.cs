@@ -9,11 +9,7 @@ namespace Microsoft.R.Host.Client {
             public IReadOnlyList<Blob> Blobs;
 
             public GetBlobResult(List<Blob> blobs) : base(BlobRequestKind.Get) {
-                if(blobs == null) {
-                    Blobs = new List<Blob>();
-                } else {
-                    Blobs = blobs;
-                }
+                Blobs = blobs ?? new List<Blob>();
             }
         }
     }

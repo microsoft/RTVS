@@ -99,28 +99,26 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
         [Test]
         public async Task BadSendBlobsRequest() {
-            byte[] data1 = new byte[] { };
-            var blob1 = 0;
-            bool exceptionRaised = false;
-            try {
-                await _session.SendBlobAsync(data1);
-            } catch (ArgumentException ex) {
-                ex.Message.Should().Contain("cannot be a 0 length array.");
-                exceptionRaised = true;
-            } finally {
-                exceptionRaised.Should().BeTrue();
-                var res = await _session.GetBlobAsync(new long[] { blob1 });
-                res.Count.Should().Be(0);
-            }
+            byte[] data = new byte[] { };
+            var blobId = await _session.SendBlobAsync(data);
+            blobId.Should().BeGreaterThan(0);
+
+            var blobIds = new long[] { blobId };
+
+            var res = await _session.GetBlobAsync(blobIds);
+            res.Count.Should().Be(0);
+            await _session.DestroyBlobAsync(blobIds);
         }
 
         [Test]
         public async Task BadGetBlobsRequest() {
-            byte[] data1 = new byte[] { 0, 1, 2, 3, 4, 5 };
-            var blob1 = await _session.SendBlobAsync(data1);
-            blob1.Should().BeGreaterThan(0);
-            var res = await _session.GetBlobAsync(new long[] { blob1 + 1 });
+            byte[] data = new byte[] { 0, 1, 2, 3, 4, 5 };
+            var blobId = await _session.SendBlobAsync(data);
+            blobId.Should().BeGreaterThan(0);
+
+            var res = await _session.GetBlobAsync(new long[] { blobId + 1 });
             res.Count.Should().Be(0);
+            await _session.DestroyBlobAsync(new long[] { blobId });
         }
 
         [Test]
