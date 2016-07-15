@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionInteraction : IRSessionInteraction {
         private readonly TaskCompletionSource<string> _requestTcs;
-        private readonly TaskCompletionSource<object> _responseTcs;
+        private readonly Task _responseTask;
 
         public string Prompt { get; }
         public int MaxLength { get; }
@@ -15,12 +15,12 @@ namespace Microsoft.R.Host.Client.Session {
 
         public RSessionInteraction(
             TaskCompletionSource<string> requestTcs,
-            TaskCompletionSource<object> responseTcs,
+            Task responseTask,
             string prompt,
             int maxLength,
             IReadOnlyList<IRContext> contexts) {
             _requestTcs = requestTcs;
-            _responseTcs = responseTcs;
+            _responseTask = responseTask;
             Prompt = prompt;
             MaxLength = maxLength;
             Contexts = contexts;
@@ -28,7 +28,7 @@ namespace Microsoft.R.Host.Client.Session {
 
         public Task RespondAsync(string messageText) {
             _requestTcs.TrySetResult(messageText);
-            return _responseTcs.Task;
+            return _responseTask;
         }
 
         public void Dispose() {

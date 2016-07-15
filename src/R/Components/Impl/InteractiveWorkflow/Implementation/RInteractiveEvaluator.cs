@@ -134,14 +134,14 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
 
             try {
-                using (_evaluatorRequest.Increment()) {
-                    using (Session.DisableMutatedOnReadConsole()) {
-                        while (end != -1) {
-                            var line = text.Substring(start, end - start + 1);
-                            start = end + 1;
-                            end = text.IndexOf('\n', start);
+                using (Session.DisableMutatedOnReadConsole()) {
+                    while (end != -1) {
+                        var line = text.Substring(start, end - start + 1);
+                        start = end + 1;
+                        end = text.IndexOf('\n', start);
 
-                            using (var request = await Session.BeginInteractionAsync()) {
+                        using (var request = await Session.BeginInteractionAsync()) {
+                            using (_evaluatorRequest.Increment()) {
                                 if (line.Length >= request.MaxLength) {
                                     CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
                                     return ExecutionResult.Failure;

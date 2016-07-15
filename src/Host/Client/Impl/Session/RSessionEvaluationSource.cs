@@ -12,15 +12,15 @@ namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluationSource {
         private readonly TaskCompletionSourceEx<IRSessionEvaluation> _tcs;
 
-        public RSessionEvaluationSource(CancellationToken ct) {
+        public RSessionEvaluationSource(CancellationToken clientCancellationToken) {
             _tcs = new TaskCompletionSourceEx<IRSessionEvaluation>();
-            ct.Register(() => _tcs.TrySetCanceled(cancellationToken: ct), false);
+            clientCancellationToken.Register(() => _tcs.TrySetCanceled(cancellationToken: clientCancellationToken), false);
         }
 
         public Task<IRSessionEvaluation> Task => _tcs.Task;
 
-        public async Task<bool> BeginEvaluationAsync(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
-            var evaluation = new RSessionEvaluation(contexts, evaluator, ct);
+        public async Task<bool> BeginEvaluationAsync(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken hostCancellationToken) {
+            var evaluation = new RSessionEvaluation(contexts, evaluator, hostCancellationToken);
             if (_tcs.TrySetResult(evaluation)) {
                 await evaluation.Task;
             }

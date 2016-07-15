@@ -149,8 +149,9 @@ namespace Microsoft.R.Host.Client.Session {
             var cancelTask = _host.CancelAllAsync();
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.TryCancel();
-            ClearPendingRequests(new OperationCanceledException());
+            var exception = new OperationCanceledException();
+            currentRequest?.TryCancel(exception);
+            ClearPendingRequests(exception);
 
             await cancelTask;
         }
@@ -308,9 +309,10 @@ namespace Microsoft.R.Host.Client.Session {
             Disconnected?.Invoke(this, EventArgs.Empty);
 
             var currentRequest = Interlocked.Exchange(ref _currentRequestSource, null);
-            currentRequest?.CompleteResponse();
+            var exception = new RHostDisconnectedException();
+            currentRequest?.TryCancel(exception);
 
-            ClearPendingRequests(new RHostDisconnectedException());
+            ClearPendingRequests(exception);
 
             return Task.CompletedTask;
         }
@@ -318,7 +320,7 @@ namespace Microsoft.R.Host.Client.Session {
         private void ClearPendingRequests(OperationCanceledException exception) {
             RSessionRequestSource requestSource;
             while (_pendingRequestSources.TryReceive(out requestSource)) {
-                requestSource.TryCancel();
+                requestSource.TryCancel(exception);
             }
 
             RSessionEvaluationSource evalSource;
@@ -423,13 +425,13 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        private async Task<bool> EvaluateAll(IReadOnlyList<IRContext> contexts, bool mutated, CancellationToken ct) {
+        private async Task<bool> EvaluateAll(IReadOnlyList<IRContext> contexts, bool mutated, CancellationToken hostCancellationToken) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
             try {
                 RSessionEvaluationSource source;
-                while (!ct.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
-                    mutated |= await source.BeginEvaluationAsync(contexts, _host, ct);
+                while (!hostCancellationToken.IsCancellationRequested && _pendingEvaluationSources.TryReceive(out source)) {
+                    mutated |= await source.BeginEvaluationAsync(contexts, _host, hostCancellationToken);
                 }
             } catch (OperationCanceledException) {
                 // Host is being shut down, so there's no point in raising the event anymore.
@@ -477,10 +479,10 @@ namespace Microsoft.R.Host.Client.Session {
         /// Graph app may call Win32 API directly rather than going via R API callbacks.
         /// </summary>
         /// <returns>Pressed button code</returns>
-        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken ct) {
+        async Task<MessageButtons> IRCallbacks.ShowDialog(IReadOnlyList<IRContext> contexts, string s, MessageButtons buttons, CancellationToken hostCancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
 
-            await EvaluateAll(contexts, true, ct);
+            await EvaluateAll(contexts, true, hostCancellationToken);
 
             var callback = _callback;
             if (callback != null) {

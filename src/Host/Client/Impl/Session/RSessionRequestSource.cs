@@ -5,25 +5,26 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Tasks;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionRequestSource {
-        private readonly TaskCompletionSource<IRSessionInteraction> _createRequestTcs;
-        private readonly TaskCompletionSource<object> _responseTcs;
+        private readonly TaskCompletionSourceEx<IRSessionInteraction> _createRequestTcs;
+        private readonly TaskCompletionSourceEx<object> _responseTcs;
 
         public Task<IRSessionInteraction> CreateRequestTask => _createRequestTcs.Task;
         public bool IsVisible { get; }
 
         public RSessionRequestSource(bool isVisible, CancellationToken ct) {
-            _createRequestTcs = new TaskCompletionSource<IRSessionInteraction>();
-            _responseTcs = new TaskCompletionSource<object>();
-            ct.Register(() => _createRequestTcs.TrySetCanceled(ct));
+            _createRequestTcs = new TaskCompletionSourceEx<IRSessionInteraction>();
+            _responseTcs = new TaskCompletionSourceEx<object>();
+            ct.Register(() => _createRequestTcs.TrySetCanceled(cancellationToken:ct));
 
             IsVisible = isVisible;
         }
 
         public void Request(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, TaskCompletionSource<string> requestTcs) {
-            var request = new RSessionInteraction(requestTcs, _responseTcs, prompt, maxLength, contexts ?? new[] { RHost.TopLevelContext });
+            var request = new RSessionInteraction(requestTcs, _responseTcs.Task, prompt, maxLength, contexts ?? new[] { RHost.TopLevelContext });
             if (_createRequestTcs.TrySetResult(request)) {
                 return;
             }
@@ -38,9 +39,9 @@ namespace Microsoft.R.Host.Client.Session {
             _responseTcs.SetResult(null);
         }
 
-        public void TryCancel() {
-            _createRequestTcs.TrySetCanceled();
-            _responseTcs.TrySetCanceled();
+        public void TryCancel(OperationCanceledException exception) {
+            _createRequestTcs.TrySetCanceled(exception);
+            _responseTcs.TrySetCanceled(exception);
         }
     }
 }

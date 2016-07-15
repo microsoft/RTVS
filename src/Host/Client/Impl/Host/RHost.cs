@@ -234,9 +234,11 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
-            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+            return _runTask == null || _runTask.IsCompleted
                 ? TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException())
-                : EvaluateAsyncBackground(expression, kind, ct);
+                : ct.IsCancellationRequested 
+                    ? Task.FromCanceled<REvaluationResult>(ct)
+                    : EvaluateAsyncBackground(expression, kind, ct);
         }
 
         private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) {
@@ -244,6 +246,7 @@ namespace Microsoft.R.Host.Client {
 
             JArray message;
             var request = new EvaluationRequest(this, expression, kind, out message);
+            ct.Register(() => request.CompletionSource.TrySetCanceled(cancellationToken:ct));
             _evalRequests[request.Id] = request;
 
             await SendAsync(message, ct);
@@ -253,13 +256,20 @@ namespace Microsoft.R.Host.Client {
         private void ProcessEvaluationResult(Message response) {
             EvaluationRequest request;
             if (!_evalRequests.TryRemove(response.RequestId, out request)) {
-                throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
+                if (_runTask != null && !_runTask.IsCompleted) {
+                    throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
+                }
+            }
+
+            if (request.CompletionSource.Task.IsCompleted) {
+                return;
             }
 
             response.ExpectArguments(1, 3);
             var firstArg = response[0] as JValue;
             if (firstArg != null && firstArg.Value == null) {
-                request.CompletionSource.SetCanceled();
+                request.CompletionSource.TrySetCanceled();
+                return;
             }
 
             if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
@@ -278,14 +288,14 @@ namespace Microsoft.R.Host.Client {
             } else {
                 result = new REvaluationResult(response[2], error, parseStatus);
             }
-            request.CompletionSource.SetResult(result);
+            request.CompletionSource.TrySetResult(result);
         }
 
         private void CancelRemainingEvaluationRequests() {
             var requests = _evalRequests.Values;
             _evalRequests.Clear();
             foreach (var request in requests) {
-                request.CompletionSource.TrySetCanceled();
+                request.CompletionSource.TrySetCanceled(new RHostDisconnectedException());
             }
         }
 
