@@ -24,11 +24,10 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
 
             public void Apply() {
                 string relativePath;
-                if (!IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out relativePath)) {
-                    return;
+                string shortRelativePath;
+                if (IsFileAllowed(_rootDirectory, _fullPath, _fileSystem, _fileSystemFilter, out relativePath, out shortRelativePath)) {
+                    _entries.AddFile(relativePath, shortRelativePath);
                 }
-
-                _entries.AddFile(relativePath, _fileSystem.ToShortRelativePath(_fullPath, _rootDirectory));
             }
 
             public override string ToString() {

@@ -14,8 +14,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     internal sealed class AddRScriptCommand : AddItemCommand {
 
         [ImportingConstructor]
-        public AddRScriptCommand(UnconfiguredProject unconfiguredProject):
-            base(unconfiguredProject, RPackageCommandId.icmdAddRScript, "rscript", "script", "R") {
+        public AddRScriptCommand(UnconfiguredProject unconfiguredProject, IProjectSystemServices pss) :
+            base(unconfiguredProject, pss, RPackageCommandId.icmdAddRScript, "rscript", "script", "R") {
         }
     }
 }
