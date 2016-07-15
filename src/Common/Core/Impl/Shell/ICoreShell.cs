@@ -94,5 +94,11 @@ namespace Microsoft.Common.Core.Shell {
         /// Application telemetry service
         /// </summary>
         ITelemetryService TelemetryService { get; }
+
+        /// <summary>
+        /// <summary>
+        /// Tells if code runs in unit test environment
+        /// </summary>
+        bool IsUnitTestEnvironment { get; }
     }
 }

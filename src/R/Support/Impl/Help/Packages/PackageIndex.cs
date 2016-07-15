@@ -1,14 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Threading;
-using Microsoft.Languages.Core.Formatting;
+using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
@@ -21,7 +24,8 @@ namespace Microsoft.R.Support.Help.Packages {
     internal sealed class PackageIndex : IPackageIndex {
         private readonly ICoreShell _shell;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
-        private readonly Dictionary<string, IPackageInfo> _packages = new Dictionary<string, IPackageInfo>();
+        private readonly ConcurrentDictionary<string, IPackageInfo> _packages = new ConcurrentDictionary<string, IPackageInfo>();
+        private IRSession _session;
         private IFunctionIndex _functionIndex;
 
         [ImportingConstructor]
@@ -36,63 +40,53 @@ namespace Microsoft.R.Support.Help.Packages {
         /// </summary>
         public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
-        public async Task BuildIndexAsync(IFunctionIndex functionIndex) {
+        public async Task BuildIndexAsync(IFunctionIndex functionIndex, IRSession session) {
             _functionIndex = functionIndex;
+            _session = session;
+
             await TaskUtilities.SwitchToBackgroundThread();
-            var packageNames = await GetPackageNamesAsync();
-            foreach (var name in packageNames) {
-                var description = await GetPackageDescriptionAsync(name);
-                _packages[name] = new PackageInfo(functionIndex, name, description);
+
+            var startTime = DateTime.Now;
+            var packages = await GetPackagesAsync();
+            foreach (var p in packages) {
+                _packages[p.Package] = new PackageInfo(functionIndex, p.Package, p.Description);
             }
+            Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
         }
 
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
-        public IPackageInfo GetPackageByName(string packageName) {
+        public Task<IPackageInfo> GetPackageByNameAsync(string packageName) {
             IPackageInfo package = null;
             packageName = packageName.TrimQuotes().Trim();
             _packages.TryGetValue(packageName, out package);
             if (package == null) {
-                var task = TryAddNewPackageAsync(packageName);
-                task.Wait(1000);
-                if (task.IsCompleted) {
-                    _packages.TryGetValue(packageName, out package);
+                return TryAddNewPackageAsync(packageName);
+            }
+            return Task.FromResult(package);
+        }
+
+        private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
+            if (_functionIndex != null) {
+                var packages = await GetPackagesAsync();
+                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+                if (package != null) {
+                    var p = new PackageInfo(_functionIndex, package.Package, package.Description);
+                    _packages[packageName] = p;
+                    await _functionIndex.AddFunctionsFromPackage(packageName);
+                    return p;
                 }
             }
-            return package;
+            return null;
         }
 
-        private Task TryAddNewPackageAsync(string packageName) {
-            if (_functionIndex != null) {
-                return Task.Run(async () => {
-                    var packageNames = await GetPackageNamesAsync();
-                    var name = packageNames.FirstOrDefault(x => x.EqualsOrdinal(packageName));
-                    if (name != null) {
-                        var description = await GetPackageDescriptionAsync(name);
-                        var p = new PackageInfo(_functionIndex, name, description);
-                        _packages[packageName] = p;
-                    }
-                });
-            }
-            return Task.CompletedTask;
-        }
-
-        private async Task<IEnumerable<string>> GetPackageNamesAsync() {
+        private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
             try {
-                var r = await _functionIndex.RSession.EvaluateAsync<JArray>(Invariant($"as.list(.packages(all = TRUE))"), REvaluationKind.Normal);
-                return r.Select(p => (string)((JValue)p).Value).ToArray();
+                var result = await _session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
+                return result.Select(p => p.ToObject<RPackage>());
             } catch (MessageTransportException) { } catch (TaskCanceledException) { }
-            return Enumerable.Empty<string>();
-        }
-
-        private async Task<string> GetPackageDescriptionAsync(string name) {
-            try {
-                var t = await _functionIndex.RSession.EvaluateAsync<JToken>(Invariant($"utils::packageDescription('{name}', fields = 'Description')"), REvaluationKind.Normal);
-                var value = t.Value<string>();
-                return value != null ? value.NormalizeWhitespace() : string.Empty;
-            } catch (MessageTransportException) { } catch (TaskCanceledException) { }
-            return string.Empty;
+            return Enumerable.Empty<RPackage>();
         }
     }
 }

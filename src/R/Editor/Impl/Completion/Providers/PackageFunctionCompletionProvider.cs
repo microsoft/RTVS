@@ -13,6 +13,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -23,21 +24,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
     [Export(typeof(IRCompletionListProvider))]
     [Export(typeof(IRHelpSearchTermProvider))]
     public class PackageFunctionCompletionProvider : IRCompletionListProvider, IRHelpSearchTermProvider {
+        private const int _asyncWaitTimeout = 1000;
         private readonly ILoadedPackagesProvider _loadedPackagesProvider;
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
         private readonly ICoreShell _shell;
         private readonly IPackageIndex _packageIndex;
-
-        private static readonly string[] _preloadPackages = {
-            "stats",
-            "graphics",
-            "grDevices",
-            "utils",
-            "datasets",
-            "methods",
-            "base"
-        };
-
 
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(ILoadedPackagesProvider loadedPackagesProvider, [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IPackageIndex packageIndex, ICoreShell shell) {
@@ -139,7 +130,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     packageName = snapshot.GetText(Span.FromBounds(start, end));
                     if (packageName.Length > 0) {
                         context.InternalFunctions = colons == 3;
-                        var package = _packageIndex.GetPackageByName(packageName);
+                        var package = GetPackageByName(packageName);
                         if (package != null) {
                             packages.Add(package);
                         }
@@ -160,14 +151,20 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = _preloadPackages.Union(filePackageNames).Union(loadedPackages);
+            IEnumerable<string> allPackageNames = FunctionIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
             return allPackageNames
-                .Select(packageName => _packageIndex.GetPackageByName(packageName))
+                .Select(packageName => GetPackageByName(packageName))
                 // May be null if user mistyped package name in the library()
                 // statement or package is not installed.
                 .Where(p => p != null)
                 .ToList();
+        }
+
+        private IPackageInfo GetPackageByName(string packageName) {
+            var t = _packageIndex.GetPackageByNameAsync(packageName);
+            t.Wait(_asyncWaitTimeout);
+            return t.IsCompleted ? t.Result : null;
         }
     }
 }

@@ -5,20 +5,23 @@ using System;
 using System.ComponentModel.Composition;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help {
     [Export(typeof(IIntellisenseRHost))]
-    public sealed class IntelliSenseRHost: IIntellisenseRHost {
+    public sealed class IntelliSenseRHost : IIntellisenseRHost {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
-        private readonly IEditorShell _editorShell;
+        private readonly ICoreShell _coreShell;
+        private readonly IRSessionProvider _sessionProvider;
         private readonly SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
 
         [ImportingConstructor]
-        public IntelliSenseRHost(IEditorShell editorShell) {
-            _editorShell = editorShell;
+        public IntelliSenseRHost(ICoreShell coreShell, IRSessionProvider sessionProvider) {
+            _coreShell = coreShell;
+            _sessionProvider = sessionProvider;
         }
 
         /// <summary>
@@ -38,12 +41,11 @@ namespace Microsoft.R.Support.Help {
             await _sessionSemaphore.WaitAsync();
             try {
                 if (Session == null) {
-                    var provider = _editorShell.ExportProvider.GetExportedValue<IRSessionProvider>();
-                    Session = provider.GetOrCreate(SessionId);
+                    Session = _sessionProvider.GetOrCreate(SessionId);
                 }
 
                 if (!Session.IsHostRunning) {
-                    int timeout = _editorShell.IsUnitTestEnvironment ? 10000 : 3000;
+                    int timeout = _coreShell.IsUnitTestEnvironment ? 10000 : 3000;
                     await Session.StartHostAsync(new RHostStartupInfo {
                         Name = "IntelliSense",
                         RBasePath = RToolsSettings.Current.RBasePath,

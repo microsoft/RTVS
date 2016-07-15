@@ -39,12 +39,6 @@ namespace Microsoft.Languages.Editor.Shell {
         ICompoundUndoAction CreateCompoundAction(ITextView textView, ITextBuffer textBuffer);
 
         /// <summary>
-        /// <summary>
-        /// Tells if code runs in unit test environment
-        /// </summary>
-        bool IsUnitTestEnvironment { get; }
-
-        /// <summary>
         /// Forces idle time processing
         /// </summary>
         void DoIdle();

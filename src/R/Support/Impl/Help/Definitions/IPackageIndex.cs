@@ -3,11 +3,12 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Support.Help {
     public interface IPackageIndex {
-        Task BuildIndexAsync(IFunctionIndex functionIndex);
+        Task BuildIndexAsync(IFunctionIndex functionIndex, IRSession session);
         IEnumerable<IPackageInfo> Packages { get; }
-        IPackageInfo GetPackageByName(string packageName);
+        Task<IPackageInfo> GetPackageByNameAsync(string packageName);
     }
 }

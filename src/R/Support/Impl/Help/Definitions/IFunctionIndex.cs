@@ -9,9 +9,9 @@ using Microsoft.R.Host.Client;
 namespace Microsoft.R.Support.Help {
     public interface IFunctionIndex: IDisposable {
         Task BuildIndexAsync();
+        Task AddFunctionsFromPackage(string packageName);
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
         IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName);
         bool IsReady { get; }
-        IRSession RSession { get; }
     }
 }
