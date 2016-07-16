@@ -26,11 +26,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
     public class FilesCompletionProvider : IRCompletionListProvider {
         private readonly ICoreShell _shell;
 
-        [Import(AllowDefault = true)]
-        private IImagesProvider ImagesProvider { get; set; }
+        private IImagesProvider ImagesProvider { get; }
 
-        [Import]
-        private IRInteractiveWorkflow Workflow { get; set; }
+        private IRInteractiveWorkflow Workflow { get; }
 
         private Task<string> _userDirectoryFetchingTask;
         private string _directory;

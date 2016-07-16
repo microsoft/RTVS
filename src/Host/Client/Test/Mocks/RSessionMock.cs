@@ -31,7 +31,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public Task<IRSessionEvaluation> BeginEvaluationAsync(CancellationToken cancellationToken = default(CancellationToken)) {
             Evaluation = new RSessionEvaluationMock();
-            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(Evaluation.Contexts, Prompt, 4096, true));
+            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(Evaluation.Contexts, Prompt, 4096, addToHistoty: true));
             if (Evaluation.IsMutating) {
                 Mutated?.Invoke(this, EventArgs.Empty);
             }
@@ -40,17 +40,17 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public Task<IRSessionInteraction> BeginInteractionAsync(bool isVisible = true, CancellationToken cancellationToken = default (CancellationToken)) {
             _inter = new RSessionInteractionMock();
-            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(_inter.Contexts, Prompt, 4096, true));
+            BeforeRequest?.Invoke(this, new RBeforeRequestEventArgs(_inter.Contexts, Prompt, 4096, addToHistoty: true));
             return Task.FromResult(_inter);
         }
 
         public Task CancelAllAsync() {
             if (Evaluation != null) {
-                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(Evaluation.Contexts, Prompt, string.Empty, true, true));
+                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(Evaluation.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
                 Evaluation = null;
             }
             else if (_inter != null) {
-                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(_inter.Contexts, Prompt, string.Empty, true, true));
+                AfterRequest?.Invoke(this, new RAfterRequestEventArgs(_inter.Contexts, Prompt, string.Empty, addToHistory: true, isVisible: true));
                 _inter = null;
             }
             return Task.CompletedTask;
