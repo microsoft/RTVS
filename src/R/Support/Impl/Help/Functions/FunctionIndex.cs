@@ -4,20 +4,23 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
     /// Provides information on functions in packages for intellisense.
     /// </summary>
-    public sealed partial class FunctionIndex : IFunctionIndex {
-        /// <summary>
-        /// Maps package name to a list of functions in the package.
-        /// Used to extract function names and descriptions when
-        /// showing list of functions available in the file.
-        /// </summary>
-        private readonly ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>> _packageToFunctionsMap = new ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>>();
+    public sealed class FunctionIndex : IFunctionIndex {
+        private readonly ICoreShell _coreShell;
+        private readonly IIntellisenseRHost _host;
+        private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
+        private bool _ready;
 
         /// <summary>
         /// Map of functions to packages. Used to quickly find package 
@@ -39,39 +42,34 @@ namespace Microsoft.R.Support.Help.Functions {
         /// </summary>
         private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
-        public void Dispose() {
-            _functionRdDataProvider?.Dispose();
+        [ImportingConstructor]
+        public FunctionIndex(ICoreShell shell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRHost host) {
+            _coreShell = shell;
+            _functionRdDataProvider = rdDataProfider;
+            _host = host;
         }
 
-        /// <summary>
-        /// Given function name provides name of the containing package
-        /// </summary>
-        public string GetFunctionPackage(string functionName) {
-            if (_functionToPackageMap != null) {
-                string packageName;
-                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
-                    return packageName;
+        public async Task BuildIndexAsync(IPackageIndex packageIndex) {
+            _ready = await _buildIndexLock.WaitAsync();
+            if (!_ready) {
+                await TaskUtilities.SwitchToBackgroundThread();
+                await _host.CreateSessionAsync();
+
+                // First populate index for popular packages that are commonly preloaded
+                var startTime = DateTime.Now;
+                foreach (var pi in packageIndex.Packages) {
+                    foreach (var f in pi.Functions) {
+                        _functionToPackageMap[f.Name] = pi.Name;
+                    }
                 }
-            }
 
-            return string.Empty;
+                Debug.WriteLine("R functions index: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+                _ready = true;
+            }
         }
 
         /// <summary>
-        /// Retrieves list of functions in a given package
-        /// </summary>
-        public IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName) {
-            if (_packageToFunctionsMap != null) {
-                BlockingCollection<INamedItemInfo> packageFunctions;
-                if (_packageToFunctionsMap.TryGetValue(packageName, out packageFunctions)) {
-                    return packageFunctions;
-                }
-            }
-            return new List<INamedItemInfo>();
-        }
-
-        /// <summary>
-        /// Retrieves function information by name. If informaton is not
+        /// Retrieves function information by name. If information is not
         /// available, starts asynchronous retrieval of the function info
         /// from R and when the data becomes available invokes specified
         /// callback passing the parameter. This is used for async
@@ -122,7 +120,7 @@ namespace Microsoft.R.Support.Help.Functions {
                     }
 
                     if (infoReadyCallback != null) {
-                        _shell.DispatchOnUIThread(() => {
+                        _coreShell.DispatchOnUIThread(() => {
                             infoReadyCallback(parameter);
                         });
                     }

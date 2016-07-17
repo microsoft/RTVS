@@ -21,69 +21,123 @@ namespace Microsoft.R.Support.Help.Packages {
     /// Index of packages available from the R engine.
     /// </summary>
     [Export(typeof(IPackageIndex))]
-    internal sealed class PackageIndex : IPackageIndex {
+    public sealed class PackageIndex : IPackageIndex {
         private readonly ICoreShell _shell;
-        private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
-        private readonly ConcurrentDictionary<string, IPackageInfo> _packages = new ConcurrentDictionary<string, IPackageInfo>();
-        private IRSession _session;
-        private IFunctionIndex _functionIndex;
+        private readonly IIntellisenseRHost _host;
+        private readonly IFunctionIndex _functionIndex;
+        private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
+        private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
+        private bool _ready;
+
+        public static readonly IEnumerable<string> PreloadedPackages = new string[]
+            { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(ICoreShell shell) {
-            // TODO: connect to installed/uninstalled/loaded/unloaded events from 
-            // the package manager when it gets them implemented.
+        public PackageIndex(ICoreShell shell, IIntellisenseRHost host, IFunctionIndex functionIndex) {
             _shell = shell;
+            _host = host;
+            _functionIndex = functionIndex;
         }
 
+        #region IPackageIndex
         /// <summary>
         /// Collection of all packages (base, user and project-specific)
         /// </summary>
         public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
-        public async Task BuildIndexAsync(IFunctionIndex functionIndex, IRSession session) {
-            _functionIndex = functionIndex;
-            _session = session;
+        public async Task BuildIndexAsync() {
+            _ready = await _buildIndexLock.WaitAsync();
+            if (!_ready) {
+                await TaskUtilities.SwitchToBackgroundThread();
+                await _host.CreateSessionAsync();
 
-            await TaskUtilities.SwitchToBackgroundThread();
+                // Fetch list of available packages from R session
+                await BuildPackageListAsync();
+                // Populate function index for preloaded packages first
+                await BuildPreloadedPackagesFunctionListAsync();
+                // Populate function index for all remaining packages
+                await BuildRemainingPackagesFunctionListAsync();
 
-            var startTime = DateTime.Now;
-            var packages = await GetPackagesAsync();
-            foreach (var p in packages) {
-                _packages[p.Package] = new PackageInfo(functionIndex, p.Package, p.Description);
+                await _functionIndex.BuildIndexAsync(this);
+                _ready = true;
             }
-            Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
         }
 
         /// <summary>
-        /// Collection of all packages (base, user and project-specific)
+        /// Retrieves information on the package from index. Does not attempt to locate the package
+        /// if it is not in the index such as when package was just installed.
         /// </summary>
-        public Task<IPackageInfo> GetPackageByNameAsync(string packageName) {
-            IPackageInfo package = null;
+        public IPackageInfo GetPackageInfo(string packageName) {
+            PackageInfo package = null;
             packageName = packageName.TrimQuotes().Trim();
             _packages.TryGetValue(packageName, out package);
+            return package;
+        }
+
+        /// <summary>
+        /// Retrieves R package information by name. If package is not in the index,
+        /// attempts to locate the package in the current R session.
+        /// </summary>
+        public Task<IPackageInfo> GetPackageInfoAsync(string packageName) {
+            packageName = packageName.TrimQuotes().Trim();
+            IPackageInfo package = GetPackageInfo(packageName);
             if (package == null) {
                 return TryAddNewPackageAsync(packageName);
             }
             return Task.FromResult(package);
         }
+        #endregion
+
+        public void Dispose() {
+            _host?.Dispose();
+            foreach (var pi in _packages.Values) {
+                pi.Dispose();
+            }
+            _packages.Clear();
+        }
+
+        private async Task BuildPackageListAsync() {
+            var startTime = DateTime.Now;
+            var packages = await GetPackagesAsync();
+            foreach (var p in packages) {
+                _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
+            }
+            Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+        }
+
+        private async Task BuildPreloadedPackagesFunctionListAsync() {
+            foreach (var packageName in PreloadedPackages) {
+                PackageInfo pi;
+                _packages.TryGetValue(packageName, out pi);
+                if (pi != null) {
+                    await pi.LoadFunctionsIndexAsync();
+                }
+            }
+        }
+
+        private async Task BuildRemainingPackagesFunctionListAsync() {
+            foreach (var pi in _packages.Values) {
+                if (pi.Functions.FirstOrDefault() == null)
+                    await pi.LoadFunctionsIndexAsync();
+            }
+        }
 
         private async Task<IPackageInfo> TryAddNewPackageAsync(string packageName) {
-            if (_functionIndex != null) {
-                var packages = await GetPackagesAsync();
-                var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
-                if (package != null) {
-                    var p = new PackageInfo(_functionIndex, package.Package, package.Description);
-                    _packages[packageName] = p;
-                    await _functionIndex.AddFunctionsFromPackage(packageName);
-                    return p;
-                }
+            var packages = await GetPackagesAsync();
+            var package = packages.FirstOrDefault(p => p.Package.EqualsOrdinal(packageName));
+            if (package != null) {
+                var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
+                await p.LoadFunctionsIndexAsync();
+                _packages[packageName] = p;
+                return p;
             }
             return null;
         }
 
         private async Task<IEnumerable<RPackage>> GetPackagesAsync() {
             try {
-                var result = await _session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
+                await _host.CreateSessionAsync();
+                var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (MessageTransportException) { } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();

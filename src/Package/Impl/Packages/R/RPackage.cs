@@ -95,6 +95,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string OptionsDialogName = "R Tools";
 
         private System.Threading.Tasks.Task _indexBuildingTask;
+        private IPackageIndex _packageIndex;
 
         public static IRPackage Current { get; private set; }
 
@@ -134,6 +135,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         protected override void Dispose(bool disposing) {
             if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
                 _indexBuildingTask.Wait(2000);
+                _packageIndex?.Dispose();
                 _indexBuildingTask = null;
             }
 
@@ -198,8 +200,8 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() {
-            var index = VsAppShell.Current.ExportProvider.GetExportedValue<IFunctionIndex>();
-            _indexBuildingTask = index.BuildIndexAsync();
+            _packageIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IPackageIndex>();
+            _indexBuildingTask = _packageIndex.BuildIndexAsync();
         }
     }
 }

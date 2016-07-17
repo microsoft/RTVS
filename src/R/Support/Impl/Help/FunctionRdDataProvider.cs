@@ -19,14 +19,10 @@ namespace Microsoft.R.Host.Client.Signatures {
             _host = host;
         }
 
-        public void Dispose() {
-            _host?.Dispose();
-        }
-
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
         /// When RD data is available, invokes specified callback
-        /// passing funation name and the RD data extracted from R.
+        /// passing function name and the RD data extracted from R.
         /// </summary>
         public void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
             Task.Run(async () => {

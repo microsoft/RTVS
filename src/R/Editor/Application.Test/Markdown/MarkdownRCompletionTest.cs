@@ -64,8 +64,8 @@ x <- function() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
                 IntelliSenseRHost.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
-                    var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-                    await functionIndex.BuildIndexAsync();
+                    var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
+                    await packageIndex.BuildIndexAsync();
                     FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.DoIdle(500);

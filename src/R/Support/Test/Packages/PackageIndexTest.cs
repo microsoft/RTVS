@@ -9,6 +9,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
@@ -22,20 +23,17 @@ namespace Microsoft.R.Support.Test.Packages {
     public class PackageIndexTest {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
-        private readonly IFunctionIndex _functionIndex;
         private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(RSupportMefCatalogFixture catalogFixture) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _shell = _exportProvider.GetExportedValue<ICoreShell>();
-            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
             _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
         }
 
         [Test]
         [Category.R.Completion]
         public async Task BuildPackageIndexTest() {
-            var packageIndex = new PackageIndex(_shell);
             string[] packageNames = {
                 "base",
                 "boot",
@@ -69,13 +67,16 @@ namespace Microsoft.R.Support.Test.Packages {
                 "utils",
              };
 
+            IPackageIndex packageIndex;
             using (var host = new IntelliSenseRHost(_shell, _sessionProvider)) {
                 await host.CreateSessionAsync();
-                await packageIndex.BuildIndexAsync(_functionIndex, host.Session);
+                var functionIndex = new FunctionIndex(_shell, null, host);
+                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                await packageIndex.BuildIndexAsync();
             }
 
             foreach (var name in packageNames) {
-                IPackageInfo pi = await packageIndex.GetPackageByNameAsync(name);
+                IPackageInfo pi = await packageIndex.GetPackageInfoAsync(name);
                 pi.Should().NotBeNull();
                 pi.Name.Should().Be(name);
             }
@@ -85,12 +86,14 @@ namespace Microsoft.R.Support.Test.Packages {
         [Category.R.Completion]
         public async Task PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            var packageIndex = new PackageIndex(_shell);
+            PackageIndex packageIndex;
             using (var host = new IntelliSenseRHost(_shell, _sessionProvider)) {
                 await host.CreateSessionAsync();
-                await packageIndex.BuildIndexAsync(_functionIndex, host.Session);
+                var functionIndex = new FunctionIndex(_shell, null, host);
+                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                await packageIndex.BuildIndexAsync();
             }
-            IPackageInfo pi = await packageIndex.GetPackageByNameAsync("base");
+            IPackageInfo pi = await packageIndex.GetPackageInfoAsync("base");
             pi.Description.Should().Be("Base R functions.");
         }
     }

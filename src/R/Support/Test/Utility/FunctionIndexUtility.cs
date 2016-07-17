@@ -38,7 +38,6 @@ namespace Microsoft.R.Support.Test.Utility {
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
-            functionIndex?.Dispose();
         } 
     }
 }

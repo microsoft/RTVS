@@ -13,7 +13,7 @@ using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help.Packages;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
@@ -151,7 +151,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
 
             IEnumerable<string> loadedPackages = _loadedPackagesProvider?.GetPackageNames() ?? Enumerable.Empty<string>();
             IEnumerable<string> filePackageNames = context.AstRoot.GetFilePackageNames();
-            IEnumerable<string> allPackageNames = FunctionIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
+            IEnumerable<string> allPackageNames = PackageIndex.PreloadedPackages.Union(filePackageNames).Union(loadedPackages);
 
             return allPackageNames
                 .Select(packageName => GetPackageByName(packageName))
@@ -162,7 +162,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
         }
 
         private IPackageInfo GetPackageByName(string packageName) {
-            var t = _packageIndex.GetPackageByNameAsync(packageName);
+            var t = _packageIndex.GetPackageInfoAsync(packageName);
             t.Wait(_asyncWaitTimeout);
             return t.IsCompleted ? t.Result : null;
         }

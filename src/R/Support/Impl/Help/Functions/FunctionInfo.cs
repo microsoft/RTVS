@@ -8,11 +8,6 @@ namespace Microsoft.R.Support.Help.Functions {
     public sealed class FunctionInfo : NamedItemInfo, IFunctionInfo {
         #region IFunctionInfo
         /// <summary>
-        /// Other function name variants
-        /// </summary>
-        public IReadOnlyList<string> Aliases { get; set; }
-
-        /// <summary>
         /// Function signatures
         /// </summary>
         public IReadOnlyList<ISignatureInfo> Signatures { get; set; }
