@@ -4,10 +4,12 @@
 using System;
 using System.ComponentModel.Composition;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.Trackers {
     [Export(typeof(IDebuggerModeTracker))]
     [Export(typeof(TestDebuggerModeTracker))]
+    [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
     public sealed class TestDebuggerModeTracker : IDebuggerModeTracker {
         public bool IsInBreakMode { get; set; }
 

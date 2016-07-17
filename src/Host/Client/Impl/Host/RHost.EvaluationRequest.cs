@@ -3,6 +3,7 @@
 
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
@@ -12,7 +13,7 @@ namespace Microsoft.R.Host.Client {
             public readonly string MessageName;
             public readonly string Expression;
             public readonly REvaluationKind Kind;
-            public readonly TaskCompletionSource<REvaluationResult> CompletionSource = new TaskCompletionSource<REvaluationResult>();
+            public readonly TaskCompletionSourceEx<REvaluationResult> CompletionSource = new TaskCompletionSourceEx<REvaluationResult>();
 
             public EvaluationRequest(RHost host, string expression, REvaluationKind kind, out JArray message) {
                 Expression = expression;

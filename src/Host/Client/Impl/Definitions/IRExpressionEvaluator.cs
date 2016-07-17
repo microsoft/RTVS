@@ -3,8 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.R.Host.Client.Host;
+using Newtonsoft.Json.Linq;
 using static System.FormattableString;
 
 namespace Microsoft.R.Host.Client {
@@ -14,12 +17,14 @@ namespace Microsoft.R.Host.Client {
         /// </summary>
         /// <param name="expression">Expression to evaluate.</param>
         /// <param name="kind">Evaluation flags.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <remarks>
         /// <para>
         /// Evaluation is performed in the global environment (<c>.GlobalEnv</c>) by default; <see cref="REvaluationKind.BaseEnv"/>
         /// or <see cref="REvaluationKind.EmptyEnv"/> can be used to designate a different environment. Evaluation is neither
         /// cancelable nor reentrant by default.
         /// </para>
+        /// <para>
         /// The result of evaluation is serialized to JSON, as if <c>rtvs:::toJSON</c> was invoked on it. If serialization fails,
         /// it is a fatal error, and the host process will be terminated. If it succeeds, the resulting JSON is returned in
         /// <see cref="REvaluationResult.Result"/>.
@@ -30,11 +35,18 @@ namespace Microsoft.R.Host.Client {
         /// </para>
         /// <para>
         /// This is a low-level evaluation method that requires explicit error checks on the result. It is recommended that
-        /// <see cref="RExpressionEvaluatorExtensions.ExecuteAsync"/> is used instead when evakuation is performed solely for
+        /// <see cref="RExpressionEvaluatorExtensions.ExecuteAsync"/> is used instead when evaluation is performed solely for
         /// its side effects and no result is expected, and that <see cref="RExpressionEvaluatorExtensions.EvaluateAsync{T}"/>
         /// is used when evaluation produces a JSON value.
         /// </para>
         /// </remarks>
+        /// <returns>
+        /// A task that represents evaluation. If evaluation is completed successfully, <see cref="Task.Result"/> will return
+        /// <see cref="REvaluationResult"/> that contains response from R host process. If R Host get terminated or connection
+        /// to the remote host is lost, task will be <see cref="TaskStatus.Canceled"/> with <see cref="RHostDisconnectedException"/>.
+        /// If <paramref name="cancellationToken"/> become canceled before method is completed, task will be <see cref="TaskStatus.Canceled"/>
+        /// with <see cref="OperationCanceledException"/>. 
+        /// </returns>
         Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken));
     }
 
@@ -48,12 +60,17 @@ namespace Microsoft.R.Host.Client {
 
         /// <summary>
         /// Like <see cref="IRExpressionEvaluator.EvaluateAsync"/>, but after obtaining the result, deserializes it using
-        /// <see cref="JToken.ToObject{T}"/>. If evaluation fails, throws <see cref="REvaluationException"/>.
+        /// <see cref="JToken.ToObject{T}"/>. If evaluation fails, returned task will be <see cref="TaskStatus.Faulted"/>
+        /// with <see cref="REvaluationException"/>.
         /// </summary>
-        /// <exception cref="REvaluationException">
-        /// <see cref="REvaluationResult.ParseStatus"/> was not <see cref="RParseStatus.OK"/>, or 
-        /// <see cref="REvaluationResult.Error"/> was not <see langword="null"/>.
-        /// </exception>
+        /// <returns>
+        /// A task that represents evaluation. If evaluation is completed successfully, <see cref="Task.Result"/> will return
+        /// deserialized object that represents response from R host process. If R Host get terminated or connection
+        /// to the remote host is lost, task will be <see cref="TaskStatus.Canceled"/> with <see cref="RHostDisconnectedException"/>.
+        /// If <paramref name="cancellationToken"/> become canceled before method is completed, task will be <see cref="TaskStatus.Canceled"/>
+        /// with <see cref="OperationCanceledException"/>. If <see cref="REvaluationResult.ParseStatus"/> was not <see cref="RParseStatus.OK"/>, or 
+        /// <see cref="REvaluationResult.Error"/> was not <see langword="null"/>, task will be <see cref="TaskStatus.Faulted"/> with <see cref="REvaluationException"/>.
+        /// </returns>
         public static async Task<T> EvaluateAsync<T>(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
             var res = await evaluator.EvaluateAsync(expression, kind, cancellationToken);
             ThrowOnError(expression, res);

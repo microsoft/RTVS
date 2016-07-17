@@ -30,11 +30,11 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Workspace {
             _enabled = false;
         }
 
-        private void OnBeforeRequest(object sender, RRequestEventArgs e) {
+        private void OnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
             _enabled = e.Contexts.Count != 1; // Disable command only if prompt is in the top level
         }
 
-        private void OnAfterRequest(object sender, RRequestEventArgs e) {
+        private void OnAfterRequest(object sender, RAfterRequestEventArgs e) {
             _enabled = true;
         }
 

@@ -81,9 +81,7 @@ namespace Microsoft.R.Debugger {
                                 // blocking debugger detach if a long-running operation is in progress. This way the
                                 // engine can just report successful detach right away, and breakpoints are deleted
                                 // later, but as soon as it's actually possible.
-                                DebugBreakpoint.DeleteAsync()
-                                    .SilenceException<MessageTransportException>()
-                                    .DoNotWait();
+                                DebugBreakpoint.DeleteAsync().DoNotWait();
                             } else {
                                 TaskExtensions.RunSynchronouslyOnUIThread(ct => DebugBreakpoint.DeleteAsync(ct));
                             }

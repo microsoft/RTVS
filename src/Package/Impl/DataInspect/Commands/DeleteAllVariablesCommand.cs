@@ -21,10 +21,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
             }
             try {
                 RSession.ExecuteAsync("rm(list = ls(all = TRUE))").DoNotWait();
-            } catch(RException ex) {
-                VsAppShell.Current.ShowErrorMessage(
-                    string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
-            } catch(MessageTransportException) { }
+            } catch (RException ex) {
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+            } catch (RHostBinaryMissingException ex) {
+                VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, ex.Message));
+            }
         }
     }
 }

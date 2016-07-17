@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.Languages.Editor.Shell;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client;
@@ -25,11 +26,9 @@ namespace Microsoft.R.Editor.Completion.Providers {
     public class FilesCompletionProvider : IRCompletionListProvider {
         private readonly ICoreShell _shell;
 
-        [Import(AllowDefault = true)]
-        private IImagesProvider ImagesProvider { get; set; }
+        private IImagesProvider ImagesProvider { get; }
 
-        [Import]
-        private IRSessionProvider SessionProvider { get; set; }
+        private IRInteractiveWorkflow Workflow { get; }
 
         private Task<string> _userDirectoryFetchingTask;
         private string _directory;
@@ -41,13 +40,13 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 throw new ArgumentNullException(nameof(directoryCandidate));
             }
 
-            _shell.CompositionService.SatisfyImportsOnce(this);
+            ImagesProvider = _shell.ExportProvider.GetExportedValueOrDefault<IImagesProvider>();
+            Workflow = _shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
             _directory = ExtractDirectory(directoryCandidate);
 
             if (_directory.StartsWithOrdinal("~\\")) {
                 _directory = _directory.Substring(2);
-                var session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
-                _userDirectoryFetchingTask = session.GetRUserDirectoryAsync();
+                _userDirectoryFetchingTask = Workflow.RSession.GetRUserDirectoryAsync();
             }
         }
 

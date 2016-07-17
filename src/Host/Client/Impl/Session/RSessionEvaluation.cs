@@ -1,29 +1,32 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Common.Core.Tasks;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Host.Client.Session {
     internal sealed class RSessionEvaluation : IRSessionEvaluation {
         private readonly IRExpressionEvaluator _evaluator;
-        private readonly TaskCompletionSource<object> _tcs;
-        private readonly CancellationToken _ct;
+        private readonly TaskCompletionSourceEx<object> _tcs;
+        private readonly IDisposable _hostCancellationRegistration;
 
         public IReadOnlyList<IRContext> Contexts { get; }
         public bool IsMutating { get; private set; }
         public Task Task => _tcs.Task;
 
-        public RSessionEvaluation(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken ct) {
+        public RSessionEvaluation(IReadOnlyList<IRContext> contexts, IRExpressionEvaluator evaluator, CancellationToken hostCancellationToken) {
             Contexts = contexts;
             _evaluator = evaluator;
-            _tcs = new TaskCompletionSource<object>();
-            _ct = ct;
-            ct.Register(() => _tcs.TrySetCanceled());
+            _tcs = new TaskCompletionSourceEx<object>();
+            _hostCancellationRegistration = hostCancellationToken.Register(() => _tcs.TrySetCanceled(new RHostDisconnectedException()));
         }
 
         public void Dispose() {
+            _hostCancellationRegistration.Dispose();
             _tcs.TrySetResult(null);
         }
 
@@ -33,8 +36,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
 
             ct.Register(() => _tcs.TrySetCanceled());
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(_ct, ct);
-            return _evaluator.EvaluateAsync(expression, kind, cts.Token);
+            return _evaluator.EvaluateAsync(expression, kind, ct);
         }
     }
 }

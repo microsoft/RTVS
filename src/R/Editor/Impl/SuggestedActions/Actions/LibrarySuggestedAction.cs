@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.SuggestedActions.Actions {
     internal abstract class LibrarySuggestedAction : RSuggestedActionBase {
-        public LibrarySuggestedAction(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position, string displayText) :
+        protected LibrarySuggestedAction(ITextView textView, ITextBuffer textBuffer, IRInteractiveWorkflow workflow, int position, string displayText) :
             base(textView, textBuffer, workflow, position, displayText) {
 
         }
@@ -20,7 +20,7 @@ namespace Microsoft.R.Editor.SuggestedActions.Actions {
             var document = REditorDocument.FromTextBuffer(TextBuffer);
             var tree = document.EditorTree;
             if (tree.IsReady) {
-                string libraryName = document.EditorTree.AstRoot.IsInLibraryStatement(TextView.Caret.Position.BufferPosition);
+                var libraryName = document.EditorTree.AstRoot.IsInLibraryStatement(TextView.Caret.Position.BufferPosition);
                 if (!string.IsNullOrEmpty(libraryName)) {
                     SubmitToInteractive(GetCommand(libraryName) + "\n", cancellationToken);
                 }

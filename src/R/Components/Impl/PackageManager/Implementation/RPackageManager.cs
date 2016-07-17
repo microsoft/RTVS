@@ -8,25 +8,29 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Diagnostics;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Components.PackageManager.Implementation {
     internal class RPackageManager : IRPackageManager {
+        private readonly IRSessionProvider _sessionProvider;
+        private readonly IRSettings _settings;
         private readonly IRInteractiveWorkflow _interactiveWorkflow;
-        private readonly Action _dispose;
-        private readonly SessionPool _sessionPool;
+        private readonly DisposeToken _disposeToken;
 
         public IRPackageManagerVisualComponent VisualComponent { get; private set; }
 
         public RPackageManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
+            _sessionProvider = sessionProvider;
+            _settings = settings;
             _interactiveWorkflow = interactiveWorkflow;
-            _dispose = dispose;
-            _sessionPool = new SessionPool(sessionProvider, settings);
+            _disposeToken = DisposeToken.Create<RPackageManager>(dispose);
         }
 
         public IRPackageManagerVisualComponent GetOrCreateVisualComponent(IRPackageManagerVisualComponentContainerFactory visualComponentContainerFactory, int instanceId = 0) {
@@ -59,7 +63,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.InstallPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -77,7 +81,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.UninstallPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -95,7 +99,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                         await request.LoadPackageAsync(name, libraryPath);
                     }
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -109,7 +113,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
                     await request.UnloadPackageAsync(name);
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -122,7 +126,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 var result = await WrapRException(_interactiveWorkflow.RSession.LoadedPackagesAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -135,7 +139,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             try {
                 var result = await WrapRException(_interactiveWorkflow.RSession.LibraryPathsAsync());
                 return result.Select(p => (string)((JValue)p).Value).ToArray();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
             }
         }
@@ -173,31 +177,25 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             // Fetching of installed and available packages is done in a
             // separate package query session to avoid freezing the REPL.
             try {
-                using (var sessionToken = await _sessionPool.GetSession()) {
+                var startupInfo = new RHostStartupInfo {
+                    RBasePath = _settings.RBasePath,
+                    CranMirrorName = _settings.CranMirror,
+                    CodePage = _settings.RCodePage
+                };
+
+                using (var eval = await _sessionProvider.BeginEvaluationAsync(startupInfo)) {
                     // Get the repos and libpaths from the REPL session and set them
                     // in the package query session
-                    await EvalRepositoriesAsync(sessionToken.Session, await DeparseRepositoriesAsync());
-                    await EvalLibrariesAsync(sessionToken.Session, await DeparseLibrariesAsync());
+                    var repositories = (await DeparseRepositoriesAsync()).ToRStringLiteral();
+                    await WrapRException(eval.ExecuteAsync($"options(repos=eval(parse(text={repositories})))"));
+                    var libraries = (await DeparseLibrariesAsync()).ToRStringLiteral();
+                    await WrapRException(eval.ExecuteAsync($".libPaths(eval(parse(text={libraries})))"));
 
-                    var result = await WrapRException(queryFunc(sessionToken.Session));
+                    var result = await WrapRException(queryFunc(eval));
                     return result.Select(p => p.ToObject<RPackage>()).ToList().AsReadOnly();
                 }
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
-            }
-        }
-
-        private async Task EvalRepositoriesAsync(IRSession session, string deparsedRepositories) {
-            var code = string.Format("options(repos=eval(parse(text={0})))", deparsedRepositories.ToRStringLiteral());
-            using (var eval = await session.BeginEvaluationAsync()) {
-                await WrapRException(eval.ExecuteAsync(code));
-            }
-        }
-
-        private async Task EvalLibrariesAsync(IRSession session, string deparsedLibraries) {
-            var code = string.Format(".libPaths(eval(parse(text={0})))", deparsedLibraries.ToRStringLiteral());
-            using (var eval = await session.BeginEvaluationAsync()) {
-                await WrapRException(eval.ExecuteAsync(code));
             }
         }
 
@@ -210,9 +208,9 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
         }
 
         public void Dispose() {
-            VisualComponent.Dispose();
-            _sessionPool.Dispose();
-            _dispose();
+            if (_disposeToken.TryMarkDisposed()) {
+                VisualComponent?.Dispose();
+            }
         }
 
         private async Task WrapRException(Task task) {

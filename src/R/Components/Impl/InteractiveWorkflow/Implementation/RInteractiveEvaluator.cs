@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.Disposables;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.VisualStudio.InteractiveWindow;
 using Microsoft.VisualStudio.Text;
@@ -21,6 +23,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveEvaluator : IInteractiveEvaluator {
         private readonly ICoreShell _coreShell;
         private readonly IRSettings _settings;
+        private readonly CountdownDisposable _evaluatorRequest;
         private int _terminalWidth = 80;
 
         public IRHistory History { get; }
@@ -32,8 +35,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Output += SessionOnOutput;
             Session.Disconnected += SessionOnDisconnected;
             Session.BeforeRequest += SessionOnBeforeRequest;
+            Session.AfterRequest += SessionOnAfterRequest;
             _coreShell = coreShell;
             _settings = settings;
+            _evaluatorRequest = new CountdownDisposable();
         }
 
         public void Dispose() {
@@ -44,6 +49,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             Session.Output -= SessionOnOutput;
             Session.Disconnected -= SessionOnDisconnected;
             Session.BeforeRequest -= SessionOnBeforeRequest;
+            Session.AfterRequest -= SessionOnAfterRequest;
         }
 
         public async Task<ExecutionResult> InitializeAsync() {
@@ -69,6 +75,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             } catch (RHostBinaryMissingException) {
                 await _coreShell.ShowErrorMessageAsync(Resources.Error_Microsoft_R_Host_Missing);
                 return ExecutionResult.Failure;
+            } catch (RHostDisconnectedException) {
+                // We don't 
+                return ExecutionResult.Success;
             } catch (Exception) {
                 return ExecutionResult.Failure;
             }
@@ -132,20 +141,23 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                         end = text.IndexOf('\n', start);
 
                         using (var request = await Session.BeginInteractionAsync()) {
-                            if (line.Length >= request.MaxLength) {
-                                CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
-                                return ExecutionResult.Failure;
-                            }
+                            using (_evaluatorRequest.Increment()) {
+                                if (line.Length >= request.MaxLength) {
+                                    CurrentWindow.WriteErrorLine(string.Format(Resources.InputIsTooLong, request.MaxLength));
+                                    return ExecutionResult.Failure;
+                                }
 
-                            await request.RespondAsync(line);
+                                await request.RespondAsync(line);
+                            }
                         }
                     }
                 }
 
                 return ExecutionResult.Success;
             } catch (OperationCanceledException) {
-                // Cancellation reason was already reported via RSession.Error and printed out; just return failure.
-                return ExecutionResult.Failure;
+                // Cancellation reason was already reported via RSession.Error and printed out;
+                // Return success cause connection lost doesn't mean that RHost died
+                return ExecutionResult.Success;
             } catch (Exception ex) {
                 await _coreShell.ShowErrorMessageAsync(ex.ToString());
                 return ExecutionResult.Failure;
@@ -188,7 +200,20 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             }
         }
 
-        private void SessionOnBeforeRequest(object sender, RRequestEventArgs e) {
+        private void SessionOnAfterRequest(object sender, RAfterRequestEventArgs e) {
+            if (_evaluatorRequest.Count == 0 && e.AddToHistory && e.IsVisible) {
+                _coreShell.DispatchOnUIThread(() => {
+                    if (CurrentWindow == null) {
+                        return;
+                    }
+
+                    ((IInteractiveWindow2)CurrentWindow).AddToHistory(e.Request.TrimEnd());
+                    History.AddToHistory(e.Request);
+                });
+            }
+        }
+
+        private void SessionOnBeforeRequest(object sender, RBeforeRequestEventArgs e) {
             _coreShell.DispatchOnUIThread(() => {
                 if (CurrentWindow == null || CurrentWindow.IsRunning) {
                     return;
@@ -261,7 +286,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             // From R docs:  Valid values are 10...10000 with default normally 80.
             _terminalWidth = Math.Max(10, Math.Min(10000, width));
 
-            Session.OptionsSetWidthAsync(_terminalWidth).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
+            Session.OptionsSetWidthAsync(_terminalWidth)
+                .SilenceException<RException>()
+                .DoNotWait();
         }
     }
 }

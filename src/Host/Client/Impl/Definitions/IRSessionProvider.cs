@@ -3,10 +3,21 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSessionProvider : IDisposable {
         IRSession GetOrCreate(Guid guid);
         IEnumerable<IRSession> GetSessions();
+
+        /// <summary>
+        /// Creates <see cref="IRSessionEvaluation"/> for R expressions to be evaluated
+        /// Expressions are evaluated in a separate <see cref="IRSession"/>, no artifacts will be preserved after evaluation
+        /// </summary>
+        /// <param name="startupInfo"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<IRSessionEvaluation> BeginEvaluationAsync(RHostStartupInfo startupInfo, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

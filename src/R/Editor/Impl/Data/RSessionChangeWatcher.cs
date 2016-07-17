@@ -2,15 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Data {
     public abstract class RSessionChangeWatcher {
-        protected IRSessionProvider SessionProvider { get; }
+        protected IRInteractiveWorkflow Workflow { get; }
         protected IRSession Session { get; private set; }
 
-        protected RSessionChangeWatcher(IRSessionProvider sessionProvider) {
-            SessionProvider = sessionProvider;
+        protected RSessionChangeWatcher(IRInteractiveWorkflowProvider workflowProvider) {
+            Workflow = workflowProvider.GetOrCreate();
         }
 
         public void Initialize() {
@@ -19,7 +20,7 @@ namespace Microsoft.R.Editor.Data {
 
         private void ConnectToSession() {
             if (Session == null) {
-                Session = SessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                Session = Workflow.RSession;
                 Session.Mutated += OnSessionMutated;
                 Session.Disposed += OnSessionDisposed;
                 SessionMutated();

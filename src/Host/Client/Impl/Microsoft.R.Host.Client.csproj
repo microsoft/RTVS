@@ -103,18 +103,19 @@
     <Compile Include="Program.cs" />
     <Compile Include="Host\RHost.Message.cs" />
     <Compile Include="Host\RHostLoggingExtensions.cs" />
-    <Compile Include="Definitions\RRequestEventArgs.cs" />
+    <Compile Include="Session\RAfterRequestEventArgs.cs" />
+    <Compile Include="Session\RBeforeRequestEventArgs.cs" />
     <Compile Include="Context\RContext.cs" />
     <Compile Include="Context\RContextType.cs" />
     <Compile Include="Definitions\RException.cs" />
     <Compile Include="Host\RHost.cs" />
-    <Compile Include="Definitions\ROutputEventArgs.cs" />
+    <Compile Include="Host\RHostDisconnectedException.cs" />
+    <Compile Include="Session\ROutputEventArgs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Session\InteractiveWindowRSessionHelper.cs" />
     <Compile Include="Session\RSession.cs" />
     <Compile Include="Session\RSessionEvaluation.cs" />
     <Compile Include="Session\RSessionEvaluationCommands.cs" />

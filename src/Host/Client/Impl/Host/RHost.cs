@@ -14,6 +14,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Diagnostics;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Host.Client.Host;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
@@ -36,6 +37,7 @@ namespace Microsoft.R.Host.Client {
 #else
             TimeSpan.FromSeconds(5);
 #endif
+        private static Task<REvaluationResult> _rhostDisconnectedEvaluationResult = TaskUtilities.CreateCanceled<REvaluationResult>(new RHostDisconnectedException());
 
         public static IRContext TopLevelContext { get; } = new RContext(RContextType.TopLevel);
 
@@ -52,6 +54,7 @@ namespace Microsoft.R.Host.Client {
         private readonly FileLogWriter _fileLogWriter;
         private Process _process;
         private volatile Task _runTask;
+        private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
         private int _rLoopDepth;
         private long _lastMessageId = -1;
         private readonly ConcurrentDictionary<string, EvaluationRequest> _evalRequests = new ConcurrentDictionary<string, EvaluationRequest>();
@@ -120,7 +123,7 @@ namespace Microsoft.R.Host.Client {
             long n = Interlocked.Add(ref _lastMessageId, 2);
             id = "#" + n + "#";
             int blob_count = 0;
-            var header = String.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blob_count) : new JArray(id, name, blob_count, requestId);
+            var header = string.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blob_count) : new JArray(id, name, blob_count, requestId);
             return header;
         }
 
@@ -139,6 +142,8 @@ namespace Microsoft.R.Host.Client {
             } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
+            } catch (MessageTransportException ex) {
+                throw new RHostDisconnectedException(ex.Message, ex);
             }
         }
 
@@ -231,9 +236,15 @@ namespace Microsoft.R.Host.Client {
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
-            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<REvaluationResult>(new CancellationToken(true))
-                : EvaluateAsyncBackground(expression, kind, ct);
+            if (_cancelEvaluationAfterRunTask == null || _cancelEvaluationAfterRunTask.IsCompleted) { 
+                return _rhostDisconnectedEvaluationResult;
+            }
+
+            if (ct.IsCancellationRequested) {
+                Task.FromCanceled<REvaluationResult>(ct);
+            }
+
+            return Task.WhenAny(EvaluateAsyncBackground(expression, kind, ct), _cancelEvaluationAfterRunTask).Unwrap();
         }
 
         private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) {
@@ -241,6 +252,7 @@ namespace Microsoft.R.Host.Client {
 
             JArray message;
             var request = new EvaluationRequest(this, expression, kind, out message);
+            ct.Register(() => request.CompletionSource.TrySetCanceled(cancellationToken:ct));
             _evalRequests[request.Id] = request;
 
             await SendAsync(message, ct);
@@ -250,13 +262,20 @@ namespace Microsoft.R.Host.Client {
         private void ProcessEvaluationResult(Message response) {
             EvaluationRequest request;
             if (!_evalRequests.TryRemove(response.RequestId, out request)) {
-                throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
+                if (_runTask != null && !_runTask.IsCompleted) {
+                    throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
+                }
+            }
+
+            if (request.CompletionSource.Task.IsCompleted) {
+                return;
             }
 
             response.ExpectArguments(1, 3);
             var firstArg = response[0] as JValue;
             if (firstArg != null && firstArg.Value == null) {
-                request.CompletionSource.SetCanceled();
+                request.CompletionSource.TrySetCanceled();
+                return;
             }
 
             if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
@@ -275,7 +294,7 @@ namespace Microsoft.R.Host.Client {
             } else {
                 result = new REvaluationResult(response[2], error, parseStatus);
             }
-            request.CompletionSource.SetResult(result);
+            request.CompletionSource.TrySetResult(result);
         }
 
         /// <summary>
@@ -511,7 +530,9 @@ namespace Microsoft.R.Host.Client {
             }
 
             try {
-                await (_runTask = RunWorker(ct));
+                _runTask = RunWorker(ct);
+                _cancelEvaluationAfterRunTask = _runTask.ContinueWith(t => _rhostDisconnectedEvaluationResult).Unwrap();
+                await _runTask;
             } catch (OperationCanceledException) when (ct.IsCancellationRequested) {
                 // Expected cancellation, do not propagate, just exit process
             } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
@@ -522,6 +543,8 @@ namespace Microsoft.R.Host.Client {
                 _log.WriteLineAsync(MessageCategory.Error, message).DoNotWait();
                 Debug.Fail(message);
                 throw;
+            } finally {
+                _evalRequests.Clear();
             }
         }
 

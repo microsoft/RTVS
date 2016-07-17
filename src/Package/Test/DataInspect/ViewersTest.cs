@@ -8,6 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
@@ -23,12 +24,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.DataInspect {
     [Collection(CollectionNames.NonParallel)]   // required for tests using R Host 
     public class ViewersTest {
         private readonly IRSessionProvider _sessionProvider;
-        private readonly IRSession _session;
         private readonly IObjectDetailsViewerAggregator _aggregator;
 
         public ViewersTest() {
             _sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _session = _sessionProvider.GetOrCreate(Guid.NewGuid());
             _aggregator = VsAppShell.Current.ExportProvider.GetExportedValue<IObjectDetailsViewerAggregator>();
         }
 

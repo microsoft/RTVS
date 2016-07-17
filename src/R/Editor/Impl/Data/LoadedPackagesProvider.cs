@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Common.Core;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Host.Client;
 using System.Threading;
+using Microsoft.R.Components.InteractiveWorkflow;
 
 namespace Microsoft.R.Editor.Data {
     [Export(typeof(ILoadedPackagesProvider))]
@@ -18,7 +18,7 @@ namespace Microsoft.R.Editor.Data {
         private IEnumerable<string> _loadedPackages = Enumerable.Empty<string>();
 
         [ImportingConstructor]
-        public LoadedPackagesProvider(IRSessionProvider sessionProvider) : base(sessionProvider) { }
+        public LoadedPackagesProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
 
         protected override void SessionMutated() {
             UpdateListOfLoadedPackagesAsync().DoNotWait();
