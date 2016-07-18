@@ -1,10 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
@@ -12,9 +10,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Completion;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,27 +20,13 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    public class RCompletionSourceTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
-        private readonly IPackageIndex _packageIndex;
-        private readonly IFunctionIndex _functionIndex;
-
-        public RCompletionSourceTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-        }
-
-        public Task InitializeAsync() {
-            return _packageIndex.InitializeAsync(_functionIndex);
-        }
-
-        public async Task DisposeAsync() {
-            await _packageIndex.DisposeAsync(_exportProvider);
-            _exportProvider.Dispose();
-        }
+    [Collection(CollectionNames.NonParallel)]
+    public class RCompletionSourceTest : FunctionIndexBasedTest {
+        public RCompletionSourceTest(REditorMefCatalogFixture catalog): base(catalog) { }
 
         [Test]
         public void BaseFunctions01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("", 0, completionSets);
 
             completionSets.Should().ContainSingle()
@@ -54,19 +36,19 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void BaseFunctions02() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
             completionSets.Should().ContainSingle();
             completionSets[0].Filter();
 
             completionSets[0].Completions[0].DisplayText.Should().Be("factanal");
-            completionSets[0].Completions[1].Description.Should().Be("Factors");
+            completionSets[0].Completions[1].DisplayText.Should().Be("factor");
         }
 
         [Test]
         public void Keywords01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("f", 1, completionSets, new TextRange(0, 1));
 
             completionSets.Should().ContainSingle();
@@ -77,7 +59,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void Packages01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("library(", 8, completionSets);
 
             completionSets.Should().ContainSingle();
@@ -90,7 +72,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("utils::", 7, "adist", "Approximate String Distances")]
         [InlineData("lm(utils::)", 10, "adist", "Approximate String Distances")]
         public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle();
@@ -111,7 +93,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [InlineData("\"a'", 2)]
         [InlineData("\"", 1)]
         public void SuppressedCompletion(string content, int position) {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
 
             completionSets.Should().ContainSingle()
@@ -120,7 +102,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void BeforeComment() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("#No", 0, completionSets);
 
             completionSets.Should().ContainSingle()
@@ -129,7 +111,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void FunctionDefinition01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("x <- function()", 14, completionSets);
 
             completionSets.Should().ContainSingle()
@@ -139,7 +121,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void FunctionDefinition02() {
             for (int i = 14; i <= 18; i++) {
-                List<CompletionSet> completionSets = new List<CompletionSet>();
+                var completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b)", i, completionSets);
 
                 completionSets.Should().ContainSingle()
@@ -150,7 +132,7 @@ namespace Microsoft.R.Editor.Test.Completions {
         [Test]
         public void FunctionDefinition03() {
             for (int i = 14; i <= 19; i++) {
-                List<CompletionSet> completionSets = new List<CompletionSet>();
+                var completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b = x+y)", i, completionSets);
 
                 completionSets.Should().ContainSingle()
@@ -158,7 +140,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             }
 
             for (int i = 20; i <= 24; i++) {
-                List<CompletionSet> completionSets = new List<CompletionSet>();
+                var completionSets = new List<CompletionSet>();
                 GetCompletions("x <- function(a, b = x+y)", i, completionSets);
 
                 completionSets.Should().NotBeEmpty();
@@ -168,7 +150,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void CaseSentivity() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("x <- T", 6, completionSets);
 
             completionSets.Should().ContainSingle();
@@ -180,7 +162,7 @@ namespace Microsoft.R.Editor.Test.Completions {
 
         [Test]
         public void UserVariables01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             var content =
 @"
 aaa123 <- 1
@@ -220,7 +202,7 @@ bbb123 = 1
 
         [Test]
         public void UserVariables02() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             var content =
 @"
 {
@@ -263,7 +245,7 @@ bbb123 = 1
 
         [Test]
         public void UserVariables03() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             var content = 
 @"x123 <- 1
 for(x456 in 1:10) x";
@@ -280,7 +262,7 @@ for(x456 in 1:10) x";
 
         [Test]
         public void UserFunctions01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             GetCompletions("aaaa <- function(a,b,c)\r\na", 25, completionSets);
 
             completionSets.Should().ContainSingle();
@@ -292,7 +274,7 @@ for(x456 in 1:10) x";
 
         [Test]
         public void UserFunctions02() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             var content =
 @"
 aaa123 <- function(a,b,c) { }
@@ -318,7 +300,7 @@ aa
 
         [Test]
         public void UserFunctions03() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             var content =
 @"
 aaa123 <- function(a,b,c) { }
@@ -357,7 +339,7 @@ aaa789 = function(a,b,c) { }
 
         [Test]
         public void UserFunctionArguments01() {
-            List<CompletionSet> completionSets = new List<CompletionSet>();
+            var completionSets = new List<CompletionSet>();
             string content =
 @"
 aaa <- function(a, b, c) { }

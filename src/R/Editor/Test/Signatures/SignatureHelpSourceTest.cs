@@ -11,9 +11,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -24,25 +21,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
-    public class SignatureHelpSourceTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
-        private readonly IPackageIndex _packageIndex;
-        private readonly IFunctionIndex _functionIndex;
-
-        public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
-            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-        }
-
-        public Task InitializeAsync() {
-            return _packageIndex.InitializeAsync(_functionIndex);
-        }
-
-        public async Task DisposeAsync() {
-            await _packageIndex.DisposeAsync(_exportProvider);
-            _exportProvider.Dispose();
-        }
+    public class SignatureHelpSourceTest : FunctionIndexBasedTest {
+        public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [Test]
         public async Task SignatureHelpSourceTest01() {
