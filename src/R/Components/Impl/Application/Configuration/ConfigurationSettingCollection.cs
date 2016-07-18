@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// </summary>
         public void Load(string filePath) {
             lock (_lock) {
-                if (!string.IsNullOrEmpty(filePath)) {
+                if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath)) {
                     Clear();
                     using (var sr = new StreamReader(filePath)) {
                         using (var csr = new ConfigurationSettingsReader(sr)) {
