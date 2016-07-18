@@ -69,8 +69,8 @@ namespace Microsoft.R.Editor.Test.Completions {
         }
 
         [CompositeTest]
-        [InlineData("utils::", 7, "adist", "Approximate String Distances")]
-        [InlineData("lm(utils::)", 10, "adist", "Approximate String Distances")]
+        [InlineData("utils::", 7, "adist", "approximate string distance")]
+        [InlineData("lm(utils::)", 10, "adist", "approximate string distance")]
         public void SpecificPackage(string content, int position, string expectedEntry, string expectedDescription) {
             var completionSets = new List<CompletionSet>();
             GetCompletions(content, position, completionSets);
@@ -78,7 +78,7 @@ namespace Microsoft.R.Editor.Test.Completions {
             completionSets.Should().ContainSingle();
 
             completionSets[0].Completions.Should().Contain(c => c.DisplayText == expectedEntry)
-                .Which.Description.Should().Be(expectedDescription);
+                .Which.Description.Should().Contain(expectedDescription);
         }
 
         [CompositeTest]

@@ -62,7 +62,7 @@ x <- function() {
         [Category.Interactive]
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
-                IntelliSenseRHost.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();

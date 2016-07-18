@@ -10,15 +10,15 @@ using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Support.Help {
-    [Export(typeof(IIntellisenseRHost))]
-    public sealed class IntelliSenseRHost : IIntellisenseRHost {
+    [Export(typeof(IIntellisenseRSession))]
+    public sealed class IntelliSenseRSession : IIntellisenseRSession {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
         private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
 
         [ImportingConstructor]
-        public IntelliSenseRHost(ICoreShell coreShell, IRSessionProvider sessionProvider) {
+        public IntelliSenseRSession(ICoreShell coreShell, IRSessionProvider sessionProvider) {
             _coreShell = coreShell;
             _sessionProvider = sessionProvider;
         }

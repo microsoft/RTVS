@@ -23,17 +23,16 @@ namespace Microsoft.R.Support.Help.Packages {
     [Export(typeof(IPackageIndex))]
     public sealed class PackageIndex : IPackageIndex {
         private readonly ICoreShell _shell;
-        private readonly IIntellisenseRHost _host;
+        private readonly IIntellisenseRSession _host;
         private readonly IFunctionIndex _functionIndex;
         private readonly ConcurrentDictionary<string, PackageInfo> _packages = new ConcurrentDictionary<string, PackageInfo>();
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
-        private bool _ready;
 
         public static readonly IEnumerable<string> PreloadedPackages = new string[]
             { "base", "stats", "utils", "graphics", "datasets", "methods" };
 
         [ImportingConstructor]
-        public PackageIndex(ICoreShell shell, IIntellisenseRHost host, IFunctionIndex functionIndex) {
+        public PackageIndex(ICoreShell shell, IIntellisenseRSession host, IFunctionIndex functionIndex) {
             _shell = shell;
             _host = host;
             _functionIndex = functionIndex;
@@ -46,9 +45,9 @@ namespace Microsoft.R.Support.Help.Packages {
         public IEnumerable<IPackageInfo> Packages => _packages.Values;
 
         public async Task BuildIndexAsync() {
-            await _buildIndexLock.WaitAsync();
+            var ready = await _buildIndexLock.WaitAsync();
             try {
-                if (!_ready) {
+                if (!ready) {
                     var startTotalTime = DateTime.Now;
 
                     await TaskUtilities.SwitchToBackgroundThread();
@@ -72,7 +71,6 @@ namespace Microsoft.R.Support.Help.Packages {
 
                     await _functionIndex.BuildIndexAsync(this);
                     Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
-                    _ready = true;
                 }
             } finally {
                 _buildIndexLock.Release();

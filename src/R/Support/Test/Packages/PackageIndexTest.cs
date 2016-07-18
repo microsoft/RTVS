@@ -68,7 +68,7 @@ namespace Microsoft.R.Support.Test.Packages {
              };
 
             IPackageIndex packageIndex;
-            using (var host = new IntelliSenseRHost(_shell, _sessionProvider)) {
+            using (var host = new IntelliSenseRSession(_shell, _sessionProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
                 packageIndex = new PackageIndex(_shell, host, functionIndex);
@@ -87,7 +87,7 @@ namespace Microsoft.R.Support.Test.Packages {
         public async Task PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
             PackageIndex packageIndex;
-            using (var host = new IntelliSenseRHost(_shell, _sessionProvider)) {
+            using (var host = new IntelliSenseRSession(_shell, _sessionProvider)) {
                 await host.CreateSessionAsync();
                 var functionIndex = new FunctionIndex(_shell, null, host);
                 packageIndex = new PackageIndex(_shell, host, functionIndex);

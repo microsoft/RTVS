@@ -12,10 +12,10 @@ namespace Microsoft.R.Host.Client.Signatures {
     /// </summary>
     [Export(typeof(IFunctionRdDataProvider))]
     public sealed class FunctionRdDataProvider : IFunctionRdDataProvider {
-        private readonly IIntellisenseRHost _host;
+        private readonly IIntellisenseRSession _host;
 
         [ImportingConstructor]
-        public FunctionRdDataProvider(IIntellisenseRHost host) {
+        public FunctionRdDataProvider(IIntellisenseRSession host) {
             _host = host;
         }
 

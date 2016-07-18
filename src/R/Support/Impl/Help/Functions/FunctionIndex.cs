@@ -19,9 +19,8 @@ namespace Microsoft.R.Support.Help.Functions {
     [Export(typeof(IFunctionIndex))]
     public sealed class FunctionIndex : IFunctionIndex {
         private readonly ICoreShell _coreShell;
-        private readonly IIntellisenseRHost _host;
+        private readonly IIntellisenseRSession _host;
         private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
-        private bool _ready;
 
         /// <summary>
         /// Map of functions to packages. Used to quickly find package 
@@ -44,7 +43,7 @@ namespace Microsoft.R.Support.Help.Functions {
         private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
         [ImportingConstructor]
-        public FunctionIndex(ICoreShell coreShell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRHost host) {
+        public FunctionIndex(ICoreShell coreShell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
             _coreShell = coreShell;
             _functionRdDataProvider = rdDataProfider;
             _host = host;
@@ -52,16 +51,15 @@ namespace Microsoft.R.Support.Help.Functions {
 
         public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
             packageIndex = packageIndex ?? _coreShell.ExportProvider.GetExportedValue<IPackageIndex>();
-            await _buildIndexLock.WaitAsync();
+            var ready = await _buildIndexLock.WaitAsync();
             try {
-                if (!_ready) {
+                if (!ready) {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
                         foreach (var f in pi.Functions) {
                             _functionToPackageMap[f.Name] = pi.Name;
                         }
                     }
-                    _ready = true;
                 }
             } finally {
                 _buildIndexLock.Release();

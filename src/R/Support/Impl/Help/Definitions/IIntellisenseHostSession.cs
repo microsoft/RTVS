@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Support.Help {
-    public interface IIntellisenseRHost : IDisposable {
+    public interface IIntellisenseRSession : IDisposable {
         IRSession Session { get; }
         Task CreateSessionAsync();
     }

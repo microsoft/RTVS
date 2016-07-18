@@ -24,11 +24,11 @@ namespace Microsoft.R.Support.Help.Packages {
         /// showing list of functions available in the file.
         /// </summary>
         private readonly ConcurrentBag<INamedItemInfo> _functions = new ConcurrentBag<INamedItemInfo>();
-        private readonly IIntellisenseRHost _host;
+        private readonly IIntellisenseRSession _host;
         private readonly string _version;
         private bool _saved;
 
-        public PackageInfo(IIntellisenseRHost host, string name, string description, string version) :
+        public PackageInfo(IIntellisenseRSession host, string name, string description, string version) :
             base(name, description, NamedItemType.Package) {
             _host = host;
             _version = version;
@@ -71,16 +71,16 @@ namespace Microsoft.R.Support.Help.Packages {
         }
 
         private async Task<IEnumerable<string>> GetFunctionNamesAsync() {
-            var cached = TryRestoreFromCache();
-            if (cached == null) {
+            var functions = TryRestoreFromCache();
+            if (functions == null) {
                 try {
                     var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
-                    return r.Select(p => (string)((JValue)p).Value).ToArray();
+                    functions = r.Select(p => (string)((JValue)p).Value).ToArray();
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;
             }
-            return Enumerable.Empty<string>();
+            return functions;
         }
 
         /// <summary>

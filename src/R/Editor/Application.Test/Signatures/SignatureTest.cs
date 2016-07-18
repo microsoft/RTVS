@@ -35,7 +35,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                IntelliSenseRHost.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
                     PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
@@ -71,7 +71,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                IntelliSenseRHost.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
                     PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
