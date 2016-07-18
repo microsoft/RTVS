@@ -5,13 +5,13 @@ using System;
 using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
-    public class RRequestEventArgs : EventArgs {
+    public class RBeforeRequestEventArgs : EventArgs {
         public IReadOnlyList<IRContext> Contexts { get; }
         public string Prompt { get; }
         public int MaxLength { get; }
         public bool AddToHistoty { get; }
 
-        public RRequestEventArgs(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistoty) {
+        public RBeforeRequestEventArgs(IReadOnlyList<IRContext> contexts, string prompt, int maxLength, bool addToHistoty) {
             Contexts = contexts;
             Prompt = prompt;
             MaxLength = maxLength;

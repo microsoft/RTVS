@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.Languages.Editor.Test.Shell {
     /// <summary>
@@ -197,8 +198,8 @@ namespace Microsoft.Languages.Editor.Test.Shell {
                     throw new FileNotFoundException(assemblyName);
                 }
 
-                AssemblyCatalog editorCatalog = new AssemblyCatalog(assembly);
-                aggregateCatalog.Catalogs.Add(editorCatalog);
+                var catalog = new AssemblyCatalog(assembly).Filter(cpd => !cpd.ContainsPartMetadataWithKey(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog));
+                aggregateCatalog.Catalogs.Add(catalog);
             } catch (Exception) {
                 Debug.Assert(false, "Can't find editor assembly: " + assemblyName);
             }

@@ -199,7 +199,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     }
                     await evaluation.SetDefaultWorkingDirectoryAsync();
                 }
-            }).SilenceException<RException>().SilenceException<MessageTransportException>().DoNotWait();
+            }).SilenceException<RException>().DoNotWait();
         }
 
         private async Task<bool> GetLoadDefaultWorkspace(string rdataPath) {

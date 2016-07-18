@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Data;
@@ -35,7 +36,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         private bool _updating;
 
         [ImportingConstructor]
-        public WorkspaceVariableProvider(IRSessionProvider sessionProvider) : base(sessionProvider) { }
+        public WorkspaceVariableProvider(IRInteractiveWorkflowProvider workflowProvider) : base(workflowProvider) { }
 
         #region IVariablesProvider
         /// <summary>
@@ -84,13 +85,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 // May be a package object line mtcars$
                 variableName = TrimToTrailingSelector(variableName);
-                var sessionProvider = SessionProvider;
-                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                var session = Workflow.RSession;
                 IReadOnlyList<IREvaluationResultInfo> infoList = null;
                 try {
                     infoList = session.DescribeChildrenAsync(REnvironments.GlobalEnv, 
-                               variableName, 
-                               REvaluationResultProperties.HasChildrenProperty | REvaluationResultProperties.AccessorKindProperty,
+                               variableName, HasChildrenProperty | AccessorKindProperty,
                                null, _maxResults).WaitTimeout(_maxWaitTime);
                 } catch(TimeoutException) { }
 
@@ -103,7 +102,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                                 .Select(m => new VariableInfo(TrimLeadingSelector(m.Name), string.Empty))
                                 .ToArray();
                 }
-            } catch (OperationCanceledException) { } catch (RException) { } catch (MessageTransportException) { }
+            } catch (OperationCanceledException) { } catch (RException) { }
 
             return new VariableInfo[0];
         }
@@ -138,8 +137,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             try {
                 _updating = true;
                 // May be null in tests
-                var sessionProvider = SessionProvider;
-                var session = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+                IRSession session = Workflow.RSession;
                 if (session.IsHostRunning) {
                     var stackFrames = await session.TracebackAsync();
 
@@ -178,7 +176,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 this(e.Name, e.TypeName) { }
 
             public VariableInfo(string name, string typeName) {
-                this.Name = name;
+                Name = name;
                 if (typeName.EqualsOrdinal("closure") || typeName.EqualsOrdinal("builtin")) {
                     ItemType = NamedItemType.Function;
                 } else {
@@ -188,13 +186,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
             public string Description { get; } = string.Empty;
 
-            public NamedItemType ItemType { get; private set; }
+            public NamedItemType ItemType { get; }
 
-            public string Name { get; set; }
-
-            public string ActualName {
-                get { return Name; }
-            }
+            public string Name { get; }
         }
     }
 }

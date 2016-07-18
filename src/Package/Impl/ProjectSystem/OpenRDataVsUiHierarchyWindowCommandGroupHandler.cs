@@ -3,6 +3,7 @@
 
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -18,8 +19,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [AppliesTo(Constants.RtvsProjectCapability)]
     internal sealed class OpenRDataVsUiHierarchyWindowCommandGroupHandler : OpenRDataCommandGroupHandler {
         [ImportingConstructor]
-        public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRSessionProvider sessionProvider)
-            : base(unconfiguredProject, sessionProvider, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey) {}
+        public OpenRDataVsUiHierarchyWindowCommandGroupHandler(UnconfiguredProject unconfiguredProject, IRInteractiveWorkflowProvider workflowProvider)
+            : base(unconfiguredProject, workflowProvider, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick, (long)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey) {}
 
         protected override async Task<bool> TryHandleCommandAsyncInternal(IProjectTree rDataNode) {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();

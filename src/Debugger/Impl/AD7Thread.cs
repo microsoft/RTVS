@@ -165,7 +165,7 @@ namespace Microsoft.R.Debugger {
                 .ToArray());
         }
 
-        private void RSession_BeforeRequest(object sender, RRequestEventArgs e) {
+        private void RSession_BeforeRequest(object sender, RBeforeRequestEventArgs e) {
             ResetStackFrames();
         }
     }

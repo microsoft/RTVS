@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Components.Extensions;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Settings;
@@ -19,12 +20,12 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
     [Export(typeof(IObjectDetailsViewer))]
     internal sealed class CodeViewer : ViewerBase, IObjectDetailsViewer {
         private readonly static string[] _types = { "closure", "language" };
-        private readonly IRSessionProvider _sessionProvider;
+        private readonly IRInteractiveWorkflow _workflow;
 
         [ImportingConstructor]
-        public CodeViewer(IRSessionProvider sessionProvider, IDataObjectEvaluator evaluator) :
+        public CodeViewer(IRInteractiveWorkflowProvider workflowProvider, IDataObjectEvaluator evaluator) :
             base(evaluator) {
-            _sessionProvider = sessionProvider;
+            _workflow = workflowProvider.GetOrCreate();
         }
 
         #region IObjectDetailsViewer
@@ -41,7 +42,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
             }
 
             var functionName = evaluation.Expression;
-            var session = _sessionProvider.GetInteractiveWindowRSession();
+            var session = _workflow.RSession;
 
             string functionCode = await GetFunctionCode(functionName);
             if (!string.IsNullOrEmpty(functionCode)) {
@@ -69,11 +70,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
         #endregion
 
         internal async Task<string> GetFunctionCode(string functionName) {
-            var session = _sessionProvider.GetInteractiveWindowRSession();
+            var session = _workflow.RSession;
             string functionCode = null;
             try {
                 functionCode = await session.GetFunctionCodeAsync(functionName);
-            } catch (RException) { } catch (MessageTransportException) { }
+            } catch (RException) { } catch (RHostBinaryMissingException) { }
 
             if (!string.IsNullOrEmpty(functionCode)) {
                 var formatter = new RFormatter(REditorSettings.FormatOptions);

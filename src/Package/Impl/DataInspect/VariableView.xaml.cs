@@ -15,6 +15,7 @@ using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Wpf.Extensions;
 using Microsoft.R.Components.Controller;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
@@ -54,8 +55,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             SortDirection = ListSortDirection.Ascending;
             RootTreeGrid.Sorting += RootTreeGrid_Sorting;
 
-            var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-            _session = sessionProvider.GetInteractiveWindowRSession();
+            var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _session = workflow.RSession;
 
             _environmentProvider = new REnvironmentProvider(_session);
             EnvironmentComboBox.DataContext = _environmentProvider;

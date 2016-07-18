@@ -34,7 +34,6 @@ namespace Microsoft.VisualStudio.R.Package.Repl.Commands {
                 if (!string.IsNullOrEmpty(projectFile)) {
                     _interactiveWorkflow.RSession.SetWorkingDirectoryAsync(Path.GetDirectoryName(projectFile))
                         .SilenceException<RException>()
-                        .SilenceException<MessageTransportException>()
                         .DoNotWait();
                 }
             }

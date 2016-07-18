@@ -8,10 +8,11 @@ using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Common.Core;
+using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.DataInspection;
 using Microsoft.R.Editor.Data;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.DataInspect.Office;
@@ -159,17 +160,17 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
         public async Task DeleteAsync(string envExpr) {
             if (!_deleted) {
                 _deleted = true;
-                var sessionProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRSessionProvider>();
-                var session = sessionProvider.GetInteractiveWindowRSession();
+                var workflow = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+                var session = workflow.RSession;
                 try {
                     using (var e = await session.BeginInteractionAsync(isVisible: false)) {
                         string rmText = string.IsNullOrWhiteSpace(envExpr) ? Invariant($"rm({Name})") : Invariant($"rm({Name}, envir = {envExpr})");
                         await e.RespondAsync(rmText);
                     }
                 } catch (RException rex) {
-                    VsAppShell.Current.ShowErrorMessage(
-                        string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
-                } catch (MessageTransportException) { }
+                    VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_UnableToDeleteVariable, rex.Message));
+                } catch (RHostDisconnectedException) {
+                }
             }
         }
         #endregion

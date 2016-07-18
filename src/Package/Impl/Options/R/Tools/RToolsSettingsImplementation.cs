@@ -128,7 +128,6 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                         await eval.SetVsCranSelectionAsync(mirrorUrl);
                     }
                 } catch (RException) {
-                } catch (MessageTransportException) {
                 } catch (OperationCanceledException) {
                 }
             }

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Host.Client {
     public interface IRSession : IRExpressionEvaluator, IDisposable {
-        event EventHandler<RRequestEventArgs> BeforeRequest;
-        event EventHandler<RRequestEventArgs> AfterRequest;
+        event EventHandler<RBeforeRequestEventArgs> BeforeRequest;
+        event EventHandler<RAfterRequestEventArgs> AfterRequest;
         event EventHandler<EventArgs> Mutated;
         event EventHandler<ROutputEventArgs> Output;
         event EventHandler<EventArgs> Connected;

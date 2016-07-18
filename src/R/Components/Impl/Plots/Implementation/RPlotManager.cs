@@ -11,6 +11,7 @@ using Microsoft.R.Components.Plots.Implementation.Commands;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Extensions;
+using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Session;
 
 namespace Microsoft.R.Components.Plots.Implementation {
@@ -48,12 +49,14 @@ namespace Microsoft.R.Components.Plots.Implementation {
             interactiveWorkflow.RSession.Disconnected += RSession_Disconnected;
         }
 
-        private async void RSession_Connected(object sender, EventArgs e) {
+        private void RSession_Connected(object sender, EventArgs e) {
+            RSessionConnectedAsync().DoNotWait();
+        }
+
+        private async Task RSessionConnectedAsync() {
             if (_lastPixelWidth > 0 && _lastPixelHeight > 0 && _lastResolution > 0) {
                 try {
                     await ResizeAsync(_lastPixelWidth, _lastPixelHeight, _lastResolution);
-                } catch (OperationCanceledException) {
-                } catch (MessageTransportException) {
                 } catch (RException) {
                 }
             }
@@ -123,7 +126,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.ClearPlotHistoryAsync();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             }
         }
@@ -132,7 +135,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.RemoveCurrentPlotAsync();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             }
         }
@@ -141,7 +144,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.NextPlotAsync();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             }
         }
@@ -150,7 +153,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             await TaskUtilities.SwitchToBackgroundThread();
             try {
                 await _interactiveWorkflow.RSession.PreviousPlotAsync();
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             }
         }
@@ -166,7 +169,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
             try {
                 await _interactiveWorkflow.RSession.ResizePlotAsync(pixelWidth, pixelHeight, resolution);
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             }
         }
@@ -175,7 +178,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             try {
                 var bitmapResult = await _interactiveWorkflow.RSession.ExportToBitmapAsync(deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution);
                 bitmapResult.SaveRawDataToFile(outputFilePath);
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
@@ -186,7 +189,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             try {
                 var metafileResult = await _interactiveWorkflow.RSession.ExportToMetafileAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
                 metafileResult.SaveRawDataToFile(outputFilePath);
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
@@ -197,7 +200,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
             try {
                 var pdfResult = await _interactiveWorkflow.RSession.ExportToPdfAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
                 pdfResult.SaveRawDataToFile(outputFilePath);
-            } catch (MessageTransportException ex) {
+            } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
                 throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);

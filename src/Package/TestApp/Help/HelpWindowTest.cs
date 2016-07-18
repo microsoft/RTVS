@@ -72,7 +72,6 @@ namespace Microsoft.VisualStudio.R.Interactive.Test.Help {
             clientApp.Ready = false;
             hostScript.Session.ExecuteAsync($"rtvs:::show_help({command.ToRStringLiteral()})")
                 .SilenceException<RException>()
-                .SilenceException<MessageTransportException>()
                 .DoNotWait();
             WaitForAppReady(clientApp);
         }

@@ -65,7 +65,6 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
 
                 success = true;
             } catch (RException) {
-            } catch (MessageTransportException) {
             } catch (OperationCanceledException) {
             }
 

@@ -7,14 +7,16 @@ using static System.FormattableString;
 
 namespace Microsoft.Common.Core.Disposables {
     public sealed class DisposeToken {
+        private readonly Action _dispose;
         private readonly string _message;
         private int _disposed;
 
-        public static DisposeToken Create<T>() where T : IDisposable {
-            return new DisposeToken(Invariant($"{typeof(T).Name} instance is disposed"));
+        public static DisposeToken Create<T>(Action dispose = null) where T : IDisposable {
+            return new DisposeToken(dispose, Invariant($"{typeof(T).Name} instance is disposed"));
         }
 
-        public DisposeToken(string message = null) {
+        public DisposeToken(Action dispose = null, string message = null) {
+            _dispose = dispose;
             _message = message;
         }
 
@@ -31,7 +33,11 @@ namespace Microsoft.Common.Core.Disposables {
         }
 
         public bool TryMarkDisposed() {
-            return Interlocked.Exchange(ref _disposed, 1) == 0;
+            var markedDisposed = Interlocked.Exchange(ref _disposed, 1) == 0;
+            if (markedDisposed) {
+                _dispose?.Invoke();
+            }
+            return markedDisposed;
         }
     }
 }

@@ -43,11 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventTaskSources.cs" />
+    <Compile Include="FluentAssertions\ActionAssertionsExtensions.cs" />
+    <Compile Include="FluentAssertions\AsyncAssertions.cs" />
     <Compile Include="FluentAssertions\CollectionAssertionsExtensions.cs" />
     <Compile Include="FluentAssertions\FluentAssertionExtensions.cs" />
     <Compile Include="FluentAssertions\GivenSelectorExtensions.cs" />
     <Compile Include="FluentAssertions\ObjectAssertionsExtensions.cs" />
     <Compile Include="Mef\CatalogFactory.cs" />
+    <Compile Include="Mef\PartMetadataAttributeNames.cs" />
     <Compile Include="NSubstitute\SubstituteExtensions.cs" />
     <Compile Include="NSubstitute\SubstituteHelper.cs" />
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.AddValueFactory.cs" />
@@ -56,6 +59,7 @@
     <Compile Include="NSubstitute\Mef\MefSubstituteBuilder.cs" />
     <Compile Include="NSubstitute\Mef\NSubstituteCompositionContainer.cs" />
     <Compile Include="NSubstitute\Mef\NSubstituteExportProvider.cs" />
+    <Compile Include="Paths.cs" />
     <Compile Include="Threading\ControlledTaskScheduler.cs" />
     <Compile Include="Threading\ControlledTaskSchedulerExtensions.cs" />
     <Compile Include="Threading\ParallelTools.cs" />

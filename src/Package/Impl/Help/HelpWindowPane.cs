@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.Help;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Host.Client;
@@ -14,6 +15,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Task = System.Threading.Tasks.Task;
 
 namespace Microsoft.VisualStudio.R.Package.Help {
     [Guid(WindowGuidString)]
@@ -52,7 +54,7 @@ namespace Microsoft.VisualStudio.R.Package.Help {
             //private static IEnumerable<Lazy<IRHelpSearchTermProvider>> _termProviders;
             //private readonly List<string> _terms = new List<string>();
             private readonly IVsSearchCallback _callback;
-            private IRInteractiveWorkflowProvider _workflowProvider;
+            private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
             public HelpSearchTask(uint dwCookie, IVsSearchQuery pSearchQuery, IVsSearchCallback pSearchCallback)
                 : base(dwCookie, pSearchQuery, pSearchCallback) {
@@ -60,20 +62,19 @@ namespace Microsoft.VisualStudio.R.Package.Help {
                 _workflowProvider = VsAppShell.Current.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             }
 
-            protected override async void OnStartSearch() {
+            protected override void OnStartSearch() {
                 base.OnStartSearch();
                 _callback.ReportComplete(this, 1);
 
                 var searchString = SearchQuery.SearchString;
                 if (!string.IsNullOrWhiteSpace(searchString)) {
-                    try {
-                        var session = _workflowProvider.GetOrCreate().RSession;
-                        await session.ExecuteAsync($"rtvs:::show_help({searchString.ToRStringLiteral()})");
-                    } catch (OperationCanceledException) {
-                    } catch (RException) {
-                    } catch (MessageTransportException) {
-                    }
+                    SearchAsync(searchString).DoNotWait();
                 }
+            }
+
+            private Task SearchAsync(string searchString) {
+                var session = _workflowProvider.GetOrCreate().RSession;
+                return session.ExecuteAsync($"rtvs:::show_help({searchString.ToRStringLiteral()})");
             }
 
 

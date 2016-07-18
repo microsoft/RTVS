@@ -7,15 +7,17 @@ using System.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.VisualStudio.R.Package.Repl;
+using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Components.Test.Fakes.InteractiveWindow {
     [Export(typeof(IRInteractiveWorkflowProvider))]
     [Export(typeof(TestRInteractiveWorkflowProvider))]
+    [PartMetadata(PartMetadataAttributeNames.SkipInEditorTestCompositionCatalog, null)]
     public class TestRInteractiveWorkflowProvider : IRInteractiveWorkflowProvider {
         private readonly IRSessionProvider _sessionProvider;
         private readonly IRHistoryProvider _historyProvider;

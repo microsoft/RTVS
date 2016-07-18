@@ -6,16 +6,13 @@ using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
-using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Install;
-using Microsoft.VisualStudio.InteractiveWindow;
+using Microsoft.VisualStudio.R.Package.Repl;
 
-namespace Microsoft.VisualStudio.R.Package.Repl {
+namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
     public sealed class RInteractiveWorkflow : IRInteractiveWorkflow {
         private readonly IActiveWpfTextViewTracker _activeTextViewTracker;
         private readonly IDebuggerModeTracker _debuggerModeTracker;
@@ -121,11 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.Repl {
                 return ActiveWindow;
             }
 
-            var svl = new SupportedRVersionRange();
-            var ri = new RInstallation();
-            var evaluator = ri.VerifyRIsInstalled(Shell, svl, _settings.RBasePath)
-                ? new RInteractiveEvaluator(RSession, History, Shell, _settings)
-                : (IInteractiveEvaluator) new NullInteractiveEvaluator();
+            var evaluator = new RInteractiveEvaluator(RSession, History, Shell, _settings);
 
             ActiveWindow = componentContainerFactory.Create(instanceId, evaluator);
             var interactiveWindow = ActiveWindow.InteractiveWindow;
