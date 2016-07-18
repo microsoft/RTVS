@@ -5,12 +5,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Microsoft.Languages.Core.Text;
-using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     internal class TextChange : ICloneable
     {
         /// <summary>

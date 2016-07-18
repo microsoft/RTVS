@@ -3,7 +3,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Components.Extensions;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;

@@ -4,8 +4,7 @@
 using System;
 using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.EditorHelpers;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.R.Components.Services;
 using Microsoft.VisualStudio.Text;

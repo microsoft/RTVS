@@ -6,7 +6,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.Markdown.Editor.Commands;
 using Microsoft.R.Components.Controller;

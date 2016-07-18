@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Microsoft.Languages.Editor.EditorHelpers {
+namespace Microsoft.Languages.Editor.Extensions {
     // Utility functions for calculating incremental text changes
     public class TextChange {
         public TextChange(int position, int length, string newText) {

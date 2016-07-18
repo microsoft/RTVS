@@ -8,12 +8,11 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Projection;
 
-namespace Microsoft.Languages.Editor.EditorHelpers {
+namespace Microsoft.Languages.Editor.Extensions {
     public class TextChangeExtent {
         public TextChangeExtent(int start, int oldEnd, int newEnd) {
             Start = start;
