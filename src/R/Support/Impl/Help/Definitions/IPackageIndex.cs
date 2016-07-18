@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Support.Help {
     public interface IPackageIndex: IDisposable {
@@ -12,6 +11,11 @@ namespace Microsoft.R.Support.Help {
         /// Creates index of packages available in the provided R session
         /// </summary>
         Task BuildIndexAsync();
+
+        /// <summary>
+        /// Writes index cache to disk
+        /// </summary>
+        void WriteToDisk();
 
         /// <summary>
         /// Returns collection of packages in the current 

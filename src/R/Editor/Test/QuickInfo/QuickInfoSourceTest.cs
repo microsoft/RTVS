@@ -26,20 +26,22 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
     public class FunctionIndexTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
+        private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
         public FunctionIndexTest(REditorMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
+            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+            return _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            await _packageIndex.DisposeAsync(_exportProvider);
             _exportProvider.Dispose();
         }
 

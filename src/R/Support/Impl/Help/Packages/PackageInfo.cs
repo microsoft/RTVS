@@ -23,9 +23,10 @@ namespace Microsoft.R.Support.Help.Packages {
         /// Used to extract function names and descriptions when
         /// showing list of functions available in the file.
         /// </summary>
-        private readonly BlockingCollection<INamedItemInfo> _functions = new BlockingCollection<INamedItemInfo>();
+        private readonly ConcurrentBag<INamedItemInfo> _functions = new ConcurrentBag<INamedItemInfo>();
         private readonly IIntellisenseRHost _host;
         private readonly string _version;
+        private bool _saved;
 
         public PackageInfo(IIntellisenseRHost host, string name, string description, string version) :
             base(name, description, NamedItemType.Package) {
@@ -38,18 +39,35 @@ namespace Microsoft.R.Support.Help.Packages {
         /// Collection of functions in the package
         /// </summary>
         public IEnumerable<INamedItemInfo> Functions => _functions;
-        #endregion
 
-        public void Dispose() {
-            SaveFunctionsList();
+        public void WriteToDisk() {
+            if (!_saved) {
+                var filePath = GetCacheFilePath();
+                try {
+                    var dir = Path.GetDirectoryName(filePath);
+                    if (!Directory.Exists(dir)) {
+                        Directory.CreateDirectory(dir);
+                    }
+                    using (var sw = new StreamWriter(filePath)) {
+                        foreach (var f in _functions) {
+                            sw.WriteLine(f.Name);
+                        }
+                    }
+                    _saved = true;
+                } catch (IOException ioex) {
+                    GeneralLog.Write(ioex);
+                } catch (AccessViolationException aex) {
+                    GeneralLog.Write(aex);
+                }
+            }
         }
+        #endregion
 
         public async Task LoadFunctionsIndexAsync() {
             var functionNames = await GetFunctionNamesAsync();
             foreach (var functionName in functionNames) {
                 _functions.Add(new FunctionInfo(functionName));
             }
-            _functions.CompleteAdding();
         }
 
         private async Task<IEnumerable<string>> GetFunctionNamesAsync() {
@@ -59,6 +77,8 @@ namespace Microsoft.R.Support.Help.Packages {
                     var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(base::getNamespaceExports('{this.Name}'))"), REvaluationKind.Normal);
                     return r.Select(p => (string)((JValue)p).Value).ToArray();
                 } catch (MessageTransportException) { } catch (TaskCanceledException) { } catch (REvaluationException) { }
+            } else {
+                _saved = true;
             }
             return Enumerable.Empty<string>();
         }
@@ -70,37 +90,24 @@ namespace Microsoft.R.Support.Help.Packages {
         private IEnumerable<string> TryRestoreFromCache() {
             var filePath = GetCacheFilePath();
             try {
-                var list = new List<string>();
-                using (var sr = new StreamReader(filePath)) {
-                    while (!sr.EndOfStream) {
-                        list.Add(sr.ReadLine().Trim());
+                if (File.Exists(filePath)) {
+                    var list = new List<string>();
+                    using (var sr = new StreamReader(filePath)) {
+                        while (!sr.EndOfStream) {
+                            list.Add(sr.ReadLine().Trim());
+                        }
                     }
+                    return list;
                 }
-                return list;
             } catch (IOException) { } catch (AccessViolationException) { }
 
             return null;
         }
 
-        public void SaveFunctionsList() {
-            var filePath = GetCacheFilePath();
-            try {
-                using (var sw = new StreamWriter(filePath)) {
-                    foreach (var f in _functions) {
-                        sw.WriteLine(f.Name);
-                    }
-                }
-            } catch (IOException ioex) {
-                GeneralLog.Write(ioex);
-            } catch (AccessViolationException aex) {
-                GeneralLog.Write(aex);
-            }
-        }
-
         private string GetCacheFilePath() {
             var folder = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                            @"Microsoft\RTVS\IntelliSense\");
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            @"Microsoft\VisualStudio\RTVS\IntelliSense\");
             return Path.Combine(folder, Invariant($"{this.Name}_{_version}.functions"));
         }
     }

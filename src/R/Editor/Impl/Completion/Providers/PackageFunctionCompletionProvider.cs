@@ -31,7 +31,11 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private readonly IPackageIndex _packageIndex;
 
         [ImportingConstructor]
-        public PackageFunctionCompletionProvider(ILoadedPackagesProvider loadedPackagesProvider, [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, IPackageIndex packageIndex, ICoreShell shell) {
+        public PackageFunctionCompletionProvider(
+            ILoadedPackagesProvider loadedPackagesProvider, 
+            [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, 
+            IPackageIndex packageIndex, 
+            ICoreShell shell) {
             _loadedPackagesProvider = loadedPackagesProvider;
             _snippetInformationSource = snippetInformationSource;
             _shell = shell;

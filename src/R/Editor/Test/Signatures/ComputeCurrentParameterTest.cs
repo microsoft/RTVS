@@ -28,20 +28,22 @@ namespace Microsoft.R.Editor.Test.Signatures {
     public class ComputeCurrentParameter : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _coreShell;
+        private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
         public ComputeCurrentParameter(REditorMefCatalogFixture catalogFixture, EditorTestFilesFixture testFiles) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _coreShell = _exportProvider.GetExportedValue<ICoreShell>();
+            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+            return _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            await _packageIndex.DisposeAsync(_exportProvider);
             _exportProvider.Dispose();
         }
 
@@ -58,7 +60,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
                 using (var document = new EditorDocumentMock(tree)) {
 
                     session.TrackingPoint = new TrackingPointMock(textBuffer, 4, PointTrackingMode.Positive, TrackingFidelityMode.Forward);
-                    await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "aov");
+                    await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "aov");
 
                     tree.TakeThreadOwnerShip();
                     await source.AugmentSignatureHelpSessionAsync(session, signatures, tree.AstRoot);
@@ -100,7 +102,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task ParameterTest_ComputeCurrentParameter02() {
-            await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
+            await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
 
             REditorSettings.PartialArgumentNameMatch = true;
 
@@ -134,7 +136,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task ParameterTest_ComputeCurrentParameter03() {
-            await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
+            await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
 
             REditorSettings.PartialArgumentNameMatch = false;
 
@@ -164,7 +166,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
 
         [Test]
         public async Task ParameterTest_ComputeCurrentParameter04() {
-            await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
+            await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "legend");
 
             REditorSettings.PartialArgumentNameMatch = true;
 

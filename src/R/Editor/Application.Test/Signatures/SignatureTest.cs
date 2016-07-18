@@ -38,7 +38,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 IntelliSenseRHost.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(");
                     script.DoIdle(2000);
@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
                 IntelliSenseRHost.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(subset = a, sing");
                     script.DoIdle(1000);
@@ -107,7 +107,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_EqualsCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 var functionIndex = PrepareFunctionIndex();
-                FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
+                PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
 
                 script.DoIdle(100);
                 script.Type("addmargins(FU");
@@ -123,9 +123,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         }
 
         private IFunctionIndex PrepareFunctionIndex() {
-            var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>(); ;
-            functionIndex.BuildIndexAsync().Wait();
-            return functionIndex;
+            var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
+            packageIndex.BuildIndexAsync().Wait();
+            return _exportProvider.GetExportedValue<IFunctionIndex>();
         }
     }
 }

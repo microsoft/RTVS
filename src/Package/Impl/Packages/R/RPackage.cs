@@ -133,11 +133,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override void Dispose(bool disposing) {
-            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
-                _indexBuildingTask.Wait(2000);
-                _packageIndex?.Dispose();
-                _indexBuildingTask = null;
-            }
+            SavePackageIndex();
 
             LogCleanup.Cancel();
             ProjectIconProvider.Close();
@@ -202,6 +198,17 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         private void BuildFunctionIndex() {
             _packageIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IPackageIndex>();
             _indexBuildingTask = _packageIndex.BuildIndexAsync();
+        }
+
+        private void SavePackageIndex() {
+            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
+                _indexBuildingTask.Wait(2000);
+                if (_indexBuildingTask.IsCompleted) {
+                    _packageIndex.WriteToDisk();
+                }
+                _packageIndex?.Dispose();
+                _indexBuildingTask = null;
+            }
         }
     }
 }

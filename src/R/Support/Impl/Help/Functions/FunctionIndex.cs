@@ -16,6 +16,7 @@ namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
     /// Provides information on functions in packages for intellisense.
     /// </summary>
+    [Export(typeof(IFunctionIndex))]
     public sealed class FunctionIndex : IFunctionIndex {
         private readonly ICoreShell _coreShell;
         private readonly IIntellisenseRHost _host;
@@ -43,27 +44,22 @@ namespace Microsoft.R.Support.Help.Functions {
         private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
         [ImportingConstructor]
-        public FunctionIndex(ICoreShell shell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRHost host) {
-            _coreShell = shell;
+        public FunctionIndex(ICoreShell coreShell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRHost host) {
+            _coreShell = coreShell;
             _functionRdDataProvider = rdDataProfider;
             _host = host;
         }
 
-        public async Task BuildIndexAsync(IPackageIndex packageIndex) {
+        public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
+            packageIndex = packageIndex ?? _coreShell.ExportProvider.GetExportedValue<IPackageIndex>();
             _ready = await _buildIndexLock.WaitAsync();
             if (!_ready) {
-                await TaskUtilities.SwitchToBackgroundThread();
-                await _host.CreateSessionAsync();
-
                 // First populate index for popular packages that are commonly preloaded
-                var startTime = DateTime.Now;
                 foreach (var pi in packageIndex.Packages) {
                     foreach (var f in pi.Functions) {
                         _functionToPackageMap[f.Name] = pi.Name;
                     }
                 }
-
-                Debug.WriteLine("R functions index: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
                 _ready = true;
             }
         }

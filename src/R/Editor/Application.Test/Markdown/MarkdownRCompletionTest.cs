@@ -66,7 +66,8 @@ x <- function() {
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
                     await packageIndex.BuildIndexAsync();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.DoIdle(500);
                     script.MoveDown();

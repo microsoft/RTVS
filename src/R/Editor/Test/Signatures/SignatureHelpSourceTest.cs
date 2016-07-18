@@ -25,19 +25,21 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [Category.R.Signatures]
     public class SignatureHelpSourceTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
+        private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
         public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
+            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+            return _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            await _packageIndex.DisposeAsync(_exportProvider);
             _exportProvider.Dispose();
         }
 

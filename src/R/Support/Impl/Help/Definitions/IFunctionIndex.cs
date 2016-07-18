@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.R.Support.Help {
     public interface IFunctionIndex {
-        Task BuildIndexAsync(IPackageIndex packageIndex);
+        Task BuildIndexAsync(IPackageIndex packageIndex = null);
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
     }
 }

@@ -48,17 +48,29 @@ namespace Microsoft.R.Support.Help.Packages {
         public async Task BuildIndexAsync() {
             _ready = await _buildIndexLock.WaitAsync();
             if (!_ready) {
+                var startTotalTime = DateTime.Now;
+
                 await TaskUtilities.SwitchToBackgroundThread();
                 await _host.CreateSessionAsync();
+                Debug.WriteLine("R function host start: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
 
+                var startTime = DateTime.Now;
                 // Fetch list of available packages from R session
                 await BuildPackageListAsync();
+                Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+
                 // Populate function index for preloaded packages first
+                startTime = DateTime.Now;
                 await BuildPreloadedPackagesFunctionListAsync();
+                Debug.WriteLine("R function index (preloaded): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
+
                 // Populate function index for all remaining packages
+                startTime = DateTime.Now;
                 await BuildRemainingPackagesFunctionListAsync();
+                Debug.WriteLine("R function index (remaining): {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
 
                 await _functionIndex.BuildIndexAsync(this);
+                Debug.WriteLine("R function index total: {0} ms", (DateTime.Now - startTotalTime).TotalMilliseconds);
                 _ready = true;
             }
         }
@@ -86,23 +98,23 @@ namespace Microsoft.R.Support.Help.Packages {
             }
             return Task.FromResult(package);
         }
+
+        public void WriteToDisk() {
+            foreach (var pi in _packages.Values) {
+                pi.WriteToDisk();
+            }
+        }
         #endregion
 
         public void Dispose() {
             _host?.Dispose();
-            foreach (var pi in _packages.Values) {
-                pi.Dispose();
-            }
-            _packages.Clear();
         }
 
         private async Task BuildPackageListAsync() {
-            var startTime = DateTime.Now;
             var packages = await GetPackagesAsync();
             foreach (var p in packages) {
                 _packages[p.Package] = new PackageInfo(_host, p.Package, p.Description, p.Version);
             }
-            Debug.WriteLine("R package names/description: {0} ms", (DateTime.Now - startTime).TotalMilliseconds);
         }
 
         private async Task BuildPreloadedPackagesFunctionListAsync() {
