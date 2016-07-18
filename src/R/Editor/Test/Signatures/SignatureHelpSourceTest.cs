@@ -20,7 +20,6 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
-    [Collection(CollectionNames.NonParallel)]
     public class SignatureHelpSourceTest : FunctionIndexBasedTest {
         public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 

@@ -13,12 +13,13 @@ using Xunit;
 
 namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
-    public class FunctionIndexTest : IAsyncLifetime {
+    [Category.R.Signatures]
+    public class FunctionInfoTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
-        public FunctionIndexTest(RSupportMefCatalogFixture catalog) {
+        public FunctionInfoTest(RSupportMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
@@ -34,7 +35,6 @@ namespace Microsoft.R.Support.Test.Functions {
         }
 
         [Test]
-        [Category.R.Signatures]
          public async Task FunctionInfoTest1() {
             var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "abs");
 
@@ -50,7 +50,6 @@ namespace Microsoft.R.Support.Test.Functions {
         }
 
         [Test]
-        [Category.R.Signatures]
         public async Task FunctionInfoTest2() {
             var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "eval");
 

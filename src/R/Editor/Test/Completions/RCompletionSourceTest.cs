@@ -20,7 +20,6 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Completions {
     [ExcludeFromCodeCoverage]
     [Category.R.Completion]
-    [Collection(CollectionNames.NonParallel)]
     public class RCompletionSourceTest : FunctionIndexBasedTest {
         public RCompletionSourceTest(REditorMefCatalogFixture catalog): base(catalog) { }
 
