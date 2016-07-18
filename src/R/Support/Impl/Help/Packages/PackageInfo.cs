@@ -56,7 +56,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     _saved = true;
                 } catch (IOException ioex) {
                     GeneralLog.Write(ioex);
-                } catch (AccessViolationException aex) {
+                } catch (UnauthorizedAccessException aex) {
                     GeneralLog.Write(aex);
                 }
             }
@@ -74,9 +74,9 @@ namespace Microsoft.R.Support.Help.Packages {
             var cached = TryRestoreFromCache();
             if (cached == null) {
                 try {
-                    var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(base::getNamespaceExports('{this.Name}'))"), REvaluationKind.Normal);
+                    var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
                     return r.Select(p => (string)((JValue)p).Value).ToArray();
-                } catch (MessageTransportException) { } catch (TaskCanceledException) { } catch (REvaluationException) { }
+                } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;
             }
@@ -99,7 +99,7 @@ namespace Microsoft.R.Support.Help.Packages {
                     }
                     return list;
                 }
-            } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
             return null;
         }

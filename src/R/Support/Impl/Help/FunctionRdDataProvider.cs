@@ -24,15 +24,24 @@ namespace Microsoft.R.Host.Client.Signatures {
         /// When RD data is available, invokes specified callback
         /// passing function name and the RD data extracted from R.
         /// </summary>
-        public void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
+        public void GetFunctionRdDataAsync(string functionName, string packageName, Action<string> rdDataAvailableCallback) {
             Task.Run(async () => {
+                var rd = await GetFunctionRdDataAsync(functionName, packageName);
+                rdDataAvailableCallback(rd);
+            });
+        }
+
+        /// <summary>
+        /// Asynchronously fetches RD data on the function from R.
+        /// </summary>
+        public Task<string> GetFunctionRdDataAsync(string functionName, string packageName) {
+            return Task.Run(async () => {
                 await _host.CreateSessionAsync();
                 string command = GetCommandText(functionName, packageName);
-                string rd;
                 try {
-                    rd = await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-                    rdDataAvailableCallback(rd);
+                    return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
                 } catch (RException) { }
+                return string.Empty;
             });
         }
 

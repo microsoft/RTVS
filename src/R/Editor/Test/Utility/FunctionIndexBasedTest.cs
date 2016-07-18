@@ -7,6 +7,7 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.XUnit;
 using Xunit;
 
 namespace Microsoft.R.Editor.Test.Utility {
@@ -17,7 +18,7 @@ namespace Microsoft.R.Editor.Test.Utility {
         protected readonly IPackageIndex _packageIndex;
         protected readonly IFunctionIndex _functionIndex;
 
-        protected FunctionIndexBasedTest(REditorMefCatalogFixture catalog) {
+        protected FunctionIndexBasedTest(AssemblyMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
             _editorShell = _exportProvider.GetExportedValue<IEditorShell>();
             _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();

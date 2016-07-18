@@ -8,5 +8,6 @@ namespace Microsoft.R.Support.Help {
     public interface IFunctionIndex {
         Task BuildIndexAsync(IPackageIndex packageIndex = null);
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
+        Task<IFunctionInfo> GetFunctionInfoAsync(string functionName);
     }
 }

@@ -3,10 +3,9 @@
 
 using System;
 using System.ComponentModel.Composition;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Support.Settings;
 
@@ -16,7 +15,7 @@ namespace Microsoft.R.Support.Help {
         private static readonly Guid SessionId = new Guid("8BEF9C06-39DC-4A64-B7F3-0C68353362C9");
         private readonly ICoreShell _coreShell;
         private readonly IRSessionProvider _sessionProvider;
-        private readonly SemaphoreSlim _sessionSemaphore = new SemaphoreSlim(1, 1);
+        private readonly BinaryAsyncLock _lock = new BinaryAsyncLock();
 
         [ImportingConstructor]
         public IntelliSenseRHost(ICoreShell coreShell, IRSessionProvider sessionProvider) {
@@ -38,7 +37,7 @@ namespace Microsoft.R.Support.Help {
         }
 
         public async Task CreateSessionAsync() {
-            await _sessionSemaphore.WaitAsync();
+            await _lock.WaitAsync();
             try {
                 if (Session == null) {
                     Session = _sessionProvider.GetOrCreate(SessionId);
@@ -54,7 +53,7 @@ namespace Microsoft.R.Support.Help {
                     }, null, timeout);
                 }
             } finally {
-                _sessionSemaphore.Release();
+                _lock.Release();
             }
         }
     }

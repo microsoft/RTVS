@@ -52,7 +52,7 @@ namespace Microsoft.R.Editor.DragDrop {
                 using (var sr = new StreamReader(file)) {
                     return sr.ReadToEnd().Trim();
                 }
-            } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return string.Empty;
         }
     }

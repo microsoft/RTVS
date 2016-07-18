@@ -69,7 +69,7 @@ namespace SetupCustomActions {
             var mefCatalog = Path.Combine(appDataLocal, @"Microsoft\VisualStudio\", vsVersion, "ComponentModelCache");
             try {
                 Directory.Delete(mefCatalog, recursive: true);
-            } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
             session.Log("End UpdateMefCatalogAction action");
             return ActionResult.Success;

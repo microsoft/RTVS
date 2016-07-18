@@ -29,17 +29,20 @@ namespace Microsoft.R.Editor.Completion.Providers {
         private readonly ISnippetInformationSourceProvider _snippetInformationSource;
         private readonly ICoreShell _shell;
         private readonly IPackageIndex _packageIndex;
+        private readonly IFunctionIndex _functionIndex;
 
         [ImportingConstructor]
         public PackageFunctionCompletionProvider(
             ILoadedPackagesProvider loadedPackagesProvider, 
             [Import(AllowDefault = true)] ISnippetInformationSourceProvider snippetInformationSource, 
-            IPackageIndex packageIndex, 
+            IPackageIndex packageIndex,
+            IFunctionIndex functionIndex,
             ICoreShell shell) {
             _loadedPackagesProvider = loadedPackagesProvider;
             _snippetInformationSource = snippetInformationSource;
             _shell = shell;
             _packageIndex = packageIndex;
+            _functionIndex = functionIndex;
         }
 
         #region IRCompletionListProvider
@@ -71,7 +74,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                         }
                         if (!isSnippet) {
                             ImageSource glyph = function.ItemType == NamedItemType.Constant ? constantGlyph : functionGlyph;
-                            var completion = new RCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph);
+                            var completion = new RFunctionCompletion(function.Name, CompletionUtilities.BacktickName(function.Name), function.Description, glyph, _functionIndex, context.Session);
                             completions.Add(completion);
                         }
                     }

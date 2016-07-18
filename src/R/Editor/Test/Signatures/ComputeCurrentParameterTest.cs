@@ -22,8 +22,8 @@ namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
     [Collection(CollectionNames.NonParallel)]
-    public class ComputeCurrentParameter : FunctionIndexBasedTest {
-        public ComputeCurrentParameter(REditorMefCatalogFixture catalog, EditorTestFilesFixture testFiles) : base(catalog) { }
+    public class ComputeCurrentParameterTest : FunctionIndexBasedTest {
+        public ComputeCurrentParameterTest(REditorMefCatalogFixture catalog, EditorTestFilesFixture testFiles) : base(catalog) { }
 
         [Test]
         public async Task ParameterTest_ComputeCurrentParameter01() {
