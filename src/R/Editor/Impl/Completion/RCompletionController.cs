@@ -21,6 +21,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.R.Editor.Completion {
+    using Languages.Editor.Shell;
     using Completion = Microsoft.VisualStudio.Language.Intellisense.Completion;
 
     /// <summary>
@@ -392,7 +393,8 @@ namespace Microsoft.R.Editor.Completion {
         /// Default signature session dismisses when caret changes position.
         /// </summary>
         public override void TriggerSignatureHelp() {
-            DismissAllSessions();
+            DismissSignatureSession(TextView, EditorShell.Current);
+            DismissQuickInfoSession(TextView);
             SignatureBroker.TriggerSignatureHelp(TextView);
         }
 

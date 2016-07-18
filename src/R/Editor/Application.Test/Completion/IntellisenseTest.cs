@@ -11,14 +11,13 @@ using FluentAssertions;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Snippets;
+using Microsoft.R.Editor.Test.Utility;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test.Script;
 using Microsoft.R.Support.Settings;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -27,24 +26,18 @@ using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Application.Test.Completion {
     [ExcludeFromCodeCoverage]
+    [Category.Interactive]
     [Collection(CollectionNames.NonParallel)]
-    public class IntellisenseTest : IDisposable {
+    public class IntellisenseTest : FunctionIndexBasedTest {
         private readonly EditorHostMethodFixture _editorHost;
-        private readonly IExportProvider _exportProvider;
         private readonly IRSessionProvider _sessionProvider;
 
-        public IntellisenseTest(REditorApplicationMefCatalogFixture catalogFixture, EditorHostMethodFixture editorHost) {
+        public IntellisenseTest(REditorApplicationMefCatalogFixture catalog, EditorHostMethodFixture editorHost): base(catalog) {
             _editorHost = editorHost;
-            _exportProvider = catalogFixture.CreateExportProvider();
             _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
         }
 
-        public void Dispose() {
-            _exportProvider.Dispose();
-        }
-
         [Test]
-        [Category.Interactive]
         public async Task R_KeywordIntellisense() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("funct");
@@ -59,7 +52,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_LibraryIntellisense() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("library(ut");
@@ -74,7 +66,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_RequireIntellisense() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("require(uti");
@@ -89,7 +80,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFilter01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
@@ -111,7 +101,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFilter02() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.Type("x <- lm");
@@ -126,7 +115,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_LoadedPackageFunctionCompletion() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (new RHostScript(_sessionProvider)) {
@@ -167,7 +155,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFiles() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 string asmPath = Assembly.GetExecutingAssembly().GetAssemblyPath();
@@ -190,7 +177,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFilesUserFolder() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (new RHostScript(_sessionProvider)) {
@@ -222,7 +208,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFilesAbsolute() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 var root = Path.GetPathRoot(Environment.GetFolderPath(Environment.SpecialFolder.Windows));
@@ -271,7 +256,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionFunctionBraces02() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -296,7 +280,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_NoCompletionOnTab() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -316,7 +299,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_CompletionOnTab() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -341,7 +323,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_NoCompletionOnTabWhenNoMatch() {
             // Tab only completes when selected item starts
             // with the text typed so far in the buffer
@@ -360,7 +341,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_NoCompletionOnTabInComment() {
             // Tab only completes when selected item starts
             // with the text typed so far in the buffer
@@ -377,7 +357,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_SnippetsCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 script.DoIdle(100);
@@ -403,7 +382,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_DeclaredVariablesCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -433,7 +411,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_DeclaredVariablesCompletion02() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -463,7 +440,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_DeclaredVariablesCompletion03() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
@@ -500,7 +476,6 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
         }
 
         [Test]
-        [Category.Interactive]
         public async Task R_PackageVariablesCompletion() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 using (var hostScript = new RHostScript(_sessionProvider)) {
