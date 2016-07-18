@@ -305,7 +305,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
 
                     REditorSettings.ShowCompletionOnTab = true;
                     script.DoIdle(100);
-                    script.Type("f1<-x");
+                    script.Type("f1<-labe");
                     UIThreadHelper.Instance.Invoke(() => script.GetCompletionSession().Dismiss());
 
                     script.DoIdle(300);
@@ -315,7 +315,7 @@ namespace Microsoft.R.Editor.Application.Test.Completion {
                     script.DoIdle(200);
 
                     string actual = script.EditorText;
-                    actual.Should().Be("f1<-X11");
+                    actual.Should().Be("f1<-labels");
 
                     REditorSettings.ShowCompletionOnTab = false;
                 }

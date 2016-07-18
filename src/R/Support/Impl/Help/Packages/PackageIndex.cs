@@ -153,7 +153,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 await _host.CreateSessionAsync();
                 var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"rtvs:::packages.installed()"), REvaluationKind.Normal);
                 return result.Select(p => p.ToObject<RPackage>());
-            } catch (MessageTransportException) { } catch (TaskCanceledException) { }
+            } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();
         }
     }
