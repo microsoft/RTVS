@@ -28,7 +28,7 @@ namespace Microsoft.R.Support.Test.Utility {
 
         public static Task InitializeAsync(this IPackageIndex packageIndex, IFunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
-            return functionIndex.BuildIndexAsync(packageIndex);
+            return packageIndex.BuildIndexAsync();
         } 
 
         public static async Task DisposeAsync(this IPackageIndex packageIndex, IExportProvider exportProvider) {

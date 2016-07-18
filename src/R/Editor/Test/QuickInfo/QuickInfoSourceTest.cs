@@ -23,6 +23,7 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.QuickInfo {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
+    [Collection(CollectionNames.NonParallel)]
     public class FunctionIndexTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
         private readonly IEditorShell _editorShell;
@@ -63,7 +64,7 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
 
             applicableSpan.Should().NotBeNull();
             quickInfoContent.Should().ContainSingle()
-                .Which.ToString().Should().StartWith("as.matrix(x, data, nrow, ncol, byrow, dimnames, rownames.force, ...)");
+                .Which.ToString().Should().StartWith("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
         }
 
         [Test]
