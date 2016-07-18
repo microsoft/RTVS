@@ -5,13 +5,10 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.ContentTypes;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -65,12 +62,12 @@ x <- function() {
         [Category.Interactive]
         public async Task RSignature() {
             using (var script = await _editorHost.StartScript(_exportProvider, "```{r}\r\n\r\n```", MdContentTypeDefinition.ContentType)) {
-                FunctionRdDataProvider.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
+                    var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
+                    await packageIndex.BuildIndexAsync();
                     var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-                    functionIndex.Initialize();
-                    await functionIndex.BuildIndexAsync();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.DoIdle(500);
                     script.MoveDown();

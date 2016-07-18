@@ -74,7 +74,7 @@ namespace Microsoft.R.Editor.Navigation.Peek {
                                 var rs = _shell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
                                 var ct = rs.GetContentType(RContentTypeDefinition.ContentType);
                                 _result.Span.Document.TextBuffer.ChangeContentType(ct, this.GetType());
-                                try { File.Delete(tempFile); } catch(IOException) { } catch(AccessViolationException) { }
+                                try { File.Delete(tempFile); } catch(IOException) { } catch(UnauthorizedAccessException) { }
                             }
                         }, 50, GetType(), _shell);
 

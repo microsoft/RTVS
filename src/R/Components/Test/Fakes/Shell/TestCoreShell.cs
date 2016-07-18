@@ -70,6 +70,8 @@ namespace Microsoft.R.Components.Test.Fakes.Shell {
         public string SaveFilePath { get; set; }
         public ITelemetryService TelemetryService { get; }
 
+        public bool IsUnitTestEnvironment => true;
+
         #region IMainThread
         public int ThreadId => MainThread.ManagedThreadId;
         public void Post(Action action) => UIThreadHelper.Instance.InvokeAsync(action).DoNotWait();

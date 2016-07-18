@@ -2,37 +2,38 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Host.Client;
+using Microsoft.R.Support.Help;
+using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.Help.Packages;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
+using Xunit;
 
 namespace Microsoft.R.Support.Test.Packages {
     [ExcludeFromCodeCoverage]
+    [Collection(CollectionNames.NonParallel)]
     public class PackageIndexTest {
         private readonly IExportProvider _exportProvider;
         private readonly ICoreShell _shell;
+        private readonly IRSessionProvider _sessionProvider;
 
         public PackageIndexTest(RSupportMefCatalogFixture catalogFixture) {
             _exportProvider = catalogFixture.CreateExportProvider();
             _shell = _exportProvider.GetExportedValue<ICoreShell>();
+            _sessionProvider = _exportProvider.GetExportedValue<IRSessionProvider>();
         }
 
         [Test]
         [Category.R.Completion]
-        public void BuildPackageIndexTest() {
-            var packageIndex = new PackageIndex(_shell);
-            IEnumerable<IPackageInfo> basePackages = packageIndex.BasePackages.AsList();
+        public async Task BuildPackageIndexTest() {
             string[] packageNames = {
                 "base",
                 "boot",
@@ -66,51 +67,34 @@ namespace Microsoft.R.Support.Test.Packages {
                 "utils",
              };
 
-            string installPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
-                @"R\R-3.2.2\library");
+            IPackageIndex packageIndex;
+            using (var host = new IntelliSenseRSession(_shell, _sessionProvider)) {
+                await host.CreateSessionAsync();
+                var functionIndex = new FunctionIndex(_shell, null, host);
+                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                await packageIndex.BuildIndexAsync();
+            }
 
             foreach (var name in packageNames) {
-                IPackageInfo info = basePackages.FirstOrDefault(x => x.Name == name);
-                info.Should().NotBeNull();
-
-                IPackageInfo pi1 = packageIndex.GetPackageByName(info.Name);
-                pi1.Should().NotBeNull();
-
-                pi1.Name.Should().Be(info.Name);
+                IPackageInfo pi = await packageIndex.GetPackageInfoAsync(name);
+                pi.Should().NotBeNull();
+                pi.Name.Should().Be(name);
             }
         }
 
         [Test]
         [Category.R.Completion]
-        public void PackageDescriptionTest() {
+        public async Task PackageDescriptionTest() {
             RToolsSettings.Current = new TestRToolsSettings();
-            var packageIndex = new PackageIndex(_shell);
-            IEnumerable<IPackageInfo> basePackages = packageIndex.BasePackages;
-
-            IPackageInfo pi = packageIndex.GetPackageByName("base");
+            PackageIndex packageIndex;
+            using (var host = new IntelliSenseRSession(_shell, _sessionProvider)) {
+                await host.CreateSessionAsync();
+                var functionIndex = new FunctionIndex(_shell, null, host);
+                packageIndex = new PackageIndex(_shell, host, functionIndex);
+                await packageIndex.BuildIndexAsync();
+            }
+            IPackageInfo pi = await packageIndex.GetPackageInfoAsync("base");
             pi.Description.Should().Be("Base R functions.");
-        }
-
-        [Test]
-        [Category.R.Completion]
-        public void UserPackagesIndex_Test01() {
-            RToolsSettings.Current = new TestRToolsSettings();
-
-            // make it broken and check that index doesn't throw
-            UserPackagesCollection.RLibraryPath = "NonExistentFolder";
-            string installPath = UserPackagesCollection.GetInstallPath();
-            string userDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-            installPath.Should().Be(Path.Combine(userDocumentsPath, UserPackagesCollection.RLibraryPath));
-
-            var collection = new UserPackagesCollection(_exportProvider.GetExportedValue<ICoreShell>());
-            collection.Packages.Should().NotBeNull();
-
-            IEnumerator en = collection.Packages.GetEnumerator();
-            en.Should().NotBeNull();
-            en.MoveNext().Should().BeFalse();
-            en.Current.Should().BeNull();
         }
     }
 }

@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.RD.Parser;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;

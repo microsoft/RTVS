@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.R.Support.Help.Definitions;
 
 namespace Microsoft.R.Support.Help.Functions {
     public sealed class SignatureInfo : ISignatureInfo {

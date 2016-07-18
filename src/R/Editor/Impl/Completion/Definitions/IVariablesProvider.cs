@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 
-namespace Microsoft.R.Editor.Completion.Definitions
-{
+namespace Microsoft.R.Editor.Completion.Definitions {
     /// <summary>
     /// Provides information on variables members or
     /// variables declared in a global scope.

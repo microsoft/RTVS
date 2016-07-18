@@ -5,18 +5,14 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Signatures;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Settings;
 using Microsoft.UnitTests.Core.Mef;
 
 namespace Microsoft.R.Support.Test.Utility {
     [ExcludeFromCodeCoverage]
-    public static class FunctionIndexUtility {
+    public static class PackageIndexUtility {
         public static Task<IFunctionInfo> GetFunctionInfoAsync(IFunctionIndex functionIndex, string functionName) {
-            FunctionRdDataProvider.HostStartTimeout = 10000;
-
             var tcs = new TaskCompletionSource<IFunctionInfo>();
             var result = functionIndex.GetFunctionInfo(functionName, o => {
                 var r = functionIndex.GetFunctionInfo(functionName);
@@ -30,19 +26,17 @@ namespace Microsoft.R.Support.Test.Utility {
             return tcs.Task;
         }
 
-        public static Task InitializeAsync(IFunctionIndex functionIndex) {
+        public static Task InitializeAsync(this IPackageIndex packageIndex, IFunctionIndex functionIndex) {
             RToolsSettings.Current = new TestRToolsSettings();
-            functionIndex.Initialize();
-            return functionIndex.BuildIndexAsync();
+            return packageIndex.BuildIndexAsync();
         } 
 
-        public static async Task DisposeAsync(IFunctionIndex functionIndex, IExportProvider exportProvider) {
+        public static async Task DisposeAsync(this IPackageIndex packageIndex, IExportProvider exportProvider) {
             IRSessionProvider sessionProvider = exportProvider.GetExportedValue<IRSessionProvider>();
             if (sessionProvider != null) {
                 await Task.WhenAll(sessionProvider.GetSessions().Select(s => s.StopHostAsync()));
             }
-
-            functionIndex.Terminate();
+            packageIndex?.Dispose();
         } 
     }
 }

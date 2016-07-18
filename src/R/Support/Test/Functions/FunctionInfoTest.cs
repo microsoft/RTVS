@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -13,28 +13,30 @@ using Xunit;
 
 namespace Microsoft.R.Support.Test.Functions {
     [ExcludeFromCodeCoverage]
-    public class FunctionIndexTest : IAsyncLifetime {
+    [Category.R.Signatures]
+    public class FunctionInfoTest : IAsyncLifetime {
         private readonly IExportProvider _exportProvider;
+        private readonly IPackageIndex _packageIndex;
         private readonly IFunctionIndex _functionIndex;
 
-        public FunctionIndexTest(RSupportMefCatalogFixture catalog) {
+        public FunctionInfoTest(RSupportMefCatalogFixture catalog) {
             _exportProvider = catalog.CreateExportProvider();
+            _packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
         public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync(_functionIndex);
+            return _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
+            await _packageIndex.DisposeAsync(_exportProvider);
             _exportProvider.Dispose();
         }
 
         [Test]
-        [Category.R.Signatures]
          public async Task FunctionInfoTest1() {
-            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "abs");
+            var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "abs");
 
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("abs");
@@ -48,9 +50,8 @@ namespace Microsoft.R.Support.Test.Functions {
         }
 
         [Test]
-        [Category.R.Signatures]
         public async Task FunctionInfoTest2() {
-            var functionInfo = await FunctionIndexUtility.GetFunctionInfoAsync(_functionIndex, "eval");
+            var functionInfo = await PackageIndexUtility.GetFunctionInfoAsync(_functionIndex, "eval");
 
             functionInfo.Should().NotBeNull();
             functionInfo.Name.Should().Be("eval");

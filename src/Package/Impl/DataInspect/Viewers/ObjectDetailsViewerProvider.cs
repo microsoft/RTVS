@@ -35,7 +35,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Viewers {
                 if (deleteFile) {
                     File.Delete(fileName);
                 }
-            } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
     }
 }

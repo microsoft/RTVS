@@ -60,6 +60,8 @@
     <Compile Include="Completion\Providers\CompletionUtilities.cs" />
     <Compile Include="Completion\Providers\UserVariablesCompletionProvider.cs" />
     <Compile Include="Completion\Providers\SnippetCompletionProvider.cs" />
+    <Compile Include="Completion\RCompletion.cs" />
+    <Compile Include="Completion\RFunctionCompletion.cs" />
     <Compile Include="ContentType\TextViewExtensions.cs" />
     <Compile Include="Data\LoadedPackagesProvider.cs" />
     <Compile Include="Data\RSessionChangeWatcher.cs" />
@@ -82,7 +84,6 @@
     <Compile Include="Completion\Providers\WorkspaceVariableCompletionProvider.cs" />
     <Compile Include="Completion\RCompletionSet.cs" />
     <Compile Include="Completion\RCompletionSource.cs" />
-    <Compile Include="Completion\RCompletion.cs" />
     <Compile Include="Completion\RCompletionController.cs" />
     <Compile Include="Data\WorkspaceVariableProvider.cs" />
     <Compile Include="Documentation\InsertRoxygenBlockCommand.cs" />

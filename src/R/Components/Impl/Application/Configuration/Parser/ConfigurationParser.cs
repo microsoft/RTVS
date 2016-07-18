@@ -101,7 +101,7 @@ namespace Microsoft.R.Components.Application.Configuration.Parser {
                                 var result = !string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(value);
                                 if (result) {
                                     s.Name = name;
-                                    s.Value = value.RemoveQuotes();
+                                    s.Value = value.TrimQuotes();
                                     s.ValueType = value[0] == '\'' || value[0] == '\"' ? ConfigurationSettingValueType.String : ConfigurationSettingValueType.Expression;
                                     return true;
                                 }

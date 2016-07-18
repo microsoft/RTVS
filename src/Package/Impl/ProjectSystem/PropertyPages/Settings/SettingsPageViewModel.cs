@@ -60,7 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings 
             _properties = properties;
             try {
                 EnumerateSettingFiles(projectPath);
-            } catch (COMException) { } catch (IOException) { } catch (AccessViolationException) { }
+            } catch (COMException) { } catch (IOException) { } catch (UnauthorizedAccessException) { }
 
             if (_properties != null) {
                 var file = await _properties.GetSettingsFileAsync();

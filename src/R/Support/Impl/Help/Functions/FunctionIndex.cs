@@ -4,24 +4,23 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
 using System.Diagnostics;
-using Microsoft.R.Support.Help.Definitions;
+using System.Threading.Tasks;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
+using Microsoft.Common.Core.Threading;
 using Microsoft.R.Support.RD.Parser;
 
 namespace Microsoft.R.Support.Help.Functions {
     /// <summary>
     /// Provides information on functions in packages for intellisense.
-    /// Since loading list of functions requires parsing of HTML index
-    /// files in packages help, it caches information and persists
-    /// cache to disk.
     /// </summary>
-    public partial class FunctionIndex : IFunctionIndex {
-        /// <summary>
-        /// Maps package name to a list of functions in the package.
-        /// Used to extract function names and descriptions when
-        /// showing list of functions available in the file.
-        /// </summary>
-        private readonly ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>> _packageToFunctionsMap = new ConcurrentDictionary<string, BlockingCollection<INamedItemInfo>>();
+    [Export(typeof(IFunctionIndex))]
+    public sealed class FunctionIndex : IFunctionIndex {
+        private readonly ICoreShell _coreShell;
+        private readonly IIntellisenseRSession _host;
+        private readonly BinaryAsyncLock _buildIndexLock = new BinaryAsyncLock();
 
         /// <summary>
         /// Map of functions to packages. Used to quickly find package 
@@ -41,74 +40,65 @@ namespace Microsoft.R.Support.Help.Functions {
         /// Provides RD data (help) on a function from the specified R package.
         /// Typically exported via MEF from the host that runs R.dll.
         /// </summary>
-        private IFunctionRdDataProvider _functionRdDataProvider;
+        private readonly IFunctionRdDataProvider _functionRdDataProvider;
 
-        /// <summary>
-        /// Initialized function index and starts R data help session
-        /// that is used to get RD documentation on functions.
-        /// </summary>
-        public void Initialize() {
-            if (_functionRdDataProvider == null) {
-                _functionRdDataProvider = _shell.ExportProvider.GetExportedValue<IFunctionRdDataProvider>();
-            }
+        [ImportingConstructor]
+        public FunctionIndex(ICoreShell coreShell, IFunctionRdDataProvider rdDataProfider, IIntellisenseRSession host) {
+            _coreShell = coreShell;
+            _functionRdDataProvider = rdDataProfider;
+            _host = host;
         }
 
-        public void Terminate() {
-            if(_functionRdDataProvider != null) {
-                _functionRdDataProvider.Dispose();
-                _functionRdDataProvider = null;
-            }
-        }
-
-        /// <summary>
-        /// Given function name provides name of the containing package
-        /// </summary>
-        public string GetFunctionPackage(string functionName) {
-            if (_functionToPackageMap != null) {
-                string packageName;
-                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
-                    return packageName;
+        public async Task BuildIndexAsync(IPackageIndex packageIndex = null) {
+            packageIndex = packageIndex ?? _coreShell.ExportProvider.GetExportedValue<IPackageIndex>();
+            var ready = await _buildIndexLock.WaitAsync();
+            try {
+                if (!ready) {
+                    // First populate index for popular packages that are commonly preloaded
+                    foreach (var pi in packageIndex.Packages) {
+                        foreach (var f in pi.Functions) {
+                            _functionToPackageMap[f.Name] = pi.Name;
+                        }
+                    }
                 }
+            } finally {
+                _buildIndexLock.Release();
             }
-
-            return string.Empty;
         }
 
         /// <summary>
-        /// Retrieves list of functions in a given package
-        /// </summary>
-        public IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName) {
-            if (_packageToFunctionsMap != null) {
-                BlockingCollection<INamedItemInfo> packageFunctions;
-                if (_packageToFunctionsMap.TryGetValue(packageName, out packageFunctions)) {
-                    return packageFunctions;
-                }
-            }
-
-            return new List<INamedItemInfo>();
-        }
-
-        /// <summary>
-        /// Retrieves function information by name. If informaton is not
+        /// Retrieves function information by name. If information is not
         /// available, starts asynchronous retrieval of the function info
         /// from R and when the data becomes available invokes specified
         /// callback passing the parameter. This is used for async
         /// intellisense or function signature/parameter help.
         /// </summary>
         public IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null) {
-            if (_functionToInfoMap != null) {
-                IFunctionInfo functionInfo;
-                if (_functionToInfoMap.TryGetValue(functionName, out functionInfo)) {
-                    return functionInfo;
-                } else {
-                    string packageName;
-                    if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
-                        GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter);
-                    }
+            var functionInfo = TryGetCachedFunctionInfo(functionName);
+            if (functionInfo == null) {
+                string packageName;
+                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
+                    GetFunctionInfoFromEngineAsync(functionName, packageName, infoReadyCallback, parameter);
                 }
             }
+            return functionInfo;
+        }
 
-            return null;
+        public async Task<IFunctionInfo> GetFunctionInfoAsync(string functionName) {
+            var functionInfo = TryGetCachedFunctionInfo(functionName);
+            if (functionInfo == null) {
+                string packageName;
+                if (_functionToPackageMap.TryGetValue(functionName, out packageName)) {
+                    return await GetFunctionInfoFromEngineAsync(functionName, packageName);
+                }
+            }
+            return functionInfo;
+        }
+
+        private IFunctionInfo TryGetCachedFunctionInfo(string functionName) {
+            IFunctionInfo functionInfo = null;
+            _functionToInfoMap?.TryGetValue(functionName, out functionInfo);
+            return functionInfo;
         }
 
         /// <summary>
@@ -119,32 +109,45 @@ namespace Microsoft.R.Support.Help.Functions {
         /// fetch function information from the index.
         /// </summary>
         private void GetFunctionInfoFromEngineAsync(string functionName, string packageName, Action<object> infoReadyCallback = null, object parameter = null) {
-            _functionRdDataProvider.GetFunctionRdData(
-                functionName,
-                packageName,
+            _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName,
                 rdData => {
-                    IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
-                    foreach (IFunctionInfo info in functionInfos) {
-                        _functionToInfoMap[info.Name] = info;
-                    }
-                    if (!_functionToInfoMap.ContainsKey(functionName)) {
-                        if (functionInfos.Count > 0) {
-                            // RD doesn't contain the requested function.
-                            // e.g. as.Date.character has RD for as.Date but not itself
-                            // without its own named info, this will request indefinitely many times
-                            // as workaround, add the first info with functionName
-                            _functionToInfoMap[functionName] = functionInfos[0];
-                        } else {
-                            // TODO: add some stub function info here to prevent subsequent calls for the same function as we already know the call will fail.
-                        }
-                    }
-
+                    UpdateIndex(functionName, rdData);
                     if (infoReadyCallback != null) {
-                        _shell.DispatchOnUIThread(() => {
+                        _coreShell.DispatchOnUIThread(() => {
                             infoReadyCallback(parameter);
                         });
                     }
                 });
+        }
+
+        /// <summary>
+        /// Fetches help on the function from R asynchronously.
+        /// </summary>
+        public async Task<IFunctionInfo> GetFunctionInfoFromEngineAsync(string functionName, string packageName) {
+            var rdData = await _functionRdDataProvider.GetFunctionRdDataAsync(functionName, packageName);
+            UpdateIndex(functionName, rdData);
+
+            IFunctionInfo fi;
+            _functionToInfoMap.TryGetValue(functionName, out fi);
+            return fi;
+        }
+
+        private void UpdateIndex(string functionName, string rdData) {
+            IReadOnlyList<IFunctionInfo> functionInfos = GetFunctionInfosFromRd(rdData);
+            foreach (IFunctionInfo info in functionInfos) {
+                _functionToInfoMap[info.Name] = info;
+            }
+            if (!_functionToInfoMap.ContainsKey(functionName)) {
+                if (functionInfos.Count > 0) {
+                    // RD doesn't contain the requested function.
+                    // e.g. as.Date.character has RD for as.Date but not itself
+                    // without its own named info, this will request indefinitely many times
+                    // as workaround, add the first info with functionName
+                    _functionToInfoMap[functionName] = functionInfos[0];
+                } else {
+                    // TODO: add some stub function info here to prevent subsequent calls for the same function as we already know the call will fail.
+                }
+            }
         }
 
         private IReadOnlyList<IFunctionInfo> GetFunctionInfosFromRd(string rdData) {

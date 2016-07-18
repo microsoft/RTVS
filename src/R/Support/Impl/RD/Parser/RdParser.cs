@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Support.Help;
-using Microsoft.R.Support.Help.Definitions;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.R.Support.RD.Tokens;
 

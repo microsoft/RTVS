@@ -25,7 +25,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         /// </summary>
         public void Load(string filePath) {
             lock (_lock) {
-                if (!string.IsNullOrEmpty(filePath)) {
+                try {
                     Clear();
                     using (var sr = new StreamReader(filePath)) {
                         using (var csr = new ConfigurationSettingsReader(sr)) {
@@ -36,6 +36,10 @@ namespace Microsoft.R.Components.Application.Configuration {
                         }
                     }
                     SourceFile = filePath;
+                } catch(IOException) {
+                    SourceFile = null;
+                } catch(UnauthorizedAccessException) {
+                    SourceFile = null;
                 }
             }
         }

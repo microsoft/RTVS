@@ -2,18 +2,24 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Threading.Tasks;
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     /// <summary>
     /// Exported via MEF. Provides RD data (help) on a
     /// function from the specified package.
     /// </summary>
-    public interface IFunctionRdDataProvider: IDisposable {
+    public interface IFunctionRdDataProvider {
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
         /// When RD data is available, invokes specified callback
-        /// passing funation name and the RD data extracted from R.
+        /// passing function name and the RD data extracted from R.
         /// </summary>
-        void GetFunctionRdData(string functionName, string packageName, Action<string> rdDataAvailableCallback);
+        void GetFunctionRdDataAsync(string functionName, string packageName, Action<string> rdDataAvailableCallback);
+        
+        /// <summary>
+        /// Asynchronously fetches RD data on the function from R.
+        /// </summary>
+        Task<string> GetFunctionRdDataAsync(string functionName, string packageName);
     }
 }

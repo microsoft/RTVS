@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Signatures;
 using Microsoft.R.Host.Client.Test.Script;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Test.Utility;
 using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
@@ -36,10 +35,10 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureParametersMatch() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                FunctionRdDataProvider.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(");
                     script.DoIdle(2000);
@@ -72,10 +71,10 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         [Category.Interactive]
         public async Task R_SignatureSessionNavigation() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
-                FunctionRdDataProvider.HostStartTimeout = 10000;
+                IntelliSenseRSession.HostStartTimeout = 10000;
                 using (new RHostScript(_exportProvider.GetExportedValue<IRSessionProvider>())) {
                     var functionIndex = PrepareFunctionIndex();
-                    FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
+                    PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "lm").Wait(3000);
 
                     script.Type("x <- lm(subset = a, sing");
                     script.DoIdle(1000);
@@ -108,7 +107,7 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         public async Task R_EqualsCompletion01() {
             using (var script = await _editorHost.StartScript(_exportProvider, RContentTypeDefinition.ContentType)) {
                 var functionIndex = PrepareFunctionIndex();
-                FunctionIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
+                PackageIndexUtility.GetFunctionInfoAsync(functionIndex, "addmargins").Wait(3000);
 
                 script.DoIdle(100);
                 script.Type("addmargins(FU");
@@ -124,10 +123,9 @@ namespace Microsoft.R.Editor.Application.Test.Signatures {
         }
 
         private IFunctionIndex PrepareFunctionIndex() {
-            var functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>(); ;
-            functionIndex.Initialize();
-            functionIndex.BuildIndexAsync().Wait();
-            return functionIndex;
+            var packageIndex = _exportProvider.GetExportedValue<IPackageIndex>();
+            packageIndex.BuildIndexAsync().Wait();
+            return _exportProvider.GetExportedValue<IFunctionIndex>();
         }
     }
 }

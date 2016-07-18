@@ -11,9 +11,6 @@ using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Test.Utility;
-using Microsoft.UnitTests.Core.Mef;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -23,23 +20,8 @@ using Xunit;
 namespace Microsoft.R.Editor.Test.Signatures {
     [ExcludeFromCodeCoverage]
     [Category.R.Signatures]
-    public class SignatureHelpSourceTest : IAsyncLifetime {
-        private readonly IExportProvider _exportProvider;
-        private readonly IFunctionIndex _functionIndex;
-
-        public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) {
-            _exportProvider = catalog.CreateExportProvider();
-            _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
-        }
-
-        public Task InitializeAsync() {
-            return FunctionIndexUtility.InitializeAsync(_functionIndex);
-        }
-
-        public async Task DisposeAsync() {
-            await FunctionIndexUtility.DisposeAsync(_functionIndex, _exportProvider);
-            _exportProvider.Dispose();
-        }
+    public class SignatureHelpSourceTest : FunctionIndexBasedTest {
+        public SignatureHelpSourceTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
         [Test]
         public async Task SignatureHelpSourceTest01() {
@@ -58,7 +40,7 @@ namespace Microsoft.R.Editor.Test.Signatures {
             signatures.Should().ContainSingle();
             signatures[0].Parameters.Should().HaveCount(8);
             signatures[0].CurrentParameter.Name.Should().Be("x");
-            signatures[0].Content.Should().Be("as.matrix(x, data, nrow, ncol, byrow, dimnames, rownames.force, ...)");
+            signatures[0].Content.Should().Be("as.matrix(x, ..., data, nrow, ncol, byrow, dimnames, rownames.force)");
             signatures[0].Documentation.Should().NotBeEmpty();
         }
 

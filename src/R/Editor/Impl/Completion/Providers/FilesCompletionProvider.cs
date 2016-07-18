@@ -3,18 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Imaging;
-using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.Language.Intellisense;
@@ -25,10 +22,8 @@ namespace Microsoft.R.Editor.Completion.Providers {
     /// </summary>
     public class FilesCompletionProvider : IRCompletionListProvider {
         private readonly ICoreShell _shell;
-
-        private IImagesProvider ImagesProvider { get; }
-
-        private IRInteractiveWorkflow Workflow { get; }
+        private readonly IImagesProvider _imagesProvider;
+        private readonly IRInteractiveWorkflowProvider _workflowProvider;
 
         private Task<string> _userDirectoryFetchingTask;
         private string _directory;
@@ -40,13 +35,13 @@ namespace Microsoft.R.Editor.Completion.Providers {
                 throw new ArgumentNullException(nameof(directoryCandidate));
             }
 
-            ImagesProvider = _shell.ExportProvider.GetExportedValueOrDefault<IImagesProvider>();
-            Workflow = _shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>().GetOrCreate();
+            _imagesProvider = shell.ExportProvider.GetExportedValueOrDefault<IImagesProvider>();
+            _workflowProvider = shell.ExportProvider.GetExportedValue<IRInteractiveWorkflowProvider>();
             _directory = ExtractDirectory(directoryCandidate);
 
             if (_directory.StartsWithOrdinal("~\\")) {
                 _directory = _directory.Substring(2);
-                _userDirectoryFetchingTask = Workflow.RSession.GetRUserDirectoryAsync();
+                _userDirectoryFetchingTask = _workflowProvider.GetOrCreate().RSession.GetRUserDirectoryAsync();
             }
         }
 
@@ -85,7 +80,7 @@ namespace Microsoft.R.Editor.Completion.Providers {
                     foreach (string file in Directory.GetFiles(directory)) {
                         FileInfo di = new FileInfo(file);
                         if (!di.Attributes.HasFlag(FileAttributes.Hidden) && !di.Attributes.HasFlag(FileAttributes.System)) {
-                            ImageSource fileGlyph = ImagesProvider?.GetFileIcon(file);
+                            ImageSource fileGlyph = _imagesProvider?.GetFileIcon(file);
                             string fileName = Path.GetFileName(file);
                             completions.Add(new RCompletion(fileName, fileName, string.Empty, fileGlyph));
                         }

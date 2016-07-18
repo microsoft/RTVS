@@ -2,16 +2,12 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Microsoft.R.Support.Help.Definitions {
+namespace Microsoft.R.Support.Help {
     public interface IFunctionIndex {
-        Task BuildIndexAsync();
-        void BuildIndexForPackage(IPackageInfo package);
+        Task BuildIndexAsync(IPackageIndex packageIndex = null);
         IFunctionInfo GetFunctionInfo(string functionName, Action<object> infoReadyCallback = null, object parameter = null);
-        IReadOnlyCollection<INamedItemInfo> GetPackageFunctions(string packageName);
-        void Initialize();
-        void Terminate();
+        Task<IFunctionInfo> GetFunctionInfoAsync(string functionName);
     }
 }

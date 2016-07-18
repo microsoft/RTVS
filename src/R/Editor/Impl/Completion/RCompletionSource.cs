@@ -6,7 +6,6 @@ using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completion;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Completion.Definitions;

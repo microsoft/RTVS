@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Signatures;
-using Microsoft.R.Support.Help.Definitions;
+using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -47,26 +46,22 @@ namespace Microsoft.R.Editor.QuickInfo {
         #region IQuickInfoSource
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan) {
             applicableToSpan = null;
-
             SnapshotPoint? triggerPoint = session.GetTriggerPoint(_subjectBuffer.CurrentSnapshot);
-            if (!triggerPoint.HasValue)
-                return;
+            if (triggerPoint.HasValue) {
+                int position = triggerPoint.Value;
+                if (_lastPosition != position) {
+                    _lastPosition = position;
+                    ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
 
-            int position = triggerPoint.Value;
-
-            if (_lastPosition == position)
-                return;
-
-            _lastPosition = position;
-            ITextSnapshot snapshot = triggerPoint.Value.Snapshot;
-
-            IREditorDocument document = REditorDocument.TryFromTextBuffer(_subjectBuffer);
-            if (document != null) {
-                // Document may be null in REPL window as projections are not
-                // getting set immediately or may change as user moves mouse over.
-                AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
-                                        session, quickInfoContent, out applicableToSpan,
-                                        (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+                    IREditorDocument document = REditorDocument.TryFromTextBuffer(_subjectBuffer);
+                    if (document != null) {
+                        // Document may be null in REPL window as projections are not
+                        // getting set immediately or may change as user moves mouse over.
+                        AugmentQuickInfoSession(document.EditorTree.AstRoot, position,
+                                                session, quickInfoContent, out applicableToSpan,
+                                                (object o) => RetriggerQuickInfoSession(o as IQuickInfoSession));
+                    }
+                }
             }
         }
 
@@ -85,8 +80,7 @@ namespace Microsoft.R.Editor.QuickInfo {
                 int end = Math.Min(signatureEnd, snapshot.Length);
 
                 applicableToSpan = snapshot.CreateTrackingSpan(Span.FromBounds(start, end), SpanTrackingMode.EdgeInclusive);
-
-                IFunctionInfo functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
+                var functionInfo = FunctionIndex.GetFunctionInfo(functionName, retriggerAction, session);
 
                 if (functionInfo != null && functionInfo.Signatures != null) {
                     foreach (ISignatureInfo sig in functionInfo.Signatures) {

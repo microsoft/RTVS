@@ -52,8 +52,10 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             workflow.RSession.Returns(session);
             workflow.Operations.Returns(operations);
 
+            var ucp = Substitute.For<UnconfiguredProject>();
+            ucp.LoadedConfiguredProjects.Returns(new ConfiguredProject[] { configuredProject });
             var vsbc = Substitute.For<IVsBrowseObjectContext>();
-            vsbc.ConfiguredProject.Returns(configuredProject); // IVsBrowseObjectContext.ConfiguredProject
+            vsbc.UnconfiguredProject.Returns(ucp); // IVsBrowseObjectContext.ConfiguredProject
 
             var dteProj = Substitute.For<EnvDTE.Project>();
             dteProj.Object.Returns(vsbc); // dteProject?.Object as IVsBrowseObjectContext

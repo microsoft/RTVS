@@ -5,14 +5,17 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Completion {
     public class CompletionCommittedEventArgs : EventArgs {
-        public ICompletionSession Session { get; set; }
+        public ICompletionSession Session { get; }
+
+        public CompletionCommittedEventArgs(ICompletionSession session) {
+            Session = session;
+        }
     }
 
     /// <summary>
@@ -468,21 +471,12 @@ namespace Microsoft.Languages.Editor.Completion {
         }
 
         protected virtual void OnCompletionSessionDismissed(object sender, EventArgs eventArgs) {
-            if (CompletionDismissed != null) {
-                CompletionDismissed(this, new EventArgs());
-            }
-
+            CompletionDismissed?.Invoke(this, EventArgs.Empty);
             ClearCompletionSession();
         }
 
         protected virtual void OnCompletionSessionCommitted(object sender, EventArgs eventArgs) {
-            if (CompletionCommitted != null) {
-                CompletionCommittedEventArgs committedEventArgs = new CompletionCommittedEventArgs();
-                committedEventArgs.Session = CompletionSession;
-
-                CompletionCommitted(this, committedEventArgs);
-            }
-
+            CompletionCommitted?.Invoke(this, new CompletionCommittedEventArgs(CompletionSession));
             ClearCompletionSession();
         }
     }

@@ -10,8 +10,7 @@ using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Settings.Mirrors;
 using Microsoft.R.Debugger;
 using Microsoft.R.Debugger.PortSupplier;
-using Microsoft.R.Support.Help.Definitions;
-using Microsoft.R.Support.Help.Functions;
+using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.InteractiveWindow.Shell;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Package.Registration;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Shell;
@@ -96,6 +95,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         public const string OptionsDialogName = "R Tools";
 
         private System.Threading.Tasks.Task _indexBuildingTask;
+        private IPackageIndex _packageIndex;
 
         public static IRPackage Current { get; private set; }
 
@@ -133,10 +133,7 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         protected override void Dispose(bool disposing) {
-            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
-                _indexBuildingTask.Wait(2000);
-                _indexBuildingTask = null;
-            }
+            SavePackageIndex();
 
             LogCleanup.Cancel();
             ProjectIconProvider.Close();
@@ -199,8 +196,19 @@ namespace Microsoft.VisualStudio.R.Packages.R {
         }
 
         private void BuildFunctionIndex() {
-            var functionIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IFunctionIndex>();
-            _indexBuildingTask = functionIndex.BuildIndexAsync();
+            _packageIndex = VsAppShell.Current.ExportProvider.GetExportedValue<IPackageIndex>();
+            _indexBuildingTask = _packageIndex.BuildIndexAsync();
+        }
+
+        private void SavePackageIndex() {
+            if (_indexBuildingTask != null && !_indexBuildingTask.IsFaulted) {
+                _indexBuildingTask.Wait(2000);
+                if (_indexBuildingTask.IsCompleted) {
+                    _packageIndex.WriteToDisk();
+                }
+                _packageIndex?.Dispose();
+                _indexBuildingTask = null;
+            }
         }
     }
 }

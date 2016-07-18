@@ -218,7 +218,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
                  try {
                     shortRelativePath = fileSystem.ToShortRelativePath(fullPath, rootDirectory);
                     return !string.IsNullOrEmpty(shortRelativePath) && filter.IsFileAllowed(relativePath, fileSystem.GetFileAttributes(fullPath));
-                } catch (IOException) { } catch (AccessViolationException) { } // File isn't allowed if it isn't accessible
+                } catch (IOException) { } catch (UnauthorizedAccessException) { } // File isn't allowed if it isn't accessible
             }
             return false;
         }
