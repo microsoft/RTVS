@@ -29,6 +29,7 @@
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Languages.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Support.dll" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.R.Interpreters.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.Markdown.Editor.dll" />
     <Asset Type="Microsoft.VisualStudio.MefComponent" Path="Microsoft.VisualStudio.R.Package.dll" />
     <Asset Type="Microsoft.VisualStudio.ItemTemplate" Path="ItemTemplates" />
