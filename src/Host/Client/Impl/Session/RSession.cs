@@ -15,6 +15,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Tasks;
 using Microsoft.R.Host.Client.Host;
 using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Interpreters;
 using static System.FormattableString;
 using Task = System.Threading.Tasks.Task;
 

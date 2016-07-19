@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Settings.Definitions;

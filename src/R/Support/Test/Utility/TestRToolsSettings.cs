@@ -6,7 +6,7 @@ using System.ComponentModel.Composition;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Enums;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings.Definitions;
 
 namespace Microsoft.R.Support.Test.Utility {

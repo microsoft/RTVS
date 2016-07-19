@@ -40,6 +40,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\Core\Impl\Microsoft.Common.Core.csproj">
+      <Project>{8d408909-459f-4853-a36c-745118f99869}</Project>
+      <Name>Microsoft.Common.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\Core\Test\Microsoft.Common.Core.Test.csproj">
       <Project>{fc4aad0a-13b9-49ee-a59c-f03142958170}</Project>
       <Name>Microsoft.Common.Core.Test</Name>
@@ -59,6 +63,10 @@
     <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
       <Project>{0c4bce1d-3cb8-4e2a-9252-58784d7f26a5}</Project>
       <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
@@ -96,6 +104,7 @@
     <Compile Include="Formatting\FormatLineBreaksTest.cs" />
     <Compile Include="Formatting\FormatOperatorsTest.cs" />
     <Compile Include="Formatting\FormatMultilineTest.cs" />
+    <Compile Include="Install\RInstallationTest.cs" />
     <Compile Include="Parser\ParseNamespaceTest.cs" />
     <Compile Include="Parser\ParsePrecedenceTest.cs" />
     <Compile Include="Parser\ParseUnaryTest.cs" />

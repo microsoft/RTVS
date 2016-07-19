@@ -15,6 +15,7 @@
       <File Source="$(var.BinDir)\Microsoft.R.Editor.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Host.Client.dll" />
       <File Source="$(var.BinDir)\Microsoft.R.Support.dll" />
+      <File Source="$(var.BinDir)\Microsoft.R.Interpreters.dll" />
       <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.dll" />
       <File Source="$(var.BinDir)\Microsoft.Data.ConnectionUI.Dialog.dll" />
       <File Source="$(var.BinDir)\Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.dll" />
@@ -33,6 +34,7 @@
         <File Source="$(var.BinDir)\Microsoft.R.Editor.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Core.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Support.pdb" />
+        <File Source="$(var.BinDir)\Microsoft.R.Interpreters.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Common.Core.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Common.Wpf.pdb" />
         <File Source="$(var.BinDir)\Microsoft.R.Wpf.pdb" />

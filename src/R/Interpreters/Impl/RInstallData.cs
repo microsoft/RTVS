@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Host.Client.Install {
+namespace Microsoft.R.Interpreters {
     public class RInstallData {
         /// <summary>
         /// General status of the installation
