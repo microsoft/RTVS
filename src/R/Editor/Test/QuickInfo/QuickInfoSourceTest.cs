@@ -11,6 +11,7 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.QuickInfo;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Editor.Test.Utility;
+using Microsoft.R.Support.Help.Packages;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
@@ -23,8 +24,14 @@ namespace Microsoft.R.Editor.Test.QuickInfo {
     public class FunctionIndexTest : FunctionIndexBasedTest {
         public FunctionIndexTest(REditorMefCatalogFixture catalog) : base(catalog) { }
 
-        [Test]
-        public async Task QuickInfoSourceTest01() {
+
+        [CompositeTest]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task QuickInfoSourceTest01(bool cached) {
+            if(!cached) {
+                PackageIndex.ClearCache();
+            }
             string content = @"x <- as.matrix(x)";
             AstRoot ast = RParser.Parse(content);
 

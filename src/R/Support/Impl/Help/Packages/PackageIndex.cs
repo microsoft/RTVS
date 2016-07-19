@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -155,6 +156,15 @@ namespace Microsoft.R.Support.Help.Packages {
                 return result.Select(p => p.ToObject<RPackage>());
             } catch (TaskCanceledException) { }
             return Enumerable.Empty<RPackage>();
+        }
+
+        internal static string CacheFolderPath =>
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"Microsoft\VisualStudio\RTVS\IntelliSense\");
+
+        public static void ClearCache() {
+            try {
+                Directory.Delete(CacheFolderPath, recursive: true);
+            } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
     }
 }
