@@ -70,9 +70,11 @@ namespace Microsoft.R.Host.Client.Session {
         internal RHost RHost => _host;
 
         static RSession() {
-            CanceledSendBlobTask = Task.FromCanceled<long>(tcs.Token);
-            CanceledGetBlobTask = Task.FromCanceled<IReadOnlyList<Blob>>(tcs.Token);
-            CanceledDestoryBlobTask = Task.FromCanceled(tcs.Token);
+            CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
+            CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
+            CanceledSendBlobTask = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
+            CanceledGetBlobTask = TaskUtilities.CreateCanceled<IReadOnlyList<Blob>>(new RHostDisconnectedException());
+            CanceledDestoryBlobTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
         public RSession(int id, Action onDispose) {
@@ -155,7 +157,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return await CanceledSendBlobTask;
             }
 
-            await _afterHostStartedTcs.Task;
+            await _afterHostStartedTask;
 
             try {
                 return await _host.SendBlobAsync(data, ct);
@@ -169,7 +171,7 @@ namespace Microsoft.R.Host.Client.Session {
                 return await CanceledGetBlobTask;
             }
 
-            await _afterHostStartedTcs.Task;
+            await _afterHostStartedTask;
 
             try {
                 return await _host.GetBlobAsync(blobIds, ct);
@@ -183,7 +185,7 @@ namespace Microsoft.R.Host.Client.Session {
                 await CanceledDestoryBlobTask;
             }
 
-            await _afterHostStartedTcs.Task;
+            await _afterHostStartedTask;
 
             try {
                 await _host.DestroyBlobAsync(blobIds, ct);

@@ -661,7 +661,7 @@ namespace Microsoft.R.Host.Client {
                 Debug.Fail(message);
                 throw;
             } finally {
-                _evalRequests.Clear();
+                _requests.Clear();
             }
         }
 
