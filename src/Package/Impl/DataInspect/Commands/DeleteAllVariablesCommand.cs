@@ -18,7 +18,9 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
 
         protected override void SetStatus() {
             var variableWindowPane = ToolWindowUtilities.FindWindowPane<VariableWindowPane>(0);
-            Enabled = (variableWindowPane?.IsGlobalREnvironment()) ?? true;
+            // 'Delete all variables' button should be enabled only when the Global environment 
+            // is selected in Variable Explorer.
+            Enabled = (variableWindowPane?.IsGlobalREnvironment()) ?? false;
         }
 
         protected override void Handle() {
