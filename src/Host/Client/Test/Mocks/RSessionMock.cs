@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Disposables;
@@ -20,6 +21,18 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
         public Task HostStarted => IsHostRunning ? Task.FromResult(0) : Task.FromCanceled(new CancellationToken(true));
 
         public string Prompt { get; set; } = ">";
+
+        public Task<long> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult((long)0);
+        }
+
+        public Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult((new List<Blob>()) as IReadOnlyList<Blob>);
+        }
+
+        public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.CompletedTask;
+        }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct = default(CancellationToken)) {
             LastExpression = expression;

@@ -61,6 +61,20 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
+        public async Task SendAsync(string message, byte[] data, CancellationToken ct = default(CancellationToken)) {
+            await _sendLock.WaitAsync(ct);
+            try {
+                Socket.Send(message);
+                Socket.Send(data);
+            } catch (SocketException ex) {
+                throw new MessageTransportException(ex);
+            } catch (WebSocketException ex) {
+                throw new MessageTransportException(ex);
+            } finally {
+                _sendLock.Release();
+            }
+        }
+
         protected override void OnOpen() {
             base.OnOpen();
             Open?.Invoke(this, EventArgs.Empty);
