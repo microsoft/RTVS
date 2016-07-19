@@ -26,6 +26,7 @@ using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Commands.R;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
 
@@ -67,6 +68,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             _environmentProvider?.Dispose();
         }
 
+        public bool IsGlobalREnvironment() {
+            var env = EnvironmentComboBox.SelectedValue as REnvironment;
+            return env?.Kind == REnvironmentKind.Global;
+        }
+
         private void RootTreeGrid_Sorting(object sender, DataGridSortingEventArgs e) {
             // SortDirection
             if (SortDirection == ListSortDirection.Ascending) {
@@ -89,6 +95,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                         SetRootModelAsync(env).DoNotWait();
                     }
                 }
+
+                // Some of the Variable Explorer tool bar buttons are depend on the R Environment (e.g., Delete all Variables button).
+                // This will give those UI elements a chance to update state.
+                IVsUIShell uiShell = VsAppShell.Current.GetGlobalService<IVsUIShell>(typeof(SVsUIShell));
+                uiShell.UpdateCommandUI(0);
             }
         }
 
