@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
+using Microsoft.Common.Core;
 using Microsoft.R.Support.Help;
 
 namespace Microsoft.R.Host.Client.Signatures {
@@ -34,15 +35,24 @@ namespace Microsoft.R.Host.Client.Signatures {
         /// <summary>
         /// Asynchronously fetches RD data on the function from R.
         /// </summary>
-        public Task<string> GetFunctionRdDataAsync(string functionName, string packageName) {
-            return Task.Run(async () => {
-                await _host.CreateSessionAsync();
-                string command = GetCommandText(functionName, packageName);
-                try {
-                    return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
-                } catch (RException) { }
-                return string.Empty;
-            });
+        public async Task<string> GetFunctionRdDataAsync(string functionName, string packageName) {
+            await TaskUtilities.SwitchToBackgroundThread();
+            await _host.CreateSessionAsync();
+
+            string command = GetCommandText(functionName, packageName);
+            try {
+                return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
+            } catch (RException) { }
+
+            // Sometimes there is no information in a specific package.
+            // For example, Matrix exports 'as.matrix' and base does it as well.
+            // However, help('as.matrix', 'Matrix') will fail while help('as.matrix' will succeed.
+            command = GetCommandText(functionName, null);
+            try {
+                return await _host.Session.EvaluateAsync<string>(command, REvaluationKind.Normal);
+            } catch (RException) { }
+
+            return string.Empty;
         }
 
         private string GetCommandText(string functionName, string packageName) {

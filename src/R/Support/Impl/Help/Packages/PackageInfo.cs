@@ -74,8 +74,11 @@ namespace Microsoft.R.Support.Help.Packages {
             var functions = TryRestoreFromCache();
             if (functions == null) {
                 try {
-                    var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
-                    functions = r.Select(p => (string)((JValue)p).Value).ToArray();
+                    var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
+                    functions = result
+                                    .Select(p => (string)((JValue)p).Value)
+                                    .Where(n => n.IndexOf(':') < 0)
+                                    .ToArray();
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;

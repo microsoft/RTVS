@@ -25,8 +25,8 @@ namespace Microsoft.R.Editor.Test.Utility {
             _functionIndex = _exportProvider.GetExportedValue<IFunctionIndex>();
         }
 
-        public Task InitializeAsync() {
-            return _packageIndex.InitializeAsync(_functionIndex);
+        public async Task InitializeAsync() {
+            await _packageIndex.InitializeAsync(_functionIndex);
         }
 
         public async Task DisposeAsync() {
