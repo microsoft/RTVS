@@ -24,6 +24,11 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             ToolBar = new CommandID(RGuidList.RCmdSetGuid, RPackageCommandId.variableWindowToolBarId);
         }
 
+        public bool IsGlobalREnvironment() {
+            var varView = Content as VariableView;
+            return varView.IsGlobalREnvironment();
+        }
+
         public override bool SearchEnabled {
             get {
                 var grid = Content as VariableView;
