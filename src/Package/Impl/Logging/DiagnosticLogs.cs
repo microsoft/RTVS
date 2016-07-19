@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Microsoft.Common.Core;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Support.Settings;

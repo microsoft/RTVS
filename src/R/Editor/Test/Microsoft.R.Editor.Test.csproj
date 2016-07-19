@@ -110,6 +110,10 @@
       <Project>{58D86BE4-FA8B-4F59-91FE-A9B348C70ED2}</Project>
       <Name>Microsoft.R.Core.Test</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Support\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>

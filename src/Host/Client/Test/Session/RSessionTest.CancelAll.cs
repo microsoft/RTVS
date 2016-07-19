@@ -4,7 +4,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.UnitTests.Core.Threading;

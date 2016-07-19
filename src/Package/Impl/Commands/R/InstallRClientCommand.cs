@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.VisualStudio.R.Package.RClient;
 using Microsoft.VisualStudio.R.Packages.R;

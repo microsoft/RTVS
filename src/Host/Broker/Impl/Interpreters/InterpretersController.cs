@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.Extensions.Options;
 using Microsoft.R.Host.Broker.Security;
 

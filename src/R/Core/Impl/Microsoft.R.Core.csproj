@@ -80,12 +80,6 @@
     <Compile Include="AST\Utility\AstWriter.cs" />
     <Compile Include="AST\Values\MissingValue.cs" />
     <Compile Include="AST\Values\NullValue.cs" />
-    <Compile Include="Install\IMicrosoftRClientInstaller.cs" />
-    <Compile Include="Install\ISupportedRVersionRange.cs" />
-    <Compile Include="Install\RInstallation.cs" />
-    <Compile Include="Install\RInstallData.cs" />
-    <Compile Include="Install\RInstallStatus.cs" />
-    <Compile Include="Install\SupportedRVersionRange.cs" />
     <Compile Include="Tokens\Number.cs" />
     <Compile Include="AST\Variables\IVariable.cs" />
     <Compile Include="AST\Variables\Variable.cs" />

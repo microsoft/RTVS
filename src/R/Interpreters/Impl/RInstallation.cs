@@ -13,7 +13,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
 using Microsoft.Win32;
 
-namespace Microsoft.R.Core.Install {
+namespace Microsoft.R.Interpreters {
     /// <summary>
     /// Verifies that R is installed in the folder
     /// specified in settings. If nothing is specified

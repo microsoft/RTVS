@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Telemetry;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Telemetry;
 
 namespace Microsoft.R.Host.Client.Install {

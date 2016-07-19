@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Test.Registry;
-using Microsoft.R.Core.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
