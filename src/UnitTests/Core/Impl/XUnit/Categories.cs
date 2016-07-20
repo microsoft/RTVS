@@ -268,6 +268,11 @@ namespace Microsoft.UnitTests.Core.XUnit {
         }
 
         [ExcludeFromCodeCoverage]
+        public class ThreadsAttribute : CategoryAttribute {
+            public ThreadsAttribute() : base("Threads") { }
+        }
+
+        [ExcludeFromCodeCoverage]
         public class ViewersAttribute : CategoryAttribute {
             public ViewersAttribute() : base("Viewers") { }
         }

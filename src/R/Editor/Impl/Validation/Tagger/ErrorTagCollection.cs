@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Definitions;
 
 namespace Microsoft.R.Editor.Validation.Tagger {
     /// <summary>

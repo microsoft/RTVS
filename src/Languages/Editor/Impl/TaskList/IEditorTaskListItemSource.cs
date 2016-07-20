@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.Languages.Editor.TaskList.Definitions {
+namespace Microsoft.Languages.Editor.TaskList {
     [ExcludeFromCodeCoverage]
     public class TasksListItemsChangedEventArgs : EventArgs {
         public ReadOnlyCollection<IEditorTaskListItem> Tasks { get; private set; }

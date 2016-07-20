@@ -7,7 +7,6 @@ using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.VisualStudio.Language.Intellisense;
 

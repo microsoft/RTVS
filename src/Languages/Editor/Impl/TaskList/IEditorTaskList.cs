@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.Languages.Editor.TaskList.Definitions {
+namespace Microsoft.Languages.Editor.TaskList {
     /// <summary>
     /// Primary interface to the editor host application task list
     /// </summary>

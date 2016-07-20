@@ -4,11 +4,11 @@
 using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Adornments;

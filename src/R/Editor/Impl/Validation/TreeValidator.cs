@@ -14,7 +14,6 @@ using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.R.Editor.Validation.Definitions;
 using Microsoft.R.Editor.Validation.Errors;
 using Microsoft.VisualStudio.Text;

@@ -9,7 +9,6 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 
 namespace Microsoft.R.Editor.Completion.Providers {

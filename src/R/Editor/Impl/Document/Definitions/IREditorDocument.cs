@@ -3,10 +3,9 @@
 
 using System;
 using Microsoft.Languages.Editor.EditorFactory;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Tree;
 
-namespace Microsoft.R.Editor.Document.Definitions
-{
+namespace Microsoft.R.Editor.Document {
     public interface IREditorDocument: IEditorDocument
     {
         /// <summary>
@@ -15,7 +14,7 @@ namespace Microsoft.R.Editor.Document.Definitions
         IEditorTree EditorTree { get; }
 
         /// <summary>
-        /// If trie the document is closed.
+        /// If true the document is closed.
         /// </summary>
         bool IsClosed { get; }
 

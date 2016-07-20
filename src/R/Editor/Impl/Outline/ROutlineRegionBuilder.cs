@@ -14,9 +14,8 @@ using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 using static System.FormattableString;
 

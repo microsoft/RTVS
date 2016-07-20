@@ -10,7 +10,6 @@ using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;

@@ -118,10 +118,10 @@
     <Compile Include="Settings\CommonSettings.cs" />
     <Compile Include="Shell\IEditorShellProvider.cs" />
     <Compile Include="SuggestedActions\SuggestedActionBase.cs" />
-    <Compile Include="TaskList\Definitions\IEditorTaskList.cs" />
-    <Compile Include="TaskList\Definitions\IEditorTaskListItem.cs" />
-    <Compile Include="TaskList\Definitions\IEditorTaskListItemSource.cs" />
-    <Compile Include="TaskList\Definitions\TaskType.cs" />
+    <Compile Include="TaskList\IEditorTaskList.cs" />
+    <Compile Include="TaskList\IEditorTaskListItem.cs" />
+    <Compile Include="TaskList\IEditorTaskListItemSource.cs" />
+    <Compile Include="TaskList\TaskType.cs" />
     <Compile Include="Tasks\CancellableTask.cs" />
     <Compile Include="Tasks\IdleTimeAction.cs" />
     <Compile Include="Tasks\IdleTimeAsyncTask.cs" />

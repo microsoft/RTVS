@@ -5,11 +5,9 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Tree;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Test.Mocks
-{
+namespace Microsoft.R.Editor.Test.Mocks {
     [ExcludeFromCodeCoverage]
     public sealed class EditorTreeMock : IEditorTree
     {

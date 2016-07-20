@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Microsoft.R.Editor.Completion.Definitions {
+namespace Microsoft.R.Editor.Completion {
     /// <summary>
     /// Provides list of R packages loaded into the R workspace
     /// Exported via MEF.

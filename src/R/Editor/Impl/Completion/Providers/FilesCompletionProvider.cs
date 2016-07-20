@@ -10,7 +10,6 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Imaging;
 using Microsoft.R.Host.Client.Session;
 using Microsoft.R.Support.Settings;

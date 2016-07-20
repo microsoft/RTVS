@@ -10,7 +10,6 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Documentation;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;

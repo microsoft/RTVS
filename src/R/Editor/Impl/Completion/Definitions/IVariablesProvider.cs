@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using Microsoft.R.Support.Help;
 
-namespace Microsoft.R.Editor.Completion.Definitions {
+namespace Microsoft.R.Editor.Completion {
     /// <summary>
     /// Provides information on variables members or
     /// variables declared in a global scope.
