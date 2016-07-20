@@ -20,6 +20,8 @@ using static System.FormattableString;
 using Microsoft.R.Components.InteractiveWorkflow;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+#elif VS15
+using Microsoft.VisualStudio.ProjectSystem.Properties;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {

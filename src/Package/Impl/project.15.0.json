@@ -13,6 +13,7 @@
     "Microsoft.VisualStudio.TextManager.Interop.12.0": "12.0.30110",
     "Microsoft.VSSDK.BuildTools": "15.0.25201-Dev15Preview2",
     "System.IO.Compression.ZipFile": "4.0.0",
+    "System.Collections.Immutable": "1.1.37",
     "VSSDK.DTE.8": "8.0.4"
   },
   "frameworks": {

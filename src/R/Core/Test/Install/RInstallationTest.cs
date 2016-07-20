@@ -8,13 +8,13 @@ using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.OS;
 using Microsoft.Common.Core.Test.Registry;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.UnitTests.Core.FluentAssertions;
 using Microsoft.UnitTests.Core.XUnit;
 using NSubstitute;
 using Xunit;
 
-namespace Microsoft.R.Host.Client.Test.Install {
+namespace Microsoft.R.Core.Test.Install {
     [ExcludeFromCodeCoverage]
     [Collection(CollectionNames.NonParallel)]
     public class RInstallationTest {

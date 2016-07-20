@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Host.Client.Install {
+namespace Microsoft.R.Interpreters {
     public sealed class SupportedRVersionRange : ISupportedRVersionRange {
         // TODO: this probably needs configuration file
         // or another dynamic source of supported versions.

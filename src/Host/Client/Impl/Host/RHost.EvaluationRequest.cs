@@ -8,17 +8,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Microsoft.R.Host.Client {
     partial class RHost {
-        private class EvaluationRequest {
-            public readonly string Id;
-            public readonly string MessageName;
+        private class EvaluationRequest : BaseRequest {
             public readonly string Expression;
             public readonly REvaluationKind Kind;
             public readonly TaskCompletionSourceEx<REvaluationResult> CompletionSource = new TaskCompletionSourceEx<REvaluationResult>();
 
-            public EvaluationRequest(RHost host, string expression, REvaluationKind kind, out JArray message) {
+            private EvaluationRequest(string id, string messageName, string expression, REvaluationKind kind) : base (id, messageName) {
                 Expression = expression;
                 Kind = kind;
+            }
 
+            public static EvaluationRequest Create(RHost host, string expression, REvaluationKind kind, out JArray message) {
                 var nameBuilder = new StringBuilder("?=");
                 if (kind.HasFlag(REvaluationKind.Reentrant)) {
                     nameBuilder.Append('@');
@@ -38,11 +38,14 @@ namespace Microsoft.R.Host.Client {
                 if (kind.HasFlag(REvaluationKind.Raw)) {
                     nameBuilder.Append('r');
                 }
-                MessageName = nameBuilder.ToString();
+                string messageName = nameBuilder.ToString();
 
                 expression = expression.Replace("\r\n", "\n");
 
-                message = host.CreateMessage(host.CreateMessageHeader(out Id, MessageName, null), expression);
+                string id;
+                message = host.CreateMessage(host.CreateMessageHeader(out id, messageName, null), expression);
+
+                return new EvaluationRequest(id, messageName, expression, kind);
             }
         }
     }

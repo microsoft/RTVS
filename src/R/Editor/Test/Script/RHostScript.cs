@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.R.Host.Client.Install;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Support.Settings;
 
 namespace Microsoft.R.Host.Client.Test.Script {

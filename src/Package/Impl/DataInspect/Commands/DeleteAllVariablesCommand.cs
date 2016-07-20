@@ -8,11 +8,19 @@ using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.R.Package.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.DataInspect.Commands {
     internal sealed class DeleteAllVariablesCommand : SessionCommand {
         public DeleteAllVariablesCommand(IRSession session) :
             base(session, RGuidList.RCmdSetGuid, RPackageCommandId.icmdDeleteAllVariables) {
+        }
+
+        protected override void SetStatus() {
+            var variableWindowPane = ToolWindowUtilities.FindWindowPane<VariableWindowPane>(0);
+            // 'Delete all variables' button should be enabled only when the Global environment 
+            // is selected in Variable Explorer.
+            Enabled = (variableWindowPane?.IsGlobalREnvironment()) ?? false;
         }
 
         protected override void Handle() {

@@ -202,6 +202,14 @@
       <Project>{506141be-1418-4d75-8e24-54a9280b0a66}</Project>
       <Name>Microsoft.R.Components</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core\Impl\Microsoft.R.Core.csproj">
+      <Project>{0C4BCE1D-3CB8-4E2A-9252-58784D7F26A5}</Project>
+      <Name>Microsoft.R.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interpreters\Impl\Microsoft.R.Interpreters.csproj">
+      <Project>{8445A4FB-4443-432C-94E8-1408559B7F58}</Project>
+      <Name>Microsoft.R.Interpreters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Impl\Microsoft.R.Support.csproj">
       <Project>{c1957d47-b0b4-42e0-bc08-0d5e96e47fe4}</Project>
       <Name>Microsoft.R.Support</Name>

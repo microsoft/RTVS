@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.R.Interpreters;
 using Microsoft.R.Host.Client.Extensions;
 using Microsoft.R.Host.Client.Install;
 using Microsoft.R.Host.Client.Session;
