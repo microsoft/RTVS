@@ -168,3 +168,23 @@ export_to_pdf <- function(width, height) {
     dev.off()
     readBin(filepath, 'raw', file.info(filepath)$size)
 }
+
+# Helper to publish rmarkdown files remotely
+rmarkdown_publish <- function(blob_id, output_filename, output_format, encoding) {
+    # Create temp file to store the rmarkdown file
+    rmdpath <- tempfile('rmd_', fileext = '.rmd');
+    on.exit(unlink(rmdpath));
+    writeBin(get_blob(blob_id), rmdpath);
+
+    # Create temp directory to collect the generated files
+    output_filepath <- paste0(tempdir(), '/', output_filename);
+
+    rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
+
+	output_id <- create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
+
+	output_files <- list();
+	output_files$blob.ids <- as.list(output_id);
+	output_files$file.names <- as.list(output_filename);
+	output_files;
+}
