@@ -6,10 +6,9 @@ using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Functions.Definitions;
+using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Statements.Loops;
 using Microsoft.R.Core.AST.Variables;
 
@@ -30,7 +29,7 @@ namespace Microsoft.R.Core.AST {
         /// Enumerates definitions of variables applicable to the given scope.
         /// Traverses scopes from the provided scope up and enumerates
         /// variables that appear at the left side of the left-hand assignment
-        /// operator or at the right side of the right-hand assignmend operator.
+        /// operator or at the right side of the right-hand assignment operator.
         /// Includes both regular variables as well as function definitions.
         /// Includes assignments that appear in the file up to the specified
         /// position except in the global scope it enumerates all assignments.
@@ -49,7 +48,7 @@ namespace Microsoft.R.Core.AST {
         /// Enumerates definitions of variables applicable to the given scope.
         /// Enumerates all the variables that appear at the left side of 
         /// the left assignment operator or at the right side of the right-hand 
-        /// assignmend operator. Includes both regular variables as well as 
+        /// assignment operator. Includes both regular variables as well as 
         /// function definitions.
         /// </summary>
         /// <param name="scope">Scope to look into</param>

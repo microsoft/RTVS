@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Controller.Command;
 using Microsoft.Languages.Editor.Controller.Constants;
@@ -13,13 +12,11 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Undo;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
-using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Formatting {
     internal class FormatDocumentCommand : EditingCommand {

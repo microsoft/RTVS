@@ -9,12 +9,11 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Validation.Definitions;
@@ -221,7 +220,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
 
                     _errorTags.EndUpdate(changedRange.Length > 0);
 
-                    // Clip range to the current snapshop
+                    // Clip range to the current snapshot
                     int start = Math.Max(changedRange.Start, 0);
                     start = Math.Min(start, _textBuffer.CurrentSnapshot.Length);
                     int end = Math.Min(changedRange.End, _textBuffer.CurrentSnapshot.Length);

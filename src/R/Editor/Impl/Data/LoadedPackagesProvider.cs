@@ -5,12 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
-using Microsoft.R.Editor.Completion.Definitions;
-using Microsoft.R.Host.Client;
-using System.Threading;
 using Microsoft.R.Components.InteractiveWorkflow;
+using Microsoft.R.Editor.Completion;
+using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Editor.Data {
     [Export(typeof(ILoadedPackagesProvider))]

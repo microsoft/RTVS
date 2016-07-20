@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Diagnostics;
 using Microsoft.Languages.Editor.Composition;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.TaskList {

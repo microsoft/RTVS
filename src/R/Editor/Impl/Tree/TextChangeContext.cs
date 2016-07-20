@@ -3,11 +3,10 @@
 
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     /// <summary>
     /// Describes complete context of the text change
     /// including text ranges, affected editor tree

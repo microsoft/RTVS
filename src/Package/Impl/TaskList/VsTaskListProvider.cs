@@ -3,8 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell;

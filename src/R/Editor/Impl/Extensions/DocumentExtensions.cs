@@ -3,7 +3,7 @@
 
 using System.Linq;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Document.Definitions;
+using Microsoft.R.Editor.Document;
 
 namespace Microsoft.R.Editor {
     public static class DocumentExtensions {

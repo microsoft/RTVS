@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 
-namespace Microsoft.R.Core.AST.Definitions {
+namespace Microsoft.R.Core.AST {
     /// <summary>
     /// Describes type of text position within AST
     /// </summary>

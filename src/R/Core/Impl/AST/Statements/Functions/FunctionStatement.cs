@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using Microsoft.R.Core.AST.Functions;
-using Microsoft.R.Core.AST.Statements.Definitions;
 
 namespace Microsoft.R.Core.AST.Statements {
     /// <summary>

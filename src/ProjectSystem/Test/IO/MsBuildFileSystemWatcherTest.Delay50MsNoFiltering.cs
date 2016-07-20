@@ -17,10 +17,9 @@ using Xunit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
     [ExcludeFromCodeCoverage]
-    public partial class MsBuildFileSystemWatcherTest
-    {
-        public class Delay50MsNoFiltering : IAsyncLifetime
-        {
+    [Category.Project.FileSystemMirror]
+    public partial class MsBuildFileSystemWatcherTest {
+        public class Delay50MsNoFiltering : IAsyncLifetime {
             private readonly IFileSystem _fileSystem;
             private readonly IMsBuildFileSystemFilter _fileSystemFilter;
             private readonly ControlledTaskScheduler _taskScheduler;
@@ -30,8 +29,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             private readonly IFileSystemWatcher _attributesWatcher;
             private MsBuildFileSystemWatcher.Changeset _changeset;
 
-            public Delay50MsNoFiltering()
-            {
+            public Delay50MsNoFiltering() {
                 _fileSystem = Substitute.For<IFileSystem>();
                 var watchers = GetWatchersFromMsBuildFileSystemWatcher(_fileSystem);
 
@@ -50,14 +48,12 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                 _attributesWatcher = watchers.AttributesWatcher;
             }
 
-            public async Task InitializeAsync()
-            {
+            public async Task InitializeAsync() {
                 await _taskScheduler;
                 _changeset = null;
             }
 
-            public Task DisposeAsync()
-            {
+            public Task DisposeAsync() {
                 _fileSystemWatcher.Dispose();
                 return Task.CompletedTask;
             }
@@ -71,12 +67,9 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
                         new string[0], new[] { @"a\" })]
             [InlineData(new[] { @"Z:\abc\a", @"Z:\abc\a\b", @"Z:\abc\c" }, new[] { @"Z:\abc\a", @"Z:\abc\c" },
                         new string[0], new[] { @"a\", @"c\" })]
-            public async Task DirectoryAdded_ThenRemoved(string[] addedDirectories, string[] deletedDirectories, string[] expectedAdded, string[] expectedRemoved)
-            {
-                using (_taskScheduler.Pause())
-                {
-                    foreach (var path in addedDirectories)
-                    {
+            public async Task DirectoryAdded_ThenRemoved(string[] addedDirectories, string[] deletedDirectories, string[] expectedAdded, string[] expectedRemoved) {
+                using (_taskScheduler.Pause()) {
+                    foreach (var path in addedDirectories) {
                         DirectoryInfoStubFactory.Create(_fileSystem, path);
                     }
 
@@ -86,8 +79,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
 
                 await Task.Delay(20);
 
-                foreach (var path in deletedDirectories)
-                {
+                foreach (var path in deletedDirectories) {
                     DirectoryInfoStubFactory.Delete(_fileSystem, path);
                 }
 

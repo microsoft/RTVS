@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -17,25 +18,22 @@ using NSubstitute;
 using Xunit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
-    public partial class MsBuildFileSystemWatcherTest
-    {
+    public partial class MsBuildFileSystemWatcherTest {
         private const string ProjectDirectory = @"Z:\abc\";
 
         [Test]
-        public void Start()
-        {
+        public void Start() {
             var filter = "*";
             var delay = 0;
             var fileSystem = Substitute.For<IFileSystem>();
             var fileSystemFilter = Substitute.For<IMsBuildFileSystemFilter>();
 
-            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, delay, fileSystem, fileSystemFilter, log: NullLog.Instance); 
+            MsBuildFileSystemWatcher watcher = new MsBuildFileSystemWatcher(ProjectDirectory, filter, delay, delay, fileSystem, fileSystemFilter, log: NullLog.Instance);
             fileSystemFilter.Received().Seal();
 
             var fileSystemWatchers = new List<IFileSystemWatcher>();
             fileSystem.CreateFileSystemWatcher(ProjectDirectory, filter)
-                .Returns(ci =>
-                {
+                .Returns(ci => {
                     var w = Substitute.For<IFileSystemWatcher>();
                     fileSystemWatchers.Add(w);
                     return w;
@@ -44,8 +42,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             watcher.Start();
             watcher.Dispose();
 
-            foreach (var fileSystemWatcher in fileSystemWatchers)
-            {
+            foreach (var fileSystemWatcher in fileSystemWatchers) {
                 fileSystemWatcher.Received().Dispose();
             }
         }
@@ -63,8 +60,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
         [InlineData(@"Z:\abc\", "*", 0, -1, true, true, typeof(ArgumentOutOfRangeException))]
         [InlineData(@"Z:\abc\", "*", 0, 0, false, true, typeof(ArgumentNullException))]
         [InlineData(@"Z:\abc\", "*", 0, 0, true, false, typeof(ArgumentNullException))]
-        public void Ctor_ThrowArgumentException(string projectFolder, string filter, int delay, int recoveryDelay, bool hasFileSystem, bool hasFileSystemFilter, Type exceptionType)
-        {
+        public void Ctor_ThrowArgumentException(string projectFolder, string filter, int delay, int recoveryDelay, bool hasFileSystem, bool hasFileSystemFilter, Type exceptionType) {
             var fileSystem = hasFileSystem ? Substitute.For<IFileSystem>() : null;
             var fileSystemFilter = hasFileSystemFilter ? Substitute.For<IMsBuildFileSystemFilter>() : null;
 
@@ -72,31 +68,25 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             ctor.ShouldThrow(exceptionType);
         }
 
-        private static void RaiseCreated(IFileSystemWatcher fileWatcher, IEnumerable<string> fullPaths)
-        {
-            foreach (var fullPath in fullPaths)
-            {
+        private static void RaiseCreated(IFileSystemWatcher fileWatcher, IEnumerable<string> fullPaths) {
+            foreach (var fullPath in fullPaths) {
                 RaiseCreated(fileWatcher, fullPath);
             }
         }
 
-        private static void RaiseDeleted(IFileSystemWatcher fileWatcher, IEnumerable<string> fullPaths)
-        {
-            foreach (var fullPath in fullPaths)
-            {
+        private static void RaiseDeleted(IFileSystemWatcher fileWatcher, IEnumerable<string> fullPaths) {
+            foreach (var fullPath in fullPaths) {
                 RaiseDeleted(fileWatcher, fullPath);
             }
         }
 
-        private static void RaiseCreated(IFileSystemWatcher fileWatcher, string fullPath)
-        {
+        private static void RaiseCreated(IFileSystemWatcher fileWatcher, string fullPath) {
             var directory = Path.GetDirectoryName(fullPath);
             var file = Path.GetFileName(fullPath);
             fileWatcher.Created += Raise.Event<FileSystemEventHandler>(fileWatcher, new FileSystemEventArgs(WatcherChangeTypes.Created, directory, file));
         }
 
-        private static void RaiseDeleted(IFileSystemWatcher fileWatcher, string fullPath)
-        {
+        private static void RaiseDeleted(IFileSystemWatcher fileWatcher, string fullPath) {
             var directory = Path.GetDirectoryName(fullPath);
             var file = Path.GetFileName(fullPath);
             fileWatcher.Deleted += Raise.Event<FileSystemEventHandler>(fileWatcher, new FileSystemEventArgs(WatcherChangeTypes.Created, directory, file));
@@ -126,17 +116,13 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             }
         }
 
-        private static Watchers GetWatchersFromMsBuildFileSystemWatcher(IFileSystem fileSystem)
-        {
+        private static Watchers GetWatchersFromMsBuildFileSystemWatcher(IFileSystem fileSystem) {
             var watchers = new Watchers();
             fileSystem.CreateFileSystemWatcher(ProjectDirectory, "*")
-                    .Returns(ci =>
-                    {
+                    .Returns(ci => {
                         var watcher = Substitute.For<IFileSystemWatcher>();
-                        watcher.NotifyFilter = Arg.Do<NotifyFilters>(nf =>
-                        {
-                            switch (nf)
-                            {
+                        watcher.NotifyFilter = Arg.Do<NotifyFilters>(nf => {
+                            switch (nf) {
                                 case NotifyFilters.FileName:
                                     watchers.FileWatcher = watcher;
                                     return;
@@ -155,8 +141,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
             return watchers;
         }
 
-        private class Watchers
-        {
+        private class Watchers {
             public IFileSystemWatcher FileWatcher { get; set; }
             public IFileSystemWatcher DirectoryWatcher { get; set; }
             public IFileSystemWatcher AttributesWatcher { get; set; }

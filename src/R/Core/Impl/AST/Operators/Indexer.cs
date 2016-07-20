@@ -4,7 +4,6 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;

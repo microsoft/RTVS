@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Tokens;

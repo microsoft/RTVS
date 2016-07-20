@@ -3,8 +3,8 @@
 
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Support.Help;
 
 namespace Microsoft.R.Editor {

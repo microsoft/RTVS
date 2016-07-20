@@ -5,7 +5,7 @@ using System;
 using Microsoft.R.Core.AST;
 using Microsoft.VisualStudio.Text;
 
-namespace Microsoft.R.Editor.Tree.Definitions {
+namespace Microsoft.R.Editor.Tree {
     /// <summary>
     /// Editor document parse tree (object model)
     /// </summary>

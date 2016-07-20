@@ -4,10 +4,9 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Services;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;

@@ -4,9 +4,6 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Operators {

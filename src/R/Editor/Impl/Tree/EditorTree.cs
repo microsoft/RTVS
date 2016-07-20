@@ -11,12 +11,9 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Tree.Definitions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree {

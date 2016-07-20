@@ -8,7 +8,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Signatures;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Functions;

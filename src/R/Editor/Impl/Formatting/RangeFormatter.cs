@@ -12,7 +12,6 @@ using Microsoft.R.Core.Formatting;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Selection;
 using Microsoft.R.Editor.SmartIndent;
 using Microsoft.VisualStudio.Text;

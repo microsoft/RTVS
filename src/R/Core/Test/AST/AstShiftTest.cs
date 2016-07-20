@@ -5,10 +5,10 @@ using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Expressions.Definitions;
-using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Expressions;
+using Microsoft.R.Core.AST.Functions;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Parser;
 using Microsoft.UnitTests.Core.XUnit;
 

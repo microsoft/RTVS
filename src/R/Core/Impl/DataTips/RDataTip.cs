@@ -4,9 +4,7 @@
 using System.Linq;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Operators.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Tokens;
 

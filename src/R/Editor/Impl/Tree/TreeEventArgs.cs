@@ -5,39 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     [ExcludeFromCodeCoverage]
-    public class TreeUpdatePendingEventArgs : EventArgs
-    {
+    public class TreeUpdatePendingEventArgs : EventArgs {
         public IReadOnlyCollection<TextChangeEventArgs> TextChanges { get; private set; }
 
-        public TreeUpdatePendingEventArgs(IReadOnlyCollection<TextChangeEventArgs> textChanges)
-        {
+        public TreeUpdatePendingEventArgs(IReadOnlyCollection<TextChangeEventArgs> textChanges) {
             TextChanges = textChanges;
         }
     }
 
     [ExcludeFromCodeCoverage]
-    public class TreeUpdatedEventArgs : EventArgs
-    {
+    public class TreeUpdatedEventArgs : EventArgs {
         public TreeUpdateType UpdateType { get; private set; }
- 
-        public TreeUpdatedEventArgs(TreeUpdateType updateType)
-        {
+
+        public TreeUpdatedEventArgs(TreeUpdateType updateType) {
             UpdateType = updateType;
         }
     }
 
     [ExcludeFromCodeCoverage]
-    public class TreeNodesRemovedEventArgs : EventArgs
-    {
+    public class TreeNodesRemovedEventArgs : EventArgs {
         public IReadOnlyCollection<IAstNode> Nodes { get; private set; }
 
-        public TreeNodesRemovedEventArgs(IReadOnlyCollection<IAstNode> nodes)
-        {
+        public TreeNodesRemovedEventArgs(IReadOnlyCollection<IAstNode> nodes) {
             Nodes = nodes;
         }
     }
@@ -54,10 +47,8 @@ namespace Microsoft.R.Editor.Tree
     //}
 
     [ExcludeFromCodeCoverage]
-    public class TreePositionsOnlyChangedEventArgs : EventArgs
-    {
-        public TreePositionsOnlyChangedEventArgs()
-        {
+    public class TreePositionsOnlyChangedEventArgs : EventArgs {
+        public TreePositionsOnlyChangedEventArgs() {
         }
     }
 }

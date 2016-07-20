@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.AST.Statements;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST.Scopes {

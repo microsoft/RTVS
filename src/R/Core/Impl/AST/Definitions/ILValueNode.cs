@@ -3,7 +3,7 @@
 
 using Microsoft.R.Core.AST.DataTypes;
 
-namespace Microsoft.R.Core.AST.Definitions {
+namespace Microsoft.R.Core.AST {
     /// <summary>
     /// Represents L-value: an entity that can be assigned to.
     /// This may be an identifier (variable), indexed variable such as 

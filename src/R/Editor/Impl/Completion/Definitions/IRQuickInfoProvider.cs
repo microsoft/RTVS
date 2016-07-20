@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 
-namespace Microsoft.R.Editor.Completion.Definitions
+namespace Microsoft.R.Editor.Completion
 {
     /// <summary>
     /// Get something (a string or WPF element) to show in a tooltip

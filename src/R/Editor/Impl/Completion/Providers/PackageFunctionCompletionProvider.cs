@@ -10,7 +10,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Snippets;
 using Microsoft.R.Support.Help;
 using Microsoft.R.Support.Help.Packages;

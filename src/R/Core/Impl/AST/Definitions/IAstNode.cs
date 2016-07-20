@@ -3,9 +3,9 @@
 
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.R.Core.Parser.Definitions;
+using Microsoft.R.Core.Parser;
 
-namespace Microsoft.R.Core.AST.Definitions {
+namespace Microsoft.R.Core.AST {
     /// <summary>
     /// Implemented by all AST nodes, Nodes that can have child nodes 
     /// such as expressions, loops, assignments and other statements

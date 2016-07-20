@@ -2,12 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Core.Tokens;
 
-namespace Microsoft.R.Editor.Validation.Definitions
-{
+namespace Microsoft.R.Editor.Validation.Definitions {
     /// <summary>
     /// Represents validation result. May be based
     /// on AST node or a standalone token.

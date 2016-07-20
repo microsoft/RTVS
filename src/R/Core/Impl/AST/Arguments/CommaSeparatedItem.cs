@@ -1,13 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.AST.Arguments {
     /// <summary>
-    /// Argument to a function or to andindexer. Generally
+    /// Argument to a function or to and indexer. Generally
     /// something that is followed by an optional comma.
     /// </summary>
     public class CommaSeparatedItem : AstNode {

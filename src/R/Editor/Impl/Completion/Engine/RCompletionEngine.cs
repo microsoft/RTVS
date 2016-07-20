@@ -10,10 +10,8 @@ using Microsoft.Languages.Editor.Composition;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
 using Microsoft.R.Core.AST.Functions;
-using Microsoft.R.Core.AST.Functions.Definitions;
 using Microsoft.R.Core.AST.Operators;
 using Microsoft.R.Core.Tokens;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Providers;
 using Microsoft.VisualStudio.Text;
 

@@ -7,8 +7,8 @@ using Microsoft.Languages.Editor.EditorFactory;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.Parser;
-using Microsoft.R.Editor.Document.Definitions;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Document;
+using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Editor.Mocks;
 using Microsoft.VisualStudio.Text;
 

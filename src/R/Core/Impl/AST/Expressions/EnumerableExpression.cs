@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Expressions.Definitions;
 using Microsoft.R.Core.AST.Variables;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;

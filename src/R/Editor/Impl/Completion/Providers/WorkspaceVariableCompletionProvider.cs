@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Windows.Media;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Imaging;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
 

@@ -8,10 +8,8 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Completion;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Editor.Completion.Definitions;
 using Microsoft.R.Editor.Completion.Engine;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 

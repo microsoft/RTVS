@@ -3,7 +3,7 @@
 
 using System;
 using Microsoft.Languages.Editor.Controller;
-using Microsoft.Languages.Editor.TaskList.Definitions;
+using Microsoft.Languages.Editor.TaskList;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Utilities;
 using Microsoft.VisualStudio.Shell;

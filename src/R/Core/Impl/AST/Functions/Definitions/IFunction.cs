@@ -2,9 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
 
-namespace Microsoft.R.Core.AST.Functions.Definitions {
+namespace Microsoft.R.Core.AST.Functions {
     public interface IFunction: IAstNode {
         /// <summary>
         /// Opening brace. Always present.

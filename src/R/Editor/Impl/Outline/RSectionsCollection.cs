@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Text;
-using Microsoft.R.Editor.Tree.Definitions;
+using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Outline {

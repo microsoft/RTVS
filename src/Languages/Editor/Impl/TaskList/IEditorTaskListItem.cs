@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 
-namespace Microsoft.Languages.Editor.TaskList.Definitions {
+namespace Microsoft.Languages.Editor.TaskList {
     /// <summary>
     /// Represents an item in a task list
     /// </summary>

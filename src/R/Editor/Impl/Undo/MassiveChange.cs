@@ -2,18 +2,14 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Diagnostics;
 using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 
-namespace Microsoft.R.Editor.Undo
-{
+namespace Microsoft.R.Editor.Undo {
     internal sealed class MassiveChange : IDisposable
     {
         private ITextUndoTransaction _transaction;

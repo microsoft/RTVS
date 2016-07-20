@@ -3,10 +3,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 
-namespace Microsoft.R.Editor.Tree
-{
+namespace Microsoft.R.Editor.Tree {
     [ExcludeFromCodeCoverage]
     internal class DebugTree
     {

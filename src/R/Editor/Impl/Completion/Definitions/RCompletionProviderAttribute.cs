@@ -4,11 +4,11 @@
 using System;
 using System.ComponentModel.Composition;
 
-namespace Microsoft.R.Editor.Completion.Definitions
+namespace Microsoft.R.Editor.Completion
 {
     /// <summary>
     /// Attribute that allows completion provider to specify
-    /// what exactly does it supply copletion sets for.
+    /// what exactly does it supply completion sets for.
     /// </summary>
     [MetadataAttribute]
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]

@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.Parser.Definitions;
 
 namespace Microsoft.R.Core.Parser {
     /// <summary>

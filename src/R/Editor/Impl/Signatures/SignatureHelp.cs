@@ -7,7 +7,6 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
-using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
 using Microsoft.R.Support.Help;
 using Microsoft.VisualStudio.Language.Intellisense;
