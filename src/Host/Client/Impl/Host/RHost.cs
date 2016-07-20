@@ -268,13 +268,13 @@ namespace Microsoft.R.Host.Client {
             return ((SendBlobResult)blobResult).BlobId;
         }
 
-        public Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct) {
+        public Task<IReadOnlyList<Blob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
                 ? Task.FromCanceled<IReadOnlyList<Blob>>(new CancellationToken(true))
                 : GetBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task<IReadOnlyList<Blob>> GetBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+        private async Task<IReadOnlyList<Blob>> GetBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
@@ -287,13 +287,13 @@ namespace Microsoft.R.Host.Client {
             return ((GetBlobResult)blobResult).Blobs;
         }
 
-        public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct) {
+        public Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
                 ? Task.FromCanceled(new CancellationToken(true))
                 : DestroyBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task DestroyBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+        private async Task DestroyBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;

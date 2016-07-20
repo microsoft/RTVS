@@ -166,7 +166,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task<IReadOnlyList<Blob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledGetBlobTask;
             }
@@ -180,7 +180,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task DestroyBlobAsync(long[] blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 await CanceledDestoryBlobTask;
             }

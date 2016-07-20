@@ -181,10 +181,7 @@ rmarkdown_publish <- function(blob_id, output_filename, output_format, encoding)
 
     rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
 
-	output_id <- create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
-
-	output_files <- list();
-	output_files$blob.ids <- as.list(output_id);
-	output_files$file.names <- as.list(output_filename);
-	output_files;
+    output_id <- create_blob(readBin(output_filepath, 'raw', file.info(output_filepath)$size));
+    
+    list(blob_ids = as.list(output_id), file_names = as.list(output_filename));
 }
