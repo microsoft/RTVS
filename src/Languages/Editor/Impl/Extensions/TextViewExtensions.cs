@@ -7,14 +7,6 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.Languages.Editor.Extensions {
     public static class TextViewExtensions {
-        public static bool IsAutoInsertAllowed(ITextView textView) {
-            return textView.Selection.Mode == TextSelectionMode.Stream;
-        }
-
-        public static bool IsAutoFormatAllowed(ITextView textView) {
-            return textView.Selection.Mode == TextSelectionMode.Stream;
-        }
-
         public static bool IsStatementCompletionWindowActive(this ITextView textView) {
             bool result = false;
             if (textView != null) {
