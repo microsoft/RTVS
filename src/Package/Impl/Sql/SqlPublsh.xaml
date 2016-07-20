@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Microsoft.VisualStudio.R.Package.Sql.SqlPublsh"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.Sql"
+             mc:Ignorable="d" Width="600" Height="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition />
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <XmlDataProvider x:Key="DesignTimeData" Source="./DesignTimeData.xml" XPath="/CodeEntries/CodeEntry"/>
+        </Grid.Resources>
+        <DataGrid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="3" 
+                  x:Name="dataGrid" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  CanUserAddRows="False" AutoGenerateColumns="False"
+                  ItemsSource="{Binding}"
+                  d:DataContext="{StaticResource DesignTimeData}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File" Binding="{Binding XPath=@File}"
+                                    IsReadOnly="True" Width="0.33*" />
+                <DataGridTextColumn Header="Variable" Binding="{Binding XPath=@Variable}"
+                                    IsReadOnly="True" Width="0.33*" />
+                <DataGridTextColumn Header="Stored Procedure" Binding="{Binding XPath=@SProc}"
+                                    IsReadOnly="True" Width="0.33*" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Row="0" Grid.Column="2"
+                x:Name="buttonOK" Content="OK" IsDefault="True" 
+                HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Height="24"/>
+        <Button Grid.Row="1" Grid.Column="2"
+                x:Name="buttonCancel" Content="Cancel" IsCancel="True" 
+                HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Height="24" />
+        <Label Grid.Row="3" Grid.Column="0"
+               x:Name="labelTableName" Content="Table Name"
+               HorizontalAlignment="Left" VerticalAlignment="Center" />
+        <TextBox Grid.Row="3" Grid.Column="1"
+                 x:Name="editTableName" 
+                 HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                 Height="24" TextWrapping="NoWrap" />
+        <CheckBox Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                  x:Name="checkGenerateSProcs" Content="Generate stored procedures" 
+                  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
+    </Grid>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Microsoft.VisualStudio.R.Package;component/Wpf/Controls.xaml" />
+                <ResourceDictionary Source="../DataInspect/DataGridStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+</UserControl>

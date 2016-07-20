@@ -269,6 +269,9 @@
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\SqlPublsh.xaml.cs">
+      <DependentUpon>SqlPublsh.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
@@ -502,6 +505,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\DatabaseProject.ico" />
+    <Content Include="Sql\DesignTimeData.xml" />
     <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
     <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
@@ -1307,6 +1311,10 @@
     <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Sql\SqlPublsh.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>
