@@ -4,8 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Scopes;
 
 namespace Microsoft.R.Core.AST {
     public static class AstRootExtensions {

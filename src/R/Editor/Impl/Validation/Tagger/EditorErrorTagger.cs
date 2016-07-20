@@ -12,7 +12,7 @@ using Microsoft.Languages.Editor.Services;
 using Microsoft.Languages.Editor.TaskList.Definitions;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;

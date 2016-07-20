@@ -3,7 +3,7 @@
 
 using System;
 
-namespace Microsoft.R.Core.AST.Definitions {
+namespace Microsoft.R.Core.AST {
     /// <summary>
     /// Implements standard visitor pattern on the AST.
     /// https://en.wikipedia.org/wiki/Visitor_pattern

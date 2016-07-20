@@ -4,10 +4,7 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.DataTypes;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Functions.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 

@@ -1,11 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO;
 using Xunit;
 
 namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Test.IO {
+    [ExcludeFromCodeCoverage]
+    [Category.Project.FileSystemMirror]
     public class MsBuildFileSystemWatcherEntriesTest {
         private readonly MsBuildFileSystemWatcherEntries _entries;
 

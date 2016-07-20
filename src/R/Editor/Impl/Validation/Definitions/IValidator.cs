@@ -2,10 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 
-namespace Microsoft.R.Editor.Validation.Definitions
-{
+namespace Microsoft.R.Editor.Validation.Definitions {
     /// <summary>
     /// AST node validator
     /// </summary>

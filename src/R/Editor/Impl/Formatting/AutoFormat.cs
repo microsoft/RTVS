@@ -7,7 +7,7 @@ using Microsoft.Languages.Editor.ContainedLanguage;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;
 using Microsoft.VisualStudio.Text;

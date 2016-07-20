@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Text;
 using Microsoft.R.Core.AST;
 using Microsoft.R.Core.AST.Arguments;
-using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.Utility {
     [ExcludeFromCodeCoverage]

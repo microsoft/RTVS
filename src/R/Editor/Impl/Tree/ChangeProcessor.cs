@@ -5,8 +5,7 @@ using System;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
+using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Editor.Tree {

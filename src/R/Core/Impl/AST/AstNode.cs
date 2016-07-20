@@ -5,7 +5,6 @@ using System;
 using System.Diagnostics;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.Parser;
 
 namespace Microsoft.R.Core.AST {

@@ -13,7 +13,6 @@ using Microsoft.Languages.Editor.Outline;
 using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Tree;

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Editor.Tree;
 using Microsoft.R.Editor.Tree.Definitions;
 
@@ -15,7 +15,7 @@ namespace Microsoft.R.Editor.Validation.Tagger {
     /// <summary>
     /// Represents collection of HTML validation errors and tasks. Tag collection
     /// is a primary source for validation squiggles in the editor as well as
-    /// source of the corresponsing messages for the application task list.
+    /// source of the corresponding messages for the application task list.
     /// Collection is thread safe.
     /// </summary>
     internal sealed class ErrorTagCollection {

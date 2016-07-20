@@ -3,13 +3,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Core.Tokens;
 using Microsoft.R.Editor.Validation.Definitions;
 
-namespace Microsoft.R.Editor.Validation.Errors
-{
+namespace Microsoft.R.Editor.Validation.Errors {
     [ExcludeFromCodeCoverage]
     public class ValidationErrorBase : TextRange, IValidationError
     {

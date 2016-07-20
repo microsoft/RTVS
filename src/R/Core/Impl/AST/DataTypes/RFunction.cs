@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Diagnostics;
-using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.AST.DataTypes {
     /// <summary>

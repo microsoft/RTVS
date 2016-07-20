@@ -9,7 +9,7 @@ using Microsoft.Languages.Core.Utility;
 using Microsoft.Languages.Editor.Extensions;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Extensions;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using Microsoft.R.Core.Parser;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Settings;

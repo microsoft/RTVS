@@ -3,7 +3,7 @@
 
 using Microsoft.Languages.Core.Text;
 
-namespace Microsoft.R.Core.Parser.Definitions {
+namespace Microsoft.R.Core.Parser {
     /// <summary>
     /// Implemented by objects representing parsing (syntax) errors.
     /// Parsing error is a text range so it can be used by the IDE 

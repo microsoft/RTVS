@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
 
 namespace Microsoft.R.Core.AST.Variables {
     public interface IVariable : IRValueNode {

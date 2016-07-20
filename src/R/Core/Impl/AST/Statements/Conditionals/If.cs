@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Expressions;
 using Microsoft.R.Core.AST.Operands;
 using Microsoft.R.Core.Parser;

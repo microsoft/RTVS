@@ -4,12 +4,10 @@
 using System;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Editor.Shell;
-using Microsoft.Languages.Editor.Undo;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Scopes;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;

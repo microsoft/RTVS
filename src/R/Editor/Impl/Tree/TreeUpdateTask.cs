@@ -11,12 +11,10 @@ using System.Windows.Threading;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Text;
 using Microsoft.Languages.Core.Utility;
-using Microsoft.Languages.Editor.Shell;
 using Microsoft.Languages.Editor.Tasks;
 using Microsoft.Languages.Editor.Text;
 using Microsoft.Languages.Editor.Utility;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.VisualStudio.Text;
 
 namespace Microsoft.R.Editor.Tree {

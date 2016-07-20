@@ -7,16 +7,13 @@ using System.Linq;
 using Microsoft.Languages.Core.Formatting;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
-using Microsoft.R.Core.AST.Functions.Definitions;
+using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.Formatting;
 using Microsoft.R.Editor.Document;
 using Microsoft.R.Editor.Document.Definitions;
 using Microsoft.R.Editor.Settings;
-using Microsoft.R.Editor.Tree;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 

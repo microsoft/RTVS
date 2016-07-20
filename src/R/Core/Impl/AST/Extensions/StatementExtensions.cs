@@ -1,7 +1,6 @@
-﻿using Microsoft.R.Core.AST.Functions.Definitions;
+﻿using Microsoft.R.Core.AST.Functions;
 using Microsoft.R.Core.AST.Operators;
-using Microsoft.R.Core.AST.Operators.Definitions;
-using Microsoft.R.Core.AST.Statements.Definitions;
+using Microsoft.R.Core.AST.Statements;
 using Microsoft.R.Core.AST.Variables;
 
 namespace Microsoft.R.Core.AST {

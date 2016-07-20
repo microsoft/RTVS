@@ -92,6 +92,10 @@ namespace Microsoft.UnitTests.Core.XUnit {
             public class ServicesAttribute : CategoryAttribute {
                 public ServicesAttribute() : base("Project.Services") { }
             }
+            [ExcludeFromCodeCoverage]
+            public class FileSystemMirrorAttribute : CategoryAttribute {
+                public FileSystemMirrorAttribute() : base("Project.FileSystemMirror") { }
+            }
         }
 
         [ExcludeFromCodeCoverage]

@@ -4,9 +4,7 @@
 using System.Diagnostics;
 using Microsoft.Languages.Core.Tokens;
 using Microsoft.R.Core.AST;
-using Microsoft.R.Core.AST.Definitions;
 using Microsoft.R.Core.AST.Scopes;
-using Microsoft.R.Core.AST.Scopes.Definitions;
 using Microsoft.R.Core.Tokens;
 
 namespace Microsoft.R.Core.Parser {

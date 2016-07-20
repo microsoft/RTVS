@@ -6,7 +6,6 @@ using Microsoft.Languages.Editor.Controller;
 using Microsoft.Languages.Editor.Services;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
-using Microsoft.R.Core.AST.Statements.Definitions;
 using Microsoft.R.Editor.Commands;
 using Microsoft.R.Editor.Completion;
 using Microsoft.R.Editor.Document;

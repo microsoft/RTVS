@@ -4,10 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using Microsoft.Languages.Core.Text;
-using Microsoft.R.Core.AST.Definitions;
+using Microsoft.R.Core.AST;
 using static System.FormattableString;
 
 namespace Microsoft.R.Editor.Tree {
