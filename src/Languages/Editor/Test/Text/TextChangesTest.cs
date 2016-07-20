@@ -1,11 +1,10 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
-using Microsoft.Languages.Editor.EditorHelpers;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.UnitTests.Core.XUnit;
 
 namespace Microsoft.Languages.Editor.Test.Text {

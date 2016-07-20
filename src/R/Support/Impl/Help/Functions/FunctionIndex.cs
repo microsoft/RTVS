@@ -57,7 +57,11 @@ namespace Microsoft.R.Support.Help.Functions {
                     // First populate index for popular packages that are commonly preloaded
                     foreach (var pi in packageIndex.Packages) {
                         foreach (var f in pi.Functions) {
-                            _functionToPackageMap[f.Name] = pi.Name;
+                            // Avoid duplicates. Packages are normally populated from base (intrinsic) 
+                            // to user so we don't want new packages to override base function information
+                            if (!_functionToPackageMap.ContainsKey(f.Name)) {
+                                _functionToPackageMap[f.Name] = pi.Name;
+                            }
                         }
                     }
                 }

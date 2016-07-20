@@ -1,0 +1,19 @@
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Microsoft.Languages.Editor.Shell;
+using Microsoft.VisualStudio.Language.Intellisense;
+using Microsoft.VisualStudio.Text.Editor;
+
+namespace Microsoft.Languages.Editor.Extensions {
+    public static class TextViewExtensions {
+        public static bool IsStatementCompletionWindowActive(this ITextView textView) {
+            bool result = false;
+            if (textView != null) {
+                var completionBroker = EditorShell.Current.ExportProvider.GetExportedValue<ICompletionBroker>();
+                result = completionBroker.IsCompletionActive(textView);
+            }
+            return result;
+        }
+    }
+}

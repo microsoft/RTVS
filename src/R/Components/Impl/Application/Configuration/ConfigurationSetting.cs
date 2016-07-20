@@ -44,6 +44,7 @@ namespace Microsoft.R.Components.Application.Configuration {
         public ConfigurationSetting(string name, string value, ConfigurationSettingValueType valueType) {
             Name = name;
             Value = value;
+            ValueType = valueType;
         }
     }
 }

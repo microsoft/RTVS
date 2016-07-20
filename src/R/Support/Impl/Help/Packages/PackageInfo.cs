@@ -42,7 +42,7 @@ namespace Microsoft.R.Support.Help.Packages {
 
         public void WriteToDisk() {
             if (!_saved) {
-                var filePath = GetCacheFilePath();
+                var filePath = CacheFilePath;
                 try {
                     var dir = Path.GetDirectoryName(filePath);
                     if (!Directory.Exists(dir)) {
@@ -74,13 +74,16 @@ namespace Microsoft.R.Support.Help.Packages {
             var functions = TryRestoreFromCache();
             if (functions == null) {
                 try {
-                    var r = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
-                    functions = r.Select(p => (string)((JValue)p).Value).ToArray();
+                    var result = await _host.Session.EvaluateAsync<JArray>(Invariant($"as.list(getNamespaceExports('{this.Name}'))"), REvaluationKind.BaseEnv);
+                    functions = result
+                                    .Select(p => (string)((JValue)p).Value)
+                                    .Where(n => n.IndexOf(':') < 0)
+                                    .ToArray();
                 } catch (TaskCanceledException) { } catch (REvaluationException) { }
             } else {
                 _saved = true;
             }
-            return functions;
+            return functions ?? Enumerable.Empty<string>();
         }
 
         /// <summary>
@@ -88,7 +91,7 @@ namespace Microsoft.R.Support.Help.Packages {
         /// </summary>
         /// <returns></returns>
         private IEnumerable<string> TryRestoreFromCache() {
-            var filePath = GetCacheFilePath();
+            var filePath = this.CacheFilePath;
             try {
                 if (File.Exists(filePath)) {
                     var list = new List<string>();
@@ -104,11 +107,6 @@ namespace Microsoft.R.Support.Help.Packages {
             return null;
         }
 
-        private string GetCacheFilePath() {
-            var folder = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                            @"Microsoft\VisualStudio\RTVS\IntelliSense\");
-            return Path.Combine(folder, Invariant($"{this.Name}_{_version}.functions"));
-        }
+        private string CacheFilePath => Path.Combine(PackageIndex.CacheFolderPath, Invariant($"{this.Name}_{_version}.functions"));
     }
 }

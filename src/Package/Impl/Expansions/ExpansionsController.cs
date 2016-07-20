@@ -3,6 +3,7 @@
 
 using System;
 using Microsoft.Common.Core;
+using Microsoft.Languages.Editor.Extensions;
 using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.R.Package.Shell;
@@ -14,7 +15,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
     /// <summary>
     /// Code expansions (aka snippets) command controller
     /// </summary>
-    public class ExpansionsController : ICommandTarget {
+    internal sealed class ExpansionsController : ICommandTarget {
         private ExpansionClient _expansionClient;
         private ITextView _textView;
         private ITextBuffer _textBuffer;
@@ -35,7 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 if (!_expansionClient.IsEditingExpansion()) {
                     switch ((VSConstants.VSStd2KCmdID)id) {
                         case VSConstants.VSStd2KCmdID.TAB:
-                            return ShouldIgnoreStatementCompletionCommand() ? CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
+                            return _expansionClient.TextView.IsStatementCompletionWindowActive() ? 
+                                CommandStatus.NotSupported : CommandStatus.SupportedAndEnabled;
 
                         case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
                         case VSConstants.VSStd2KCmdID.SURROUNDWITH:
@@ -87,7 +89,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.RETURN:
-                        if (!ShouldIgnoreStatementCompletionCommand() && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive() && _expansionClient.IsEditingExpansion()) {
                             if (_expansionClient.IsCaretInsideSnippetFields()) {
                                 // End the current expansion session and position the 
                                 // edit caret according to the code snippet template.
@@ -102,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                         break;
 
                     case VSConstants.VSStd2KCmdID.CANCEL:
-                        if (!IsStatementCompletionWindowActive(_expansionClient.TextView) && _expansionClient.IsEditingExpansion()) {
+                        if (!_expansionClient.TextView.IsStatementCompletionWindowActive() && _expansionClient.IsEditingExpansion()) {
                             _expansionClient.EndExpansionSession(true);
                             return CommandResult.Executed;
                         }
@@ -127,19 +129,6 @@ namespace Microsoft.VisualStudio.R.Package.Expansions {
                 }
             }
             return false;
-        }
-
-        private bool ShouldIgnoreStatementCompletionCommand() {
-            return IsStatementCompletionWindowActive(_expansionClient.TextView);
-        }
-
-        private static bool IsStatementCompletionWindowActive(ITextView textView) {
-            bool result = false;
-            if (textView != null) {
-                ICompletionBroker completionBroker = VsAppShell.Current.ExportProvider.GetExport<ICompletionBroker>().Value;
-                result = completionBroker.IsCompletionActive(textView);
-            }
-            return result;
         }
     }
 }

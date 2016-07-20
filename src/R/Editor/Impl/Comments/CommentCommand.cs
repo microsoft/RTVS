@@ -10,18 +10,14 @@ using Microsoft.R.Components.Controller;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace Microsoft.R.Editor.Comments
-{
-    internal class CommentCommand : EditingCommand
-    {
+namespace Microsoft.R.Editor.Comments {
+    internal class CommentCommand : EditingCommand {
         internal CommentCommand(ITextView textView, ITextBuffer textBuffer, IEditorShell editorShell)
-            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK))
-        {
+            : base(textView, editorShell, new CommandId(VSConstants.VSStd2K, (int)VSConstants.VSStd2KCmdID.COMMENT_BLOCK)) {
         }
 
         #region ICommand
-        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg)
-        {
+        public override CommandResult Invoke(Guid group, int id, object inputArg, ref object outputArg) {
             SnapshotSpan selectionSpan = TextView.Selection.StreamSelectionSpan.SnapshotSpan;
 
             RCommenter.CommentBlock(TextView, TextView.TextBuffer, new TextRange(selectionSpan.Start.Position, selectionSpan.Length), EditorShell);
@@ -29,8 +25,7 @@ namespace Microsoft.R.Editor.Comments
             return CommandResult.Executed;
         }
 
-        public override CommandStatus Status(Guid group, int id)
-        {
+        public override CommandStatus Status(Guid group, int id) {
             return CommandStatus.SupportedAndEnabled;
         }
         #endregion

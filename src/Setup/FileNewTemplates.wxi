@@ -7,6 +7,7 @@
       <File Source="$(var.BinDir)\Templates\NewItem\dataset.rd" />
       <File Source="$(var.BinDir)\Templates\NewItem\document.rd" />
       <File Source="$(var.BinDir)\Templates\NewItem\function.rd" />
+      <File Source="$(var.BinDir)\Templates\NewItem\sqlquery.sql" />
       <File Source="$(var.BinDir)\Templates\NewItem\NewRItems.vsdir" />
     </Component>
   </DirectoryRef>
