@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.InteractiveWorkflow;
@@ -20,6 +21,7 @@ using Microsoft.VisualStudio.R.Package.Utilities;
 namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
     public static class TestRInteractiveWorkflowProviderFactory {
         public static IRInteractiveWorkflowProvider Create(IRSessionProvider sessionProvider = null
+            , IConnectionManagerProvider connectionsProvider = null
             , IRHistoryProvider historyProvider = null
             , IRPackageManagerProvider packagesProvider = null
             , IRPlotManagerProvider plotsProvider = null
@@ -35,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.FakeFactories {
             activeTextViewTracker = activeTextViewTracker ?? new ActiveTextViewTrackerMock(string.Empty, RContentTypeDefinition.ContentType);
             debuggerModeTracker = debuggerModeTracker ?? new VsDebuggerModeTracker();
 
-           return new TestRInteractiveWorkflowProvider(sessionProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
+           return new TestRInteractiveWorkflowProvider(sessionProvider, connectionsProvider, historyProvider, packagesProvider, plotsProvider, activeTextViewTracker, debuggerModeTracker, shell ?? VsAppShell.Current, settings ?? RToolsSettings.Current);
         }
     }
 }

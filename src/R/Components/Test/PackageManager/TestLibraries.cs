@@ -9,7 +9,7 @@ using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Test.PackageManager {
     internal static class TestLibraries {
-        public static Task SetLocalLibsAsync(IRSessionEvaluation eval, params string[] libPaths) {
+        public static Task SetLocalLibsAsync(IRExpressionEvaluator eval, params string[] libPaths) {
             foreach (var libPath in libPaths.Where(libPath => !Directory.Exists(libPath))) {
                 Directory.CreateDirectory(libPath);
             }
@@ -19,7 +19,7 @@ namespace Microsoft.R.Components.Test.PackageManager {
             return eval.ExecuteAsync(code);
         }
 
-        public static Task SetLocalLibraryAsync(IRSessionEvaluation eval, MethodInfo testMethod, TestFilesFixture testFiles) {
+        public static Task SetLocalLibraryAsync(IRExpressionEvaluator eval, MethodInfo testMethod, TestFilesFixture testFiles) {
             return SetLocalLibsAsync(eval, Path.Combine(testFiles.LibraryDestinationPath, testMethod.Name));
         }
     }

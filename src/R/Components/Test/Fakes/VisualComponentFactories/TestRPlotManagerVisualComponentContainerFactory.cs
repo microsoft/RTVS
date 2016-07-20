@@ -7,7 +7,6 @@ using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Components.View;
-using Microsoft.R.Host.Client;
 
 namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
     [Export(typeof (IRPlotManagerVisualComponentContainerFactory))]
@@ -21,8 +20,8 @@ namespace Microsoft.R.Components.Test.Fakes.VisualComponentFactories {
             _coreShell = coreShell;
         }
 
-        public IVisualComponentContainer<IRPlotManagerVisualComponent> GetOrCreate(IRPlotManager plotManager, IRSession session, int instanceId = 0) {
-            return GetOrCreate(instanceId, container => new RPlotManagerVisualComponent(plotManager, container, session, _settings, _coreShell));
+        public IVisualComponentContainer<IRPlotManagerVisualComponent> GetOrCreate(IRPlotManager plotManager, int instanceId = 0) {
+            return GetOrCreate(instanceId, container => new RPlotManagerVisualComponent(plotManager, container, _settings, _coreShell));
         }
     }
 }

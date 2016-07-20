@@ -11,6 +11,7 @@ using Microsoft.R.Components.Controller;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Implementation;
 using Microsoft.R.Components.Test.Stubs.VisualComponents;
+using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.Editor.Mocks;
@@ -43,31 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Commands {
 
         public void Dispose() {
             _workflow?.Dispose();
-        }
-
-        [Test]
-        [Category.Repl]
-        public async Task InterruptRStatusTest() {
-            var command = new InterruptRCommand(_workflow, _debuggerModeTracker);
-            command.Should().BeInvisibleAndDisabled();
-
-            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
-                command.Should().BeVisibleAndDisabled();
-
-                await _workflow.RSession.BeginEvaluationAsync();
-                command.Should().BeVisibleAndEnabled();
-
-                _debuggerModeTracker.OnModeChange(DBGMODE.DBGMODE_Break);
-                command.Should().BeVisibleAndDisabled();
-
-                _debuggerModeTracker.OnModeChange(DBGMODE.DBGMODE_Run);
-                command.Should().BeVisibleAndEnabled();
-
-                command.Invoke();
-                command.Should().BeVisibleAndDisabled();
-            }
-
-            command.Should().BeVisibleAndDisabled();
         }
 
         [Test]

@@ -11,9 +11,9 @@ namespace Microsoft.R.Components.Test.PackageManager {
 
         public static string GetRepoPath(TestFilesFixture testFiles) => Path.Combine(testFiles.ReposDestinationPath, Repo);
 
-        public static Task SetLocalRepoAsync(IRSessionEvaluation eval, TestFilesFixture testFiles) => SetLocalRepoAsync(eval, GetRepoPath(testFiles));
+        public static Task SetLocalRepoAsync(IRExpressionEvaluator eval, TestFilesFixture testFiles) => SetLocalRepoAsync(eval, GetRepoPath(testFiles));
 
-        public static Task SetLocalRepoAsync(IRSessionEvaluation eval, string localRepoPath) {
+        public static Task SetLocalRepoAsync(IRExpressionEvaluator eval, string localRepoPath) {
             var code = $"options(repos=list(LOCAL=\"file:///{localRepoPath.ToRPath()}\"))";
             return eval.ExecuteAsync(code);
         }

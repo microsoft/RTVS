@@ -71,6 +71,18 @@
     <Compile Include="Application\Configuration\Definitions\ConfigurationSettingValueType.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSetting.cs" />
     <Compile Include="Application\Configuration\Definitions\IConfigurationSettingsReader.cs" />
+    <Compile Include="ConnectionManager\IConnectionManager.cs" />
+    <Compile Include="ConnectionManager\IConnectionManagerProvider.cs" />
+    <Compile Include="ConnectionManager\IConnectionManagerVisualComponent.cs" />
+    <Compile Include="ConnectionManager\IConnectionManagerVisualComponentContainerFactory.cs" />
+    <Compile Include="ConnectionManager\Implementation\ConnectionManager.cs" />
+    <Compile Include="ConnectionManager\Implementation\RPackageManagerProvider.cs" />
+    <Compile Include="ConnectionManager\Implementation\ViewModel\ConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml.cs">
+      <DependentUpon>ConnectionStatusBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ConnectionManager\Implementation\View\DesignTime\DesignTimeConnectionStatusBarViewModel.cs" />
+    <Compile Include="ConnectionManager\ViewModel\IConnectionStatusBarViewModel.cs" />
     <Compile Include="ContentTypes\RContentTypeDefinition.cs" />
     <Compile Include="Controller\CommandResult.cs" />
     <Compile Include="Controller\CommandStatus.cs" />
@@ -101,6 +113,7 @@
     <Compile Include="History\IRHistoryVisualComponentContainerFactory.cs" />
     <Compile Include="History\RHistoryCommandIds.cs" />
     <Compile Include="ContentTypes\RHistoryContentTypeDefinition.cs" />
+    <Compile Include="InteractiveWorkflow\Commands\InterruptRCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\EndLocatorCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\CopyPlotAsMetafileCommand.cs" />
     <Compile Include="Plots\Implementation\Commands\CopyPlotAsBitmapCommand.cs" />
@@ -204,6 +217,7 @@
     <Compile Include="Sql\DbConnectionService.cs" />
     <Compile Include="Sql\IDbConnectionService.cs" />
     <Compile Include="Sql\ConnectionStringConverter.cs" />
+    <Compile Include="StatusBar\IStatusBar.cs" />
     <Compile Include="TextBuffer\ITextBufferListener.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEventArgs.cs" />
     <Compile Include="TextBuffer\TextBufferListenerEvents.cs" />
@@ -252,6 +266,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ConnectionManager\Implementation\View\ConnectionStatusBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="PackageManager\Implementation\View\PackageList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

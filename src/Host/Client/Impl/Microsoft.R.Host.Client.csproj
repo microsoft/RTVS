@@ -113,6 +113,7 @@
     <Compile Include="Definitions\RException.cs" />
     <Compile Include="Host\RHost.cs" />
     <Compile Include="Host\RHostDisconnectedException.cs" />
+    <Compile Include="Session\RConnectedEventArgs.cs" />
     <Compile Include="Session\ROutputEventArgs.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>

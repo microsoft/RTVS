@@ -45,5 +45,30 @@ namespace Microsoft.R.Wpf {
         public static object WindowTextKey { get; set; } = SystemColors.WindowTextBrushKey;
         public static object WindowKey { get; set; } = SystemColors.WindowBrushKey;
 
+        public static object StartPageUnselectedItemStrokeBrushKey { get; set; } = SystemColors.InactiveBorderBrushKey;
+        public static object StartPageUnselectedItemStrokeColorKey { get; set; } = SystemColors.InactiveBorderColorKey;
+        public static object StatusBarBuildingBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
+        public static object StatusBarBuildingColorKey { get; set; } = SystemColors.ActiveCaptionColorKey;
+        public static object StatusBarBuildingTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object StatusBarBuildingTextColorKey { get; set; } = SystemColors.ActiveCaptionTextColorKey;
+        public static object StatusBarDebuggingBrushKey { get; set; } = SystemColors.ActiveCaptionBrushKey;
+        public static object StatusBarDebuggingColorKey { get; set; } = SystemColors.ActiveCaptionColorKey;
+        public static object StatusBarDebuggingTextBrushKey { get; set; } = SystemColors.ActiveCaptionTextBrushKey;
+        public static object StatusBarDebuggingTextColorKey { get; set; } = SystemColors.ActiveCaptionTextColorKey;
+        public static object StatusBarDefaultBrushKey { get; set; } = SystemColors.DesktopBrushKey;
+        public static object StatusBarDefaultColorKey { get; set; } = SystemColors.DesktopColorKey;
+        public static object StatusBarDefaultTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
+        public static object StatusBarDefaultTextColorKey { get; set; } = SystemColors.ControlTextColorKey;
+        public static object StatusBarHighlightBrushKey { get; set; } = SystemColors.HighlightBrushKey;
+        public static object StatusBarHighlightColorKey { get; set; } = SystemColors.HighlightColorKey;
+        public static object StatusBarHighlightTextBrushKey { get; set; } = SystemColors.HighlightTextBrushKey;
+        public static object StatusBarHighlightTextColorKey { get; set; } = SystemColors.HighlightTextColorKey;
+        public static object StatusBarNoSolutionBrushKey { get; set; } = SystemColors.InactiveCaptionBrushKey;
+        public static object StatusBarNoSolutionColorKey { get; set; } = SystemColors.InactiveCaptionColorKey;
+        public static object StatusBarNoSolutionTextBrushKey { get; set; } = SystemColors.InactiveCaptionTextBrushKey;
+        public static object StatusBarNoSolutionTextColorKey { get; set; } = SystemColors.InactiveCaptionTextColorKey;
+        public static object StatusBarTextBrushKey { get; set; } = SystemColors.ControlTextBrushKey; 
+        public static object StatusBarTextColorKey { get; set; } = SystemColors.ControlTextColorKey;
+
     }
 }

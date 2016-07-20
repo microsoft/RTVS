@@ -78,14 +78,12 @@ namespace Microsoft.R.RtvsPackage.Test {
                 json = expr;
             }
 
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
-                res.Error.Should().BeNullOrEmpty();
-                res.Result.Should().NotBeNull();
-                res.RawResult.Should().BeNull();
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-            }
+            var res = await _session.EvaluateAsync(expr, REvaluationKind.Normal);
+            res.Error.Should().BeNullOrEmpty();
+            res.Result.Should().NotBeNull();
+            res.RawResult.Should().BeNull();
+            var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
+            actualJson.Should().Be(json);
         }
 
         [CompositeTest]
@@ -99,15 +97,13 @@ namespace Microsoft.R.RtvsPackage.Test {
                 json = expr;
             }
 
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                await eval.SetCodePageAsync(codepage); 
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
-                res.Error.Should().BeNullOrEmpty();
-                res.Result.Should().NotBeNull();
-                res.RawResult.Should().BeNull();
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-            }
+            await _session.SetCodePageAsync(codepage);
+            var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
+            res.Error.Should().BeNullOrEmpty();
+            res.Result.Should().NotBeNull();
+            res.RawResult.Should().BeNull();
+            var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
+            actualJson.Should().Be(json);
         }
 
         [CompositeTest]
@@ -125,11 +121,9 @@ namespace Microsoft.R.RtvsPackage.Test {
         [InlineData("list(x = 1, x = 2)")]
         [InlineData("as.environment(list(x = 1, x = 2))")]
         public async Task SerializeError(string expr) {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
-                res.Error.Should().NotBeNullOrEmpty();
-                res.RawResult.Should().BeNull();
-            }
+            var res = await _session.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
+            res.Error.Should().NotBeNullOrEmpty();
+            res.RawResult.Should().BeNull();
         }
     }
 }

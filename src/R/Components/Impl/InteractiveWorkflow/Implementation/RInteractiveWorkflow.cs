@@ -4,6 +4,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Common.Core.Shell;
+using Microsoft.R.Components.ConnectionManager;
 using Microsoft.R.Components.Extensions;
 using Microsoft.R.Components.History;
 using Microsoft.R.Components.PackageManager;
@@ -25,6 +26,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         private bool _debuggerJustEnteredBreakMode;
 
         public ICoreShell Shell { get; }
+        public IConnectionManager Connections { get; }
         public IRHistory History { get; }
         public IRSession RSession { get; }
         public IRPackageManager Packages { get; }
@@ -35,6 +37,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
         public IInteractiveWindowVisualComponent ActiveWindow { get; private set; }
 
         public RInteractiveWorkflow(IRSessionProvider sessionProvider
+            , IConnectionManagerProvider connectionsProvider
             , IRHistoryProvider historyProvider
             , IRPackageManagerProvider packagesProvider
             , IRPlotManagerProvider plotsProvider
@@ -51,9 +54,10 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
             Shell = coreShell;
             RSession = sessionProvider.GetOrCreate(GuidList.InteractiveWindowRSessionGuid);
+            Connections = connectionsProvider.CreateConnectionManager(this);
             History = historyProvider.CreateRHistory(this);
             Packages = packagesProvider.CreateRPackageManager(sessionProvider, settings, this);
-            Plots = plotsProvider.CreatePlotManager(sessionProvider, settings, this);
+            Plots = plotsProvider.CreatePlotManager(settings, this);
             _operations = new RInteractiveWorkflowOperations(this, _debuggerModeTracker, Shell);
 
             _activeTextViewTracker.LastActiveTextViewChanged += LastActiveTextViewChanged;
@@ -140,6 +144,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
             _activeTextViewTracker.LastActiveTextViewChanged -= LastActiveTextViewChanged;
             RSession.Disconnected -= RSessionDisconnected;
             Operations.Dispose();
+            Connections.Dispose();
             _onDispose();
         }
     }

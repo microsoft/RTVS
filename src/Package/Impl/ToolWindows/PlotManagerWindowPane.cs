@@ -8,18 +8,16 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.R.Components.Plots;
 using Microsoft.R.Components.Plots.Implementation;
 using Microsoft.R.Components.Settings;
-using Microsoft.R.Host.Client;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Packages.R;
 
-namespace Microsoft.VisualStudio.R.Package.Plots {
+namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Guid(WindowGuidString)]
     internal class PlotManagerWindowPane : VisualComponentToolWindow<IRPlotManagerVisualComponent>, IOleCommandTarget {
         private readonly IRPlotManager _plotManager;
-        private readonly IRSession _session;
         private readonly IRSettings _settings;
         private readonly ICoreShell _coreShell;
 
@@ -27,9 +25,8 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
 
         public static Guid WindowGuid { get; } = new Guid(WindowGuidString);
 
-        public PlotManagerWindowPane(IRPlotManager plotManager, IRSession session, IRSettings settings, ICoreShell coreShell) {
+        public PlotManagerWindowPane(IRPlotManager plotManager, IRSettings settings, ICoreShell coreShell) {
             _plotManager = plotManager;
-            _session = session;
             _settings = settings;
             _coreShell = coreShell;
 
@@ -40,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Plots {
         }
 
         protected override void OnCreate() {
-            Component = new RPlotManagerVisualComponent(_plotManager, this, _session, _settings, _coreShell);
+            Component = new RPlotManagerVisualComponent(_plotManager, this, _settings, _coreShell);
             base.OnCreate();
         }
 

@@ -40,7 +40,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
 
         public event EventHandler LocatorModeChanged;
 
-        public RPlotManager(IRSessionProvider sessionProvider, IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
+        public RPlotManager(IRSettings settings, IRInteractiveWorkflow interactiveWorkflow, Action dispose) {
             _interactiveWorkflow = interactiveWorkflow;
             _dispose = dispose;
             ActivePlotIndex = -1;
@@ -74,7 +74,7 @@ namespace Microsoft.R.Components.Plots.Implementation {
                 return VisualComponent;
             }
 
-            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, _interactiveWorkflow.RSession, instanceId).Component;
+            VisualComponent = visualComponentContainerFactory.GetOrCreate(this, instanceId).Component;
             return VisualComponent;
         }
 

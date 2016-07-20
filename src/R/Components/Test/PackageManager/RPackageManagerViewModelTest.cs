@@ -42,10 +42,8 @@ namespace Microsoft.R.Components.Test.PackageManager {
                 CodePage = settings.RCodePage,
             }, null, 50000);
 
-            using (var eval = await _workflow.RSession.BeginEvaluationAsync()) {
-                await TestRepositories.SetLocalRepoAsync(eval, _testFiles);
-                await TestLibraries.SetLocalLibraryAsync(eval, _testMethod, _testFiles);
-            }
+            await TestRepositories.SetLocalRepoAsync(_workflow.RSession, _testFiles);
+            await TestLibraries.SetLocalLibraryAsync(_workflow.RSession, _testMethod, _testFiles);
 
             var componentContainerFactory = _exportProvider.GetExportedValue<IRPackageManagerVisualComponentContainerFactory>();
             _packageManagerComponent = await InUI(() => _workflow.Packages.GetOrCreateVisualComponent(componentContainerFactory));

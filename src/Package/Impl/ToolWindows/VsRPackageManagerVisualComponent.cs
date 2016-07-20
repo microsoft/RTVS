@@ -2,8 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.ComponentModel.Composition;
-using Microsoft.Common.Core;
-using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.PackageManager;
 using Microsoft.R.Components.Search;
 using Microsoft.R.Components.View;
@@ -12,7 +10,7 @@ using Microsoft.R.Support.Settings;
 using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Windows;
 
-namespace Microsoft.VisualStudio.R.Package.PackageManager {
+namespace Microsoft.VisualStudio.R.Package.ToolWindows {
     [Export(typeof(IRPackageManagerVisualComponentContainerFactory))]
     internal class VsRPackageManagerVisualComponentContainerFactory : ToolWindowPaneFactory<PackageManagerWindowPane>, IRPackageManagerVisualComponentContainerFactory { 
         private readonly ISearchControlProvider _searchControlProvider;

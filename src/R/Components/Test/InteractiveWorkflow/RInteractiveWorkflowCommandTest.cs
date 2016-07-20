@@ -6,16 +6,20 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Common.Core;
 using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Settings;
+using Microsoft.R.Components.Test.Fakes.Trackers;
 using Microsoft.R.Host.Client;
 using Microsoft.R.Host.Client.Test;
 using Microsoft.UnitTests.Core.Mef;
+using Microsoft.UnitTests.Core.Threading;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.UnitTests.Core.XUnit.MethodFixtures;
 using Microsoft.VisualStudio.Editor.Mocks;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using NSubstitute;
@@ -98,5 +102,36 @@ namespace Microsoft.R.Components.Test.InteractiveWorkflow {
                 }
             }
         }
+
+        [Test]
+        [Category.Repl]
+        public async Task InterruptRStatusTest() {
+            var debuggerModeTracker = _exportProvider.GetExportedValue<TestDebuggerModeTracker>();
+            var command = new InterruptRCommand(_workflow, debuggerModeTracker);
+            command.Should().BeInvisibleAndDisabled();
+
+            using (await UIThreadHelper.Instance.Invoke(() => _workflow.GetOrCreateVisualComponent(_componentContainerFactory))) {
+                command.Should().BeVisibleAndDisabled();
+
+                using (var interaction = await _workflow.RSession.BeginInteractionAsync()) {
+                    var task = interaction.RespondAsync("while(TRUE) {}");
+                    await EventTaskSources.IRSession.AfterRequest.Create(_workflow.RSession);
+                    await Task.Delay(100);
+                    command.Should().BeVisibleAndEnabled();
+
+                    debuggerModeTracker.IsInBreakMode = true;
+                    command.Should().BeVisibleAndDisabled();
+
+                    debuggerModeTracker.IsInBreakMode = false;
+                    command.Should().BeVisibleAndEnabled();
+
+                    await command.InvokeAsync();
+                    command.Should().BeVisibleAndDisabled();
+                }
+            }
+
+            command.Should().BeVisibleAndDisabled();
+        }
+
     }
 }

@@ -36,7 +36,7 @@ namespace Microsoft.R.Host.Client.Session {
         public event EventHandler<RAfterRequestEventArgs> AfterRequest;
         public event EventHandler<EventArgs> Mutated;
         public event EventHandler<ROutputEventArgs> Output;
-        public event EventHandler<EventArgs> Connected;
+        public event EventHandler<RConnectedEventArgs> Connected;
         public event EventHandler<EventArgs> Disconnected;
         public event EventHandler<EventArgs> Disposed;
         public event EventHandler<EventArgs> DirectoryChanged;
@@ -353,7 +353,7 @@ namespace Microsoft.R.Host.Client.Session {
             Prompt = DefaultPrompt;
             _isHostRunning = true;
             _initializationTcs.SetResult(null);
-            Connected?.Invoke(this, EventArgs.Empty);
+            Connected?.Invoke(this, new RConnectedEventArgs(rVersion));
             Mutated?.Invoke(this, EventArgs.Empty);
             return Task.CompletedTask;
         }

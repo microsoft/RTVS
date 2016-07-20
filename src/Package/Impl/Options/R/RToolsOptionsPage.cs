@@ -100,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Options.R {
                 value = ValidateRBasePath(value);
                 if (value != null) {
                     if (RToolsSettings.Current.RBasePath != value && !_allowLoadingFromStorage) {
-                        VsAppShell.Current.ShowErrorMessage(Resources.RPathChangedRestartVS);
+                        VsAppShell.Current.ShowErrorMessage(Resources.RPathChanged_RestartRToApplyChanges);
                     }
                     RToolsSettings.Current.RBasePath = value;
                 }

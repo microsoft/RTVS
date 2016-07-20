@@ -19,6 +19,7 @@ using Microsoft.R.Components.PackageManager.Model;
 using Microsoft.R.Components.PackageManager.ViewModel;
 using Microsoft.R.Components.Settings;
 using Microsoft.R.Host.Client;
+using Microsoft.R.Host.Client.Host;
 
 namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
     internal class RPackageManagerViewModel : BindableBase, IRPackageManagerViewModel {
@@ -147,6 +148,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             try {
                 var libPath = await GetLibPath();
                 await _packageManager.InstallPackageAsync(package.Name, libPath);
+            } catch (RHostDisconnectedException) {
+                AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantInstallPackageNoRSession, package.Name));
             } catch (RPackageManagerException ex) {
                 AddErrorMessage(ex.Message);
             }
@@ -176,31 +179,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                 IsLoading = true;
             }
 
-            if (package.IsLoaded) {
-                try {
-                    await _packageManager.UnloadPackageAsync(package.Name);
-                } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message);
-                }
-                await ReloadLoadedPackagesAsync();
-            }
-
-            if (!package.IsLoaded) {
-                try {
-                    var libPath = package.LibraryPath.ToRPath();
-                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
-                    if (packageLockState == PackageLockState.Unlocked) {
-                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
-                        await _packageManager.InstallPackageAsync(package.Name, libPath);
-                    } else {
-                        ShowPackageLockedMessage(packageLockState, package.Name);
-                    }
-                } catch (RPackageManagerException ex) {
-                    AddErrorMessage(ex.Message);
-                }
-
-                await ReloadInstalledAndLoadedPackagesAsync();
-            }
+            await UpdateImplAsync(package);
 
             if (_selectedTab == SelectedTab.InstalledPackages) {
                 ReplaceItems(_installedPackages);
@@ -211,6 +190,49 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             }
 
             package.IsChanging = false;
+        }
+
+        private async Task UpdateImplAsync(IRPackageViewModel package) {
+            await _coreShell.SwitchToMainThreadAsync();
+
+            if (package.IsLoaded) {
+                try {
+                    await _packageManager.UnloadPackageAsync(package.Name);
+                } catch (RHostDisconnectedException) {
+                    AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUnloadPackageNoRSession, package.Name));
+                } catch (RPackageManagerException ex) {
+                    AddErrorMessage(ex.Message);
+                }
+                await ReloadLoadedPackagesAsync();
+            }
+
+            if (package.IsLoaded) {
+                return;
+            }
+
+            try {
+                var libPath = package.LibraryPath.ToRPath();
+                var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                if (packageLockState == PackageLockState.Unlocked) {
+                    try {
+                        await _packageManager.UninstallPackageAsync(package.Name, libPath);
+                    } catch (RHostDisconnectedException) {
+                        AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUninstallPackageNoRSession, package.Name));
+                    }
+
+                    try {
+                        await _packageManager.InstallPackageAsync(package.Name, libPath);
+                    } catch (RHostDisconnectedException) {
+                        AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantInstallPackageNoRSession, package.Name));
+                    }
+                } else {
+                    ShowPackageLockedMessage(packageLockState, package.Name);
+                }
+            } catch (RPackageManagerException ex) {
+                AddErrorMessage(ex.Message);
+            }
+
+            await ReloadInstalledAndLoadedPackagesAsync();
         }
 
         public async Task UninstallAsync(IRPackageViewModel package) {
@@ -233,6 +255,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (package.IsLoaded) {
                 try {
                     await _packageManager.UnloadPackageAsync(package.Name);
+                } catch (RHostDisconnectedException) {
+                    AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUnloadPackageNoRSession, package.Name));
                 } catch (RPackageManagerException ex) {
                     AddErrorMessage(ex.Message);
                 }
@@ -248,6 +272,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
                     } else {
                         ShowPackageLockedMessage(packageLockState, package.Name);
                     }
+                } catch (RHostDisconnectedException) {
+                    AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUninstallPackageNoRSession, package.Name));
                 } catch (RPackageManagerException ex) {
                     AddErrorMessage(ex.Message);
                 }
@@ -277,6 +303,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
             try {
                 await _packageManager.LoadPackageAsync(package.Name, package.LibraryPath.ToRPath());
+            } catch (RHostDisconnectedException) {
+                AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantLoadPackageNoRSession, package.Name));
             } catch (RPackageManagerException ex) {
                 AddErrorMessage(ex.Message);
             }
@@ -298,6 +326,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
 
             try {
                 await _packageManager.UnloadPackageAsync(package.Name);
+            } catch (RHostDisconnectedException) {
+                AddErrorMessage(string.Format(CultureInfo.CurrentCulture, Resources.PackageManager_CantUnloadPackageNoRSession, package.Name));
             } catch (RPackageManagerException ex) {
                 AddErrorMessage(ex.Message);
             }
@@ -509,7 +539,13 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             try {
                 var currentLoadedPackages = _loadedPackages;
                 var currentInstalledPackages = _installedPackages;
-                var loadedPackageNames = (await _packageManager.GetLoadedPackagesAsync()).OrderBy(n => n).ToList();
+                List<string> loadedPackageNames;
+                try {
+                    loadedPackageNames = (await _packageManager.GetLoadedPackagesAsync()).OrderBy(n => n).ToList();
+                } catch (RHostDisconnectedException) {
+                    _coreShell.DispatchOnUIThread(() => AddErrorMessage(Resources.PackageManager_NoLoadedPackagesNoRSession));
+                    loadedPackageNames = new List<string>();
+                }
 
                 if (loadedPackageNames.Equals(currentLoadedPackages, (n, p) => n.EqualsIgnoreCase(p.Name))) {
                     return;
@@ -522,7 +558,12 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
         }
 
         private async Task UpdateLoadedPackages(IList<IRPackageViewModel> installedPackages, IList<string> loadedPackageNames = null) {
-            loadedPackageNames = loadedPackageNames ?? await _packageManager.GetLoadedPackagesAsync();
+            try { 
+                loadedPackageNames = loadedPackageNames ?? await _packageManager.GetLoadedPackagesAsync();
+            } catch (RHostDisconnectedException) {
+                _coreShell.DispatchOnUIThread(() => AddErrorMessage(Resources.PackageManager_NoLoadedPackagesNoRSession));
+                loadedPackageNames = new List<string>();
+            }
 
             var vmLoadedPackages = new List<IRPackageViewModel>();
             foreach (var package in installedPackages) {

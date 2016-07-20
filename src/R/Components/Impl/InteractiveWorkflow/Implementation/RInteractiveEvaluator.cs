@@ -154,6 +154,9 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
                 }
 
                 return ExecutionResult.Success;
+            } catch (RHostDisconnectedException) {
+                WriteError(Resources.MicrosoftRHostDisconnected);
+                return ExecutionResult.Success;
             } catch (OperationCanceledException) {
                 // Cancellation reason was already reported via RSession.Error and printed out;
                 // Return success cause connection lost doesn't mean that RHost died
@@ -196,7 +199,7 @@ namespace Microsoft.R.Components.InteractiveWorkflow.Implementation {
 
         private void SessionOnDisconnected(object sender, EventArgs args) {
             if (CurrentWindow == null || !CurrentWindow.IsResetting) {
-                WriteLine(Resources.MicrosoftRHostStopped);
+                WriteError(Resources.MicrosoftRHostStopped);
             }
         }
 
