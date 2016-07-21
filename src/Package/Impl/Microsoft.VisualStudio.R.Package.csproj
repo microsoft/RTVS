@@ -263,14 +263,15 @@
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
+    <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
-    <Compile Include="Sql\SqlPublsh.xaml.cs">
-      <DependentUpon>SqlPublsh.xaml</DependentUpon>
+    <Compile Include="Sql\SqlPublshDialog.xaml.cs">
+      <DependentUpon>SqlPublshDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
@@ -1312,7 +1313,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Sql\SqlPublsh.xaml">
+    <Page Include="Sql\SqlPublshDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

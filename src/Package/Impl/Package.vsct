@@ -309,7 +309,10 @@
       <Group guid="guidRToolsCmdSet" id="dataSubMenuDatabaseGroup" priority="0x0300">
         <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
       </Group>
-      
+      <Group guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup" priority="0x0400">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenu"/>
+      </Group>
+
       <!-- Directory flyout -->
       <Group guid="guidRToolsCmdSet" id="directorySubMenuGroup" priority="0x0100">
         <Parent guid="guidRToolsCmdSet" id="directorySubMenu"/>
@@ -1526,7 +1529,17 @@
         </Strings>
       </Button>
 
-  </Buttons>
+      <Button guid="guidRToolsCmdSet" id="icmdPublishSProc" priority="0x0100" type="Button">
+        <Parent guid="guidRToolsCmdSet" id="dataSubMenuSProcGroup"/>
+        <Icon guid="ImageCatalogGuid" id="DACApplications"/>
+        <CommandFlag>IconIsMoniker</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>&amp;Publish Stored Procedures...</ButtonText>
+        </Strings>
+      </Button>
+
+    </Buttons>
   </Commands>
 
   <Commands package="MarkdownPackage">
@@ -2219,7 +2232,8 @@
       <IDSymbol name="icmdAddDatabaseConnection" value="809" />
       <IDSymbol name="icmdAddDsn" value="810" />
       <IDSymbol name="icmdManageDsn" value="811" />
-
+      <IDSymbol name="icmdPublishSProc" value="812" />
+      
       <!-- Window management-->
       <IDSymbol name="icmdShowReplWindow" value="901" />
       <IDSymbol name="icmdShowPlotWindow" value="902" />
@@ -2328,6 +2342,7 @@
       <IDSymbol name="dataSubMenuEditGroup" value="0x2341"/>
       <IDSymbol name="dataSubMenuImportGroup" value="0x2342"/>
       <IDSymbol name="dataSubMenuDatabaseGroup" value="0x2343"/>
+      <IDSymbol name="dataSubMenuSProcGroup" value="0x2344"/>
       <IDSymbol name="publishPreviewSubMenuGroup" value="0x2360"/>
       <IDSymbol name="publishPublishSubMenuGroup" value="0x2370"/>
       <IDSymbol name="feedbackSubMenu" value="0x2380"/>
