@@ -268,13 +268,13 @@ namespace Microsoft.R.Host.Client {
             return ((SendBlobResult)blobResult).BlobId;
         }
 
-        public Task<IReadOnlyList<Blob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
+        public Task<IReadOnlyList<IRBlobData>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<IReadOnlyList<Blob>>(new CancellationToken(true))
+                ? Task.FromCanceled<IReadOnlyList<IRBlobData>>(new CancellationToken(true))
                 : GetBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task<IReadOnlyList<Blob>> GetBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
+        private async Task<IReadOnlyList<IRBlobData>> GetBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
@@ -353,11 +353,11 @@ namespace Microsoft.R.Host.Client {
                     request.CompletionSource.SetResult(new SendBlobResult(response.GetInt32(0, "blob_id")));
                     break;
                 case BlobRequestKind.Get:
-                    List<Blob> blobs = new List<Blob>();
+                    List<IRBlobData> blobs = new List<IRBlobData>();
                     int i = 0;
                     JArray arr = response.GetArgument(0, "block_ids", JTokenType.Array) as JArray;
                     foreach(var data in response.Blobs) {
-                        Blob blob = new Blob(arr[i++].Value<long>(), data);
+                        IRBlobData blob = new BlobData(arr[i++].Value<long>(), data);
                         blobs.Add(blob);
                     }
                     request.CompletionSource.SetResult(new GetBlobResult(blobs));

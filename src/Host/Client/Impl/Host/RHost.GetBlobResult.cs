@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace Microsoft.R.Host.Client {
     partial class RHost {
         private class GetBlobResult : BlobResult {
-            public IReadOnlyList<Blob> Blobs;
+            public IReadOnlyList<IRBlobData> Blobs;
 
-            public GetBlobResult(List<Blob> blobs) : base(BlobRequestKind.Get) {
-                Blobs = blobs ?? new List<Blob>();
+            public GetBlobResult(List<IRBlobData> blobs) : base(BlobRequestKind.Get) {
+                Blobs = blobs ?? new List<IRBlobData>();
             }
         }
     }

@@ -48,19 +48,5 @@ namespace Microsoft.R.Host.Client.Session {
         public static Task<string> GetFunctionCodeAsync(this IRSession session, string functionName) {
             return session.EvaluateAsync<string>(Invariant($"paste0(deparse({functionName}), collapse='\n')"), REvaluationKind.Normal);
         }
-
-        public static async Task<long> SendFileAsBlobAsync(this IRSession session, IFileSystem fs, string inputFilePath) {
-            byte[] rmdBytes = fs.FileReadAllBytes(inputFilePath);
-            return await session.SendBlobAsync(rmdBytes);
-        }
-
-        public static async Task<bool> GetFileFromBlobAsync(this IRSession session, IFileSystem fs, long blobId, string outputFilePath) {
-            var result = await session.GetBlobAsync(new long[] { blobId });
-            if (result.Count > 0) {
-                fs.FileWriteAllBytes(outputFilePath, result[0].Data);
-                return true;
-            }
-            return false; 
-        }
     }
 }
