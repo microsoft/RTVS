@@ -152,7 +152,6 @@
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryTextViewConnectionListener.cs" />
     <Compile Include="Commands\ShowToolWindowCommand.cs" />
-    <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\VariableViewModel.cs" />
@@ -221,6 +220,7 @@
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ProjectSystem\ProjectSettings.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -270,7 +270,10 @@
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
-    <Compile Include="Sql\SqlPublshDialog.xaml.cs">
+    <Compile Include="Sql\Publish\SProcInfo.cs" />
+    <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
+    <Compile Include="Sql\Publish\SqlPublishDialogViewModel.cs" />
+    <Compile Include="Sql\Publish\SqlPublshDialog.xaml.cs">
       <DependentUpon>SqlPublshDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Utilities\IdeUtilities.cs" />
@@ -1313,7 +1316,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Sql\SqlPublshDialog.xaml">
+    <Page Include="Sql\Publish\SqlPublshDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

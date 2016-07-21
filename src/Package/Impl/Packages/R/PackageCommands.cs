@@ -104,7 +104,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
                 new AddDsnCommand(appShell, interactiveWorkflow),
                 new ManageDsnCommand(appShell, interactiveWorkflow),
-                new PublishSProcCommand(appShell, interactiveWorkflow),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),

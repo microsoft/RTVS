@@ -422,6 +422,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to read SQL publishing settings from {0}. Exception: {1}.
+        /// </summary>
+        public static string Error_UnableToReadSqlPublishSettings {
+            get {
+                return ResourceManager.GetString("Error_UnableToReadSqlPublishSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unable to write to settings file {0}. Exception: {1}.
         /// </summary>
         public static string Error_UnableToSaveSettings {
@@ -1943,6 +1952,69 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string ShowDetailCommandTooltip {
             get {
                 return ResourceManager.GetString("ShowDetailCommandTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generate stored procedures.
+        /// </summary>
+        public static string SqlPublishDialog_GenerateStoredProcedures {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_GenerateStoredProcedures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderFile {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stored Procedure.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderSProc {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderSProc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable.
+        /// </summary>
+        public static string SqlPublishDialog_HeaderVariable {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_HeaderVariable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table name.
+        /// </summary>
+        public static string SqlPublishDialog_TableName {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Target project.
+        /// </summary>
+        public static string SqlPublishDialog_TargetProject {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TargetProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Publish R Code to SQL.
+        /// </summary>
+        public static string SqlPublishDialog_Title {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_Title", resourceCulture);
             }
         }
         

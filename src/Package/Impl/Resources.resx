@@ -845,4 +845,28 @@ Additional information:
   <data name="Yes" xml:space="preserve">
     <value>Yes</value>
   </data>
+  <data name="SqlPublishDialog_GenerateStoredProcedures" xml:space="preserve">
+    <value>Generate stored procedures</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderSProc" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="SqlPublishDialog_HeaderVariable" xml:space="preserve">
+    <value>Variable</value>
+  </data>
+  <data name="SqlPublishDialog_TableName" xml:space="preserve">
+    <value>Table name</value>
+  </data>
+  <data name="SqlPublishDialog_TargetProject" xml:space="preserve">
+    <value>Target project</value>
+  </data>
+  <data name="Error_UnableToReadSqlPublishSettings" xml:space="preserve">
+    <value>Unable to read SQL publishing settings from {0}. Exception: {1}</value>
+  </data>
+  <data name="SqlPublishDialog_Title" xml:space="preserve">
+    <value>Publish R Code to SQL</value>
+  </data>
 </root>
