@@ -43,6 +43,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public bool GenerateStoredProcedures { get; set; }
 
+        /// <summary>
+        /// Determines where to place R code in SQL
+        /// </summary>
+        public RCodePlacement CodePlacement { get; set; }
+
         public SqlSProcPublishSettings() {
             SProcInfoEntries = new List<SProcInfo>();
             GenerateStoredProcedures = true;
@@ -105,7 +110,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     var spInfo = new SProcInfo() {
                         FileName = fileName,
                         FilePath = PathHelper.MakeRelative(folder, entry),
-                        VariableName = GetVariableName(fileName),
                         SProcName = GetSProcName(fileName)
                     };
                     combinedList.Add(spInfo);
@@ -113,14 +117,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
             SProcInfoEntries = combinedList;
             TableName = TableName ?? "RCodeTable";
-        }
-
-        private string GetVariableName(string fileName) {
-            var name = SProcInfoEntries.FirstOrDefault(x => x.FileName.EqualsIgnoreCase(fileName))?.VariableName;
-            if(name != null && name.StartsWithOrdinal("@")) {
-                return name;
-            }
-            return "@" + (name ?? Path.GetFileNameWithoutExtension(fileName));
         }
 
         private string GetSProcName(string fileName) {

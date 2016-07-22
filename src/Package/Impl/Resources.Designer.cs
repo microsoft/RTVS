@@ -386,6 +386,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to create SQL files. Exception: {0}.
+        /// </summary>
+        public static string Error_UnableGenerateSqlFiles {
+            get {
+                return ResourceManager.GetString("Error_UnableGenerateSqlFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot delete variable(s). Exception {0}.
         /// </summary>
         public static string Error_UnableToDeleteVariable {
@@ -1992,7 +2001,43 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Table name.
+        ///   Looks up a localized string similar to This wizard can help you to transfer R code into a  SQL database and generate stored procedures that invoke R scripts. {0}R script can be placed in a separate table and referenced from the stored procedure by name or placed inline directly in the @script attribute of the SQL stored procedure.{1}By default stored procedure names are derived from the respective R script file name. However, you can edit names in the grid and enter any suitable value.
+        /// </summary>
+        public static string SqlPublishDialog_Help {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In stored procedure @script parameter.
+        /// </summary>
+        public static string SqlPublishDialog_RCodeInline {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodeInline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In a separate table.
+        /// </summary>
+        public static string SqlPublishDialog_RCodeInTable {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodeInTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to R code placement:.
+        /// </summary>
+        public static string SqlPublishDialog_RCodePlacement {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_RCodePlacement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table name:.
         /// </summary>
         public static string SqlPublishDialog_TableName {
             get {
@@ -2001,7 +2046,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Target project.
+        ///   Looks up a localized string similar to Target project:.
         /// </summary>
         public static string SqlPublishDialog_TargetProject {
             get {

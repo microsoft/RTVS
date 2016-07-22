@@ -17,11 +17,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public string FilePath { get; set; }
 
         /// <summary>
-        /// SQL variable name
-        /// </summary>
-        public string VariableName { get; set; }
-
-        /// <summary>
         /// Stored procedure name
         /// </summary>
         public string SProcName { get; set; }

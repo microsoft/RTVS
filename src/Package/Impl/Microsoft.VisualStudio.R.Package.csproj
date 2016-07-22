@@ -270,6 +270,7 @@
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\Publish\RCodePlacement.cs" />
     <Compile Include="Sql\Publish\SProcGenerator.cs" />
     <Compile Include="Sql\Publish\SProcInfo.cs" />
     <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />

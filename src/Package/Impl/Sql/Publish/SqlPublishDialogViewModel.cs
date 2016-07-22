@@ -15,19 +15,26 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal sealed class SqlPublishDialogViewModel : BindableBase {
         private readonly Dictionary<string, EnvDTE.Project> _projectMap = new Dictionary<string, EnvDTE.Project>();
         private bool _canGenerate;
+        private bool _generateTable;
 
         public IReadOnlyCollection<string> TargetProjects { get; private set; }
         public int SelectedTargetProjectIndex { get; set; }
         public SqlSProcPublishSettings Settings { get; private set; }
+        public int SelectedCodePlacementIndex { get; set; }
 
         public bool CanGenerate {
             get { return _canGenerate; }
             set { SetProperty(ref _canGenerate, value); }
         }
+        public bool GenerateTable {
+            get { return _generateTable; }
+            set { SetProperty(ref _generateTable, value); }
+        }
 
         public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
             Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, folder);
             PopulateProjectList(pss);
+            SelectCodePlacementMode();
         }
 
         private void PopulateProjectList(IProjectSystemServices pss) {
@@ -40,6 +47,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 }
                 SelectedTargetProjectIndex = index >= 0 ? index : 0;
             }
+        }
+
+        private void SelectCodePlacementMode() {
+            SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
 
         private IReadOnlyCollection<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {

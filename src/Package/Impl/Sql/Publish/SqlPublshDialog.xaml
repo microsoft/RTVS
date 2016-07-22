@@ -14,19 +14,19 @@
             mc:Ignorable="d" Width="600" Height="400">
     <Grid Margin="12" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="36" />
-            <RowDefinition Height="36" />
             <RowDefinition Height="*" />
             <RowDefinition Height="42" />
             <RowDefinition Height="42" />
-            <RowDefinition Height="36" />
+            <RowDefinition Height="42" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="120"/>
             <ColumnDefinition />
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="90"/>
+            <ColumnDefinition Width="90"/>
         </Grid.ColumnDefinitions>
-        <DataGrid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="3" 
+        <DataGrid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
                   x:Name="dataGrid" 
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False" 
@@ -55,7 +55,7 @@
                 </Style>
             </DataGrid.CellStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderFile}" Width="0.33*" IsReadOnly="True">
+                <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderFile}" Width="0.5*" IsReadOnly="True">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=FileName}" 
@@ -65,14 +65,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderVariable}" Width="0.33*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding Path=VariableName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" BorderThickness="0" Margin="4,2,1,2"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderSProc}" Width="0.33*">
+                <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderSProc}" Width="0.5*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBox Text="{Binding Path=SProcName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" BorderThickness="0" Margin="4,2,1,2"/>
@@ -81,24 +74,29 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="0" Grid.Column="2" Content="{x:Static components:Resources.Ok}" IsDefault="True" 
-                IsEnabled="{Binding Path=CanGenerate}"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Height="24" Click="OKButton_Click" />
-        <Button Grid.Row="1" Grid.Column="2" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
-                HorizontalAlignment="Center" VerticalAlignment="Top" Width="76" Height="24" Click="CancelButton_Click" />
+        <Label Grid.Row="1" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TargetProject}" />
+        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="ProjectList" 
+                  ItemsSource="{Binding Path=TargetProjects}" SelectedIndex="{Binding Path=SelectedTargetProjectIndex}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_RCodePlacement}" />
+        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="CodePlacementList"
+                  SelectedIndex="{Binding Path=SelectedCodePlacementIndex}" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False">
+            <ComboBoxItem Content="{x:Static package:Resources.SqlPublishDialog_RCodeInTable}" />
+            <ComboBoxItem Content="{x:Static package:Resources.SqlPublishDialog_RCodeInline}" />
+        </ComboBox>
         <Label Grid.Row="3" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TableName}" />
         <TextBox Grid.Row="3" Grid.Column="1" x:Name="TableName" Text="{Binding Path=Settings.TableName}"
                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" TextWrapping="NoWrap" VerticalContentAlignment="Center"
-                 TextChanged="TableName_TextChanged"/>
-        <Label Grid.Row="4" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TargetProject}" />
-        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="listProjects" 
-                  ItemsSource="{Binding Path=TargetProjects}" SelectedIndex="{Binding Path=SelectedTargetProjectIndex}"
-                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"/>
-        <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
-                  IsChecked="{Binding Path=Settings.GenerateStoredProcedures}"
-                  Content="{x:Static package:Resources.SqlPublishDialog_GenerateStoredProcedures}"
-                  x:Name="checkGenerateSProcs"  HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0" 
-                  TextBlock.Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+                 TextChanged="TableName_TextChanged" IsEnabled="{Binding GenerateTable}"/>
+        <TextBlock x:Name="HelpText" Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3"
+                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" TextWrapping="Wrap" 
+                   Text="Help" Margin="8,0,8,8" />
+        <Button Grid.Row="3" Grid.Column="3" Content="{x:Static components:Resources.Ok}" IsDefault="True" 
+                IsEnabled="{Binding Path=CanGenerate}"
+                HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="OKButton_Click" />
+        <Button Grid.Row="3" Grid.Column="4" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
+                HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="CancelButton_Click" />
 
     </Grid>
     <ui:DialogWindow.Resources>
