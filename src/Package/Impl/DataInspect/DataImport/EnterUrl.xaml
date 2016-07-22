@@ -32,9 +32,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="URL:" VerticalAlignment="Center" />
-            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" 
-                     Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                     Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}"/>
+            <TextBox Grid.Column="2" x:Name="UrlTextBox" MinHeight="20" VerticalContentAlignment="Center" />
             <ProgressBar Grid.Column="2" x:Name="DownloadProgressBar" Visibility="Collapsed" Minimum="0" Maximum="100" />
         </Grid>
 

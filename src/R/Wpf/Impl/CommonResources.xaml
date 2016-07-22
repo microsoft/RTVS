@@ -62,6 +62,60 @@
         <Setter Property="MaxWidth" Value="300" />
     </Style>
 
+    <Style TargetType="{x:Type TextBox}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+    </Style>
+
+    <Style  TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="{x:Type Button}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ButtonTextBrush}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ButtonFaceBrush}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}">
+                        <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          Focusable="False"
+                                          RecognizesAccessKey="True"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrushKey}}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
 

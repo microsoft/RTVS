@@ -41,7 +41,7 @@
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
                     <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
-                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderBackground}}" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
                     <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
                     <Setter Property="BorderThickness" Value="0,0,1,0" />
                     <Setter Property="Padding" Value="6" />
@@ -60,22 +60,22 @@
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=FileName}" 
                                        Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" 
-                                       Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" 
-                                       Margin="4,1,1,1"/>
+                                       Background="Transparent" 
+                                       FontWeight="DemiBold" Margin="4,2,1,2"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderVariable}" Width="0.33*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Path=VariableName}" BorderThickness="0" Margin="4,1,1,1"/>
+                            <TextBox Text="{Binding Path=VariableName}" BorderThickness="0" Margin="4,2,1,2"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="{x:Static package:Resources.SqlPublishDialog_HeaderSProc}" Width="0.33*">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBox Text="{Binding Path=SProcName}" BorderThickness="0" Margin="4,1,1,1"/>
+                            <TextBox Text="{Binding Path=SProcName}" BorderThickness="0" Margin="4,2,1,2"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -91,8 +91,9 @@
                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" TextWrapping="NoWrap" 
                  TextChanged="TableName_TextChanged"/>
         <Label Grid.Row="4" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_TargetProject}" />
-        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="listProjects" Text="{Binding Path=TargetProjects}"
-                 HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="listProjects" 
+                  ItemsSource="{Binding Path=TargetProjects}" SelectedIndex="{Binding Path=SelectedTargetProjectIndex}"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"/>
         <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" 
                   IsChecked="{Binding Path=Settings.GenerateStoredProcedures}"
                   Content="{x:Static package:Resources.SqlPublishDialog_GenerateStoredProcedures}"
