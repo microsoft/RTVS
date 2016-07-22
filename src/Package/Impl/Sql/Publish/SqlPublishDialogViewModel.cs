@@ -17,7 +17,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public IReadOnlyCollection<string> TargetProjects { get; private set; }
         public int SelectedTargetProjectIndex { get; private set; }
         public SqlSProcPublishSettings Settings { get; private set; }
-        public ObservableCollection<SProcInfo> SProcInfoEntries { get; private set; }
+        //public ObservableCollection<SProcInfo> SProcInfoEntries { get; private set; }
 
         public bool CanGenerate {
             get { return _canGenerate; }
@@ -26,7 +26,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
             Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, folder);
-            SProcInfoEntries = new ObservableCollection<SProcInfo>(Settings.SProcInfoEntries);
+            //SProcInfoEntries = new ObservableCollection<SProcInfo>(Settings.SProcInfoEntries);
             PopulateProjectList(pss);
         }
 
@@ -46,8 +46,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var solution = pss.GetSolution();
             var projects = new List<string>();
             foreach (EnvDTE.Project project in solution.Projects) {
-                foreach (var prop in project.Properties) {
-                }
                 projects.Add(project.Name);
             }
             return projects;

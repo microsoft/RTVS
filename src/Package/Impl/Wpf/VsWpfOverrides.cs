@@ -23,10 +23,13 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         private static void OverrideBrushes() {
             Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrush = VsBrushes.BrandedUIBorderKey;
+            Brushes.ButtonFaceBrush = VsBrushes.ButtonFaceKey;
+            Brushes.ButtonTextBrush = VsBrushes.ButtonTextKey;
             Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
             Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
             Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;
             Brushes.DetailPaneBackground = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.GrayTextBrushKey = VsBrushes.GrayTextKey;
             Brushes.HeaderBackground = VsBrushes.BrandedUIBackgroundKey;
             Brushes.InfoBackgroundKey = VsBrushes.InfoBackgroundKey;
             Brushes.InfoTextKey = VsBrushes.InfoTextKey;

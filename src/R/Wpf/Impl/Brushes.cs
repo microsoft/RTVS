@@ -8,6 +8,8 @@ namespace Microsoft.R.Wpf {
         public static object ActiveBorderKey { get; set; } = SystemColors.ActiveBorderBrushKey;
         public static object BackgroundBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object BorderBrush { get; set; } = SystemColors.InactiveBorderBrushKey;
+        public static object ButtonFaceBrush { get; set; } = SystemColors.ControlBrushKey;
+        public static object ButtonTextBrush { get; set; } = SystemColors.ControlTextBrushKey;
         public static object ComboBoxBorderKey { get; set; } = SystemColors.InactiveBorderBrushKey;
         public static object ContentBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object ContentInactiveSelectedBrushKey { get; set; } = SystemColors.ControlTextBrushKey;
@@ -19,6 +21,7 @@ namespace Microsoft.R.Wpf {
         public static object ControlLinkTextHoverKey { get; set; } = SystemColors.HighlightBrushKey;
         public static object ControlLinkTextKey { get; set; } = SystemColors.HighlightBrushKey;
         public static object DetailPaneBackground { get; set; } = SystemColors.WindowBrushKey;
+        public static object GrayTextBrushKey { get; set; } = SystemColors.GrayTextBrushKey;
         public static object HeaderBackground { get; set; } = SystemColors.WindowBrushKey;
         public static object HeaderColorsDefaultBrushKey { get; set; } = SystemColors.WindowBrushKey;
         public static object HeaderColorsDefaultTextBrushKey { get; set; } = SystemColors.WindowTextBrushKey;

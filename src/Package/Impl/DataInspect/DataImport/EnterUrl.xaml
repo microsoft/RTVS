@@ -48,7 +48,8 @@
             </Grid.ColumnDefinitions>
             <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch" 
                     Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
-                <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" />
+                <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" 
+                           Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
             </Border>
 
             <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" 
