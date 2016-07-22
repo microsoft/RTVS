@@ -20,19 +20,19 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _fs = fs;
         }
 
-        public void Generate(SqlSProcPublishSettings settings, string rFilesFolder, string targetProjectFolder) {
+        public void Generate(SqlSProcPublishSettings settings, string rFilesFolder, EnvDTE.Project targetProject) {
             rFilesFolder = PathHelper.EnsureTrailingSlash(rFilesFolder);
-            targetProjectFolder = PathHelper.EnsureTrailingSlash(targetProjectFolder);
+            var targetProjectFolder = PathHelper.EnsureTrailingSlash(Path.GetDirectoryName(targetProject.FullName));
 
             // Create SQL file with the table that will hold R code
             var sqlTableFile = Path.Combine(targetProjectFolder, "RCodeTable.sql");
             var codeTableName = Invariant($"[dbo].[{settings.TableName}]");
             using (var sw = new StreamWriter(sqlTableFile)) {
                 sw.WriteLine(Invariant($"CREATE TABLE {codeTableName}"));
-                sw.WriteLine("{");
+                sw.WriteLine("(");
                 sw.WriteLine("[Variable] NVARCHAR(64) NOT NULL,");
                 sw.WriteLine("[Code] NVARCHAR(max) NOT NULL,");
-                sw.WriteLine("}");
+                sw.WriteLine(")");
                 sw.WriteLine(string.Empty);
 
                 sw.WriteLine(Invariant($"INSERT INTO {codeTableName}"));
@@ -52,6 +52,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 }
             }
 
+            targetProject.ProjectItems.AddFromFile(sqlTableFile);
+
             if (settings.GenerateStoredProcedures) {
                 foreach (var info in settings.SProcInfoEntries) {
                     var sprocFile = Path.Combine(targetProjectFolder, Invariant($"SProcR_{info.SProcName}.sql"));
@@ -63,12 +65,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                         sw.WriteLine("BEGIN");
                         sw.WriteLine("EXEC sp_execute_external_script");
                         sw.WriteLine("@language = N'R'");
-                        sw.WriteLine(Invariant($", @script = @{varName},"));
+                        sw.WriteLine(Invariant($", @script = @{varName}"));
                         sw.WriteLine(", @input_data_1 = N''");
                         sw.WriteLine(", @input_data_1_name = N''");
                         sw.WriteLine(", @output_data_1_name = N''");
                         sw.WriteLine("END;");
                     }
+                    targetProject.ProjectItems.AddFromFile(sprocFile);
                 }
             }
         }

@@ -44,11 +44,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _model.Settings.TargetProject = listProjects.SelectedItem as string;
             _model.Settings.Save(_pss, _folder);
 
-            var targetFolder = GetSelectedProjectFolder(_model.Settings.TargetProject);
-            Debug.Assert(!string.IsNullOrEmpty(targetFolder));
+            var targetProject = GetSelectedProject(_model.Settings.TargetProject);
+            Debug.Assert(targetProject != null);
 
             var generator = new SProcGenerator(_pss, _fs);
-            generator.Generate(_model.Settings, _folder, targetFolder);
+            generator.Generate(_model.Settings, _folder, targetProject);
 
             this.Close();
         }
@@ -65,11 +65,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             _model.CanGenerate = !string.IsNullOrEmpty(TableName.Text) && _model.TargetProjects.Count > 0;
         }
 
-        private string GetSelectedProjectFolder(string projectName) {
+        private EnvDTE.Project GetSelectedProject(string projectName) {
             var projects = _pss.GetSolution().Projects;
             foreach(EnvDTE.Project p in projects) {
                 if(p.Name.EqualsOrdinal(projectName)) {
-                    return Path.GetDirectoryName(p.FullName);
+                    return p;
                 }
             }
             return null;
