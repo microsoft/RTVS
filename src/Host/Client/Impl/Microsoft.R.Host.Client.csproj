@@ -55,14 +55,9 @@
     <Compile Include="DataInspection\RPromiseInfo.cs" />
     <Compile Include="DataInspection\RSessionExtensions.cs" />
     <Compile Include="Definitions\FileTransferSession.cs" />
+    <Compile Include="Definitions\IRBlobInfo.cs" />
     <Compile Include="Definitions\IRBlob.cs" />
-    <Compile Include="Definitions\IRBlobData.cs" />
-    <Compile Include="Definitions\BlobData.cs" />
-    <Compile Include="Definitions\IRBlobFile.cs" />
-    <Compile Include="Definitions\BlobFile.cs" />
-    <Compile Include="Definitions\IRBlobFileInfo.cs" />
-    <Compile Include="Definitions\BlobFileInfo.cs" />
-    <Compile Include="Definitions\RBlobKind.cs" />
+    <Compile Include="Definitions\Blob.cs" />
     <Compile Include="Host\RHost.BaseRequest.cs" />
     <Compile Include="Host\RHost.BlobRequestKind.cs" />
     <Compile Include="Host\RHost.BlobResult.cs" />

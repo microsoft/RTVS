@@ -2,8 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Client {
-    public interface IRBlobData : IRBlob {
-        RBlobKind Kind { get; }
-        byte[] Data { get; }
+    public interface IRBlobInfo {
+        long Id { get; }
     }
 }

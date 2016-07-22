@@ -89,7 +89,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             res.Count.Should().Be(3);
 
             for(int i = 0; i < res.Count; ++i) {
-                IRBlobData blob = res[i];
+                IRBlob blob = res[i];
                 blob.Id.Should().Be(blobIds[i]);
                 blob.Data.ShouldAllBeEquivalentTo(dataSet[i]);
             }

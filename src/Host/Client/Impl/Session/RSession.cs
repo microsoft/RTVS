@@ -24,7 +24,7 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
         private readonly static Task<long> CanceledSendBlobTask;
-        private readonly static Task<IReadOnlyList<IRBlobData>> CanceledGetBlobTask;
+        private readonly static Task<IReadOnlyList<IRBlob>> CanceledGetBlobTask;
         private readonly static Task CanceledDestoryBlobTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
@@ -73,7 +73,7 @@ namespace Microsoft.R.Host.Client.Session {
             CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
             CanceledSendBlobTask = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
-            CanceledGetBlobTask = TaskUtilities.CreateCanceled<IReadOnlyList<IRBlobData>>(new RHostDisconnectedException());
+            CanceledGetBlobTask = TaskUtilities.CreateCanceled<IReadOnlyList<IRBlob>>(new RHostDisconnectedException());
             CanceledDestoryBlobTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
@@ -166,7 +166,7 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task<IReadOnlyList<IRBlobData>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledGetBlobTask;
             }

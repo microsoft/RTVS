@@ -26,8 +26,8 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult((long)0);
         }
 
-        public Task<IReadOnlyList<IRBlobData>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult((new List<IRBlobData>()) as IReadOnlyList<IRBlobData>);
+        public Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult((new List<IRBlob>()) as IReadOnlyList<IRBlob>);
         }
 
         public Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {

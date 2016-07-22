@@ -6,12 +6,11 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Markdown.Editor.Flavor;
 using Microsoft.R.Host.Client;
-using Microsoft.R.Host.Client.Session;
+using Microsoft.R.Host.Client.Extensions;
 using Microsoft.VisualStudio.R.Package.Publishing.Definitions;
 
 namespace Microsoft.VisualStudio.R.Package.Publishing {
@@ -32,11 +31,7 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
 
         public async Task PublishAsync(IRSession session, ICoreShell coreShell,  IFileSystem fs, string inputFilePath, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {
             try {
-                using(var fts = new FileTransferSession(session, fs)) {
-                    var rmd = await fts.SendFileAsync(inputFilePath);
-                    var result = await RMarkdownRenderAsync(session, rmd, outputFilePath, publishFormat, encoding);
-                    await fts.FetchFileAsync(result, outputFilePath);
-                }
+                await RMarkdownRenderAsync(session, fs, inputFilePath, outputFilePath, GetDocumentTypeString(publishFormat), encoding.CodePage);
             } catch (IOException ex) {
                 coreShell.ShowErrorMessage(ex.Message);
             } catch (RException ex) {
@@ -45,11 +40,12 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
             } 
         }
 
-        private async Task<IRBlobFileInfo> RMarkdownRenderAsync(IRSession session, IRBlob blob, string outputFilePath, PublishFormat publishFormat, Encoding encoding) {
-            string outputFile = Path.GetFileName(outputFilePath).ToRStringLiteral();
-            string format = GetDocumentTypeString(publishFormat).ToRStringLiteral();
-            var publishResult = await session.EvaluateAsync($"rtvs:::rmarkdown_publish(blob_id = {blob.Id}, output_filename = {outputFile}, output_format = {format}, encoding = 'cp{encoding.CodePage}')", REvaluationKind.Normal);
-            return BlobFileInfo.Create(publishResult.Result);
+        private async Task RMarkdownRenderAsync(IRSession session, IFileSystem fs, string inputFilePath, string outputFilePath, string format, int codePage) {
+            using (var fts = new FileTransferSession(session, fs)) {
+                var rmd = await fts.SendFileAsync(inputFilePath);
+                var publishResult = await session.EvaluateAsync($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Raw);
+                publishResult.SaveRawDataToFile(outputFilePath);
+            }
         }
 
         private string GetDocumentTypeString(PublishFormat publishFormat) {
