@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
@@ -12,12 +13,12 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal sealed class SqlPublishDialogViewModel : BindableBase {
+        private readonly Dictionary<string, EnvDTE.Project> _projectMap = new Dictionary<string, EnvDTE.Project>();
         private bool _canGenerate;
 
         public IReadOnlyCollection<string> TargetProjects { get; private set; }
-        public int SelectedTargetProjectIndex { get; private set; }
+        public int SelectedTargetProjectIndex { get; set; }
         public SqlSProcPublishSettings Settings { get; private set; }
-        //public ObservableCollection<SProcInfo> SProcInfoEntries { get; private set; }
 
         public bool CanGenerate {
             get { return _canGenerate; }
@@ -26,7 +27,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
             Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, folder);
-            //SProcInfoEntries = new ObservableCollection<SProcInfo>(Settings.SProcInfoEntries);
             PopulateProjectList(pss);
         }
 
@@ -46,7 +46,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var solution = pss.GetSolution();
             var projects = new List<string>();
             foreach (EnvDTE.Project project in solution.Projects) {
-                projects.Add(project.Name);
+                var projectFileName = project.FileName;
+                if (!string.IsNullOrEmpty(projectFileName) && Path.GetExtension(projectFileName).EqualsIgnoreCase(".sqlproj")) {
+                    projects.Add(project.Name);
+                    _projectMap[project.Name] = project;
+                }
             }
             return projects;
         }

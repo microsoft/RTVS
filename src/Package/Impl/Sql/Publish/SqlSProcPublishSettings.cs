@@ -11,6 +11,9 @@ using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Newtonsoft.Json;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -92,6 +95,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private void Initialize(IProjectSystemServices pss, IFileSystem fs, string folder) {
             // Fetch all R files in the folder
+            folder = folder.EndsWithOrdinal("\\") ? folder : folder + "\\";
             var entries = fs.GetFileSystemEntries(folder, "*.r", SearchOption.TopDirectoryOnly);
             var combinedList = new List<SProcInfo>();
             foreach (var entry in entries) {
@@ -100,7 +104,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 if (!ProjectSettings.IsProjectSettingFile(fileName)) {
                     var spInfo = new SProcInfo() {
                         FileName = fileName,
-                        FilePath = entry,
+                        FilePath = PathHelper.MakeRelative(folder, entry),
                         VariableName = GetVariableName(fileName),
                         SProcName = GetSProcName(fileName)
                     };
@@ -108,11 +112,15 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 }
             }
             SProcInfoEntries = combinedList;
+            TableName = TableName ?? "RCodeTable";
         }
 
         private string GetVariableName(string fileName) {
             var name = SProcInfoEntries.FirstOrDefault(x => x.FileName.EqualsIgnoreCase(fileName))?.VariableName;
-            return name ?? Path.GetFileNameWithoutExtension(fileName);
+            if(name != null && name.StartsWithOrdinal("@")) {
+                return name;
+            }
+            return "@" + (name ?? Path.GetFileNameWithoutExtension(fileName));
         }
 
         private string GetSProcName(string fileName) {
