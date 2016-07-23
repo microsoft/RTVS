@@ -25,26 +25,29 @@ namespace Microsoft.R.Host.Client {
 
     public partial struct REvaluationResult {
         /// <summary>
-        /// Result of evaluation.
+        /// JSON result of evaluation.
         /// </summary>
         /// <remarks>
         /// Computed by serializing the immediate result of evaluation, as if by <c>rtvs:::toJSON</c>.
+        /// Only valid when <see cref="REvaluationKind.RawResult"/> was not used; ; otherwise, <see langword="null"/>.
         /// </remarks>
         public JToken Result { get; }
+
         /// <summary>
-        /// Result of evaluation for 'raw'
+        /// Raw result of evaluation.
         /// </summary>
         /// <remarks>
-        /// Contains the result of <see cref="RHost.EvaluateAsync(string, REvaluationKind, CancellationToken)"/>, 
-        /// with <see cref="REvaluationKind.Raw"/>.
+        /// Contains the result of <see cref="RHost.EvaluateAsync(string, REvaluationKind, CancellationToken)"/>
+        /// if <see cref="REvaluationKind.RawResult"/> was used; otherwise, <see langword="null"/>.
         /// </remarks>
-        public List<byte[]> Raw { get; }
+        public byte[] RawResult { get; }
 
         /// <summary>
         /// If evaluation failed because of an R runtime error, text of the error message.
         /// Otherwise, <see langword="null"/>.
         /// </summary>
         public string Error { get; }
+
         /// <summary>
         /// Status code indicating the result of parsing the expression.</summary>
         /// <remarks>
@@ -56,7 +59,7 @@ namespace Microsoft.R.Host.Client {
             Error = error;
             ParseStatus = parseStatus;
             Result = null;
-            Raw = null;
+            RawResult = null;
         }
 
         public REvaluationResult(JToken result, string error, RParseStatus parseStatus)
@@ -64,14 +67,20 @@ namespace Microsoft.R.Host.Client {
             Result = result;
         }
 
-        public REvaluationResult(JToken result, string error, RParseStatus parseStatus, List<byte[]> raw)
+        public REvaluationResult(byte[] rawResult, string error, RParseStatus parseStatus)
             : this(error, parseStatus) {
-            Result = result;
-            Raw = raw;
+            RawResult = rawResult;
         }
 
         public override string ToString() {
-            var sb = new StringBuilder((Result ?? "").ToString());
+            var sb = new StringBuilder();
+
+            if (RawResult != null) {
+                sb.Append("<raw>");
+            } else if (Result != null) {
+                sb.Append(Result);
+            }
+
             if (ParseStatus != RParseStatus.OK) {
                 sb.AppendFormat(CultureInfo.InvariantCulture, "; {0}", ParseStatus);
             }

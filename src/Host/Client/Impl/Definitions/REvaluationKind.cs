@@ -47,11 +47,13 @@ namespace Microsoft.R.Host.Client {
         /// <seealso cref="RExpressionEvaluatorExtensions.ExecuteAsync"/>
         NoResult = 1 << 8,
         /// <summary>
-        /// Returns result explicitly in Raw format.
+        /// Indicates that the result of the expression should be transmitted as raw bytes,
+        /// instead of trying to serialize it as JSON.
         /// </summary>
         /// <remarks>
-        /// Used for data that cannot be represented in JSON.</remarks>
-        Raw = 1 << 9,
+        /// Expression must return a <c>RAWSXP</c> value or <c>NULL</c>. <c>NULL</c> is considered equivalent to a zero-length <c>RAWSXP</c>.
+        /// </remarks>
+        RawResult = 1 << 9,
     }
 }
 

@@ -22,15 +22,15 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
 
         public string Prompt { get; set; } = ">";
 
-        public Task<long> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult((long)0);
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult(0ul);
         }
 
-        public Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
-            return Task.FromResult((new List<IRBlob>()) as IReadOnlyList<IRBlob>);
+        public Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
+            return Task.FromResult(new byte[0]);
         }
 
-        public Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
+        public Task DestroyBlobAsync(ulong[] blobIds, CancellationToken ct = default(CancellationToken)) {
             return Task.CompletedTask;
         }
 

@@ -24,8 +24,6 @@ using System.Collections.Generic;
 
 namespace Microsoft.R.Host.Client {
     public sealed partial class RHost : IDisposable, IRExpressionEvaluator, IRBlobService {
-        private readonly string[] parseStatusNames = { "NULL", "OK", "INCOMPLETE", "ERROR", "EOF" };
-
         public const int DefaultPort = 5118;
         public const string RHostExe = "Microsoft.R.Host.exe";
         public const string RBinPathX64 = @"bin\x64";
@@ -57,8 +55,8 @@ namespace Microsoft.R.Host.Client {
         private volatile Task _runTask;
         private volatile Task<REvaluationResult> _cancelEvaluationAfterRunTask;
         private int _rLoopDepth;
-        private long _lastMessageId = -1;
-        private readonly ConcurrentDictionary<string, BaseRequest> _requests = new ConcurrentDictionary<string, BaseRequest>();
+        private long _lastMessageId = 0;
+        private readonly ConcurrentDictionary<ulong, Request> _requests = new ConcurrentDictionary<ulong, Request>();
 
         private TaskCompletionSource<object> _cancelAllTcs;
         private CancellationTokenSource _cancelAllCts = new CancellationTokenSource();
@@ -93,52 +91,35 @@ namespace Microsoft.R.Host.Client {
         }
 
         private async Task<Message> ReceiveMessageAsync(CancellationToken ct) {
-            string json;
+            Message message;
             try {
-                json = await _transport.ReceiveAsync(ct);
+                message = await _transport.ReceiveAsync(ct);
             } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
             }
 
-            _log.Response(json, _rLoopDepth);
-
-            var token = JToken.Parse(json);
-
-            var value = token as JValue;
-            if (value != null && value.Value == null) {
-                return null;
-            }
-
-            var message = new Message(token);
-
-            for(int i = 0; i < message.ExpectedBlobs; ++i) {
-                var blob_slices = await _transport.ReceiveRawAsync();
-                message.Blobs.Enqueue(blob_slices);
-            }
-
+            _log.Response(message.ToString(), _rLoopDepth);
             return message;
         }
 
-        private JArray CreateMessageHeader(out string id, string name, string requestId, int blobCount = 0) {
-            long n = Interlocked.Add(ref _lastMessageId, 2);
-            id = "#" + n + "#";
-            var header = String.IsNullOrWhiteSpace(requestId) ? new JArray(id, name, blobCount) : new JArray(id, name, blobCount, requestId);
-            return header;
+        private Message CreateMessage(string name, ulong requestId, JArray json, byte[] blob = null) {
+            ulong id = (ulong)Interlocked.Add(ref _lastMessageId, 2);
+            return new Message(id, requestId, name, json, blob);
         }
 
-        private JArray CreateMessage(JArray header, params object[] args) {
-            return new JArray(header, args);
+        private Message CreateRequestMessage(string name, JArray json, byte[] blob = null) {
+            Debug.Assert(name.StartsWithOrdinal("?"));
+            return CreateMessage(name, ulong.MaxValue, json, blob);
         }
 
-        private async Task SendAsync(JToken token, CancellationToken ct) {
+        private async Task SendAsync(Message message, CancellationToken ct) {
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            var json = JsonConvert.SerializeObject(token);
-            _log.Request(json, _rLoopDepth);
+            _log.Request(message.ToString(), _rLoopDepth);
 
             try {
-                await _transport.SendAsync(json, ct);
+                await _transport.SendAsync(message, ct);
             } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
                 // Network errors during cancellation are expected, but should not be exposed to clients.
                 throw new OperationCanceledException(new OperationCanceledException().Message, ex);
@@ -147,38 +128,22 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        private async Task SendAsync(JToken token, byte[] data, CancellationToken ct) {
-            TaskUtilities.AssertIsOnBackgroundThread();
-
-            var json = JsonConvert.SerializeObject(token);
-            _log.Request(json, _rLoopDepth);
-
-            try {
-                await _transport.SendAsync(json, data, ct);
-            } catch (MessageTransportException ex) when (ct.IsCancellationRequested) {
-                // Network errors during cancellation are expected, but should not be exposed to clients.
-                throw new OperationCanceledException(new OperationCanceledException().Message, ex);
-            }
-        }
-
-        private async Task<string> NotifyAsync(string name, CancellationToken ct, params object[] args) {
+        private async Task<ulong> NotifyAsync(string name, CancellationToken ct, params object[] args) {
             Debug.Assert(name.StartsWithOrdinal("!"));
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            string id;
-            var message = CreateMessage(CreateMessageHeader(out id, name, null), args);
+            var message = CreateMessage(name, 0, new JArray(args));
             await SendAsync(message, ct);
-            return id;
+            return message.Id;
         }
 
-        private async Task<string> RespondAsync(Message request, CancellationToken ct, params object[] args) {
+        private async Task<ulong> RespondAsync(Message request, CancellationToken ct, params object[] args) {
             Debug.Assert(request.Name.StartsWithOrdinal("?"));
             TaskUtilities.AssertIsOnBackgroundThread();
 
-            string id;
-            var message = CreateMessage(CreateMessageHeader(out id, ":" + request.Name.Substring(1), request.Id), args);
+            var message = CreateMessage(":" + request.Name.Substring(1), request.Id, new JArray(args));
             await SendAsync(message, ct);
-            return id;
+            return message.Id;
         }
 
         private static RContext[] GetContexts(Message message) {
@@ -249,58 +214,36 @@ namespace Microsoft.R.Host.Client {
             await RespondAsync(request, ct, input);
         }
 
-        public Task<long> SendBlobAsync(byte[] data, CancellationToken ct) {
-            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<long>(new CancellationToken(true))
-                : SendBlobAsyncBackground(data, ct);
-        }
+        public Task<ulong> CreateBlobAsync(byte[] data, CancellationToken cancellationToken) =>
+            cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled<ulong>(new CancellationToken(true))
+                : CreateBlobAsyncWorker(data, cancellationToken);
 
-        private async Task<long> SendBlobAsyncBackground(byte[] data, CancellationToken ct) {
+        private async Task<ulong> CreateBlobAsyncWorker(byte[] data, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
-
-            JArray message;
-            var request =  BlobRequest.MakeCreateBlobRequest(this,out message, 1);
-            _requests[request.Id] = request;
-
-            await SendAsync(message, data, ct);
-            var blobResult = await request.CompletionSource.Task;
-
-            return ((SendBlobResult)blobResult).BlobId;
+            var request = await CreateBlobRequest.SendAsync(this, data, cancellationToken);
+            return await request.Task;
         }
 
-        public Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
-            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<IReadOnlyList<IRBlob>>(new CancellationToken(true))
-                : GetBlobAsyncBackground(blobIds, ct);
-        }
+        public Task<byte[]> GetBlobAsync(ulong id, CancellationToken cancellationToken) =>
+            cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+                ? Task.FromCanceled<byte[]>(new CancellationToken(true))
+                : GetBlobAsyncWorker(id, cancellationToken);
 
-        private async Task<IReadOnlyList<IRBlob>> GetBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
+        private async Task<byte[]> GetBlobAsyncWorker(ulong id, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
-
-            JArray message;
-            var request = BlobRequest.MakeGetBlobsRequest(this, out message, blobIds);
-            _requests[request.Id] = request;
-
-            await SendAsync(message, ct);
-            var blobResult = await request.CompletionSource.Task;
-
-            return ((GetBlobResult)blobResult).Blobs;
+            var request = await GetBlobRequest.SendAsync(this, id, cancellationToken);
+            return await request.Task;
         }
 
-        public Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
-            return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
+        public Task DestroyBlobAsync(ulong[] ids, CancellationToken cancellationToken) =>
+            cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
                 ? Task.FromCanceled(new CancellationToken(true))
-                : DestroyBlobAsyncBackground(blobIds, ct);
-        }
+                : DestroyBlobAsyncWorker(ids, cancellationToken);
 
-        private async Task DestroyBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
+        private async Task DestroyBlobAsyncWorker(ulong[] ids, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
-
-            JArray message;
-            var request = BlobRequest.MakeDestroyBlobsRequest(this, out message, blobIds);
-            //  we don't expect a response for this so don't add it to the pending blob requests
-
-            await SendAsync(message, ct);
+            await NotifyAsync("!DestroyBlob", cancellationToken, ids.Select(x => (object)x));
         }
 
         public Task<REvaluationResult> EvaluateAsync(string expression, REvaluationKind kind, CancellationToken ct) {
@@ -312,102 +255,13 @@ namespace Microsoft.R.Host.Client {
                 Task.FromCanceled<REvaluationResult>(ct);
             }
 
-            return Task.WhenAny(EvaluateAsyncBackground(expression, kind, ct), _cancelEvaluationAfterRunTask).Unwrap();
+            return Task.WhenAny(EvaluateAsyncWorker(expression, kind, ct), _cancelEvaluationAfterRunTask).Unwrap();
         }
 
-        private async Task<REvaluationResult> EvaluateAsyncBackground(string expression, REvaluationKind kind, CancellationToken ct) {
+        private async Task<REvaluationResult> EvaluateAsyncWorker(string expression, REvaluationKind kind, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
-
-            JArray message;
-            var request = EvaluationRequest.Create(this, expression, kind, out message);
-            ct.Register(() => request.CompletionSource.TrySetCanceled(cancellationToken: ct));
-            _requests[request.Id] = request;
-
-            await SendAsync(message, ct);
-            return await request.CompletionSource.Task;
-        }
-
-        private void ProcessBlobResult(Message response) {
-            BaseRequest baseRequest;
-            if (!_requests.TryRemove(response.RequestId, out baseRequest)) {
-                throw ProtocolError($"Unexpected response to create blob request {response.RequestId} that is not pending.");
-            }
-
-            BlobRequest request = baseRequest as BlobRequest;
-            if (request == null) {
-                throw ProtocolError($"Unexpected request type {response.RequestId}.");
-            }
-
-            response.ExpectArguments(1, 1);
-            var firstArg = response[0] as JValue;
-            if (firstArg != null && firstArg.Value == null) {
-                request.CompletionSource.SetCanceled();
-            }
-
-            if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
-                throw ProtocolError($"Mismatched host response ['{response.Id}',':{response.Name.Substring(1)}',...] to create blob request ['{request.Id}']");
-            }
-
-            switch (request.Kind) {
-                case BlobRequestKind.Create:
-                    request.CompletionSource.SetResult(new SendBlobResult(response.GetInt32(0, "blob_id")));
-                    break;
-                case BlobRequestKind.Get:
-                    List<IRBlob> blobs = new List<IRBlob>();
-                    int i = 0;
-                    JArray arr = response.GetArgument(0, "block_ids", JTokenType.Array) as JArray;
-                    foreach(var data in response.Blobs) {
-                        IRBlob blob = new Blob(arr[i++].Value<long>(), data);
-                        blobs.Add(blob);
-                    }
-                    request.CompletionSource.SetResult(new GetBlobResult(blobs));
-                    break;
-                case BlobRequestKind.Destroy:
-                    throw ProtocolError($"Destroying blobs does not have a response.");
-            }
-        }
-
-        private void ProcessEvaluationResult(Message response) {
-            BaseRequest baseRequest;
-            if (!_requests.TryRemove(response.RequestId, out baseRequest)) {
-                if (_runTask != null && !_runTask.IsCompleted) {
-                    throw ProtocolError($"Unexpected response to evaluation request {response.RequestId} that is not pending.");
-                }
-            }
-
-            EvaluationRequest request = baseRequest as EvaluationRequest;
-            if (request == null) {
-                throw ProtocolError($"Unexpected request type {response.RequestId}.");
-            }
-
-            if (request.CompletionSource.Task.IsCompleted) {
-                return;
-            }
-
-            response.ExpectArguments(1, 3);
-            var firstArg = response[0] as JValue;
-            if (firstArg != null && firstArg.Value == null) {
-                request.CompletionSource.TrySetCanceled();
-                return;
-            }
-
-            if (response.Name.Substring(1) != request.MessageName.Substring(1)) {
-                throw ProtocolError($"Mismatched host response ['{response.Id}',':{response.Name.Substring(1)}',...] to evaluation request ['{request.Id}','{request.MessageName}','{request.Expression}']");
-            }
-
-            response.ExpectArguments(3);
-            var parseStatus = response.GetEnum<RParseStatus>(0, "parseStatus", parseStatusNames);
-            var error = response.GetString(1, "error", allowNull: true);
-
-            REvaluationResult result;
-            if (request.Kind.HasFlag(REvaluationKind.NoResult)) {
-                result = new REvaluationResult(error, parseStatus);
-            } else if(request.Kind.HasFlag(REvaluationKind.Raw) && response.Blobs.Count > 0) {
-                result = new REvaluationResult(response[2], error, parseStatus, response.Blobs.ToList());
-            } else {
-                result = new REvaluationResult(response[2], error, parseStatus);
-            }
-            request.CompletionSource.TrySetResult(result);
+            var request = await EvaluationRequest.SendAsync(this, expression, kind, cancellationToken);
+            return await request.Task;
         }
 
         /// <summary>
@@ -461,7 +315,7 @@ namespace Microsoft.R.Host.Client {
             try {
                 // Don't use _cts, since it's already cancelled. We want to try to send this message in
                 // any case, and we'll catch MessageTransportException if no-one is on the other end anymore.
-                await SendAsync(JValue.CreateNull(), new CancellationToken());
+                await NotifyAsync("!End", new CancellationToken());
             } catch (OperationCanceledException) {
             } catch (MessageTransportException) {
             }
@@ -482,23 +336,23 @@ namespace Microsoft.R.Host.Client {
                 _log.EnterRLoop(_rLoopDepth++);
                 while (!ct.IsCancellationRequested) {
                     var message = await ReceiveMessageAsync(ct);
-                    if (message == null) {
-                        return null;
-                    } else if (message.RequestId != null) {
-                        if (message.Name.StartsWithOrdinal(":=")) {
-                            ProcessEvaluationResult(message);
-                            continue;
-                        }  else if (message.Name == BlobRequest.CreateBlobResponseMessageName || message.Name == BlobRequest.GetBlobResponseMessageName) {
-                            ProcessBlobResult(message);
-                            continue;
-                        } 
-                        else {
-                            throw ProtocolError($"Unrecognized host response message name:", message);
+                    if (message.IsResponse) {
+                        Request request;
+                        if (!_requests.TryRemove(message.RequestId, out request)) {
+                            throw ProtocolError($"Mismatched response - no request with such ID:", message);
+                        } else if (message.Name != ":" + request.MessageName.Substring(1)) {
+                            throw ProtocolError($"Mismatched response - message name does not match request '{request.MessageName}':", message);
                         }
+
+                        request.Handle(this, message);
+                        continue;
                     }
 
                     try {
                         switch (message.Name) {
+                            case "!End":
+                                return null;
+
                             case "!CanceledAll":
                                 CancelAll();
                                 break;
@@ -570,14 +424,12 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!Plot":
-                                byte[] data;
-                                message.Blobs.TryDequeue(out data);
                                 await _callbacks.Plot(
                                     new PlotMessage(
                                         message.GetString(0, "xaml_file_path"),
                                         message.GetInt32(1, "active_plot_index"),
                                         message.GetInt32(2, "plot_count"),
-                                        data),
+                                        message.Blob),
                                     ct);
                                 break;
 
@@ -588,7 +440,7 @@ namespace Microsoft.R.Host.Client {
                                 break;
 
                             case "!WebBrowser":
-                                await _callbacks.WebBrowser(message.GetString(0, "help_url"));
+                                await _callbacks.WebBrowser(message.GetString(0, "url"));
                                 break;
 
                             default:
@@ -610,7 +462,7 @@ namespace Microsoft.R.Host.Client {
 
             try {
                 var message = await ReceiveMessageAsync(ct);
-                if (message.Name != "!Microsoft.R.Host" || message.RequestId != null) {
+                if (!message.IsNotification || message.Name != "!Microsoft.R.Host") {
                     throw ProtocolError($"Microsoft.R.Host handshake expected:", message);
                 }
 

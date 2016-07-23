@@ -75,7 +75,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
             using (var e = await session.BeginEvaluationAsync()) {
-                var csvdata = await e.EvaluateAsync($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Raw);
+                var csvdata = await e.EvaluateAsync($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.RawResult);
                 csvdata.SaveRawDataToFile(file);
             }
 
