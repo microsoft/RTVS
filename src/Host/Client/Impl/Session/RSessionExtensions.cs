@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
+using Microsoft.Common.Core.IO;
 using Microsoft.R.Host.Client.Extensions;
 using static System.FormattableString;
 

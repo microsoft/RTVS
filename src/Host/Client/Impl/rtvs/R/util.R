@@ -168,3 +168,29 @@ export_to_pdf <- function(width, height) {
     dev.off()
     readBin(filepath, 'raw', file.info(filepath)$size)
 }
+
+# Helper to publish rmarkdown files remotely
+rmarkdown_publish <- function(blob_id, output_format, encoding) {
+    # Create temp file to store the rmarkdown file
+    rmdpath <- tempfile('rmd_', fileext = '.rmd');
+    on.exit(unlink(rmdpath));
+    writeBin(get_blob(blob_id), rmdpath);
+
+    # Get file extension from format
+    fileext <- if (identical(output_format, 'html_document')) {
+        '.html'
+    } else if (identical(output_format, 'pdf_document')) {
+        '.pdf'
+    } else if (identical(output_format, 'word_document')) {
+        '.docx'
+    } else {
+        '.tmp'
+    }
+
+    # Create temp file to store the markdown render output
+    output_filepath <- tempfile('rmd_', fileext = fileext);
+    on.exit(unlink(output_filepath));
+
+    rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
+    readBin(output_filepath, 'raw', file.info(output_filepath)$size);
+}
