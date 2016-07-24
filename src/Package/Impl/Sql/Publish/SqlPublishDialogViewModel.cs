@@ -19,8 +19,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public IReadOnlyCollection<string> TargetProjects { get; private set; }
         public int SelectedTargetProjectIndex { get; set; }
-        public SqlSProcPublishSettings Settings { get; private set; }
+        public IReadOnlyCollection<string> CodePlacementNames { get; private set; }
         public int SelectedCodePlacementIndex { get; set; }
+        public SqlSProcPublishSettings Settings { get; private set; }
 
         public bool CanGenerate {
             get { return _canGenerate; }
@@ -50,6 +51,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void SelectCodePlacementMode() {
+            CodePlacementNames = new string[] {
+                Package.Resources.SqlPublishDialog_RCodeInTable,
+                Package.Resources.SqlPublishDialog_RCodeInline
+            };
             SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
 

@@ -20,5 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Stored procedure name
         /// </summary>
         public string SProcName { get; set; }
+
+        public bool Selected { get; set; }
     }
 }

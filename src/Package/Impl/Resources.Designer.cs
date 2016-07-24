@@ -2001,7 +2001,7 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This wizard can help you to transfer R code into a  SQL database and generate stored procedures that invoke R scripts. {0}R script can be placed in a separate table and referenced from the stored procedure by name or placed inline directly in the @script attribute of the SQL stored procedure.{1}By default stored procedure names are derived from the respective R script file name. However, you can edit names in the grid and enter any suitable value.
+        ///   Looks up a localized string similar to R script can be placed in a separate table and referenced in the stored procedure by name or placed inline directly inside the @script attribute value in the SQL stored procedure.{0}By default stored procedure names are derived from the respective R script file name. However, you can edit names in the grid and enter any suitable values..
         /// </summary>
         public static string SqlPublishDialog_Help {
             get {

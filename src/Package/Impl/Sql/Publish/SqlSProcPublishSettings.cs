@@ -96,9 +96,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         /// <summary>
-        /// Combines data from the saved settings and from the actual project and solition
+        /// Combines data from the saved settings and from the actual project and solution
         /// </summary>
         private void Initialize(IProjectSystemServices pss, IFileSystem fs, string folder) {
+            // Remove non-existent files
+            SProcInfoEntries = SProcInfoEntries.Where(x => fs.FileExists(PathHelper.MakeRooted(folder, x.FileName))).ToList();
+
             // Fetch all R files in the folder
             folder = folder.EndsWithOrdinal("\\") ? folder : folder + "\\";
             var entries = fs.GetFileSystemEntries(folder, "*.r", SearchOption.TopDirectoryOnly);
@@ -110,7 +113,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     var spInfo = new SProcInfo() {
                         FileName = fileName,
                         FilePath = PathHelper.MakeRelative(folder, entry),
-                        SProcName = GetSProcName(fileName)
+                        SProcName = GetSProcName(fileName),
+                        Selected = false
                     };
                     combinedList.Add(spInfo);
                 }

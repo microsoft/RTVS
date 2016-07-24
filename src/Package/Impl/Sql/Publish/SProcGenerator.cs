@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using static System.FormattableString;
@@ -17,7 +18,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         private const string CreateRCodeTableScriptName = "CreateRCodeTable.sql";
         /// <summary>
-        /// Name of the post-deplyoment script that inserts actual R code into the table
+        /// Name of the post-deployment script that inserts actual R code into the table
         /// </summary>
         private const string PostDeploymentScriptName = "InsertRCode.PostDeployment.sql";
         /// <summary>
@@ -44,6 +45,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <param name="rFilesFolder">Folder with R files</param>
         /// <param name="targetProject">Target database project</param>
         public void Generate(SqlSProcPublishSettings settings, string rFilesFolder, EnvDTE.Project targetProject) {
+            // Is there anything selected?
+            if(settings.SProcInfoEntries.FirstOrDefault(s => s.Selected) == null) {
+                return;
+            }
+
             rFilesFolder = PathHelper.EnsureTrailingSlash(rFilesFolder);
             var targetProjectFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
             var codeTableName = Invariant($"dbo.{settings.TableName}");
@@ -79,13 +85,15 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
                 for (int i = 0; i < settings.SProcInfoEntries.Count; i++) {
                     var info = settings.SProcInfoEntries[i];
-                    var content = GetRFileContent(rFilesFolder, info.FilePath);
-                    sw.Write(Invariant($"VALUES ('{info.SProcName}', '{content}')"));
+                    if (info.Selected) {
+                        var content = GetRFileContent(rFilesFolder, info.FilePath);
+                        sw.Write(Invariant($"VALUES ('{info.SProcName}', '{content}')"));
 
-                    if (i < settings.SProcInfoEntries.Count - 1) {
-                        sw.Write(',');
+                        if (i < settings.SProcInfoEntries.Count - 1) {
+                            sw.Write(',');
+                        }
+                        sw.WriteLine(string.Empty);
                     }
-                    sw.WriteLine(string.Empty);
                 }
             }
             var item = targetProject.ProjectItems.AddFromFile(populateTableScriptFile);
@@ -93,7 +101,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         }
 
         private void CreateStoredProcedures(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string rFilesFolder, string targetProjectFolder, string codeTableName) {
-            foreach (var info in settings.SProcInfoEntries) {
+            foreach (var info in settings.SProcInfoEntries.Where(s => s.Selected)) {
                 var sprocFile = Path.Combine(targetProjectFolder, Invariant($"{info.SProcName}.sql"));
                 using (var sw = new StreamWriter(sprocFile)) {
                     sw.WriteLine(Invariant($"CREATE PROCEDURE dbo.{info.SProcName}"));
