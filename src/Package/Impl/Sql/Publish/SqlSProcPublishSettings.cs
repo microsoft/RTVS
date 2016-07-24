@@ -100,12 +100,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Combines data from the saved settings and from the actual project and solution
         /// </summary>
         private void Initialize(IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> filePaths, string projectFolder) {
-            // Remove non-existent files from the saved list
-            SProcInfoEntries = SProcInfoEntries.Where(x => fs.FileExists(PathHelper.MakeRooted(projectFolder, x.FileName))).ToList();
-
-            // Fetch all R files in the folder
             projectFolder = PathHelper.EnsureTrailingSlash(projectFolder);
-             var combinedList = new List<SProcInfo>();
+            // Remove non-existent files from the saved list
+            SProcInfoEntries = SProcInfoEntries
+                .Where(x => fs.FileExists(PathHelper.MakeRooted(projectFolder, x.FileName)))
+                .ToList();
+
+            var combinedList = new List<SProcInfo>();
             foreach (var file in filePaths) {
                 string fileName = Path.GetFileName(file);
                 // Skip setting files

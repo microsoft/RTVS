@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 Debug.Assert(targetProject != null);
 
                 var generator = new SProcGenerator(_pss, _fs);
-                generator.Generate(_model.Settings, _selectedFiles, targetProject);
+                generator.Generate(_model.Settings, _selectedFiles, _projectFolder, targetProject);
             } catch (Exception ex) {
                 _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);
