@@ -12,7 +12,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public string FileName { get; set; }
 
         /// <summary>
-        /// Full path to the file
+        /// Relative to the project folder
         /// </summary>
         public string FilePath { get; set; }
 
@@ -20,7 +20,5 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Stored procedure name
         /// </summary>
         public string SProcName { get; set; }
-
-        public bool Selected { get; set; }
     }
 }

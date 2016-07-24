@@ -61,6 +61,10 @@ namespace Microsoft.Common.Core.IO {
             return Directory.GetFileSystemEntries(path, searchPattern, options);
         }
 
+        public void CreateDirectory(string path) {
+            Directory.CreateDirectory(path);
+        }
+
         private static class NativeMethods {
             public const int MAX_PATH = 260;
 

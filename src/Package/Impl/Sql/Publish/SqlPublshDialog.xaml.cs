@@ -23,10 +23,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
-        private readonly string _folder;
+        private readonly IEnumerable<string> _selectedFiles;
+        private readonly string _projectFolder;
 
-        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, string folder) :
-            this(coreShell, pss, new FileSystem(), folder) {
+        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IEnumerable<string> selectedFiles, string projectFolder) :
+            this(coreShell, pss, new FileSystem(), selectedFiles, projectFolder) {
             InitializeComponent();
             Title = Package.Resources.SqlPublishDialog_Title;
 
@@ -37,24 +38,25 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             CheckCanGenerate();
         }
 
-        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
+        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> selectedFiles, string projectFolder) {
             _coreShell = coreShell;
             _pss = pss;
             _fs = fs;
-            _folder = folder;
-            _model = new SqlPublishDialogViewModel(coreShell, pss, fs, folder);
+            _selectedFiles = selectedFiles;
+            _projectFolder = projectFolder;
+            _model = new SqlPublishDialogViewModel(coreShell, pss, fs, selectedFiles, projectFolder);
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e) {
             try {
                 _model.Settings.TargetProject = ProjectList.SelectedItem as string;
-                _model.Settings.Save(_pss, _folder);
+                _model.Settings.Save(_pss, _projectFolder);
 
                 var targetProject = GetSelectedProject(_model.Settings.TargetProject);
                 Debug.Assert(targetProject != null);
 
                 var generator = new SProcGenerator(_pss, _fs);
-                generator.Generate(_model.Settings, _folder, targetProject);
+                generator.Generate(_model.Settings, _selectedFiles, targetProject);
             } catch (Exception ex) {
                 _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);

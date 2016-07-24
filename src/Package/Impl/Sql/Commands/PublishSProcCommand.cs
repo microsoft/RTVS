@@ -11,6 +11,9 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
 using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
+using System.IO;
+using Microsoft.Common.Core;
+using System.Collections.Generic;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -32,22 +35,30 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdPublishSProc && nodes.Count == 1) {
-                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+            if (commandId == RPackageCommandId.icmdPublishSProc && nodes.Count > 0) {
+                // all nodes must be files
+                var selectedFiles = GetSelectedFiles(nodes);
+                if (selectedFiles.FirstOrDefault() != null) {
+                    return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+                }
             }
             return CommandStatusResult.Unhandled;
         }
 
         public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
             if (commandId == RPackageCommandId.icmdPublishSProc) {
-                var folder = nodes.GetSelectedFolderPath(_unconfiguredProject);
-                if (!string.IsNullOrEmpty(folder)) {
-                    var dlg = new SqlPublshDialog(_coreShell, _pss, folder);
+                var selectedFiles = GetSelectedFiles(nodes);
+                if (selectedFiles.FirstOrDefault() != null) {
+                    var dlg = new SqlPublshDialog(_coreShell, _pss, selectedFiles, Path.GetDirectoryName(_unconfiguredProject.FullPath));
                     dlg.ShowModal();
                     return true;
                 }
             }
             return false;
+        }
+
+        private IEnumerable<string> GetSelectedFiles(IImmutableSet<IProjectTree> nodes) {
+            return nodes.GetSelectedFilesPaths().Where(x => Path.GetExtension(x).EqualsIgnoreCase(".r"));
         }
     }
 }

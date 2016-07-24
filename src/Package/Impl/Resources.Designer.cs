@@ -2010,6 +2010,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code..
+        /// </summary>
+        public static string SqlPublishDialog_NoDbProject {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoDbProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In stored procedure @script parameter.
         /// </summary>
         public static string SqlPublishDialog_RCodeInline {

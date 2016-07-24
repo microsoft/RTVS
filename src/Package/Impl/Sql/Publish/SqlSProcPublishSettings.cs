@@ -56,10 +56,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Loads settings from JSON file
         /// </summary>
-        public static SqlSProcPublishSettings LoadSettings(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
+        public static SqlSProcPublishSettings LoadSettings(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs,
+                                                           IEnumerable<string> filePaths, string projectFolder) {
             SqlSProcPublishSettings settings = null;
             Exception exception = null;
-            var settingsFile = GetSettingsFilePath(pss, folder);
+            var settingsFile = GetSettingsFilePath(pss, projectFolder);
             try {
                 if (fs.FileExists(settingsFile)) {
                     using (var sr = new StreamReader(settingsFile)) {
@@ -74,16 +75,16 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
 
             settings = settings ?? new SqlSProcPublishSettings();
-            settings.Initialize(pss, fs, folder);
+            settings.Initialize(pss, fs, filePaths, projectFolder);
             return settings;
         }
 
         /// <summary>
         /// Saves settings to JSON file
         /// </summary>
-        public void Save(IProjectSystemServices pss, string folder) {
+        public void Save(IProjectSystemServices pss, string projectFolder) {
             try {
-                var settingsFile = GetSettingsFilePath(pss, folder);
+                var settingsFile = GetSettingsFilePath(pss, projectFolder);
                 using (var sw = new StreamWriter(settingsFile)) {
                     var json = JsonConvert.SerializeObject(this);
                     sw.Write(json);
@@ -91,30 +92,28 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             } catch (IOException) { } catch (UnauthorizedAccessException) { } catch (JsonException) { }
         }
 
-        private static string GetSettingsFilePath(IProjectSystemServices pss, string folder) {
-            return Path.Combine(folder, "SqlSProcSettings.json");
+        private static string GetSettingsFilePath(IProjectSystemServices pss, string projectFolder) {
+            return Path.Combine(projectFolder, "SqlSProcSettings.json");
         }
 
         /// <summary>
         /// Combines data from the saved settings and from the actual project and solution
         /// </summary>
-        private void Initialize(IProjectSystemServices pss, IFileSystem fs, string folder) {
-            // Remove non-existent files
-            SProcInfoEntries = SProcInfoEntries.Where(x => fs.FileExists(PathHelper.MakeRooted(folder, x.FileName))).ToList();
+        private void Initialize(IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> filePaths, string projectFolder) {
+            // Remove non-existent files from the saved list
+            SProcInfoEntries = SProcInfoEntries.Where(x => fs.FileExists(PathHelper.MakeRooted(projectFolder, x.FileName))).ToList();
 
             // Fetch all R files in the folder
-            folder = folder.EndsWithOrdinal("\\") ? folder : folder + "\\";
-            var entries = fs.GetFileSystemEntries(folder, "*.r", SearchOption.TopDirectoryOnly);
-            var combinedList = new List<SProcInfo>();
-            foreach (var entry in entries) {
-                string fileName = Path.GetFileName(entry);
+            projectFolder = PathHelper.EnsureTrailingSlash(projectFolder);
+             var combinedList = new List<SProcInfo>();
+            foreach (var file in filePaths) {
+                string fileName = Path.GetFileName(file);
                 // Skip setting files
                 if (!ProjectSettings.IsProjectSettingFile(fileName)) {
                     var spInfo = new SProcInfo() {
                         FileName = fileName,
-                        FilePath = PathHelper.MakeRelative(folder, entry),
+                        FilePath = PathHelper.MakeRelative(projectFolder, file),
                         SProcName = GetSProcName(fileName),
-                        Selected = false
                     };
                     combinedList.Add(spInfo);
                 }

@@ -32,8 +32,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             set { SetProperty(ref _generateTable, value); }
         }
 
-        public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, string folder) {
-            Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, folder);
+        public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, 
+                                         IEnumerable<string> filePaths, string projectFolder) {
+            Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, filePaths, projectFolder);
             PopulateProjectList(pss);
             SelectCodePlacementMode();
         }
@@ -52,8 +53,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void SelectCodePlacementMode() {
             CodePlacementNames = new string[] {
-                Package.Resources.SqlPublishDialog_RCodeInTable,
-                Package.Resources.SqlPublishDialog_RCodeInline
+                Resources.SqlPublishDialog_RCodeInTable,
+                Resources.SqlPublishDialog_RCodeInline
             };
             SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
