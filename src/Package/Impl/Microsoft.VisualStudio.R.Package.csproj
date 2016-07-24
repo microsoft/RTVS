@@ -269,6 +269,9 @@
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
+    <Compile Include="Sql\DragDrop\DataObject.cs" />
+    <Compile Include="Sql\DragDrop\DropHandler.cs" />
+    <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
     <Compile Include="Sql\Publish\RCodePlacement.cs" />
     <Compile Include="Sql\Publish\SProcGenerator.cs" />
