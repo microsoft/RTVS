@@ -75,6 +75,12 @@ namespace Microsoft.R.DataInspection {
         /// otherwise <see langword="false"/>.
         /// </summary>
         bool HasChildren { get; }
+
+        /// <summary>
+        /// <see langword="true"/> if <see cref="REvaluationResultProperties.ExpressionProperty"/> can be exported to 
+        /// a CSV, <see langword="false"/> otherwise.
+        /// </summary>
+        bool CanExportToCsv { get; }
     }
 
     public static class RValueInfoExtensions {

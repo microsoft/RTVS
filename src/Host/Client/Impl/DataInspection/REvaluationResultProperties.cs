@@ -41,23 +41,45 @@ namespace Microsoft.R.DataInspection {
         FlagsProperty = 1 << 10,
         /// <seealso cref="IRActiveBindingInfo.ComputedValue"/>
         ComputedValueProperty = 1 << 11,
+        /// <seealso cref="IRValueInfo.CanExportToCSV"/>
+        CanExportToCsvProperty = 1 << 12,
         /// <seealso cref="IRValueInfo.HasChildren"/>
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
     }
 
+    internal class REvaluationResultFieldNames {
+        public const string ReprFieldName = "repr";
+        public const string ExpressionFieldName = "expression";
+        public const string AccessorKindFieldName = "kind";
+        public const string TypeFieldName = "type";
+        public const string ClassesFieldName = "classes";
+        public const string LengthFieldName = "length";
+        public const string SlotCountFieldName = "slot_count";
+        public const string AttributeCountFieldName = "attr_count";
+        public const string NameCountFieldName = "name_count";
+        public const string DimFieldName = "dim";
+        public const string FlagsFieldName = "flags";
+        public const string ComputedValueFieldName = "computed_value";
+        public const string CanExportToCsvFieldName = "to_csv";
+        public const string ErrorFieldName = "error";
+        public const string PromiseFieldName = "promise";
+        public const string ActiveBindingFieldName = "active_binding";
+    }
+    
     internal static class REvaluationResultPropertiesExtensions {
         private static readonly Dictionary<REvaluationResultProperties, string> _mapping = new Dictionary<REvaluationResultProperties, string> {
-            [ExpressionProperty] = "expression",
-            [AccessorKindProperty] = "kind",
-            [TypeNameProperty] = "type",
-            [ClassesProperty] = "classes",
-            [LengthProperty] = "length",
-            [SlotCountProperty] = "slot_count",
-            [AttributeCountProperty] = "attr_count",
-            [NameCountProperty] = "name_count",
-            [DimProperty] = "dim",
-            [FlagsProperty] = "flags",
-            [ComputedValueProperty] = "computed_value",
+            [ExpressionProperty] = REvaluationResultFieldNames.ExpressionFieldName,
+            [AccessorKindProperty] = REvaluationResultFieldNames.AccessorKindFieldName,
+            [TypeNameProperty] = REvaluationResultFieldNames.TypeFieldName,
+            [ClassesProperty] = REvaluationResultFieldNames.ClassesFieldName,
+            [LengthProperty] = REvaluationResultFieldNames.LengthFieldName,
+            [SlotCountProperty] = REvaluationResultFieldNames.SlotCountFieldName,
+            [AttributeCountProperty] = REvaluationResultFieldNames.AttributeCountFieldName,
+            [NameCountProperty] = REvaluationResultFieldNames.NameCountFieldName,
+            [DimProperty] = REvaluationResultFieldNames.DimFieldName,
+            [FlagsProperty] = REvaluationResultFieldNames.FlagsFieldName,
+            [ComputedValueProperty] = REvaluationResultFieldNames.ComputedValueFieldName,
+            [CanExportToCsvProperty] = REvaluationResultFieldNames.CanExportToCsvFieldName,
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {

@@ -10,7 +10,7 @@ namespace Microsoft.R.DataInspection {
 
         internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
-            JObject bindingResultJson = json.Value<JObject>("computed_value");
+            JObject bindingResultJson = json.Value<JObject>(REvaluationResultFieldNames.ComputedValueFieldName);
             if(bindingResultJson == null) {
                 ComputedValue = null;
             } else {

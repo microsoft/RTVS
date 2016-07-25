@@ -30,6 +30,8 @@ namespace Microsoft.R.DataInspection {
 
         public RValueFlags Flags { get; }
 
+        public bool CanExportToCsv { get; }
+
         public bool HasChildren {
             get {
                 if (this.HasSlots()) {
@@ -62,24 +64,25 @@ namespace Microsoft.R.DataInspection {
         internal RValueInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
 
-            Representation = json.Value<string>("repr");
-            TypeName = json.Value<string>("type");
-            Length = json.Value<int?>("length");
-            AttributeCount = json.Value<int?>("attr_count");
-            SlotCount = json.Value<int?>("slot_count");
-            NameCount = json.Value<int?>("name_count");
+            Representation = json.Value<string>(REvaluationResultFieldNames.ReprFieldName);
+            TypeName = json.Value<string>(REvaluationResultFieldNames.TypeFieldName);
+            Length = json.Value<int?>(REvaluationResultFieldNames.LengthFieldName);
+            AttributeCount = json.Value<int?>(REvaluationResultFieldNames.AttributeCountFieldName);
+            SlotCount = json.Value<int?>(REvaluationResultFieldNames.SlotCountFieldName);
+            NameCount = json.Value<int?>(REvaluationResultFieldNames.NameCountFieldName);
+            CanExportToCsv = json.Value<bool>(REvaluationResultFieldNames.CanExportToCsvFieldName);
 
-            var classes = json.Value<JArray>("classes");
+            var classes = json.Value<JArray>(REvaluationResultFieldNames.ClassesFieldName);
             if (classes != null) {
                 Classes = classes.Select(t => t.Value<string>()).ToArray();
             }
 
-            var dim = json.Value<JArray>("dim");
+            var dim = json.Value<JArray>(REvaluationResultFieldNames.DimFieldName);
             if (dim != null) {
                 Dim = dim.Select(t => t.Value<int>()).ToArray();
             }
 
-            var kind = json.Value<string>("kind");
+            var kind = json.Value<string>(REvaluationResultFieldNames.AccessorKindFieldName);
             switch (kind) {
                 case null:
                     AccessorKind = RChildAccessorKind.None;
@@ -97,7 +100,7 @@ namespace Microsoft.R.DataInspection {
                     throw new InvalidDataException(Invariant($"Invalid kind '{kind}' in:\n\n{json}"));
             }
 
-            var flags = json.Value<JArray>("flags")?.Select(v => v.Value<string>());
+            var flags = json.Value<JArray>(REvaluationResultFieldNames.FlagsFieldName)?.Select(v => v.Value<string>());
             if (flags != null) {
                 foreach (var flag in flags) {
                     switch (flag) {

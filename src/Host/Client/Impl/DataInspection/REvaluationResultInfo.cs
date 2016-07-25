@@ -30,19 +30,19 @@ namespace Microsoft.R.DataInspection {
         }
 
         internal static REvaluationResultInfo Parse(IRSession session, string environmentExpression, string name, JObject json) {
-            var expression = json.Value<string>("expression");
+            var expression = json.Value<string>(REvaluationResultFieldNames.ExpressionFieldName);
 
-            var errorText = json.Value<string>("error");
+            var errorText = json.Value<string>(REvaluationResultFieldNames.ErrorFieldName);
             if (errorText != null) {
                 return new RErrorInfo(session, environmentExpression, expression, name, errorText);
             }
 
-            var code = json.Value<string>("promise");
+            var code = json.Value<string>(REvaluationResultFieldNames.PromiseFieldName);
             if (code != null) {
                 return new RPromiseInfo(session, environmentExpression, expression, name, code);
             }
 
-            var isActiveBinding = json.Value<bool?>("active_binding");
+            var isActiveBinding = json.Value<bool?>(REvaluationResultFieldNames.ActiveBindingFieldName);
             if (isActiveBinding == true) {
                 return new RActiveBindingInfo(session, environmentExpression, expression, name, json);
             }

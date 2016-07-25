@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
             }
 
             var tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
-            CanShowOpenCsv = CanShowDetail && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
+            CanShowOpenCsv = CanShowDetail && result.CanExportToCsv && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
                 OpenInCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;
@@ -110,6 +110,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                     AttributeCountProperty |
                     DimProperty |
                     FlagsProperty |
+                    CanExportToCsvProperty |
                     (RToolsSettings.Current.EvaluateActiveBindings ? ComputedValueProperty : 0);
                 IReadOnlyList<IREvaluationResultInfo> children = await valueEvaluation.DescribeChildrenAsync(properties, Repr, MaxChildrenCount);
 
