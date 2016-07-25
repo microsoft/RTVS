@@ -41,7 +41,7 @@ namespace Microsoft.R.DataInspection {
         FlagsProperty = 1 << 10,
         /// <seealso cref="IRActiveBindingInfo.ComputedValue"/>
         ComputedValueProperty = 1 << 11,
-        /// <seealso cref="IRValueInfo.CanExportToCSV"/>
+        /// <seealso cref="IRValueInfo.CanCoerceToDataFrame"/>
         CanCoerceToDataFrameProperty = 1 << 12,
         /// <seealso cref="IRValueInfo.HasChildren"/>
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
