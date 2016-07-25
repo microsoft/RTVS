@@ -30,7 +30,7 @@ namespace Microsoft.R.DataInspection {
 
         public RValueFlags Flags { get; }
 
-        public bool CanExportToCsv { get; }
+        public bool CanCoerceToDataFrame { get; }
 
         public bool HasChildren {
             get {
@@ -70,7 +70,7 @@ namespace Microsoft.R.DataInspection {
             AttributeCount = json.Value<int?>(REvaluationResultFieldNames.AttributeCountFieldName);
             SlotCount = json.Value<int?>(REvaluationResultFieldNames.SlotCountFieldName);
             NameCount = json.Value<int?>(REvaluationResultFieldNames.NameCountFieldName);
-            CanExportToCsv = json.Value<bool>(REvaluationResultFieldNames.CanExportToCsvFieldName);
+            CanCoerceToDataFrame = json.Value<bool>(REvaluationResultFieldNames.CanCoerceToDataFrameFieldName);
 
             var classes = json.Value<JArray>(REvaluationResultFieldNames.ClassesFieldName);
             if (classes != null) {

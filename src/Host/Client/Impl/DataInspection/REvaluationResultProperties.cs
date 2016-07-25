@@ -42,7 +42,7 @@ namespace Microsoft.R.DataInspection {
         /// <seealso cref="IRActiveBindingInfo.ComputedValue"/>
         ComputedValueProperty = 1 << 11,
         /// <seealso cref="IRValueInfo.CanExportToCSV"/>
-        CanExportToCsvProperty = 1 << 12,
+        CanCoerceToDataFrameProperty = 1 << 12,
         /// <seealso cref="IRValueInfo.HasChildren"/>
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
     }
@@ -60,7 +60,7 @@ namespace Microsoft.R.DataInspection {
         public const string DimFieldName = "dim";
         public const string FlagsFieldName = "flags";
         public const string ComputedValueFieldName = "computed_value";
-        public const string CanExportToCsvFieldName = "to_csv";
+        public const string CanCoerceToDataFrameFieldName = "to_df";
         public const string ErrorFieldName = "error";
         public const string PromiseFieldName = "promise";
         public const string ActiveBindingFieldName = "active_binding";
@@ -79,7 +79,7 @@ namespace Microsoft.R.DataInspection {
             [DimProperty] = REvaluationResultFieldNames.DimFieldName,
             [FlagsProperty] = REvaluationResultFieldNames.FlagsFieldName,
             [ComputedValueProperty] = REvaluationResultFieldNames.ComputedValueFieldName,
-            [CanExportToCsvProperty] = REvaluationResultFieldNames.CanExportToCsvFieldName,
+            [CanCoerceToDataFrameProperty] = REvaluationResultFieldNames.CanCoerceToDataFrameFieldName,
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {

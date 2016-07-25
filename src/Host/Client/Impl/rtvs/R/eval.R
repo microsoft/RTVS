@@ -68,7 +68,7 @@ describe_object <- function(obj, res, fields, repr = NULL) {
     }
   }
   
-  if (field('to_csv')) {
+  if (field('to_df')) {
     can_coerce_to_df <- function(obj){
       df_test <- function(objclass){
         res <- getS3method('as.data.frame', objclass, optional = TRUE);
@@ -76,7 +76,7 @@ describe_object <- function(obj, res, fields, repr = NULL) {
       }
       any(as.logical(lapply(class(obj), df_test)), na.rm = TRUE);
     }
-    res$to_csv <- FALSE_if_error(can_coerce_to_df(obj));
+    res$to_df <- FALSE_if_error(can_coerce_to_df(obj));
   }
     
   has_parent_env <- FALSE;

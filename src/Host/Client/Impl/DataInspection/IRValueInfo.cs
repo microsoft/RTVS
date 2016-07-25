@@ -77,10 +77,10 @@ namespace Microsoft.R.DataInspection {
         bool HasChildren { get; }
 
         /// <summary>
-        /// <see langword="true"/> if <see cref="REvaluationResultProperties.ExpressionProperty"/> can be exported to 
-        /// a CSV, <see langword="false"/> otherwise.
+        /// <see langword="true"/> if <see cref="REvaluationResultProperties.ExpressionProperty"/> can be coerced to 
+        /// a data frame, <see langword="false"/> otherwise.
         /// </summary>
-        bool CanExportToCsv { get; }
+        bool CanCoerceToDataFrame { get; }
     }
 
     public static class RValueInfoExtensions {
