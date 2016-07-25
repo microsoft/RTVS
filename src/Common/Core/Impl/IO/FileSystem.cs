@@ -32,6 +32,14 @@ namespace Microsoft.Common.Core.IO {
             File.WriteAllLines(path, contents);
         }
 
+        public byte[] FileReadAllBytes(string path) {
+            return File.ReadAllBytes(path);
+        }
+
+        public void FileWriteAllBytes(string path, byte[] bytes) {
+            File.WriteAllBytes(path, bytes);
+        }
+
         public bool DirectoryExists(string path) {
             return Directory.Exists(path);
         }

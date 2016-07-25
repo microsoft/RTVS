@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Microsoft.R.Host.Client {
     public interface IRBlobService {
         Task<long> SendBlobAsync(byte[] data, CancellationToken cancellationToken = default(CancellationToken));
-        Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken cancellationToken = default(CancellationToken));
-        Task DestroyBlobAsync(long[] blobIds, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken cancellationToken = default(CancellationToken));
+        Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

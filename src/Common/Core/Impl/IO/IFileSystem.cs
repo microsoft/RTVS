@@ -18,6 +18,9 @@ namespace Microsoft.Common.Core.IO {
         IEnumerable<string> FileReadAllLines(string path);
         void FileWriteAllLines(string path, IEnumerable<string> contents);
 
+        byte[] FileReadAllBytes(string path);
+        void FileWriteAllBytes(string path, byte[] bytes);
+
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);

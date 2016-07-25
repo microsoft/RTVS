@@ -268,13 +268,13 @@ namespace Microsoft.R.Host.Client {
             return ((SendBlobResult)blobResult).BlobId;
         }
 
-        public Task<IReadOnlyList<Blob>> GetBlobAsync(long[] blobIds, CancellationToken ct) {
+        public Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
-                ? Task.FromCanceled<IReadOnlyList<Blob>>(new CancellationToken(true))
+                ? Task.FromCanceled<IReadOnlyList<IRBlob>>(new CancellationToken(true))
                 : GetBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task<IReadOnlyList<Blob>> GetBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+        private async Task<IReadOnlyList<IRBlob>> GetBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
@@ -287,13 +287,13 @@ namespace Microsoft.R.Host.Client {
             return ((GetBlobResult)blobResult).Blobs;
         }
 
-        public Task DestroyBlobAsync(long[] blobIds, CancellationToken ct) {
+        public Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct) {
             return ct.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
                 ? Task.FromCanceled(new CancellationToken(true))
                 : DestroyBlobAsyncBackground(blobIds, ct);
         }
 
-        private async Task DestroyBlobAsyncBackground(long[] blobIds, CancellationToken ct) {
+        private async Task DestroyBlobAsyncBackground(IEnumerable<long> blobIds, CancellationToken ct) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             JArray message;
@@ -353,11 +353,11 @@ namespace Microsoft.R.Host.Client {
                     request.CompletionSource.SetResult(new SendBlobResult(response.GetInt32(0, "blob_id")));
                     break;
                 case BlobRequestKind.Get:
-                    List<Blob> blobs = new List<Blob>();
+                    List<IRBlob> blobs = new List<IRBlob>();
                     int i = 0;
                     JArray arr = response.GetArgument(0, "block_ids", JTokenType.Array) as JArray;
                     foreach(var data in response.Blobs) {
-                        Blob blob = new Blob(arr[i++].Value<long>(), data);
+                        IRBlob blob = new Blob(arr[i++].Value<long>(), data);
                         blobs.Add(blob);
                     }
                     request.CompletionSource.SetResult(new GetBlobResult(blobs));

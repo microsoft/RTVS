@@ -107,12 +107,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing.Commands {
                     return CommandResult.Executed;
                 }
 
-                inputFilePath = inputFilePath.Replace('\\', '/');
-                string outputFilePath = _outputFilePath.Replace('\\', '/');
-
-                string arguments = flavorHandler.GetCommandLine(inputFilePath, outputFilePath, Format, tb.GetEncoding());
                 var session = _workflowProvider.GetOrCreate().RSession;
-                _lastCommandTask = session.ExecuteAsync(arguments).ContinueWith(t => LaunchViewer());
+                _lastCommandTask = flavorHandler.PublishAsync(session, _coreShell, _fs, inputFilePath, _outputFilePath, Format, tb.GetEncoding()).ContinueWith(t => LaunchViewer());
             }
             return CommandResult.Executed;
         }

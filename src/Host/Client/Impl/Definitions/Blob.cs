@@ -2,13 +2,16 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.R.Host.Client {
-    public class Blob {
-        public readonly long BlobId;
-        public readonly byte[] Data;
-
-        public Blob(long blobId, byte[] data) {
-            BlobId = blobId;
-            Data = data;
+    public class Blob : IRBlob {
+        private readonly long _id;
+        private readonly byte[] _data;
+        
+        public Blob(long id, byte[] data) {
+            _id = id;
+            _data = data;
         }
+
+        public byte[] Data => _data;
+        public long Id => _id;
     }
 }
