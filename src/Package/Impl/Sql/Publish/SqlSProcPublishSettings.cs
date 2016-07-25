@@ -58,10 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var settingsFile = GetSettingsFilePath(pss, projectFolder);
             try {
                 if (fs.FileExists(settingsFile)) {
-                    using (var sr = new StreamReader(settingsFile)) {
-                        var json = sr.ReadToEnd();
-                        settings = JsonConvert.DeserializeObject<SqlSProcPublishSettings>(json);
-                    }
+                    var json = fs.ReadToEnd(settingsFile);
+                    settings = JsonConvert.DeserializeObject<SqlSProcPublishSettings>(json);
                 }
             } catch (IOException ioex) { exception = ioex; } catch (UnauthorizedAccessException uaex) { exception = uaex; } catch (JsonException jex) { exception = jex; }
 

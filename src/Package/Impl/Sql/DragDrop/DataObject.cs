@@ -23,9 +23,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.DragDrop {
 
         private static string GetFileContent(string file) {
             try {
-                using (var sr = new StreamReader(file)) {
-                    return sr.ReadToEnd().Trim();
-                }
+                return File.ReadAllText(file).Trim();
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return string.Empty;
         }

@@ -20,6 +20,10 @@ namespace Microsoft.Common.Core.IO {
             return File.Exists(path);
         }
 
+        public string ReadToEnd(string path) {
+            return File.ReadAllText(path);
+        }
+
         public IEnumerable<string> FileReadAllLines(string path) {
             return File.ReadLines(path);
         }

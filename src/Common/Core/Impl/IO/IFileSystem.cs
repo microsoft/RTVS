@@ -14,6 +14,7 @@ namespace Microsoft.Common.Core.IO {
         string ToLongPath(string path);
         string ToShortPath(string path);
 
+        string ReadToEnd(string path);
         IEnumerable<string> FileReadAllLines(string path);
         void FileWriteAllLines(string path, IEnumerable<string> contents);
 
