@@ -29,22 +29,23 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IEnumerable<string> selectedFiles, string projectFolder) :
             this(coreShell, pss, new FileSystem(), selectedFiles, projectFolder) {
             InitializeComponent();
-            Title = Package.Resources.SqlPublishDialog_Title;
 
             HelpText.Text = string.Format(CultureInfo.InvariantCulture, Package.Resources.SqlPublishDialog_Help,
                                     Environment.NewLine + Environment.NewLine,
                                     Environment.NewLine + Environment.NewLine);
-            DataContext = _model;
-            CheckCanGenerate();
         }
 
-        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> selectedFiles, string projectFolder) {
+        internal SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> selectedFiles, string projectFolder) {
             _coreShell = coreShell;
             _pss = pss;
             _fs = fs;
             _selectedFiles = selectedFiles;
             _projectFolder = projectFolder;
             _model = new SqlPublishDialogViewModel(coreShell, pss, fs, selectedFiles, projectFolder);
+
+            Title = Package.Resources.SqlPublishDialog_Title;
+            DataContext = _model;
+            CheckCanGenerate();
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e) {
@@ -77,7 +78,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void CheckCanGenerate() {
             _model.GenerateTable = _model.Settings.CodePlacement == RCodePlacement.Table;
-            _model.CanGenerate = (!_model.GenerateTable || !string.IsNullOrEmpty(TableName.Text)) && _model.TargetProjects.Count > 0;
+            _model.CanGenerate = (!_model.GenerateTable || !string.IsNullOrEmpty(TableName?.Text)) && _model.TargetProjects.Count > 0;
         }
 
         private EnvDTE.Project GetSelectedProject(string projectName) {

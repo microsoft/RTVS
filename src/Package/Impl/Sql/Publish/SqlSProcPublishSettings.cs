@@ -25,7 +25,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// List of entries
         /// </summary>
-        public IList<SProcInfo> SProcInfoEntries { get; set; }
+        public IList<SProcInfo> SProcInfoEntries { get; set; } = new List<SProcInfo>();
 
         /// <summary>
         /// Target SQL table name
@@ -41,17 +41,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// If true then generate stored procedures. If false, only
         /// table with variables is created.
         /// </summary>
-        public bool GenerateStoredProcedures { get; set; }
+        public bool GenerateStoredProcedures { get; set; } = true;
 
         /// <summary>
         /// Determines where to place R code in SQL
         /// </summary>
-        public RCodePlacement CodePlacement { get; set; }
-
-        public SqlSProcPublishSettings() {
-            SProcInfoEntries = new List<SProcInfo>();
-            GenerateStoredProcedures = true;
-        }
+        public RCodePlacement CodePlacement { get; set; } = RCodePlacement.Inline;
 
         /// <summary>
         /// Loads settings from JSON file

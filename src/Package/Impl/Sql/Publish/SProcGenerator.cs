@@ -2,12 +2,11 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using static System.FormattableString;
-using System.Collections.Generic;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -21,7 +20,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Name of the post-deployment script that inserts actual R code into the table
         /// </summary>
-        private const string PostDeploymentScriptName = "InsertRCode.PostDeployment.sql";
+        private const string PostDeploymentScriptName = "RCode.PostDeployment.sql";
         /// <summary>
         /// Default name of the column with the stored procedure names
         /// </summary>
@@ -50,14 +49,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             if(!_fs.DirectoryExists(targetFolder)) {
                 _fs.CreateDirectory(targetFolder);
             }
-            var codeTableName = Invariant($"dbo.{settings.TableName}");
 
             if (settings.CodePlacement == RCodePlacement.Table) {
-                CreateRCodeTable(settings, targetProject, targetFolder, codeTableName);
-                CreatePostDeploymentScript(settings, sourceProjectFolder, targetProject, targetFolder, codeTableName);
+                CreateRCodeTable(settings, targetProject, targetFolder, settings.TableName);
+                CreatePostDeploymentScript(settings, sourceProjectFolder, targetProject, targetFolder, settings.TableName);
             }
             if (settings.GenerateStoredProcedures) {
-                CreateStoredProcedures(settings, sourceProjectFolder, targetProject, targetFolder, codeTableName);
+                CreateStoredProcedures(settings, sourceProjectFolder, targetProject, targetFolder, settings.TableName);
             }
         }
 
@@ -102,7 +100,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                                             EnvDTE.Project targetProject, string targetFolder, string codeTableName) {
             var projectFolder = Path.GetDirectoryName(targetProject.FullName);
             foreach (var info in settings.SProcInfoEntries) {
-                var sprocFile = Path.Combine(targetFolder, Invariant($"{info.SProcName}.sql"));
+                var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, info.SProcName), ".sql");
                 using (var sw = new StreamWriter(sprocFile)) {
                     sw.WriteLine(Invariant($"CREATE PROCEDURE {info.SProcName}"));
                     sw.WriteLine("AS");

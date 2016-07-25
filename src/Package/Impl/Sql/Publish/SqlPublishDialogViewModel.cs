@@ -1,10 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
@@ -53,8 +54,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void SelectCodePlacementMode() {
             CodePlacementNames = new string[] {
+                Resources.SqlPublishDialog_RCodeInline,
                 Resources.SqlPublishDialog_RCodeInTable,
-                Resources.SqlPublishDialog_RCodeInline
             };
             SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
@@ -63,11 +64,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var solution = pss.GetSolution();
             var projects = new List<string>();
             foreach (EnvDTE.Project project in solution.Projects) {
-                var projectFileName = project.FileName;
-                if (!string.IsNullOrEmpty(projectFileName) && Path.GetExtension(projectFileName).EqualsIgnoreCase(".sqlproj")) {
-                    projects.Add(project.Name);
-                    _projectMap[project.Name] = project;
-                }
+                try {
+                    // Some projects throw 'not implemented'
+                    var projectFileName = project.FileName;
+                    if (!string.IsNullOrEmpty(projectFileName) && Path.GetExtension(projectFileName).EqualsIgnoreCase(".sqlproj")) {
+                        projects.Add(project.Name);
+                        _projectMap[project.Name] = project;
+                    }
+                } catch (NotImplementedException) { } catch(COMException) { }
             }
             return projects;
         }

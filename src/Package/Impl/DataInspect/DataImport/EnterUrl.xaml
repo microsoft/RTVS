@@ -9,7 +9,7 @@
                  xmlns:components="clr-namespace:Microsoft.R.Components;assembly=Microsoft.R.Components"
                  ShowInTaskbar="False" WindowStyle="SingleBorderWindow"
                  mc:Ignorable="d" d:DesignWidth="500" MinWidth="700" MaxWidth="700" MinHeight="120" MaxHeight="120"
-                 Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+                 Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrush}}" 
                  Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
                  Title="{x:Static pkg:Resources.ImportData_EnterUrlTitle}"
                  FocusManager.FocusedElement="{Binding ElementName=UrlTextBox}">
@@ -45,9 +45,9 @@
                 <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Border x:Name="ErrorBlock" Grid.Row="0" Visibility="Collapsed" VerticalAlignment="Stretch" 
-                    Background="{DynamicResource {x:Static wpf:Brushes.InfoBackgroundKey}}">
+                    Background="{DynamicResource {x:Static wpf:Brushes.InfoBackground}}">
                 <TextBlock x:Name="ErrorText" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Margin="6,0" 
-                           Foreground="{DynamicResource {x:Static wpf:Brushes.InfoTextKey}}"/>
+                           Foreground="{DynamicResource {x:Static wpf:Brushes.InfoText}}"/>
             </Border>
 
             <Button Grid.Column="2" x:Name="OkButton" MinWidth="86" MinHeight="24" 

@@ -3,7 +3,7 @@
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal enum RCodePlacement {
-        Table,
-        Inline
+        Inline,
+        Table
     }
 }

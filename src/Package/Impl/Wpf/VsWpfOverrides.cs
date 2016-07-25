@@ -21,49 +21,55 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         private static void OverrideBrushes() {
-            Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
+            Brushes.ActiveBorder = VsBrushes.ActiveBorderKey;
             Brushes.BorderBrush = VsBrushes.BrandedUIBorderKey;
             Brushes.ButtonFaceBrush = VsBrushes.ButtonFaceKey;
             Brushes.ButtonTextBrush = VsBrushes.ButtonTextKey;
-            Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
-            Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
-            Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;
+            Brushes.ComboBoxBorder = VsBrushes.ComboBoxBorderKey;
+            Brushes.ControlLinkTextHover = VsBrushes.ControlLinkTextHoverKey;
+            Brushes.ControlLinkText = VsBrushes.ControlLinkTextKey;
             Brushes.DetailPaneBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.GrayTextBrushKey = VsBrushes.GrayTextKey;
+            Brushes.GrayTextBrush = VsBrushes.GrayTextKey;
             Brushes.HeaderBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.InfoBackgroundKey = VsBrushes.InfoBackgroundKey;
-            Brushes.InfoTextKey = VsBrushes.InfoTextKey;
+            Brushes.InfoBackground = VsBrushes.InfoBackgroundKey;
+            Brushes.InfoText = VsBrushes.InfoTextKey;
             Brushes.LegalMessageBackground = VsBrushes.BrandedUIBackgroundKey;
             Brushes.ListPaneBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
-            Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
-            Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
-            Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
-            Brushes.ToolWindowButtonHoverActiveBorderKey = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
-            Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
+            Brushes.SplitterBackground = VsBrushes.CommandShelfBackgroundGradientKey;
+            Brushes.ToolWindowBorder = VsBrushes.ToolWindowBorderKey;
+            Brushes.ToolWindowButtonDownBorder = VsBrushes.ToolWindowButtonDownBorderKey;
+            Brushes.ToolWindowButtonDown = VsBrushes.ToolWindowButtonDownKey;
+            Brushes.ToolWindowButtonHoverActiveBorder = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
+            Brushes.ToolWindowButtonHoverActive = VsBrushes.ToolWindowButtonHoverActiveKey;
             Brushes.UIText = VsBrushes.BrandedUITextKey;
-            Brushes.WindowTextKey = VsBrushes.WindowTextKey;
-            Brushes.WindowKey = VsBrushes.WindowKey;
+            Brushes.WindowText = VsBrushes.WindowTextKey;
+            Brushes.Window = VsBrushes.WindowKey;
 
-            Brushes.HeaderColorsDefaultBrushKey = HeaderColors.DefaultBrushKey;
-            Brushes.HeaderColorsDefaultTextBrushKey = HeaderColors.DefaultTextBrushKey;
-            Brushes.HeaderColorsMouseDownBrushKey = HeaderColors.MouseDownBrushKey;
-            Brushes.HeaderColorsMouseDownTextBrushKey = HeaderColors.MouseDownTextBrushKey;
-            Brushes.HeaderColorsMouseOverBrushKey = HeaderColors.MouseOverBrushKey;
-            Brushes.HeaderColorsMouseOverTextBrushKey = HeaderColors.MouseOverTextBrushKey;
-            Brushes.HeaderColorsSeparatorLineBrushKey = HeaderColors.SeparatorLineBrushKey;
+            Brushes.HeaderColorsDefaultBrush = HeaderColors.DefaultBrushKey;
+            Brushes.HeaderColorsDefaultTextBrush = HeaderColors.DefaultTextBrushKey;
+            Brushes.HeaderColorsMouseDownBrush = HeaderColors.MouseDownBrushKey;
+            Brushes.HeaderColorsMouseDownTextBrush = HeaderColors.MouseDownTextBrushKey;
+            Brushes.HeaderColorsMouseOverBrush = HeaderColors.MouseOverBrushKey;
+            Brushes.HeaderColorsMouseOverTextBrush = HeaderColors.MouseOverTextBrushKey;
+            Brushes.HeaderColorsSeparatorLineBrush = HeaderColors.SeparatorLineBrushKey;
 
-            Brushes.IndicatorFillBrushKey = ProgressBarColors.IndicatorFillBrushKey;
+            Brushes.IndicatorFillBrush = ProgressBarColors.IndicatorFillBrushKey;
 
             var colorResources = GetColorResources();
-            Brushes.BackgroundBrushKey = colorResources["BackgroundBrushKey"];
-            Brushes.ContentMouseOverBrushKey = colorResources["ContentMouseOverBrushKey"];
-            Brushes.ContentMouseOverTextBrushKey = colorResources["ContentMouseOverTextBrushKey"];
-            Brushes.ContentInactiveSelectedBrushKey = colorResources["ContentInactiveSelectedBrushKey"];
-            Brushes.ContentInactiveSelectedTextBrushKey = colorResources["ContentInactiveSelectedTextBrushKey"];
-            Brushes.ContentSelectedBrushKey = colorResources["ContentSelectedBrushKey"];
-            Brushes.ContentSelectedTextBrushKey = colorResources["ContentSelectedTextBrushKey"];
-            Brushes.ContentBrushKey = colorResources["ContentBrushKey"];
+            Brushes.BackgroundBrush = VsBrushes.BackgroundKey;
+            Brushes.ContentMouseOverBrush = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
+            Brushes.ContentMouseOverTextBrush = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
+            Brushes.ContentInactiveSelectedBrush = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");
+            Brushes.ContentInactiveSelectedTextBrush = colorResources.TryGetThemeKey("ContentInactiveSelectedTextBrushKey");
+            Brushes.ContentSelectedBrush = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
+            Brushes.ContentSelectedTextBrush = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
+            Brushes.ContentBrush = colorResources.TryGetThemeKey("ContentBrushKey");
+        }
+
+        private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {
+            ThemeResourceKey k;
+            dict.TryGetValue(name, out k);
+            return k;
         }
 
         private static void OverrideStyleKeys() {
