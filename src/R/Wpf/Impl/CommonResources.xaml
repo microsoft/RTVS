@@ -56,16 +56,12 @@
     <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
     <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollViewerStyleKey}}"/>
-    
+    <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ButtonStyleKey}}"/>
+    <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.TextBoxStyleKey}}"/>
+
     <Style x:Key="TooltipStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="MaxWidth" Value="300" />
-    </Style>
-
-    <Style TargetType="{x:Type TextBox}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
-        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
     </Style>
 
     <Style  TargetType="{x:Type Label}">
@@ -73,47 +69,6 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
-    <Style TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ButtonTextBrushKey}}" />
-        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ButtonFaceBrushKey}}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrushKey}}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type Button}">
-                    <Border BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
-                            Background="{TemplateBinding Background}">
-                        <ContentPresenter ContentTemplate="{TemplateBinding ContentTemplate}"
-                                          Content="{TemplateBinding Content}"
-                                          ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                          Margin="{TemplateBinding Padding}"
-                                          Focusable="False"
-                                          RecognizesAccessKey="True"
-                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrushKey}}" />
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
-            </Trigger>
-            <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">

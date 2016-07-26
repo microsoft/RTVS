@@ -77,6 +77,8 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             StyleKeys.ThemedComboStyleKey = new ComponentResourceKey(comboBoxType, "ThemedComboBoxStyle");
             StyleKeys.ScrollBarStyleKey = VsResourceKeys.ScrollBarStyleKey;
             StyleKeys.ScrollViewerStyleKey = VsResourceKeys.ScrollViewerStyleKey;
+            StyleKeys.ButtonStyleKey = VsResourceKeys.ButtonStyleKey;
+            StyleKeys.TextBoxStyleKey = VsResourceKeys.TextBoxStyleKey;
         }
 
         private static IDictionary<string, ThemeResourceKey> GetColorResources() {
