@@ -69,8 +69,8 @@ NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }
 
-FALSE_if_error <- function(expr) {
-  tryCatch(expr, error = function(e) { FALSE })
+NULL_if_error <- function(expr) {
+  tryCatch(expr, error = function(e) { NULL })
 }
 
 # Like toString, but guarantees that result is a single-element character vector.

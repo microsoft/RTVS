@@ -58,8 +58,8 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect {
                 ShowDetailCommandTooltip = Resources.ShowDetailCommandTooltip;
             }
 
-            var tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
-            CanShowOpenCsv = CanShowDetail && result.CanCoerceToDataFrame && (_detailsViewer.Capabilities & tableCaps) != 0 && result.Length > 0;
+            const ViewerCapabilities tableCaps = (ViewerCapabilities.Table | ViewerCapabilities.List);
+            CanShowOpenCsv = CanShowDetail && result.CanCoerceToDataFrame && _detailsViewer.Capabilities.HasFlag(tableCaps) && result.Length > 0;
             if (CanShowOpenCsv) {
                 OpenInCsvAppCommand = new DelegateCommand(OpenInCsvApp, o => CanShowOpenCsv);
                 OpenInCsvAppCommandTooltip = Resources.OpenCsvAppCommandTooltip;

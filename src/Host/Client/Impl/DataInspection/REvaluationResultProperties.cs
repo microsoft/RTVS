@@ -8,6 +8,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.StackTracing;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using static Microsoft.R.Host.Client.REvaluationResult;
 
 namespace Microsoft.R.DataInspection {
     /// <summary>
@@ -47,39 +48,20 @@ namespace Microsoft.R.DataInspection {
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
     }
 
-    internal class REvaluationResultFieldNames {
-        public const string ReprFieldName = "repr";
-        public const string ExpressionFieldName = "expression";
-        public const string AccessorKindFieldName = "kind";
-        public const string TypeFieldName = "type";
-        public const string ClassesFieldName = "classes";
-        public const string LengthFieldName = "length";
-        public const string SlotCountFieldName = "slot_count";
-        public const string AttributeCountFieldName = "attr_count";
-        public const string NameCountFieldName = "name_count";
-        public const string DimFieldName = "dim";
-        public const string FlagsFieldName = "flags";
-        public const string ComputedValueFieldName = "computed_value";
-        public const string CanCoerceToDataFrameFieldName = "to_df";
-        public const string ErrorFieldName = "error";
-        public const string PromiseFieldName = "promise";
-        public const string ActiveBindingFieldName = "active_binding";
-    }
-    
     internal static class REvaluationResultPropertiesExtensions {
         private static readonly Dictionary<REvaluationResultProperties, string> _mapping = new Dictionary<REvaluationResultProperties, string> {
-            [ExpressionProperty] = REvaluationResultFieldNames.ExpressionFieldName,
-            [AccessorKindProperty] = REvaluationResultFieldNames.AccessorKindFieldName,
-            [TypeNameProperty] = REvaluationResultFieldNames.TypeFieldName,
-            [ClassesProperty] = REvaluationResultFieldNames.ClassesFieldName,
-            [LengthProperty] = REvaluationResultFieldNames.LengthFieldName,
-            [SlotCountProperty] = REvaluationResultFieldNames.SlotCountFieldName,
-            [AttributeCountProperty] = REvaluationResultFieldNames.AttributeCountFieldName,
-            [NameCountProperty] = REvaluationResultFieldNames.NameCountFieldName,
-            [DimProperty] = REvaluationResultFieldNames.DimFieldName,
-            [FlagsProperty] = REvaluationResultFieldNames.FlagsFieldName,
-            [ComputedValueProperty] = REvaluationResultFieldNames.ComputedValueFieldName,
-            [CanCoerceToDataFrameProperty] = REvaluationResultFieldNames.CanCoerceToDataFrameFieldName,
+            [ExpressionProperty] = FieldNames.Expression,
+            [AccessorKindProperty] = FieldNames.AccessorKind,
+            [TypeNameProperty] = FieldNames.Type,
+            [ClassesProperty] = FieldNames.Classes,
+            [LengthProperty] = FieldNames.Length,
+            [SlotCountProperty] = FieldNames.SlotCount,
+            [AttributeCountProperty] = FieldNames.AttributeCount,
+            [NameCountProperty] = FieldNames.NameCount,
+            [DimProperty] = FieldNames.Dim,
+            [FlagsProperty] = FieldNames.Flags,
+            [ComputedValueProperty] = FieldNames.ComputedValue,
+            [CanCoerceToDataFrameProperty] = FieldNames.CanCoerceToDataFrame,
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {

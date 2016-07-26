@@ -72,11 +72,11 @@ describe_object <- function(obj, res, fields, repr = NULL) {
     can_coerce_to_df <- function(obj){
       df_test <- function(objclass){
         res <- getS3method('as.data.frame', objclass, optional = TRUE);
-        if (is.null(res)) { FALSE } else { TRUE }
+        !is.null(res);
       }
-      any(as.logical(lapply(class(obj), df_test)), na.rm = TRUE);
+      any(sapply(class(obj), df_test));
     }
-    res$to_df <- FALSE_if_error(can_coerce_to_df(obj));
+    res$to_df <- NULL_if_error(can_coerce_to_df(obj));
   }
     
   has_parent_env <- FALSE;

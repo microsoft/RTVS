@@ -3,6 +3,7 @@
 
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
+using static Microsoft.R.Host.Client.REvaluationResult;
 
 namespace Microsoft.R.DataInspection {
     internal sealed class RActiveBindingInfo : REvaluationResultInfo, IRActiveBindingInfo {
@@ -10,7 +11,7 @@ namespace Microsoft.R.DataInspection {
 
         internal RActiveBindingInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
-            JObject bindingResultJson = json.Value<JObject>(REvaluationResultFieldNames.ComputedValueFieldName);
+            JObject bindingResultJson = json.Value<JObject>(FieldNames.ComputedValue);
             if(bindingResultJson == null) {
                 ComputedValue = null;
             } else {

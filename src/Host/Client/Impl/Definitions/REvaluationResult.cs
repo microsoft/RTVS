@@ -23,7 +23,7 @@ namespace Microsoft.R.Host.Client {
         EOF
     }
 
-    public struct REvaluationResult {
+    public partial struct REvaluationResult {
         /// <summary>
         /// Result of evaluation.
         /// </summary>
