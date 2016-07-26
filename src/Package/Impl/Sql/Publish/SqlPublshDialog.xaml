@@ -9,8 +9,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Microsoft.VisualStudio.R.Package.Sql"
              ShowInTaskbar="False" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" 
-             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrush}}" 
-             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+             Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
+             Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
             mc:Ignorable="d" Width="610" Height="400">
     <Grid Margin="12" Background="Transparent">
         <Grid.RowDefinitions>
@@ -33,16 +33,16 @@
                   CanUserSortColumns="False" AutoGenerateColumns="False"
                   ItemsSource="{Binding Path=Settings.SProcInfoEntries}"
                   RowBackground="Transparent"
-                  VerticalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrush}}"
-                  HorizontalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrush}}"
-                  BorderBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrush}}"
-                  Background="{DynamicResource {x:Static wpf:Brushes.Window}}"
+                  VerticalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
+                  HorizontalGridLinesBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
+                  BorderBrush="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}"
+                  Background="{DynamicResource {x:Static wpf:Brushes.WindowKey}}"
                   RowHeaderWidth="0" BorderThickness="1" IsReadOnly="False">
             <DataGrid.ColumnHeaderStyle>
                 <Style TargetType="{x:Type DataGridColumnHeader}">
-                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrush}}" />
-                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrush}}" />
-                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrush}}" />
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultTextBrushKey}}" />
+                    <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsDefaultBrushKey}}" />
+                    <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.HeaderColorsSeparatorLineBrushKey}}" />
                     <Setter Property="BorderThickness" Value="0,0,1,0" />
                     <Setter Property="Padding" Value="6" />
                 </Style>
@@ -59,7 +59,7 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Path=FileName}" 
-                                       Foreground="{DynamicResource {x:Static wpf:Brushes.WindowText}}" 
+                                       Foreground="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" 
                                        Background="Transparent" 
                                        FontWeight="DemiBold" Margin="4,2,1,2"/>
                         </DataTemplate>

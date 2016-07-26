@@ -27,12 +27,12 @@
                 </Setter>
                 <Setter Property="HorizontalContentAlignment" Value="Center" />
                 <Setter Property="VerticalContentAlignment" Value="Center" />
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkText}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextKey}}" />
                 <Setter Property="Cursor" Value="Hand" />
                 <Setter Property="Margin" Value="5,0"/>
                 <Style.Triggers>
                     <Trigger Property="IsMouseOver" Value="true">
-                        <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextHover}}" />
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.ControlLinkTextHoverKey}}" />
                     </Trigger>
                 </Style.Triggers>
             </Style>
@@ -42,7 +42,7 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Margin" Value="3,0"/>
                 <Setter Property="HorizontalAlignment" Value="Left"/>
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.InfoText}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static rwpf:Brushes.InfoTextKey}}" />
             </Style>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -55,7 +55,7 @@
                     <Binding ElementName="RootContent" Path="MinWidth" />
                 </MultiBinding>
             </DockPanel.MaxWidth>
-            <Grid DockPanel.Dock="Top" Background="{DynamicResource {x:Static rwpf:Brushes.InfoBackground}}" Margin="0" Height="22"
+            <Grid DockPanel.Dock="Top" Background="{DynamicResource {x:Static rwpf:Brushes.InfoBackgroundKey}}" Margin="0" Height="22"
                   Visibility="{Binding Path=FirstError, Converter={x:Static rwpf:Converters.NullOrEmptyIsCollapsed}}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="16"/>
@@ -124,14 +124,14 @@
                         </Grid.RowDefinitions>
 
                         <view:PackageList Grid.Row="0" x:Name="ListPackages" Loaded="ListPackages_Loaded" />
-                        <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorder}}"
-                                Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackground}}"
+                        <Border Grid.Row="1" BorderThickness="0,1,0,0" x:Name="LegalDisclaimer" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}"
+                                Background="{DynamicResource {x:Static rwpf:Brushes.LegalMessageBackgroundKey}}"
                                 Visibility="{Binding Path=ShowPackageManagerDisclaimer, Converter={x:Static rwpf:Converters.FalseIsCollapsed}}">
 
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" 
+                                <TextBlock Margin="24,12,24,12" TextWrapping="Wrap" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" 
                                             Text="{x:Static components:Resources.PackageManager_LegalDisclaimer}" />
-                                <CheckBox x:Name="CheckBoxSuppressLegalDisclaimer" Margin="24,0,24,12" Foreground="{DynamicResource {x:Static rwpf:Brushes.UIText}}" 
+                                <CheckBox x:Name="CheckBoxSuppressLegalDisclaimer" Margin="24,0,24,12" Foreground="{DynamicResource {x:Static rwpf:Brushes.UITextKey}}" 
                                             Content="{x:Static components:Resources.DoNotShowThisAgain}" Checked="CheckBoxSuppressLegalDisclaimer_Checked" />
                             </StackPanel>
 
@@ -139,7 +139,7 @@
                     </Grid>
 
                     <GridSplitter Grid.Column="1" Width="4" Grid.RowSpan="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" BorderThickness="1,0"
-                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackground}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorder}}" />
+                                  Background="{DynamicResource {x:Static rwpf:Brushes.SplitterBackgroundKey}}" BorderBrush="{DynamicResource {x:Static rwpf:Brushes.ActiveBorderKey}}" />
 
                     <!-- right side -->
                     <view:PackageDetails x:Name="PackageDetails" Grid.Column="2" Grid.RowSpan="2" DataContext="{Binding Path=SelectedPackage}" 

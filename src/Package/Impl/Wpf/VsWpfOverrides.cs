@@ -21,49 +21,49 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
         }
 
         private static void OverrideBrushes() {
-            Brushes.ActiveBorder = VsBrushes.ActiveBorderKey;
-            Brushes.BorderBrush = VsBrushes.BrandedUIBorderKey;
-            Brushes.ButtonFaceBrush = VsBrushes.ButtonFaceKey;
-            Brushes.ButtonTextBrush = VsBrushes.ButtonTextKey;
-            Brushes.ComboBoxBorder = VsBrushes.ComboBoxBorderKey;
-            Brushes.ControlLinkTextHover = VsBrushes.ControlLinkTextHoverKey;
-            Brushes.ControlLinkText = VsBrushes.ControlLinkTextKey;
-            Brushes.DetailPaneBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.GrayTextBrush = VsBrushes.GrayTextKey;
-            Brushes.HeaderBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.InfoBackground = VsBrushes.InfoBackgroundKey;
-            Brushes.InfoText = VsBrushes.InfoTextKey;
-            Brushes.LegalMessageBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.ListPaneBackground = VsBrushes.BrandedUIBackgroundKey;
-            Brushes.SplitterBackground = VsBrushes.CommandShelfBackgroundGradientKey;
-            Brushes.ToolWindowBorder = VsBrushes.ToolWindowBorderKey;
-            Brushes.ToolWindowButtonDownBorder = VsBrushes.ToolWindowButtonDownBorderKey;
-            Brushes.ToolWindowButtonDown = VsBrushes.ToolWindowButtonDownKey;
-            Brushes.ToolWindowButtonHoverActiveBorder = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
-            Brushes.ToolWindowButtonHoverActive = VsBrushes.ToolWindowButtonHoverActiveKey;
-            Brushes.UIText = VsBrushes.BrandedUITextKey;
-            Brushes.WindowText = VsBrushes.WindowTextKey;
-            Brushes.Window = VsBrushes.WindowKey;
+            Brushes.ActiveBorderKey = VsBrushes.ActiveBorderKey;
+            Brushes.BorderBrushKey = VsBrushes.BrandedUIBorderKey;
+            Brushes.ButtonFaceBrushKey = VsBrushes.ButtonFaceKey;
+            Brushes.ButtonTextBrushKey = VsBrushes.ButtonTextKey;
+            Brushes.ComboBoxBorderKey = VsBrushes.ComboBoxBorderKey;
+            Brushes.ControlLinkTextHoverKey = VsBrushes.ControlLinkTextHoverKey;
+            Brushes.ControlLinkTextKey = VsBrushes.ControlLinkTextKey;
+            Brushes.DetailPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.GrayTextBrushKey = VsBrushes.GrayTextKey;
+            Brushes.HeaderBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.InfoBackgroundKey = VsBrushes.InfoBackgroundKey;
+            Brushes.InfoTextKey = VsBrushes.InfoTextKey;
+            Brushes.LegalMessageBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.ListPaneBackgroundKey = VsBrushes.BrandedUIBackgroundKey;
+            Brushes.SplitterBackgroundKey = VsBrushes.CommandShelfBackgroundGradientKey;
+            Brushes.ToolWindowBorderKey = VsBrushes.ToolWindowBorderKey;
+            Brushes.ToolWindowButtonDownBorderKey = VsBrushes.ToolWindowButtonDownBorderKey;
+            Brushes.ToolWindowButtonDownKey = VsBrushes.ToolWindowButtonDownKey;
+            Brushes.ToolWindowButtonHoverActiveBorderKey = VsBrushes.ToolWindowButtonHoverActiveBorderKey;
+            Brushes.ToolWindowButtonHoverActiveKey = VsBrushes.ToolWindowButtonHoverActiveKey;
+            Brushes.UITextKey = VsBrushes.BrandedUITextKey;
+            Brushes.WindowTextKey = VsBrushes.WindowTextKey;
+            Brushes.WindowKey = VsBrushes.WindowKey;
 
-            Brushes.HeaderColorsDefaultBrush = HeaderColors.DefaultBrushKey;
-            Brushes.HeaderColorsDefaultTextBrush = HeaderColors.DefaultTextBrushKey;
-            Brushes.HeaderColorsMouseDownBrush = HeaderColors.MouseDownBrushKey;
-            Brushes.HeaderColorsMouseDownTextBrush = HeaderColors.MouseDownTextBrushKey;
-            Brushes.HeaderColorsMouseOverBrush = HeaderColors.MouseOverBrushKey;
-            Brushes.HeaderColorsMouseOverTextBrush = HeaderColors.MouseOverTextBrushKey;
-            Brushes.HeaderColorsSeparatorLineBrush = HeaderColors.SeparatorLineBrushKey;
+            Brushes.HeaderColorsDefaultBrushKey = HeaderColors.DefaultBrushKey;
+            Brushes.HeaderColorsDefaultTextBrushKey = HeaderColors.DefaultTextBrushKey;
+            Brushes.HeaderColorsMouseDownBrushKey = HeaderColors.MouseDownBrushKey;
+            Brushes.HeaderColorsMouseDownTextBrushKey = HeaderColors.MouseDownTextBrushKey;
+            Brushes.HeaderColorsMouseOverBrushKey = HeaderColors.MouseOverBrushKey;
+            Brushes.HeaderColorsMouseOverTextBrushKey = HeaderColors.MouseOverTextBrushKey;
+            Brushes.HeaderColorsSeparatorLineBrushKey = HeaderColors.SeparatorLineBrushKey;
 
-            Brushes.IndicatorFillBrush = ProgressBarColors.IndicatorFillBrushKey;
+            Brushes.IndicatorFillBrushKey = ProgressBarColors.IndicatorFillBrushKey;
 
             var colorResources = GetColorResources();
-            Brushes.BackgroundBrush = colorResources.TryGetThemeKey("BackgroundBrushKey");
-            Brushes.ContentMouseOverBrush = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
-            Brushes.ContentMouseOverTextBrush = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
-            Brushes.ContentInactiveSelectedBrush = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");
-            Brushes.ContentInactiveSelectedTextBrush = colorResources.TryGetThemeKey("ContentInactiveSelectedTextBrushKey");
-            Brushes.ContentSelectedBrush = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
-            Brushes.ContentSelectedTextBrush = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
-            Brushes.ContentBrush = colorResources.TryGetThemeKey("ContentBrushKey");
+            Brushes.BackgroundBrushKey = colorResources.TryGetThemeKey("BackgroundBrushKey");
+            Brushes.ContentMouseOverBrushKey = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
+            Brushes.ContentMouseOverTextBrushKey = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
+            Brushes.ContentInactiveSelectedBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");
+            Brushes.ContentInactiveSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentInactiveSelectedTextBrushKey");
+            Brushes.ContentSelectedBrushKey = colorResources.TryGetThemeKey("ContentSelectedBrushKey");
+            Brushes.ContentSelectedTextBrushKey = colorResources.TryGetThemeKey("ContentSelectedTextBrushKey");
+            Brushes.ContentBrushKey = colorResources.TryGetThemeKey("ContentBrushKey");
         }
 
         private static object TryGetThemeKey(this IDictionary<string, ThemeResourceKey> dict, string name) {

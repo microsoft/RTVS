@@ -17,7 +17,7 @@
                     <VisualState x:Name="MouseOver">
                         <Storyboard>
                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground)" Storyboard.TargetName="LabelText">
-                                <DiscreteObjectKeyFrame KeyTime="0" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrush}}" />
+                                <DiscreteObjectKeyFrame KeyTime="0" Value="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrushKey}}" />
                             </ObjectAnimationUsingKeyFrames>
                         </Storyboard>
                     </VisualState>
@@ -36,7 +36,7 @@
             </VisualStateManager.VisualStateGroups>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                                    Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
                                    FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static wpf:Converters.Scale122}}"/>
 
@@ -48,7 +48,7 @@
                     -->
             </StackPanel>
 
-            <Rectangle x:Name="Underline" Visibility="Hidden" Margin="0" Height="3" Fill="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrush}}" Grid.Row="1" />
+            <Rectangle x:Name="Underline" Visibility="Hidden" Margin="0" Height="3" Fill="{DynamicResource {x:Static wpf:Brushes.ContentSelectedBrushKey}}" Grid.Row="1" />
         </Grid>
     </ControlTemplate>
 
@@ -63,22 +63,22 @@
     </Style>
 
     <Style TargetType="{x:Type TextBox}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowText}}" />
-        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.Window}}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.WindowKey}}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
     </Style>
 
     <Style  TargetType="{x:Type Label}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UIText}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="HorizontalAlignment" Value="Left" />
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="{x:Type Button}">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ButtonTextBrush}}" />
-        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ButtonFaceBrush}}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrush}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ButtonTextBrushKey}}" />
+        <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ButtonFaceBrushKey}}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.BorderBrushKey}}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
@@ -100,28 +100,28 @@
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActive}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorder}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonHoverActiveBorderKey}}" />
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrush}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.GrayTextBrushKey}}" />
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDown}}" />
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorder}}" />
+                <Setter Property="Background" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownKey}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ToolWindowButtonDownBorderKey}}" />
             </Trigger>
             <Trigger Property="IsKeyboardFocused" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ActiveBorder}}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource {x:Static wpf:Brushes.ActiveBorderKey}}" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkText}}" />
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextKey}}" />
 
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextHover}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.ControlLinkTextHoverKey}}" />
             </Trigger>
 
             <Trigger Property="IsMouseOver" Value="False">
@@ -129,7 +129,7 @@
             </Trigger>
 
             <Trigger Property="NavigateUri" Value="{x:Null}">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowText}}" />
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.WindowTextKey}}" />
                 <Setter Property="TextBlock.TextDecorations" Value="{x:Null}" />
                 <Setter Property="IsEnabled" Value="False" />
             </Trigger>
