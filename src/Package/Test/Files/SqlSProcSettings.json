@@ -1,1 +1,1 @@
-{"SProcInfoEntries":[{"FileName":"sqlcode.R","FilePath":"sqlcode.R","SProcName":"script"}],"TableName":"RCodeTable","TargetProject":"Database","GenerateStoredProcedures":true,"CodePlacement":0}
+{"SProcInfoEntries":[{"FileName":"sqlcode1.R","FilePath":"sqlcode1.R","SProcName":"script"}],"TableName":"RCodeTable","TargetProject":"Database","GenerateStoredProcedures":true,"CodePlacement":0}

@@ -114,9 +114,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                         content = content.EndsWithOrdinal(Environment.NewLine) ? content : content + Environment.NewLine;
                         sw.WriteLine(Invariant($"    , @script = N'{Environment.NewLine}{content}'"));
                     }
-                    var sqlQuery = GetFileContent(sourceProjectFolder, info.FilePath);
+                    var sqlQuery = GetFileContent(sourceProjectFolder, info.FilePath + ".sql").Trim();
                     sw.WriteLine(Invariant($"    , @input_data_1 = N'{sqlQuery}'"));
-                    sw.WriteLine("WITH RESULT SETS (([Column] NVARCHAR(max)));");
+                    sw.WriteLine("    WITH RESULT SETS (([Column] NVARCHAR(max)));");
                     sw.WriteLine("END;");
                 }
                 targetProject.ProjectItems.AddFromFile(sprocFile);

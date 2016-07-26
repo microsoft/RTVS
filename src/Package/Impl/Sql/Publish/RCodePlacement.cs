@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
-    internal enum RCodePlacement {
+    public enum RCodePlacement {
         Inline,
         Table
     }

@@ -3,7 +3,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using FluentAssertions;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
@@ -11,13 +10,13 @@ using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using NSubstitute;
+using Xunit;
 using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class SProcGeneratorTest {
-        private const string sqlRCodeFile = "sqlcode.r";
         private const string sqlProjectName = "db.sqlproj";
 
         private readonly PackageTestFilesFixture _files;
@@ -39,49 +38,33 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var fs = new FileSystem();
             var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[0], _files.DestinationPath);
             var g = new SProcGenerator(_pss, fs);
-            g.Generate(settings, new string[] { sqlRCodeFile }, _files.DestinationPath, _project);
+            g.Generate(settings, new string[] { "sqlcode1.r" }, _files.DestinationPath, _project);
         }
 
-        [Test]
-        public void GenerateInline() {
+        [CompositeTest]
+        [InlineData("sqlcode1.r", RCodePlacement.Inline)]
+        [InlineData("sqlcode1.r", RCodePlacement.Table)]
+        [InlineData("sqlcode2.r", RCodePlacement.Inline)]
+        public void Generate(string rFile, RCodePlacement codePlacement) {
             var fs = new FileSystem();
-            var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { sqlRCodeFile }, _files.DestinationPath);
+            var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { rFile }, _files.DestinationPath);
             var g = new SProcGenerator(_pss, fs);
 
-            var targetFolder = _files.DestinationPath;
-            g.Generate(settings, new string[] { sqlRCodeFile }, targetFolder, _project);
+            settings.CodePlacement = codePlacement;
 
-            var rFile = Path.Combine(targetFolder, sqlRCodeFile);
-            var rCode = fs.ReadToEnd(rFile);
+            var targetFolder = _files.DestinationPath;
+            g.Generate(settings, new string[] { rFile }, targetFolder, _project);
+
+            var rFilePath = Path.Combine(targetFolder, rFile);
+            var rCode = fs.ReadToEnd(rFilePath);
 
             var info = settings.SProcInfoEntries[0];
             var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", info.SProcName), ".sql");
 
             _project.ProjectItems.Received().AddFromFile(sprocFile);
 
-            var baseline = fs.ReadToEnd(Path.Combine(_files.DestinationPath, "SqlCode.inline.baseline.sql"));
-            string actual = fs.ReadToEnd(sprocFile);
-            BaselineCompare.CompareStringLines(baseline, actual);
-        }
-
-        [Test]
-        public void GenerateTable() {
-            var fs = new FileSystem();
-            var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { sqlRCodeFile }, _files.DestinationPath);
-            var g = new SProcGenerator(_pss, fs);
-
-            settings.CodePlacement = RCodePlacement.Table;
-            var targetFolder = _files.DestinationPath;
-            g.Generate(settings, new string[] { sqlRCodeFile }, targetFolder, _project);
-
-            var rFile = Path.Combine(targetFolder, sqlRCodeFile);
-            var rCode = fs.ReadToEnd(rFile);
-
-            var info = settings.SProcInfoEntries[0];
-            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", info.SProcName), ".sql");
-            _project.ProjectItems.Received().AddFromFile(sprocFile);
-
-            var baseline = fs.ReadToEnd(Path.Combine(_files.DestinationPath, "SqlCode.table.baseline.sql"));
+            var mode = codePlacement == RCodePlacement.Inline ? "inline" : "table";
+            var baseline = fs.ReadToEnd(Path.Combine(_files.DestinationPath, Invariant($"{Path.GetFileNameWithoutExtension(rFile)}.{mode}.baseline.sql")));
             string actual = fs.ReadToEnd(sprocFile);
             BaselineCompare.CompareStringLines(baseline, actual);
         }

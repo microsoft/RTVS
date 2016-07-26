@@ -59,9 +59,12 @@
     <None Include="Files\PropertyGridMultiple02-1.settings.r" />
     <None Include="Files\PropertyGridSingle.settings.r" />
     <None Include="Files\PropertyGridMultiple02-2.settings.r" />
-    <None Include="Files\SqlCode.r" />
-    <Content Include="Files\SqlCode.table.baseline.sql" />
-    <Content Include="Files\SqlCode.inline.baseline.sql" />
+    <Content Include="Files\SqlCode2.inline.baseline.sql" />
+    <Content Include="Files\SqlCode2.r.sql" />
+    <None Include="Files\SqlCode2.r" />
+    <None Include="Files\SqlCode1.r" />
+    <Content Include="Files\SqlCode1.table.baseline.sql" />
+    <Content Include="Files\SqlCode1.inline.baseline.sql" />
     <None Include="Files\SqlSProcSettings.json" />
     <None Include="project.14.0.json" />
     <None Include="project.15.0.json" />
