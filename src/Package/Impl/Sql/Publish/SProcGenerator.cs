@@ -9,6 +9,8 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using static System.FormattableString;
+using Microsoft.Common.Core.Shell;
+using System.Globalization;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #endif
@@ -39,10 +41,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private const string RCodeTemplate = "_RCODE_";
         private const string InputQueryTemplate = "_INPUT_QUERY_";
 
+        private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
 
-        public SProcGenerator(IProjectSystemServices pss, IFileSystem fs) {
+        public SProcGenerator(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs) {
+            _coreShell = coreShell;
             _pss = pss;
             _fs = fs;
         }
@@ -115,6 +119,12 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private string FillSprocTemplate(string sourceProjectFolder, SProcInfo info, RCodePlacement codePlacement, string codeTableName) {
             var sprocTemplateFile = info.FilePath + ".SProc.sql";
             var sprocTemplate = GetSqlFileContent(sourceProjectFolder, sprocTemplateFile);
+
+            if (sprocTemplate.IndexOf(SProcNameTemplate) < 0 || sprocTemplate.IndexOf(RCodeTemplate) < 0 || sprocTemplate.IndexOf(InputQueryTemplate) < 0) {
+                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.SqlPublishDialog_TemplateDamaged, sprocTemplateFile));
+                return string.Empty;
+            }
+
             sprocTemplate = sprocTemplate.Replace(SProcNameTemplate, info.SProcName);
 
             string scriptCode;
@@ -135,9 +145,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                                             EnvDTE.Project targetProject, string targetFolder, string codeTableName) {
             foreach (var info in settings.SProcInfoEntries) {
                 var template = FillSprocTemplate(sourceProjectFolder, info, settings.CodePlacement, codeTableName);
-                var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, info.SProcName), ".sql");
-                _fs.WriteAllText(sprocFile, template);
-                targetProject.ProjectItems.AddFromFile(sprocFile);
+                if (!string.IsNullOrEmpty(template)) {
+                    var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, info.SProcName), ".sql");
+                    _fs.WriteAllText(sprocFile, template);
+                    targetProject.ProjectItems.AddFromFile(sprocFile);
+                }
             }
         }
 

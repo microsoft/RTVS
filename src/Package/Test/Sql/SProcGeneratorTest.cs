@@ -37,7 +37,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void GenerateEmpty() {
             var fs = new FileSystem();
             var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[0], _files.DestinationPath);
-            var g = new SProcGenerator(_pss, fs);
+            var g = new SProcGenerator(_coreShell, _pss, fs);
             g.Generate(settings, new string[] { "sqlcode1.r" }, _files.DestinationPath, _project);
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void Generate(string rFile, RCodePlacement codePlacement) {
             var fs = new FileSystem();
             var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { rFile }, _files.DestinationPath);
-            var g = new SProcGenerator(_pss, fs);
+            var g = new SProcGenerator(_coreShell, _pss, fs);
 
             settings.CodePlacement = codePlacement;
 

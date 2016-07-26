@@ -890,4 +890,7 @@ Additional information:
   <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
     <value>The selected project does not contain any R Script with SQL files.</value>
   </data>
+  <data name="SqlPublishDialog_TemplateDamaged" xml:space="preserve">
+    <value>Unable to find placeholders for procedure name, R code or for the input query. Please check stored procedure template file syntax in {0}.</value>
+  </data>
 </root>

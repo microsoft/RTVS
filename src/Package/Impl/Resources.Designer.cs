@@ -2073,6 +2073,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find placeholders for procedure name, R code or for the input query. Please check stored procedure template file syntax in {0}..
+        /// </summary>
+        public static string SqlPublishDialog_TemplateDamaged {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_TemplateDamaged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Publish R Code to SQL.
         /// </summary>
         public static string SqlPublishDialog_Title {
