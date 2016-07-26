@@ -516,6 +516,10 @@
     </Content>
     <None Include="Resources\DatabaseProject.ico" />
     <Content Include="Sql\DesignTimeData.xml" />
+    <Content Include="Templates\ItemTemplates\SqlRScript\RFile.ico" />
+    <VSTemplate Include="Templates\ItemTemplates\SqlRScript\sqlrscript.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
     <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
     <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
@@ -523,6 +527,7 @@
     <VSTemplate Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
+    <None Include="Templates\ItemTemplates\SqlRScript\SqlRScript.R" />
     <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
     <Content Include="Templates\NewItem\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1166,6 +1171,9 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="Templates\ItemTemplates\RSettings\Settings.R" />
+    <Content Include="Templates\NewItem\SqlRScript.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="VSShell\ShellIcons.h" />
     <Page Include="DataInspect\DataGridStyle.xaml">
       <SubType>Designer</SubType>

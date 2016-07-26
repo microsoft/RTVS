@@ -3,7 +3,7 @@ AS
 BEGIN
 EXEC sp_execute_external_script
         @language = N'R'
-        , @script = '
+        , @script = N'
 x <- 1
 '
         , @input_data_1 = N''

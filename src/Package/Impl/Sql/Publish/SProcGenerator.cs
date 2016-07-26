@@ -113,7 +113,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     } else {
                         var content = GetRFileContent(sourceProjectFolder, info.FilePath);
                         content = content.EndsWithOrdinal(Environment.NewLine) ? content : content + Environment.NewLine;
-                        sw.WriteLine(Invariant($"        , @script = '{Environment.NewLine}{content}'"));
+                        sw.WriteLine(Invariant($"        , @script = N'{Environment.NewLine}{content}'"));
                     }
                     sw.WriteLine("        , @input_data_1 = N''");
                     sw.WriteLine("        , @input_data_1_name = N''");

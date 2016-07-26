@@ -70,6 +70,12 @@ namespace Microsoft.R.Support.Help.Functions {
             }
         }
 
+        public void RegisterPackageFunctions(IPackageInfo package) {
+            foreach(var f in package.Functions) {
+                _functionToPackageMap[f.Name] = package.Name;
+            }
+        }
+
         /// <summary>
         /// Retrieves function information by name. If information is not
         /// available, starts asynchronous retrieval of the function info
