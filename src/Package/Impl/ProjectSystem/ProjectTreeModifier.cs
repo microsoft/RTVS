@@ -3,6 +3,7 @@
 #if VS14
 using System.ComponentModel.Composition;
 using System.IO;
+using Microsoft.Common.Core;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -22,9 +23,12 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         tree = tree.SetIcon(ProjectIconProvider.RFileNodeImage.ToProjectSystemType());
                     } else if (ext == ".rdata" || ext == ".rhistory") {
                         tree = tree.SetIcon(ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType());
-                    }
-                    if (ext == ".md" || ext == ".rmd") {
+                    } else if (ext == ".md" || ext == ".rmd") {
                         tree = tree.SetIcon(KnownMonikers.MarkdownFile.ToProjectSystemType());
+                    } else if (tree.FilePath.EndsWithIgnoreCase(".r.sql")) {
+                        tree = tree.SetIcon(KnownMonikers.DatabaseColumn.ToProjectSystemType());
+                    } else if (tree.FilePath.EndsWithIgnoreCase(".r.sproc.sql")) {
+                        tree = tree.SetIcon(KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType());
                     }
                 }
             }

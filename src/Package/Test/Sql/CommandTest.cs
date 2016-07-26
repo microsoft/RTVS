@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -14,7 +13,6 @@ using Microsoft.R.Host.Client;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.ProjectSystem;
-using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.ProjectSystem.Configuration;
 using Microsoft.VisualStudio.R.Package.Sql;
@@ -95,42 +93,28 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void PublishSProcCommandStatus() {
             var coreShell = Substitute.For<ICoreShell>();
             var pss = Substitute.For<IProjectSystemServices>();
-            var uc = Substitute.For<UnconfiguredProject>();
 
-            var cmd = new PublishSProcCommand(coreShell, pss, uc);
-            var emptySet = ImmutableArray.Create<IProjectTree>().ToImmutableHashSet();
-            cmd.GetCommandStatus(emptySet, 0, true, string.Empty, CommandStatus.NotSupported)
-                .Should().Be(CommandStatusResult.Unhandled);
-            cmd.GetCommandStatus(emptySet, RPackageCommandId.icmdPublishSProc, true, string.Empty, CommandStatus.NotSupported)
-                .Should().Be(CommandStatusResult.Unhandled);
+            var cmd = new PublishSProcCommand(coreShell, pss);
+            cmd.Enabled.Should().BeFalse();
 
-            var node = Substitute.For<IProjectTree>();
-            node.IsFolder.Returns(true);
-            var oneNode = ImmutableArray.Create<IProjectTree>(node).ToImmutableHashSet();
-            cmd.GetCommandStatus(oneNode, RPackageCommandId.icmdPublishSProc, true, string.Empty, CommandStatus.NotSupported)
-                .Should().Be(CommandStatusResult.Unhandled);
+            pss.GetSelectedProject<IVsHierarchy>().Returns(Substitute.For<IVsHierarchy>());
+            cmd = new PublishSProcCommand(coreShell, pss);
+            cmd.Enabled.Should().BeTrue();
+        }
 
-            node = Substitute.For<IProjectTree>();
-            node.IsFolder.Returns(false);
-            node.FilePath.Returns(@"C:\file.r");
-            oneNode = ImmutableArray.Create<IProjectTree>(node).ToImmutableHashSet();
-            cmd.GetCommandStatus(oneNode, RPackageCommandId.icmdPublishSProc, true, string.Empty, CommandStatus.NotSupported)
-                .Status.Should().Be(CommandStatus.Enabled | CommandStatus.Supported);
+        [Test]
+        public void PublishSProcCommandHandle() {
+            var coreShell = Substitute.For<ICoreShell>();
+            var pss = Substitute.For<IProjectSystemServices>();
 
-            var node1 = Substitute.For<IProjectTree>();
-            node1.IsFolder.Returns(false);
-            node1.FilePath.Returns(@"C:\file.r");
+            var cmd = new PublishSProcCommand(coreShell, pss);
+            cmd.Enabled.Should().BeFalse();
 
-            var node2 = Substitute.For<IProjectTree>();
-            node2.IsFolder.Returns(false);
-            node2.FilePath.Returns(@"C:\file.r");
-
-            var node3 = Substitute.For<IProjectTree>();
-            node3.IsFolder.Returns(true);
-
-            var nodes = ImmutableArray.Create<IProjectTree>(new IProjectTree[] { node1, node2, node3 }).ToImmutableHashSet();
-            cmd.GetCommandStatus(nodes, RPackageCommandId.icmdPublishSProc, true, string.Empty, CommandStatus.NotSupported)
-                .Status.Should().Be(CommandStatus.Enabled | CommandStatus.Supported);
+            pss.GetProjectFiles(null).ReturnsForAnyArgs(new string[] { "file.r" });
+            cmd = new PublishSProcCommand(coreShell, pss);
+            cmd.Enabled.Should().BeTrue();
+            cmd.Invoke();
+            coreShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
         }
     }
 }

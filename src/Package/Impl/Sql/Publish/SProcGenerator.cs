@@ -4,12 +4,16 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using static System.FormattableString;
-using Microsoft.Common.Core;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
+#endif
+#if VS15
+using Microsoft.VisualStudio.ProjectSystem;
 #endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
@@ -30,6 +34,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Name of the column with the procedure code
         /// </summary>
         internal const string RCodeColumnName = "RCode";
+
+        private const string SProcNameTemplate = "_PROCEDURENAME_";
+        private const string RCodeTemplate = "_RCODE_";
+        private const string InputQueryTemplate = "_INPUT_QUERY_";
 
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
@@ -75,6 +83,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             targetProject.ProjectItems.AddFromFile(creatTableScriptFile);
         }
 
+        /// <summary>
+        /// Generates SQL post deployment script that pushes R code into a table
+        /// as well as 
+        /// </summary>
         private void CreatePostDeploymentScript(SqlSProcPublishSettings settings, string sourceProjectFolder,
                             EnvDTE.Project targetProject, string targetFolder, string codeTableName) {
             var targetProjectFolder = Path.GetDirectoryName(targetProject.FullName);
@@ -84,7 +96,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
                 for (int i = 0; i < settings.SProcInfoEntries.Count; i++) {
                     var info = settings.SProcInfoEntries[i];
-                    var content = GetFileContent(sourceProjectFolder, info.FilePath);
+                    var content = GetRFileContent(sourceProjectFolder, info.FilePath);
                     sw.Write(Invariant($"VALUES ('{info.SProcName}', '{content}')"));
 
                     if (i < settings.SProcInfoEntries.Count - 1) {
@@ -97,42 +109,58 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             item.Properties.Item("BuildAction").Value = "PostDeploy";
         }
 
+        /// <summary>
+        /// Replaces procedure name, R Code and the SQL query placeholders with actual values
+        /// </summary>
+        private string FillSprocTemplate(string sourceProjectFolder, SProcInfo info, RCodePlacement codePlacement, string codeTableName) {
+            var sprocTemplateFile = info.FilePath + ".SProc.sql";
+            var sprocTemplate = GetSqlFileContent(sourceProjectFolder, sprocTemplateFile);
+            sprocTemplate = sprocTemplate.Replace(SProcNameTemplate, info.SProcName);
+
+            string scriptCode;
+            if (codePlacement == RCodePlacement.Table) {
+                scriptCode = Invariant($"SELECT RCode FROM {codeTableName} WHERE {SProcColumnName} IS {info.SProcName}");
+            } else {
+                var rCode = GetRFileContent(sourceProjectFolder, info.FilePath);
+                rCode = rCode.EndsWithOrdinal(Environment.NewLine) ? rCode : rCode + Environment.NewLine;
+                scriptCode = Environment.NewLine + rCode;
+            }
+            sprocTemplate = sprocTemplate.Replace(RCodeTemplate, scriptCode);
+
+            var sqlQuery = GetSqlFileContent(sourceProjectFolder, info.FilePath + ".sql").Trim();
+            return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
+        }
+
         private void CreateStoredProcedures(SqlSProcPublishSettings settings, string sourceProjectFolder,
                                             EnvDTE.Project targetProject, string targetFolder, string codeTableName) {
-            var projectFolder = Path.GetDirectoryName(targetProject.FullName);
             foreach (var info in settings.SProcInfoEntries) {
+                var template = FillSprocTemplate(sourceProjectFolder, info, settings.CodePlacement, codeTableName);
                 var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, info.SProcName), ".sql");
-                using (var sw = new StreamWriter(sprocFile)) {
-                    sw.WriteLine(Invariant($"CREATE PROCEDURE {info.SProcName}"));
-                    sw.WriteLine("AS");
-                    sw.WriteLine("BEGIN");
-                    sw.WriteLine("EXEC sp_execute_external_script @language = N'R'");
-                    if (settings.CodePlacement == RCodePlacement.Table) {
-                        sw.WriteLine(Invariant($"    , @script = N'SELECT RCode FROM {codeTableName} WHERE {SProcColumnName} IS {info.SProcName}'"));
-                    } else {
-                        var content = GetFileContent(sourceProjectFolder, info.FilePath);
-                        content = content.EndsWithOrdinal(Environment.NewLine) ? content : content + Environment.NewLine;
-                        sw.WriteLine(Invariant($"    , @script = N'{Environment.NewLine}{content}'"));
-                    }
-                    var sqlQuery = GetFileContent(sourceProjectFolder, info.FilePath + ".sql").Trim();
-                    sw.WriteLine(Invariant($"    , @input_data_1 = N'{sqlQuery}'"));
-                    sw.WriteLine("    WITH RESULT SETS (([Column] NVARCHAR(max)));");
-                    sw.WriteLine("END;");
-                }
+                _fs.WriteAllText(sprocFile, template);
                 targetProject.ProjectItems.AddFromFile(sprocFile);
             }
         }
 
-        private string GetFileContent(string sourceFolder, string relativePath) {
+        private string GetRFileContent(string sourceFolder, string relativePath) {
             var filePath = PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(sourceFolder), relativePath);
-            string content = string.Empty;
             if (_fs.FileExists(filePath)) {
-                content = _fs.ReadToEnd(filePath);
-                if (Path.GetExtension(filePath).EqualsIgnoreCase(".R")) {
-                    content = content.Replace("'", "''");
-                }
+                return _fs.ReadAllText(filePath).Replace("'", "''");
             }
-            return content;
+            return string.Empty;
+        }
+
+        private string GetSqlFileContent(string sourceFolder, string relativePath) {
+            var filePath = PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(sourceFolder), relativePath);
+            if (_fs.FileExists(filePath)) {
+                var sb = new StringBuilder();
+                foreach (var line in _fs.FileReadAllLines(filePath)) {
+                    if (!line.TrimStart().StartsWithOrdinal("--")) {
+                        sb.AppendLine(line);
+                    }
+                }
+                return sb.ToString();
+            }
+            return string.Empty;
         }
     }
 }

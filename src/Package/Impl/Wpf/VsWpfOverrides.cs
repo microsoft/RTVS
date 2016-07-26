@@ -56,7 +56,7 @@ namespace Microsoft.VisualStudio.R.Package.Wpf {
             Brushes.IndicatorFillBrush = ProgressBarColors.IndicatorFillBrushKey;
 
             var colorResources = GetColorResources();
-            Brushes.BackgroundBrush = VsBrushes.BackgroundKey;
+            Brushes.BackgroundBrush = colorResources.TryGetThemeKey("BackgroundBrushKey");
             Brushes.ContentMouseOverBrush = colorResources.TryGetThemeKey("ContentMouseOverBrushKey");
             Brushes.ContentMouseOverTextBrush = colorResources.TryGetThemeKey("ContentMouseOverTextBrushKey");
             Brushes.ContentInactiveSelectedBrush = colorResources.TryGetThemeKey("ContentInactiveSelectedBrushKey");

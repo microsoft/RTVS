@@ -53,6 +53,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
         private readonly IEnumerable<Lazy<IVsProject>> _cpsIVsProjects;
         private readonly IRInteractiveWorkflowProvider _workflowProvider;
         private readonly IInteractiveWindowComponentContainerFactory _componentContainerFactory;
+        private readonly IProjectItemDependencyProvider _dependencyProvider;
 
         private IRInteractiveWorkflow _workflow;
         private IRSession _session;
@@ -70,7 +71,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             , IInteractiveWindowComponentContainerFactory componentContainerFactory
             , IRToolsSettings toolsSettings
             , IThreadHandling threadHandling
-            , ISurveyNewsService surveyNews) {
+            , ISurveyNewsService surveyNews
+            , [Import(AllowDefault = true)] IProjectItemDependencyProvider dependencyProvider) {
 
             _unconfiguredProject = unconfiguredProject;
             _cpsIVsProjects = cpsIVsProjects;
@@ -80,12 +82,14 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             _toolsSettings = toolsSettings;
             _threadHandling = threadHandling;
             _surveyNews = surveyNews;
+            _dependencyProvider = dependencyProvider;
+
             _projectDirectory = unconfiguredProject.GetProjectDirectory();
 
             unconfiguredProject.ProjectUnloading += ProjectUnloading;
             _fileWatcher = new MsBuildFileSystemWatcher(_projectDirectory, "*", 25, 1000, _fileSystem, new RMsBuildFileSystemFilter());
             _fileWatcher.Error += FileWatcherError;
-            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher);
+            Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider);
         }
 
         [AppliesTo(Constants.RtvsProjectCapability)]
@@ -177,7 +181,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
 
             _unconfiguredProject.ProjectUnloading -= ProjectUnloading;
             _fileWatcher.Dispose();
-            
+
             if (!_fileSystem.DirectoryExists(_projectDirectory)) {
                 return;
             }

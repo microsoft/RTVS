@@ -211,6 +211,7 @@
     <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
+    <Compile Include="ProjectSystem\ProjectItemDependencyProvider.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml.cs">
@@ -502,6 +503,7 @@
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\SqlRScript.ico" />
     <Content Include="Profiles\15.0\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -517,10 +519,9 @@
     <None Include="Resources\DatabaseProject.ico" />
     <None Include="Resources\DatabaseProject1.ico" />
     <Content Include="Sql\DesignTimeData.xml" />
-    <VSTemplate Include="Templates\ItemTemplates\SqlRScript\sqlrscript.vstemplate">
+    <VSTemplate Include="Templates\ItemTemplates\SqlRScript\SqlRScript.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
-    <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
     <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
@@ -529,8 +530,8 @@
     </VSTemplate>
     <None Include="Templates\ItemTemplates\SqlRScript\SqlRScript.R" />
     <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
-    <Content Include="Templates\ItemTemplates\SqlRScript\SqlRScript.ico" />
-    <Content Include="Templates\ItemTemplates\SqlRScript\SqlRScript.R.sql" />
+    <None Include="Templates\ItemTemplates\SqlRScript\SqlRScript.R.SProc.sql" />
+    <None Include="Templates\ItemTemplates\SqlRScript\SqlRScript.R.sql" />
     <Content Include="Templates\NewItem\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1135,7 +1136,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <Content Include="Templates\NewItem\markdown.rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>

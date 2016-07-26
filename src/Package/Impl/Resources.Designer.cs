@@ -2019,6 +2019,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The selected project does not contain any R Script with SQL files..
+        /// </summary>
+        public static string SqlPublishDialog_NoSProcFiles {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In stored procedure @script parameter.
         /// </summary>
         public static string SqlPublishDialog_RCodeInline {

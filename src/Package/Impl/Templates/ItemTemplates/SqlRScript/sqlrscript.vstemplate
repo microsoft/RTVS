@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
-    <Name>SQL R Script</Name>
-    <Description>R Script to be used in SQL Stored Procedure</Description>
+    <Name>SQL R Stored Procedure</Name>
+    <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3017" />
     <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="505" />
     <TemplateID>Microsoft.RTools.SqlRScript</TemplateID>
     <ProjectType>R</ProjectType>
@@ -15,5 +15,6 @@
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">SqlRScript.R</ProjectItem>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.sql" OpenInEditor="false">SqlRScript.R.sql</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.SProc.sql" OpenInEditor="false">SqlRScript.R.SProc.sql</ProjectItem>
   </TemplateContent>
 </VSTemplate>

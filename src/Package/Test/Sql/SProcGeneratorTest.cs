@@ -44,7 +44,6 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [CompositeTest]
         [InlineData("sqlcode1.r", RCodePlacement.Inline)]
         [InlineData("sqlcode1.r", RCodePlacement.Table)]
-        [InlineData("sqlcode2.r", RCodePlacement.Inline)]
         public void Generate(string rFile, RCodePlacement codePlacement) {
             var fs = new FileSystem();
             var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { rFile }, _files.DestinationPath);
@@ -56,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             g.Generate(settings, new string[] { rFile }, targetFolder, _project);
 
             var rFilePath = Path.Combine(targetFolder, rFile);
-            var rCode = fs.ReadToEnd(rFilePath);
+            var rCode = fs.ReadAllText(rFilePath);
 
             var info = settings.SProcInfoEntries[0];
             var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", info.SProcName), ".sql");
@@ -64,8 +63,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _project.ProjectItems.Received().AddFromFile(sprocFile);
 
             var mode = codePlacement == RCodePlacement.Inline ? "inline" : "table";
-            var baseline = fs.ReadToEnd(Path.Combine(_files.DestinationPath, Invariant($"{Path.GetFileNameWithoutExtension(rFile)}.{mode}.baseline.sql")));
-            string actual = fs.ReadToEnd(sprocFile);
+            var baseline = fs.ReadAllText(Path.Combine(_files.DestinationPath, Invariant($"{Path.GetFileNameWithoutExtension(rFile)}.{mode}.baseline.sql")));
+            string actual = fs.ReadAllText(sprocFile);
             BaselineCompare.CompareStringLines(baseline, actual);
         }
     }

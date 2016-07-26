@@ -2,63 +2,53 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.ComponentModel.Composition;
+using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.ProjectSystem;
+using Microsoft.Common.Core;
+using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
-using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring;
-using Microsoft.Common.Core.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
-using System.IO;
-using Microsoft.Common.Core;
-using System.Collections.Generic;
-#if VS14
-using Microsoft.VisualStudio.ProjectSystem.Designers;
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
-#endif
+using Microsoft.VisualStudio.R.Packages.R;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
-    [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
-    internal sealed class PublishSProcCommand : ICommandGroupHandler {
+    internal sealed class PublishSProcCommand : PackageCommand {
         private readonly ICoreShell _coreShell;
-        private readonly UnconfiguredProject _unconfiguredProject;
         private readonly IProjectSystemServices _pss;
 
-        [ImportingConstructor]
-        public PublishSProcCommand(ICoreShell coreShell, IProjectSystemServices pss, UnconfiguredProject unconfiguredProject) {
+        public PublishSProcCommand(ICoreShell coreShell, IProjectSystemServices pss) :
+            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc) {
             _coreShell = coreShell;
-            _unconfiguredProject = unconfiguredProject;
             _pss = pss;
         }
 
-        public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
-            if (commandId == RPackageCommandId.icmdPublishSProc && nodes.Count > 0) {
-                // all nodes must be files
-                var selectedFiles = GetSelectedFiles(nodes);
-                if (selectedFiles.FirstOrDefault() != null) {
-                    return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
-                }
-            }
-            return CommandStatusResult.Unhandled;
+        protected override void SetStatus() {
+            Visible = Supported = true;
+            Enabled = _pss.GetSelectedProject<IVsHierarchy>() != null;
         }
 
-        public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
-            if (commandId == RPackageCommandId.icmdPublishSProc) {
-                var selectedFiles = GetSelectedFiles(nodes);
-                if (selectedFiles.FirstOrDefault() != null) {
-                    var dlg = new SqlPublshDialog(_coreShell, _pss, selectedFiles, Path.GetDirectoryName(_unconfiguredProject.FullPath));
-                    dlg.ShowModal();
-                    return true;
+        protected override void Handle() {
+            var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
+            if (project != null) {
+                if (SqlPublishDialogViewModel.GetDatabaseProjectsInSolution(_pss).Count > 0) {
+                    var rFiles = _pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".R"));
+                    var sqlFiles = new HashSet<string>(_pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".sql")));
+                    var sprocFiles = rFiles.Where(x =>
+                                sqlFiles.Contains(x + ".sql", StringComparer.OrdinalIgnoreCase) &&
+                                sqlFiles.Contains(x + ".sproc.sql", StringComparer.OrdinalIgnoreCase));
+                    if (sprocFiles.FirstOrDefault() != null) {
+                        var dlg = new SqlPublshDialog(_coreShell, _pss, sprocFiles, Path.GetDirectoryName(project.FullName));
+                        dlg.ShowModal();
+                    } else {
+                        _coreShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
+                    }
+                } else {
+                    _coreShell.ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
                 }
             }
-            return false;
-        }
-
-        private IEnumerable<string> GetSelectedFiles(IImmutableSet<IProjectTree> nodes) {
-            return nodes.GetSelectedFilesPaths().Where(x => Path.GetExtension(x).EqualsIgnoreCase(".r"));
         }
     }
 }

@@ -14,7 +14,6 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     internal sealed class SqlPublishDialogViewModel : BindableBase {
-        private readonly Dictionary<string, EnvDTE.Project> _projectMap = new Dictionary<string, EnvDTE.Project>();
         private bool _canGenerate;
         private bool _generateTable;
 
@@ -60,7 +59,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
 
-        private IReadOnlyCollection<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {
+        public static IReadOnlyCollection<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {
+            var projectMap = new Dictionary<string, EnvDTE.Project>();
             var solution = pss.GetSolution();
             var projects = new List<string>();
             foreach (EnvDTE.Project project in solution.Projects) {
@@ -69,7 +69,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     var projectFileName = project.FileName;
                     if (!string.IsNullOrEmpty(projectFileName) && Path.GetExtension(projectFileName).EqualsIgnoreCase(".sqlproj")) {
                         projects.Add(project.Name);
-                        _projectMap[project.Name] = project;
                     }
                 } catch (NotImplementedException) { } catch(COMException) { }
             }

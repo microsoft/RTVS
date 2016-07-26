@@ -162,12 +162,13 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             }
             foreach (var item in items) {
                 var pi = item as EnvDTE.ProjectItem;
+                var fullPath = (item as EnvDTE.ProjectItem)?.Properties?.Item("FullPath")?.Value as string;
+                if (!string.IsNullOrEmpty(fullPath)) {
+                    yield return fullPath;
+                }
                 if (pi.ProjectItems?.Count != 0) {
-                    EnumerateProjectFiles(pi.ProjectItems);
-                } else {
-                    var fullPath = (item as EnvDTE.ProjectItem)?.Properties?.Item("FullPath")?.Value as string;
-                    if (!string.IsNullOrEmpty(fullPath)) {
-                        yield return fullPath;
+                    foreach (var x in EnumerateProjectFiles(pi.ProjectItems)) {
+                        yield return x;
                     }
                 }
             }
