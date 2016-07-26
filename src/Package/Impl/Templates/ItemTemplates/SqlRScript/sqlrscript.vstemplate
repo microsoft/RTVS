@@ -3,7 +3,7 @@
   <TemplateData>
     <Name>SQL R Script</Name>
     <Description>R Script to be used in SQL Stored Procedure</Description>
-    <Icon>RFile.ico</Icon>
+    <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="505" />
     <TemplateID>Microsoft.RTools.SqlRScript</TemplateID>
     <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>
@@ -14,5 +14,6 @@
   </TemplateData>
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">SqlRScript.R</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.sql" OpenInEditor="false">SqlRScript.R.sql</ProjectItem>
   </TemplateContent>
 </VSTemplate>

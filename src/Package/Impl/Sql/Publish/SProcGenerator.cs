@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
                 for (int i = 0; i < settings.SProcInfoEntries.Count; i++) {
                     var info = settings.SProcInfoEntries[i];
-                    var content = GetRFileContent(sourceProjectFolder, info.FilePath);
+                    var content = GetFileContent(sourceProjectFolder, info.FilePath);
                     sw.Write(Invariant($"VALUES ('{info.SProcName}', '{content}')"));
 
                     if (i < settings.SProcInfoEntries.Count - 1) {
@@ -106,27 +106,33 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     sw.WriteLine(Invariant($"CREATE PROCEDURE {info.SProcName}"));
                     sw.WriteLine("AS");
                     sw.WriteLine("BEGIN");
-                    sw.WriteLine("EXEC sp_execute_external_script");
-                    sw.WriteLine("        @language = N'R'");
+                    sw.WriteLine("EXEC sp_execute_external_script @language = N'R'");
                     if (settings.CodePlacement == RCodePlacement.Table) {
-                        sw.WriteLine(Invariant($"        , @script = 'SELECT RCode FROM {codeTableName} WHERE {SProcColumnName} IS {info.SProcName}'"));
+                        sw.WriteLine(Invariant($"    , @script = N'SELECT RCode FROM {codeTableName} WHERE {SProcColumnName} IS {info.SProcName}'"));
                     } else {
-                        var content = GetRFileContent(sourceProjectFolder, info.FilePath);
+                        var content = GetFileContent(sourceProjectFolder, info.FilePath);
                         content = content.EndsWithOrdinal(Environment.NewLine) ? content : content + Environment.NewLine;
-                        sw.WriteLine(Invariant($"        , @script = N'{Environment.NewLine}{content}'"));
+                        sw.WriteLine(Invariant($"    , @script = N'{Environment.NewLine}{content}'"));
                     }
-                    sw.WriteLine("        , @input_data_1 = N''");
-                    sw.WriteLine("        , @input_data_1_name = N''");
-                    sw.WriteLine("        , @output_data_1_name = N''");
+                    var sqlQuery = GetFileContent(sourceProjectFolder, info.FilePath);
+                    sw.WriteLine(Invariant($"    , @input_data_1 = N'{sqlQuery}'"));
+                    sw.WriteLine("WITH RESULT SETS (([Column] NVARCHAR(max)));");
                     sw.WriteLine("END;");
                 }
                 targetProject.ProjectItems.AddFromFile(sprocFile);
             }
         }
 
-        private string GetRFileContent(string rFilesFolder, string relativePath) {
-            var rFilePath = PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(rFilesFolder), relativePath);
-            return _fs.ReadToEnd(rFilePath).Replace("'", "''");
+        private string GetFileContent(string sourceFolder, string relativePath) {
+            var filePath = PathHelper.MakeRooted(PathHelper.EnsureTrailingSlash(sourceFolder), relativePath);
+            string content = string.Empty;
+            if (_fs.FileExists(filePath)) {
+                content = _fs.ReadToEnd(filePath);
+                if (Path.GetExtension(filePath).EqualsIgnoreCase(".R")) {
+                    content = content.Replace("'", "''");
+                }
+            }
+            return content;
         }
     }
 }

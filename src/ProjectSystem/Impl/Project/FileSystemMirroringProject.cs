@@ -270,7 +270,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
             foreach (string path in filesToAdd) {
                 RemoveItem(_filesItemGroup, _fileItems, path);
-                ProjectItemElement item = _filesItemGroup.AddItem("Content", path, Enumerable.Empty<KeyValuePair<string, string>>());
+
+                var metadata = Enumerable.Empty<KeyValuePair<string, string>>();
+                // TODO: consider getting this via a provider
+                if (path.EndsWithIgnoreCase(".R.sql")) {
+                    var mainItemPath = path.Substring(0, path.Length - 4);
+                    var dict = new Dictionary<string, string>();
+                    dict["DependentUpon"] = mainItemPath;
+                    metadata = dict;
+                }
+                var item = _filesItemGroup.AddItem("Content", path, metadata);
                 _fileItems.Add(path, item);
             }
 
