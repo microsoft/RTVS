@@ -199,23 +199,17 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
     readBin(output_filepath, 'raw', file.info(output_filepath)$size);
 }
 
-package_lock_state <- function(package_name, package_lib) {
-    file_path_i386 <- paste0(package_lib, '/', package_name, '/libs/i386/', package_name, '.dll');
-    file_path_x64 <- paste0(package_lib, '/', package_name, '/libs/x64/', package_name, '.dll');
+package_lock_state <- function(package_name, lib_path) {
+    dlls <- dir(path = paste0(lib_path,'/', package_name), pattern = '.dll', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
     
-    lock_state <- if (file.exists(file_path_x64)) {
-        call_embedded('get_package_lock_state', file_path_x64);
-    } else {
-        'unlocked'
-    }
-
-    if (identical(lock_state, 'unlocked')) {
-        lock_state <- if (file.exists(file_path_i386)) {
-        call_embedded('get_package_lock_state', file_path_i386);
+    lock_state <- 'unlocked'
+    for(dll in dlls) {
+        if(identical(lock_state, 'unlocked')) {
+            lock_state <- call_embedded('get_package_lock_state', dll);
         } else {
-            'unlocked'
+            break;
         }
     }
-
+    
     lock_state
 }
