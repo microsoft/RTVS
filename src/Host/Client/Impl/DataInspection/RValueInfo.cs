@@ -7,8 +7,9 @@ using System.Linq;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
 using static System.FormattableString;
+using static Microsoft.R.Host.Client.REvaluationResult;
 
-namespace Microsoft.R.DataInspection {
+    namespace Microsoft.R.DataInspection {
     internal sealed class RValueInfo : REvaluationResultInfo, IRValueInfo {
         public string Representation { get; }
 
@@ -29,6 +30,8 @@ namespace Microsoft.R.DataInspection {
         public IReadOnlyList<int> Dim { get; }
 
         public RValueFlags Flags { get; }
+
+        public bool CanCoerceToDataFrame { get; }
 
         public bool HasChildren {
             get {
@@ -62,24 +65,25 @@ namespace Microsoft.R.DataInspection {
         internal RValueInfo(IRSession session, string environmentExpression, string expression, string name, JObject json)
             : base(session, environmentExpression, expression, name) {
 
-            Representation = json.Value<string>("repr");
-            TypeName = json.Value<string>("type");
-            Length = json.Value<int?>("length");
-            AttributeCount = json.Value<int?>("attr_count");
-            SlotCount = json.Value<int?>("slot_count");
-            NameCount = json.Value<int?>("name_count");
+            Representation = json.Value<string>(FieldNames.Repr);
+            TypeName = json.Value<string>(FieldNames.Type);
+            Length = json.Value<int?>(FieldNames.Length);
+            AttributeCount = json.Value<int?>(FieldNames.AttributeCount);
+            SlotCount = json.Value<int?>(FieldNames.SlotCount);
+            NameCount = json.Value<int?>(FieldNames.NameCount);
+            CanCoerceToDataFrame = json.Value<bool?>(FieldNames.CanCoerceToDataFrame) ?? false;
 
-            var classes = json.Value<JArray>("classes");
+            var classes = json.Value<JArray>(FieldNames.Classes);
             if (classes != null) {
                 Classes = classes.Select(t => t.Value<string>()).ToArray();
             }
 
-            var dim = json.Value<JArray>("dim");
+            var dim = json.Value<JArray>(FieldNames.Dim);
             if (dim != null) {
                 Dim = dim.Select(t => t.Value<int>()).ToArray();
             }
 
-            var kind = json.Value<string>("kind");
+            var kind = json.Value<string>(FieldNames.AccessorKind);
             switch (kind) {
                 case null:
                     AccessorKind = RChildAccessorKind.None;
@@ -97,7 +101,7 @@ namespace Microsoft.R.DataInspection {
                     throw new InvalidDataException(Invariant($"Invalid kind '{kind}' in:\n\n{json}"));
             }
 
-            var flags = json.Value<JArray>("flags")?.Select(v => v.Value<string>());
+            var flags = json.Value<JArray>(FieldNames.Flags)?.Select(v => v.Value<string>());
             if (flags != null) {
                 foreach (var flag in flags) {
                     switch (flag) {

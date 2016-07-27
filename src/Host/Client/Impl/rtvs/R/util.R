@@ -69,6 +69,10 @@ NA_if_error <- function(expr) {
   tryCatch(expr, error = function(e) { NA })
 }
 
+NULL_if_error <- function(expr) {
+  tryCatch(expr, error = function(e) { NULL })
+}
+
 # Like toString, but guarantees that result is a single-element character vector.
 force_toString <- function(obj) {
   if (is.null(obj) || (length(obj) == 1 && is.atomic(obj) && is.na(obj) && !is.nan(obj))) {

@@ -67,6 +67,17 @@ describe_object <- function(obj, res, fields, repr = NULL) {
       res$dim <- as.list(dim);
     }
   }
+  
+  if (field('to_df')) {
+    can_coerce_to_df <- function(obj){
+      df_test <- function(objclass){
+        res <- getS3method('as.data.frame', objclass, optional = TRUE);
+        !is.null(res);
+      }
+      any(sapply(class(obj), df_test));
+    }
+    res$to_df <- NULL_if_error(can_coerce_to_df(obj));
+  }
     
   has_parent_env <- FALSE;
   if (is.environment(obj)) {
