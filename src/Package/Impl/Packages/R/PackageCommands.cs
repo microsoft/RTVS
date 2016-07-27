@@ -4,6 +4,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
+using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Composition;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Sql;
@@ -104,7 +107,6 @@ namespace Microsoft.VisualStudio.R.Packages.R {
                 new AddDbConnectionCommand(dbcs, pss, pcsp, interactiveWorkflow),
                 new AddDsnCommand(appShell, interactiveWorkflow),
                 new ManageDsnCommand(appShell, interactiveWorkflow),
-                new PublishSProcCommand(appShell, pss),
 
                 new InstallPackagesCommand(),
                 new CheckForPackageUpdatesCommand(),

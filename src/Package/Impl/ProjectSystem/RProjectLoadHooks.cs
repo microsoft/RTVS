@@ -92,7 +92,7 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
             Project = new FileSystemMirroringProject(unconfiguredProject, projectLockService, _fileWatcher, _dependencyProvider);
         }
 
-        [AppliesTo(Constants.RtvsProjectCapability)]
+        [AppliesTo(ProjectConstants.RtvsProjectCapability)]
 #if VS14
         [UnconfiguredProjectAutoLoad2(completeBy: UnconfiguredProjectLoadCheckpoint.CapabilitiesEstablished)]
 #else

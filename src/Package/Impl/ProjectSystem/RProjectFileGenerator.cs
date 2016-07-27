@@ -12,8 +12,8 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Guid(RGuidList.ProjectFileGeneratorGuidString)]
     internal sealed class RProjectFileGenerator : FileSystemMirroringProjectFileGenerator {
         private static readonly string[] _imports = {
-             Constants.RtvsRulesPropsRelativePath,
-             Constants.RtvsTargetsRelativePath,
+             ProjectConstants.RtvsRulesPropsRelativePath,
+             ProjectConstants.RtvsTargetsRelativePath,
         };
 
         public RProjectFileGenerator()

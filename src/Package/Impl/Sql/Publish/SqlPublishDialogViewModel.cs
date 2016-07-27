@@ -8,19 +8,19 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Wpf;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
-    internal sealed class SqlPublishDialogViewModel : BindableBase, IDisposable {
-        // Store settings during session so they can be reused.
-        // Settings are generally per project. Consider saving
-        // them in the project file.
-        private static string _targetProject;
-        private static string _tableName;
-        private static RCodePlacement _codePlacement = RCodePlacement.Inline;
+    internal sealed class SqlPublishDialogViewModel : BindableBase {
+        private const string TargetProjectSettingName = "SqlSprocPublishTargetProject";
+        private const string TableNameSettingName = "SqlSprocPublishTableName";
+        private const string CodePlacementSettingName = "SqlSprocPublishCodePlacement";
 
+        private readonly IProjectSystemServices _pss;
+        private readonly IWritableSettingsStorage _settingsStorage;
         private bool _canGenerate;
         private bool _generateTable;
 
@@ -28,7 +28,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public int SelectedTargetProjectIndex { get; set; }
         public IReadOnlyCollection<string> CodePlacementNames { get; private set; }
         public int SelectedCodePlacementIndex { get; set; }
-        public SqlSProcPublishSettings Settings { get; private set; }
+        public SqlSProcPublishSettings Settings { get; }
 
         public bool CanGenerate {
             get { return _canGenerate; }
@@ -39,16 +39,26 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             set { SetProperty(ref _generateTable, value); }
         }
 
-        public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, 
-                                         IEnumerable<string> filePaths, string projectFolder) {
-             PopulateProjectList(pss);
+        public SqlPublishDialogViewModel(IProjectSystemServices pss, IFileSystem fs, IWritableSettingsStorage settingsStorage, IEnumerable<string> sprocFiles) {
+            _pss = pss;
+            _settingsStorage = settingsStorage;
+
+            Settings = new SqlSProcPublishSettings(sprocFiles, fs);
+            LoadSettings();
+            PopulateProjectList(pss);
             SelectCodePlacementMode();
         }
 
-        public void Dispose() {
-            _targetProject = Settings.TargetProject;
-            _tableName = Settings.TableName;
-            _codePlacement = Settings.CodePlacement;
+        public void SaveSettings() {
+            _settingsStorage.SetString(TargetProjectSettingName, Settings.TargetProject);
+            _settingsStorage.SetString(TableNameSettingName, Settings.TableName);
+            _settingsStorage.SetInteger(CodePlacementSettingName, (int)Settings.CodePlacement);
+        }
+
+        private void LoadSettings() {
+            Settings.TargetProject = _settingsStorage.GetString(TargetProjectSettingName, string.Empty);
+            Settings.TableName =_settingsStorage.GetString(TableNameSettingName, SqlSProcPublishSettings.DefaultRCodeTableName);
+            Settings.CodePlacement = (RCodePlacement)_settingsStorage.GetInteger(CodePlacementSettingName, (int)RCodePlacement.Inline);
         }
 
         private void PopulateProjectList(IProjectSystemServices pss) {

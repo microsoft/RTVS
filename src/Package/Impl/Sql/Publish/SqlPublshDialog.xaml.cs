@@ -11,6 +11,7 @@ using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
@@ -23,25 +24,28 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
-        private readonly IEnumerable<string> _selectedFiles;
-        private readonly string _projectFolder;
 
-        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IEnumerable<string> selectedFiles, string projectFolder) :
-            this(coreShell, pss, new FileSystem(), selectedFiles, projectFolder) {
+        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IWritableSettingsStorage settingsStorage, IEnumerable<string> sprocFiles) :
+            this(coreShell, pss, new FileSystem(), settingsStorage, sprocFiles) {
             InitializeComponent();
         }
 
-        internal SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> selectedFiles, string projectFolder) {
+        internal SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IWritableSettingsStorage settingsStorage, IEnumerable<string> sprocFiles) {
             _coreShell = coreShell;
             _pss = pss;
             _fs = fs;
-            _selectedFiles = selectedFiles;
-            _projectFolder = projectFolder;
-            _model = new SqlPublishDialogViewModel(coreShell, pss, fs, selectedFiles, projectFolder);
+            _model = new SqlPublishDialogViewModel(pss, fs, settingsStorage, sprocFiles);
 
             Title = Package.Resources.SqlPublishDialog_Title;
             DataContext = _model;
             CheckCanGenerate();
+        }
+
+        private void Close(bool saveSettings) {
+            if (saveSettings) {
+                _model.SaveSettings();
+            }
+            Close();
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e) {
@@ -51,7 +55,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 Debug.Assert(targetProject != null);
 
                 var generator = new SProcGenerator(_coreShell, _pss, _fs);
-                generator.Generate(_model.Settings, _selectedFiles, targetProject);
+                generator.Generate(_model.Settings, targetProject);
             } catch (Exception ex) {
                 _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);
@@ -59,11 +63,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     throw ex;
                 }
             }
-            this.Close();
+            Close(true);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e) {
-            this.Close();
+            Close(false);
         }
 
         private void TableName_TextChanged(object sender, TextChangedEventArgs e) {

@@ -2,27 +2,34 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.Common.Core.IO;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
     /// Represents persistent settings for the SQL stored procedure publishing dialog.
     /// </summary>
     internal class SqlSProcPublishSettings {
+        public const string DefaultRCodeTableName = "RCodeTable";
+        public const string SProcFileExtension = ".SProc.sql";
+
+        private readonly List<string> _files = new List<string>();
+        private readonly Dictionary<string, string> _sprocNameMap = new Dictionary<string, string>();
+        private readonly IFileSystem _fs;
+
         /// <summary>
         /// List of files
         /// </summary>
-        public IList<string> Files { get; set; } = new List<string>();
+        public IReadOnlyList<string> Files => _files;
 
         /// <summary>
         /// List of stored procedure names
         /// </summary>
-        public IDictionary<string, string> SProcNames => new Dictionary<string, string>();
+        public IReadOnlyDictionary<string, string> SProcNames => _sprocNameMap;
 
         /// <summary>
         /// Target SQL table name
         /// </summary>
-        public string TableName { get; set; }
+        public string TableName { get; set; } = DefaultRCodeTableName;
 
         /// <summary>
         /// Target database project name
@@ -34,15 +41,43 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public RCodePlacement CodePlacement { get; set; } = RCodePlacement.Inline;
 
-        private IReadOnlyCollection<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {
-            var solution = pss.GetSolution();
-            var projects = new List<string>();
-            foreach (EnvDTE.Project project in solution.Projects) {
-                foreach (var prop in project.Properties) {
-                }
-                projects.Add(project.Name);
+        public SqlSProcPublishSettings(IEnumerable<string> files, IFileSystem fs) {
+            _files.AddRange(files);
+            _fs = fs;
+            LoadSProcNames();
+        }
+
+        private void LoadSProcNames() {
+            _sprocNameMap.Clear();
+            foreach (var file in Files) {
+                var sprocName = GetSProcNameFromTemplate(file);
+                _sprocNameMap[file] = sprocName;
             }
-            return projects;
+        }
+
+        private string GetSProcNameFromTemplate(string rFilePath) {
+            var sprocTemplateFile = rFilePath + SProcFileExtension;
+            var content = _fs.ReadAllText(sprocTemplateFile);
+            var str = "CREATE PROCEDURE";
+            var index = content.ToUpperInvariant().IndexOf(str);
+            if (index >= 0) {
+                int i = index + str.Length;
+                for (; i < content.Length; i++) {
+                    if (!char.IsWhiteSpace(content[i])) {
+                        break;
+                    }
+                }
+                int start = i;
+                for (; i < content.Length; i++) {
+                    if (char.IsWhiteSpace(content[i])) {
+                        break;
+                    }
+                }
+                if (i > start) {
+                    return content.Substring(start, i - start);
+                }
+            }
+            return null;
         }
     }
 }

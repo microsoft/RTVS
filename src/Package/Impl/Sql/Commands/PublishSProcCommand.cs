@@ -8,29 +8,60 @@ using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
+using Microsoft.Languages.Core.Settings;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
-using Microsoft.VisualStudio.R.Packages.R;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Utilities;
+using Microsoft.Languages.Editor.Composition;
+using Microsoft.R.Components.ContentTypes;
+#if VS14
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
+using Microsoft.VisualStudio.ProjectSystem.Designers;
+#else
+using Microsoft.VisualStudio.ProjectSystem;
+#endif
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
-    internal sealed class PublishSProcCommand : PackageCommand {
+    [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
+    internal sealed class PublishSProcCommand : ICommandGroupHandler {
         private readonly ICoreShell _coreShell;
         private readonly IProjectSystemServices _pss;
+        private readonly IWritableSettingsStorage _settingsStorage;
 
-        public PublishSProcCommand(ICoreShell coreShell, IProjectSystemServices pss) :
-            base(RGuidList.RCmdSetGuid, RPackageCommandId.icmdPublishSProc) {
+        [ImportingConstructor]
+        public PublishSProcCommand(ICoreShell coreShell, IProjectSystemServices pss, [Import(AllowDefault = true)]IWritableSettingsStorage settingsStorage) {
+            if (settingsStorage == null) {
+                var ctrs = coreShell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
+                settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
+                                        .FindFirstOrderedComponent(coreShell.CompositionService, contentType);
+            }
+
             _coreShell = coreShell;
             _pss = pss;
+            _settingsStorage = settingsStorage;
         }
 
-        protected override void SetStatus() {
-            Visible = Supported = true;
-            Enabled = _pss.GetSelectedProject<IVsHierarchy>() != null;
+        public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
+            if (commandId == RPackageCommandId.icmdPublishSProc) {
+                return new CommandStatusResult(true, commandText, CommandStatus.Enabled | CommandStatus.Supported);
+            }
+            return CommandStatusResult.Unhandled;
         }
 
-        protected override void Handle() {
+        public bool TryHandleCommand(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, long commandExecuteOptions, IntPtr variantArgIn, IntPtr variantArgOut) {
+            if (commandId == RPackageCommandId.icmdPublishSProc) {
+                Handle();
+                return true;
+            }
+            return false;
+        }
+
+        private void Handle() {
             var project = _pss.GetSelectedProject<IVsHierarchy>()?.GetDTEProject();
             if (project != null) {
                 if (SqlPublishDialogViewModel.GetDatabaseProjectsInSolution(_pss).Count > 0) {
@@ -38,9 +69,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     var sqlFiles = new HashSet<string>(_pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".sql")));
                     var sprocFiles = rFiles.Where(x =>
                                 sqlFiles.Contains(x + ".sql", StringComparer.OrdinalIgnoreCase) &&
-                                sqlFiles.Contains(x + ".sproc.sql", StringComparer.OrdinalIgnoreCase));
+                                sqlFiles.Contains(x + SqlSProcPublishSettings.SProcFileExtension, StringComparer.OrdinalIgnoreCase));
                     if (sprocFiles.FirstOrDefault() != null) {
-                        var dlg = new SqlPublshDialog(_coreShell, _pss, sprocFiles, Path.GetDirectoryName(project.FullName));
+                        var dlg = new SqlPublshDialog(_coreShell, _pss, _settingsStorage, sprocFiles);
                         dlg.ShowModal();
                     } else {
                         _coreShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);

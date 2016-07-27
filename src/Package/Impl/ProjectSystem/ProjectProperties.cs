@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package {
     [Export]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal partial class ProjectProperties : StronglyTypedPropertyAccess, IRProjectProperties {
         [ImportingConstructor]
         public ProjectProperties(ConfiguredProject configuredProject)

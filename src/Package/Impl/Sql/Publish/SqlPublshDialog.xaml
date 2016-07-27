@@ -11,7 +11,7 @@
              ShowInTaskbar="False" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" 
              Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
              Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
-            mc:Ignorable="d" Width="424.857" Height="224.286">
+            mc:Ignorable="d" Width="435" Height="225">
     <Grid Margin="12" Background="Transparent">
         <Grid.RowDefinitions>
             <RowDefinition Height="42" />
@@ -45,7 +45,6 @@
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="OKButton_Click" />
         <Button x:Name="CancelButton" Grid.Row="3" Grid.Column="3" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="CancelButton_Click" />
-
     </Grid>
     <ui:DialogWindow.Resources>
         <ResourceDictionary>

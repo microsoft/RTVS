@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE script
+﻿CREATE PROCEDURE _PROCEDURENAME_
 AS
 BEGIN
 EXEC sp_execute_external_script @language = N'R'

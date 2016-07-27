@@ -37,7 +37,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         public void GenerateEmpty() {
             var fs = new FileSystem();
             var g = new SProcGenerator(_coreShell, _pss, fs);
-            g.Generate(new SqlSProcPublishSettings(), new string[] { "sqlcode1.r" }, _project);
+            var settings = new SqlSProcPublishSettings(new string[0], fs);
+            g.Generate(settings, _project);
         }
 
         [CompositeTest]
@@ -45,20 +46,30 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [InlineData("sqlcode1.r", RCodePlacement.Table)]
         public void Generate(string rFile, RCodePlacement codePlacement) {
             var fs = new FileSystem();
-            var settings = new SqlSProcPublishSettings();
-            settings.Files.Add(Path.Combine(_files.DestinationPath, rFile));
+            var settings = new SqlSProcPublishSettings(new string[] { Path.Combine(_files.DestinationPath, rFile) }, fs);
             var g = new SProcGenerator(_coreShell, _pss, fs);
 
+            var targetProjItem = Substitute.For<EnvDTE.ProjectItem>();
+            var targetProjItems = Substitute.For<EnvDTE.ProjectItems>();
+            targetProjItem.ProjectItems.Returns(targetProjItems);
+
+            var rootProjItems = Substitute.For<EnvDTE.ProjectItems>();
+            rootProjItems.AddFolder("R").Returns(targetProjItem);
+            _project.ProjectItems.Returns(rootProjItems);
+
             settings.CodePlacement = codePlacement;
+            g.Generate(settings, _project);
+            _project.ProjectItems.Received().AddFolder("R");
 
-            var targetFolder = _files.DestinationPath;
-            g.Generate(settings, new string[] { rFile }, _project);
-
+            var targetFolder = Path.Combine(_files.DestinationPath, "R\\");
             var rFilePath = Path.Combine(targetFolder, rFile);
-            var rCode = fs.ReadAllText(rFilePath);
-            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", Path.GetFileNameWithoutExtension(settings.Files[0])), ".sql");
+            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, Path.GetFileNameWithoutExtension("_PROCEDURENAME_")), ".sql");
 
-            _project.ProjectItems.Received().AddFromFile(sprocFile);
+            targetProjItem.ProjectItems.Received().AddFromFile(sprocFile);
+            if (codePlacement == RCodePlacement.Table) {
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.PostDeploymentScriptName));
+                targetProjItem.ProjectItems.Received().AddFromFile(Path.Combine(targetFolder, SProcGenerator.CreateRCodeTableScriptName));
+            }
 
             var mode = codePlacement == RCodePlacement.Inline ? "inline" : "table";
             var baseline = fs.ReadAllText(Path.Combine(_files.DestinationPath, Invariant($"{Path.GetFileNameWithoutExtension(rFile)}.{mode}.baseline.sql")));

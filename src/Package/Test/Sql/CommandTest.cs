@@ -19,6 +19,8 @@ using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.Shell.Interop;
 using NSubstitute;
 using static System.FormattableString;
+using Microsoft.Languages.Core.Settings;
+using Microsoft.VisualStudio.R.Package.Commands;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 #elif VS15
@@ -29,6 +31,16 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     [ExcludeFromCodeCoverage]
     [Category.Sql]
     public class CommandTest {
+        private readonly ICoreShell _coreShell;
+        private readonly IProjectSystemServices _pss;
+        private readonly IWritableSettingsStorage _settingsStorage;
+
+        public CommandTest() {
+            _coreShell = Substitute.For<ICoreShell>();
+            _settingsStorage = Substitute.For<IWritableSettingsStorage>();
+            _pss = Substitute.For<IProjectSystemServices>();
+        }
+
         [Test(ThreadType.UI)]
         public void AddDbConnectionCommand() {
             var coll = new ConfigurationSettingCollection();
@@ -89,32 +101,58 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             operations.Received(1).EnqueueExpression(Invariant($"dbConnection3 <- 'DSN'"), true);
         }
 
-        [Test]
+        [Test(ThreadType.UI)]
         public void PublishSProcCommandStatus() {
-            var coreShell = Substitute.For<ICoreShell>();
-            var pss = Substitute.For<IProjectSystemServices>();
-
-            var cmd = new PublishSProcCommand(coreShell, pss);
-            cmd.Enabled.Should().BeFalse();
-
-            pss.GetSelectedProject<IVsHierarchy>().Returns(Substitute.For<IVsHierarchy>());
-            cmd = new PublishSProcCommand(coreShell, pss);
-            cmd.Enabled.Should().BeTrue();
+            var cmd = new PublishSProcCommand(_coreShell, _pss, _settingsStorage);
+            cmd.GetCommandStatus(null, 0, true, null, CommandStatus.NotSupported).Should().Be(CommandStatusResult.Unhandled);
+            cmd.GetCommandStatus(null, RPackageCommandId.icmdPublishSProc, true, null, CommandStatus.NotSupported)
+                .Should().Be(new CommandStatusResult(true, null, CommandStatus.Enabled | CommandStatus.Supported));
+            cmd.TryHandleCommand(null, 0, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeFalse();
         }
 
-        [Test]
-        public void PublishSProcCommandHandle() {
-            var coreShell = Substitute.For<ICoreShell>();
-            var pss = Substitute.For<IProjectSystemServices>();
+        [Test(ThreadType.UI)]
+        public void PublishSProcCommandHandle01() {
+            _pss.GetSelectedProject<IVsHierarchy>().Returns((IVsHierarchy)null);
 
-            var cmd = new PublishSProcCommand(coreShell, pss);
-            cmd.Enabled.Should().BeFalse();
+            _pss.GetProjectFiles(null).ReturnsForAnyArgs(new string[] { "file.r" });
+            var hier = Substitute.For<IVsHierarchy>();
 
-            pss.GetProjectFiles(null).ReturnsForAnyArgs(new string[] { "file.r" });
-            cmd = new PublishSProcCommand(coreShell, pss);
-            cmd.Enabled.Should().BeTrue();
-            cmd.Invoke();
-            coreShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
+            object ext;
+            hier.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out ext).Returns((c) => {
+                c[2] = Substitute.For<EnvDTE.Project>();
+                return VSConstants.S_OK;
+            });
+            _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
+
+            var cmd = new PublishSProcCommand(_coreShell, _pss, _settingsStorage);
+            cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
+            _coreShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
+        }
+
+        [Test(ThreadType.UI)]
+        public void PublishSProcCommandHandle02() {
+            var project = Substitute.For<EnvDTE.Project>();
+            project.FileName.Returns("db.sqlproj");
+
+            _pss.GetProjectFiles(null).ReturnsForAnyArgs(new string[] { "file.r" });
+
+            object ext;
+            var hier = Substitute.For<IVsHierarchy>();
+            hier.GetProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ExtObject, out ext).Returns((c) => {
+                c[2] = project;
+                return VSConstants.S_OK;
+            });
+            _pss.GetSelectedProject<IVsHierarchy>().Returns(hier);
+
+            var sol = Substitute.For<EnvDTE.Solution>();
+            var projects = Substitute.For<EnvDTE.Projects>();
+            projects.GetEnumerator().Returns((new EnvDTE.Project[] { project }).GetEnumerator());
+            sol.Projects.Returns(projects);
+            _pss.GetSolution().Returns(sol);
+
+            var cmd = new PublishSProcCommand(_coreShell, _pss, _settingsStorage);
+            cmd.TryHandleCommand(null, RPackageCommandId.icmdPublishSProc, false, 0, IntPtr.Zero, IntPtr.Zero).Should().BeTrue();
+            _coreShell.Received().ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
         }
     }
 }

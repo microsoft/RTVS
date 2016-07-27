@@ -2,7 +2,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
@@ -46,40 +45,42 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Generates SQL scripts for the deployment of R code into SQL database.
         /// </summary>
-        public void Generate(SqlSProcPublishSettings settings, IEnumerable<string> selectedFiles, EnvDTE.Project targetProject) {
+        public void Generate(SqlSProcPublishSettings settings, EnvDTE.Project targetProject) {
             var targetFolder = Path.Combine(Path.GetDirectoryName(targetProject.FullName), "R\\");
             if (!_fs.DirectoryExists(targetFolder)) {
                 _fs.CreateDirectory(targetFolder);
             }
+
+            var targetProjectItem = targetProject.ProjectItems.AddFolder("R");
+
             if (settings.CodePlacement == RCodePlacement.Table) {
-                CreateRCodeTable(settings, targetProject, targetFolder, settings.TableName);
-                CreatePostDeploymentScript(settings, targetProject, targetFolder);
+                CreateRCodeTable(settings, targetProject, targetFolder, targetProjectItem);
+                CreatePostDeploymentScript(settings, targetProject, targetFolder, targetProjectItem);
             }
-            CreateStoredProcedures(settings, targetProject, targetFolder);
+            CreateStoredProcedures(settings, targetProject, targetFolder, targetProjectItem);
         }
 
         /// <summary>
         /// Create SQL file that defines table template that will hold R code
         /// </summary>
-        private void CreateRCodeTable(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, string codeTableName) {
+        private void CreateRCodeTable(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             var creatTableScriptFile = Path.Combine(targetFolder, CreateRCodeTableScriptName);
             using (var sw = new StreamWriter(creatTableScriptFile)) {
-                sw.WriteLine(Invariant($"CREATE TABLE {codeTableName}"));
+                sw.WriteLine(Invariant($"CREATE TABLE {settings.TableName}"));
                 sw.WriteLine("(");
                 sw.WriteLine(Invariant($"[{SProcColumnName}] NVARCHAR(64),"));
                 sw.WriteLine(Invariant($"[{RCodeColumnName}] NVARCHAR(max)"));
                 sw.WriteLine(")");
             }
-            targetProject.ProjectItems.AddFromFile(creatTableScriptFile);
+            targetProjectItem.ProjectItems.AddFromFile(creatTableScriptFile);
         }
 
         /// <summary>
         /// Generates SQL post deployment script that pushes R code into a table
         /// as well as 
         /// </summary>
-        private void CreatePostDeploymentScript(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder) {
-            var targetProjectFolder = Path.GetDirectoryName(targetProject.FullName);
-            var postDeploymentScript = Path.Combine(targetProjectFolder, PostDeploymentScriptName);
+        private void CreatePostDeploymentScript(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
+            var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 
             using (var sw = new StreamWriter(postDeploymentScript)) {
                 sw.WriteLine(Invariant($"INSERT INTO {settings.TableName}"));
@@ -98,7 +99,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     }
                 }
             }
-            var item = targetProject.ProjectItems.AddFromFile(postDeploymentScript);
+            var item = targetProjectItem.ProjectItems.AddFromFile(postDeploymentScript);
             item.Properties.Item("BuildAction").Value = "PostDeploy";
         }
 
@@ -106,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Replaces procedure name, R Code and the SQL query placeholders with actual values
         /// </summary>
         private string FillSprocTemplate(string filePath, string sprocName, RCodePlacement codePlacement, string codeTableName) {
-            var sprocTemplateFile = filePath + ".SProc.sql";
+            var sprocTemplateFile = filePath + SqlSProcPublishSettings.SProcFileExtension;
             var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
 
             string scriptCode;
@@ -123,7 +124,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
         }
 
-        private void CreateStoredProcedures(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder) {
+        private void CreateStoredProcedures(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             foreach (var filePath in settings.Files) {
                 var sprocName = settings.SProcNames[filePath];
                 if (!string.IsNullOrEmpty(sprocName)) {
@@ -131,43 +132,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     if (!string.IsNullOrEmpty(template)) {
                         var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");
                         _fs.WriteAllText(sprocFile, template);
-                        targetProject.ProjectItems.AddFromFile(sprocFile);
+                        targetProjectItem.ProjectItems.AddFromFile(sprocFile);
                     }
                 }
             }
-        }
-
-        private void GetSProcNames(SqlSProcPublishSettings settings) {
-            settings.SProcNames.Clear();
-            foreach (var file in settings.Files) {
-                var sprocName = GetSProcNameFromTemplate(file);
-                settings.SProcNames[file] = sprocName;
-            }
-        }
-
-        private string GetSProcNameFromTemplate(string rFilePath) {
-            var sprocTemplateFile = rFilePath + ".SProc.sql";
-            var content = _fs.ReadAllText(sprocTemplateFile);
-            var str = "CREATE PROCEDURE";
-            var index = content.ToUpperInvariant().IndexOf(str);
-            if (index >= 0) {
-                int i = index + str.Length;
-                for (; i < content.Length; i++) {
-                    if (!char.IsWhiteSpace(content[i])) {
-                        break;
-                    }
-                }
-                int start = i;
-                for (; i < content.Length; i++) {
-                    if (char.IsWhiteSpace(content[i])) {
-                        break;
-                    }
-                }
-                if (i > start) {
-                    return content.Substring(start, i - start);
-                }
-            }
-            return null;
         }
 
         private string GetRFileContent(string filePath) {

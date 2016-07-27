@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreeModifier))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class ProjectTreeModifier : IProjectTreeModifier {
         public IProjectTree ApplyModifications(IProjectTree tree, IProjectTreeProvider projectTreeProvider) {
             if (tree != null) {

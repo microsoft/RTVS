@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectSourceItemProviderExtension))]
     [Export(typeof(IProjectFolderItemProviderExtension))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class RProjectSourceItemProviderExtension : FileSystemMirroringProjectSourceItemProviderExtensionBase {
         [ImportingConstructor]
         public RProjectSourceItemProviderExtension(UnconfiguredProject unconfiguredProject, ConfiguredProject configuredProject, IProjectLockService projectLockService, IFileSystemMirroringProjectTemporaryItems temporaryItems)
