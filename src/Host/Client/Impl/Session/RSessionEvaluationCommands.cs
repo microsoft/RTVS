@@ -126,19 +126,19 @@ grDevices::deviceIsInteractive('ide')
             return evaluation.EvaluateAsync<JArray>(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToBitmapAsync(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
+        public static Task<byte[]> ExportToBitmapAsync(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = Invariant($"rtvs:::export_to_image({deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
+            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToMetafileAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
+        public static Task<byte[]> ExportToMetafileAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
             string script = Invariant($"rtvs:::export_to_image(win.metafile, {widthInInches}, {heightInInches}, {resolution})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
+            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
         }
 
-        public static Task<REvaluationResult> ExportToPdfAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
+        public static Task<byte[]> ExportToPdfAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
             string script = Invariant($"rtvs:::export_to_pdf({widthInInches}, {heightInInches})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
+            return evaluation.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
         }
 
         public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl) {

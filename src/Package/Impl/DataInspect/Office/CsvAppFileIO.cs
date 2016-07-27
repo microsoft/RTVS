@@ -59,7 +59,7 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
                 await CreateCsvAndStartProcess(result, session, file);
             } catch (Win32Exception ex) {
                 VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
-            } catch (FileNotFoundException ex) {
+            } catch (IOException ex) {
                 VsAppShell.Current.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Resources.Error_CannotOpenCsv, ex.Message));
             } finally {
                 statusBar.SetText(currentStatusText);
@@ -68,19 +68,19 @@ namespace Microsoft.VisualStudio.R.Package.DataInspect.Office {
             Interlocked.Exchange(ref _busy, 0);
         }
 
-        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string file) {
+        private static async Task CreateCsvAndStartProcess(IREvaluationResultInfo result, IRSession session, string fileName) {
             await TaskUtilities.SwitchToBackgroundThread();
 
             var sep = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
             var dec = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
 
             using (var e = await session.BeginEvaluationAsync()) {
-                var csvdata = await e.EvaluateAsync($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.RawResult);
-                csvdata.SaveRawDataToFile(file);
+                var csvData = await e.EvaluateAsync<byte[]>($"rtvs:::export_to_csv({result.Expression}, sep={sep.ToRStringLiteral()}, dec={dec.ToRStringLiteral()})", REvaluationKind.Normal);
+                File.WriteAllBytes(fileName, csvData);
             }
 
-            if (File.Exists(file)) {
-                Process.Start(file);
+            if (File.Exists(fileName)) {
+                Process.Start(fileName);
             }
         }
 
