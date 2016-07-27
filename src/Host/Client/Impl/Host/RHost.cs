@@ -236,12 +236,12 @@ namespace Microsoft.R.Host.Client {
             return await request.Task;
         }
 
-        public Task DestroyBlobAsync(ulong[] ids, CancellationToken cancellationToken) =>
+        public Task DestroyBlobsAsync(IEnumerable<ulong> ids, CancellationToken cancellationToken) =>
             cancellationToken.IsCancellationRequested || _runTask == null || _runTask.IsCompleted
                 ? Task.FromCanceled(new CancellationToken(true))
-                : DestroyBlobAsyncWorker(ids, cancellationToken);
+                : DestroyBlobsAsyncWorker(ids.ToArray(), cancellationToken);
 
-        private async Task DestroyBlobAsyncWorker(ulong[] ids, CancellationToken cancellationToken) {
+        private async Task DestroyBlobsAsyncWorker(ulong[] ids, CancellationToken cancellationToken) {
             await TaskUtilities.SwitchToBackgroundThread();
             await NotifyAsync("!DestroyBlob", cancellationToken, ids.Select(x => (object)x));
         }

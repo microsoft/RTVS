@@ -86,7 +86,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 blob.Should().Equal(dataSet[i]);
             }
 
-            await _session.DestroyBlobAsync(blobIds);
+            await _session.DestroyBlobsAsync(blobIds);
         }
 
         [Test]
@@ -98,7 +98,7 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             var res = await _session.GetBlobAsync(blobId);
             res.Should().Equal(new byte[0]);
 
-            await _session.DestroyBlobAsync(new[] { blobId });
+            await _session.DestroyBlobsAsync(new[] { blobId });
         }
 
         [Test]

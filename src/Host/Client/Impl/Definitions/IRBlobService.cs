@@ -9,6 +9,6 @@ namespace Microsoft.R.Host.Client {
     public interface IRBlobService {
         Task<ulong> CreateBlobAsync(byte[] data, CancellationToken cancellationToken = default(CancellationToken));
         Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken cancellationToken = default(CancellationToken));
-        Task DestroyBlobAsync(ulong[] blobIds, CancellationToken cancellationToken = default(CancellationToken));
+        Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken cancellationToken = default(CancellationToken));
     }
 }

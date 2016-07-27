@@ -76,7 +76,7 @@ namespace Microsoft.R.Host.Client {
             var sb = new StringBuilder();
 
             if (RawResult != null) {
-                sb.Append("<raw>");
+                sb.AppendFormat("<raw ({0} bytes)>", RawResult.Length);
             } else if (Result != null) {
                 sb.Append(Result);
             }

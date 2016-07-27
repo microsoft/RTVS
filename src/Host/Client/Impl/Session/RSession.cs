@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -181,15 +182,18 @@ namespace Microsoft.R.Host.Client.Session {
             }
         }
 
-        public async Task DestroyBlobAsync(ulong[] blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 await CanceledDestoryBlobTask;
             }
 
+            // Get a snapshot before yielding in case this is a lazy enumerable.
+            blobIds = blobIds.ToArray(); 
+
             await _afterHostStartedTask;
 
             try {
-                await _host.DestroyBlobAsync(blobIds, ct);
+                await _host.DestroyBlobsAsync(blobIds, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
                 await CanceledDestoryBlobTask;
             }

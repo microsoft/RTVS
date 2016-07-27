@@ -30,7 +30,7 @@ namespace Microsoft.R.Host.Client.Test.Mocks {
             return Task.FromResult(new byte[0]);
         }
 
-        public Task DestroyBlobAsync(ulong[] blobIds, CancellationToken ct = default(CancellationToken)) {
+        public Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
             return Task.CompletedTask;
         }
 

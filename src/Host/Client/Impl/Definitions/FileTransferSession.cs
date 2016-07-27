@@ -53,7 +53,7 @@ namespace Microsoft.R.Host.Client {
         }
 
         public void Dispose() {
-            _session.DestroyBlobAsync(_cleanup.Select(b => b.Id).ToArray()).DoNotWait();
+            _session.DestroyBlobsAsync(_cleanup.Select(b => b.Id).ToArray()).DoNotWait();
         }
     }
 }
