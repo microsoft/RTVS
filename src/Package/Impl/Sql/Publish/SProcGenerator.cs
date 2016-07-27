@@ -51,7 +51,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 _fs.CreateDirectory(targetFolder);
             }
 
-            var targetProjectItem = targetProject.ProjectItems.AddFolder("R");
+            var targetProjectItem = targetProject.ProjectItems.Item("R") ?? targetProject.ProjectItems.AddFolder("R");
 
             if (settings.CodePlacement == RCodePlacement.Table) {
                 CreateRCodeTable(settings, targetProject, targetFolder, targetProjectItem);
