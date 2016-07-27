@@ -59,9 +59,20 @@ namespace Microsoft.R.Host.Client {
             evaluator.EvaluateAsync(Invariant(expression), kind, cancellationToken);
 
         /// <summary>
-        /// Like <see cref="IRExpressionEvaluator.EvaluateAsync"/>, but after obtaining the result, deserializes it using
-        /// <see cref="JToken.ToObject{T}"/>. If evaluation fails, returned task will be <see cref="TaskStatus.Faulted"/>
-        /// with <see cref="REvaluationException"/>.
+        /// <para>
+        /// Like <see cref="IRExpressionEvaluator.EvaluateAsync"/>, but after obtaining the result, deserializes it. 
+        /// </para>
+        /// <para>
+        /// If <typeparamref name="T"/> is an array of bytes, <see cref="REvaluationKind.RawResult"/> is implicitly added to <paramref name="kind"/>,
+        /// and <see cref="REvaluationResult.RawResult"/> produced by the evaluation is returned as is.
+        /// </para>
+        /// <para>
+        /// If <typeparamref name="T"/> is any other type, <see cref="JToken.ToObject{T}"/> is used to convert <see cref="REvaluationResult.Result"/>
+        /// to <typeparamref name="T"/>.
+        /// </para>
+        /// <para>
+        /// If evaluation fails, returned task will be <see cref="TaskStatus.Faulted"/> with <see cref="REvaluationException"/>.
+        /// </para>
         /// </summary>
         /// <returns>
         /// A task that represents evaluation. If evaluation is completed successfully, <see cref="Task.Result"/> will return
@@ -72,10 +83,21 @@ namespace Microsoft.R.Host.Client {
         /// <see cref="REvaluationResult.Error"/> was not <see langword="null"/>, task will be <see cref="TaskStatus.Faulted"/> with <see cref="REvaluationException"/>.
         /// </returns>
         public static async Task<T> EvaluateAsync<T>(this IRExpressionEvaluator evaluator, string expression, REvaluationKind kind, CancellationToken cancellationToken = default(CancellationToken)) {
+            bool isRaw = typeof(T) == typeof(byte[]);
+            if (isRaw) {
+                kind |= REvaluationKind.RawResult;
+            }
+
             var res = await evaluator.EvaluateAsync(expression, kind, cancellationToken);
             ThrowOnError(expression, res);
-            Trace.Assert(res.Result != null);
-            return res.Result.ToObject<T>();
+
+            if (isRaw) {
+                Trace.Assert(res.RawResult != null);
+                return (T)(object)res.RawResult;
+            } else {
+                Trace.Assert(res.Result != null);
+                return res.Result.ToObject<T>();
+            }
         }
 
         /// <summary>

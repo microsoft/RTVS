@@ -577,8 +577,8 @@ dev.off()
 
         private async Task ExportToImageAsync(IRSession session, string format, string filePath, int widthInPixels,int heightInPixels, int resolution) {
             string script = String.Format("rtvs:::export_to_image({0}, {1}, {2}, {3})",format, widthInPixels, heightInPixels, resolution);
-            var result = await session.EvaluateAsync(script, REvaluationKind.RawResult);
-            result.SaveRawDataToFile(filePath);
+            var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
+            File.WriteAllBytes(filePath, data);
         }
 
         private async Task<IEnumerable<string>> ExportToImageAsync(string[] inputs, string[] format, string[] paths, int widthInPixels, int heightInPixels, int resolution) {
@@ -626,8 +626,8 @@ dev.off()
                 }
 
                 string script = String.Format("rtvs:::export_to_pdf({0}, {1})", width, height);
-                var result = await session.EvaluateAsync(script, REvaluationKind.RawResult);
-                result.SaveRawDataToFile(filePath);
+                var data = await session.EvaluateAsync<byte[]>(script, REvaluationKind.Normal);
+                File.WriteAllBytes(filePath, data);
 
                 await session.StopHostAsync();
             }

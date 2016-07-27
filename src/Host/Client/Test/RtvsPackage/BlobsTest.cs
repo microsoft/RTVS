@@ -45,10 +45,14 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
         [Category.R.RtvsPackage]
         [InlineData(new byte[] { 0, 1, 2, 3, 4 })]
         public async Task RawResult(byte[] data) {
-            var res = await _session.EvaluateAsync($"as.raw(c({string.Join(", ", data)}))", REvaluationKind.RawResult);
+            string expr = $"as.raw(c({string.Join(", ", data)}))";
+            var res = await _session.EvaluateAsync(expr, REvaluationKind.RawResult);
 
             res.Result.Should().BeNull();
             res.RawResult.Should().Equal(data);
+
+            var bytes = await _session.EvaluateAsync<byte[]>(expr, REvaluationKind.Normal);
+            bytes.Should().Equal(data);
         }
 
         [Test]
@@ -58,6 +62,9 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 var res = await eval.EvaluateAsync("NULL", REvaluationKind.RawResult);
                 res.Result.Should().BeNull();
                 res.RawResult.Should().Equal(new byte[0]);
+
+                var bytes = await _session.EvaluateAsync<byte[]>("NULL", REvaluationKind.Normal);
+                bytes.Should().Equal(new byte[0]);
             }
         }
 
@@ -108,10 +115,10 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
                 createResult.Result.Should().NotBeNull();
 
                 var blobId = ((JValue)createResult.Result).Value<ulong>();
-                var getResult = await eval.EvaluateAsync($"rtvs:::get_blob({blobId})", REvaluationKind.RawResult);
+                var actualData = await eval.EvaluateAsync<byte[]>($"rtvs:::get_blob({blobId})", REvaluationKind.Normal);
 
                 byte[] expectedData = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                getResult.RawResult.Should().Equal(expectedData);
+                actualData.Should().Equal(expectedData);
                 
                 await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
             }
