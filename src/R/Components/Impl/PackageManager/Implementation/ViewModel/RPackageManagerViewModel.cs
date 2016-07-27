@@ -188,7 +188,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (!package.IsLoaded) {
                 try {
                     var libPath = package.LibraryPath.ToRPath();
-                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                    var packageLockState = await _packageManager.GetPackageLockState(package.Name, libPath);
                     if (packageLockState == PackageLockState.Unlocked) {
                         await _packageManager.UninstallPackageAsync(package.Name, libPath);
                         await _packageManager.InstallPackageAsync(package.Name, libPath);
@@ -242,7 +242,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation.ViewModel {
             if (!package.IsLoaded) {
                 try {
                     var libPath = package.LibraryPath.ToRPath();
-                    var packageLockState = _packageManager.GetPackageLockState(package.Name, libPath);
+                    var packageLockState = await _packageManager.GetPackageLockState(package.Name, libPath);
                     if (packageLockState == PackageLockState.Unlocked) {
                         await _packageManager.UninstallPackageAsync(package.Name, libPath);
                     } else {

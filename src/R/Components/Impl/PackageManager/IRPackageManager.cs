@@ -105,6 +105,6 @@ namespace Microsoft.R.Components.PackageManager {
         /// <param name="name">Package name.</param>
         /// <param name="libraryPath">Library path (in any format).</param>
         /// <returns>Lock state.</returns>
-        PackageLockState GetPackageLockState(string name, string libraryPath);
+        Task<PackageLockState> GetPackageLockState(string name, string libraryPath);
     }
 }

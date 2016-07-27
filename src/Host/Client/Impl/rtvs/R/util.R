@@ -198,3 +198,24 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
     rmarkdown::render(rmdpath, output_format = output_format, output_file = output_filepath,  output_dir = tempdir(), encoding = encoding);
     readBin(output_filepath, 'raw', file.info(output_filepath)$size);
 }
+
+package_lock_state <- function(package_name, package_lib) {
+    file_path_i386 <- paste0(package_lib, '/', package_name, '/libs/i386/', package_name, '.dll');
+    file_path_x64 <- paste0(package_lib, '/', package_name, '/libs/x64/', package_name, '.dll');
+    
+    lock_state <- if (file.exists(file_path_x64)) {
+        call_embedded('get_package_lock_state', file_path_x64);
+    } else {
+        'unlocked'
+    }
+
+    if (identical(lock_state, 'unlocked')) {
+        lock_state <- if (file.exists(file_path_i386)) {
+        call_embedded('get_package_lock_state', file_path_i386);
+        } else {
+            'unlocked'
+        }
+    }
+
+    lock_state
+}

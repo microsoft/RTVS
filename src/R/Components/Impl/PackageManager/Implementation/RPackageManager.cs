@@ -144,21 +144,15 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public PackageLockState GetPackageLockState(string name, string libraryPath) {
-            string dllPath = GetPackageDllPath(name, libraryPath);
-            if (!string.IsNullOrEmpty(dllPath)) {
-                var processes = RestartManager.GetProcessesUsingFiles(new string[] { dllPath }).ToArray();
-                if (processes != null) {
-                    if (processes.Length == 1 && processes[0].Id == _interactiveWorkflow.RSession.ProcessId) {
-                        return PackageLockState.LockedByRSession;
-                    }
+        public  async Task<PackageLockState> GetPackageLockState(string name, string libraryPath) {
+            var pkgStateresult =  await _interactiveWorkflow.RSession.EvaluateAsync($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
 
-                    if (processes.Length > 0) {
-                        return PackageLockState.LockedByOther;
-                    }
-                }
+            string pkgState = pkgStateresult.Result.Value<string>();
+            if (pkgState == "locked_by_r") {
+                return PackageLockState.LockedByRSession;
+            } else if (pkgState == "locked_by_other") {
+                return PackageLockState.LockedByOther;
             }
-
             return PackageLockState.Unlocked;
         }
 
