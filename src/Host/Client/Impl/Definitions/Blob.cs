@@ -3,15 +3,15 @@
 
 namespace Microsoft.R.Host.Client {
     public class Blob : IRBlob {
-        private readonly long _id;
+        private readonly ulong _id;
         private readonly byte[] _data;
         
-        public Blob(long id, byte[] data) {
+        public Blob(ulong id, byte[] data) {
             _id = id;
             _data = data;
         }
 
         public byte[] Data => _data;
-        public long Id => _id;
+        public ulong Id => _id;
     }
 }

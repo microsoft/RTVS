@@ -128,17 +128,17 @@ grDevices::deviceIsInteractive('ide')
 
         public static Task<REvaluationResult> ExportToBitmapAsync(this IRExpressionEvaluator evaluation, string deviceName, string outputFilePath, int widthInPixels, int heightInPixels, int resolution) {
             string script = Invariant($"rtvs:::export_to_image({deviceName}, {widthInPixels}, {heightInPixels}, {resolution})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.Raw);
+            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
         }
 
         public static Task<REvaluationResult> ExportToMetafileAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches, int resolution) {
             string script = Invariant($"rtvs:::export_to_image(win.metafile, {widthInInches}, {heightInInches}, {resolution})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.Raw);
+            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
         }
 
         public static Task<REvaluationResult> ExportToPdfAsync(this IRExpressionEvaluator evaluation, string outputFilePath, double widthInInches, double heightInInches) {
             string script = Invariant($"rtvs:::export_to_pdf({widthInInches}, {heightInInches})");
-            return evaluation.EvaluateAsync(script, REvaluationKind.Raw);
+            return evaluation.EvaluateAsync(script, REvaluationKind.RawResult);
         }
 
         public static async Task SetVsCranSelectionAsync(this IRExpressionEvaluator evaluation, string mirrorUrl) {

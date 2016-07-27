@@ -82,7 +82,7 @@ namespace Microsoft.R.RtvsPackage.Test {
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
                 res.Error.Should().BeNullOrEmpty();
                 res.Result.Should().NotBeNull();
-                res.Raw.Should().BeNull();
+                res.RawResult.Should().BeNull();
                 var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
             }
@@ -104,7 +104,7 @@ namespace Microsoft.R.RtvsPackage.Test {
                 var res = await eval.EvaluateAsync(expr, REvaluationKind.Normal);
                 res.Error.Should().BeNullOrEmpty();
                 res.Result.Should().NotBeNull();
-                res.Raw.Should().BeNull();
+                res.RawResult.Should().BeNull();
                 var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
                 actualJson.Should().Be(json);
             }
@@ -128,7 +128,7 @@ namespace Microsoft.R.RtvsPackage.Test {
             using (var eval = await _session.BeginEvaluationAsync()) {
                 var res = await eval.EvaluateAsync($"rtvs::toJSON({expr})", REvaluationKind.Normal);
                 res.Error.Should().NotBeNullOrEmpty();
-                res.Raw.Should().BeNull();
+                res.RawResult.Should().BeNull();
             }
         }
     }

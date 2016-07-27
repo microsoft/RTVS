@@ -43,39 +43,34 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
 
         [CompositeTest]
         [Category.R.RtvsPackage]
-        [InlineData("charToRaw('0123456789')", "null", new int[] { 10 })]
-        public async Task RawTest(string expr, string json, int[] sizes) {
-            using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Raw);
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-                res.Raw.Should().NotBeNull();
-                res.Raw.Should().Equal(sizes, (a, e) => a.Length == e);
-            }
+        [InlineData(new byte[] { 0, 1, 2, 3, 4 })]
+        public async Task RawResult(byte[] data) {
+            var res = await _session.EvaluateAsync($"as.raw(c({string.Join(", ", data)}))", REvaluationKind.RawResult);
+
+            res.Result.Should().BeNull();
+            res.RawResult.Should().Equal(data);
         }
 
-        [CompositeTest]
+        [Test]
         [Category.R.RtvsPackage]
-        [InlineData("NULL", "null")]
-        public async Task NullTest(string expr, string json) {
+        public async Task RawResultNull() {
             using (var eval = await _session.BeginEvaluationAsync()) {
-                var res = await eval.EvaluateAsync(expr, REvaluationKind.Raw);
-                var actualJson = JsonConvert.SerializeObject(res.Result).ToUnicodeQuotes();
-                actualJson.Should().Be(json);
-                res.Raw.Should().BeNull();
+                var res = await eval.EvaluateAsync("NULL", REvaluationKind.RawResult);
+                res.Result.Should().BeNull();
+                res.RawResult.Should().Equal(new byte[0]);
             }
         }
 
         [Test]
-        public async Task CreateGetDestroyBlobsTest() {
+        public async Task CreateGetDestroyBlobs() {
             byte[] data1 = new byte[] { 0, 1, 2, 3, 4, 5 };
             byte[] data2 = new byte[] { 10, 11, 12, 13, 14, 15 };
             byte[] data3 = new byte[] { 20, 21, 22, 23, 24, 25 };
             var dataSet = new byte[][] { data1, data2, data3 };
 
-            var blob1 = await _session.SendBlobAsync(data1);
-            var blob2 = await _session.SendBlobAsync(data2);
-            var blob3 = await _session.SendBlobAsync(data3);
+            var blob1 = await _session.CreateBlobAsync(data1);
+            var blob2 = await _session.CreateBlobAsync(data2);
+            var blob3 = await _session.CreateBlobAsync(data3);
 
             blob1.Should().BeGreaterThan(0);
             blob2.Should().BeGreaterThan(0);
@@ -84,60 +79,41 @@ namespace Microsoft.R.Host.Client.Test.RtvsPackage {
             blob1.Should().NotBe(blob2);
             blob2.Should().NotBe(blob3);
             blob3.Should().NotBe(blob1);
-            var blobIds = new long[] { blob1, blob2, blob3 };
+            var blobIds = new ulong[] { blob1, blob2, blob3 };
 
-            var res = await _session.GetBlobAsync(blobIds);
-            res.Count.Should().Be(3);
-
-            for(int i = 0; i < res.Count; ++i) {
-                IRBlob blob = res[i];
-                blob.Id.Should().Be(blobIds[i]);
-                blob.Data.ShouldAllBeEquivalentTo(dataSet[i]);
+            for (int i = 0; i < blobIds.Length; ++i) {
+                var blob = await _session.GetBlobAsync(blobIds[i]);
+                blob.Should().Equal(dataSet[i]);
             }
 
-            await _session.DestroyBlobAsync(blobIds);
+            await _session.DestroyBlobsAsync(blobIds);
         }
 
         [Test]
-        public async Task BadSendBlobsRequest() {
+        public async Task ZeroSizedBlob() {
             byte[] data = new byte[] { };
-            var blobId = await _session.SendBlobAsync(data);
+            var blobId = await _session.CreateBlobAsync(data);
             blobId.Should().BeGreaterThan(0);
 
-            var blobIds = new long[] { blobId };
+            var res = await _session.GetBlobAsync(blobId);
+            res.Should().Equal(new byte[0]);
 
-            var res = await _session.GetBlobAsync(blobIds);
-            res.Count.Should().Be(0);
-            await _session.DestroyBlobAsync(blobIds);
+            await _session.DestroyBlobsAsync(new[] { blobId });
         }
 
         [Test]
-        public async Task BadGetBlobsRequest() {
-            byte[] data = new byte[] { 0, 1, 2, 3, 4, 5 };
-            var blobId = await _session.SendBlobAsync(data);
-            blobId.Should().BeGreaterThan(0);
-
-            var res = await _session.GetBlobAsync(new long[] { blobId + 1 });
-            res.Count.Should().Be(0);
-            await _session.DestroyBlobAsync(new long[] { blobId });
-        }
-
-        [Test]
-        public async Task RCreateGetDestroyBlobsTest() {
+        public async Task RCreateGetDestroyBlobs() {
             using (var eval = await _session.BeginEvaluationAsync()) {
                 var createResult = await eval.EvaluateAsync("rtvs:::create_blob(as.raw(1:10))", REvaluationKind.Normal);
                 createResult.Result.Should().NotBeNull();
-                long blobId = ((JValue)createResult.Result).Value<long>();
-                var getResult = await eval.EvaluateAsync($"rtvs:::get_blob({blobId})", REvaluationKind.Raw);
 
-                byte[] expectedData = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-                getResult.Raw.Count.Should().Be(1);
-                getResult.Raw[0].Length.Should().Be(expectedData.Length);
-                getResult.Raw[0].ShouldAllBeEquivalentTo(expectedData);
+                var blobId = ((JValue)createResult.Result).Value<ulong>();
+                var getResult = await eval.EvaluateAsync($"rtvs:::get_blob({blobId})", REvaluationKind.RawResult);
+
+                byte[] expectedData = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+                getResult.RawResult.Should().Equal(expectedData);
                 
-                var destroyResult = await eval.EvaluateAsync($"rtvs:::destroy_blob({blobId})", REvaluationKind.NoResult);
-                destroyResult.Result.Should().BeNull();
-                destroyResult.Raw.Should().BeNull();
+                await eval.ExecuteAsync($"rtvs:::destroy_blob({blobId})");
             }
         }
     }
