@@ -3,6 +3,6 @@
 
 namespace Microsoft.R.Host.Client {
     public interface IRBlobInfo {
-        long Id { get; }
+        ulong Id { get; }
     }
 }

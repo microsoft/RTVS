@@ -1,16 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Common.Core;
 using Microsoft.R.Host.Client;
 using Newtonsoft.Json.Linq;
-using static System.FormattableString;
+using static Microsoft.R.Host.Client.REvaluationResult;
 
 namespace Microsoft.R.DataInspection {
     internal abstract class REvaluationResultInfo : IREvaluationResultInfo {
@@ -30,19 +23,19 @@ namespace Microsoft.R.DataInspection {
         }
 
         internal static REvaluationResultInfo Parse(IRSession session, string environmentExpression, string name, JObject json) {
-            var expression = json.Value<string>("expression");
+            var expression = json.Value<string>(FieldNames.Expression);
 
-            var errorText = json.Value<string>("error");
+            var errorText = json.Value<string>(FieldNames.Error);
             if (errorText != null) {
                 return new RErrorInfo(session, environmentExpression, expression, name, errorText);
             }
 
-            var code = json.Value<string>("promise");
+            var code = json.Value<string>(FieldNames.Promise);
             if (code != null) {
                 return new RPromiseInfo(session, environmentExpression, expression, name, code);
             }
 
-            var isActiveBinding = json.Value<bool?>("active_binding");
+            var isActiveBinding = json.Value<bool?>(FieldNames.ActiveBinding);
             if (isActiveBinding == true) {
                 return new RActiveBindingInfo(session, environmentExpression, expression, name, json);
             }

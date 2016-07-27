@@ -8,6 +8,7 @@ using Microsoft.R.DataInspection;
 using Microsoft.R.StackTracing;
 using static System.FormattableString;
 using static Microsoft.R.DataInspection.REvaluationResultProperties;
+using static Microsoft.R.Host.Client.REvaluationResult;
 
 namespace Microsoft.R.DataInspection {
     /// <summary>
@@ -41,23 +42,26 @@ namespace Microsoft.R.DataInspection {
         FlagsProperty = 1 << 10,
         /// <seealso cref="IRActiveBindingInfo.ComputedValue"/>
         ComputedValueProperty = 1 << 11,
+        /// <seealso cref="IRValueInfo.CanCoerceToDataFrame"/>
+        CanCoerceToDataFrameProperty = 1 << 12,
         /// <seealso cref="IRValueInfo.HasChildren"/>
         HasChildrenProperty = ExpressionProperty | LengthProperty | AttributeCountProperty | SlotCountProperty | NameCountProperty | FlagsProperty,
     }
 
     internal static class REvaluationResultPropertiesExtensions {
         private static readonly Dictionary<REvaluationResultProperties, string> _mapping = new Dictionary<REvaluationResultProperties, string> {
-            [ExpressionProperty] = "expression",
-            [AccessorKindProperty] = "kind",
-            [TypeNameProperty] = "type",
-            [ClassesProperty] = "classes",
-            [LengthProperty] = "length",
-            [SlotCountProperty] = "slot_count",
-            [AttributeCountProperty] = "attr_count",
-            [NameCountProperty] = "name_count",
-            [DimProperty] = "dim",
-            [FlagsProperty] = "flags",
-            [ComputedValueProperty] = "computed_value",
+            [ExpressionProperty] = FieldNames.Expression,
+            [AccessorKindProperty] = FieldNames.AccessorKind,
+            [TypeNameProperty] = FieldNames.Type,
+            [ClassesProperty] = FieldNames.Classes,
+            [LengthProperty] = FieldNames.Length,
+            [SlotCountProperty] = FieldNames.SlotCount,
+            [AttributeCountProperty] = FieldNames.AttributeCount,
+            [NameCountProperty] = FieldNames.NameCount,
+            [DimProperty] = FieldNames.Dim,
+            [FlagsProperty] = FieldNames.Flags,
+            [ComputedValueProperty] = FieldNames.ComputedValue,
+            [CanCoerceToDataFrameProperty] = FieldNames.CanCoerceToDataFrame,
         };
 
         public static string ToRVector(this REvaluationResultProperties properties) {

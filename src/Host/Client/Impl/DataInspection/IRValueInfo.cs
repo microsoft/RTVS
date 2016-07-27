@@ -75,6 +75,12 @@ namespace Microsoft.R.DataInspection {
         /// otherwise <see langword="false"/>.
         /// </summary>
         bool HasChildren { get; }
+
+        /// <summary>
+        /// <see langword="true"/> if <see cref="REvaluationResultProperties.ExpressionProperty"/> can be coerced to 
+        /// a data frame, <see langword="false"/> otherwise.
+        /// </summary>
+        bool CanCoerceToDataFrame { get; }
     }
 
     public static class RValueInfoExtensions {

@@ -10,10 +10,9 @@ using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace Microsoft.R.Host.Client {
-    public class WebSocketMessageTransport : WebSocketBehavior, IMessageTransport {
+    internal class WebSocketMessageTransport : WebSocketBehavior, IMessageTransport {
         private readonly WebSocket _socket;
-        private readonly BufferBlock<Task<string>> _incomingMessages = new BufferBlock<Task<string>>();
-        private readonly BufferBlock<Task<byte[]>> _incomingRawMessages = new BufferBlock<Task<byte[]>>();
+        private readonly BufferBlock<Task<Message>> _incomingMessages = new BufferBlock<Task<Message>>();
         private readonly SemaphoreSlim _sendLock = new SemaphoreSlim(1, 1);
 
         private WebSocket Socket => _socket ?? Context.WebSocket;
@@ -32,19 +31,16 @@ namespace Microsoft.R.Host.Client {
             _socket.OnClose += (sender, args) => OnClose(args);
         }
 
-        public async Task<string> ReceiveAsync(CancellationToken ct = default(CancellationToken)) {
+        public async Task<Message> ReceiveAsync(CancellationToken ct = default(CancellationToken)) {
             return await await _incomingMessages.ReceiveAsync(ct);
         }
 
-        public async Task<byte[]> ReceiveRawAsync(CancellationToken ct = default(CancellationToken)) {
-            return await await _incomingRawMessages.ReceiveAsync(ct);
-        }
-
-        public async Task SendAsync(string message, CancellationToken ct = default(CancellationToken)) {
+        public async Task SendAsync(Message message, CancellationToken ct = default(CancellationToken)) {
+            var data = message.ToBytes();
             await _sendLock.WaitAsync(ct);
             try {
                 var tcs = new TaskCompletionSource<object>();
-                Socket.SendAsync(message, ok => {
+                Socket.SendAsync(data, ok => {
                     if (ok) {
                         tcs.SetResult(null);
                     } else {
@@ -61,20 +57,6 @@ namespace Microsoft.R.Host.Client {
             }
         }
 
-        public async Task SendAsync(string message, byte[] data, CancellationToken ct = default(CancellationToken)) {
-            await _sendLock.WaitAsync(ct);
-            try {
-                Socket.Send(message);
-                Socket.Send(data);
-            } catch (SocketException ex) {
-                throw new MessageTransportException(ex);
-            } catch (WebSocketException ex) {
-                throw new MessageTransportException(ex);
-            } finally {
-                _sendLock.Release();
-            }
-        }
-
         protected override void OnOpen() {
             base.OnOpen();
             Open?.Invoke(this, EventArgs.Empty);
@@ -82,18 +64,13 @@ namespace Microsoft.R.Host.Client {
 
         protected override void OnClose(CloseEventArgs e) {
             base.OnClose(e);
-            _incomingMessages.Post(Task.FromException<string>(new OperationCanceledException("Connection closed by host.")));
+            _incomingMessages.Post(Task.FromException<Message>(new OperationCanceledException("Connection closed by host.")));
             Close?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnMessage(MessageEventArgs e) {
             base.OnMessage(e);
-
-            if (e.Type == Opcode.Binary) {
-                _incomingRawMessages.Post(Task.FromResult(e.RawData));
-            } else {
-                _incomingMessages.Post(Task.FromResult(e.Data));
-            }
+            _incomingMessages.Post(Task.FromResult(new Message(e.RawData)));
         }
 
         protected override void OnError(ErrorEventArgs e) {
@@ -106,7 +83,7 @@ namespace Microsoft.R.Host.Client {
                 ex = new MessageTransportException(ex);
             } 
 
-            _incomingMessages.Post(Task.FromException<string>(ex));
+            _incomingMessages.Post(Task.FromException<Message>(ex));
         }
     }
 }

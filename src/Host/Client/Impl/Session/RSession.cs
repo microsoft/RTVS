@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,8 +25,8 @@ namespace Microsoft.R.Host.Client.Session {
         private readonly static string DefaultPrompt = "> ";
         private readonly static Task<IRSessionEvaluation> CanceledBeginEvaluationTask;
         private readonly static Task<IRSessionInteraction> CanceledBeginInteractionTask;
-        private readonly static Task<long> CanceledSendBlobTask;
-        private readonly static Task<IReadOnlyList<IRBlob>> CanceledGetBlobTask;
+        private readonly static Task<ulong> CanceledSendBlobTask;
+        private readonly static Task<byte[]> CanceledGetBlobTask;
         private readonly static Task CanceledDestoryBlobTask;
 
         private readonly BufferBlock<RSessionRequestSource> _pendingRequestSources = new BufferBlock<RSessionRequestSource>();
@@ -73,8 +74,8 @@ namespace Microsoft.R.Host.Client.Session {
         static RSession() {
             CanceledBeginEvaluationTask = TaskUtilities.CreateCanceled<IRSessionEvaluation>(new RHostDisconnectedException());
             CanceledBeginInteractionTask = TaskUtilities.CreateCanceled<IRSessionInteraction>(new RHostDisconnectedException());
-            CanceledSendBlobTask = TaskUtilities.CreateCanceled<long>(new RHostDisconnectedException());
-            CanceledGetBlobTask = TaskUtilities.CreateCanceled<IReadOnlyList<IRBlob>>(new RHostDisconnectedException());
+            CanceledSendBlobTask = TaskUtilities.CreateCanceled<ulong>(new RHostDisconnectedException());
+            CanceledGetBlobTask = TaskUtilities.CreateCanceled<byte[]>(new RHostDisconnectedException());
             CanceledDestoryBlobTask = TaskUtilities.CreateCanceled(new RHostDisconnectedException());
         }
 
@@ -153,7 +154,7 @@ namespace Microsoft.R.Host.Client.Session {
         }
 
 
-        public async Task<long> SendBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
+        public async Task<ulong> CreateBlobAsync(byte[] data, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledSendBlobTask;
             }
@@ -161,13 +162,13 @@ namespace Microsoft.R.Host.Client.Session {
             await _afterHostStartedTask;
 
             try {
-                return await _host.SendBlobAsync(data, ct);
+                return await _host.CreateBlobAsync(data, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
                 return await CanceledSendBlobTask;
             }
         }
 
-        public async Task<IReadOnlyList<IRBlob>> GetBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task<byte[]> GetBlobAsync(ulong blobId, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 return await CanceledGetBlobTask;
             }
@@ -175,21 +176,24 @@ namespace Microsoft.R.Host.Client.Session {
             await _afterHostStartedTask;
 
             try {
-                return await _host.GetBlobAsync(blobIds, ct);
+                return await _host.GetBlobAsync(blobId, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
                 return await CanceledGetBlobTask;
             }
         }
 
-        public async Task DestroyBlobAsync(IEnumerable<long> blobIds, CancellationToken ct = default(CancellationToken)) {
+        public async Task DestroyBlobsAsync(IEnumerable<ulong> blobIds, CancellationToken ct = default(CancellationToken)) {
             if (!IsHostRunning) {
                 await CanceledDestoryBlobTask;
             }
 
+            // Get a snapshot before yielding in case this is a lazy enumerable.
+            blobIds = blobIds.ToArray(); 
+
             await _afterHostStartedTask;
 
             try {
-                await _host.DestroyBlobAsync(blobIds, ct);
+                await _host.DestroyBlobsAsync(blobIds, ct);
             } catch (MessageTransportException) when (!IsHostRunning) {
                 await CanceledDestoryBlobTask;
             }
