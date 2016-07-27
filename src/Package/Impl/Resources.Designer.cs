@@ -2001,15 +2001,6 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to R script can be placed in a separate table and referenced in the stored procedure by name or placed inline directly inside the @script attribute value in the SQL stored procedure.{0}By default stored procedure names are derived from the respective R script file name. However, you can edit names in the grid and enter any suitable values..
-        /// </summary>
-        public static string SqlPublishDialog_Help {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_Help", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code..
         /// </summary>
         public static string SqlPublishDialog_NoDbProject {
@@ -2069,15 +2060,6 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_TargetProject {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_TargetProject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to find placeholders for procedure name, R code or for the input query. Please check stored procedure template file syntax in {0}..
-        /// </summary>
-        public static string SqlPublishDialog_TemplateDamaged {
-            get {
-                return ResourceManager.GetString("SqlPublishDialog_TemplateDamaged", resourceCulture);
             }
         }
         

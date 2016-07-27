@@ -13,11 +13,18 @@ using Microsoft.Common.Wpf;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
-    internal sealed class SqlPublishDialogViewModel : BindableBase {
+    internal sealed class SqlPublishDialogViewModel : BindableBase, IDisposable {
+        // Store settings during session so they can be reused.
+        // Settings are generally per project. Consider saving
+        // them in the project file.
+        private static string _targetProject;
+        private static string _tableName;
+        private static RCodePlacement _codePlacement = RCodePlacement.Inline;
+
         private bool _canGenerate;
         private bool _generateTable;
 
-        public IReadOnlyCollection<string> TargetProjects { get; private set; }
+        public IReadOnlyList<string> TargetProjects { get; private set; }
         public int SelectedTargetProjectIndex { get; set; }
         public IReadOnlyCollection<string> CodePlacementNames { get; private set; }
         public int SelectedCodePlacementIndex { get; set; }
@@ -34,9 +41,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         public SqlPublishDialogViewModel(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, 
                                          IEnumerable<string> filePaths, string projectFolder) {
-            Settings = SqlSProcPublishSettings.LoadSettings(coreShell, pss, fs, filePaths, projectFolder);
-            PopulateProjectList(pss);
+             PopulateProjectList(pss);
             SelectCodePlacementMode();
+        }
+
+        public void Dispose() {
+            _targetProject = Settings.TargetProject;
+            _tableName = Settings.TableName;
+            _codePlacement = Settings.CodePlacement;
         }
 
         private void PopulateProjectList(IProjectSystemServices pss) {
@@ -48,6 +60,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                     index = indices.Count() > 0 ? indices.First() : -1;
                 }
                 SelectedTargetProjectIndex = index >= 0 ? index : 0;
+                Settings.TargetProject = TargetProjects[SelectedCodePlacementIndex];
             }
         }
 
@@ -59,7 +72,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             SelectedCodePlacementIndex = (int)Settings.CodePlacement;
         }
 
-        public static IReadOnlyCollection<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {
+        public static IReadOnlyList<string> GetDatabaseProjectsInSolution(IProjectSystemServices pss) {
             var projectMap = new Dictionary<string, EnvDTE.Project>();
             var solution = pss.GetSolution();
             var projects = new List<string>();

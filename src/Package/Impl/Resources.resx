@@ -881,16 +881,10 @@ Additional information:
   <data name="SqlPublishDialog_RCodePlacement" xml:space="preserve">
     <value>R code placement:</value>
   </data>
-  <data name="SqlPublishDialog_Help" xml:space="preserve">
-    <value>R script can be placed in a separate table and referenced in the stored procedure by name or placed inline directly inside the @script attribute value in the SQL stored procedure.{0}By default stored procedure names are derived from the respective R script file name. However, you can edit names in the grid and enter any suitable values.</value>
-  </data>
   <data name="SqlPublishDialog_NoDbProject" xml:space="preserve">
     <value>Unable to find database project in the Solution. Please create a database project which will receive SQL files with the R code.</value>
   </data>
   <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
     <value>The selected project does not contain any R Script with SQL files.</value>
-  </data>
-  <data name="SqlPublishDialog_TemplateDamaged" xml:space="preserve">
-    <value>Unable to find placeholders for procedure name, R code or for the input query. Please check stored procedure template file syntax in {0}.</value>
   </data>
 </root>

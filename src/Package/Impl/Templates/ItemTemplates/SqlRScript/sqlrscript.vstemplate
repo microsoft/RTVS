@@ -15,6 +15,7 @@
   <TemplateContent>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$" OpenInEditor="true">SqlRScript.R</ProjectItem>
     <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.sql" OpenInEditor="false">SqlRScript.R.sql</ProjectItem>
-    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.SProc.sql" OpenInEditor="false">SqlRScript.R.SProc.sql</ProjectItem>
+    <ProjectItem TargetFileName="$fileinputname$.$fileinputextension$.SProc.sql" OpenInEditor="false" 
+                 ReplaceParameters="true">SqlRScript.R.SProc.sql</ProjectItem>
   </TemplateContent>
 </VSTemplate>

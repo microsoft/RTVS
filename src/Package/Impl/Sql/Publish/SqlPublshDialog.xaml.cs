@@ -29,10 +29,6 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IEnumerable<string> selectedFiles, string projectFolder) :
             this(coreShell, pss, new FileSystem(), selectedFiles, projectFolder) {
             InitializeComponent();
-
-            HelpText.Text = string.Format(CultureInfo.InvariantCulture, Package.Resources.SqlPublishDialog_Help,
-                                    Environment.NewLine + Environment.NewLine,
-                                    Environment.NewLine + Environment.NewLine);
         }
 
         internal SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> selectedFiles, string projectFolder) {
@@ -51,13 +47,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void OKButton_Click(object sender, RoutedEventArgs e) {
             try {
                 _model.Settings.TargetProject = ProjectList.SelectedItem as string;
-                _model.Settings.Save(_pss, _projectFolder);
-
                 var targetProject = GetSelectedProject(_model.Settings.TargetProject);
                 Debug.Assert(targetProject != null);
 
                 var generator = new SProcGenerator(_coreShell, _pss, _fs);
-                generator.Generate(_model.Settings, _selectedFiles, _projectFolder, targetProject);
+                generator.Generate(_model.Settings, _selectedFiles, targetProject);
             } catch (Exception ex) {
                 _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);

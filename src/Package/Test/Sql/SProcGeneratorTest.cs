@@ -36,9 +36,8 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [Test]
         public void GenerateEmpty() {
             var fs = new FileSystem();
-            var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[0], _files.DestinationPath);
             var g = new SProcGenerator(_coreShell, _pss, fs);
-            g.Generate(settings, new string[] { "sqlcode1.r" }, _files.DestinationPath, _project);
+            g.Generate(new SqlSProcPublishSettings(), new string[] { "sqlcode1.r" }, _project);
         }
 
         [CompositeTest]
@@ -46,19 +45,18 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         [InlineData("sqlcode1.r", RCodePlacement.Table)]
         public void Generate(string rFile, RCodePlacement codePlacement) {
             var fs = new FileSystem();
-            var settings = SqlSProcPublishSettings.LoadSettings(_coreShell, _pss, fs, new string[] { rFile }, _files.DestinationPath);
+            var settings = new SqlSProcPublishSettings();
+            settings.Files.Add(Path.Combine(_files.DestinationPath, rFile));
             var g = new SProcGenerator(_coreShell, _pss, fs);
 
             settings.CodePlacement = codePlacement;
 
             var targetFolder = _files.DestinationPath;
-            g.Generate(settings, new string[] { rFile }, targetFolder, _project);
+            g.Generate(settings, new string[] { rFile }, _project);
 
             var rFilePath = Path.Combine(targetFolder, rFile);
             var rCode = fs.ReadAllText(rFilePath);
-
-            var info = settings.SProcInfoEntries[0];
-            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", info.SProcName), ".sql");
+            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, "R\\", Path.GetFileNameWithoutExtension(settings.Files[0])), ".sql");
 
             _project.ProjectItems.Received().AddFromFile(sprocFile);
 
