@@ -144,7 +144,7 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public  async Task<PackageLockState> GetPackageLockState(string name, string libraryPath) {
+        public async Task<PackageLockState> GetPackageLockState(string name, string libraryPath) {
             var pkgStateresult =  await _interactiveWorkflow.RSession.EvaluateAsync($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
 
             string pkgState = pkgStateresult.Result.Value<string>();
