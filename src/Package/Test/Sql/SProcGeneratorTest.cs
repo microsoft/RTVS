@@ -54,12 +54,13 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             targetProjItem.ProjectItems.Returns(targetProjItems);
 
             var rootProjItems = Substitute.For<EnvDTE.ProjectItems>();
+            rootProjItems.Item("R").Returns((EnvDTE.ProjectItem)null);
             rootProjItems.AddFolder("R").Returns(targetProjItem);
             _project.ProjectItems.Returns(rootProjItems);
 
             settings.CodePlacement = codePlacement;
             g.Generate(settings, _project);
-            _project.ProjectItems.Received().AddFolder("R");
+            rootProjItems.Received().AddFolder("R");
 
             var targetFolder = Path.Combine(_files.DestinationPath, "R\\");
             var rFilePath = Path.Combine(targetFolder, rFile);

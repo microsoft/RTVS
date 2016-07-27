@@ -60,12 +60,11 @@
     <None Include="Files\PropertyGridMultiple02-1.settings.r" />
     <None Include="Files\PropertyGridSingle.settings.r" />
     <None Include="Files\PropertyGridMultiple02-2.settings.r" />
-    <Content Include="Files\SqlCode1.r.SProc.sql" />
-    <Content Include="Files\SqlCode1.r.sql" />
+    <Content Include="Files\SqlCode1.Template.sql" />
+    <Content Include="Files\SqlCode1.Query.sql" />
     <None Include="Files\SqlCode1.r" />
     <Content Include="Files\SqlCode1.table.baseline.sql" />
     <Content Include="Files\SqlCode1.inline.baseline.sql" />
-    <None Include="Files\SqlSProcSettings.json" />
     <None Include="project.14.0.json" />
     <None Include="project.15.0.json" />
     <None Include="project.json" />
@@ -223,6 +222,7 @@
     <Compile Include="Repl\ExportsTest.cs" />
     <Compile Include="Shell\TestVsAppShell.cs" />
     <Compile Include="Mocks\InteractiveWindowComponentContainerFactoryMock.cs" />
+    <Compile Include="Sql\ExtensionsTest.cs" />
     <Compile Include="Sql\SProcGeneratorTest.cs" />
     <Compile Include="Sql\SettingsTest.cs" />
     <Compile Include="Sql\PublishDialogTest.cs" />

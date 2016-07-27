@@ -68,8 +68,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     var rFiles = _pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".R"));
                     var sqlFiles = new HashSet<string>(_pss.GetProjectFiles(project).Where(x => Path.GetExtension(x).EqualsIgnoreCase(".sql")));
                     var sprocFiles = rFiles.Where(x =>
-                                sqlFiles.Contains(x + ".sql", StringComparer.OrdinalIgnoreCase) &&
-                                sqlFiles.Contains(x + SqlSProcPublishSettings.SProcFileExtension, StringComparer.OrdinalIgnoreCase));
+                                sqlFiles.Contains(x.ToQueryFilePath(), StringComparer.OrdinalIgnoreCase) &&
+                                sqlFiles.Contains(x.ToSProcFilePath(), StringComparer.OrdinalIgnoreCase));
                     if (sprocFiles.FirstOrDefault() != null) {
                         var dlg = new SqlPublshDialog(_coreShell, _pss, _settingsStorage, sprocFiles);
                         dlg.ShowModal();

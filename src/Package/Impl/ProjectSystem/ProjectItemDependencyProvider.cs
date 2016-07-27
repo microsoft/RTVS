@@ -4,16 +4,17 @@
 using System.ComponentModel.Composition;
 using Microsoft.Common.Core;
 using Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project;
+using Microsoft.VisualStudio.R.Package.Sql;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectItemDependencyProvider))]
     internal sealed class ProjectItemDependencyProvider : IProjectItemDependencyProvider {
         public string GetMasterFile(string childFilePath) {
-            if(childFilePath.EndsWithIgnoreCase(".R.sql")) {
-                return childFilePath.Substring(0, childFilePath.Length - 4);
+            if(childFilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
+                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.QueryFileExtension.Length);
             }
-            else if (childFilePath.EndsWithIgnoreCase(".R.SProc.sql")) {
-                return childFilePath.Substring(0, childFilePath.Length - 10);
+            else if (childFilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
+                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.SProcFileExtension.Length);
             }
             return string.Empty;
         }

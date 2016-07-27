@@ -4,9 +4,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
 using System.ComponentModel.Design;
-using Microsoft.Languages.Core.Settings;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.InteractiveWorkflow;
 using Microsoft.R.Components.InteractiveWorkflow.Commands;
 using Microsoft.R.Components.Sql;

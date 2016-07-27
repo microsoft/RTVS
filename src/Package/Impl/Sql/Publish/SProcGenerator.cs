@@ -107,7 +107,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// Replaces procedure name, R Code and the SQL query placeholders with actual values
         /// </summary>
         private string FillSprocTemplate(string filePath, string sprocName, RCodePlacement codePlacement, string codeTableName) {
-            var sprocTemplateFile = filePath + SqlSProcPublishSettings.SProcFileExtension;
+            var sprocTemplateFile = filePath.ToSProcFilePath();
             var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
 
             string scriptCode;
@@ -120,7 +120,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             }
             sprocTemplate = sprocTemplate.Replace(RCodeTemplate, scriptCode);
 
-            var sqlQuery = GetSqlFileContent(filePath + ".sql").Trim();
+            var sqlQuery = GetSqlFileContent(filePath.ToQueryFilePath()).Trim();
             return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
         }
 

@@ -22,7 +22,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             var fs = Substitute.For<IFileSystem>();
             var storage = Substitute.For<IWritableSettingsStorage>();
 
-            var dlg = new SqlPublshDialog(coreShell, pss, fs, storage, new string[] { @"C:\file.r", @"C:\" });
+            var dlg = new SqlPublshDialog(coreShell, pss, fs, storage, new string[] { @"C:\file.r", @"C:\file.x" });
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishDialogViewModel));
 
