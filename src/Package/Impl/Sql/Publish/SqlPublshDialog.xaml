@@ -11,9 +11,10 @@
              ShowInTaskbar="False" WindowStyle="SingleBorderWindow" WindowStartupLocation="CenterOwner" 
              Background="{DynamicResource {x:Static wpf:Brushes.BackgroundBrushKey}}" 
              Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
-            mc:Ignorable="d" Width="435" Height="225">
+            mc:Ignorable="d" Width="435" Height="270">
     <Grid Margin="12" Background="Transparent">
         <Grid.RowDefinitions>
+            <RowDefinition Height="42" />
             <RowDefinition Height="42" />
             <RowDefinition Height="42" />
             <RowDefinition Height="42" />
@@ -40,10 +41,16 @@
                  x:Name="TableName" Text="{Binding Path=Settings.TableName}"
                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" TextWrapping="NoWrap" VerticalContentAlignment="Center"
                  TextChanged="TableName_TextChanged" IsEnabled="{Binding GenerateTable}"/>
-        <Button x:Name="OKButton" Grid.Row="3" Grid.Column="2" Content="{x:Static components:Resources.Ok}" IsDefault="True" 
+        <Label x:Name="QuoteTypeLabel" Grid.Row="3" Grid.Column="0" Content="{x:Static package:Resources.SqlPublishDialog_QuoteType}" />
+        <ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" 
+                  x:Name="QuoteTypeList"
+                  ItemsSource="{Binding Path=QuoteTypeNames}" SelectedIndex="{Binding Path=SelectedQuoteTypeIndex}" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="24" IsEditable="False"
+                  SelectionChanged="QuoteTypetList_SelectionChanged"/>
+        <Button x:Name="OKButton" Grid.Row="4" Grid.Column="2" Content="{x:Static components:Resources.Ok}" IsDefault="True" 
                 IsEnabled="{Binding Path=CanGenerate}"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="OKButton_Click" />
-        <Button x:Name="CancelButton" Grid.Row="3" Grid.Column="3" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
+        <Button x:Name="CancelButton" Grid.Row="4" Grid.Column="3" Content="{x:Static components:Resources.Cancel}" IsCancel="True"
                 HorizontalAlignment="Center" VerticalAlignment="Center" Width="76" Height="24" Click="CancelButton_Click" />
     </Grid>
     <ui:DialogWindow.Resources>

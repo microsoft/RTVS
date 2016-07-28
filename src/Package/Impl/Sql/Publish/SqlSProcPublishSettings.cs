@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Microsoft.Common.Core.IO;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
@@ -40,6 +41,11 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// </summary>
         public RCodePlacement CodePlacement { get; set; } = RCodePlacement.Inline;
 
+        /// <summary>
+        /// Determines type of quoting for SQL names with spaces
+        /// </summary>
+        public SqlQuoteType QuoteType { get; set; } = SqlQuoteType.Bracket;
+
         public SqlSProcPublishSettings(IEnumerable<string> files, IFileSystem fs) {
             _files.AddRange(files);
             _fs = fs;
@@ -58,27 +64,42 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var sprocTemplateFile = rFilePath.ToSProcFilePath();
             if (!string.IsNullOrEmpty(sprocTemplateFile) && _fs.FileExists(sprocTemplateFile)) {
                 var content = _fs.ReadAllText(sprocTemplateFile);
-                var str = "CREATE PROCEDURE";
-                var index = content.ToUpperInvariant().IndexOf(str);
-                if (index >= 0) {
-                    int i = index + str.Length;
-                    for (; i < content.Length; i++) {
-                        if (!char.IsWhiteSpace(content[i])) {
-                            break;
-                        }
-                    }
-                    int start = i;
-                    for (; i < content.Length; i++) {
-                        if (char.IsWhiteSpace(content[i])) {
-                            break;
-                        }
-                    }
-                    if (i > start) {
-                        return content.Substring(start, i - start);
-                    }
+                var regex = new Regex(@"\bCREATE\s+PROCEDURE\s+");
+                var match = regex.Match(content);
+                 if (match.Index >= 0) {
+                     return GetProcedureName(content, match.Index + match.Length);
                 }
             }
             return string.Empty;
+        }
+
+        private string GetProcedureName(string s, int start) {
+            // Check if name starts with [ or "
+            if (start >= s.Length) {
+                return string.Empty;
+            }
+            int i = start;
+            var openQuote = s[start];
+            if (openQuote == '[' || openQuote == '\"') {
+                var closeQuote = openQuote == '[' ? ']' : '\"';
+                i++; // Skip over opening quoting character
+                for (; i < s.Length; i++) {
+                    if (s[i] == '\n' || s[i] == '\r') {
+                        break; // No variables with line breaks
+                    }
+                    if (s[i] == closeQuote) {
+                        // handle "" and ]] escapes
+                        if (i >= s.Length - 1 || s[i + 1] != closeQuote) {
+                            break;
+                        }
+                        i++;
+                    }
+                }
+            } else {
+                // Unquoted
+                for (; i < s.Length && !char.IsWhiteSpace(s[i]); i++) { }
+            }
+            return s.Substring(start, i - start);
         }
     }
 }

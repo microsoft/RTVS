@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<CodeEntries>
-  <CodeEntry File="Calculate" Variable="RCalculate" SProc="RCalculate"/>
-  <CodeEntry File="Regress" Variable="RRegress" SProc="RRegress"/>
-  <CodeEntry File="Convert" Variable="RConvert" SProc="RConvert"/>
-  <CodeEntry File="Fit" Variable="RFit" SProc="RFit"/>
-</CodeEntries>

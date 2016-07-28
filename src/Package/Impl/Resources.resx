@@ -887,4 +887,13 @@ Additional information:
   <data name="SqlPublishDialog_NoSProcFiles" xml:space="preserve">
     <value>The selected project does not contain any R Script with SQL files.</value>
   </data>
+  <data name="SqlPublishDialog_BracketQuote" xml:space="preserve">
+    <value>Square brackets</value>
+  </data>
+  <data name="SqlPublishDialog_DoubleQuote" xml:space="preserve">
+    <value>Double quote</value>
+  </data>
+  <data name="SqlPublishDialog_QuoteType" xml:space="preserve">
+    <value>Quote type:</value>
+  </data>
 </root>

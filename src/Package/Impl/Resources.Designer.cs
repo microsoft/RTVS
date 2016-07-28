@@ -1965,6 +1965,24 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Square brackets.
+        /// </summary>
+        public static string SqlPublishDialog_BracketQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_BracketQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Double quote.
+        /// </summary>
+        public static string SqlPublishDialog_DoubleQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_DoubleQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generate stored procedures.
         /// </summary>
         public static string SqlPublishDialog_GenerateStoredProcedures {
@@ -2015,6 +2033,15 @@ namespace Microsoft.VisualStudio.R.Package {
         public static string SqlPublishDialog_NoSProcFiles {
             get {
                 return ResourceManager.GetString("SqlPublishDialog_NoSProcFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Quote type:.
+        /// </summary>
+        public static string SqlPublishDialog_QuoteType {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_QuoteType", resourceCulture);
             }
         }
         
