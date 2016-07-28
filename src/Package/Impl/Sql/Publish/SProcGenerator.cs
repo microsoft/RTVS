@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void CreateRCodeTable(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
             var creatTableScriptFile = Path.Combine(targetFolder, CreateRCodeTableScriptName);
             using (var sw = new StreamWriter(creatTableScriptFile)) {
-                sw.WriteLine(Invariant($"CREATE TABLE {settings.TableName}"));
+                sw.WriteLine(Invariant($"CREATE TABLE [{settings.TableName}]"));
                 sw.WriteLine("(");
                 sw.WriteLine(Invariant($"[{SProcColumnName}] NVARCHAR(64),"));
                 sw.WriteLine(Invariant($"[{RCodeColumnName}] NVARCHAR(max)"));
@@ -84,7 +84,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             var postDeploymentScript = Path.Combine(targetFolder, PostDeploymentScriptName);
 
             using (var sw = new StreamWriter(postDeploymentScript)) {
-                sw.WriteLine(Invariant($"INSERT INTO {settings.TableName}"));
+                sw.WriteLine(Invariant($"INSERT INTO [{settings.TableName}]"));
 
                 for (int i = 0; i < settings.Files.Count; i++) {
                     var filePath = settings.Files[i];
@@ -129,7 +129,7 @@ DECLARE @RCodeQuery NVARCHAR(max);
 DECLARE @RCode NVARCHAR(max);
 DECLARE @ParmDefinition NVARCHAR(max);
 
-SET @RCodeQuery = 'SELECT @RCodeOUT = RCode FROM {0} WHERE SProcName = ''{1}''';
+SET @RCodeQuery = N'SELECT @RCodeOUT = RCode FROM [{0}] WHERE SProcName = ''{1}''';
 SET @ParmDefinition = N'@RCodeOUT NVARCHAR(max) OUTPUT';
 
 EXEC sp_executesql @RCodeQuery, @ParmDefinition, @RCodeOUT=@RCode OUTPUT;

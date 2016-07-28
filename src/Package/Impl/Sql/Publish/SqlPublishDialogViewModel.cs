@@ -67,7 +67,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 var index = -1;
                 if (!string.IsNullOrEmpty(Settings.TargetProject)) {
                     var indices = TargetProjects.IndexWhere(x => x.EqualsIgnoreCase(Settings.TargetProject));
-                    index = indices.Count() > 0 ? indices.First() : -1;
+                    index = indices.DefaultIfEmpty(-1).First();
                 }
                 SelectedTargetProjectIndex = index >= 0 ? index : 0;
                 Settings.TargetProject = TargetProjects[SelectedCodePlacementIndex];

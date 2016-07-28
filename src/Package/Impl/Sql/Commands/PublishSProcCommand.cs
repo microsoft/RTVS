@@ -4,22 +4,22 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Composition;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.R.Components.ContentTypes;
 #if VS14
-using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
+using Microsoft.VisualStudio.ProjectSystem.Utilities;
 #else
 using Microsoft.VisualStudio.ProjectSystem;
 #endif
@@ -70,7 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                     var sprocFiles = rFiles.Where(x =>
                                 sqlFiles.Contains(x.ToQueryFilePath(), StringComparer.OrdinalIgnoreCase) &&
                                 sqlFiles.Contains(x.ToSProcFilePath(), StringComparer.OrdinalIgnoreCase));
-                    if (sprocFiles.FirstOrDefault() != null) {
+                    if (sprocFiles.Any()) {
                         var dlg = new SqlPublshDialog(_coreShell, _pss, _settingsStorage, sprocFiles);
                         dlg.ShowModal();
                     } else {
