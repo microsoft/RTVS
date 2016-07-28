@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
 using Microsoft.VisualStudio.ProjectSystem.Utilities.Designers;
+using Microsoft.VisualStudio.R.Package.Sql;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     [Export(typeof(IProjectTreeModifier))]
@@ -25,9 +26,9 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                         tree = tree.SetIcon(ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType());
                     } else if (ext == ".md" || ext == ".rmd") {
                         tree = tree.SetIcon(KnownMonikers.MarkdownFile.ToProjectSystemType());
-                    } else if (tree.FilePath.EndsWithIgnoreCase(".r.sql")) {
+                    } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
                         tree = tree.SetIcon(KnownMonikers.DatabaseColumn.ToProjectSystemType());
-                    } else if (tree.FilePath.EndsWithIgnoreCase(".r.sproc.sql")) {
+                    } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
                         tree = tree.SetIcon(KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType());
                     }
                 }

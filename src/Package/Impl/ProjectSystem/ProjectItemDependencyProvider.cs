@@ -11,10 +11,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
     internal sealed class ProjectItemDependencyProvider : IProjectItemDependencyProvider {
         public string GetMasterFile(string childFilePath) {
             if(childFilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
-                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.QueryFileExtension.Length);
+                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.QueryFileExtension.Length) + ".R";
             }
             else if (childFilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
-                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.SProcFileExtension.Length);
+                return childFilePath.Substring(0, childFilePath.Length - SProcFileExtensions.SProcFileExtension.Length) + ".R";
             }
             return string.Empty;
         }

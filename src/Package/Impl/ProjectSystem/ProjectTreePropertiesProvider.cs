@@ -22,6 +22,10 @@ namespace Microsoft.VisualStudio.R.Package.ProjectSystem {
                     propertyValues.Icon = ProjectIconProvider.RDataFileNodeImage.ToProjectSystemType();
                 } else if (ext == ".md" || ext == ".rmd") {
                     propertyValues.Icon = KnownMonikers.MarkdownFile.ToProjectSystemType();
+                } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.QueryFileExtension)) {
+                    propertyValues.Icon = KnownMonikers.DatabaseColumn.ToProjectSystemType();
+                } else if (tree.FilePath.EndsWithIgnoreCase(SProcFileExtensions.SProcFileExtension)) {
+                    propertyValues.Icon = KnownMonikers.DatabaseStoredProcedures.ToProjectSystemType();
                 }
             }
         }
