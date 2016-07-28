@@ -28,9 +28,13 @@ namespace Microsoft.R.Editor.DragDrop {
                 var ext = Path.GetExtension(item.FileName).ToLowerInvariant();
                 switch (ext) {
                     case ".r":
-                        var str = first ? Environment.NewLine : string.Empty;
-                        sb.AppendLine(Invariant($"{str}source('{relative}')"));
-                        first = false;
+                        if ((keystates & DragDropKeyStates.ControlKey) != 0) {
+                            sb.Append(GetFileContent(item.FileName));
+                        } else {
+                            var str = first ? Environment.NewLine : string.Empty;
+                            sb.AppendLine(Invariant($"{str}source('{relative}')"));
+                            first = false;
+                        }
                         break;
                     case ".sql":
                         if ((keystates & DragDropKeyStates.ControlKey) != 0) {
