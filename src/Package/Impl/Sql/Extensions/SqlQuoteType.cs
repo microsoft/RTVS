@@ -6,7 +6,8 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
     /// Describes selected type of quoting for SQL names with spaces
     /// See https://technet.microsoft.com/en-us/library/ms176027%28v=sql.105%29.aspx
     /// </summary>
-    internal enum SqlQuoteType {
+    public enum SqlQuoteType {
+        None,
         Bracket,
         Quote
     }

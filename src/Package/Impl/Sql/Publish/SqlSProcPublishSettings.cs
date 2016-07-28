@@ -44,7 +44,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Determines type of quoting for SQL names with spaces
         /// </summary>
-        public SqlQuoteType QuoteType { get; set; } = SqlQuoteType.Bracket;
+        public SqlQuoteType QuoteType { get; set; } = SqlQuoteType.None;
 
         public SqlSProcPublishSettings(IEnumerable<string> files, IFileSystem fs) {
             _files.AddRange(files);
@@ -55,51 +55,9 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         private void LoadSProcNames() {
             _sprocNameMap.Clear();
             foreach (var file in Files) {
-                var sprocName = GetSProcNameFromTemplate(file);
+                var sprocName = _fs.GetSProcNameFromTemplate(file);
                 _sprocNameMap[file] = sprocName;
             }
-        }
-
-        private string GetSProcNameFromTemplate(string rFilePath) {
-            var sprocTemplateFile = rFilePath.ToSProcFilePath();
-            if (!string.IsNullOrEmpty(sprocTemplateFile) && _fs.FileExists(sprocTemplateFile)) {
-                var content = _fs.ReadAllText(sprocTemplateFile);
-                var regex = new Regex(@"\bCREATE\s+PROCEDURE\s+");
-                var match = regex.Match(content);
-                 if (match.Index >= 0) {
-                     return GetProcedureName(content, match.Index + match.Length);
-                }
-            }
-            return string.Empty;
-        }
-
-        private string GetProcedureName(string s, int start) {
-            // Check if name starts with [ or "
-            if (start >= s.Length) {
-                return string.Empty;
-            }
-            int i = start;
-            var openQuote = s[start];
-            if (openQuote == '[' || openQuote == '\"') {
-                var closeQuote = openQuote == '[' ? ']' : '\"';
-                i++; // Skip over opening quoting character
-                for (; i < s.Length; i++) {
-                    if (s[i] == '\n' || s[i] == '\r') {
-                        break; // No variables with line breaks
-                    }
-                    if (s[i] == closeQuote) {
-                        // handle "" and ]] escapes
-                        if (i >= s.Length - 1 || s[i + 1] != closeQuote) {
-                            break;
-                        }
-                        i++;
-                    }
-                }
-            } else {
-                // Unquoted
-                for (; i < s.Length && !char.IsWhiteSpace(s[i]); i++) { }
-            }
-            return s.Substring(start, i - start);
         }
     }
 }

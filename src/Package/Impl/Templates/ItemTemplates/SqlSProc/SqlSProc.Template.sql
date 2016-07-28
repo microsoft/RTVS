@@ -1,10 +1,4 @@
-﻿-- This is a template for the stored procedure in R
---
--- _PROCEDURENAME_ will be replaced by the generated procedure name
--- _RCODE_will be replaced with the R script
--- _INPUT_QUERY_ will receive SQL query from the RScript.R.sql file
---
-CREATE PROCEDURE [$fileinputname$]
+﻿CREATE PROCEDURE [$fileinputname$]
 AS
 BEGIN
 EXEC sp_execute_external_script @language = N'R'

@@ -8,6 +8,7 @@ using Microsoft.Common.Core.Shell;
 using Microsoft.Common.Core.Test.Utility;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Sql;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using NSubstitute;
 using Xunit;
@@ -42,9 +43,11 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
         }
 
         [CompositeTest]
-        [InlineData("sqlcode1.r", RCodePlacement.Inline)]
-        [InlineData("sqlcode1.r", RCodePlacement.Table)]
-        public void Generate(string rFile, RCodePlacement codePlacement) {
+        [InlineData("sqlcode1.r", RCodePlacement.Inline, SqlQuoteType.None, "ProcName")]
+        [InlineData("sqlcode1.r", RCodePlacement.Table, SqlQuoteType.None, "ProcName")]
+        [InlineData("sqlcode2.r", RCodePlacement.Inline, SqlQuoteType.Bracket, "a b")]
+        [InlineData("sqlcode2.r", RCodePlacement.Table, SqlQuoteType.Quote, "a b")]
+        public void Generate(string rFile, RCodePlacement codePlacement, SqlQuoteType quoteType, string sprocName) {
             var fs = new FileSystem();
             var settings = new SqlSProcPublishSettings(new string[] { Path.Combine(_files.DestinationPath, rFile) }, fs);
             var g = new SProcGenerator(_coreShell, _pss, fs);
@@ -59,12 +62,14 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
             _project.ProjectItems.Returns(rootProjItems);
 
             settings.CodePlacement = codePlacement;
+            settings.QuoteType = quoteType;
+
             g.Generate(settings, _project);
             rootProjItems.Received().AddFolder("R");
 
             var targetFolder = Path.Combine(_files.DestinationPath, "R\\");
             var rFilePath = Path.Combine(targetFolder, rFile);
-            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, Path.GetFileNameWithoutExtension("_PROCEDURENAME_")), ".sql");
+            var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");
 
             targetProjItem.ProjectItems.Received().AddFromFile(sprocFile);
             if (codePlacement == RCodePlacement.Table) {

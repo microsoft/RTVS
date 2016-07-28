@@ -65,7 +65,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             Settings.TargetProject = _settingsStorage.GetString(TargetProjectSettingName, string.Empty);
             Settings.TableName =_settingsStorage.GetString(TableNameSettingName, SqlSProcPublishSettings.DefaultRCodeTableName);
             Settings.CodePlacement = (RCodePlacement)_settingsStorage.GetInteger(CodePlacementSettingName, (int)RCodePlacement.Inline);
-            Settings.QuoteType = (SqlQuoteType)_settingsStorage.GetInteger(QuoteTypeSettingName, (int)SqlQuoteType.Bracket);
+            Settings.QuoteType = (SqlQuoteType)_settingsStorage.GetInteger(QuoteTypeSettingName, (int)SqlQuoteType.None);
         }
 
         private void PopulateProjectList(IProjectSystemServices pss) {
@@ -91,6 +91,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void SelectQuoteType() {
             QuoteTypeNames = new string[] {
+                Resources.SqlPublishDialog_NoQuote,
                 Resources.SqlPublishDialog_BracketQuote,
                 Resources.SqlPublishDialog_DoubleQuote,
             };

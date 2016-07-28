@@ -118,7 +118,7 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
             return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
         }
 
-        private string FillSprocTableTemplage(string rFilePath, string sprocName, string codeTableName, SqlQuoteType quoteType) {
+        private string FillSprocTableTemplate(string rFilePath, string sprocName, string codeTableName, SqlQuoteType quoteType) {
             var sprocTemplateFile = rFilePath.ToSProcFilePath();
             var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
 
@@ -151,7 +151,7 @@ SELECT @RCode;
                     if (settings.CodePlacement == RCodePlacement.Inline) {
                         template = FillSprocInlineTemplate(rFilePath, sprocName);
                     } else {
-                        template = FillSprocTableTemplage(rFilePath, sprocName, settings.TableName, settings.QuoteType);
+                        template = FillSprocTableTemplate(rFilePath, sprocName, settings.TableName, settings.QuoteType);
                     }
                     if (!string.IsNullOrEmpty(template)) {
                         var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");

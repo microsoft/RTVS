@@ -1,3 +1,1 @@
-﻿-- comment
-SELECT * FROM ABC
--- comment
+﻿SELECT * FROM ABC

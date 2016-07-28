@@ -97,7 +97,14 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
 
         private void QuoteTypetList_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var s = QuoteTypeList.SelectedItem as string;
-            var quoteType = s.EqualsOrdinal(Package.Resources.SqlPublishDialog_BracketQuote) ? SqlQuoteType.Bracket : SqlQuoteType.Quote;
+            SqlQuoteType quoteType;
+            if (s.EqualsOrdinal(Package.Resources.SqlPublishDialog_BracketQuote)) {
+                quoteType = SqlQuoteType.Bracket;
+            } else if(s.EqualsOrdinal(Package.Resources.SqlPublishDialog_NoQuote)) {
+                quoteType = SqlQuoteType.None;
+            } else {
+                quoteType = SqlQuoteType.Quote;
+            }
             _model.Settings.QuoteType = quoteType;
         }
     }

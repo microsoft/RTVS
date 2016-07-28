@@ -6,14 +6,19 @@ using static System.FormattableString;
 
 namespace Microsoft.VisualStudio.R.Package.Sql {
     internal static class SqlStringExtensions {
+        // https://technet.microsoft.com/en-us/library/ms176027%28v=sql.105%29.aspx
         public static string ToSqlName(this string name, SqlQuoteType quoteType) {
-            if (!HasSpaces(name)) {
-                return name;
+            if(name.HasSpaces() && quoteType == SqlQuoteType.None) {
+                quoteType = SqlQuoteType.Bracket;
             }
-            if (quoteType == SqlQuoteType.Quote) {
-                return Invariant($"\"{name}\"");
+            switch (quoteType) {
+                case SqlQuoteType.Quote:
+                    return Invariant($"\"{name}\"");
+                case SqlQuoteType.Bracket:
+                    return Invariant($"[{name}]");
+                default:
+                    return name;
             }
-            return Invariant($"[{name}]");
         }
 
         private static bool HasSpaces(this string s) {

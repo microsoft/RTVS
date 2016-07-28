@@ -896,4 +896,7 @@ Additional information:
   <data name="SqlPublishDialog_QuoteType" xml:space="preserve">
     <value>Quote type:</value>
   </data>
+  <data name="SqlPublishDialog_NoQuote" xml:space="preserve">
+    <value>None</value>
+  </data>
 </root>

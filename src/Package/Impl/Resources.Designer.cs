@@ -2028,6 +2028,15 @@ namespace Microsoft.VisualStudio.R.Package {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to None.
+        /// </summary>
+        public static string SqlPublishDialog_NoQuote {
+            get {
+                return ResourceManager.GetString("SqlPublishDialog_NoQuote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The selected project does not contain any R Script with SQL files..
         /// </summary>
         public static string SqlPublishDialog_NoSProcFiles {

@@ -60,8 +60,13 @@
     <None Include="Files\PropertyGridMultiple02-1.settings.r" />
     <None Include="Files\PropertyGridSingle.settings.r" />
     <None Include="Files\PropertyGridMultiple02-2.settings.r" />
+    <Content Include="Files\SqlCode2.table.baseline.sql" />
+    <Content Include="Files\SqlCode2.inline.baseline.sql" />
+    <Content Include="Files\SqlCode2.Template.sql" />
+    <Content Include="Files\SqlCode2.Query.sql" />
     <Content Include="Files\SqlCode1.Template.sql" />
     <Content Include="Files\SqlCode1.Query.sql" />
+    <None Include="Files\SqlCode2.r" />
     <None Include="Files\SqlCode1.r" />
     <Content Include="Files\SqlCode1.table.baseline.sql" />
     <Content Include="Files\SqlCode1.inline.baseline.sql" />
