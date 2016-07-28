@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using Microsoft.Common.Core;
@@ -106,29 +107,53 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
         /// <summary>
         /// Replaces procedure name, R Code and the SQL query placeholders with actual values
         /// </summary>
-        private string FillSprocTemplate(string filePath, string sprocName, RCodePlacement codePlacement, string codeTableName) {
-            var sprocTemplateFile = filePath.ToSProcFilePath();
+        private string FillSprocInlineTemplate(string rFilePath, string sprocName) {
+            var sprocTemplateFile = rFilePath.ToSProcFilePath();
             var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
 
-            string scriptCode;
-            if (codePlacement == RCodePlacement.Table) {
-                scriptCode = Invariant($"SELECT RCode FROM {codeTableName} WHERE {SProcColumnName} IS {sprocName}");
-            } else {
-                var rCode = GetRFileContent(filePath);
-                rCode = rCode.EndsWithOrdinal(Environment.NewLine) ? rCode : rCode + Environment.NewLine;
-                scriptCode = Environment.NewLine + rCode;
-            }
-            sprocTemplate = sprocTemplate.Replace(RCodeTemplate, scriptCode);
+            var rCode = GetRFileContent(rFilePath);
+            rCode = rCode.EndsWithOrdinal(Environment.NewLine) ? rCode : rCode + Environment.NewLine;
+            sprocTemplate = sprocTemplate.Replace(RCodeTemplate, Environment.NewLine + rCode);
 
-            var sqlQuery = GetSqlFileContent(filePath.ToQueryFilePath()).Trim();
+            var sqlQuery = GetSqlFileContent(rFilePath.ToQueryFilePath()).Trim();
+            return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
+        }
+
+        private string FillSprocTableTemplage(string rFilePath, string sprocName, string codeTableName) {
+            var sprocTemplateFile = rFilePath.ToSProcFilePath();
+            var sprocTemplate = GetSqlFileContent(sprocTemplateFile);
+
+            var format =
+@"BEGIN
+DECLARE @RCodeQuery NVARCHAR(max);
+DECLARE @RCode NVARCHAR(max);
+DECLARE @ParmDefinition NVARCHAR(max);
+
+SET @RCodeQuery = 'SELECT @RCodeOUT = RCode FROM {0} WHERE SProcName = ''{1}''';
+SET @ParmDefinition = N'@RCodeOUT NVARCHAR(max) OUTPUT';
+
+EXEC sp_executesql @RCodeQuery, @ParmDefinition, @RCodeOUT=@RCode OUTPUT;
+SELECT @RCode;
+";
+            var declarations = string.Format(CultureInfo.InvariantCulture, format, codeTableName, sprocName);
+            sprocTemplate = sprocTemplate.Replace("BEGIN", declarations);
+            sprocTemplate = sprocTemplate.Replace("N'_RCODE_'", "@RCode");
+
+            var sqlQuery = GetSqlFileContent(rFilePath.ToQueryFilePath()).Trim();
             return sprocTemplate.Replace(InputQueryTemplate, sqlQuery);
         }
 
         private void CreateStoredProcedures(SqlSProcPublishSettings settings, EnvDTE.Project targetProject, string targetFolder, EnvDTE.ProjectItem targetProjectItem) {
-            foreach (var filePath in settings.Files) {
-                var sprocName = settings.SProcNames[filePath];
+            foreach (var rFilePath in settings.Files) {
+                var sprocName = settings.SProcNames[rFilePath];
                 if (!string.IsNullOrEmpty(sprocName)) {
-                    var template = FillSprocTemplate(filePath, sprocName, settings.CodePlacement, settings.TableName);
+
+                    string template;
+                    if (settings.CodePlacement == RCodePlacement.Inline) {
+                        template = FillSprocInlineTemplate(rFilePath, sprocName);
+                    } else {
+                        template = FillSprocTableTemplage(rFilePath, sprocName, settings.TableName);
+                    }
                     if (!string.IsNullOrEmpty(template)) {
                         var sprocFile = Path.ChangeExtension(Path.Combine(targetFolder, sprocName), ".sql");
                         _fs.WriteAllText(sprocFile, template);
