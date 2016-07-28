@@ -83,7 +83,6 @@
     <Compile Include="ExecutionTracing\RSessionExtensions.cs" />
     <Compile Include="ExecutionTracing\RSourceLocation.cs" />
     <Compile Include="Install\RInstallationExtensions.cs" />
-    <Compile Include="Extensions\RawEvalResultExtensions.cs" />
     <Compile Include="Extensions\DirectoryExtensions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

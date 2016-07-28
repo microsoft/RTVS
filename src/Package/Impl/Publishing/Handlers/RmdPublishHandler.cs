@@ -43,8 +43,8 @@ namespace Microsoft.VisualStudio.R.Package.Publishing {
         private async Task RMarkdownRenderAsync(IRSession session, IFileSystem fs, string inputFilePath, string outputFilePath, string format, int codePage) {
             using (var fts = new FileTransferSession(session, fs)) {
                 var rmd = await fts.SendFileAsync(inputFilePath);
-                var publishResult = await session.EvaluateAsync($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.RawResult);
-                publishResult.SaveRawDataToFile(outputFilePath);
+                var publishResult = await session.EvaluateAsync<byte[]>($"rtvs:::rmarkdown_publish(blob_id = {rmd.Id}, output_format = {format.ToRStringLiteral()}, encoding = 'cp{codePage}')", REvaluationKind.Normal);
+                File.WriteAllBytes(outputFilePath, publishResult);
             }
         }
 

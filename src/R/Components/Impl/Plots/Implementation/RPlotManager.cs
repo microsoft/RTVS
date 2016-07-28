@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Common.Core;
@@ -174,10 +175,12 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task ExportToBitmapAsync(string deviceName, string outputFilePath) {
+        private async Task ExportAsync(string outputFilePath, Task<byte[]> exportTask) {
             try {
-                var bitmapResult = await _interactiveWorkflow.RSession.ExportToBitmapAsync(deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution);
-                bitmapResult.SaveRawDataToFile(outputFilePath);
+                var result = await exportTask;
+                File.WriteAllBytes(outputFilePath, result);
+            } catch (IOException ex) {
+                throw new RPlotManagerException(ex.Message, ex);
             } catch (RHostDisconnectedException ex) {
                 throw new RPlotManagerException(Resources.Plots_TransportError, ex);
             } catch (RException ex) {
@@ -185,27 +188,14 @@ namespace Microsoft.R.Components.Plots.Implementation {
             }
         }
 
-        public async Task ExportToMetafileAsync(string outputFilePath) {
-            try {
-                var metafileResult = await _interactiveWorkflow.RSession.ExportToMetafileAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution);
-                metafileResult.SaveRawDataToFile(outputFilePath);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
-            } catch (RException ex) {
-                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
-            }
-        }
+        public Task ExportToBitmapAsync(string deviceName, string outputFilePath) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToBitmapAsync(deviceName, outputFilePath, _lastPixelWidth, _lastPixelHeight, _lastResolution));
 
-        public async Task ExportToPdfAsync(string outputFilePath) {
-            try {
-                var pdfResult = await _interactiveWorkflow.RSession.ExportToPdfAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight));
-                pdfResult.SaveRawDataToFile(outputFilePath);
-            } catch (RHostDisconnectedException ex) {
-                throw new RPlotManagerException(Resources.Plots_TransportError, ex);
-            } catch (RException ex) {
-                throw new RPlotManagerException(string.Format(CultureInfo.InvariantCulture, Resources.Plots_EvalError, ex.Message), ex);
-            }
-        }
+        public Task ExportToMetafileAsync(string outputFilePath) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToMetafileAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight), _lastResolution));
+
+        public Task ExportToPdfAsync(string outputFilePath) =>
+            ExportAsync(outputFilePath, _interactiveWorkflow.RSession.ExportToPdfAsync(outputFilePath, PixelsToInches(_lastPixelWidth), PixelsToInches(_lastPixelHeight)));
 
         public void EndLocatorMode() {
             EndLocatorMode(LocatorResult.CreateNotClicked());
