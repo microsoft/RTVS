@@ -163,10 +163,7 @@ SELECT @RCode;
         }
 
         private string GetRFileContent(string filePath) {
-            if (_fs.FileExists(filePath)) {
-                return _fs.ReadAllText(filePath).Replace("'", "''");
-            }
-            return string.Empty;
+            return _fs.ReadAllText(filePath).Replace("'", "''");
         }
 
         private string GetSqlFileContent(string filePath) {

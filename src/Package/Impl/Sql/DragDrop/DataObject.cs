@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using Microsoft.Common.Core;
 using Microsoft.Languages.Editor.DragDrop;
@@ -23,7 +24,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql.DragDrop {
 
         private static string GetFileContent(string file) {
             try {
-                return File.ReadAllText(file).Trim();
+                var content = File.ReadAllText(file).Trim();
+                var sb = new StringBuilder();
+                for (int i = 0; i < content.Length; i++) {
+                    char ch = content[i];
+                    sb.Append(!char.IsControl(ch)  || char.IsWhiteSpace(ch) ? ch : ' ');
+                }
+                return sb.ToString();
             } catch (IOException) { } catch (UnauthorizedAccessException) { }
             return string.Empty;
         }
