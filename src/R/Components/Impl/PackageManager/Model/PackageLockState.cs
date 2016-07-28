@@ -3,8 +3,8 @@
 
 namespace Microsoft.R.Components.PackageManager.Model {
     public enum PackageLockState {
-        Unlocked,
-        LockedByRSession,
-        LockedByOther,
+        Unlocked = 1,
+        LockedByRSession = 2,
+        LockedByOther = 3,
     }
 }

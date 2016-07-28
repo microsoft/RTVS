@@ -200,16 +200,23 @@ rmarkdown_publish <- function(blob_id, output_format, encoding) {
 }
 
 package_lock_state <- function(package_name, lib_path) {
-    dlls <- dir(path = paste0(lib_path,'/', package_name), pattern = '.dll', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
-    
-    lock_state <- 'unlocked'
-    for(dll in dlls) {
-        if(identical(lock_state, 'unlocked')) {
-            lock_state <- call_embedded('get_package_lock_state', dll);
-        } else {
-            break;
-        }
+    files <- dir(path = paste0(lib_path,'/', package_name), pattern = '\\.', recursive = TRUE, ignore.case = TRUE, full.names = TRUE)
+    lock_state <- call_embedded('get_file_lock_state', files);
+    factor(lock_state, levels = c(0, 1, 2), labels = c('unlocked', 'locked_by_r_session', 'locked_by_other'));
+}
+
+package_uninstall <- function(package_name, lib_path) {
+    lock_state <- package_lock_state(package_name, lib_path);
+    if (lock_state == 'unlocked') {
+        remove.packages(package_name, lib = lib_path);
     }
-    
+    lock_state
+}
+
+package_update <- function(package_name, lib_path) {
+    lock_state <- package_uninstall(package_name, lib_path)
+    if (lock_state == 'unlocked') {
+        install.packages(package_name, lib = lib_path);
+    }
     lock_state
 }

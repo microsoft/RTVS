@@ -68,17 +68,31 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task UninstallPackageAsync(string name, string libraryPath) {
+        public async Task<PackageLockState> UninstallPackageAsync(string name, string libraryPath) {
             if (!_interactiveWorkflow.RSession.IsHostRunning) {
                 throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
             }
 
             try {
                 using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
-                    if (string.IsNullOrEmpty(libraryPath)) {
-                        await request.UninstallPackageAsync(name);
-                    } else {
-                        await request.UninstallPackageAsync(name, libraryPath);
+                    using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                        return await eval.EvaluateAsync<PackageLockState>($"rtvs:::package_uninstall({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
+                    }
+                }
+            } catch (RHostDisconnectedException ex) {
+                throw new RPackageManagerException(Resources.PackageManager_TransportError, ex);
+            }
+        }
+
+        public async Task<PackageLockState> UpdatePackageAsync(string name, string libraryPath) {
+            if (!_interactiveWorkflow.RSession.IsHostRunning) {
+                throw new RPackageManagerException(Resources.PackageManager_EvalSessionNotAvailable);
+            }
+
+            try {
+                using (var request = await _interactiveWorkflow.RSession.BeginInteractionAsync()) {
+                    using (var eval = await _interactiveWorkflow.RSession.BeginEvaluationAsync()) {
+                        return await eval.EvaluateAsync<PackageLockState>($"rtvs:::package_update({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
                     }
                 }
             } catch (RHostDisconnectedException ex) {
@@ -144,16 +158,8 @@ namespace Microsoft.R.Components.PackageManager.Implementation {
             }
         }
 
-        public async Task<PackageLockState> GetPackageLockState(string name, string libraryPath) {
-            var pkgStateresult =  await _interactiveWorkflow.RSession.EvaluateAsync($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
-
-            string pkgState = pkgStateresult.Result.Value<string>();
-            if (pkgState == "locked_by_r") {
-                return PackageLockState.LockedByRSession;
-            } else if (pkgState == "locked_by_other") {
-                return PackageLockState.LockedByOther;
-            }
-            return PackageLockState.Unlocked;
+        public Task<PackageLockState> GetPackageLockStateAsync(string name, string libraryPath) {
+            return _interactiveWorkflow.RSession.EvaluateAsync<PackageLockState>($"rtvs:::package_lock_state({name.ToRStringLiteral()}, {libraryPath.ToRStringLiteral()})", REvaluationKind.Normal);
         }
 
         private string GetPackageDllPath(string name, string libraryPath) {
