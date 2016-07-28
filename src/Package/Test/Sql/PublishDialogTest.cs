@@ -4,10 +4,10 @@
 using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using Microsoft.Common.Core.IO;
-using Microsoft.Common.Core.Shell;
 using Microsoft.Languages.Core.Settings;
 using Microsoft.UnitTests.Core.XUnit;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
 using NSubstitute;
 
@@ -17,12 +17,12 @@ namespace Microsoft.VisualStudio.R.Package.Test.Sql {
     public class PublishDialogTest {
         [Test(ThreadType.UI)]
         public void Constructor() {
-            var coreShell = Substitute.For<ICoreShell>();
+            var appShell = Substitute.For<IApplicationShell>();
             var pss = Substitute.For<IProjectSystemServices>();
             var fs = Substitute.For<IFileSystem>();
             var storage = Substitute.For<IWritableSettingsStorage>();
 
-            var dlg = new SqlPublshDialog(coreShell, pss, fs, storage, new string[] { @"C:\file.r", @"C:\file.x" });
+            var dlg = new SqlPublshDialog(appShell, pss, fs, new string[] { @"C:\file.r", @"C:\file.x" });
             dlg.Title.Should().Be(Resources.SqlPublishDialog_Title);
             dlg.DataContext.Should().BeOfType(typeof(SqlPublishDialogViewModel));
 

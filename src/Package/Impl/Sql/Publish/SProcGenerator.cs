@@ -4,7 +4,6 @@
 using System;
 using System.Globalization;
 using System.IO;
-using System.Text;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Shell;
@@ -172,13 +171,7 @@ SELECT @RCode;
 
         private string GetSqlFileContent(string filePath) {
             if (_fs.FileExists(filePath)) {
-                var sb = new StringBuilder();
-                foreach (var line in _fs.FileReadAllLines(filePath)) {
-                    if (!line.TrimStart().StartsWithOrdinal("--")) {
-                        sb.AppendLine(line);
-                    }
-                }
-                return sb.ToString();
+                return _fs.ReadAllText(filePath);
             }
             return string.Empty;
         }

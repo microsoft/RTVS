@@ -10,10 +10,9 @@ using System.Windows.Controls;
 using Microsoft.Common.Core;
 using Microsoft.Common.Core.IO;
 using Microsoft.Common.Core.Logging;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Settings;
 using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
+using Microsoft.VisualStudio.R.Package.Shell;
 
 namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// <summary>
@@ -21,20 +20,20 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
     /// </summary>
     public partial class SqlPublshDialog : DialogWindow {
         private readonly SqlPublishDialogViewModel _model;
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
         private readonly IFileSystem _fs;
 
-        public SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IWritableSettingsStorage settingsStorage, IEnumerable<string> sprocFiles) :
-            this(coreShell, pss, new FileSystem(), settingsStorage, sprocFiles) {
+        public SqlPublshDialog(IApplicationShell appShell, IProjectSystemServices pss, IEnumerable<string> sprocFiles) :
+            this(appShell, pss, new FileSystem(), sprocFiles) {
             InitializeComponent();
         }
 
-        internal SqlPublshDialog(ICoreShell coreShell, IProjectSystemServices pss, IFileSystem fs, IWritableSettingsStorage settingsStorage, IEnumerable<string> sprocFiles) {
-            _coreShell = coreShell;
+        internal SqlPublshDialog(IApplicationShell appShell, IProjectSystemServices pss, IFileSystem fs, IEnumerable<string> sprocFiles) {
+            _appShell = appShell;
             _pss = pss;
             _fs = fs;
-            _model = new SqlPublishDialogViewModel(pss, fs, settingsStorage, sprocFiles);
+            _model = new SqlPublishDialogViewModel(pss, fs, appShell.SettingsStorage, sprocFiles);
 
             Title = Package.Resources.SqlPublishDialog_Title;
             DataContext = _model;
@@ -54,10 +53,10 @@ namespace Microsoft.VisualStudio.R.Package.Sql.Publish {
                 var targetProject = GetSelectedProject(_model.Settings.TargetProject);
                 Debug.Assert(targetProject != null);
 
-                var generator = new SProcGenerator(_coreShell, _pss, _fs);
+                var generator = new SProcGenerator(_appShell, _pss, _fs);
                 generator.Generate(_model.Settings, targetProject);
             } catch (Exception ex) {
-                _coreShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
+                _appShell.ShowErrorMessage(string.Format(CultureInfo.InvariantCulture, Package.Resources.Error_UnableGenerateSqlFiles, ex.Message));
                 GeneralLog.Write(ex);
                 if (ex.IsCriticalException()) {
                     throw ex;

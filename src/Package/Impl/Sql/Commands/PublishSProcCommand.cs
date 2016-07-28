@@ -8,15 +8,11 @@ using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using Microsoft.Common.Core;
-using Microsoft.Common.Core.Shell;
-using Microsoft.Languages.Core.Settings;
-using Microsoft.Languages.Editor.Composition;
-using Microsoft.R.Components.ContentTypes;
 using Microsoft.VisualStudio.R.Package.Commands;
 using Microsoft.VisualStudio.R.Package.ProjectSystem;
 using Microsoft.VisualStudio.R.Package.Sql.Publish;
+using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Utilities;
 #if VS14
 using Microsoft.VisualStudio.ProjectSystem.Designers;
 using Microsoft.VisualStudio.ProjectSystem.Utilities;
@@ -28,22 +24,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
     [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class PublishSProcCommand : ICommandGroupHandler {
-        private readonly ICoreShell _coreShell;
+        private readonly IApplicationShell _appShell;
         private readonly IProjectSystemServices _pss;
-        private readonly IWritableSettingsStorage _settingsStorage;
 
         [ImportingConstructor]
-        public PublishSProcCommand(ICoreShell coreShell, IProjectSystemServices pss, [Import(AllowDefault = true)]IWritableSettingsStorage settingsStorage) {
-            if (settingsStorage == null) {
-                var ctrs = coreShell.ExportProvider.GetExportedValue<IContentTypeRegistryService>();
-                var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
-                settingsStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
-                                        .FindFirstOrderedComponent(coreShell.CompositionService, contentType);
-            }
-
-            _coreShell = coreShell;
+        public PublishSProcCommand(IApplicationShell appShell, IProjectSystemServices pss) {
+            _appShell = appShell;
             _pss = pss;
-            _settingsStorage = settingsStorage;
         }
 
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {
@@ -71,13 +58,13 @@ namespace Microsoft.VisualStudio.R.Package.Sql {
                                 sqlFiles.Contains(x.ToQueryFilePath(), StringComparer.OrdinalIgnoreCase) &&
                                 sqlFiles.Contains(x.ToSProcFilePath(), StringComparer.OrdinalIgnoreCase));
                     if (sprocFiles.Any()) {
-                        var dlg = new SqlPublshDialog(_coreShell, _pss, _settingsStorage, sprocFiles);
+                        var dlg = new SqlPublshDialog(_appShell, _pss, sprocFiles);
                         dlg.ShowModal();
                     } else {
-                        _coreShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
+                        _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoSProcFiles);
                     }
                 } else {
-                    _coreShell.ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
+                    _appShell.ShowErrorMessage(Resources.SqlPublishDialog_NoDbProject);
                 }
             }
         }
