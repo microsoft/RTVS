@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.ProjectSystem.Utilities;
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands
 {
     [ExportCommandGroup("1496A755-94DE-11D0-8C3F-00C04FC2AAE2")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class ExcludeFromProjectCommand : ICommandGroupHandler
     {
         public CommandStatusResult GetCommandStatus(IImmutableSet<IProjectTree> nodes, long commandId, bool focused, string commandText, CommandStatus progressiveStatus) {

@@ -153,7 +153,6 @@
     <Compile Include="Commands\RHistory\VsRHistoryCommandFactory.cs" />
     <Compile Include="Commands\RHistory\VsRHistoryTextViewConnectionListener.cs" />
     <Compile Include="Commands\ShowToolWindowCommand.cs" />
-    <Compile Include="DataInspect\BindableBase.cs" />
     <Compile Include="DataInspect\Commands\ShowVariableWindowCommand.cs" />
     <Compile Include="DataInspect\DataSource\Range.cs" />
     <Compile Include="DataInspect\VariableViewModel.cs" />
@@ -212,6 +211,7 @@
     <Compile Include="ProjectSystem\Configuration\ProjectConfigurationSettingsProvider.cs" />
     <Compile Include="ProjectSystem\Constants.cs" />
     <Compile Include="ProjectSystem\Definitions\IProjectSystemServices.cs" />
+    <Compile Include="ProjectSystem\ProjectItemDependencyProvider.cs" />
     <Compile Include="ProjectSystem\ProjectSystemServices.cs" />
     <Compile Include="ProjectSystem\ProjectTreePropertiesProvider.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml.cs">
@@ -222,6 +222,7 @@
     <Compile Include="ProjectSystem\PropertyPages\Run\RunPropertyPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="ProjectSystem\ProjectSettings.cs" />
     <Compile Include="ProjectSystem\PropertyPages\Settings\SettingsPageControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -264,12 +265,26 @@
     <Compile Include="Repl\Shiny\StopShinyAppCommand.cs" />
     <Compile Include="Repl\Shiny\RunShinyAppCommand.cs" />
     <Compile Include="Shell\AppShellExtensions.cs" />
+    <Compile Include="Sql\Commands\PublishSProcCommand.cs" />
     <Compile Include="Sql\Commands\ManageDsnCommand.cs" />
     <Compile Include="Sql\Commands\AddDsnCommand.cs" />
     <Compile Include="Sql\Commands\ConfigurationSettingCommand.cs" />
     <Compile Include="Sql\ConnectionStringEditor.cs" />
     <Compile Include="Sql\Commands\AddDbConnectionCommand.cs" />
+    <Compile Include="Sql\DragDrop\DataObject.cs" />
+    <Compile Include="Sql\DragDrop\DropHandler.cs" />
+    <Compile Include="Sql\DragDrop\DropHandlerProvider.cs" />
     <Compile Include="Sql\NativeMethods.cs" />
+    <Compile Include="Sql\Publish\RCodePlacement.cs" />
+    <Compile Include="Sql\Publish\SProcGenerator.cs" />
+    <Compile Include="Sql\Extensions\SqlQuoteType.cs" />
+    <Compile Include="Sql\Publish\SqlSProcPublishSettings.cs" />
+    <Compile Include="Sql\Publish\SqlPublishDialogViewModel.cs" />
+    <Compile Include="Sql\Publish\SqlPublshDialog.xaml.cs">
+      <DependentUpon>SqlPublshDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Sql\Extensions\SqlStringExtensions.cs" />
+    <Compile Include="Sql\Extensions\SProcFileExtensions.cs" />
     <Compile Include="Utilities\IdeUtilities.cs" />
     <Compile Include="Windows\ToolWindowPaneFactory.cs" />
     <Compile Include="History\VsRHistoryVisualComponentContainerFactory.cs" />
@@ -490,6 +505,7 @@
     <Compile Include="Wpf\WpfHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\SqlRScript.ico" />
     <Content Include="Profiles\15.0\R.vssettings">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -503,14 +519,20 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\DatabaseProject.ico" />
-    <Content Include="Templates\ItemTemplates\RSettings\RFile.ico" />
+    <None Include="Resources\DatabaseProject1.ico" />
+    <VSTemplate Include="Templates\ItemTemplates\SqlSProc\SqlSProc.vstemplate">
+      <SubType>Designer</SubType>
+    </VSTemplate>
     <VSTemplate Include="Templates\ItemTemplates\RSettings\rsettings.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
     <VSTemplate Include="Templates\ItemTemplates\SqlQuery\SqlQuery.vstemplate">
       <SubType>Designer</SubType>
     </VSTemplate>
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.R" />
     <None Include="Templates\ItemTemplates\SqlQuery\SqlQuery.sql" />
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Template.sql" />
+    <None Include="Templates\ItemTemplates\SqlSProc\SqlSProc.Query.sql" />
     <Content Include="Templates\NewItem\SqlQuery.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1115,7 +1137,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Templates\ItemTemplates\RScript\RFile.ico" />
     <Content Include="Templates\NewItem\markdown.rmd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -1153,6 +1174,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <None Include="Templates\ItemTemplates\RSettings\Settings.R" />
+    <Content Include="Templates\NewItem\SqlRScript.R">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="VSShell\ShellIcons.h" />
     <Page Include="DataInspect\DataGridStyle.xaml">
       <SubType>Designer</SubType>
@@ -1308,6 +1333,10 @@
     <Page Include="ProjectSystem\PropertyPages\Run\RunPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Sql\Publish\SqlPublshDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Wpf\Controls.xaml">
       <Generator>MSBuild:Compile</Generator>

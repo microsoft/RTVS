@@ -33,6 +33,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
         private readonly string _inMemoryImportFullPath;
         private readonly Dictionary<string, ProjectItemElement> _fileItems;
         private readonly Dictionary<string, ProjectItemElement> _directoryItems;
+        private readonly IProjectItemDependencyProvider _dependencyProvider;
 
         private ProjectRootElement _inMemoryImport;
         private ProjectItemGroupElement _filesItemGroup;
@@ -43,10 +44,14 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
             EmptyProject = new XProjDocument(new XProject());
         }
 
-        public FileSystemMirroringProject(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, MsBuildFileSystemWatcher fileSystemWatcher, IActionLog log = null) {
+        public FileSystemMirroringProject(UnconfiguredProject unconfiguredProject, IProjectLockService projectLockService, 
+                                          MsBuildFileSystemWatcher fileSystemWatcher, IProjectItemDependencyProvider dependencyProvider, 
+                                          IActionLog log = null) {
             _unconfiguredProject = unconfiguredProject;
             _projectLockService = projectLockService;
             _fileSystemWatcher = fileSystemWatcher;
+            _dependencyProvider = dependencyProvider;
+
             _log = log ?? ProjectSystemActionLog.Default;
             _unloadCancellationToken = _unconfiguredProject.Services.ProjectAsynchronousTasks.UnloadCancellationToken;
             _projectDirectory = _unconfiguredProject.GetProjectDirectory();
@@ -270,7 +275,16 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.Project {
 
             foreach (string path in filesToAdd) {
                 RemoveItem(_filesItemGroup, _fileItems, path);
-                ProjectItemElement item = _filesItemGroup.AddItem("Content", path, Enumerable.Empty<KeyValuePair<string, string>>());
+
+                var metadata = Enumerable.Empty<KeyValuePair<string, string>>();
+                // TODO: consider getting this via a provider
+                var masterFilePath = _dependencyProvider?.GetMasterFile(path);
+                if (!string.IsNullOrEmpty(masterFilePath)) {
+                    var dict = new Dictionary<string, string>();
+                    dict["DependentUpon"] = masterFilePath;
+                    metadata = dict;
+                }
+                var item = _filesItemGroup.AddItem("Content", path, metadata);
                 _fileItems.Add(path, item);
             }
 

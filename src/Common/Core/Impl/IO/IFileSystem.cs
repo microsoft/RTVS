@@ -14,6 +14,9 @@ namespace Microsoft.Common.Core.IO {
         string ToLongPath(string path);
         string ToShortPath(string path);
 
+        string ReadAllText(string path);
+        void WriteAllText(string path, string content);
+
         IEnumerable<string> FileReadAllLines(string path);
         void FileWriteAllLines(string path, IEnumerable<string> contents);
 
@@ -23,5 +26,6 @@ namespace Microsoft.Common.Core.IO {
         IFileVersionInfo GetVersionInfo(string path);
         void DeleteFile(string path);
         string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options);
+        void CreateDirectory(string path);
     }
 }

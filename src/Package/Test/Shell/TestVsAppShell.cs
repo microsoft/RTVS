@@ -6,8 +6,11 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Common.Core.Telemetry;
+using Microsoft.Languages.Core.Settings;
+using Microsoft.Languages.Editor.Composition;
 using Microsoft.Languages.Editor.Test.Shell;
 using Microsoft.Languages.Editor.Undo;
+using Microsoft.R.Components.ContentTypes;
 using Microsoft.R.Components.Controller;
 using Microsoft.R.Support.Settings;
 using Microsoft.R.Support.Test.Utility;
@@ -16,6 +19,7 @@ using Microsoft.VisualStudio.R.Package.Shell;
 using Microsoft.VisualStudio.R.Package.Test.Utility;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     /// <summary>
@@ -26,6 +30,7 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
     sealed class TestVsAppShell : TestShellBase, IApplicationShell {
         private IServiceProvider _sp;
         private static TestVsAppShell _instance;
+        private IWritableSettingsStorage _settingStorage;
 
         private TestVsAppShell() {
             CompositionService = VsTestCompositionCatalog.Current.CompositionService;
@@ -61,6 +66,19 @@ namespace Microsoft.VisualStudio.R.Package.Test.Shell {
         public string BrowseForFileSave(IntPtr owner, string filter, string initialPath = null, string title = null) {
             return null;
         }
+
+        public IWritableSettingsStorage SettingsStorage {
+            get {
+                if (_settingStorage == null) {
+                    var ctrs = ExportProvider.GetExportedValue<IContentTypeRegistryService>();
+                    var contentType = ctrs.GetContentType(RContentTypeDefinition.ContentType);
+                    _settingStorage = ComponentLocatorForOrderedContentType<IWritableSettingsStorage>
+                                            .FindFirstOrderedComponent(CompositionService, contentType);
+                }
+                return _settingStorage;
+            }
+        }
+
         #endregion
 
         #region IEditorShell

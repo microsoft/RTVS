@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.ProjectSystem.VS.Properties;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.PropertyPages.Settings {
     [Export(typeof(IPageMetadata))]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal class SettingsPageMetadata : IPageMetadata {
         public bool HasConfigurationCondition => true;
 

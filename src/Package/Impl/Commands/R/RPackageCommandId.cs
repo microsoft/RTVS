@@ -70,6 +70,7 @@ namespace Microsoft.VisualStudio.R.Package.Commands {
         public const int icmdAddDatabaseConnection = 809;
         public const int icmdAddDsn = 810;
         public const int icmdManageDsn = 811;
+        public const int icmdPublishSProc = 812;
 
         // Window management
         public const int icmdShowReplWindow = 901;

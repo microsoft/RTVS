@@ -20,6 +20,14 @@ namespace Microsoft.Common.Core.IO {
             return File.Exists(path);
         }
 
+        public string ReadAllText(string path) {
+            return File.ReadAllText(path);
+        }
+
+        public void WriteAllText(string path, string content) {
+            File.WriteAllText(path, content);
+        }
+
         public IEnumerable<string> FileReadAllLines(string path) {
             return File.ReadLines(path);
         }
@@ -67,6 +75,10 @@ namespace Microsoft.Common.Core.IO {
 
         public string[] GetFileSystemEntries(string path, string searchPattern, SearchOption options) {
             return Directory.GetFileSystemEntries(path, searchPattern, options);
+        }
+
+        public void CreateDirectory(string path) {
+            Directory.CreateDirectory(path);
         }
 
         private static class NativeMethods {

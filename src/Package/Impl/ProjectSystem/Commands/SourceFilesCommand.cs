@@ -20,7 +20,7 @@ using Microsoft.VisualStudio.ProjectSystem;
 
 namespace Microsoft.VisualStudio.R.Package.ProjectSystem.Commands {
     [ExportCommandGroup("AD87578C-B324-44DC-A12A-B01A6ED5C6E3")]
-    [AppliesTo(Constants.RtvsProjectCapability)]
+    [AppliesTo(ProjectConstants.RtvsProjectCapability)]
     internal sealed class SourceFilesCommand : ICommandGroupHandler {
         private IRInteractiveWorkflowProvider _interactiveWorkflowProvider;
 

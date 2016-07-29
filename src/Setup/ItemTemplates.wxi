@@ -11,6 +11,7 @@
       <File Id="ItemTemplates_functionrd_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\functionrd.zip" />
       <File Id="ItemTemplates_rscript_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\rscript.zip" />
       <File Id="ItemTemplates_sqlquery_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\sqlquery.zip" />
+      <File Id="ItemTemplates_SqlSProc_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\SqlSProc.zip" />
       <File Id="ItemTemplates_TextFile_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\TextFile.zip" />
       <File Id="ItemTemplates_WebHtmlPage_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebHtmlPage.zip" />
       <File Id="ItemTemplates_WebStyleSheet_$(var.Lcid)" Source="$(var.ItemTemplatesDir)\$(var.Lcid)\WebStyleSheet.zip" />

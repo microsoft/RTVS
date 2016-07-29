@@ -2,8 +2,8 @@
 <VSTemplate Version="3.0.0" Type="Item" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" xmlns:sdk="http://schemas.microsoft.com/developer/vstemplate-sdkextension/2010">
   <TemplateData>
     <Name>R Settings</Name>
-    <Description>File that holds R application settings</Description>
-    <Icon>RFile.ico</Icon>
+    <Description Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="3018" />
+    <Icon Package="{6D7C5336-C0CA-4857-A7E7-2E964EA836BF}" ID="501" />
     <TemplateID>Microsoft.RTools.RSettings</TemplateID>
     <ProjectType>R</ProjectType>
     <ShowByDefault>false</ShowByDefault>

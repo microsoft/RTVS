@@ -80,7 +80,7 @@ namespace Microsoft.VisualStudio.ProjectSystem.FileSystemMirroring.IO {
         }
 
         public void MarkAllDeleted() {
-            foreach (var entry in _entries.Values) {
+            foreach (var entry in _entries.Values.ToList()) {
                 entry.PreviousRelativePath = null;
                 switch (entry.State) {
                     case Unchanged:

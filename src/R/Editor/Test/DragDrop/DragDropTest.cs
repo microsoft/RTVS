@@ -53,10 +53,7 @@ namespace Microsoft.R.Editor.Test.Formatting {
             data.GetDataPresent(DataObjectFormats.VSProjectItems).Returns(true);
             data.GetData(DataObjectFormats.VSProjectItems).Returns(MakeStream(new string[] { fullPath }));
 
-            string content = null;
-            using (var sr = new StreamReader(fullPath)) {
-                content = sr.ReadToEnd().Trim();
-            }
+            string content = File.ReadAllText(fullPath).Trim();
             data.GetPlainText(null, DragDropKeyStates.ControlKey).Should().Be('\'' + content + '\'');
 
             var rp = fullPath.MakeRRelativePath(_files.DestinationPath);

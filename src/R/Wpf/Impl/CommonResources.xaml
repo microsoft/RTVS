@@ -36,7 +36,7 @@
             </VisualStateManager.VisualStateGroups>
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+                <TextBlock x:Name="LabelText" Padding="0" Margin="0" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
                                    Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
                                    FontSize="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FontSize, Converter={x:Static wpf:Converters.Scale122}}"/>
 
@@ -56,10 +56,19 @@
     <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ThemedComboStyleKey}}"/>
     <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollBarStyleKey}}"/>
     <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ScrollViewerStyleKey}}"/>
-    
+    <Style x:Key="{x:Type Button}" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.ButtonStyleKey}}"/>
+    <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Static wpf:StyleKeys.TextBoxStyleKey}}"/>
+
     <Style x:Key="TooltipStyle" TargetType="{x:Type TextBlock}">
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="MaxWidth" Value="300" />
+    </Style>
+
+    <Style  TargetType="{x:Type Label}">
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style TargetType="{x:Type Hyperlink}" x:Key="HyperlinkStyle">

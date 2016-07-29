@@ -132,8 +132,9 @@ namespace Microsoft.R.Support.Help.Packages {
 
         private async Task BuildRemainingPackagesFunctionListAsync() {
             foreach (var pi in _packages.Values) {
-                if (pi.Functions.FirstOrDefault() == null)
+                if (!pi.Functions.Any()) {
                     await pi.LoadFunctionsIndexAsync();
+                }
             }
         }
 
@@ -144,6 +145,7 @@ namespace Microsoft.R.Support.Help.Packages {
                 var p = new PackageInfo(_host, package.Package, package.Description, package.Version);
                 await p.LoadFunctionsIndexAsync();
                 _packages[packageName] = p;
+                _functionIndex.RegisterPackageFunctions(p);
                 return p;
             }
             return null;

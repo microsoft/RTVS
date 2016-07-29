@@ -7,8 +7,8 @@
              xmlns:view="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View"
              xmlns:local="clr-namespace:Microsoft.R.Components"
              xmlns:designTime="clr-namespace:Microsoft.R.Components.PackageManager.Implementation.View.DesignTime"
-             Background="{DynamicResource {x:Static wpf:Brushes.DetailPaneBackground}}"
-             Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"
+             Background="{DynamicResource {x:Static wpf:Brushes.DetailPaneBackgroundKey}}"
+             Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"
              x:Name="Self"
              mc:Ignorable="d"
              d:DesignHeight="800" d:DesignWidth="400"
@@ -35,12 +35,12 @@
             <!-- Icon and Id -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" MinHeight="32" Margin="0,8">
 
-                <TextBox Background="Transparent" Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}" BorderThickness="0" Margin="-2,0,-2,0"
+                <TextBox Background="Transparent" Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}" BorderThickness="0" Margin="-2,0,-2,0"
                          Text="{Binding Path=Name, Mode=OneWay}" IsReadOnly="True" FontSize="{Binding ElementName=Self, Path=FontSize, Converter={x:Static wpf:Converters.Scale155}}" />
             </StackPanel>
 
             <!-- project action when in project package manager -->
-            <Grid Grid.Row="1" Margin="0,8" Background="{DynamicResource {x:Static wpf:Brushes.HeaderBackground}}">
+            <Grid Grid.Row="1" Margin="0,8" Background="{DynamicResource {x:Static wpf:Brushes.HeaderBackgroundKey}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
@@ -110,7 +110,7 @@
                 </Grid.ColumnDefinitions>
                 <view:Spinner Grid.Column="0" Width="16" Height="16" Margin="3" HorizontalAlignment="Center" VerticalAlignment="Center" />
                 <TextBlock Grid.Column="1" Text="{x:Static local:Resources.LoadingDetails}" HorizontalAlignment="Left" VerticalAlignment="Center"
-                           Foreground="{DynamicResource {x:Static wpf:Brushes.UIText}}"/>
+                           Foreground="{DynamicResource {x:Static wpf:Brushes.UITextKey}}"/>
             </Grid>
 
             <Grid Grid.Row="4" Margin="0,12,0,0" Visibility="{Binding Path=HasDetails, Converter={x:Static wpf:Converters.FalseIsCollapsed}}">
